@@ -74,17 +74,23 @@ namespace SCIRun {
       void cameraRotationChangeForwarder();
       void cameraLookAtChangeForwarder();
       void cameraDistnaceChangeForwarder();
+      void lockMutexForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
 
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
+      void sendBugReport();
 
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
+      void updateModifiedGeometriesAndSendScreenShot();
       void updateAllGeometries();
       void newGeometryValue(bool forceAllObjectsToUpdate);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void frameFinished();
+      void lockMutex();
+      void unblockExecution();
 
       //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();
@@ -121,9 +127,9 @@ namespace SCIRun {
       void pullCameraLookAt();
       void pullCameraDistance();
 
-
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
+      void toggleSelectionHack(bool b);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void setClippingPlaneIndex(int index);

@@ -26,39 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
-
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
-
-namespace SCIRun {
-namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
-{
-public:
-  ESCore();
-  virtual ~ESCore();
-
-  std::string toString(std::string prefix) const;
-
-  void execute(double currentTime, double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
-
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
-
-} // namespace Render
-} // namespace SCIRun
-
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
 #endif
+
+void main()
+{
+  gl_FragColor = vec4(0.0);
+}

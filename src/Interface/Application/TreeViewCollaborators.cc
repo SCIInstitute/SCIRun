@@ -40,7 +40,9 @@ void GrabNameAndSetFlags::operator()(QTreeWidgetItem* item)
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
-HideItemsNotMatchingString::HideItemsNotMatchingString(SearchType searchType, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), searchType_(searchType) {}
+HideItemsNotMatchingString::HideItemsNotMatchingString(SearchType searchType, const QString& pattern) :
+  match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard),
+  start_(pattern), searchType_(searchType) {}
 
 void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 {
@@ -81,7 +83,9 @@ void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
-  if (searchType_ == SearchType::STARTS_WITH)
+  if (searchType_ == SearchType::HIDE_NON_UI)
+    return !item->data(0, Qt::UserRole).toBool();
+  else if (searchType_ == SearchType::STARTS_WITH)
     return !text.startsWith(start_, Qt::CaseInsensitive);
   else if(searchType_ == SearchType::WILDCARDS
           || boost::contains(start_, "*"))

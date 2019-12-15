@@ -73,6 +73,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   //----------- Developer Tab--------------//
   connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
+  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 
   //-----------Objects Tab-----------------//
   visibleItems_.reset(new VisibleItemManager(objectListWidget_));
@@ -122,18 +123,28 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
   connect(headlightAzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightAzimuth(int)));
   connect(headlightInclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightInclination(int)));
+  connect(colorButton0, SIGNAL(clicked()), this, SLOT(selectLight0Color()));
+  setLabelColor(color0, lightColors[0] = Qt::white);
 
   connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
   connect(light1AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Azimuth(int)));
   connect(light1InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Inclination(int)));
+  connect(colorButton1, SIGNAL(clicked()), this, SLOT(selectLight1Color()));
+  setLabelColor(color1, lightColors[1] = Qt::white);
 
   connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
   connect(light2AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Azimuth(int)));
   connect(light2InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Inclination(int)));
+  connect(colorButton2, SIGNAL(clicked()), this, SLOT(selectLight2Color()));
+  setLabelColor(color2, lightColors[2] = Qt::white);
 
   connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
   connect(light3AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Azimuth(int)));
   connect(light3InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Inclination(int)));
+  connect(colorButton3, SIGNAL(clicked()), this, SLOT(selectLight3Color()));
+  setLabelColor(color3, lightColors[3] = Qt::white);
+
+  connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
 
   //-----------Materials Tab-----------------//
   connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
@@ -181,26 +192,11 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  connect(selectionHackCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleSelectionHack(bool)));
 
   setSampleColor(Qt::black);
 
   WidgetStyleMixin::tabStyle(tabWidget);
-
-  setupLightControlCircle(headlightFrame_, 0, parent->pulling_, false);
-  setupLightControlCircle(light1Frame_, 1, parent->pulling_, false);
-  setupLightControlCircle(light2Frame_, 2, parent->pulling_, false);
-  setupLightControlCircle(light3Frame_, 3, parent->pulling_, false);
-  /*Temporarily set three light to no movement until movement works (after IBBM 2016)
-  setupLightControlCircle(light1Frame_, 1, parent->pulling_, true);
-  setupLightControlCircle(light2Frame_, 2, parent->pulling_, true);
-  setupLightControlCircle(light3Frame_, 3, parent->pulling_, true);
-  */
-
-  for (auto &light : lightControls_)
-  {
-    //connect(light, SIGNAL(lightMoved(int)), parent, SLOT(setLightPosition(int)));
-    connect(light, SIGNAL(colorChanged(int)), parent, SLOT(setLightColor(int)));
-  }
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -216,9 +212,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   globalSettingsGroupBox_->setVisible(false);
   renderSliderFrame_->setEnabled(false);
   renderSliderFrame_->setVisible(false);
-
-  ///Lights Tab
-  label_11->setVisible(false);
 
   ///Materials Tab
   //materialsFrame_->setEnabled(false);
@@ -242,6 +235,14 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
 
   currentBackgroundLabel_->setStyleSheet(styleSheet);
+}
+
+void ViewSceneControlsDock::setLabelColor(QLabel* label, const QColor& color)
+{
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
+    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
+
+  label->setStyleSheet(styleSheet);
 }
 
 void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
@@ -364,11 +365,6 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
-QPointF ViewSceneControlsDock::getLightPosition(int index) const
-{
-  return lightControls_[index]->getLightPosition();
-}
-
 // Set x and y sliders all the way right(100)
 void ViewSceneControlsDock::setSliderDefaultPos()
 {
@@ -381,11 +377,6 @@ void ViewSceneControlsDock::setSliderCenterPos()
 {
   orientAxisXPos_->setValue(50);
   orientAxisYPos_->setValue(50);
-}
-
-QColor ViewSceneControlsDock::getLightColor(int index) const
-{
-  return lightControls_[index]->getColor();
 }
 
 bool VisibleItemManager::isVisible(const QString& name) const
@@ -564,101 +555,26 @@ void ViewSceneControlsDock::setupObjectListWidget()
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
-
-void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, int index, const boost::atomic<bool>& pulling, bool moveable)
+QColor ViewSceneControlsDock::getLightColor(int index) const
 {
-  auto scene = new QGraphicsScene(frame);
-  auto lightcontrol = new LightControlCircle(scene, index, pulling, frame->rect(), frame);
-  lightcontrol->setMovable(moveable);
-  lightControls_.push_back(lightcontrol);
+  return lightColors[index];
 }
 
-LightControlCircle::LightControlCircle(QGraphicsScene* scene,  int index,
-  const boost::atomic<bool>& pulling, QRectF sceneRect,
-  QWidget* parent)
-  : QGraphicsView(scene, parent),
-   index_(index), dialogPulling_(pulling), lightColor_(Qt::white)
+void ViewSceneControlsDock::selectLightColor(int index)
 {
-  setSceneRect(sceneRect);
-  static QPen pointPen(Qt::white, 1);
-  qreal x = (sceneRect.width()/2) - (sceneRect.height()/2) + 6;
-  qreal y = 6;
-  qreal radius = sceneRect.height() - 12;
-  boundingCircle_ = scene->addEllipse(x, y, radius, radius, pointPen, QBrush(Qt::transparent));
+  QString title = index < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(index);
 
-  const int lightCircleRadius = 10;
-  qreal circleX = (sceneRect.width() / 2) - (lightCircleRadius / 2);
-  qreal circleY = (sceneRect.height() / 2) - (lightCircleRadius / 2);
-  lightPosition_ = scene->addEllipse(circleX, circleY, lightCircleRadius, lightCircleRadius, pointPen, QBrush(lightColor_));
-  previousX_ = circleX;
-  previousY_ = circleY;
-  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, true);
-}
-
-void LightControlCircle::setMovable(bool canMove)
-{
-  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, canMove);
-}
-
-QPointF LightControlCircle::getLightPosition() const
-{
-  return lightPosition_->pos();
-}
-
-void LightControlCircle::setColor(const QColor& color)
-{
-  lightColor_ = color;
-  static_cast<QGraphicsEllipseItem*>(lightPosition_)->setBrush(QBrush(color));
-  Q_EMIT colorChanged(index_);
-}
-
-QColor LightControlCircle::getColor() const
-{
-  return lightColor_;
-}
-
-void LightControlCircle::mousePressEvent(QMouseEvent* event)
-{
-  QGraphicsView::mousePressEvent(event);
-  if (event->buttons() & Qt::LeftButton)
-  {
-    if (lightPosition_->isUnderMouse())
-    {
-      //std::cout << "small dot clicked" << std::endl;
-    }
-    else if (boundingCircle_->isUnderMouse())
-    {
-      //std::cout << "bounding circle clicked!" << std::endl;
-      selectLightColor();
-    }
-  }
-}
-
-void LightControlCircle::mouseMoveEvent(QMouseEvent* event)
-{
-  QGraphicsView::mouseMoveEvent(event);
-  if (lightPosition_->isUnderMouse())
-  {
-    if (lightPosition_->collidesWithItem(boundingCircle_))
-    {
-      previousX_ = lightPosition_->pos().x();
-      previousY_ = lightPosition_->pos().y();
-    }
-    else
-    {
-      lightPosition_->setPos(previousX_, previousY_);
-    }
-    Q_EMIT lightMoved(index_);
-  }
-}
-
-void LightControlCircle::selectLightColor()
-{
-  QString title = index_<1 ? windowTitle() + " Choose color for Headlight" : windowTitle() + " Choose color for Light" + QString::number(index_);
-
-  auto newColor = QColorDialog::getColor(lightColor_, this, title);
+  auto newColor = QColorDialog::getColor(lightColors[index], this, title);
   if (newColor.isValid())
   {
-    setColor(newColor);
+    lightColors[index] = newColor;
+    updateLightColor(index);
+    switch (index)
+    {
+      case 0: setLabelColor(color0, newColor); break;
+      case 1: setLabelColor(color1, newColor); break;
+      case 2: setLabelColor(color2, newColor); break;
+      case 3: setLabelColor(color3, newColor); break;
+    }
   }
 }

@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -980,11 +980,27 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_14">
         <item row="4" column="1">
-         <widget class="QFrame" name="light3Frame_">
+         <widget class="QSlider" name="light1AzimuthSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Azimuth&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>360</number>
+          </property>
+          <property name="value">
+           <number>180</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QFrame" name="colorFrame2">
           <property name="minimumSize">
            <size>
-            <width>201</width>
-            <height>115</height>
+            <width>0</width>
+            <height>60</height>
            </size>
           </property>
           <property name="frameShape">
@@ -993,73 +1009,39 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
+          <widget class="QPushButton" name="colorButton2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>241</width>
+             <height>32</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Change Light Color</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="color2">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>221</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QSlider" name="light1AzimuthSlider_">
-          <property name="maximum">
-           <number>360</number>
-          </property>
-          <property name="value">
-           <number>180</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QSlider" name="light2AzimuthSlider_">
-          <property name="maximum">
-           <number>360</number>
-          </property>
-          <property name="value">
-           <number>180</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <spacer name="horizontalSpacer_12">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>172</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_25">
-            <property name="text">
-             <string>Click on circle to change light color/brightness</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_16">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>171</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="8" column="0">
+        <item row="10" column="0">
          <widget class="QSlider" name="light2InclinationSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inclination&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>180</number>
           </property>
@@ -1071,64 +1053,31 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QCheckBox" name="light1CheckBox_">
           <property name="text">
            <string>Light1: on/off</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="1">
-         <widget class="QSlider" name="light3AzimuthSlider_">
-          <property name="maximum">
-           <number>360</number>
-          </property>
-          <property name="value">
-           <number>180</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="7" column="0">
+         <widget class="QCheckBox" name="light2CheckBox_">
+          <property name="text">
+           <string>Light2: on/off</string>
           </property>
          </widget>
         </item>
-        <item row="10" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>172</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>Click on dot to move light. Note: Headlight will not move.</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>171</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="headlightCheckBox_">
+          <property name="text">
+           <string>Headlight: on/off</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
-        <item row="9" column="1">
+        <item row="11" column="1">
          <spacer name="verticalSpacer_6">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1141,8 +1090,11 @@
           </property>
          </spacer>
         </item>
-        <item row="8" column="1">
+        <item row="10" column="1">
          <widget class="QSlider" name="light3InclinationSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inclination&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>180</number>
           </property>
@@ -1154,12 +1106,12 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QFrame" name="headlightFrame_">
+        <item row="1" column="0">
+         <widget class="QFrame" name="colorFrame0">
           <property name="minimumSize">
            <size>
-            <width>201</width>
-            <height>115</height>
+            <width>0</width>
+            <height>60</height>
            </size>
           </property>
           <property name="frameShape">
@@ -1168,17 +1120,55 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
+          <widget class="QLabel" name="color0">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>221</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="colorButton0">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>241</width>
+             <height>32</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Change Light Color</string>
+           </property>
+          </widget>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="light2CheckBox_">
-          <property name="text">
-           <string>Light2: on/off</string>
+        <item row="5" column="1">
+         <widget class="QSlider" name="light1InclinationSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inclination&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>180</number>
+          </property>
+          <property name="value">
+           <number>90</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QSlider" name="light1InclinationSlider_">
+        <item row="5" column="0">
+         <widget class="QSlider" name="headlightInclinationSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inclination&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>180</number>
           </property>
@@ -1191,69 +1181,133 @@
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QFrame" name="light2Frame_">
-          <property name="minimumSize">
-           <size>
-            <width>201</width>
-            <height>115</height>
-           </size>
+         <widget class="QSlider" name="headlightAzimuthSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Azimuth&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QCheckBox" name="light3CheckBox_">
-          <property name="text">
-           <string>Light3: on/off</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QFrame" name="light1Frame_">
-          <property name="minimumSize">
-           <size>
-            <width>201</width>
-            <height>115</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="headlightCheckBox_">
-          <property name="text">
-           <string>Headlight: on/off</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QSlider" name="headlightInclinationSlider_">
           <property name="maximum">
-           <number>180</number>
+           <number>360</number>
           </property>
           <property name="value">
-           <number>90</number>
+           <number>180</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QSlider" name="headlightAzimuthSlider_">
+        <item row="9" column="0">
+         <widget class="QSlider" name="light2AzimuthSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Azimuth&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>360</number>
+          </property>
+          <property name="value">
+           <number>180</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QCheckBox" name="light3CheckBox_">
+          <property name="text">
+           <string>Light3: on/off</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QFrame" name="colorFrame1">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>60</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QPushButton" name="colorButton1">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>241</width>
+             <height>32</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Change Light Color</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="color1">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>221</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QFrame" name="colorFrame3">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>60</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QPushButton" name="colorButton3">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>241</width>
+             <height>32</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Change Light Color</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="color3">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>221</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QSlider" name="light3AzimuthSlider_">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Azimuth&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>360</number>
           </property>
@@ -2160,6 +2214,80 @@
         <string>Controls</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
+        <item row="3" column="0" colspan="2">
+         <widget class="QGroupBox" name="transparencyGroupBox_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Transparency Rendering</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QRadioButton" name="contSortRadioButton_">
+             <property name="text">
+              <string>Continuous Sort</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="updateSortRadioButton_">
+             <property name="text">
+              <string>Intermittent Sort</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="listSortRadioButton_">
+             <property name="text">
+              <string>List Sort</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>222</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Save screenshot on geometry update</string>
+          </property>
+          <property name="text">
+           <string>Save screenshot on update</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0" colspan="2">
          <widget class="QGroupBox" name="zoomBox_">
           <property name="font">
@@ -2236,84 +2364,10 @@
           </layout>
          </widget>
         </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QGroupBox" name="transparencyGroupBox_">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="title">
-           <string>Transparency Rendering</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QRadioButton" name="contSortRadioButton_">
-             <property name="text">
-              <string>Continuous Sort</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="updateSortRadioButton_">
-             <property name="text">
-              <string>Intermittent Sort</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="listSortRadioButton_">
-             <property name="text">
-              <string>List Sort</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>222</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="1">
          <widget class="QCheckBox" name="invertZoomCheckBox_">
           <property name="text">
            <string>Invert Zoom</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>Save screenshot on geometry update</string>
-          </property>
-          <property name="text">
-           <string>Save screenshot on update</string>
           </property>
          </widget>
         </item>
@@ -2334,6 +2388,13 @@
           </item>
          </widget>
         </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="selectionHackCheckBox_">
+          <property name="text">
+           <string>Enable Selection Hack</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="DeveloperTab">
@@ -2341,6 +2402,19 @@
         <string>Developer</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <spacer name="horizontalSpacer_17">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="toStringButton_">
           <property name="sizePolicy">
@@ -2363,15 +2437,15 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <spacer name="horizontalSpacer_17">
+        <item row="2" column="1">
+         <spacer name="verticalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>20</width>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -2390,17 +2464,11 @@
          </spacer>
         </item>
         <item row="1" column="1">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+         <widget class="QPushButton" name="bugReportButton_">
+          <property name="text">
+           <string>Send Bug Report</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -2429,7 +2497,7 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="shadingButtonGroup_"/>
   <buttongroup name="planeButtonGroup_"/>
+  <buttongroup name="shadingButtonGroup_"/>
  </buttongroups>
 </ui>

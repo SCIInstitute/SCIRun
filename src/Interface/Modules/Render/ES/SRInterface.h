@@ -145,6 +145,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
+      void toggleSelectionHack(bool b) {mSelectionHack = b;}
       typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
       void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
@@ -176,6 +177,7 @@ namespace SCIRun {
       // hash multimap with a list which assigns ids to names.
       uint64_t getEntityIDForName(const std::string& name, int port);
       Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
+      bool hasShaderPromise() const {return mCore.hasShaderPromise();}
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
@@ -314,7 +316,6 @@ namespace SCIRun {
         int	mPort;
       };
 
-
       bool                                             showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                             autoRotate_         {false};  // Whether the scene will continue to rotate.
       bool                                             selectWidget_       {false};  // Whether mouse click will select a widget.
@@ -333,6 +334,7 @@ namespace SCIRun {
 
       std::string                                      mSelected           {};       // Current selection
       GLfloat                                          mDepth              {};
+      bool                                             mSelectionHack      {false};
       glm::vec3                                        mOriginWorld        {};
       glm::vec3                                        mFlipAxisWorld      {};
       int                                              mScaleAxisIndex     {};
@@ -389,8 +391,7 @@ namespace SCIRun {
       const int                                        frameInitLimit_     {};
       QOpenGLContext*                                  mContext            {};
       std::shared_ptr<spire::ArcBall>	                 widgetBall_		     {};
-	  std::unique_ptr<SRCamera>                          mCamera;			// Primary camera.
-
+      std::unique_ptr<SRCamera>                        mCamera;			// Primary camera.
     };
 
   } // namespace Render
