@@ -332,6 +332,7 @@ namespace SCIRun {
       int                                              mZoomSpeed          {65};
       MouseMode                                        mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
 
+      std::vector<uint64_t>                            mEntityList         {};
       std::string                                      mSelected           {};       // Current selection
       GLfloat                                          mDepth              {};
       bool                                             mSelectionHack      {false};

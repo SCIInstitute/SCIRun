@@ -190,13 +190,14 @@ namespace SCIRun {
       if(btn != MouseButton::NONE)
       {
         select(pos, objList, 0);
-        if(widgetSelected_)
-          if(mWidgetMovementTypes[btn] != WidgetMovement::NONE)
-          {
-            initializeWidgetMovement(btn, pos);
-            setSelectedWidgetToRed(objList);
-            updateWidget(btn, pos);
-          }
+        if(widgetSelected_ && mWidgetMovementTypes[btn] != WidgetMovement::NONE)
+        {
+          initializeWidgetMovement(btn, pos);
+          setSelectedWidgetToRed(objList);
+          updateWidget(btn, pos);
+        }
+        for (auto &it : mEntityList)
+          mCore.removeEntity(it);
       }
       autoRotateVector = glm::vec2(0.0, 0.0);
       tryAutoRotate = false;
@@ -405,7 +406,7 @@ namespace SCIRun {
 
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
-      std::vector<uint64_t> entityList;
+      mEntityList.clear();
 
       int nameIndex = 0;
       //modify and add each object to draw
@@ -571,7 +572,7 @@ namespace SCIRun {
             pass.renderState.mSortType = mRenderSortType;
             pass.renderState.set(RenderState::ActionFlags::USE_BLEND, false);
             mCore.addComponent(entityID, pass);
-            entityList.push_back(entityID);
+            mEntityList.push_back(entityID);
           }
         }
       }
@@ -579,7 +580,7 @@ namespace SCIRun {
       updateCamera();
       updateWorldLight();
 
-      mCore.execute(0, 50);
+      mCore.execute(0, 0);
 
       GLuint value;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
@@ -631,9 +632,6 @@ namespace SCIRun {
 
       //release and restore fbo
       fboMan->unbindFBO();
-
-      for (auto &it : entityList)
-        mCore.removeEntity(it);
     }
 
     void SRInterface::initializeWidgetMovement(MouseButton btn, const glm::ivec2& pos)
@@ -724,7 +722,7 @@ namespace SCIRun {
       switch(mWidgetMovementTypes[btn])
       {
       case WidgetMovement::NONE:
-        break;
+        return; // No reason to update
       case WidgetMovement::TRANSLATE:
         translateWidget(pos);
         break;
@@ -737,7 +735,11 @@ namespace SCIRun {
       case WidgetMovement::SCALE_AXIS:
         scaleAxisWidget(pos);
         break;
+      case WidgetMovement::SCALE_AXIS_HALF:
+        scaleAxisWidget(pos);
+        break;
       }
+      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -748,10 +750,7 @@ namespace SCIRun {
       {
         auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
         if (component.first != nullptr)
-        {
-          glm::mat4 temp = component.first->transform;
           contTrans->modifyIndex(mWidgetTransform, component.second, 0);
-        }
       }
     }
 
@@ -765,8 +764,6 @@ namespace SCIRun {
       glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
-
-      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -802,8 +799,6 @@ namespace SCIRun {
         mWidgetTransform.transform = flip * mWidgetTransform.transform;
 
       mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
-
-      modifyWidgets();
     }
 
     void SRInterface::scaleAxisWidget(const glm::ivec2& pos)
@@ -840,8 +835,6 @@ namespace SCIRun {
         mWidgetTransform.transform = flip * mWidgetTransform.transform;
 
       mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
-
-      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -867,8 +860,6 @@ namespace SCIRun {
 
       mWidgetTransform = gen::Transform();
       mWidgetTransform.transform = reverse_translation * rotation * translation;
-
-      modifyWidgets();
     }
 
 

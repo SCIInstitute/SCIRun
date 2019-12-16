@@ -94,9 +94,6 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  /// Retrieve SRInterface mouse button from mouse event.
-  Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
-
   std::shared_ptr<Render::SRInterface>  mGraphics          {};  ///< Interface to spire.
   QTimer*                               mTimer             {};
   double                                mFrameTime         {0.0};
