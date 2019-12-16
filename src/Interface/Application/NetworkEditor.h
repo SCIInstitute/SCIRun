@@ -421,6 +421,7 @@ namespace Gui {
     void alignViewport();
     void deleteImpl(QList<QGraphicsItem*> items);
     QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    void deselectAll();
 
     // default constructed
     bool modulesSelectedByCL_{ false };

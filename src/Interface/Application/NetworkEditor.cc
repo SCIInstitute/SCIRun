@@ -1600,18 +1600,18 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
 
   setSceneRect(QRectF());
 
+  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]() { deselectAll(); });
+}
 
-  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]()
+void NetworkEditor::deselectAll()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      Q_FOREACH(QGraphicsItem* item, scene_->items())
-      {
-        if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
-        {
-          w->setSelected(false);
-        }
-      }
+      w->setSelected(false);
     }
-  );
+  }
 }
 
 void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
