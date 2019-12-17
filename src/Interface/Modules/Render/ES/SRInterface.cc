@@ -829,7 +829,7 @@ namespace SCIRun {
       glm::mat4 scale = glm::scale(mWidgetTransform.transform, scaleVec);
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = (*mScaleTrans) * scale * glm::transpose(*mScaleTrans) * translation;
+      mWidgetTransform.transform = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
 
       if(negativeScale)
         mWidgetTransform.transform = flip * mWidgetTransform.transform;

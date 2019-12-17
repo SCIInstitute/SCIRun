@@ -108,9 +108,9 @@ int WidgetBase::getScaleAxisIndex()
   return scaleAxisIndex_;
 }
 
-glm::mat4* WidgetBase::getScaleTransform()
+const glm::mat4 WidgetBase::getScaleTransform()
 {
-  return &scaleTrans_;
+  return scaleTrans_;
 }
 
 std::vector<WidgetMovement> WidgetBase::getMovementTypes()

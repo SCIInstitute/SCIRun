@@ -339,13 +339,13 @@ namespace SCIRun {
       glm::vec3                                        mOriginWorld        {};
       glm::vec3                                        mFlipAxisWorld      {};
       int                                              mScaleAxisIndex     {};
-      const glm::mat4*                                 mScaleTrans         {};
-      glm::vec3                                        mOriginToSpos       {};
-      glm::vec3                                        mOriginView         {};
-      glm::vec2                                        mSelectedPos        {};
-      float                                            mSelectedW          {};
-      float                                            mSelectedDepth      {};
-      float                                            mSelectedRadius     {};
+      glm::mat4                                        mScaleTrans         {};
+      glm::vec3                                        mOriginToSpos       {glm::vec3(0,0,0)};
+      glm::vec3                                        mOriginView         {glm::vec3(0,0,0)};
+      glm::vec2                                        mSelectedPos        {glm::vec2(0,0)};
+      float                                            mSelectedW          {0};
+      float                                            mSelectedDepth      {0};
+      float                                            mSelectedRadius     {0};
       gen::Transform                                   mWidgetTransform    {};
       std::vector<Graphics::Datatypes::WidgetMovement> mWidgetMovementTypes{};
       std::vector<std::string>                         mConnectedWidgets   {};
@@ -358,7 +358,7 @@ namespace SCIRun {
       int                                              axesFailCount_      {0};
       std::vector<SRObject>                            mSRObjects          {};       // All SCIRun objects.
       Core::Geometry::BBox				                     mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
-      std::unordered_map<std::string, uint64_t>        mEntityIdMap  {};
+      std::unordered_map<std::string, uint64_t>        mEntityIdMap        {};
 
       ESCore                                           mCore               {};       // Entity system core.
 

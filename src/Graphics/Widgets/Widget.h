@@ -71,7 +71,7 @@ namespace SCIRun
         void setToRotate(MouseButton btn);
         void setToTranslate(MouseButton btn);
         glm::vec3 getFlipVector();
-        glm::mat4* getScaleTransform();
+        const glm::mat4 getScaleTransform();
         int getScaleAxisIndex();
         std::vector<WidgetMovement> getMovementTypes();
 

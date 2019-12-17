@@ -66,6 +66,9 @@ namespace SCIRun {
                           const Core::Geometry::Point& center, int widget_num, int widget_iter);
 
       private:
+        const int DIMENSIONS_ = 3;
+        const int CORNERS_ = 8;
+        const int FACES_ = 6;
         std::string widgetName(size_t i, size_t id, size_t iter);
 
         int resolution_ = 10;
@@ -77,6 +80,7 @@ namespace SCIRun {
         int widgetsIndex_;
         double scale_;
         double diagonalLength_;
+        double smallestEigval_;
         Core::Geometry::BBox bbox_;
         Core::Geometry::Point center_;
         std::vector<double> eigvals_;
@@ -85,12 +89,11 @@ namespace SCIRun {
         std::vector<Core::Geometry::Point> corners_;
         std::vector<Core::Geometry::Point> facesStart_;
         std::vector<Core::Geometry::Point> facesEnd_;
-        const float boxScale_ {0.75};
-        const float rotSphereScale_ {1.5};
-        const float resizeSphereScale_ {1.0};
-        const float faceScale_ {1.0};
+        const float boxScale_ {1.0};
+        const float rotSphereScale_ {2.0};
+        const float resizeSphereScale_ {1.5};
         const float diskWidth_ {0.3};
-        const float diskRadius_ {0.75};
+        const float diskRadius_ {1.0};
 
         void createWidgets(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
                            int widgetIter);

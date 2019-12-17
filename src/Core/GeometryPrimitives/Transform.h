@@ -79,7 +79,7 @@ namespace SCIRun {
 
         Transform();
         Transform(const Transform&);
-        Transform(double* pmat);
+        explicit Transform(double* pmat);
         Transform& operator=(const Transform&);
         Transform(const Point&, const Vector&, const Vector&, const Vector&);
 

@@ -1277,7 +1277,7 @@ std::vector<WidgetHandle> ViewSceneDialog::getObjList(const int x, const int y, 
 
   auto spire = mSpire.lock();
   if (!spire)
-    return std::vector<WidgetHandle>();
+    return {};
 
   spire->removeAllGeomObjects();
 
@@ -1289,14 +1289,14 @@ std::vector<WidgetHandle> ViewSceneDialog::getObjList(const int x, const int y, 
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return std::vector<WidgetHandle>();
+      return {};
     }
 
     //get widgets
     auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
     return objList;
   }
-  return std::vector<WidgetHandle>();
+  else return {};
 }
 
 //--------------------------------------------------------------------------------------------------
