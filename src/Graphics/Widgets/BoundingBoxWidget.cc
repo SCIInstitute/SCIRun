@@ -108,7 +108,6 @@ void BoundingBoxWidget::createWidgets(const GeometryIDGenerator& idGenerator, in
 void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerator, int widgetNum,
                                            int widgetIter)
 {
-  diagonalLength_ = Vector(eigvals_[0], eigvals_[1], eigvals_[2]).length();
   smallestEigval_ = std::min(eigvals_[0], std::min(eigvals_[1], eigvals_[2]));
   getCorners();
   getFacesStart();
@@ -132,34 +131,45 @@ void BoundingBoxWidget::getEigenValuesAndEigenVectors()
 
 void BoundingBoxWidget::getCorners()
 {
-  corners_ = {
-    center_ + scaledEigvecs_[0] + scaledEigvecs_[1] + scaledEigvecs_[2],
-    center_ + scaledEigvecs_[0] + scaledEigvecs_[1] - scaledEigvecs_[2],
-    center_ + scaledEigvecs_[0] - scaledEigvecs_[1] + scaledEigvecs_[2],
-    center_ + scaledEigvecs_[0] - scaledEigvecs_[1] - scaledEigvecs_[2],
-    center_ - scaledEigvecs_[0] + scaledEigvecs_[1] + scaledEigvecs_[2],
-    center_ - scaledEigvecs_[0] + scaledEigvecs_[1] - scaledEigvecs_[2],
-    center_ - scaledEigvecs_[0] - scaledEigvecs_[1] + scaledEigvecs_[2],
-    center_ - scaledEigvecs_[0] - scaledEigvecs_[1] - scaledEigvecs_[2] };
+  corners_.reserve(CORNERS_);
+  double sign0, sign1, sign2;
+  sign0 = sign1 = sign2 = 1.0;
+  for(int i = 0; i < 2; ++i)
+  {
+    for(int j = 0; j < 2; ++j)
+    {
+      for(int k = 0; k < 2; ++k)
+      {
+        corners_.emplace_back(center_ + sign0 * scaledEigvecs_[0]
+                                      + sign1 * scaledEigvecs_[1]
+                                      + sign2 * scaledEigvecs_[2]);
+        sign2 = -sign2;
+      }
+      sign1 = -sign1;
+    }
+    sign0 = -sign0;
+  }
 }
 
 void BoundingBoxWidget::getFacesStart()
 {
-  facesStart_ = {
-    center_ + scaledEigvecs_[0], center_ - scaledEigvecs_[0],
-    center_ + scaledEigvecs_[1], center_ - scaledEigvecs_[1],
-    center_ + scaledEigvecs_[2], center_ - scaledEigvecs_[2]};
+  facesStart_.reserve(FACES_);
+  for(int i = 0; i < DIMENSIONS_; ++i)
+  {
+    facesStart_.emplace_back(center_ + scaledEigvecs_[i]);
+    facesStart_.emplace_back(center_ - scaledEigvecs_[i]);
+  }
 }
 
 void BoundingBoxWidget::getFacesEnd()
 {
-  facesEnd_ = {
-    facesStart_[0] + eigvecs_[0] * smallestEigval_ * diskWidth_,
-    facesStart_[1] - eigvecs_[0] * smallestEigval_ * diskWidth_,
-    facesStart_[2] + eigvecs_[1] * smallestEigval_ * diskWidth_,
-    facesStart_[3] - eigvecs_[1] * smallestEigval_ * diskWidth_,
-    facesStart_[4] + eigvecs_[2] * smallestEigval_ * diskWidth_,
-    facesStart_[5] - eigvecs_[2] * smallestEigval_ * diskWidth_};
+  facesEnd_.reserve(FACES_);
+  for(int i = 0; i < FACES_; i+=2)
+  {
+    auto dist = eigvecs_[i/2] * smallestEigval_ * diskWidth_;
+    facesEnd_.emplace_back(facesStart_[i]   + dist);
+    facesEnd_.emplace_back(facesStart_[i+1] - dist);
+  }
 }
 
 void BoundingBoxWidget::addCornerSphere(int i, const Core::GeometryIDGenerator& idGenerator,

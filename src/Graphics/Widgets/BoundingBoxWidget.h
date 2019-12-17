@@ -79,7 +79,6 @@ namespace SCIRun {
 
         int widgetsIndex_;
         double scale_;
-        double diagonalLength_;
         double smallestEigval_;
         Core::Geometry::BBox bbox_;
         Core::Geometry::Point center_;
