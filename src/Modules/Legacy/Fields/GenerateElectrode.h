@@ -75,7 +75,9 @@ namespace SCIRun {
         OUTPUT_PORT(2, ControlPoints, Field);
         OUTPUT_PORT(3, ParameterMatrixOut, DenseMatrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI);
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
+        //TODO: enable after UI is written
+        //MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
       private:
         SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
