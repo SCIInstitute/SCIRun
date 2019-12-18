@@ -39,6 +39,23 @@
 
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
+        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
+        ALGORITHM_PARAMETER_DECL(ElectrodeType);
+        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+        class GenerateElectrodeImpl;
+      }
+    }
+  }
+
   namespace Modules {
     namespace Fields {
 
@@ -51,19 +68,6 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
-        //static const Core::Algorithms::AlgorithmParameterName FieldName;
-        //static const Core::Algorithms::AlgorithmParameterName WidgetScaleFactor;
-        //static const Core::Algorithms::AlgorithmParameterName Sizing;
-        //static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
-        //static const Core::Algorithms::AlgorithmParameterName ShowLines;
-        //static const Core::Algorithms::AlgorithmParameterName Reset;
-        //static const Core::Algorithms::AlgorithmParameterName MoveDipolesTogether;
-        //static const Core::Algorithms::AlgorithmParameterName DipolePositions;
-        //static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
-        //static const Core::Algorithms::AlgorithmParameterName DipoleScales;
-        //static const Core::Algorithms::AlgorithmParameterName DataSaved;
-        //static const Core::Algorithms::AlgorithmParameterName LargestSize;
-
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, ParameterMatrixIn, DenseMatrix);
         OUTPUT_PORT(0, OutputField, Field);
@@ -74,7 +78,7 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
       private:
-
+        SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
       };
     }
   }

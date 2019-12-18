@@ -50,15 +50,22 @@ using namespace Graphics;
 using namespace Modules::Fields;
 using namespace Dataflow::Networks;
 using namespace Graphics::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
+ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
+
+//TODO: move to algorithm layer
 namespace impl
 {
   // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
-  bool
-    CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
+  bool CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
   {
     // need to have at least 3 nodes
     if (t.size() < 3) return (false);
@@ -148,8 +155,7 @@ namespace impl
   // this is a sline function.  pp is the final points that are in between the original points p.  
   // t and tt are the original and final desired spacing, respectively.
 
-  bool
-    CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
+  bool CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
   {
     // need to have at least 3 nodes
     if (t.size() < 3) return (false);
@@ -184,6 +190,25 @@ namespace impl
     //cout<< "----spline interpolation  done!!"<< endl;
 
     return (true);
+  }
+
+
+}
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        class GenerateElectrodeImpl
+        {
+        public:
+          std::vector<Point> Previous_points_;
+        };
+      }
+    }
   }
 }
 #if 0
@@ -250,13 +275,14 @@ namespace impl
 			bool														color_changed_;
 			bool														move_all_;
 			
-			std::vector<Point>										Previous_points_;
+			
 			
 						
 		};
 #endif
 	
-GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
+GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_),
+  impl_(new GenerateElectrodeImpl)
 		//widget_lock_("GenerateElectrode widget lock"),
 		//arrow_widget_(0),
 		//gui_probe_scale_(get_ctx()->subVar("probe_scale"), 3.0),
@@ -284,7 +310,12 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
 
 void GenerateElectrode::setStateDefaults()
 {
-  //TODO
+  auto state = get_state();
+
+  state->setValue(Parameters::ElectrodeLength, 0.1);
+  state->setValue(Parameters::ElectrodeThickness, 0.003);
+  state->setValue(Parameters::NumberOfControlPoints, 5);
+  state->setValue(Parameters::ElectrodeType, std::string("wire"));
 }
 
 void GenerateElectrode::execute()
@@ -343,11 +374,20 @@ void GenerateElectrode::execute()
   std::vector<Point> orig_points;
   Vector direction;
   Vector defdir = Vector(-10, 10, 10);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   const std::string &moveto = gui_moveto_.get();
   int use_field = gui_use_field_.get();
-  const	std::string &electrode_type = gui_type_.get();
+#endif
 
-  if (source && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_))
+  auto state = get_state();
+  auto electrode_type = state->getValue(Parameters::ElectrodeType).toString();
+
+  if (source 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
+#endif
+    )
   {
     VMesh* smesh = source->vmesh();
 
@@ -371,7 +411,9 @@ void GenerateElectrode::execute()
       orig_points[idx] = ap;
       direction = defdir;
     }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     gui_moveto_.set("");
+#endif
   }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
@@ -433,16 +475,17 @@ void GenerateElectrode::execute()
   }
 #endif
 
-  gui_widget_points_.set(orig_points.size());
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  gui_widget_points_.set(orig_points.size());
+
   if (electrode_type == "wire") 
     arrow_widget_ = 0;
 #endif
 
-  if (Previous_points_.size() < 3)
+  if (impl_->Previous_points_.size() < 3)
   {
-    Previous_points_ = orig_points;
+    impl_->Previous_points_ = orig_points;
   }
 
   size_type size = orig_points.size();
@@ -483,7 +526,7 @@ void GenerateElectrode::execute()
     create_widgets(orig_points, direction);
 #endif
 
-  Previous_points_ = orig_points;
+  impl_->Previous_points_ = orig_points;
 
   FieldInformation pi("PointCloudMesh", 0, "double");
   MeshHandle pmesh = CreateMesh(pi);
@@ -495,10 +538,10 @@ void GenerateElectrode::execute()
 
   sendOutput(ControlPoints, pfield);
 
-  get_centers(points, final_points);
+  impl_->get_centers(points, final_points);
 
   if (electrode_type == "wire") 
-    Make_Mesh_Wire(final_points, ofield);
+    impl_->Make_Mesh_Wire(final_points, ofield);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (electrode_type == "planar") 
@@ -506,11 +549,11 @@ void GenerateElectrode::execute()
 #endif
 
   DenseMatrixHandle parameters(new DenseMatrix(5, 1));
-  (*parameters) << gui_length_.get()
-  << gui_width_.get();
-  << gui_thick_.get();
-  << static_cast<double> (gui_wire_res_.get());
-  << electrode_type == "wire" ? 0 : 1;
+  (*parameters) << state->getValue(Parameters::ElectrodeLength).toDouble(),
+  0, // TODO wire has no width--gui_width_.get();
+  state->getValue(Parameters::ElectrodeThickness).toDouble(),
+  state->getValue(Parameters::ElectrodeResolution).toInt(),
+  electrode_type == "wire" ? 0 : 1;
 
   sendOutput(ParameterMatrixOut, parameters);
 }
