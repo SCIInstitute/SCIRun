@@ -602,6 +602,7 @@ namespace SCIRun {
               mScaleAxisIndex = obj->getScaleAxisIndex();
               mWidgetMovementTypes = obj->getMovementTypes();
               mConnectedWidgets = obj->connectedIds_;
+              mMoveMaps = obj->moveMaps_;
               mScaleTrans = obj->getScaleTransform();
             }
           }
@@ -719,36 +720,41 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
     {
-      switch(mWidgetMovementTypes[btn])
+      for(auto pair : mMoveMaps)
       {
-      case WidgetMovement::NONE:
-        return; // No reason to update
-      case WidgetMovement::TRANSLATE:
-        translateWidget(pos);
-        break;
-      case WidgetMovement::ROTATE:
-        rotateWidget(pos);
-        break;
-      case WidgetMovement::SCALE:
-        scaleWidget(pos);
-        break;
-      case WidgetMovement::SCALE_AXIS:
-        scaleAxisWidget(pos);
-        break;
-      case WidgetMovement::SCALE_AXIS_HALF:
-        scaleAxisWidget(pos);
-        break;
+        // switch(mWidgetMovementTypes[btn])
+        switch(pair.first)
+        {
+        case WidgetMovement::NONE:
+          return; // No reason to update
+        case WidgetMovement::TRANSLATE:
+          translateWidget(pos);
+          break;
+        case WidgetMovement::ROTATE:
+          rotateWidget(pos);
+          break;
+        case WidgetMovement::SCALE:
+          scaleWidget(pos);
+          break;
+        case WidgetMovement::SCALE_AXIS:
+          scaleAxisWidget(pos);
+          break;
+        case WidgetMovement::SCALE_AXIS_HALF:
+          scaleAxisWidget(pos);
+          break;
+        }
+        modifyWidgets(pair.second);
       }
-      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::modifyWidgets()
+    void SRInterface::modifyWidgets(std::vector<std::string> ids)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for (auto &widgetId : mConnectedWidgets)
+      // for (auto &widgetId : mConnectedWidgets)
+      for (auto &id : ids)
       {
-        auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
+        auto component = contTrans->getComponent(mEntityIdMap[id]);
         if (component.first != nullptr)
           contTrans->modifyIndex(mWidgetTransform, component.second, 0);
       }

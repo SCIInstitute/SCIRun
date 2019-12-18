@@ -66,7 +66,23 @@ namespace SCIRun {
                           const Core::Geometry::Point& center, int widget_num, int widget_iter);
 
       private:
+        std::vector<WidgetHandle> translateWidgets_;
+        std::vector<WidgetHandle> rotateWidgets_;
+        std::vector<WidgetHandle> scaleWidgets_;
+        std::vector<std::vector<WidgetHandle> > scaleAxisWidgets_;
+        std::vector<std::string> allIds_;
+        std::vector<std::string> translateIds_;
+        std::vector<std::vector<std::vector<std::string> > > translateIdsByFace_;
+        std::vector<std::vector<std::string> > translateIdsBySide_;
+        std::vector<std::string> rotateIds_;
+        std::vector<std::string> scaleIds_;
+        std::vector<std::vector<std::string> > scaleAxisIds_;
+        std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > > translateMaps_;
+        std::vector<std::pair<WidgetMovement, std::vector<std::string> > > rotateMap_;
+        std::vector<std::pair<WidgetMovement, std::vector<std::string> > > scaleMap_;
+        std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > > scaleAxisMaps_;
         const int DIMENSIONS_ = 3;
+        const int EDGES_ = 12;
         const int CORNERS_ = 8;
         const int FACES_ = 6;
         std::string widgetName(size_t i, size_t id, size_t iter);
@@ -94,6 +110,7 @@ namespace SCIRun {
         const float diskWidth_ {0.3};
         const float diskRadius_ {1.0};
 
+        void addBox(const Core::GeometryIDGenerator& idGenerator, int widgetNum, int widgetIter);
         void createWidgets(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
                            int widgetIter);
         void initWidgetCreation(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
@@ -109,6 +126,10 @@ namespace SCIRun {
         void addFaceCylinder(int i, const Core::GeometryIDGenerator& idGenerator,
                              glm::mat4& scaleTrans, int axisNum, int widgetNum, int widgetIter);
         void addIds();
+        void getTranslateIds();
+        void getRotateIds();
+        void getScaleIds();
+        void getScaleAxisIds();
       };
 
       using BoundingBoxWidgetHandle = SharedPointer<BoundingBoxWidget>;

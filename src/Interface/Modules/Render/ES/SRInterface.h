@@ -212,7 +212,7 @@ namespace SCIRun {
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
       //---------------- Widgets -------------------------------------------------------------------
-      void modifyWidgets();
+      void modifyWidgets(std::vector<std::string> ids);
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos);
       void rotateWidget(const glm::ivec2& pos);
@@ -349,6 +349,8 @@ namespace SCIRun {
       gen::Transform                                   mWidgetTransform    {};
       std::vector<Graphics::Datatypes::WidgetMovement> mWidgetMovementTypes{};
       std::vector<std::string>                         mConnectedWidgets   {};
+      std::vector<std::pair<Graphics::Datatypes::WidgetMovement,
+                         std::vector<std::string> > >  mMoveMaps           {};
 
       size_t                                           mScreenWidth        {640};    // Screen width in pixels.
       size_t                                           mScreenHeight       {480};    // Screen height in pixels.

@@ -70,6 +70,7 @@ namespace SCIRun
         void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToRotate(MouseButton btn);
         void setToTranslate(MouseButton btn);
+        void addMovementMap(std::pair<WidgetMovement, std::vector<std::string> > map);
         glm::vec3 getFlipVector();
         const glm::mat4 getScaleTransform();
         int getScaleAxisIndex();
@@ -77,6 +78,7 @@ namespace SCIRun
 
         glm::vec3 origin_;
         std::vector<std::string> connectedIds_;
+        std::vector<std::pair<WidgetMovement, std::vector<std::string> > > moveMaps_;
         void addInitialId();
 
       protected:

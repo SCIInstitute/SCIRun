@@ -51,6 +51,11 @@ WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::
     movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
 {}
 
+void WidgetBase::addMovementMap(std::pair<WidgetMovement, std::vector<std::string> > map)
+{
+  moveMaps_.push_back(map);
+}
+
 Point WidgetBase::position() const
 {
   return position_;
