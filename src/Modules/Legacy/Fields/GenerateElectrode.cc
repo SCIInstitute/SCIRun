@@ -1,7 +1,8 @@
 /*
+   For more information, please see: http://software.sci.utah.edu
  * The MIT License
  * 
- * Copyright (c) 2015 Scientific Computing and Imaging Institute,
+ * Copyright (c) 2019 Scientific Computing and Imaging Institute,
  * University of Utah.
  * 
  * 
@@ -26,32 +27,20 @@
 
 ///@brief This module makes a mesh that looks like a wire
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/GeometryPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/MeshTypes.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Modules/Legacy/Fields/GenerateElectrode.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Datatypes/PointCloudMesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <Core/Thread/CrowdMonitor.h>
-#include <Dataflow/Widgets/PointWidget.h>
-#include <Dataflow/Widgets/ArrowWidget.h>
-
-#include <iostream>
-#include <list>
-#include <string>
-#include <stack>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Logging/Log.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 
 
-namespace SCIRun {
-	
 	// equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
 	bool
@@ -1367,9 +1356,3 @@ namespace SCIRun {
 		return (true);
 	}
 	
-	
-}
-
-		
-		
-		

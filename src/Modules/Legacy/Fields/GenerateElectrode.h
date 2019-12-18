@@ -65,11 +65,11 @@ namespace SCIRun {
         //static const Core::Algorithms::AlgorithmParameterName LargestSize;
 
         INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, ParameterMatrix, DenseMatrix);
+        INPUT_PORT(1, ParameterMatrixIn, DenseMatrix);
         OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
-        OUTPUT_PORT(3, ParameterMatrix, DenseMatrix);
+        OUTPUT_PORT(3, ParameterMatrixOut, DenseMatrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
