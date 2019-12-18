@@ -205,6 +205,10 @@ namespace SCIRun
         class GenerateElectrodeImpl
         {
         public:
+          void get_points(std::vector<Point>& points);
+          void get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution);
+          FieldHandle Make_Mesh_Wire(std::vector<Point>& points, double thickness, int resolution);
+
           std::vector<Point> Previous_points_;
         };
       }
@@ -227,17 +231,10 @@ namespace SCIRun
 			void add_point(std::vector<Point>& p);
 			bool remove_point();
 			
-			//void reset();
-			
-			
 			void create_widgets(std::vector<Point>& points);
 			
 			void create_widgets(std::vector<Point>& points,Vector& direction);
 			
-			void get_points(std::vector<Point>& points);
-			void get_centers(std::vector<Point>& p,std::vector<Point>& pp);
-			
-			void Make_Mesh_Wire(std::vector<Point>& points, FieldHandle& ofield);
 			void Make_Mesh_Planar(std::vector<Point>& points, FieldHandle& ofield, Vector& direction);
 			
 			
@@ -491,7 +488,6 @@ void GenerateElectrode::execute()
   size_type size = orig_points.size();
 
   Vector move_dist;
-  size_t move_idx;
   std::vector<Point> temp_points;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -533,15 +529,22 @@ void GenerateElectrode::execute()
 
   for (VMesh::Node::index_type idx = 0; idx < orig_points.size(); idx++) pmesh->vmesh()->add_point(orig_points[idx]);
 
+  //TODO: copy this here since widgets don't exist yet
+  points = orig_points;
+
   pi.make_double();
   pfield = CreateField(pi, pmesh);
 
   sendOutput(ControlPoints, pfield);
 
-  impl_->get_centers(points, final_points);
+  impl_->get_centers(points, final_points, 
+    state->getValue(Parameters::ElectrodeLength).toDouble(),
+    state->getValue(Parameters::ElectrodeResolution).toInt());
 
   if (electrode_type == "wire") 
-    impl_->Make_Mesh_Wire(final_points, ofield);
+    sendOutput(OutputField, impl_->Make_Mesh_Wire(final_points, 
+      state->getValue(Parameters::ElectrodeThickness).toDouble(),
+      state->getValue(Parameters::ElectrodeResolution).toInt()));
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (electrode_type == "planar") 
@@ -558,21 +561,17 @@ void GenerateElectrode::execute()
   sendOutput(ParameterMatrixOut, parameters);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-	void
-	GenerateElectrode::Make_Mesh_Wire(std::vector<Point>& final_points, FieldHandle& ofield)
+	FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
 	{
-		//-------make wire mesh---------
-		
 		FieldInformation fi("TetVolMesh",0,"double");
 		MeshHandle mesh = CreateMesh(fi);
 		VMesh::Node::array_type nodes;
 		
 		double Pi=3.14159;
 		
-		double radius=gui_thick_.get()*.5;
+		double radius = thickness *.5;
 		
-		size_t DN=gui_wire_res_.get();
+		size_t DN = resolution;
 		
 		Vector Vold1, Vold2;
 		Vector V1, V2, V, Vx, Vy;
@@ -588,26 +587,21 @@ void GenerateElectrode::execute()
 		size_t N=final_points.size();
 		
 		std::vector<Point> p=final_points;
-		
 		std::vector<double> phi(DN);
-		
 		std::vector<Point> fin_nodes;
 		
 		for (size_t q=0;q<DN;q++) 
 		{
 			phi[q]=q*(2*Pi/(static_cast<double> (DN))); 
-			//cout <<"q=  "<<q<< ".  phi= "<<phi[q]<<". DN= "<<DN<<endl;
 		}
 		
 		for (size_t k=0;k<N;k++)
 		{
-			
 			if (k==N-1)
 			{
 				V1=p[k]-p[k-1];
 				V2=V1;
 			}
-			
 			else if (k==0)
 			{
 				V2=p[k+1]-p[k];
@@ -642,9 +636,6 @@ void GenerateElectrode::execute()
 			V=(V1+V2)*.5;
 			V.normalize();
 			
-			//cout<<"k=  "<<k<<".  V1= "<<V1<<".  V2=  "<<V2<<". V=  "<<V<<endl;
-			
-			
 			if (Dot(V,Vold1)<.9)
 			{
 				Vx=Cross(V,Vold1);
@@ -655,7 +646,6 @@ void GenerateElectrode::execute()
 				Vx=Cross(V,Vold2);
 				Vy=Cross(V,Vx);
 			}
-			
 			
 			Vx.normalize();
 			Vy.normalize();
@@ -668,26 +658,16 @@ void GenerateElectrode::execute()
 			for (size_t q=0;q<DN;q++)
 			{
 				fin_nodes.push_back(Point(p[k]+Vx*radius*cos(phi[q])+Vy*radius*sin(phi[q])));
-				
-				//cout<<"last Point: "<<fin_nodes[k]<<".  q=  "<<q<<endl;
-				
 			}
-			
-			
 		}
-		
-		
 		
 		for (VMesh::Node::index_type idx=0;idx<fin_nodes.size();idx++)
 		{
-			
 			mesh->vmesh()->add_point(fin_nodes[idx]);
 			mesh->vmesh()->get_nodes(nodes,idx);
-			
 		}
 		
 		VMesh::Node::index_type SE=0, EE=0, SE1, SE2, EE1, EE2;
-		
 		std::vector<size_t>  L(DN+1);
 		
 		for (size_t k=0;k<DN;k++)
@@ -732,23 +712,13 @@ void GenerateElectrode::execute()
 			}
 			
 			EE=static_cast<VMesh::Node::index_type> (static_cast<int> (EE)+(static_cast<int> (DN))+1);
-			
-			
 		}
 		
-		
-		
-		//add_edge(nodes);
-		
 		fi.make_double();
-		ofield = CreateField(fi,mesh);				
-		
-		send_output_handle("Output Field",ofield);
+		return CreateField(fi,mesh);				
 	}
 	
-	
-	
-	
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 	
 	void
 	GenerateElectrode::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
@@ -1144,58 +1114,53 @@ void GenerateElectrode::execute()
 		
 		geom_oport_->addObj(widget_switch_,"Wire Electrode", &widget_lock_);
 	}
+#endif
+
+void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
+{
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+	size_t s=0,n=widget_.size();
+	points.resize(n);
+		
 	
-	void
-	GenerateElectrode::get_points(std::vector<Point>& points)
+	if(gui_type_.get()=="planar")
 	{
-		size_t s=0,n=widget_.size();
+		n+=1;
+		s=1;
 		points.resize(n);
-		
-		//cout<<"Electrode Type:  "<<gui_type_.get()<<".  size= "<<n<<".  s= "<<s<<endl;
-		
-		if(gui_type_.get()=="planar")
-		{
-			n+=1;
-			s=1;
-			points.resize(n);
-			points[0]=arrow_widget_->GetPosition();
-		}
-		
-		for (size_t k = s; k < n; k++)	points[k] = widget_[k-s]->GetPosition();
+		points[0]=arrow_widget_->GetPosition();
 	}
-	
-	
-	
-	void
-	GenerateElectrode::get_centers(std::vector<Point>& p, std::vector<Point>& pp)
-	{
-		get_points(p);
-		
-		//cout<<"get_points done"<<endl;
-		
-		std::vector<double> t(p.size());
 
 		
-		t[0]=0;
+	for (size_t k = s; k < n; k++)	
+    points[k] = widget_[k-s]->GetPosition();
+#endif
+  //TODO: defaulting widget positions to hard-coded values. 
+  // Use input field points instead.
+  points = { {0,0,0}, {1,0,0}, {2,0,0}, {3,0,0}, {4,0,0} };
+}
 		
-		for (size_t k=1; k<p.size(); k++)
-		{
-			t[k] = (p[k]-p[k-1]).length() + t[k-1];		
-		}
+void GenerateElectrodeImpl::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
+{
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //This is only needed to get the positions from the widget
+	get_points(p);
+#endif
+	std::vector<double> t(p.size());
+	t[0]=0;
 		
-		double length=gui_length_.get();
+	for (size_t k=1; k<p.size(); k++)
+	{
+		t[k] = (p[k]-p[k-1]).length() + t[k-1];		
+	}
 		
-		double res=gui_wire_res_.get();
+	std::vector<double> tt(resolution*(p.size()-1));
+	for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
 		
-		std::vector<double> tt(res*(p.size()-1));
-		for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
+	impl::CalculateSpline(t,p,tt,pp);
+} 
 		
-		CalculateSpline(t,p,tt,pp);
-					
-				
-	} 
-		
-			
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER	
 	void 
 	GenerateElectrode::tcl_command(GuiArgs& args, void* userdata)
 	{
