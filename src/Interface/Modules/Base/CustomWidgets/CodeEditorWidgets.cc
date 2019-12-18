@@ -164,23 +164,26 @@ void CodeEditor::matchParentheses()
 
   if (data)
   {
-    auto infos = data->parentheses(parentheses);
-    for (int i = 0; i < infos.size(); ++i)
+    for (const auto& type : { parentheses, brackets, braces })
     {
-      auto info = infos[i];
-      int curPos = textCursor().position() - textCursor().block().position();
-      if (info.position == curPos - 1 && info.character == parentheses.left)
+      auto infos = data->parentheses(type);
+      for (int i = 0; i < infos.size(); ++i)
       {
-        if (!matchLeftParenthesis(textCursor().block(), i + 1, 0))
+        auto info = infos[i];
+        int curPos = textCursor().position() - textCursor().block().position();
+        if (info.position == curPos - 1 && info.character == type.left)
         {
-          createParenthesisSelection(info.position, Qt::red);
+          if (!matchLeftParenthesis(type, textCursor().block(), i + 1, 0))
+          {
+            createParenthesisSelection(textCursor().block().position() + info.position, Qt::red);
+          }
         }
-      }
-      else if (info.position == curPos - 1 && info.character == parentheses.right)
-      {
-        if (!matchRightParenthesis(textCursor().block(), i - 1, 0))
+        else if (info.position == curPos - 1 && info.character == type.right)
         {
-          createParenthesisSelection(info.position, Qt::red);
+          if (!matchRightParenthesis(type, textCursor().block(), i - 1, 0))
+          {
+            createParenthesisSelection(textCursor().block().position() + info.position, Qt::red);
+          }
         }
       }
     }
@@ -313,23 +316,23 @@ void Highlighter::highlightBlockParens(const QString &text)
   setCurrentBlockUserData(data);
 }
 
-bool CodeEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLeftParentheses)
+bool CodeEditor::matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int i, int numLeftParentheses)
 {
   auto data = static_cast<TextBlockData *>(currentBlock.userData());
-  auto infos = data->parentheses(parentheses);
+  auto infos = data->parentheses(type);
 
   int docPos = currentBlock.position();
   for (; i < infos.size(); ++i)
   {
     auto info = infos[i];
 
-    if (info.character == parentheses.left)
+    if (info.character == type.left)
     {
       ++numLeftParentheses;
       continue;
     }
 
-    if (info.character == parentheses.right && numLeftParentheses == 0)
+    if (info.character == type.right && numLeftParentheses == 0)
     {
       createParenthesisSelection(docPos + info.position, Qt::green);
       return true;
@@ -340,26 +343,26 @@ bool CodeEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLef
 
   currentBlock = currentBlock.next();
   if (currentBlock.isValid())
-    return matchLeftParenthesis(currentBlock, 0, numLeftParentheses);
+    return matchLeftParenthesis(type, currentBlock, 0, numLeftParentheses);
 
   return false;
 }
 
-bool CodeEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRightParentheses)
+bool CodeEditor::matchRightParenthesis(const MatchingPair& type, QTextBlock currentBlock, int i, int numRightParentheses)
 {
   auto data = static_cast<TextBlockData *>(currentBlock.userData());
-  auto bracketData = data->parentheses(parentheses);
+  auto bracketData = data->parentheses(type);
 
   int docPos = currentBlock.position();
   for (; i > -1 && bracketData.size() > 0; --i)
   {
     auto info = bracketData.at(i);
-    if (info.character == parentheses.right)
+    if (info.character == type.right)
     {
       ++numRightParentheses;
       continue;
     }
-    if (info.character == parentheses.left && numRightParentheses == 0)
+    if (info.character == type.left && numRightParentheses == 0)
     {
       createParenthesisSelection(docPos + info.position, Qt::green);
       return true;
@@ -370,7 +373,7 @@ bool CodeEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRi
 
   currentBlock = currentBlock.previous();
   if (currentBlock.isValid())
-    return matchRightParenthesis(currentBlock, 0, numRightParentheses);
+    return matchRightParenthesis(type, currentBlock, 0, numRightParentheses);
 
   return false;
 }
