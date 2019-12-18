@@ -285,8 +285,6 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
 void
 GenerateElectrode::execute()
 {
-  //cout<< "----begin execute" << endl;
-
   FieldHandle source, ofield, pfield;
   MatrixHandle source_matrix;
   const bool input_field_p = get_input_handle("Input Field", source, false);
@@ -294,20 +292,14 @@ GenerateElectrode::execute()
 
   update_state(Executing);
 
-  //cout<< "----matrix stuff one start" << endl;
-
   size_type num_para = 0;
   size_type num_col = 0;
 
   if (input_matrix_p)
   {
-    //cout<< "----matrix input" << endl;
     num_para = source_matrix->nrows();
     num_col = source_matrix->ncols();
   }
-
-
-  //cout<< "----matrix stuff one start " << endl;
 
   if (input_matrix_p && num_para == 5 && num_col == 1)
   {
@@ -330,7 +322,6 @@ GenerateElectrode::execute()
       error("Last value in the input matrix needs to be 1 or 0");
       return;
     }
-
   }
 
   if (input_matrix_p && (num_para != 5 || num_col != 1))
@@ -339,30 +330,16 @@ GenerateElectrode::execute()
     return;
   }
 
-
   FieldInformation fis(source);
-
-
   std::vector<Point> orig_points;
   Vector direction;
-
   Vector defdir = Vector(-10, 10, 10);
-
-
   const std::string &moveto = gui_moveto_.get();
-
-  //cout<<"moveto="<<moveto<<endl;
-
   int use_field = gui_use_field_.get();
-
   const	std::string &electrode_type = gui_type_.get();
-
-
-
 
   if (input_field_p && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_))
   {
-    //cout<< "----using field data"<< endl;
     VMesh* smesh = source->vmesh();
 
     smesh->synchronize(Mesh::ELEM_LOCATE_E);
@@ -375,24 +352,18 @@ GenerateElectrode::execute()
     }
 
     VMesh::Node::array_type a;
-
     orig_points.resize(num_nodes);
 
     for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
-
       Point ap;
       smesh->get_center(ap, idx);
 
       orig_points[idx] = ap;
       direction = defdir;
     }
-
     gui_moveto_.set("");
-
-
   }
-
   else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
   {
     double l, lx;
@@ -409,50 +380,31 @@ GenerateElectrode::execute()
     orig_points[4] = (Point(lx, lx, lx));
 
     direction = defdir;
-    //cout<<"----using default positions"<<endl;
-
     gui_moveto_.set("");
-
-
   }
-
   else if (moveto == "add_point")
   {
     add_point(orig_points);
-
-    if (electrode_type == "planar") {
+    if (electrode_type == "planar") 
+    {
       direction = arrow_widget_->GetDirection();
     }
-    else {
+    else 
+    {
       direction = defdir;
     }
-
-
     gui_moveto_.set("");
-
-    //return;
   }
-
   else if (moveto == "remove_point")
   {
     remove_point();
-
     gui_moveto_.set("");
-
     return;
   }
-
-
-
   else
   {
-
-    //cout<< "----  case 3"<< endl;
-
     size_t n = widget_.size(), s = 0;
-
     orig_points.resize(n);
-
     direction = defdir;
 
     if (arrow_widget_)
@@ -467,27 +419,18 @@ GenerateElectrode::execute()
     for (size_t k = s; k < n; k++)
     {
       orig_points[k] = widget_[k - s]->GetPosition();
-      //cout<<"---- position "<<k<<" = "<<orig_points[k]<<endl;
     }
-    //cout<<"---using widget position"<<endl;
-
-
   }
 
   gui_widget_points_.set(orig_points.size());
 
-  if (electrode_type == "wire") arrow_widget_ = 0;
+  if (electrode_type == "wire") 
+    arrow_widget_ = 0;
 
   if (Previous_points_.size() < 3)
   {
     Previous_points_ = orig_points;
-    //cout<<"no Previous_points_"<<endl;
   }
-
-
-
-
-  //cout<<"--- original point vector size="<<orig_points.size()<<endl;
 
   size_type size = orig_points.size();
 
@@ -495,40 +438,28 @@ GenerateElectrode::execute()
   size_t move_idx;
   std::vector<Point> temp_points;
 
-  //for (size_t	k=0;k<size;k++) cout<<"---- Previous_points_= "<<Previous_points_[k]<<".  orig_point ="<<orig_points[k]<<endl;
-  //cout<<"-------------"<<endl;
   if (move_all_ == true)
   {
     for (size_t k = 0; k < size; k++)
     {
-      //cout<<"---- Previous_points_= "<<Previous_points_[k]<<endl;
       if (orig_points[k] != Previous_points_[k])
       {
         move_dist = orig_points[k] - Previous_points_[k];
         move_idx = k;
       }
-      //cout<<"----move_dist = "<<move_dist<<endl;
-
     }
 
     for (size_t k = 0; k < size; k++)
     {
       if (k == move_idx) temp_points.push_back(orig_points[k]);
       else temp_points.push_back(orig_points[k] + move_dist);
-      //cout<<"----second time move_dist = "<<move_dist<<endl;
     }
-
     orig_points = temp_points;
     move_all_ = false;
-
   }
 
-
-
   std::vector<Point> final_points;
-
   std::vector<Point> points(size);
-
 
   if (electrode_type == "wire") create_widgets(orig_points);
   if (electrode_type == "planar") create_widgets(orig_points, direction);
@@ -545,12 +476,7 @@ GenerateElectrode::execute()
 
   send_output_handle("Control Points", pfield);
 
-
-  //cout<<"widgets created"<<endl;
-
   get_centers(points, final_points);
-
-  //cout<<"spline done"<<endl;
 
   if (electrode_type == "wire") Make_Mesh_Wire(final_points, ofield);
   if (electrode_type == "planar") Make_Mesh_Planar(final_points, ofield, direction);
@@ -572,11 +498,6 @@ GenerateElectrode::execute()
   P[4] = temp;
 
   send_output_handle("Parameter Matrix", Parameters);
-
-  //cout<< "----matrix stuff two" << endl;
-
-    //}
-
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
