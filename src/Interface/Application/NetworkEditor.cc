@@ -204,13 +204,15 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
 
-QTimer::singleShot(macModulePositionWorkaroundTimerValue, [proxy]()
-  {
-    proxy->setSelected(true);
-    proxy->setSelected(false);
-    proxy->setSelected(true);
-  }
-);
+#ifdef __APPLE__
+  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [proxy]()
+    {
+      proxy->setSelected(true);
+      proxy->setSelected(false);
+      proxy->setSelected(true);
+    }
+  );
+#endif
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
@@ -1600,7 +1602,9 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
 
   setSceneRect(QRectF());
 
+#ifdef __APPLE__
   QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]() { deselectAll(); });
+#endif
 }
 
 void NetworkEditor::deselectAll()
