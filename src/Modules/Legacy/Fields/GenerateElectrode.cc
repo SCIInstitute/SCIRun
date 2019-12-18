@@ -40,138 +40,153 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 
+using namespace SCIRun;
+using namespace Core;
+using namespace Logging;
+using namespace Datatypes;
+using namespace Algorithms;
+using namespace Geometry;
+using namespace Graphics;
+using namespace Modules::Fields;
+using namespace Dataflow::Networks;
+using namespace Graphics::Datatypes;
 
-	// equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
+MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
-	bool
-	CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
-	{
-		// need to have at least 3 nodes
-		if (t.size() < 3) return (false);
-		if (x.size() != t.size()) return (false);
-		
-		
-		//cout<<"------beginning spline algorithm"<<endl;
-		
-		
-		size_t size = x.size();
-		std::vector<double> z(size), h(size-1), b(size-1), v(size-1), u(size-1);
-		
-		for (size_t k=0;k<size-1;k++)
-		{
-			h[k]=(t[k+1]-t[k]);
-			b[k]=(6*(x[k+1]-x[k])/h[k]);
-			
-			//cout<<"--- h="<<h[k]<<", b="<<b[k]<<"  and k = "<< k<< endl;
-		}
-		
-		//cout<<"-----h and b  calculated"<<endl;
-		
-		
-		u[1]=2*(h[0]+h[1]);
-		v[1]=b[1]-b[0];
-		
-		for (size_t k=2;k<size-1;k++)
-		{
-			u[k]=2*(h[k]+h[k-1])-(h[k-1]*h[k-1])/u[k-1];
-			v[k]=b[k]-b[k-1]-h[k-1]*v[k-1]/u[k-1];
-			
-			//cout<<"--- u="<<u[k]<<", v="<<v[k]<<"  and k = "<< k<< endl;
-		}
-		
-		//cout<<"----- u and v calculated"<<endl;
-		
-		z[size-1]=0;
-		
-		for (size_t k=size-2;k>0;k--)
-		{
-			z[k]=(v[k]-h[k]*z[k+1])/u[k];
-			
-			//cout<<"--- z="<<z[k]<<"  and k = "<< k<< endl;
-			
-		}
-		
-		z[0]=0;
-		
-		//cout<<"----- z calculated"<<endl;
-		
-		size_t segment = 0;
-		
-		xx.resize(tt.size());
-		for(size_t k = 0; k < tt.size(); k++)
-		{
-			while (segment < (size-2) && t[segment+1] < tt[k])
-			{
-				segment++;
-				//cout<<"----- segment number "<<segment<<endl;
-			}
-			
-			
-			
-			double w0,w1,w2,w3,a,b,c,d;
-			
-			w3=(t[segment+1]-tt[k]);
-			w0=w3*w3*w3;
-			w2=(tt[k]-t[segment]);
-			w1=w2*w2*w2;
-			
-			
-			
-			a=z[segment]/(6*h[segment]);
-			b=z[segment+1]/(6*h[segment]);
-			c=(x[segment+1]/h[segment]-(z[segment+1]*h[segment])/6);
-			d=(x[segment]/h[segment]-z[segment]*h[segment]/6);
-					
-			xx[k]=a*w0+b*w1+c*w2+d*w3;
-			
-		}
-		
-		//cout<<"----- xx calculated"<<endl;
-		
-		return (true);
-	}
-	
-	// this is a sline function.  pp is the final points that are in between the original points p.  
-	// t and tt are the original and final desired spacing, respectively.
-	
-	bool
-	CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
-	{
-		// need to have at least 3 nodes
-		if (t.size() < 3) return (false);
-		if (p.size() != t.size()) return (false);
-		
-		
-		size_t size=p.size();
-		
-		std::vector<double> x(size), y(size), z(size);
-		std::vector<double> xx, yy, zz;
-		
-		
-		
-		for (size_t	k=0;k<p.size();k++)
-		{
-			x[k]=p[k].x();
-			y[k]=p[k].y();
-			z[k]=p[k].z();
-		}
-		
-		//cout<< "-----widget points reassigned"<< endl;
+namespace impl
+{
+  // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
-		CalculateSpline(t,x,tt,xx);
-		CalculateSpline(t,y,tt,yy);
-		CalculateSpline(t,z,tt,zz);
-		
-		//cout<< "-----executed interpolation commands"<< endl;
-		
-		
-		for (size_t	k=0;k<tt.size();k++) pp.push_back(Point(xx[k],yy[k],zz[k]));
-		
-		//cout<< "----spline interpolation  done!!"<< endl;
-		
-		return (true);
-	}
-	
+  bool
+    CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
+  {
+    // need to have at least 3 nodes
+    if (t.size() < 3) return (false);
+    if (x.size() != t.size()) return (false);
+
+
+    //cout<<"------beginning spline algorithm"<<endl;
+
+
+    size_t size = x.size();
+    std::vector<double> z(size), h(size - 1), b(size - 1), v(size - 1), u(size - 1);
+
+    for (size_t k = 0; k < size - 1; k++)
+    {
+      h[k] = (t[k + 1] - t[k]);
+      b[k] = (6 * (x[k + 1] - x[k]) / h[k]);
+
+      //cout<<"--- h="<<h[k]<<", b="<<b[k]<<"  and k = "<< k<< endl;
+    }
+
+    //cout<<"-----h and b  calculated"<<endl;
+
+
+    u[1] = 2 * (h[0] + h[1]);
+    v[1] = b[1] - b[0];
+
+    for (size_t k = 2; k < size - 1; k++)
+    {
+      u[k] = 2 * (h[k] + h[k - 1]) - (h[k - 1] * h[k - 1]) / u[k - 1];
+      v[k] = b[k] - b[k - 1] - h[k - 1] * v[k - 1] / u[k - 1];
+
+      //cout<<"--- u="<<u[k]<<", v="<<v[k]<<"  and k = "<< k<< endl;
+    }
+
+    //cout<<"----- u and v calculated"<<endl;
+
+    z[size - 1] = 0;
+
+    for (size_t k = size - 2; k > 0; k--)
+    {
+      z[k] = (v[k] - h[k] * z[k + 1]) / u[k];
+
+      //cout<<"--- z="<<z[k]<<"  and k = "<< k<< endl;
+
+    }
+
+    z[0] = 0;
+
+    //cout<<"----- z calculated"<<endl;
+
+    size_t segment = 0;
+
+    xx.resize(tt.size());
+    for (size_t k = 0; k < tt.size(); k++)
+    {
+      while (segment < (size - 2) && t[segment + 1] < tt[k])
+      {
+        segment++;
+        //cout<<"----- segment number "<<segment<<endl;
+      }
+
+
+
+      double w0, w1, w2, w3, a, b, c, d;
+
+      w3 = (t[segment + 1] - tt[k]);
+      w0 = w3 * w3*w3;
+      w2 = (tt[k] - t[segment]);
+      w1 = w2 * w2*w2;
+
+
+
+      a = z[segment] / (6 * h[segment]);
+      b = z[segment + 1] / (6 * h[segment]);
+      c = (x[segment + 1] / h[segment] - (z[segment + 1] * h[segment]) / 6);
+      d = (x[segment] / h[segment] - z[segment] * h[segment] / 6);
+
+      xx[k] = a * w0 + b * w1 + c * w2 + d * w3;
+
+    }
+
+    //cout<<"----- xx calculated"<<endl;
+
+    return (true);
+  }
+
+  // this is a sline function.  pp is the final points that are in between the original points p.  
+  // t and tt are the original and final desired spacing, respectively.
+
+  bool
+    CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
+  {
+    // need to have at least 3 nodes
+    if (t.size() < 3) return (false);
+    if (p.size() != t.size()) return (false);
+
+
+    size_t size = p.size();
+
+    std::vector<double> x(size), y(size), z(size);
+    std::vector<double> xx, yy, zz;
+
+
+
+    for (size_t k = 0; k < p.size(); k++)
+    {
+      x[k] = p[k].x();
+      y[k] = p[k].y();
+      z[k] = p[k].z();
+    }
+
+    //cout<< "-----widget points reassigned"<< endl;
+
+    CalculateSpline(t, x, tt, xx);
+    CalculateSpline(t, y, tt, yy);
+    CalculateSpline(t, z, tt, zz);
+
+    //cout<< "-----executed interpolation commands"<< endl;
+
+
+    for (size_t k = 0; k < tt.size(); k++) pp.push_back(Point(xx[k], yy[k], zz[k]));
+
+    //cout<< "----spline interpolation  done!!"<< endl;
+
+    return (true);
+  }
+}
+#if 0
 	class GenerateElectrode : public Module
 		{
 		public:
@@ -239,335 +254,332 @@
 			
 						
 		};
+#endif
 	
-	
-	
-	DECLARE_MAKER(GenerateElectrode)
-	
-	GenerateElectrode::GenerateElectrode(GuiContext* ctx) 
-		:	Module("GenerateElectrode", ctx, Source, "NewField", "SCIRun"),
-		widget_lock_("GenerateElectrode widget lock"),
-		arrow_widget_(0),
-		gui_probe_scale_(get_ctx()->subVar("probe_scale"), 3.0),
-		gui_color_r_(get_ctx()->subVar("color-r"), 1.0),
-		gui_color_g_(get_ctx()->subVar("color-g"), 1.0),
-		gui_color_b_(get_ctx()->subVar("color-b"), 1.0),
-		gui_widget_points_(get_ctx()->subVar("num_points"),5),
-		gui_length_(get_ctx()->subVar("length"),.1),
-		gui_width_(get_ctx()->subVar("width"),.02),
-		gui_thick_(get_ctx()->subVar("thick"),.003),
-		gui_moveto_(get_ctx()->subVar("moveto"), ""),
-		gui_type_(get_ctx()->subVar("electrode_type"),"wire"),
-		gui_project_(get_ctx()->subVar("project"),"midway"),
-		gui_use_field_(get_ctx()->subVar("use-field"),1),
-		gui_move_all_(get_ctx()->subVar("move-all"),0),
-		gui_wire_res_(get_ctx()->subVar("wire_res"),10)
-	  
-		
-	
-	
-	
-		{
-			get_oport_handle("Electrode Widget",geom_oport_);
-		}
-	
-	void
-	GenerateElectrode::execute()
-	{
-		//cout<< "----begin execute" << endl;
-		
-		FieldHandle source, ofield, pfield;
-		MatrixHandle source_matrix;
-		const bool input_field_p =get_input_handle("Input Field",source,false);
-		const bool input_matrix_p =get_input_handle("Parameter Matrix",source_matrix,false);
-		
-		update_state(Executing);
-		
-		//cout<< "----matrix stuff one start" << endl;
-		
-		size_type num_para=0;
-		size_type num_col=0;
-		
-		if (input_matrix_p)
-		{
-			//cout<< "----matrix input" << endl;
-			num_para=source_matrix->nrows();
-			num_col=source_matrix->ncols();
-		}
-		
-		
-		//cout<< "----matrix stuff one start " << endl;
-		
-		if (input_matrix_p && num_para == 5 && num_col == 1) 
-		{
-			double* sm=source_matrix->get_data_pointer();
-			
-			double temp=sm[0];
-			gui_length_.set(temp);
-			temp=sm[1];
-			gui_width_.set(temp);
-			temp=sm[2];
-			gui_thick_.set(temp);
-			temp=sm[3];
-			gui_wire_res_.set(static_cast<int> (temp));
-			temp=sm[4];
-			
-			if (temp==1) gui_type_.set("planar");
-			else if (temp==0) gui_type_.set("wire");
-			else 
-			{
-				error("Last value in the input matrix needs to be 1 or 0");
-				return;
-			}
-			
-		}
-			
-		if (input_matrix_p && (num_para != 5 || num_col != 1))
-		{
-			error("Parameter matrix needs to be right size (1x5). This input is optional, but remember: Length, Width, Thickness, Resolution, Type (1=planar, 0=wire)");
-			return;
-		}
-		
-			
-			FieldInformation fis(source);
-			
-			
-			std::vector<Point> orig_points;
-			Vector direction;
-		
-			Vector defdir=Vector(-10,10,10);
-		
-		
-			const std::string &moveto = gui_moveto_.get();
-		
-			//cout<<"moveto="<<moveto<<endl;
-					
-			int use_field=gui_use_field_.get();
-		
-			const	std::string &electrode_type=gui_type_.get();
-		
-		
-		
-		
-			if (input_field_p && (use_field==1) && (moveto=="default" || widget_.size()==0 || inputs_changed_))
-			{
-				//cout<< "----using field data"<< endl;
-				VMesh* smesh = source->vmesh();
-				
-				smesh->synchronize(Mesh::ELEM_LOCATE_E);
-				
-				VMesh::Node::size_type num_nodes = smesh->num_nodes();
-				if (num_nodes>50)
-				{
-					error("Why would you want to use that many nodes to make an electrode?  Do you want to crash you system?  That's way to many.");
-					return;
-				}
-				
-				VMesh::Node::array_type a;
-				
-				orig_points.resize(num_nodes);
-				
-				for (VMesh::Node::index_type idx=0;idx<num_nodes;idx++)
-				{
-					
-					Point ap;
-					smesh->get_center(ap,idx);
-					
-					orig_points[idx]=ap;
-					direction=defdir;
-				}
-				
-				gui_moveto_.set("");
-				
-									
-			}
-			
-			else if ((!input_field_p || use_field==0) && (moveto=="default" || widget_.size()==0))
-			{
-				double l, lx;
-				l=gui_length_.get();
-				
-				lx=l*.5774;
-				
-				orig_points.resize(5);
-				
-				orig_points[0]=(Point(0,0,0));
-				orig_points[1]=(Point(lx*.25,lx*.25,lx*.25));
-				orig_points[2]=(Point(lx*.5,lx*.5,lx*.5));
-				orig_points[3]=(Point(lx*.75,lx*.75,lx*.75));
-				orig_points[4]=(Point(lx,lx,lx));
-				
-				direction=defdir;							
-				//cout<<"----using default positions"<<endl;
-				
-				gui_moveto_.set("");
+GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
+		//widget_lock_("GenerateElectrode widget lock"),
+		//arrow_widget_(0),
+		//gui_probe_scale_(get_ctx()->subVar("probe_scale"), 3.0),
+		//gui_color_r_(get_ctx()->subVar("color-r"), 1.0),
+		//gui_color_g_(get_ctx()->subVar("color-g"), 1.0),
+		//gui_color_b_(get_ctx()->subVar("color-b"), 1.0),
+		//gui_widget_points_(get_ctx()->subVar("num_points"),5),
+		//gui_length_(get_ctx()->subVar("length"),.1),
+		//gui_width_(get_ctx()->subVar("width"),.02),
+		//gui_thick_(get_ctx()->subVar("thick"),.003),
+		//gui_moveto_(get_ctx()->subVar("moveto"), ""),
+		//gui_type_(get_ctx()->subVar("electrode_type"),"wire"),
+		//gui_project_(get_ctx()->subVar("project"),"midway"),
+		//gui_use_field_(get_ctx()->subVar("use-field"),1),
+		//gui_move_all_(get_ctx()->subVar("move-all"),0),
+		//gui_wire_res_(get_ctx()->subVar("wire_res"),10)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ParameterMatrixIn);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(ElectrodeWidget);
+  INITIALIZE_PORT(ControlPoints);
+  INITIALIZE_PORT(ParameterMatrixOut);
+}
 
-				
-			}
-							
-			else if (moveto=="add_point")
-			{
-				add_point(orig_points);
-				
-				if(electrode_type=="planar"){
-					direction=arrow_widget_->GetDirection();
-				}
-				else{
-					direction=defdir;
-				}
-				
-				
-				gui_moveto_.set("");
-				
-				//return;
-			}
-			
-			else if (moveto=="remove_point")
-			{
-				remove_point();
-				
-				gui_moveto_.set("");
-				
-				return;
-			}
-		
+void
+GenerateElectrode::execute()
+{
+  //cout<< "----begin execute" << endl;
 
-							 
-			else
-			{	
-				
-				//cout<< "----  case 3"<< endl;
-				
-				size_t n=widget_.size(), s=0;
-				
-				orig_points.resize(n);
-				
-				direction=defdir;
-					
-				if(arrow_widget_)
-				{
-					n=n+1;
-					s=1;
-					orig_points.resize(n);
-					direction=arrow_widget_->GetDirection();
-					orig_points[0]=arrow_widget_->GetPosition();
-				}				
-				
-				for (size_t k = s; k < n; k++)
-				{
-					orig_points[k] = widget_[k-s]->GetPosition();
-					//cout<<"---- position "<<k<<" = "<<orig_points[k]<<endl;
-				}
-				//cout<<"---using widget position"<<endl;
-				
-				
-			}
-		
-			gui_widget_points_.set(orig_points.size());
-		
-			if(electrode_type=="wire") arrow_widget_=0;
-		
-		if (Previous_points_.size()<3) 
-		{
-			Previous_points_=orig_points;
-			//cout<<"no Previous_points_"<<endl;
-		}
-		
-			 
-			
-						
-		//cout<<"--- original point vector size="<<orig_points.size()<<endl;
+  FieldHandle source, ofield, pfield;
+  MatrixHandle source_matrix;
+  const bool input_field_p = get_input_handle("Input Field", source, false);
+  const bool input_matrix_p = get_input_handle("Parameter Matrix", source_matrix, false);
 
-			size_type size=orig_points.size();
-		
-			Vector move_dist;
-			size_t move_idx;
-			std::vector<Point> temp_points;
-		
-			//for (size_t	k=0;k<size;k++) cout<<"---- Previous_points_= "<<Previous_points_[k]<<".  orig_point ="<<orig_points[k]<<endl;
-			//cout<<"-------------"<<endl;
-			if(move_all_==true)
-			{
-				for (size_t	k=0;k<size;k++) 
-				{
-					//cout<<"---- Previous_points_= "<<Previous_points_[k]<<endl;
-					if(orig_points[k]!=Previous_points_[k]) 
-					{
-						move_dist=orig_points[k]-Previous_points_[k];						
-						move_idx=k;
-					}
-					//cout<<"----move_dist = "<<move_dist<<endl;
-					
-				}
-				
-				for (size_t	k=0;k<size;k++) 
-				{
-					if (k==move_idx) temp_points.push_back(orig_points[k]);
-					else temp_points.push_back(orig_points[k]+move_dist);
-					//cout<<"----second time move_dist = "<<move_dist<<endl;
-				}
-				
-				orig_points=temp_points;
-				move_all_=false;
-				
-			}
-		
-				
-		
-			std::vector<Point> final_points;
-			
-			std::vector<Point> points(size);
-			
-				
-			if(electrode_type=="wire") create_widgets(orig_points);	
-			if(electrode_type=="planar") create_widgets(orig_points,direction);
-		
-			Previous_points_=orig_points;
-		
-			FieldInformation pi("PointCloudMesh",0,"double");
-			MeshHandle pmesh = CreateMesh(pi);
-		
-			for (VMesh::Node::index_type idx=0;idx<orig_points.size();idx++) pmesh->vmesh()->add_point(orig_points[idx]);
-			
-			pi.make_double();
-			pfield = CreateField(pi,pmesh);				
-		
-			send_output_handle("Control Points",pfield);
+  update_state(Executing);
 
-		
-		//cout<<"widgets created"<<endl;
-		
-			get_centers(points,final_points);		
-		
-		//cout<<"spline done"<<endl;
-		
-			if(electrode_type=="wire") Make_Mesh_Wire(final_points,ofield);
-			if(electrode_type=="planar") Make_Mesh_Planar(final_points,ofield,direction);
+  //cout<< "----matrix stuff one start" << endl;
 
-			MatrixHandle Parameters = new DenseMatrix(5,1);
-			double* P=Parameters->get_data_pointer();
-		
-			double temp=gui_length_.get();
-			P[0]=temp;
-			temp=gui_width_.get();
-			P[1]=temp;
-			temp=gui_thick_.get();
-			P[2]=temp;
-			temp=static_cast<double> (gui_wire_res_.get());
-			P[3]=temp;
-		
-			if (electrode_type=="wire") temp=0;
-			else if (electrode_type=="planar") temp=1;
-			P[4]=temp;		
-		
-			send_output_handle("Parameter Matrix", Parameters);
-		
-		//cout<< "----matrix stuff two" << endl;
+  size_type num_para = 0;
+  size_type num_col = 0;
 
-			//}
-						
-	}
-	
+  if (input_matrix_p)
+  {
+    //cout<< "----matrix input" << endl;
+    num_para = source_matrix->nrows();
+    num_col = source_matrix->ncols();
+  }
+
+
+  //cout<< "----matrix stuff one start " << endl;
+
+  if (input_matrix_p && num_para == 5 && num_col == 1)
+  {
+    double* sm = source_matrix->get_data_pointer();
+
+    double temp = sm[0];
+    gui_length_.set(temp);
+    temp = sm[1];
+    gui_width_.set(temp);
+    temp = sm[2];
+    gui_thick_.set(temp);
+    temp = sm[3];
+    gui_wire_res_.set(static_cast<int> (temp));
+    temp = sm[4];
+
+    if (temp == 1) gui_type_.set("planar");
+    else if (temp == 0) gui_type_.set("wire");
+    else
+    {
+      error("Last value in the input matrix needs to be 1 or 0");
+      return;
+    }
+
+  }
+
+  if (input_matrix_p && (num_para != 5 || num_col != 1))
+  {
+    error("Parameter matrix needs to be right size (1x5). This input is optional, but remember: Length, Width, Thickness, Resolution, Type (1=planar, 0=wire)");
+    return;
+  }
+
+
+  FieldInformation fis(source);
+
+
+  std::vector<Point> orig_points;
+  Vector direction;
+
+  Vector defdir = Vector(-10, 10, 10);
+
+
+  const std::string &moveto = gui_moveto_.get();
+
+  //cout<<"moveto="<<moveto<<endl;
+
+  int use_field = gui_use_field_.get();
+
+  const	std::string &electrode_type = gui_type_.get();
+
+
+
+
+  if (input_field_p && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_))
+  {
+    //cout<< "----using field data"<< endl;
+    VMesh* smesh = source->vmesh();
+
+    smesh->synchronize(Mesh::ELEM_LOCATE_E);
+
+    VMesh::Node::size_type num_nodes = smesh->num_nodes();
+    if (num_nodes > 50)
+    {
+      error("Why would you want to use that many nodes to make an electrode?  Do you want to crash you system?  That's way to many.");
+      return;
+    }
+
+    VMesh::Node::array_type a;
+
+    orig_points.resize(num_nodes);
+
+    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
+    {
+
+      Point ap;
+      smesh->get_center(ap, idx);
+
+      orig_points[idx] = ap;
+      direction = defdir;
+    }
+
+    gui_moveto_.set("");
+
+
+  }
+
+  else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
+  {
+    double l, lx;
+    l = gui_length_.get();
+
+    lx = l * .5774;
+
+    orig_points.resize(5);
+
+    orig_points[0] = (Point(0, 0, 0));
+    orig_points[1] = (Point(lx*.25, lx*.25, lx*.25));
+    orig_points[2] = (Point(lx*.5, lx*.5, lx*.5));
+    orig_points[3] = (Point(lx*.75, lx*.75, lx*.75));
+    orig_points[4] = (Point(lx, lx, lx));
+
+    direction = defdir;
+    //cout<<"----using default positions"<<endl;
+
+    gui_moveto_.set("");
+
+
+  }
+
+  else if (moveto == "add_point")
+  {
+    add_point(orig_points);
+
+    if (electrode_type == "planar") {
+      direction = arrow_widget_->GetDirection();
+    }
+    else {
+      direction = defdir;
+    }
+
+
+    gui_moveto_.set("");
+
+    //return;
+  }
+
+  else if (moveto == "remove_point")
+  {
+    remove_point();
+
+    gui_moveto_.set("");
+
+    return;
+  }
+
+
+
+  else
+  {
+
+    //cout<< "----  case 3"<< endl;
+
+    size_t n = widget_.size(), s = 0;
+
+    orig_points.resize(n);
+
+    direction = defdir;
+
+    if (arrow_widget_)
+    {
+      n = n + 1;
+      s = 1;
+      orig_points.resize(n);
+      direction = arrow_widget_->GetDirection();
+      orig_points[0] = arrow_widget_->GetPosition();
+    }
+
+    for (size_t k = s; k < n; k++)
+    {
+      orig_points[k] = widget_[k - s]->GetPosition();
+      //cout<<"---- position "<<k<<" = "<<orig_points[k]<<endl;
+    }
+    //cout<<"---using widget position"<<endl;
+
+
+  }
+
+  gui_widget_points_.set(orig_points.size());
+
+  if (electrode_type == "wire") arrow_widget_ = 0;
+
+  if (Previous_points_.size() < 3)
+  {
+    Previous_points_ = orig_points;
+    //cout<<"no Previous_points_"<<endl;
+  }
+
+
+
+
+  //cout<<"--- original point vector size="<<orig_points.size()<<endl;
+
+  size_type size = orig_points.size();
+
+  Vector move_dist;
+  size_t move_idx;
+  std::vector<Point> temp_points;
+
+  //for (size_t	k=0;k<size;k++) cout<<"---- Previous_points_= "<<Previous_points_[k]<<".  orig_point ="<<orig_points[k]<<endl;
+  //cout<<"-------------"<<endl;
+  if (move_all_ == true)
+  {
+    for (size_t k = 0; k < size; k++)
+    {
+      //cout<<"---- Previous_points_= "<<Previous_points_[k]<<endl;
+      if (orig_points[k] != Previous_points_[k])
+      {
+        move_dist = orig_points[k] - Previous_points_[k];
+        move_idx = k;
+      }
+      //cout<<"----move_dist = "<<move_dist<<endl;
+
+    }
+
+    for (size_t k = 0; k < size; k++)
+    {
+      if (k == move_idx) temp_points.push_back(orig_points[k]);
+      else temp_points.push_back(orig_points[k] + move_dist);
+      //cout<<"----second time move_dist = "<<move_dist<<endl;
+    }
+
+    orig_points = temp_points;
+    move_all_ = false;
+
+  }
+
+
+
+  std::vector<Point> final_points;
+
+  std::vector<Point> points(size);
+
+
+  if (electrode_type == "wire") create_widgets(orig_points);
+  if (electrode_type == "planar") create_widgets(orig_points, direction);
+
+  Previous_points_ = orig_points;
+
+  FieldInformation pi("PointCloudMesh", 0, "double");
+  MeshHandle pmesh = CreateMesh(pi);
+
+  for (VMesh::Node::index_type idx = 0; idx < orig_points.size(); idx++) pmesh->vmesh()->add_point(orig_points[idx]);
+
+  pi.make_double();
+  pfield = CreateField(pi, pmesh);
+
+  send_output_handle("Control Points", pfield);
+
+
+  //cout<<"widgets created"<<endl;
+
+  get_centers(points, final_points);
+
+  //cout<<"spline done"<<endl;
+
+  if (electrode_type == "wire") Make_Mesh_Wire(final_points, ofield);
+  if (electrode_type == "planar") Make_Mesh_Planar(final_points, ofield, direction);
+
+  MatrixHandle Parameters = new DenseMatrix(5, 1);
+  double* P = Parameters->get_data_pointer();
+
+  double temp = gui_length_.get();
+  P[0] = temp;
+  temp = gui_width_.get();
+  P[1] = temp;
+  temp = gui_thick_.get();
+  P[2] = temp;
+  temp = static_cast<double> (gui_wire_res_.get());
+  P[3] = temp;
+
+  if (electrode_type == "wire") temp = 0;
+  else if (electrode_type == "planar") temp = 1;
+  P[4] = temp;
+
+  send_output_handle("Parameter Matrix", Parameters);
+
+  //cout<< "----matrix stuff two" << endl;
+
+    //}
+
+}
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 	void
 	GenerateElectrode::Make_Mesh_Wire(std::vector<Point>& final_points, FieldHandle& ofield)
 	{
@@ -1355,4 +1367,4 @@
 			
 		return (true);
 	}
-	
+#endif
