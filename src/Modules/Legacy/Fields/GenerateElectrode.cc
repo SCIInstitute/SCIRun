@@ -282,19 +282,27 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
   INITIALIZE_PORT(ParameterMatrixOut);
 }
 
-void
-GenerateElectrode::execute()
+void GenerateElectrode::setStateDefaults()
 {
-  FieldHandle source, ofield, pfield;
-  MatrixHandle source_matrix;
-  const bool input_field_p = get_input_handle("Input Field", source, false);
-  const bool input_matrix_p = get_input_handle("Parameter Matrix", source_matrix, false);
+  //TODO
+}
 
-  update_state(Executing);
+void GenerateElectrode::execute()
+{
+  FieldHandle ofield, pfield;
+  MatrixHandle source_matrix;
+
+  //TODO: enable optional input logic
+  auto source = getRequiredInput(InputField);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  const bool input_matrix_p = get_input_handle("Parameter Matrix", source_matrix, false);
+#endif
 
   size_type num_para = 0;
   size_type num_col = 0;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (input_matrix_p)
   {
     num_para = source_matrix->nrows();
@@ -329,6 +337,7 @@ GenerateElectrode::execute()
     error("Parameter matrix needs to be right size (1x5). This input is optional, but remember: Length, Width, Thickness, Resolution, Type (1=planar, 0=wire)");
     return;
   }
+#endif
 
   FieldInformation fis(source);
   std::vector<Point> orig_points;
@@ -338,7 +347,7 @@ GenerateElectrode::execute()
   int use_field = gui_use_field_.get();
   const	std::string &electrode_type = gui_type_.get();
 
-  if (input_field_p && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_))
+  if (source && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_))
   {
     VMesh* smesh = source->vmesh();
 
@@ -364,6 +373,7 @@ GenerateElectrode::execute()
     }
     gui_moveto_.set("");
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
   {
     double l, lx;
@@ -421,11 +431,14 @@ GenerateElectrode::execute()
       orig_points[k] = widget_[k - s]->GetPosition();
     }
   }
+#endif
 
   gui_widget_points_.set(orig_points.size());
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (electrode_type == "wire") 
     arrow_widget_ = 0;
+#endif
 
   if (Previous_points_.size() < 3)
   {
@@ -438,7 +451,8 @@ GenerateElectrode::execute()
   size_t move_idx;
   std::vector<Point> temp_points;
 
-  if (move_all_ == true)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  if (move_all_)
   {
     for (size_t k = 0; k < size; k++)
     {
@@ -457,12 +471,17 @@ GenerateElectrode::execute()
     orig_points = temp_points;
     move_all_ = false;
   }
+#endif
 
   std::vector<Point> final_points;
   std::vector<Point> points(size);
 
-  if (electrode_type == "wire") create_widgets(orig_points);
-  if (electrode_type == "planar") create_widgets(orig_points, direction);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER // Tark
+  if (electrode_type == "wire") 
+    create_widgets(orig_points);
+  if (electrode_type == "planar") 
+    create_widgets(orig_points, direction);
+#endif
 
   Previous_points_ = orig_points;
 
@@ -474,30 +493,26 @@ GenerateElectrode::execute()
   pi.make_double();
   pfield = CreateField(pi, pmesh);
 
-  send_output_handle("Control Points", pfield);
+  sendOutput(ControlPoints, pfield);
 
   get_centers(points, final_points);
 
-  if (electrode_type == "wire") Make_Mesh_Wire(final_points, ofield);
-  if (electrode_type == "planar") Make_Mesh_Planar(final_points, ofield, direction);
+  if (electrode_type == "wire") 
+    Make_Mesh_Wire(final_points, ofield);
 
-  MatrixHandle Parameters = new DenseMatrix(5, 1);
-  double* P = Parameters->get_data_pointer();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  if (electrode_type == "planar") 
+    Make_Mesh_Planar(final_points, ofield, direction);
+#endif
 
-  double temp = gui_length_.get();
-  P[0] = temp;
-  temp = gui_width_.get();
-  P[1] = temp;
-  temp = gui_thick_.get();
-  P[2] = temp;
-  temp = static_cast<double> (gui_wire_res_.get());
-  P[3] = temp;
+  DenseMatrixHandle parameters(new DenseMatrix(5, 1));
+  (*parameters) << gui_length_.get()
+  << gui_width_.get();
+  << gui_thick_.get();
+  << static_cast<double> (gui_wire_res_.get());
+  << electrode_type == "wire" ? 0 : 1;
 
-  if (electrode_type == "wire") temp = 0;
-  else if (electrode_type == "planar") temp = 1;
-  P[4] = temp;
-
-  send_output_handle("Parameter Matrix", Parameters);
+  sendOutput(ParameterMatrixOut, parameters);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
