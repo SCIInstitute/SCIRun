@@ -123,14 +123,21 @@ struct ParenthesisInfo
   int position;
 };
 
+struct MatchingPair
+{
+  char left, right;
+};
+
+bool operator<(const MatchingPair& lhs, const MatchingPair& rhs);
+
 class TextBlockData : public QTextBlockUserData
 {
 public:
   TextBlockData();
-  std::vector<ParenthesisInfo> parentheses() const;
-  void insert(ParenthesisInfo&& info);
+  std::vector<ParenthesisInfo> parentheses(const MatchingPair& type) const;
+  void insert(const MatchingPair& type, ParenthesisInfo&& info);
 private:
-  std::vector<ParenthesisInfo> m_parentheses;
+  std::map<MatchingPair, std::vector<ParenthesisInfo>> parenthesesByType_;
 };
 
 }
