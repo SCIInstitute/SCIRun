@@ -45,7 +45,7 @@ varying vec4    vColor;
 void main( void )
 {
   vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * uModel * vPosWorld;
+  vPosView = uView * vPosWorld;
   vNormal = normalize((uView * uModel * vec4(aNormal, 0.0)).xyz);
   vColor = aColor;
 
