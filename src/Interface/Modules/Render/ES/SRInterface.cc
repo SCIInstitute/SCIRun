@@ -600,6 +600,7 @@ namespace SCIRun {
               mOriginWorld = obj->origin_;
               mFlipAxisWorld = obj->getFlipVector();
               mScaleAxisIndex = obj->getScaleAxisIndex();
+              mTranslationVector = obj->getTranslationVector();
               mWidgetMovementTypes = obj->getMovementTypes();
               mConnectedWidgets = obj->connectedIds_;
               mMoveMaps = obj->moveMaps_;
@@ -730,6 +731,12 @@ namespace SCIRun {
         case WidgetMovement::TRANSLATE:
           translateWidget(pos);
           break;
+        case WidgetMovement::TRANSLATE_AXIS:
+          translateAxisWidget(pos, false);
+          break;
+        case WidgetMovement::TRANSLATE_AXIS_REVERSE:
+          translateAxisWidget(pos, true);
+          break;
         case WidgetMovement::ROTATE:
           rotateWidget(pos);
           break;
@@ -770,6 +777,21 @@ namespace SCIRun {
       glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::translateAxisWidget(const glm::ivec2& pos, bool reverse)
+    {
+      auto cam = mCore.getStaticComponent<gen::StaticCamera>();
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+      glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
+      mWidgetTransform = gen::Transform();
+      glm::vec3 worldPos = (glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz();
+      if(reverse)
+        worldPos = -worldPos;
+      mWidgetTransform.setPosition(glm::dot(worldPos, mTranslationVector) * mTranslationVector);
     }
 
     //----------------------------------------------------------------------------------------------

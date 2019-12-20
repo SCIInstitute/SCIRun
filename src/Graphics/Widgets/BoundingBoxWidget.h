@@ -69,18 +69,21 @@ namespace SCIRun {
         std::vector<WidgetHandle> translateWidgets_;
         std::vector<WidgetHandle> rotateWidgets_;
         std::vector<WidgetHandle> scaleWidgets_;
-        std::vector<std::vector<WidgetHandle> > scaleAxisWidgets_;
+        std::vector<std::vector<std::vector<WidgetHandle> > > scaleAxisWidgets_;
         std::vector<std::string> allIds_;
         std::vector<std::string> translateIds_;
         std::vector<std::vector<std::vector<std::string> > > translateIdsByFace_;
         std::vector<std::vector<std::string> > translateIdsBySide_;
+        std::vector<std::vector<std::vector<std::string> > > rotateIdsByFace_;
+        // std::vector<std::vector<std::string> > rotateIdsBySide_;
+        std::vector<std::vector<std::vector<std::string> > > scaleIdsByFace_;
         std::vector<std::string> rotateIds_;
         std::vector<std::string> scaleIds_;
-        std::vector<std::vector<std::string> > scaleAxisIds_;
+        std::vector<std::vector<std::vector<std::string> > > scaleAxisIds_;
         std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > > translateMaps_;
         std::vector<std::pair<WidgetMovement, std::vector<std::string> > > rotateMap_;
         std::vector<std::pair<WidgetMovement, std::vector<std::string> > > scaleMap_;
-        std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > > scaleAxisMaps_;
+        std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > > > scaleAxisMaps_;
         const int DIMENSIONS_ = 3;
         const int EDGES_ = 12;
         const int CORNERS_ = 8;
@@ -119,13 +122,12 @@ namespace SCIRun {
         void getCorners();
         void getFacesStart();
         void getFacesEnd();
-        void addCornerSphere(int i, const Core::GeometryIDGenerator& idGenerator,
-                             const Core::Geometry::Vector& flipVec, int widgetNum, int widgetIter);
-        void addFaceSphere(int i, const Core::GeometryIDGenerator& idGenerator, int widgetNum,
+        void addCornerSpheres(const Core::GeometryIDGenerator& idGenerator,
+                              int widgetNum, int widgetIter);
+        void addFaceSphere(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
                            int widgetIter);
-        void addFaceCylinder(int i, const Core::GeometryIDGenerator& idGenerator,
-                             glm::mat4& scaleTrans, int axisNum, int widgetNum, int widgetIter);
-        void addIds();
+        void addFaceCylinder(const Core::GeometryIDGenerator& idGenerator,
+                             glm::mat4& scaleTrans, int widgetNum, int widgetIter);
         void getTranslateIds();
         void getRotateIds();
         void getScaleIds();

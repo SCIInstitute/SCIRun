@@ -217,6 +217,7 @@ namespace SCIRun {
       void updateWidget(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos);
       void rotateWidget(const glm::ivec2& pos);
       void translateWidget(const glm::ivec2& pos);
+      void translateAxisWidget(const glm::ivec2& pos, bool reverse);
       void scaleWidget(const glm::ivec2& pos);
       void scaleAxisWidget(const glm::ivec2 &pos);
       uint32_t getSelectIDForName(const std::string& name);
@@ -340,9 +341,10 @@ namespace SCIRun {
       glm::vec3                                        mFlipAxisWorld      {};
       int                                              mScaleAxisIndex     {};
       glm::mat4                                        mScaleTrans         {};
-      glm::vec3                                        mOriginToSpos       {glm::vec3(0,0,0)};
-      glm::vec3                                        mOriginView         {glm::vec3(0,0,0)};
-      glm::vec2                                        mSelectedPos        {glm::vec2(0,0)};
+      glm::vec3                                        mOriginToSpos       {glm::vec3(0)};
+      glm::vec3                                        mOriginView         {glm::vec3(0)};
+      glm::vec2                                        mSelectedPos        {glm::vec2(0)};
+      glm::vec3                                        mTranslationVector  {glm::vec3(0)};
       float                                            mSelectedW          {0};
       float                                            mSelectedDepth      {0};
       float                                            mSelectedRadius     {0};

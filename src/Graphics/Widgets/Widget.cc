@@ -108,6 +108,11 @@ glm::vec3 WidgetBase::getFlipVector()
   return flipAxis_;
 }
 
+glm::vec3 WidgetBase::getTranslationVector()
+{
+  return translationAxis_;
+}
+
 int WidgetBase::getScaleAxisIndex()
 {
   return scaleAxisIndex_;

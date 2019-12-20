@@ -45,6 +45,8 @@ namespace SCIRun
       {
         NONE,
         TRANSLATE,
+        TRANSLATE_AXIS,
+        TRANSLATE_AXIS_REVERSE,
         ROTATE,
         SCALE,
         SCALE_AXIS,
@@ -72,9 +74,11 @@ namespace SCIRun
         void setToTranslate(MouseButton btn);
         void addMovementMap(std::pair<WidgetMovement, std::vector<std::string> > map);
         glm::vec3 getFlipVector();
+        glm::vec3 getTranslationVector();
         const glm::mat4 getScaleTransform();
         int getScaleAxisIndex();
         std::vector<WidgetMovement> getMovementTypes();
+        glm::vec3 translationAxis_;
 
         glm::vec3 origin_;
         std::vector<std::string> connectedIds_;
