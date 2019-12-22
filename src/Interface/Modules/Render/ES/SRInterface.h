@@ -351,8 +351,9 @@ namespace SCIRun {
       gen::Transform                                   mWidgetTransform    {};
       std::vector<Graphics::Datatypes::WidgetMovement> mWidgetMovementTypes{};
       std::vector<std::string>                         mConnectedWidgets   {};
-      std::vector<std::pair<Graphics::Datatypes::WidgetMovement,
-                         std::vector<std::string> > >  mMoveMaps           {};
+      std::unordered_map<Graphics::Datatypes::WidgetMovement,
+                         std::vector<std::pair<Graphics::Datatypes::WidgetMovement,
+                         std::vector<std::string>>>>   mMoveMap            {};
 
       size_t                                           mScreenWidth        {640};    // Screen width in pixels.
       size_t                                           mScreenHeight       {480};    // Screen height in pixels.

@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 
+#include <unordered_map>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/share.h>
@@ -72,7 +73,7 @@ namespace SCIRun
         void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToRotate(MouseButton btn);
         void setToTranslate(MouseButton btn);
-        void addMovementMap(std::pair<WidgetMovement, std::vector<std::string> > map);
+        void addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string> > moves);
         glm::vec3 getFlipVector();
         glm::vec3 getTranslationVector();
         const glm::mat4 getScaleTransform();
@@ -82,7 +83,8 @@ namespace SCIRun
 
         glm::vec3 origin_;
         std::vector<std::string> connectedIds_;
-        std::vector<std::pair<WidgetMovement, std::vector<std::string> > > moveMaps_;
+        std::unordered_map<WidgetMovement,
+                           std::vector<std::pair<WidgetMovement, std::vector<std::string>>>> moveMap_;
         void addInitialId();
 
       protected:

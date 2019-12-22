@@ -147,20 +147,20 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
       }
 
   for(auto& w : translateWidgets_)
-    w->addMovementMap(std::make_pair(WidgetMovement::TRANSLATE, allIds_));
+    w->addMovementMap(WidgetMovement::TRANSLATE, std::make_pair(WidgetMovement::TRANSLATE, allIds_));
 
   for(auto& w : rotateWidgets_)
-    w->addMovementMap(std::make_pair(WidgetMovement::ROTATE, allIds_));
+    w->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, allIds_));
 
   for(auto& w : scaleWidgets_)
-    w->addMovementMap(std::make_pair(WidgetMovement::SCALE, allIds_));
+    w->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, allIds_));
 
   for(int d = 0; d < DIMENSIONS_; ++d)
     for(int sign = 0; sign < 2; ++sign)
       for(auto &w : scaleAxisWidgets_[d][sign])
         for (auto &m : scaleAxisMaps_[d][sign])
         {
-          w->addMovementMap(m);
+          w->addMovementMap(WidgetMovement::SCALE_AXIS, m);
           w->translationAxis_ = glm::vec3(eigvecs_[d][0], eigvecs_[d][1], eigvecs_[d][2]);
         }
 }

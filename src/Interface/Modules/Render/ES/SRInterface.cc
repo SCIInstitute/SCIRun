@@ -603,7 +603,7 @@ namespace SCIRun {
               mTranslationVector = obj->getTranslationVector();
               mWidgetMovementTypes = obj->getMovementTypes();
               mConnectedWidgets = obj->connectedIds_;
-              mMoveMaps = obj->moveMaps_;
+              mMoveMap = obj->moveMap_;
               mScaleTrans = obj->getScaleTransform();
             }
           }
@@ -721,36 +721,39 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
     {
-      for(auto pair : mMoveMaps)
+      for(auto move : mMoveMap)
       {
-        // switch(mWidgetMovementTypes[btn])
-        switch(pair.first)
+        for(auto pair : move.second)
         {
-        case WidgetMovement::NONE:
-          return; // No reason to update
-        case WidgetMovement::TRANSLATE:
-          translateWidget(pos);
-          break;
-        case WidgetMovement::TRANSLATE_AXIS:
-          translateAxisWidget(pos, false);
-          break;
-        case WidgetMovement::TRANSLATE_AXIS_REVERSE:
-          translateAxisWidget(pos, true);
-          break;
-        case WidgetMovement::ROTATE:
-          rotateWidget(pos);
-          break;
-        case WidgetMovement::SCALE:
-          scaleWidget(pos);
-          break;
-        case WidgetMovement::SCALE_AXIS:
-          scaleAxisWidget(pos);
-          break;
-        case WidgetMovement::SCALE_AXIS_HALF:
-          scaleAxisWidget(pos);
-          break;
+          // switch(mWidgetMovementTypes[btn])
+          switch(pair.first)
+          {
+          case WidgetMovement::NONE:
+            return; // No reason to update
+          case WidgetMovement::TRANSLATE:
+            translateWidget(pos);
+            break;
+          case WidgetMovement::TRANSLATE_AXIS:
+            translateAxisWidget(pos, false);
+            break;
+          case WidgetMovement::TRANSLATE_AXIS_REVERSE:
+            translateAxisWidget(pos, true);
+            break;
+          case WidgetMovement::ROTATE:
+            rotateWidget(pos);
+            break;
+          case WidgetMovement::SCALE:
+            scaleWidget(pos);
+            break;
+          case WidgetMovement::SCALE_AXIS:
+            scaleAxisWidget(pos);
+            break;
+          case WidgetMovement::SCALE_AXIS_HALF:
+            scaleAxisWidget(pos);
+            break;
+          }
+          modifyWidgets(pair.second);
         }
-        modifyWidgets(pair.second);
       }
     }
 
@@ -857,7 +860,7 @@ namespace SCIRun {
       glm::mat4 scale = glm::scale(mWidgetTransform.transform, scaleVec);
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
+      mWidgetTransform.transform = scale * translation;
 
       if(negativeScale)
         mWidgetTransform.transform = flip * mWidgetTransform.transform;
