@@ -68,6 +68,8 @@ namespace SCIRun
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
+        void setTranslationAxis(const Core::Geometry::Vector& v);
+        void setToTranslationAxis(MouseButton btn, const Core::Geometry::Vector& v);
         void setToScale(MouseButton btn, const Core::Geometry::Vector& flipAxis);
         void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);

@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/BoxWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include "Graphics/Widgets/Widget.h"
 #include "glm/gtx/string_cast.hpp"
 
 using namespace SCIRun;
@@ -146,8 +147,13 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
         scaleAxisMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS, translateIdsBySide_[i]));
       }
 
-  for(auto& w : translateWidgets_)
-    w->addMovementMap(WidgetMovement::TRANSLATE, std::make_pair(WidgetMovement::TRANSLATE, allIds_));
+  for(auto &w : translateWidgets_)
+  {
+    w->addMovementMap(WidgetMovement::TRANSLATE,
+                      std::make_pair(WidgetMovement::TRANSLATE, allIds_));
+    w->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+                      std::make_pair(WidgetMovement::TRANSLATE_AXIS, allIds_));
+  }
 
   for(auto& w : rotateWidgets_)
     w->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, allIds_));
@@ -161,7 +167,7 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
         for (auto &m : scaleAxisMaps_[d][sign])
         {
           w->addMovementMap(WidgetMovement::SCALE_AXIS, m);
-          w->translationAxis_ = glm::vec3(eigvecs_[d][0], eigvecs_[d][1], eigvecs_[d][2]);
+          w->setTranslationAxis(eigvecs_[d]);
         }
 }
 
@@ -246,6 +252,8 @@ void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widge
         corners_[point_indicies[i]], corners_[point_indicies[i + 1]], center_,
         bbox_, resolution_));
     widgets_[++widgetsIndex_]->setToTranslate(MouseButton::LEFT);
+    widgets_[widgetsIndex_]->setToTranslationAxis(MouseButton::RIGHT,
+                               (corners_[point_indicies[i]] - corners_[point_indicies[i + 1]]).normal());
     translateWidgets_.push_back(widgets_[widgetsIndex_]);
   }
   translateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string> >());

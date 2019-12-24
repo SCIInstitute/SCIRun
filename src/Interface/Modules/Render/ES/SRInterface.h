@@ -150,7 +150,7 @@ namespace SCIRun {
       void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
       gen::Transform &getWidgetTransform() {return mWidgetTransform;}
-      void setSelectedWidgetToRed(std::vector<Graphics::Datatypes::WidgetHandle> objList);
+      void setSelectedWidgetToColor(glm::vec3 col, std::vector<Graphics::Datatypes::WidgetHandle> objList);
       void initializeWidgetMovement(Graphics::Datatypes::MouseButton btn, const glm::ivec2 &pos);
 
       //---------------- Clipping Planes -----------------------------------------------------------

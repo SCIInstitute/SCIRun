@@ -193,7 +193,18 @@ namespace SCIRun {
         if(widgetSelected_ && mWidgetMovementTypes[btn] != WidgetMovement::NONE)
         {
           initializeWidgetMovement(btn, pos);
-          setSelectedWidgetToRed(objList);
+          switch(btn)
+          {
+          case MouseButton::LEFT:
+            setSelectedWidgetToColor(glm::vec3(1.0, 0.0, 0.0), objList);
+            break;
+          case MouseButton::MIDDLE:
+            setSelectedWidgetToColor(glm::vec3(0.0, 1.0, 0.0), objList);
+            break;
+          case MouseButton::RIGHT:
+            setSelectedWidgetToColor(glm::vec3(0.0, 0.0, 1.0), objList);
+            break;
+          }
           updateWidget(btn, pos);
         }
         for (auto &it : mEntityList)
@@ -361,7 +372,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::setSelectedWidgetToRed(std::vector<WidgetHandle> objList)
+    void SRInterface::setSelectedWidgetToColor(glm::vec3 col, std::vector<WidgetHandle> objList)
     {
       std::string selName = getSelection();
       if (selName != "")
@@ -370,7 +381,7 @@ namespace SCIRun {
             for (auto &pass : obj->passes())
             {
               pass.addUniform("uAmbientColor", glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-              pass.addUniform("uDiffuseColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+              pass.addUniform("uDiffuseColor", glm::vec4(col, 1.0f));
               pass.addUniform("uSpecularColor", glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
             }
     }
@@ -722,11 +733,8 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
     {
-      for(auto move : mMoveMap)
-      {
-        for(auto pair : move.second)
+        for(auto pair : mMoveMap[mWidgetMovementTypes[btn]])
         {
-          // switch(mWidgetMovementTypes[btn])
           switch(pair.first)
           {
           case WidgetMovement::NONE:
@@ -755,7 +763,6 @@ namespace SCIRun {
           }
           modifyWidgets(pair.second);
         }
-      }
     }
 
     //----------------------------------------------------------------------------------------------

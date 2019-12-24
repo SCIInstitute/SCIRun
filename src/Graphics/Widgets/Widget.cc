@@ -69,6 +69,18 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
+void WidgetBase::setTranslationAxis(const Vector& v)
+{
+  translationAxis_ = glm::vec3(v.x(), v.y(), v.z());
+}
+
+void WidgetBase::setToTranslationAxis(MouseButton btn, const Vector& v)
+{
+  if(btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::TRANSLATE_AXIS;
+  translationAxis_ = glm::vec3(v.x(), v.y(), v.z());
+}
+
 void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex)
 {
   if(btn == MouseButton::NONE) return;
