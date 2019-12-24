@@ -338,6 +338,7 @@ namespace SCIRun {
       GLfloat                                          mDepth              {};
       bool                                             mSelectionHack      {false};
       glm::vec3                                        mOriginWorld        {};
+      glm::vec3                                        mScaleAxisWorld     {};
       glm::vec3                                        mFlipAxisWorld      {};
       int                                              mScaleAxisIndex     {};
       glm::mat4                                        mScaleTrans         {};

@@ -69,11 +69,12 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& flipAxis, glm::mat4 scaleTrans, int scaleAxisIndex)
+void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex)
 {
   if(btn == MouseButton::NONE) return;
   movementType_[btn] = WidgetMovement::SCALE_AXIS;
-  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  scaleAxis_ = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  flipAxis_ = scaleAxis_;
   scaleAxisIndex_ = scaleAxisIndex;
   scaleTrans_ = scaleTrans;
 }
@@ -104,6 +105,11 @@ void WidgetBase::setToTranslate(MouseButton btn)
 {
   if (btn == MouseButton::NONE) return;
   movementType_[btn] = WidgetMovement::TRANSLATE;
+}
+
+glm::vec3 WidgetBase::getScaleVector()
+{
+  return scaleAxis_;
 }
 
 glm::vec3 WidgetBase::getFlipVector()

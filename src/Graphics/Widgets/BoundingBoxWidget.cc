@@ -294,7 +294,7 @@ void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGene
 void BoundingBoxWidget::addFaceSphere(const Core::GeometryIDGenerator& idGenerator,
                                       int widgetNum, int widgetIter)
 {
-  for (int i = 0; i < FACES_; i++)
+  for (int i = 0; i < FACES_; ++i)
   {
     std::string name = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widgetNum, widgetsIndex_);
     widgets_.push_back(WidgetFactory::createSphere(idGenerator, name,
@@ -319,18 +319,20 @@ void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGener
   for(auto &v : scaleAxisWidgets_)
     v.resize(2, std::vector<WidgetHandle>());
 
-  for (int i = 0; i < FACES_; i++)
-  {
-    std::string name = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widgetNum, widgetsIndex_);
-    widgets_.push_back(WidgetFactory::createDisk(idGenerator, name,
-                                                 smallestEigval_ * scale_ * diskRadius_, resizeCol_,
-                                                 facesStart_[i], facesEnd_[i], center_, bbox_,
-                                                 resolution_));
-    widgets_[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, eigvecs_[i/2],
-                                              scaleTrans, i/2);
-    // scaleAxisWidgets_[widgetsIndex_]->setToScaleAxisHalf(MouseButton::RIGHT, eigvecs_[axisNum], scaleTrans, axisNum);
-    scaleAxisWidgets_[i/2][i%2].push_back(widgets_[widgetsIndex_]);
-  }
+  for (int d = 0; d < DIMENSIONS_; ++d)
+    for (int sign = 0; sign < 2; ++sign)
+    {
+      float signMultiplier = (sign == 0) ? 1.0 : -1.0;
+      std::string name = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widgetNum, widgetsIndex_);
+      widgets_.push_back(WidgetFactory::createDisk(idGenerator, name,
+                                                   smallestEigval_ * scale_ * diskRadius_, resizeCol_,
+                                                   facesStart_[2*d + sign], facesEnd_[2*d + sign], center_, bbox_,
+                                                   resolution_));
+      widgets_[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, signMultiplier * scaledEigvecs_[d],
+                                                scaleTrans, d);
+      // scaleAxisWidgets_[widgetsIndex_]->setToScaleAxisHalf(MouseButton::RIGHT, eigvecs_[axisNum], scaleTrans, axisNum);
+      scaleAxisWidgets_[d][sign].push_back(widgets_[widgetsIndex_]);
+    }
 }
 
 void BoundingBoxWidget::getTranslateIds()

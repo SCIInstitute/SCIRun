@@ -598,6 +598,7 @@ namespace SCIRun {
               widgetSelected_ = true;
 
               mOriginWorld = obj->origin_;
+              mScaleAxisWorld = obj->getScaleVector();
               mFlipAxisWorld = obj->getFlipVector();
               mScaleAxisIndex = obj->getScaleAxisIndex();
               mTranslationVector = obj->getTranslationVector();
@@ -777,7 +778,7 @@ namespace SCIRun {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
+      glm::vec2 transVec = (spos - mSelectedPos) * mSelectedW;
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
     }
@@ -789,7 +790,7 @@ namespace SCIRun {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
+      glm::vec2 transVec = (spos - mSelectedPos) * mSelectedW;
       mWidgetTransform = gen::Transform();
       glm::vec3 worldPos = (glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz();
       if(reverse)
@@ -805,23 +806,23 @@ namespace SCIRun {
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
       currentSposView.z = -mSelectedW;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
+      glm::vec3 originToCurrentSpos = currentSposView - mOriginView;
 
-      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
-        * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
+      float initLen = glm::length(mOriginToSpos);
+      float scalingFactor = glm::dot(originToCurrentSpos/initLen, mOriginToSpos/initLen);
 
       // Flip if negative to avoid inverted normals
       glm::mat4 flip;
-      bool negativeScale = scaling_factor < 0.0;
+      bool negativeScale = scalingFactor < 0.0;
       if(negativeScale)
       {
         flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
-        scaling_factor = -scaling_factor;
+        scalingFactor = -scalingFactor;
       }
 
       mWidgetTransform = gen::Transform();
       glm::mat4 translation = glm::translate(-mOriginWorld);
-      glm::mat4 scale = glm::scale(mWidgetTransform.transform, glm::vec3(scaling_factor));
+      glm::mat4 scale = glm::scale(mWidgetTransform.transform, glm::vec3(scalingFactor));
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
       mWidgetTransform.transform = scale * translation;
@@ -839,20 +840,22 @@ namespace SCIRun {
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
       currentSposView.z = -mSelectedW;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
+      glm::vec3 originToCurrentSpos = currentSposView - mOriginView;
+      glm::vec3 scaleAxisView = (mCamera->getWorldToView() * glm::vec4(mScaleAxisWorld, 0.0)).xyz();
+      glm::vec3 shiftedOriginToCurrentSpos = originToCurrentSpos - (mOriginToSpos - scaleAxisView);
 
-      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
-        * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
+      float initLen = glm::length(scaleAxisView);
+      float scalingFactor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
       glm::vec3 scaleVec = glm::vec3(1.0);
-      scaleVec[mScaleAxisIndex] = scaling_factor;
+      scaleVec[mScaleAxisIndex] = scalingFactor;
 
       // Flip if negative to avoid inverted normals
       glm::mat4 flip;
-      bool negativeScale = scaling_factor < 0.0;
+      bool negativeScale = scalingFactor < 0.0;
       if(negativeScale)
       {
         flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
-        scaling_factor = -scaling_factor;
+        scalingFactor = -scalingFactor;
       }
 
       mWidgetTransform = gen::Transform();
@@ -860,7 +863,7 @@ namespace SCIRun {
       glm::mat4 scale = glm::scale(mWidgetTransform.transform, scaleVec);
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = scale * translation;
+      mWidgetTransform.transform = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
 
       if(negativeScale)
         mWidgetTransform.transform = flip * mWidgetTransform.transform;

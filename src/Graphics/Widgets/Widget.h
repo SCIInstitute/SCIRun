@@ -75,6 +75,7 @@ namespace SCIRun
         void setToTranslate(MouseButton btn);
         void addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string> > moves);
         glm::vec3 getFlipVector();
+        glm::vec3 getScaleVector();
         glm::vec3 getTranslationVector();
         const glm::mat4 getScaleTransform();
         int getScaleAxisIndex();
@@ -91,6 +92,7 @@ namespace SCIRun
         Core::Geometry::Point position_;
       private:
         std::vector<WidgetMovement> movementType_;
+        glm::vec3 scaleAxis_;
         glm::vec3 flipAxis_;
         int scaleAxisIndex_;
         glm::mat4 scaleTrans_;
