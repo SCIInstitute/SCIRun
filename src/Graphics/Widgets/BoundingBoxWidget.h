@@ -83,6 +83,7 @@ namespace SCIRun {
         std::vector<std::pair<WidgetMovement, std::vector<std::string>>> rotateMap_;
         std::vector<std::pair<WidgetMovement, std::vector<std::string>>> scaleMap_;
         std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>> scaleAxisMaps_;
+        std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>> scaleAxisUnidirectionalMaps_;
         const int DIMENSIONS_ = 3;
         const int EDGES_ = 12;
         const int CORNERS_ = 8;

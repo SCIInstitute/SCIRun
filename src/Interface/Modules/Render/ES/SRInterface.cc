@@ -735,78 +735,95 @@ namespace SCIRun {
     {
         for(auto pair : mMoveMap[mWidgetMovementTypes[btn]])
         {
+          glm::mat4 trans;
           switch(pair.first)
           {
           case WidgetMovement::NONE:
             return; // No reason to update
           case WidgetMovement::TRANSLATE:
-            translateWidget(pos);
+            trans = translateWidget(pos);
             break;
           case WidgetMovement::TRANSLATE_AXIS:
-            translateAxisWidget(pos, false);
+            trans = translateAxisWidget(pos, false);
+            break;
+          case WidgetMovement::TRANSLATE_AXIS_HALF:
+            trans = translateAxisWidget(pos, false, 0.5);
             break;
           case WidgetMovement::TRANSLATE_AXIS_REVERSE:
-            translateAxisWidget(pos, true);
+            trans = translateAxisWidget(pos, true);
             break;
           case WidgetMovement::ROTATE:
-            rotateWidget(pos);
+            trans = rotateWidget(pos);
             break;
           case WidgetMovement::SCALE:
-            scaleWidget(pos);
+            trans = scaleWidget(pos);
             break;
           case WidgetMovement::SCALE_AXIS:
-            scaleAxisWidget(pos);
+            trans = scaleAxisWidget(pos);
             break;
-          case WidgetMovement::SCALE_AXIS_HALF:
-            scaleAxisWidget(pos);
+          case WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL:
+          {
+            auto scaleTrans = scaleAxisWidget(pos, 0.5);
+            auto translateTrans = translateAxisWidget(pos, false, 0.5);
+            trans = translateTrans * scaleTrans;
             break;
           }
-          modifyWidgets(pair.second);
+          }
+          auto genTrans = gen::Transform();
+          genTrans.transform = trans;
+          if(pair.first == mWidgetMovementTypes[btn])
+            mWidgetTransform = genTrans;
+          modifyWidgets(genTrans, pair.second);
         }
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::modifyWidgets(std::vector<std::string> ids)
+    void SRInterface::modifyWidgets(gen::Transform trans, std::vector<std::string> ids)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      // for (auto &widgetId : mConnectedWidgets)
       for (auto &id : ids)
       {
         auto component = contTrans->getComponent(mEntityIdMap[id]);
         if (component.first != nullptr)
-          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+          contTrans->modifyIndex(trans, component.second, 0);
       }
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::translateWidget(const glm::ivec2& pos)
+    glm::mat4 SRInterface::translateWidget(const glm::ivec2& pos, float multiplier)
     {
       auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 transVec = (spos - mSelectedPos) * mSelectedW;
-      mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
+      glm::vec2 transVec = multiplier * (spos - mSelectedPos) * mSelectedW;
+      glm::mat4 trans = glm::mat4(1.0);
+
+      glm::vec3 newPos = (glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz();
+      trans[3] = glm::vec4(newPos, 1.0);
+      return trans;
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::translateAxisWidget(const glm::ivec2& pos, bool reverse)
+    glm::mat4 SRInterface::translateAxisWidget(const glm::ivec2& pos, bool reverse, float multiplier)
     {
       auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 transVec = (spos - mSelectedPos) * mSelectedW;
-      mWidgetTransform = gen::Transform();
+      glm::vec2 transVec = multiplier * (spos - mSelectedPos) * mSelectedW;
+      glm::mat4 trans = glm::mat4(1.0);
       glm::vec3 worldPos = (glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz();
       if(reverse)
         worldPos = -worldPos;
-      mWidgetTransform.setPosition(glm::dot(worldPos, mTranslationVector) * mTranslationVector);
+
+      glm::vec3 newPos = glm::dot(worldPos, mTranslationVector) * mTranslationVector;
+      trans[3] = glm::vec4(newPos, 1.0);
+      return trans;
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::scaleWidget(const glm::ivec2& pos)
+    glm::mat4 SRInterface::scaleWidget(const glm::ivec2& pos, float multiplier)
     {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
@@ -816,7 +833,7 @@ namespace SCIRun {
       glm::vec3 originToCurrentSpos = currentSposView - mOriginView;
 
       float initLen = glm::length(mOriginToSpos);
-      float scalingFactor = glm::dot(originToCurrentSpos/initLen, mOriginToSpos/initLen);
+      float scalingFactor = (multiplier * glm::dot(originToCurrentSpos/initLen, mOriginToSpos/initLen)) + (1.0-multiplier);
 
       // Flip if negative to avoid inverted normals
       glm::mat4 flip;
@@ -827,20 +844,21 @@ namespace SCIRun {
         scalingFactor = -scalingFactor;
       }
 
-      mWidgetTransform = gen::Transform();
+      glm::mat4 trans = glm::mat4(1.0);
       glm::mat4 translation = glm::translate(-mOriginWorld);
-      glm::mat4 scale = glm::scale(mWidgetTransform.transform, glm::vec3(scalingFactor));
+      glm::mat4 scale = glm::scale(trans, glm::vec3(scalingFactor));
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = scale * translation;
+      trans = scale * translation;
 
       if(negativeScale)
-        mWidgetTransform.transform = flip * mWidgetTransform.transform;
+        trans = flip * trans;
 
-      mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
+      trans = reverse_translation * trans;
+      return trans;
     }
 
-    void SRInterface::scaleAxisWidget(const glm::ivec2& pos)
+    glm::mat4 SRInterface::scaleAxisWidget(const glm::ivec2& pos, float multiplier)
     {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
@@ -854,7 +872,7 @@ namespace SCIRun {
       float initLen = glm::length(scaleAxisView);
       float scalingFactor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
       glm::vec3 scaleVec = glm::vec3(1.0);
-      scaleVec[mScaleAxisIndex] = scalingFactor;
+      scaleVec[mScaleAxisIndex] = (multiplier * scalingFactor) + (1.0-multiplier);
 
       // Flip if negative to avoid inverted normals
       glm::mat4 flip;
@@ -865,30 +883,31 @@ namespace SCIRun {
         scalingFactor = -scalingFactor;
       }
 
-      mWidgetTransform = gen::Transform();
+      glm::mat4 trans = glm::mat4(1.0);
       glm::mat4 translation = glm::translate(-mOriginWorld);
-      glm::mat4 scale = glm::scale(mWidgetTransform.transform, scaleVec);
+      glm::mat4 scale = glm::scale(trans, scaleVec);
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
+      trans = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
 
       if(negativeScale)
-        mWidgetTransform.transform = flip * mWidgetTransform.transform;
+        trans = flip * trans;
 
-      mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
+      trans = reverse_translation * trans;
+      return trans;
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::rotateWidget(const glm::ivec2& pos)
+    glm::mat4 SRInterface::rotateWidget(const glm::ivec2& pos)
     {
-      if(!widgetBall_) return;
+      glm::mat4 trans = glm::mat4(1.0);
+      if(!widgetBall_) return trans;
 
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                    -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
       glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
       widgetBall_->drag(sposView);
-
 
       glm::quat rotationView = widgetBall_->getQuat();
       glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
@@ -899,8 +918,8 @@ namespace SCIRun {
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
       glm::mat4 rotation = glm::mat4_cast(rotationWorld);
 
-      mWidgetTransform = gen::Transform();
-      mWidgetTransform.transform = reverse_translation * rotation * translation;
+      trans = reverse_translation * rotation * translation;
+      return trans;
     }
 
 

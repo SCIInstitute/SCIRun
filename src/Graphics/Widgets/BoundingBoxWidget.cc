@@ -115,13 +115,15 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
   getScaleAxisIds();
 
 
-  scaleAxisMaps_.resize(DIMENSIONS_, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string> > > >());
+  scaleAxisMaps_.resize(DIMENSIONS_, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
   for(auto &v : scaleAxisMaps_)
-    v.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string> > >());
+    v.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
   for(int i = 0; i < DIMENSIONS_; ++i)
     for(int sign = 0; sign < 2; ++sign)
       for(int j = 0; j < DIMENSIONS_; ++j)
       {
+        scaleAxisMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS,
+                                                         translateIdsBySide_[i]));
         if(i == j)
         {
           WidgetMovement plusMove, minusMove;
@@ -144,8 +146,27 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
           scaleAxisMaps_[i][sign].push_back(std::make_pair(plusMove, scaleIdsByFace_[j][0]));
           scaleAxisMaps_[i][sign].push_back(std::make_pair(minusMove, scaleIdsByFace_[j][1]));
         }
-        scaleAxisMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS, translateIdsBySide_[i]));
       }
+
+  scaleAxisUnidirectionalMaps_.resize(DIMENSIONS_, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
+  for(auto &v : scaleAxisUnidirectionalMaps_)
+    v.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
+  for(int i = 0; i < DIMENSIONS_; ++i)
+    for(int sign = 0; sign < 2; ++sign)
+    {
+      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, translateIdsBySide_[i]));
+      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, scaleAxisIds_[i][sign]));
+      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, translateIdsByFace_[i][sign]));
+      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, rotateIdsByFace_[i][sign]));
+      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, scaleIdsByFace_[i][sign]));
+      for(int j = 0; j < DIMENSIONS_; ++j)
+        if(i != j)
+          for(int l = 0; l < 2; ++l)
+          {
+            scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF, scaleAxisIds_[j][l]));
+            scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF, rotateIdsByFace_[j][l]));
+          }
+    }
 
   for(auto &w : translateWidgets_)
   {
@@ -164,11 +185,18 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
   for(int d = 0; d < DIMENSIONS_; ++d)
     for(int sign = 0; sign < 2; ++sign)
       for(auto &w : scaleAxisWidgets_[d][sign])
+      {
         for (auto &m : scaleAxisMaps_[d][sign])
         {
           w->addMovementMap(WidgetMovement::SCALE_AXIS, m);
           w->setTranslationAxis(eigvecs_[d]);
         }
+        for (auto &m : scaleAxisUnidirectionalMaps_[d][sign])
+        {
+          w->addMovementMap(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, m);
+          w->setTranslationAxis(eigvecs_[d]);
+        }
+      }
 }
 
 void BoundingBoxWidget::getEigenValuesAndEigenVectors()
@@ -232,14 +260,14 @@ void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widge
     4, 5,  4, 6,  6, 7,  5, 7,
     0, 4,  1, 5,  2, 6,  3, 7};
 
-  std::vector<std::vector<std::vector<uint32_t> > > face_indices =
+  std::vector<std::vector<std::vector<uint32_t>>> face_indices =
     {{{0, 1, 2, 3},
       {4, 5, 6, 7}},
      {{0, 4, 8, 9},
       {2, 6, 10, 11}},
      {{1, 5, 8, 10},
       {3, 7, 9, 11}}};
-  std::vector<std::vector<uint32_t> > side_indices =
+  std::vector<std::vector<uint32_t>> side_indices =
     {{8, 9, 10, 11},
      {1, 3, 5, 7},
      {0, 2, 4, 6}};
@@ -273,7 +301,7 @@ void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widge
 
 void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGenerator, int widgetNum, int widgetIter)
 {
-  std::vector<std::vector<std::vector<uint32_t> > > corner_indices_by_axis =
+  std::vector<std::vector<std::vector<uint32_t>>> corner_indices_by_axis =
     {{{0, 1, 2, 3},
       {4, 5, 6, 7}},
      {{0, 1, 4, 5},
@@ -338,7 +366,9 @@ void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGener
                                                    resolution_));
       widgets_[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, signMultiplier * scaledEigvecs_[d],
                                                 scaleTrans, d);
-      // scaleAxisWidgets_[widgetsIndex_]->setToScaleAxisHalf(MouseButton::RIGHT, eigvecs_[axisNum], scaleTrans, axisNum);
+      widgets_[widgetsIndex_]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
+                                                            signMultiplier * scaledEigvecs_[d],
+                                                            scaleTrans, d);
       scaleAxisWidgets_[d][sign].push_back(widgets_[widgetsIndex_]);
     }
 }

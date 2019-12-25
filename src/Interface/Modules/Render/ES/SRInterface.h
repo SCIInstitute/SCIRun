@@ -212,14 +212,14 @@ namespace SCIRun {
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
       //---------------- Widgets -------------------------------------------------------------------
-      void modifyWidgets(std::vector<std::string> ids);
+      void modifyWidgets(gen::Transform, std::vector<std::string> ids);
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos);
-      void rotateWidget(const glm::ivec2& pos);
-      void translateWidget(const glm::ivec2& pos);
-      void translateAxisWidget(const glm::ivec2& pos, bool reverse);
-      void scaleWidget(const glm::ivec2& pos);
-      void scaleAxisWidget(const glm::ivec2 &pos);
+      glm::mat4 rotateWidget(const glm::ivec2& pos);
+      glm::mat4 translateWidget(const glm::ivec2& pos, float multiplier = 1.0);
+      glm::mat4 translateAxisWidget(const glm::ivec2& pos, bool reverse, float multiplier = 1.0);
+      glm::mat4 scaleWidget(const glm::ivec2& pos, float multiplier = 1.0);
+      glm::mat4 scaleAxisWidget(const glm::ivec2 &pos, float multiplier = 1.0);
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);

@@ -47,11 +47,12 @@ namespace SCIRun
         NONE,
         TRANSLATE,
         TRANSLATE_AXIS,
+        TRANSLATE_AXIS_HALF,
         TRANSLATE_AXIS_REVERSE,
         ROTATE,
         SCALE,
         SCALE_AXIS,
-        SCALE_AXIS_HALF
+        SCALE_AXIS_UNIDIRECTIONAL,
       };
       enum MouseButton {
         NONE = 0,
@@ -72,6 +73,7 @@ namespace SCIRun
         void setToTranslationAxis(MouseButton btn, const Core::Geometry::Vector& v);
         void setToScale(MouseButton btn, const Core::Geometry::Vector& flipAxis);
         void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToRotate(MouseButton btn);
         void setToTranslate(MouseButton btn);

@@ -91,6 +91,18 @@ void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::m
   scaleTrans_ = scaleTrans;
 }
 
+void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& scaleAxis,
+                                              glm::mat4 scaleTrans, int scaleAxisIndex)
+{
+  if(btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL;
+  scaleAxis_ = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  flipAxis_ = scaleAxis_;
+  translationAxis_ = scaleAxis_;
+  scaleAxisIndex_ = scaleAxisIndex;
+  scaleTrans_ = scaleTrans;
+}
+
 void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &flipAxis,
                                 glm::mat4 scaleTrans, int scaleAxisIndex) {
   if (btn == MouseButton::NONE)
