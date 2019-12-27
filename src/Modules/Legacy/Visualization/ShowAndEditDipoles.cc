@@ -297,7 +297,7 @@ void ShowAndEditDipoles::generateGeomsList()
   geoms_.clear();
   for(const auto& arrow : arrows_)
   {
-    for(const auto& widget : arrow->widgets_)
+    for(const auto& widget : arrow->mWidgets)
       geoms_.push_back(widget);
   }
 

@@ -93,7 +93,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   Point center = bmin + dir/2.0 * scale;
 
   // Create glyphs
-  widgets_.push_back(WidgetFactory::createSphere(
+  mWidgets.push_back(WidgetFactory::createSphere(
                                 idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, widget_num, widget_iter),
                                 sphereRadius_ * scale,
@@ -102,14 +102,14 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                 bmin,
                                 bbox,
                                 resolution));
-  widgets_[0]->setToTranslate(MouseButton::LEFT);
+  mWidgets[0]->setToTranslate(MouseButton::LEFT);
 
   if(show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (dir * scale * sphereRadius_);
 
-    widgets_.push_back(WidgetFactory::createCylinder(
+    mWidgets.push_back(WidgetFactory::createCylinder(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, widget_num, widget_iter),
                                   cylinderRadius_ * scale,
@@ -119,9 +119,9 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bmin,
                                   bbox,
                                   resolution));
-    widgets_[1]->setToTranslate(MouseButton::LEFT);
+    mWidgets[1]->setToTranslate(MouseButton::LEFT);
 
-    widgets_.push_back(WidgetFactory::createCone(
+    mWidgets.push_back(WidgetFactory::createCone(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, widget_num, widget_iter),
                                   coneRadius_ * scale,
@@ -132,12 +132,12 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   true,
                                   resolution));
-    widgets_[2]->setToRotate(MouseButton::LEFT);
+    mWidgets[2]->setToRotate(MouseButton::LEFT);
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
     Point dp2 = diskPos + diskWidth_ * dir * scale;
-    widgets_.push_back(WidgetFactory::createDisk(
+    mWidgets.push_back(WidgetFactory::createDisk(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, widget_num, widget_iter),
                                   diskRadius_ * scale,
@@ -148,17 +148,17 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   resolution));
     Vector flipVec = dir.getArbitraryTangent().normal();
-    widgets_[3]->setToScale(MouseButton::LEFT, flipVec);
+    mWidgets[3]->setToScale(MouseButton::LEFT, flipVec);
   }
 
   std::vector<std::string> geom_ids;
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    geom_ids.push_back(widgets_[i]->uniqueID());
+    geom_ids.push_back(mWidgets[i]->uniqueID());
 
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
   {
-    widgets_[i]->connectedIds_ = geom_ids;
-    addToList(widgets_[i]);
+    // mWidgets[i]->connectedIds_ = geom_ids;
+    addToList(mWidgets[i]);
   }
 }
 

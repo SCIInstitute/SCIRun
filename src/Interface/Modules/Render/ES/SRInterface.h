@@ -217,9 +217,12 @@ namespace SCIRun {
       void updateWidget(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos);
       glm::mat4 rotateWidget(const glm::ivec2& pos);
       glm::mat4 translateWidget(const glm::ivec2& pos, float multiplier = 1.0);
-      glm::mat4 translateAxisWidget(const glm::ivec2& pos, bool reverse, float multiplier = 1.0);
-      glm::mat4 scaleWidget(const glm::ivec2& pos, float multiplier = 1.0);
-      glm::mat4 scaleAxisWidget(const glm::ivec2 &pos, float multiplier = 1.0);
+      glm::mat4 translateAxisWidget(Graphics::Datatypes::WidgetInfo info, const glm::ivec2& pos,
+                                    bool reverse, float multiplier = 1.0);
+      glm::mat4 scaleWidget(Graphics::Datatypes::WidgetInfo info, const glm::ivec2& pos,
+                            bool negate, float multiplier = 1.0);
+      glm::mat4 scaleAxisWidget(Graphics::Datatypes::WidgetInfo info, const glm::ivec2 &pos,
+                                bool negate, float multiplier = 1.0);
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
@@ -337,11 +340,8 @@ namespace SCIRun {
       std::string                                      mSelected           {};       // Current selection
       GLfloat                                          mDepth              {};
       bool                                             mSelectionHack      {false};
+      std::vector<Graphics::Datatypes::WidgetInfo>     mMoveInfo           {};
       glm::vec3                                        mOriginWorld        {};
-      glm::vec3                                        mScaleAxisWorld     {};
-      glm::vec3                                        mFlipAxisWorld      {};
-      int                                              mScaleAxisIndex     {};
-      glm::mat4                                        mScaleTrans         {};
       glm::vec3                                        mOriginToSpos       {glm::vec3(0)};
       glm::vec3                                        mOriginView         {glm::vec3(0)};
       glm::vec2                                        mSelectedPos        {glm::vec2(0)};
@@ -350,8 +350,6 @@ namespace SCIRun {
       float                                            mSelectedDepth      {0};
       float                                            mSelectedRadius     {0};
       gen::Transform                                   mWidgetTransform    {};
-      std::vector<Graphics::Datatypes::WidgetMovement> mWidgetMovementTypes{};
-      std::vector<std::string>                         mConnectedWidgets   {};
       std::unordered_map<Graphics::Datatypes::WidgetMovement,
                          std::vector<std::pair<Graphics::Datatypes::WidgetMovement,
                          std::vector<std::string>>>>   mMoveMap            {};

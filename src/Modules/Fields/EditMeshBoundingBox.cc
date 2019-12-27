@@ -291,7 +291,7 @@ void EditMeshBoundingBox::generateGeomsList()
     get_state()->getValue(Scale).toDouble(), trans_, trans_.get_translation_point(), i++,0);
 
   geoms_.clear();
-  for (const auto& widget : bboxWidget->widgets_)
+  for (const auto& widget : bboxWidget->mWidgets)
     geoms_.push_back(widget);
 }
 

@@ -51,7 +51,9 @@ namespace SCIRun
         TRANSLATE_AXIS_REVERSE,
         ROTATE,
         SCALE,
+        SCALE_UNIDIRECTIONAL,
         SCALE_AXIS,
+        SCALE_AXIS_HALF,
         SCALE_AXIS_UNIDIRECTIONAL,
       };
       enum MouseButton {
@@ -62,19 +64,51 @@ namespace SCIRun
         STATE_COUNT
       };
 
+      struct WidgetInfo
+      {
+        WidgetInfo(WidgetMovement move) : moveType(move) {}
+        WidgetMovement moveType;
+        glm::mat4 scaleTrans;
+        glm::vec3 origin;
+        glm::vec3 scaleAxis;
+        glm::vec3 flipAxis;
+        glm::vec3 translationAxis;
+        bool flipInvertedWidget;
+        int scaleAxisIndex;
+      };
+
       class SCISHARE WidgetBase : public GeometryObjectSpire {
       public:
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                   bool isClippable);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                   bool isClippable, const Core::Geometry::Point& origin);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                   bool isClippable, const Core::Geometry::Point& pos,
+                   const Core::Geometry::Point& origin);
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        void setTranslationAxis(const Core::Geometry::Vector& v);
         void setToTranslationAxis(MouseButton btn, const Core::Geometry::Vector& v);
         void setToScale(MouseButton btn, const Core::Geometry::Vector& flipAxis);
-        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
-        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
-        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToScale(MouseButton btn);
+        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                            const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
+                            int scaleAxisIndex);
+        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                            glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToScaleUnidirectional(MouseButton btn, const Core::Geometry::Vector& translationAxis,
+                                      const Core::Geometry::Vector& flipAxis);
+        void setToScaleUnidirectional(MouseButton btn, const Core::Geometry::Vector& translationAxis);
+        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                          const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
+                                          int scaleAxisIndex);
+        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                          glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
+                                int scaleAxisIndex);
+        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                glm::mat4 scaleTrans, int scaleAxisIndex);
         void setToRotate(MouseButton btn);
         void setToTranslate(MouseButton btn);
         void addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string> > moves);
@@ -83,23 +117,25 @@ namespace SCIRun
         glm::vec3 getTranslationVector();
         const glm::mat4 getScaleTransform();
         int getScaleAxisIndex();
-        std::vector<WidgetMovement> getMovementTypes();
-        glm::vec3 translationAxis_;
+        bool getFlipInvertedWidget();
+        std::vector<WidgetInfo> getMovementInfo();
+        glm::vec3 mTranslationAxis;
 
-        glm::vec3 origin_;
-        std::vector<std::string> connectedIds_;
+        glm::vec3 mOrigin;
+        // std::vector<std::string> connectedIds;
         std::unordered_map<WidgetMovement,
-                           std::vector<std::pair<WidgetMovement, std::vector<std::string>>>> moveMap_;
+                           std::vector<std::pair<WidgetMovement, std::vector<std::string>>>> mMoveMap;
         void addInitialId();
 
       protected:
-        Core::Geometry::Point position_;
+        Core::Geometry::Point mPosition;
       private:
-        std::vector<WidgetMovement> movementType_;
-        glm::vec3 scaleAxis_;
-        glm::vec3 flipAxis_;
-        int scaleAxisIndex_;
-        glm::mat4 scaleTrans_;
+        std::vector<WidgetInfo> mMovementInfo;
+        glm::vec3 mScaleAxis;
+        glm::vec3 mFlipAxis;
+        int mScaleAxisIndex;
+        glm::mat4 mScaleTrans;
+        bool mFlipInvertedWidget;
       };
 
         using WidgetHandle = SharedPointer<WidgetBase>;
@@ -121,8 +157,9 @@ namespace SCIRun
       {
       public:
         template <typename WidgetIter>
-          CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-          : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
+          CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                          WidgetIter begin, WidgetIter end)
+          : WidgetBase(idGenerator, tag, true), mWidgets(begin, end)
           {}
         CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
           : WidgetBase(idGenerator, tag, true)
@@ -132,14 +169,15 @@ namespace SCIRun
         void addToList(WidgetHandle handle);
         std::vector<std::string> getListOfConnectedIds();
 
-        std::vector<WidgetHandle> widgets_;
+        std::vector<WidgetHandle> mWidgets;
       private:
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
 
       template <typename WidgetIter>
-        static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+        static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator,
+                                                  const std::string& tag, WidgetIter begin, WidgetIter end)
       {
         return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
       }

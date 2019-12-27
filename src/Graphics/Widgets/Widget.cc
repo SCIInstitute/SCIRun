@@ -35,157 +35,248 @@ using namespace SCIRun::Graphics::Datatypes;
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
-    movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+    mMovementInfo(std::vector<WidgetInfo>(MouseButton::STATE_COUNT, WidgetInfo(WidgetMovement::NONE)))
 {}
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator &idGenerator, const std::string &tag, bool isClippable, const Point &origin)
     : GeometryObjectSpire(idGenerator, tag, isClippable),
-      origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
-      movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+      mOrigin(glm::vec3(origin.x(), origin.y(), origin.z())),
+      mMovementInfo(std::vector<WidgetInfo>(MouseButton::STATE_COUNT, WidgetInfo(WidgetMovement::NONE)))
 
 {}
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
-    origin_(glm::vec3(origin.x(), origin.y(), origin.z())), position_(pos),
-    movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+    mOrigin(glm::vec3(origin.x(), origin.y(), origin.z())), mPosition(pos),
+    mMovementInfo(std::vector<WidgetInfo>(MouseButton::STATE_COUNT, WidgetInfo(WidgetMovement::NONE)))
 {}
 
-void WidgetBase::addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string> > moves)
+void WidgetBase::addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string>> moves)
 {
-  if(moveMap_.count(key))
-    moveMap_[key].push_back(moves);
+  if(mMoveMap.count(key))
+    mMoveMap[key].push_back(moves);
   else
-    moveMap_[key] = {moves};
+    mMoveMap[key] = {moves};
 }
 
 Point WidgetBase::position() const
 {
-  return position_;
+  return mPosition;
 }
 
 void WidgetBase::setPosition(const Point& p)
 {
-  position_ = p;
-}
-
-void WidgetBase::setTranslationAxis(const Vector& v)
-{
-  translationAxis_ = glm::vec3(v.x(), v.y(), v.z());
+  mPosition = p;
 }
 
 void WidgetBase::setToTranslationAxis(MouseButton btn, const Vector& v)
 {
   if(btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::TRANSLATE_AXIS;
-  translationAxis_ = glm::vec3(v.x(), v.y(), v.z());
+  WidgetInfo info(WidgetMovement::TRANSLATE_AXIS);
+  info.translationAxis = glm::vec3(v.x(), v.y(), v.z());
+  mMovementInfo[btn] = info;
 }
 
-void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex)
+void WidgetBase::setToScale(MouseButton btn, const Vector &flipAxis)
+{
+  if (btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE);
+  info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  info.flipInvertedWidget = true;
+}
+
+void WidgetBase::setToScale(MouseButton btn)
+{
+  if (btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE);
+  info.flipInvertedWidget = false;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, const Vector& flipAxis,
+                                glm::mat4 scaleTrans, int scaleAxisIndex)
 {
   if(btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::SCALE_AXIS;
-  scaleAxis_ = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
-  flipAxis_ = scaleAxis_;
-  scaleAxisIndex_ = scaleAxisIndex;
-  scaleTrans_ = scaleTrans;
+  WidgetInfo info(WidgetMovement::SCALE_AXIS);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = true;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::mat4 scaleTrans,
+                                int scaleAxisIndex)
+{
+  if(btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE_AXIS);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = false;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleUnidirectional(MouseButton btn, const Vector &translationAxis,
+                                          const Vector &flipAxis)
+{
+  if (btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE_UNIDIRECTIONAL);
+  info.translationAxis = glm::vec3(translationAxis.x(), translationAxis.y(), translationAxis.z());
+  info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  info.flipInvertedWidget = true;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleUnidirectional(MouseButton btn, const Vector &translationAxis)
+{
+  if (btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE_UNIDIRECTIONAL);
+  info.translationAxis = glm::vec3(translationAxis.x(), translationAxis.y(), translationAxis.z());
+  info.flipInvertedWidget = false;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& scaleAxis,
+                                              const Vector& flipAxis, glm::mat4 scaleTrans,
+                                              int scaleAxisIndex)
+{
+  if(btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  info.translationAxis = info.scaleAxis;
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = true;
+  mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& scaleAxis,
                                               glm::mat4 scaleTrans, int scaleAxisIndex)
 {
   if(btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL;
-  scaleAxis_ = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
-  flipAxis_ = scaleAxis_;
-  translationAxis_ = scaleAxis_;
-  scaleAxisIndex_ = scaleAxisIndex;
-  scaleTrans_ = scaleTrans;
+  WidgetInfo info(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = false;
+  mMovementInfo[btn] = info;
 }
 
-void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &flipAxis,
-                                glm::mat4 scaleTrans, int scaleAxisIndex) {
-  if (btn == MouseButton::NONE)
-    return;
-  movementType_[btn] = WidgetMovement::SCALE_AXIS;
-  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
-  scaleAxisIndex_ = scaleAxisIndex;
-  scaleTrans_ = scaleTrans;
-}
-
-void WidgetBase::setToScale(MouseButton btn, const Vector &flipAxis) {
+void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
+                                    const Vector& flipAxis, glm::mat4 scaleTrans,
+                                    int scaleAxisIndex)
+{
   if (btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::SCALE;
-  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  WidgetInfo info(WidgetMovement::SCALE_AXIS_HALF);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = true;
+  mMovementInfo[btn] = info;
+}
+
+void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
+                                    glm::mat4 scaleTrans, int scaleAxisIndex)
+{
+  if (btn == MouseButton::NONE) return;
+  WidgetInfo info(WidgetMovement::SCALE_AXIS_HALF);
+  info.scaleAxis = glm::vec3(scaleAxis.x(), scaleAxis.y(), scaleAxis.z());
+  Vector scaleAxisNormal = scaleAxis.normal();
+  info.translationAxis = glm::vec3(scaleAxisNormal.x(), scaleAxisNormal.y(), scaleAxisNormal.z());
+  info.scaleAxisIndex = scaleAxisIndex;
+  info.scaleTrans = scaleTrans;
+  info.flipInvertedWidget = false;
+  mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToRotate(MouseButton btn)
 {
   if (btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::ROTATE;
+  WidgetInfo info(WidgetMovement::ROTATE);
+  mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToTranslate(MouseButton btn)
 {
   if (btn == MouseButton::NONE) return;
-  movementType_[btn] = WidgetMovement::TRANSLATE;
+  WidgetInfo info(WidgetMovement::TRANSLATE);
+  mMovementInfo[btn] = info;
 }
 
-glm::vec3 WidgetBase::getScaleVector()
-{
-  return scaleAxis_;
-}
+// glm::vec3 WidgetBase::getScaleVector()
+// {
+  // return mScaleAxis;
+// }
 
-glm::vec3 WidgetBase::getFlipVector()
-{
-  return flipAxis_;
-}
+// glm::vec3 WidgetBase::getFlipVector()
+// {
+  // return mFlipAxis;
+// }
 
-glm::vec3 WidgetBase::getTranslationVector()
-{
-  return translationAxis_;
-}
+// glm::vec3 WidgetBase::getTranslationVector()
+// {
+  // return mTranslationAxis;
+// }
 
-int WidgetBase::getScaleAxisIndex()
-{
-  return scaleAxisIndex_;
-}
+// int WidgetBase::getScaleAxisIndex()
+// {
+  // return mScaleAxisIndex;
+// }
 
-const glm::mat4 WidgetBase::getScaleTransform()
-{
-  return scaleTrans_;
-}
+// bool WidgetBase::getFlipInvertedWidget()
+// {
+  // return mFlipInvertedWidget;
+// }
 
-std::vector<WidgetMovement> WidgetBase::getMovementTypes()
+// const glm::mat4 WidgetBase::getScaleTransform()
+// {
+  // return mScaleTrans;
+// }
+
+std::vector<WidgetInfo> WidgetBase::getMovementInfo()
 {
-  return movementType_;
+  return mMovementInfo;
 }
 
 void WidgetBase::addInitialId() {
   auto ids = std::vector<std::string>(1);
   ids.push_back(uniqueID());
-  connectedIds_ = ids;
+  // connectedIds_ = ids;
 }
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
   if (handle.get() == this)
   {
-    list.insert(widgets_.begin(), widgets_.end());
+    list.insert(mWidgets.begin(), mWidgets.end());
   }
 }
 
 void CompositeWidget::addToList(WidgetHandle widget)
 {
-  widgets_.push_back(widget);
+  mWidgets.push_back(widget);
 }
 
 std::vector<std::string> CompositeWidget::getListOfConnectedIds()
 {
-  std::vector<std::string> ids(widgets_.size());
+  std::vector<std::string> ids(mWidgets.size());
   for(int i = 0; i < ids.size(); i++)
   {
-    ids[i] = widgets_[i]->uniqueID();
+    ids[i] = mWidgets[i]->uniqueID();
   }
   return ids;
 }

@@ -189,8 +189,9 @@ namespace SCIRun {
     {
       if(btn != MouseButton::NONE)
       {
+        mWidgetTransform = gen::Transform();
         select(pos, objList, 0);
-        if(widgetSelected_ && mWidgetMovementTypes[btn] != WidgetMovement::NONE)
+        if(widgetSelected_ && mMoveInfo[btn].moveType != WidgetMovement::NONE)
         {
           initializeWidgetMovement(btn, pos);
           switch(btn)
@@ -608,15 +609,9 @@ namespace SCIRun {
             {
               widgetSelected_ = true;
 
-              mOriginWorld = obj->origin_;
-              mScaleAxisWorld = obj->getScaleVector();
-              mFlipAxisWorld = obj->getFlipVector();
-              mScaleAxisIndex = obj->getScaleAxisIndex();
-              mTranslationVector = obj->getTranslationVector();
-              mWidgetMovementTypes = obj->getMovementTypes();
-              mConnectedWidgets = obj->connectedIds_;
-              mMoveMap = obj->moveMap_;
-              mScaleTrans = obj->getScaleTransform();
+              mMoveInfo = obj->getMovementInfo();
+              mOriginWorld = obj->mOrigin;
+              mMoveMap = obj->mMoveMap;
             }
           }
         }
@@ -661,7 +656,7 @@ namespace SCIRun {
       mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
 
       // Get w value in of origin if scaling
-      if(mWidgetMovementTypes[btn] == WidgetMovement::SCALE)
+      if(mMoveInfo[btn].moveType == WidgetMovement::SCALE)
       {
         glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
         mSelectedW = projectedOrigin.w;
@@ -677,7 +672,7 @@ namespace SCIRun {
       mOriginToSpos = sposView - mOriginView;
       mSelectedRadius = glm::length(mOriginToSpos);
 
-      if(mWidgetMovementTypes[btn] == WidgetMovement::ROTATE)
+      if(mMoveInfo[btn].moveType == WidgetMovement::ROTATE)
       {
         widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
         widgetBall_->beginDrag(glm::vec2(sposView));
@@ -733,48 +728,70 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
     {
-        for(auto pair : mMoveMap[mWidgetMovementTypes[btn]])
+      WidgetInfo info = mMoveInfo[btn];
+      for(auto pair : mMoveMap[info.moveType])
+      {
+        bool update = true;
+        glm::mat4 widgetTrans, feedbackTrans;
+        switch(pair.first)
         {
-          glm::mat4 trans;
-          switch(pair.first)
-          {
-          case WidgetMovement::NONE:
-            return; // No reason to update
-          case WidgetMovement::TRANSLATE:
-            trans = translateWidget(pos);
-            break;
-          case WidgetMovement::TRANSLATE_AXIS:
-            trans = translateAxisWidget(pos, false);
-            break;
-          case WidgetMovement::TRANSLATE_AXIS_HALF:
-            trans = translateAxisWidget(pos, false, 0.5);
-            break;
-          case WidgetMovement::TRANSLATE_AXIS_REVERSE:
-            trans = translateAxisWidget(pos, true);
-            break;
-          case WidgetMovement::ROTATE:
-            trans = rotateWidget(pos);
-            break;
-          case WidgetMovement::SCALE:
-            trans = scaleWidget(pos);
-            break;
-          case WidgetMovement::SCALE_AXIS:
-            trans = scaleAxisWidget(pos);
-            break;
-          case WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL:
-          {
-            auto scaleTrans = scaleAxisWidget(pos, 0.5);
-            auto translateTrans = translateAxisWidget(pos, false, 0.5);
-            trans = translateTrans * scaleTrans;
-            break;
-          }
-          }
-          auto genTrans = gen::Transform();
-          genTrans.transform = trans;
-          if(pair.first == mWidgetMovementTypes[btn])
-            mWidgetTransform = genTrans;
-          modifyWidgets(genTrans, pair.second);
+        case WidgetMovement::NONE:
+          update = false;
+          break;
+        case WidgetMovement::TRANSLATE:
+          widgetTrans = feedbackTrans = translateWidget(pos);
+          break;
+        case WidgetMovement::TRANSLATE_AXIS:
+          widgetTrans = feedbackTrans = translateAxisWidget(info, pos, false);
+          break;
+        case WidgetMovement::TRANSLATE_AXIS_HALF:
+          widgetTrans = feedbackTrans = translateAxisWidget(info, pos, false, 0.5);
+          break;
+        case WidgetMovement::TRANSLATE_AXIS_REVERSE:
+          widgetTrans = feedbackTrans = translateAxisWidget(info, pos, true);
+          break;
+        case WidgetMovement::ROTATE:
+          widgetTrans = feedbackTrans = rotateWidget(pos);
+          break;
+        case WidgetMovement::SCALE:
+          widgetTrans = scaleWidget(info, pos, true);
+          feedbackTrans = scaleWidget(info, pos, false);
+          break;
+        case WidgetMovement::SCALE_UNIDIRECTIONAL:
+        {
+          auto widgetScaleTrans = scaleWidget(info, pos, true, 0.5);
+          auto feedbackScaleTrans = scaleWidget(info, pos, false, 0.5);
+          auto translateTrans = translateAxisWidget(info, pos, false, 0.5);
+          widgetTrans = translateTrans * widgetScaleTrans;
+          feedbackTrans = translateTrans * feedbackScaleTrans;
+          break;
         }
+        case WidgetMovement::SCALE_AXIS:
+          widgetTrans = scaleAxisWidget(info, pos, true);
+          feedbackTrans = scaleAxisWidget(info, pos, false);
+          break;
+        case WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL:
+        {
+          auto widgetScaleTrans = scaleAxisWidget(info, pos, true, 0.5);
+          auto feedbackScaleTrans = scaleAxisWidget(info, pos, false, 0.5);
+          auto translateTrans = translateAxisWidget(info, pos, false, 0.5);
+          widgetTrans = translateTrans * widgetScaleTrans;
+          feedbackTrans = translateTrans * feedbackScaleTrans;
+          break;
+        }
+        }
+        if(update)
+        {
+          auto widgetGenTrans = gen::Transform();
+          auto feedbackGenTrans = gen::Transform();
+          widgetGenTrans.transform = widgetTrans;
+          feedbackGenTrans.transform = feedbackTrans;
+
+          if(pair.first == mMoveInfo[btn].moveType)
+            mWidgetTransform = feedbackGenTrans;
+          modifyWidgets(widgetGenTrans, pair.second);
+        }
+      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -805,7 +822,7 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    glm::mat4 SRInterface::translateAxisWidget(const glm::ivec2& pos, bool reverse, float multiplier)
+    glm::mat4 SRInterface::translateAxisWidget(WidgetInfo info, const glm::ivec2& pos, bool reverse, float multiplier)
     {
       auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
@@ -817,13 +834,13 @@ namespace SCIRun {
       if(reverse)
         worldPos = -worldPos;
 
-      glm::vec3 newPos = glm::dot(worldPos, mTranslationVector) * mTranslationVector;
+      glm::vec3 newPos = glm::dot(worldPos, info.translationAxis) * info.translationAxis;
       trans[3] = glm::vec4(newPos, 1.0);
       return trans;
     }
 
     //----------------------------------------------------------------------------------------------
-    glm::mat4 SRInterface::scaleWidget(const glm::ivec2& pos, float multiplier)
+    glm::mat4 SRInterface::scaleWidget(WidgetInfo info, const glm::ivec2& pos, bool negate, float multiplier)
     {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
@@ -836,12 +853,14 @@ namespace SCIRun {
       float scalingFactor = (multiplier * glm::dot(originToCurrentSpos/initLen, mOriginToSpos/initLen)) + (1.0-multiplier);
 
       // Flip if negative to avoid inverted normals
-      glm::mat4 flip;
+      glm::mat4 flipTrans = glm::mat4(1.0);
       bool negativeScale = scalingFactor < 0.0;
       if(negativeScale)
       {
-        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
-        scalingFactor = -scalingFactor;
+        if(info.flipInvertedWidget)
+          flipTrans = glm::rotate(glm::mat4(1.0f), 3.1415926f, info.flipAxis);
+        if(negate)
+          scalingFactor = -scalingFactor;
       }
 
       glm::mat4 trans = glm::mat4(1.0);
@@ -851,14 +870,13 @@ namespace SCIRun {
 
       trans = scale * translation;
 
-      if(negativeScale)
-        trans = flip * trans;
+      trans = flipTrans * trans;
 
       trans = reverse_translation * trans;
       return trans;
     }
 
-    glm::mat4 SRInterface::scaleAxisWidget(const glm::ivec2& pos, float multiplier)
+    glm::mat4 SRInterface::scaleAxisWidget(WidgetInfo info, const glm::ivec2& pos, bool negate, float multiplier)
     {
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
@@ -866,32 +884,35 @@ namespace SCIRun {
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
       currentSposView.z = -mSelectedW;
       glm::vec3 originToCurrentSpos = currentSposView - mOriginView;
-      glm::vec3 scaleAxisView = (mCamera->getWorldToView() * glm::vec4(mScaleAxisWorld, 0.0)).xyz();
+      glm::vec3 scaleAxisView = (mCamera->getWorldToView() * glm::vec4(info.scaleAxis, 0.0)).xyz();
       glm::vec3 shiftedOriginToCurrentSpos = originToCurrentSpos - (mOriginToSpos - scaleAxisView);
 
       float initLen = glm::length(scaleAxisView);
       float scalingFactor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
-      glm::vec3 scaleVec = glm::vec3(1.0);
-      scaleVec[mScaleAxisIndex] = (multiplier * scalingFactor) + (1.0-multiplier);
+      scalingFactor = (multiplier * scalingFactor) + (1.0-multiplier);
 
       // Flip if negative to avoid inverted normals
-      glm::mat4 flip;
+      glm::mat4 flipTrans = glm::mat4(1.0);
       bool negativeScale = scalingFactor < 0.0;
       if(negativeScale)
       {
-        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
-        scalingFactor = -scalingFactor;
+        if(info.flipInvertedWidget)
+          flipTrans = glm::rotate(glm::mat4(1.0f), 3.1415926f, info.flipAxis);
+        if(negate)
+          scalingFactor = -scalingFactor;
       }
+
+      glm::vec3 scaleVec = glm::vec3(1.0);
+      scaleVec[info.scaleAxisIndex] = scalingFactor;
 
       glm::mat4 trans = glm::mat4(1.0);
       glm::mat4 translation = glm::translate(-mOriginWorld);
       glm::mat4 scale = glm::scale(trans, scaleVec);
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      trans = mScaleTrans * scale * glm::transpose(mScaleTrans) * translation;
+      trans = info.scaleTrans * scale * glm::transpose(info.scaleTrans) * translation;
 
-      if(negativeScale)
-        trans = flip * trans;
+      trans = flipTrans * trans;
 
       trans = reverse_translation * trans;
       return trans;

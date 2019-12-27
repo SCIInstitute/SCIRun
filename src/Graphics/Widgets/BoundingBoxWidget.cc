@@ -180,22 +180,20 @@ void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerato
     w->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, allIds_));
 
   for(auto& w : scaleWidgets_)
+  {
     w->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, allIds_));
+    w->addMovementMap(WidgetMovement::SCALE_UNIDIRECTIONAL,
+                      std::make_pair(WidgetMovement::SCALE_UNIDIRECTIONAL, allIds_));
+  }
 
   for(int d = 0; d < DIMENSIONS_; ++d)
     for(int sign = 0; sign < 2; ++sign)
       for(auto &w : scaleAxisWidgets_[d][sign])
       {
         for (auto &m : scaleAxisMaps_[d][sign])
-        {
           w->addMovementMap(WidgetMovement::SCALE_AXIS, m);
-          w->setTranslationAxis(eigvecs_[d]);
-        }
         for (auto &m : scaleAxisUnidirectionalMaps_[d][sign])
-        {
           w->addMovementMap(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, m);
-          w->setTranslationAxis(eigvecs_[d]);
-        }
       }
 }
 
@@ -275,16 +273,16 @@ void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widge
   for (auto i = 0; i < point_indicies.size(); i += 2)
   {
     std::string cylinderName = widgetName(BoundingBoxWidgetSection::BOX, widgetNum, widgetsIndex_);
-    widgets_.push_back(WidgetFactory::createCylinder(idGenerator, cylinderName,
+    mWidgets.push_back(WidgetFactory::createCylinder(idGenerator, cylinderName,
         smallestEigval_ * scale_ * boxScale_, ColorRGB().toString(),
         corners_[point_indicies[i]], corners_[point_indicies[i + 1]], center_,
         bbox_, resolution_));
-    widgets_[++widgetsIndex_]->setToTranslate(MouseButton::LEFT);
-    widgets_[widgetsIndex_]->setToTranslationAxis(MouseButton::RIGHT,
+    mWidgets[++widgetsIndex_]->setToTranslate(MouseButton::LEFT);
+    mWidgets[widgetsIndex_]->setToTranslationAxis(MouseButton::RIGHT,
                                (corners_[point_indicies[i]] - corners_[point_indicies[i + 1]]).normal());
-    translateWidgets_.push_back(widgets_[widgetsIndex_]);
+    translateWidgets_.push_back(mWidgets[widgetsIndex_]);
   }
-  translateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string> >());
+  translateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
   translateIdsBySide_.resize(DIMENSIONS_, std::vector<std::string>());
   for(auto& axis : translateIdsByFace_)
     axis.resize(2, std::vector<std::string>());
@@ -312,13 +310,15 @@ void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGene
   for(int i = 0; i < CORNERS_; ++i)
   {
     std::string name = widgetName(BoundingBoxWidgetSection::CORNER_SCALE, widgetNum, widgetsIndex_);
-    widgets_.push_back(WidgetFactory::createSphere(idGenerator, name,
+    mWidgets.push_back(WidgetFactory::createSphere(idGenerator, name,
                                                    smallestEigval_ * scale_ * resizeSphereScale_,
                                                    resizeCol_, corners_[i], center_, bbox_, resolution_));
-    widgets_[++widgetsIndex_]->setToScale(MouseButton::LEFT, eigvecs_[i/2]);
-    scaleWidgets_.push_back(widgets_[widgetsIndex_]);
+    Vector centerToCornerAxis = (corners_[i] - center_).normal();
+    mWidgets[++widgetsIndex_]->setToScale(MouseButton::LEFT);
+    mWidgets[widgetsIndex_]->setToScaleUnidirectional(MouseButton::RIGHT, centerToCornerAxis);
+    scaleWidgets_.push_back(mWidgets[widgetsIndex_]);
   }
-  scaleIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string> >());
+  scaleIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
   for(auto& axis : scaleIdsByFace_)
     axis.resize(2, std::vector<std::string>());
 
@@ -333,13 +333,13 @@ void BoundingBoxWidget::addFaceSphere(const Core::GeometryIDGenerator& idGenerat
   for (int i = 0; i < FACES_; ++i)
   {
     std::string name = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widgetNum, widgetsIndex_);
-    widgets_.push_back(WidgetFactory::createSphere(idGenerator, name,
+    mWidgets.push_back(WidgetFactory::createSphere(idGenerator, name,
                                                    smallestEigval_ * scale_ * rotSphereScale_,
                                                    deflCol_, facesStart_[i], center_, bbox_, resolution_));
-    widgets_[++widgetsIndex_]->setToRotate(MouseButton::LEFT);
-    rotateWidgets_.push_back(widgets_[widgetsIndex_]);
+    mWidgets[++widgetsIndex_]->setToRotate(MouseButton::LEFT);
+    rotateWidgets_.push_back(mWidgets[widgetsIndex_]);
   }
-  rotateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string> >());
+  rotateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
   for(auto& axis : rotateIdsByFace_)
     axis.resize(2, std::vector<std::string>());
 
@@ -351,7 +351,7 @@ void BoundingBoxWidget::addFaceSphere(const Core::GeometryIDGenerator& idGenerat
 void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGenerator,
                                         glm::mat4& scaleTrans, int widgetNum, int widgetIter)
 {
-  scaleAxisWidgets_.resize(DIMENSIONS_, std::vector<std::vector<WidgetHandle> >());
+  scaleAxisWidgets_.resize(DIMENSIONS_, std::vector<std::vector<WidgetHandle>>());
   for(auto &v : scaleAxisWidgets_)
     v.resize(2, std::vector<WidgetHandle>());
 
@@ -360,16 +360,16 @@ void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGener
     {
       float signMultiplier = (sign == 0) ? 1.0 : -1.0;
       std::string name = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widgetNum, widgetsIndex_);
-      widgets_.push_back(WidgetFactory::createDisk(idGenerator, name,
+      mWidgets.push_back(WidgetFactory::createDisk(idGenerator, name,
                                                    smallestEigval_ * scale_ * diskRadius_, resizeCol_,
-                                                   facesStart_[2*d + sign], facesEnd_[2*d + sign], center_, bbox_,
-                                                   resolution_));
-      widgets_[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, signMultiplier * scaledEigvecs_[d],
+                                                   facesStart_[2*d + sign], facesEnd_[2*d + sign],
+                                                   center_, bbox_, resolution_));
+      mWidgets[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, signMultiplier * scaledEigvecs_[d],
                                                 scaleTrans, d);
-      widgets_[widgetsIndex_]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
+      mWidgets[widgetsIndex_]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
                                                             signMultiplier * scaledEigvecs_[d],
                                                             scaleTrans, d);
-      scaleAxisWidgets_[d][sign].push_back(widgets_[widgetsIndex_]);
+      scaleAxisWidgets_[d][sign].push_back(mWidgets[widgetsIndex_]);
     }
 }
 
@@ -406,7 +406,7 @@ void BoundingBoxWidget::getScaleIds()
 void BoundingBoxWidget::getScaleAxisIds()
 {
   scaleAxisIds_.clear();
-  scaleAxisIds_.resize(DIMENSIONS_, std::vector<std::vector<std::string> >());
+  scaleAxisIds_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
   for(auto &v : scaleAxisIds_)
     v.resize(2, std::vector<std::string>());
   for(int d = 0; d < DIMENSIONS_; ++d)
