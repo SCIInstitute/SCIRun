@@ -47,13 +47,14 @@ namespace SCIRun {
         public Has3OutputPorts < FieldPortTag, GeometryPortTag, MatrixPortTag >
       {
       public:
+        const int mDIMENSIONS = 3;
         EditMeshBoundingBox();
         void execute() override;
         void setStateDefaults() override;
 
         static const Core::Algorithms::AlgorithmParameterName TransformMatrix;
         static const Core::Algorithms::AlgorithmParameterName FieldTransformMatrix;
-        static const Core::Algorithms::AlgorithmParameterName RefreshGeom;
+        static const Core::Algorithms::AlgorithmParameterName ResetToInput;
         static const Core::Algorithms::AlgorithmParameterName ResetSize;
         static const Core::Algorithms::AlgorithmParameterName ResetCenter;
         static const Core::Algorithms::AlgorithmParameterName DataSaved;
@@ -99,12 +100,12 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
-        void applyScaling();
-        void refreshGeometry(const FieldHandle field);
-        void clear_vals();
+        void clearVals();
         void computeWidgetBox(const Core::Geometry::BBox& box);
         void buildGeometryObject();
-        void updateState();
+        void updateState(FieldHandle field);
+        void sendOutputPorts();
+        void resetToInputField();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& feedbackTrans);
         void generateGeomsList();
@@ -113,17 +114,16 @@ namespace SCIRun {
         std::string convertForLabel(double coord);
         void updateInputFieldAttributes();
 
-        Core::Geometry::Point pos_;
-        std::vector<Core::Geometry::Vector> eigvecs_;
-        std::vector<double> eigvals_;
-        FieldHandle outputField_;
+        Core::Geometry::Point mPos;
+        std::vector<Core::Geometry::Vector> mEigvecs;
+        std::vector<double> mEigvals;
+        FieldHandle mOutputField;
 
-        boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
-        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
-        Core::Geometry::Transform trans_;
-        Core::Geometry::Transform fieldTrans_;
-        bool widgetMoved_;
-        bool firstRun_;
+        std::vector<Graphics::Datatypes::GeometryHandle> mGeoms;
+        Core::Geometry::Transform mTrans;
+        Core::Geometry::Transform mFieldTrans;
+        bool mWidgetMoved;
+        bool mFirstRun;
       };
     }
   }

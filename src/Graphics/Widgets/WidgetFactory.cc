@@ -75,18 +75,16 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
 
 BoundingBoxWidgetHandle WidgetFactory::createBoundingBox(const Core::GeometryIDGenerator& idGenerator,
                                               const std::string& name, double scale, const BoxPosition& pos,
-                                              const Point& origin, int widget_num,
-                                              int widget_iter,const BBox& bbox)
+                                              const Point& origin, int widget_num, const BBox& bbox)
 {
-  return boost::make_shared<BoundingBoxWidget>(idGenerator, name, scale, pos, origin, widget_num,
-                                               widget_iter, bbox);
+  return boost::make_shared<BoundingBoxWidget>(idGenerator, name, scale, pos, origin, widget_num, bbox);
 }
 
 BoundingBoxWidgetHandle WidgetFactory::createBoundingBox(const Core::GeometryIDGenerator& idGenerator,
                                                          const std::string& name, double scale, const Transform& trans,
-                                                         const Point& origin, int widget_num, int widget_iter)
+                                                         const Point& origin, int widget_num)
 {
-  return boost::make_shared<BoundingBoxWidget>(idGenerator, name, scale, trans, origin, widget_num, widget_iter);
+  return boost::make_shared<BoundingBoxWidget>(idGenerator, name, scale, trans, origin, widget_num);
 }
 
 

@@ -40,188 +40,262 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
+// Index diagram for corners and edges:
+// NOTE: This ordering is based on the order corners are generated.
+// If you change order of corners, update this diagram.
+//
+//          (0)          1            (2)
+//           .+-----------------------+
+//         .' |                     .'|
+//       8.'  |                 10.'  |
+//      .'    |     5           .'    |
+//  (4)+------+----------------+(6)   |
+//     |      |                |      |
+//     |      |                |      |
+//     |    0 |                |      | 2
+//     |      |                |      |
+//    4|      |               6|      |
+//     |      |                |      |
+//     |      |                |      |
+//     |   (1)+----------------+------+(3)
+//     |    .'          3      |    .'
+//     |  .' 9                 |  .' 11
+//     |.'                     |.'
+//     +-----------------------+
+//   (5)            7          (7)
+//
+//  Legend: (#) - corner index
+//           #  - edge index
+
 BoundingBoxWidget::BoundingBoxWidget(const GeometryIDGenerator& idGenerator, const std::string& name,
                                      double scale, const Point& center,
                                      const std::vector<Vector>& eigvecs,
-                                     const std::vector<double>& eigvals, int widgetNum,
-                                     int widgetIter)
-  : CompositeWidget(idGenerator, name), scale_(scale), center_(center), eigvecs_(eigvecs),
-    eigvals_(eigvals), widgetsIndex_(-1)
+                                     const std::vector<double>& eigvals, int widgetNum)
+  : CompositeWidget(idGenerator, name), mScale(scale), mCenter(center), mEigvecs(eigvecs),
+    mEigvals(eigvals), mWidgetsIndex(-1)
 {
-  scaledEigvecs_.reserve(DIMENSIONS_);
-  for(int d = 0; d < DIMENSIONS_; ++d)
-    scaledEigvecs_.emplace_back(eigvecs_[d] * eigvals_[d]);
+  mScaledEigvecs.reserve(mDIMENSIONS);
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    mScaledEigvecs.emplace_back(mEigvecs[iDim] * mEigvals[iDim]);
 
-  initWidgetCreation(idGenerator, widgetNum, widgetIter);
+  initWidgetCreation(idGenerator, widgetNum);
 }
 
 BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
                                      const std::string& name, double scale, const Transform& trans,
-                                     const Point& center, int widgetNum, int widgetIter)
-  : CompositeWidget(idGenerator, name), scale_(scale), widgetsIndex_(-1)
+                                     const Point& center, int widgetNum)
+  : CompositeWidget(idGenerator, name), mScale(scale), mWidgetsIndex(-1)
 {
-  center_ = trans.get_translation_point();
-  scaledEigvecs_ = trans.get_rotation_vectors();
+  mCenter = trans.get_translation_point();
+  mScaledEigvecs = trans.get_rotation_vectors();
   getEigenValuesAndEigenVectors();
-  initWidgetCreation(idGenerator, widgetNum, widgetIter);
+  initWidgetCreation(idGenerator, widgetNum);
 }
 
 BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
                                      const std::string& name, double scale, const BoxPosition& pos,
-                                     const Point& center, int widgetNum, int widgetIter,
-                                     const BBox& bbox)
-  : CompositeWidget(idGenerator, name), scale_(scale), center_(center), bbox_(bbox), widgetsIndex_(-1)
+                                     const Point& center, int widgetNum, const BBox& bbox)
+  : CompositeWidget(idGenerator, name), mScale(scale), mCenter(center), mBbox(bbox), mWidgetsIndex(-1)
 {
   Point c,r,d,b;
-  pos.getPosition(center_, r, d, b);
-  auto centerVector = Vector(center_);
-  scaledEigvecs_ = { Vector(r), Vector(d), Vector(b) };
-  for(auto& vec : scaledEigvecs_)
-    vec -= centerVector;
+  pos.getPosition(mCenter, r, d, b);
+  auto centerVector = Vector(mCenter);
+  mScaledEigvecs = { Vector(r), Vector(d), Vector(b) };
+  for(auto& iVec : mScaledEigvecs)
+    iVec -= centerVector;
 
   getEigenValuesAndEigenVectors();
-  initWidgetCreation(idGenerator, widgetNum, widgetIter);
+  initWidgetCreation(idGenerator, widgetNum);
 }
 
-void BoundingBoxWidget::createWidgets(const GeometryIDGenerator& idGenerator, int widgetNum,
-                                      int widgetIter)
+void BoundingBoxWidget::createWidgets(const GeometryIDGenerator& idGenerator, int widgetNum)
 {
-  addBox(idGenerator, widgetNum, widgetIter);
-  addCornerSpheres(idGenerator, widgetNum, widgetIter);
-  addFaceSphere(idGenerator, widgetNum, widgetIter);
+  addBox(idGenerator, widgetNum);
+  addCornerSpheres(idGenerator, widgetNum);
+  addFaceSphere(idGenerator, widgetNum);
 
-  glm::mat4 scaleTrans = glm::mat4(1.0);
-  for(int i = 0; i < DIMENSIONS_; ++i)
-    for(int j = 0; j < DIMENSIONS_; ++j)
-      scaleTrans[i][j] = eigvecs_[i][j];
+  auto scaleTrans = glm::mat4(1.0);
+  for(int iCol = 0; iCol < mDIMENSIONS; ++iCol)
+    for(int iRow = 0; iRow < mDIMENSIONS; ++iRow)
+      scaleTrans[iCol][iRow] = mEigvecs[iCol][iRow];
 
-  addFaceCylinder(idGenerator, scaleTrans, widgetNum, widgetIter);
+  addFaceCylinder(idGenerator, scaleTrans, widgetNum);
 }
 
-void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerator, int widgetNum,
-                                           int widgetIter)
+void BoundingBoxWidget::initWidgetCreation(const GeometryIDGenerator& idGenerator, int widgetNum)
 {
-  smallestEigval_ = std::min(eigvals_[0], std::min(eigvals_[1], eigvals_[2]));
+  mSmallestEigval = std::min(mEigvals[0], std::min(mEigvals[1], mEigvals[2]));
+  generateWidgetPoints();
+  createWidgets(idGenerator, widgetNum);
+  assignIds();
+  assignMoveMaps();
+}
+
+void BoundingBoxWidget::generateWidgetPoints()
+{
   getCorners();
   getFacesStart();
   getFacesEnd();
-  bbox_ = BBox(corners_);
+  mBbox = BBox(mCorners);
+}
 
-  createWidgets(idGenerator, widgetNum, widgetIter);
-
+void BoundingBoxWidget::assignIds()
+{
   getTranslateIds();
   getRotateIds();
   getScaleIds();
   getScaleAxisIds();
+}
 
+void BoundingBoxWidget::assignMoveMaps()
+{
+  assignTranslateMaps();
+  assignRotateMaps();
+  assignScaleMaps();
+  assignScaleAxisMaps();
+  assignScaleAxisUnidirectionalMaps();
+}
 
-  scaleAxisMaps_.resize(DIMENSIONS_, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
-  for(auto &v : scaleAxisMaps_)
-    v.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
-  for(int i = 0; i < DIMENSIONS_; ++i)
-    for(int sign = 0; sign < 2; ++sign)
-      for(int j = 0; j < DIMENSIONS_; ++j)
+void BoundingBoxWidget::assignTranslateMaps()
+{
+  for(auto &iWidget : mTranslateWidgets)
+    {
+      iWidget->addMovementMap(WidgetMovement::TRANSLATE,
+                              std::make_pair(WidgetMovement::TRANSLATE, mAllIds));
+      iWidget->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+                              std::make_pair(WidgetMovement::TRANSLATE_AXIS, mAllIds));
+    }
+}
+
+void BoundingBoxWidget::assignRotateMaps()
+{
+  for(auto& iWidget : mRotateWidgets)
+    iWidget->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, mAllIds));
+}
+
+void BoundingBoxWidget::assignScaleMaps()
+{
+  for(auto& iWidget : mScaleWidgets)
+    {
+      iWidget->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, mAllIds));
+      iWidget->addMovementMap(WidgetMovement::SCALE_UNIDIRECTIONAL,
+                              std::make_pair(WidgetMovement::SCALE_UNIDIRECTIONAL, mAllIds));
+    }
+}
+
+void BoundingBoxWidget::assignScaleAxisMaps()
+{
+  std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>>
+    maps(mDIMENSIONS, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
+  for(auto &iMapVec : maps)
+    iMapVec.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      for(int iNestedDim = 0; iNestedDim < mDIMENSIONS; ++iNestedDim)
       {
-        scaleAxisMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS,
-                                                         translateIdsBySide_[i]));
-        if(i == j)
+        // Scales the cylinders parallel to the eigenvector.
+        maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS,
+                                                            mTranslateIdsBySide[iDim]));
+        if(iDim == iNestedDim)
         {
-          WidgetMovement plusMove, minusMove;
-          if(sign == 0)
-          {
-            plusMove = WidgetMovement::TRANSLATE_AXIS;
-            minusMove = WidgetMovement::TRANSLATE_AXIS_REVERSE;
-          }
+          // Positive and negative directions along an eigenvector will translate these widgets in
+          // opposite directions. Ignores the stationary widgets.
+          std::vector<WidgetMovement> plusAndMinusMove(2);
+          if(iSign == 0)
+            plusAndMinusMove = {WidgetMovement::TRANSLATE_AXIS,
+                                WidgetMovement::TRANSLATE_AXIS_REVERSE};
           else
+            plusAndMinusMove = {WidgetMovement::TRANSLATE_AXIS_REVERSE,
+                                WidgetMovement::TRANSLATE_AXIS};
+          for(int iNestedSign = 0; iNestedSign < 2; ++iNestedSign)
           {
-            plusMove = WidgetMovement::TRANSLATE_AXIS_REVERSE;
-            minusMove = WidgetMovement::TRANSLATE_AXIS;
+            maps[iDim][iSign].push_back(std::make_pair(plusAndMinusMove[iNestedSign],
+                                                       mTranslateIdsByFace[iNestedDim][iNestedSign]));
+            maps[iDim][iSign].push_back(std::make_pair(plusAndMinusMove[iNestedSign],
+                                                       mScaleAxisIds[iNestedDim][iNestedSign]));
+            maps[iDim][iSign].push_back(std::make_pair(plusAndMinusMove[iNestedSign],
+                                                       mRotateIdsByFace[iNestedDim][iNestedSign]));
+            maps[iDim][iSign].push_back(std::make_pair(plusAndMinusMove[iNestedSign],
+                                                       mScaleIdsByFace[iNestedDim][iNestedSign]));
           }
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(plusMove, translateIdsByFace_[j][0]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(minusMove, translateIdsByFace_[j][1]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(plusMove, scaleAxisIds_[j][0]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(minusMove, scaleAxisIds_[j][1]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(plusMove, rotateIdsByFace_[j][0]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(minusMove, rotateIdsByFace_[j][1]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(plusMove, scaleIdsByFace_[j][0]));
-          scaleAxisMaps_[i][sign].push_back(std::make_pair(minusMove, scaleIdsByFace_[j][1]));
         }
       }
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      for(auto &iWidget : mScaleAxisWidgets[iDim][iSign])
+        for (auto &iMap : maps[iDim][iSign])
+          iWidget->addMovementMap(WidgetMovement::SCALE_AXIS, iMap);
+}
 
-  scaleAxisUnidirectionalMaps_.resize(DIMENSIONS_, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
-  for(auto &v : scaleAxisUnidirectionalMaps_)
-    v.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
-  for(int i = 0; i < DIMENSIONS_; ++i)
-    for(int sign = 0; sign < 2; ++sign)
+void BoundingBoxWidget::assignScaleAxisUnidirectionalMaps()
+{
+  std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>>
+    maps(mDIMENSIONS, std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>());
+  for(auto &iMapVec : maps)
+    iMapVec.resize(2, std::vector<std::pair<WidgetMovement, std::vector<std::string>>>());
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
     {
-      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, translateIdsBySide_[i]));
-      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, scaleAxisIds_[i][sign]));
-      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, translateIdsByFace_[i][sign]));
-      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, rotateIdsByFace_[i][sign]));
-      scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS, scaleIdsByFace_[i][sign]));
-      for(int j = 0; j < DIMENSIONS_; ++j)
-        if(i != j)
-          for(int l = 0; l < 2; ++l)
+      // Scales the cylinders parallel to the eigenvector in only one direction.
+      maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL,
+                                                 mTranslateIdsBySide[iDim]));
+
+      // Only need to translate widgets in positive direction along eigenvector.
+      // Ignores the stationary widgets
+      maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS,
+                                                 mScaleAxisIds[iDim][iSign]));
+      maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS,
+                                                 mTranslateIdsByFace[iDim][iSign]));
+      maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS,
+                                                 mRotateIdsByFace[iDim][iSign]));
+      maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS,
+                                                 mScaleIdsByFace[iDim][iSign]));
+
+      // Unlike the regular scale axis, the widgets in the center of the box need to move.
+      // Here we need to translate them at half distance to stay in the center of the box.
+      for(int iNestedDim = 0; iNestedDim < mDIMENSIONS; ++iNestedDim)
+        if(iDim != iNestedDim)
+          for(int iNestedSign = 0; iNestedSign < 2; ++iNestedSign)
           {
-            scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF, scaleAxisIds_[j][l]));
-            scaleAxisUnidirectionalMaps_[i][sign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF, rotateIdsByFace_[j][l]));
+            maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF,
+                                                       mScaleAxisIds[iNestedDim][iNestedSign]));
+            maps[iDim][iSign].push_back(std::make_pair(WidgetMovement::TRANSLATE_AXIS_HALF,
+                                                       mRotateIdsByFace[iNestedDim][iNestedSign]));
           }
     }
-
-  for(auto &w : translateWidgets_)
-  {
-    w->addMovementMap(WidgetMovement::TRANSLATE,
-                      std::make_pair(WidgetMovement::TRANSLATE, allIds_));
-    w->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
-                      std::make_pair(WidgetMovement::TRANSLATE_AXIS, allIds_));
-  }
-
-  for(auto& w : rotateWidgets_)
-    w->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, allIds_));
-
-  for(auto& w : scaleWidgets_)
-  {
-    w->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, allIds_));
-    w->addMovementMap(WidgetMovement::SCALE_UNIDIRECTIONAL,
-                      std::make_pair(WidgetMovement::SCALE_UNIDIRECTIONAL, allIds_));
-  }
-
-  for(int d = 0; d < DIMENSIONS_; ++d)
-    for(int sign = 0; sign < 2; ++sign)
-      for(auto &w : scaleAxisWidgets_[d][sign])
-      {
-        for (auto &m : scaleAxisMaps_[d][sign])
-          w->addMovementMap(WidgetMovement::SCALE_AXIS, m);
-        for (auto &m : scaleAxisUnidirectionalMaps_[d][sign])
-          w->addMovementMap(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, m);
-      }
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      for(auto &iWidget : mScaleAxisWidgets[iDim][iSign])
+        for (auto &iMap : maps[iDim][iSign])
+          iWidget->addMovementMap(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL, iMap);
 }
 
 void BoundingBoxWidget::getEigenValuesAndEigenVectors()
 {
-  eigvals_.reserve(DIMENSIONS_);
-  eigvecs_.reserve(DIMENSIONS_);
-  for(int d = 0; d < DIMENSIONS_; ++d)
+  mEigvals.reserve(mDIMENSIONS);
+  mEigvecs.reserve(mDIMENSIONS);
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
   {
-    eigvals_.emplace_back(scaledEigvecs_[d].length());
-    eigvecs_.emplace_back(scaledEigvecs_[d] / eigvals_[d]);
+    mEigvals.emplace_back(mScaledEigvecs[iDim].length());
+    mEigvecs.emplace_back(mScaledEigvecs[iDim] / mEigvals[iDim]);
   }
 }
 
 void BoundingBoxWidget::getCorners()
 {
-  corners_.reserve(CORNERS_);
+  // NOTE: If you change the order which corners are generated, update the diagram at the top of the file
+  mCorners.reserve(mCORNERS);
   double sign0, sign1, sign2;
   sign0 = sign1 = sign2 = 1.0;
-  for(int i = 0; i < 2; ++i)
+  for(int iEig0Sign = 0; iEig0Sign < 2; ++iEig0Sign)
   {
-    for(int j = 0; j < 2; ++j)
+    for(int iEig1Sign = 0; iEig1Sign < 2; ++iEig1Sign)
     {
-      for(int k = 0; k < 2; ++k)
+      for(int iEig2Sign = 0; iEig2Sign < 2; ++iEig2Sign)
       {
-        corners_.emplace_back(center_ + sign0 * scaledEigvecs_[0]
-                                      + sign1 * scaledEigvecs_[1]
-                                      + sign2 * scaledEigvecs_[2]);
+        mCorners.emplace_back(mCenter + sign0 * mScaledEigvecs[0]
+                                      + sign1 * mScaledEigvecs[1]
+                                      + sign2 * mScaledEigvecs[2]);
         sign2 = -sign2;
       }
       sign1 = -sign1;
@@ -232,74 +306,87 @@ void BoundingBoxWidget::getCorners()
 
 void BoundingBoxWidget::getFacesStart()
 {
-  facesStart_.reserve(FACES_);
-  for(int d = 0; d < DIMENSIONS_; ++d)
+  mFacesStart.reserve(mFACES);
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
   {
-    facesStart_.emplace_back(center_ + scaledEigvecs_[d]);
-    facesStart_.emplace_back(center_ - scaledEigvecs_[d]);
+    mFacesStart.emplace_back(mCenter + mScaledEigvecs[iDim]);
+    mFacesStart.emplace_back(mCenter - mScaledEigvecs[iDim]);
   }
 }
 
 void BoundingBoxWidget::getFacesEnd()
 {
-  facesEnd_.reserve(FACES_);
-  for(int i = 0; i < FACES_; i+=2)
+  mFacesEnd.reserve(mFACES);
+  for(int iFace = 0; iFace < mFACES; iFace+=2)
   {
-    auto dist = eigvecs_[i/2] * smallestEigval_ * diskWidth_;
-    facesEnd_.emplace_back(facesStart_[i]   + dist);
-    facesEnd_.emplace_back(facesStart_[i+1] - dist);
+    auto dist = mEigvecs[iFace/2] * mSmallestEigval * mDISK_WIDTH * mScale;
+    mFacesEnd.emplace_back(mFacesStart[iFace]   + dist);
+    mFacesEnd.emplace_back(mFacesStart[iFace+1] - dist);
   }
 }
 
-void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widgetNum, int widgetIter)
+void BoundingBoxWidget::addBox(const GeometryIDGenerator& idGenerator, int widgetNum)
 {
-  const static std::vector<uint32_t> point_indicies = {
-    0, 1,  0, 2,  2, 3,  1, 3,
-    4, 5,  4, 6,  6, 7,  5, 7,
-    0, 4,  1, 5,  2, 6,  3, 7};
+  // NOTE: See index diagram at the top of the file
 
-  std::vector<std::vector<std::vector<uint32_t>>> face_indices =
+  // For accessing the list of corner points.
+  // These points are grouped by pairs to make the edges.
+  const static std::vector<uint32_t> pointIndices =
+    {0, 1,  0, 2,  2, 3,  1, 3,
+     4, 5,  4, 6,  6, 7,  5, 7,
+     0, 4,  1, 5,  2, 6,  3, 7};
+
+  // These indices access the edges to get the cylinders that are orthogonal to the eigenvector.
+  // Each index matches to the point pairs in pointIndices.
+  const static std::vector<std::vector<std::vector<uint32_t>>> faceIndices =
     {{{0, 1, 2, 3},
       {4, 5, 6, 7}},
      {{0, 4, 8, 9},
       {2, 6, 10, 11}},
      {{1, 5, 8, 10},
       {3, 7, 9, 11}}};
-  std::vector<std::vector<uint32_t>> side_indices =
+
+  // These indices access the edges to get the cylinders that are parallel to the eigenvector.
+  // Each index matches to the point pairs in pointIndices.
+  const static std::vector<std::vector<uint32_t>> sideIndices =
     {{8, 9, 10, 11},
      {1, 3, 5, 7},
      {0, 2, 4, 6}};
 
-  for (auto i = 0; i < point_indicies.size(); i += 2)
+  for (auto iPoint = 0; iPoint < pointIndices.size(); iPoint += 2)
   {
-    std::string cylinderName = widgetName(BoundingBoxWidgetSection::BOX, widgetNum, widgetsIndex_);
+    std::string cylinderName = widgetName(BoundingBoxWidgetSection::BOX, widgetNum, ++mWidgetsIndex);
     mWidgets.push_back(WidgetFactory::createCylinder(idGenerator, cylinderName,
-        smallestEigval_ * scale_ * boxScale_, ColorRGB().toString(),
-        corners_[point_indicies[i]], corners_[point_indicies[i + 1]], center_,
-        bbox_, resolution_));
-    mWidgets[++widgetsIndex_]->setToTranslate(MouseButton::LEFT);
-    mWidgets[widgetsIndex_]->setToTranslationAxis(MouseButton::RIGHT,
-                               (corners_[point_indicies[i]] - corners_[point_indicies[i + 1]]).normal());
-    translateWidgets_.push_back(mWidgets[widgetsIndex_]);
+        mSmallestEigval * mScale * mBOX_SCALE, ColorRGB().toString(),
+        mCorners[pointIndices[iPoint]], mCorners[pointIndices[iPoint + 1]], mCenter,
+        mBbox, mRESOLUTION));
+    mWidgets[mWidgetsIndex]->setToTranslate(MouseButton::LEFT);
+    mWidgets[mWidgetsIndex]->setToTranslationAxis(MouseButton::RIGHT,
+                               (mCorners[pointIndices[iPoint]] - mCorners[pointIndices[iPoint + 1]]).normal());
+    mTranslateWidgets.push_back(mWidgets[mWidgetsIndex]);
   }
-  translateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
-  translateIdsBySide_.resize(DIMENSIONS_, std::vector<std::string>());
-  for(auto& axis : translateIdsByFace_)
-    axis.resize(2, std::vector<std::string>());
+  mTranslateIdsByFace.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
+  mTranslateIdsBySide.resize(mDIMENSIONS, std::vector<std::string>());
+  for(auto& iIdVec : mTranslateIdsByFace)
+    iIdVec.resize(2, std::vector<std::string>());
 
-  for(int d = 0; d < DIMENSIONS_; ++d)
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
   {
-    for (int sign = 0; sign < 2; ++sign)
-      for(auto i : face_indices[d][sign])
-        translateIdsByFace_[d][sign].push_back(translateWidgets_[i]->uniqueID());
-    for (auto i : side_indices[d])
-      translateIdsBySide_[d].push_back(translateWidgets_[i]->uniqueID());
+    for (int iSign = 0; iSign < 2; ++iSign)
+      for(auto iFace : faceIndices[iDim][iSign])
+        mTranslateIdsByFace[iDim][iSign].push_back(mTranslateWidgets[iFace]->uniqueID());
+    for (auto iSide : sideIndices[iDim])
+      mTranslateIdsBySide[iDim].push_back(mTranslateWidgets[iSide]->uniqueID());
   }
 }
 
-void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGenerator, int widgetNum, int widgetIter)
+void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGenerator, int widgetNum)
 {
-  std::vector<std::vector<std::vector<uint32_t>>> corner_indices_by_axis =
+  // See index diagram at the top of the file
+
+  // For accessing the list of corner points.
+  // This groups corner points based on eigenvector.
+  const static std::vector<std::vector<std::vector<uint32_t>>> cornerIndicesByAxis =
     {{{0, 1, 2, 3},
       {4, 5, 6, 7}},
      {{0, 1, 4, 5},
@@ -307,114 +394,114 @@ void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGene
      {{0, 2, 4, 6},
       {1, 3, 5, 7}}};
 
-  for(int i = 0; i < CORNERS_; ++i)
+  for(int iCorner = 0; iCorner < mCORNERS; ++iCorner)
   {
-    std::string name = widgetName(BoundingBoxWidgetSection::CORNER_SCALE, widgetNum, widgetsIndex_);
+    std::string name = widgetName(BoundingBoxWidgetSection::CORNER_SCALE, widgetNum, ++mWidgetsIndex);
     mWidgets.push_back(WidgetFactory::createSphere(idGenerator, name,
-                                                   smallestEigval_ * scale_ * resizeSphereScale_,
-                                                   resizeCol_, corners_[i], center_, bbox_, resolution_));
-    Vector centerToCornerAxis = (corners_[i] - center_).normal();
-    mWidgets[++widgetsIndex_]->setToScale(MouseButton::LEFT);
-    mWidgets[widgetsIndex_]->setToScaleUnidirectional(MouseButton::RIGHT, centerToCornerAxis);
-    scaleWidgets_.push_back(mWidgets[widgetsIndex_]);
+                                                   mSmallestEigval * mScale * mRESIZE_SPHERE_SCALE,
+                                                   mRESIZE_COL, mCorners[iCorner], mCenter, mBbox, mRESOLUTION));
+    Vector centerToCornerAxis = (mCorners[iCorner] - mCenter).normal();
+    mWidgets[mWidgetsIndex]->setToScale(MouseButton::LEFT);
+    mWidgets[mWidgetsIndex]->setToScaleUnidirectional(MouseButton::RIGHT, centerToCornerAxis);
+    mScaleWidgets.push_back(mWidgets[mWidgetsIndex]);
   }
-  scaleIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
-  for(auto& axis : scaleIdsByFace_)
-    axis.resize(2, std::vector<std::string>());
+  mScaleIdsByFace.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
+  for(auto& iIdVec : mScaleIdsByFace)
+    iIdVec.resize(2, std::vector<std::string>());
 
-  for(int d = 0; d < DIMENSIONS_; ++d)
-    for(int sign = 0; sign < 2; ++sign)
-      for(auto i : corner_indices_by_axis[d][sign])
-        scaleIdsByFace_[d][sign].push_back(scaleWidgets_[i]->uniqueID());
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      for(auto iCornerAxis : cornerIndicesByAxis[iDim][iSign])
+        mScaleIdsByFace[iDim][iSign].push_back(mScaleWidgets[iCornerAxis]->uniqueID());
 }
 void BoundingBoxWidget::addFaceSphere(const Core::GeometryIDGenerator& idGenerator,
-                                      int widgetNum, int widgetIter)
+                                      int widgetNum)
 {
-  for (int i = 0; i < FACES_; ++i)
+  for (int iFace = 0; iFace < mFACES; ++iFace)
   {
-    std::string name = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widgetNum, widgetsIndex_);
+    std::string name = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widgetNum, ++mWidgetsIndex);
     mWidgets.push_back(WidgetFactory::createSphere(idGenerator, name,
-                                                   smallestEigval_ * scale_ * rotSphereScale_,
-                                                   deflCol_, facesStart_[i], center_, bbox_, resolution_));
-    mWidgets[++widgetsIndex_]->setToRotate(MouseButton::LEFT);
-    rotateWidgets_.push_back(mWidgets[widgetsIndex_]);
+                                                   mSmallestEigval * mScale * mROT_SPHERE_SCALE,
+                                                   mDEFL_COL, mFacesStart[iFace], mCenter, mBbox, mRESOLUTION));
+    mWidgets[mWidgetsIndex]->setToRotate(MouseButton::LEFT);
+    mRotateWidgets.push_back(mWidgets[mWidgetsIndex]);
   }
-  rotateIdsByFace_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
-  for(auto& axis : rotateIdsByFace_)
-    axis.resize(2, std::vector<std::string>());
+  mRotateIdsByFace.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
+  for(auto& iIdVec : mRotateIdsByFace)
+    iIdVec.resize(2, std::vector<std::string>());
 
-  for(int d = 0; d < DIMENSIONS_; ++d)
-    for(int sign = 0; sign < 2; ++sign)
-      rotateIdsByFace_[d][sign].push_back(rotateWidgets_[2*d + sign]->uniqueID());
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      mRotateIdsByFace[iDim][iSign].push_back(mRotateWidgets[2*iDim + iSign]->uniqueID());
 }
 
 void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGenerator,
-                                        glm::mat4& scaleTrans, int widgetNum, int widgetIter)
+                                        glm::mat4& scaleTrans, int widgetNum)
 {
-  scaleAxisWidgets_.resize(DIMENSIONS_, std::vector<std::vector<WidgetHandle>>());
-  for(auto &v : scaleAxisWidgets_)
-    v.resize(2, std::vector<WidgetHandle>());
+  mScaleAxisWidgets.resize(mDIMENSIONS, std::vector<std::vector<WidgetHandle>>());
+  for(auto &iWidgetVec : mScaleAxisWidgets)
+    iWidgetVec.resize(2, std::vector<WidgetHandle>());
 
-  for (int d = 0; d < DIMENSIONS_; ++d)
-    for (int sign = 0; sign < 2; ++sign)
+  for (int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for (int iSign = 0; iSign < 2; ++iSign)
     {
-      float signMultiplier = (sign == 0) ? 1.0 : -1.0;
-      std::string name = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widgetNum, widgetsIndex_);
+      float signMultiplier = (iSign == 0) ? 1.0 : -1.0;
+      std::string name = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widgetNum, ++mWidgetsIndex);
       mWidgets.push_back(WidgetFactory::createDisk(idGenerator, name,
-                                                   smallestEigval_ * scale_ * diskRadius_, resizeCol_,
-                                                   facesStart_[2*d + sign], facesEnd_[2*d + sign],
-                                                   center_, bbox_, resolution_));
-      mWidgets[++widgetsIndex_]->setToScaleAxis(MouseButton::LEFT, signMultiplier * scaledEigvecs_[d],
-                                                scaleTrans, d);
-      mWidgets[widgetsIndex_]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
-                                                            signMultiplier * scaledEigvecs_[d],
-                                                            scaleTrans, d);
-      scaleAxisWidgets_[d][sign].push_back(mWidgets[widgetsIndex_]);
+                                                   mSmallestEigval * mScale * mDISK_RADIUS, mRESIZE_COL,
+                                                   mFacesStart[2*iDim + iSign], mFacesEnd[2*iDim + iSign],
+                                                   mCenter, mBbox, mRESOLUTION));
+      mWidgets[mWidgetsIndex]->setToScaleAxis(MouseButton::LEFT, signMultiplier * mScaledEigvecs[iDim],
+                                                scaleTrans, iDim);
+      mWidgets[mWidgetsIndex]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
+                                                            signMultiplier * mScaledEigvecs[iDim],
+                                                            scaleTrans, iDim);
+      mScaleAxisWidgets[iDim][iSign].push_back(mWidgets[mWidgetsIndex]);
     }
 }
 
 void BoundingBoxWidget::getTranslateIds()
 {
-  translateIds_.clear();
-  for(auto& w : translateWidgets_)
+  mTranslateIds.clear();
+  for(auto& iWidget : mTranslateWidgets)
   {
-    translateIds_.push_back(w->uniqueID());
-    allIds_.push_back(w->uniqueID());
+    mTranslateIds.push_back(iWidget->uniqueID());
+    mAllIds.push_back(iWidget->uniqueID());
   }
 }
 
 void BoundingBoxWidget::getRotateIds()
 {
-  rotateIds_.clear();
-  for(auto& w : rotateWidgets_)
+  mRotateIds.clear();
+  for(auto& iWidget : mRotateWidgets)
   {
-    rotateIds_.push_back(w->uniqueID());
-    allIds_.push_back(w->uniqueID());
+    mRotateIds.push_back(iWidget->uniqueID());
+    mAllIds.push_back(iWidget->uniqueID());
   }
 }
 
 void BoundingBoxWidget::getScaleIds()
 {
-  scaleIds_.clear();
-  for(auto& w : scaleWidgets_)
+  mScaleIds.clear();
+  for(auto& iWidget : mScaleWidgets)
   {
-    scaleIds_.push_back(w->uniqueID());
-    allIds_.push_back(w->uniqueID());
+    mScaleIds.push_back(iWidget->uniqueID());
+    mAllIds.push_back(iWidget->uniqueID());
   }
 }
 
 void BoundingBoxWidget::getScaleAxisIds()
 {
-  scaleAxisIds_.clear();
-  scaleAxisIds_.resize(DIMENSIONS_, std::vector<std::vector<std::string>>());
-  for(auto &v : scaleAxisIds_)
-    v.resize(2, std::vector<std::string>());
-  for(int d = 0; d < DIMENSIONS_; ++d)
-    for(int sign = 0; sign < 2; ++sign)
-      for(auto& w : scaleAxisWidgets_[d][sign])
+  mScaleAxisIds.clear();
+  mScaleAxisIds.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
+  for(auto &iIdVec : mScaleAxisIds)
+    iIdVec.resize(2, std::vector<std::string>());
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+    for(int iSign = 0; iSign < 2; ++iSign)
+      for(auto& iWidget : mScaleAxisWidgets[iDim][iSign])
       {
-        scaleAxisIds_[d][sign].push_back(w->uniqueID());
-        allIds_.push_back(w->uniqueID());
+        mScaleAxisIds[iDim][iSign].push_back(iWidget->uniqueID());
+        mAllIds.push_back(iWidget->uniqueID());
       }
 }
 

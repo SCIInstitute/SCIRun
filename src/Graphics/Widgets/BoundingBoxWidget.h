@@ -54,84 +54,80 @@ namespace SCIRun {
       public:
         BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
                           double scale, const Core::Geometry::Point& center,
-                          const std::vector<Core::Geometry::Vector>& eigvecs_,
-                          const std::vector<double>& eigvals_,
-                          int widget_num, int widget_iter);
+                          const std::vector<Core::Geometry::Vector>& eigvecs,
+                          const std::vector<double>& eigvals, int widget_num);
         BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
                           double scale, const BoxPosition& pos, const Core::Geometry::Point& center,
-                          int widget_num, int widget_iter, const Core::Geometry::BBox& bbox);
-
+                          int widget_num, const Core::Geometry::BBox& bbox);
         BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
                           double scale, const Core::Geometry::Transform& trans,
-                          const Core::Geometry::Point& center, int widget_num, int widget_iter);
+                          const Core::Geometry::Point& center, int widget_num);
 
       private:
-        std::vector<WidgetHandle> translateWidgets_;
-        std::vector<WidgetHandle> rotateWidgets_;
-        std::vector<WidgetHandle> scaleWidgets_;
-        std::vector<std::vector<std::vector<WidgetHandle>>> scaleAxisWidgets_;
-        std::vector<std::string> allIds_;
-        std::vector<std::string> translateIds_;
-        std::vector<std::vector<std::vector<std::string>>> translateIdsByFace_;
-        std::vector<std::vector<std::string> > translateIdsBySide_;
-        std::vector<std::vector<std::vector<std::string>>> rotateIdsByFace_;
-        std::vector<std::vector<std::vector<std::string>>> scaleIdsByFace_;
-        std::vector<std::string> rotateIds_;
-        std::vector<std::string> scaleIds_;
-        std::vector<std::vector<std::vector<std::string>>> scaleAxisIds_;
-        std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>> translateMaps_;
-        std::vector<std::pair<WidgetMovement, std::vector<std::string>>> rotateMap_;
-        std::vector<std::pair<WidgetMovement, std::vector<std::string>>> scaleMap_;
-        std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>> scaleAxisMaps_;
-        std::vector<std::vector<std::vector<std::pair<WidgetMovement, std::vector<std::string>>>>> scaleAxisUnidirectionalMaps_;
-        const int DIMENSIONS_ = 3;
-        const int EDGES_ = 12;
-        const int CORNERS_ = 8;
-        const int FACES_ = 6;
+        int mRESOLUTION = 10;
+        const int mDIMENSIONS = 3;
+        const int mEDGES = 12;
+        const int mCORNERS = 8;
+        const int mFACES = 6;
+        const float mBOX_SCALE {1.0};
+        const float mROT_SPHERE_SCALE {2.0};
+        const float mRESIZE_SPHERE_SCALE {1.5};
+        const float mDISK_WIDTH {3.0};
+        const float mDISK_RADIUS {1.0};
+        const std::string mDEFL_POINT_COL {Core::Datatypes::ColorRGB(0.54, 0.6, 1.0).toString()};
+        const std::string mDEFL_COL {Core::Datatypes::ColorRGB(0.5, 0.5, 0.5).toString()};
+        const std::string mRESIZE_COL {Core::Datatypes::ColorRGB(0.54, 1.0, 0.60).toString()};
+        const std::string mDISK_COL = mRESIZE_COL;
+        std::vector<WidgetHandle> mTranslateWidgets;
+        std::vector<WidgetHandle> mRotateWidgets;
+        std::vector<WidgetHandle> mScaleWidgets;
+        std::vector<std::vector<std::vector<WidgetHandle>>> mScaleAxisWidgets;
+        std::vector<std::string> mAllIds;
+        std::vector<std::string> mTranslateIds;
+        std::vector<std::vector<std::vector<std::string>>> mTranslateIdsByFace;
+        std::vector<std::vector<std::string> > mTranslateIdsBySide;
+        std::vector<std::vector<std::vector<std::string>>> mRotateIdsByFace;
+        std::vector<std::vector<std::vector<std::string>>> mScaleIdsByFace;
+        std::vector<std::string> mRotateIds;
+        std::vector<std::string> mScaleIds;
+        std::vector<std::vector<std::vector<std::string>>> mScaleAxisIds;
         std::string widgetName(size_t i, size_t id, size_t iter);
 
-        int resolution_ = 10;
-        const std::string deflPointCol_ {Core::Datatypes::ColorRGB(0.54, 0.6, 1.0).toString()};
-        const std::string deflCol_ {Core::Datatypes::ColorRGB(0.5, 0.5, 0.5).toString()};
-        const std::string resizeCol_ {Core::Datatypes::ColorRGB(0.54, 1.0, 0.60).toString()};
-        std::string diskCol_ = resizeCol_;
+        int mWidgetsIndex;
+        double mScale;
+        double mSmallestEigval;
+        Core::Geometry::BBox mBbox;
+        Core::Geometry::Point mCenter;
+        std::vector<double> mEigvals;
+        std::vector<Core::Geometry::Vector> mEigvecs;
+        std::vector<Core::Geometry::Vector> mScaledEigvecs;
+        std::vector<Core::Geometry::Point> mCorners;
+        std::vector<Core::Geometry::Point> mFacesStart;
+        std::vector<Core::Geometry::Point> mFacesEnd;
 
-        int widgetsIndex_;
-        double scale_;
-        double smallestEigval_;
-        Core::Geometry::BBox bbox_;
-        Core::Geometry::Point center_;
-        std::vector<double> eigvals_;
-        std::vector<Core::Geometry::Vector> eigvecs_;
-        std::vector<Core::Geometry::Vector> scaledEigvecs_;
-        std::vector<Core::Geometry::Point> corners_;
-        std::vector<Core::Geometry::Point> facesStart_;
-        std::vector<Core::Geometry::Point> facesEnd_;
-        const float boxScale_ {1.0};
-        const float rotSphereScale_ {2.0};
-        const float resizeSphereScale_ {1.5};
-        const float diskWidth_ {0.3};
-        const float diskRadius_ {1.0};
-
-        void addBox(const Core::GeometryIDGenerator& idGenerator, int widgetNum, int widgetIter);
-        void createWidgets(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
-                           int widgetIter);
-        void initWidgetCreation(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
-                                int widgetIter);
+        void addBox(const Core::GeometryIDGenerator& idGenerator, int widgetNum);
+        void createWidgets(const Core::GeometryIDGenerator& idGenerator, int widgetNum);
+        void initWidgetCreation(const Core::GeometryIDGenerator& idGenerator, int widgetNum);
         void getEigenValuesAndEigenVectors();
         void getCorners();
         void getFacesStart();
         void getFacesEnd();
-        void addCornerSpheres(const Core::GeometryIDGenerator& idGenerator,
-                              int widgetNum, int widgetIter);
-        void addFaceSphere(const Core::GeometryIDGenerator& idGenerator, int widgetNum,
-                           int widgetIter);
+        void addCornerSpheres(const Core::GeometryIDGenerator& idGenerator, int widgetNum);
+        void addFaceSphere(const Core::GeometryIDGenerator& idGenerator, int widgetNum);
         void addFaceCylinder(const Core::GeometryIDGenerator& idGenerator,
-                             glm::mat4& scaleTrans, int widgetNum, int widgetIter);
+                             glm::mat4& scaleTrans, int widgetNum);
         void getTranslateIds();
         void getRotateIds();
         void getScaleIds();
         void getScaleAxisIds();
+        void generateWidgetPoints();
+        void assignIds();
+        void assignMoveMaps();
+        void assignTranslateMaps();
+        void assignRotateMaps();
+        void assignScaleMaps();
+        void assignScaleAxisMaps();
+        void assignScaleAxisUnidirectionalMaps();
       };
 
       using BoundingBoxWidgetHandle = SharedPointer<BoundingBoxWidget>;
