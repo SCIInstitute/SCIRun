@@ -58,6 +58,7 @@
 #include <es-fs/fscomp/StaticFS.hpp>
 #include <es-fs/FilesystemSync.hpp>
 
+#include "Core/Datatypes/Color.h"
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
@@ -187,6 +188,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(MouseButton btn, const glm::ivec2 &pos, std::vector<WidgetHandle> objList)
     {
+      mButtonClicked = btn;
       if(btn != MouseButton::NONE)
       {
         mWidgetTransform = gen::Transform();
@@ -206,7 +208,7 @@ namespace SCIRun {
             setSelectedWidgetToColor(glm::vec3(0.0, 0.0, 1.0), objList);
             break;
           }
-          updateWidget(btn, pos);
+          updateWidget(pos);
         }
         for (auto &it : mEntityList)
           mCore.removeEntity(it);
@@ -226,13 +228,14 @@ namespace SCIRun {
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(MouseButton btn, const glm::ivec2 &pos) {
+      // mButtonClicked = btn;
       if (widgetSelected_)
       {
-        updateWidget(btn, pos);
+        updateWidget(pos);
       }
       else
       {
-        mCamera->mouseMoveEvent(btn, pos);
+        mCamera->mouseMoveEvent(mButtonClicked, pos);
         updateCamera();
       }
     }
@@ -726,9 +729,18 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
+    WidgetMovement SRInterface::getMovementType()
     {
-      WidgetInfo info = mMoveInfo[btn];
+      if(widgetSelected_)
+        return mMoveInfo[mButtonClicked].moveType;
+      else
+        return WidgetMovement::NONE;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::updateWidget(const glm::ivec2& pos)
+    {
+      WidgetInfo info = mMoveInfo[mButtonClicked];
       for(auto pair : mMoveMap[info.moveType])
       {
         bool update = true;
@@ -755,12 +767,12 @@ namespace SCIRun {
           break;
         case WidgetMovement::SCALE:
           widgetTrans = scaleWidget(info, pos, true);
-          feedbackTrans = scaleWidget(info, pos, false);
+          feedbackTrans = scaleWidget(info, pos, info.negate);
           break;
         case WidgetMovement::SCALE_UNIDIRECTIONAL:
         {
           auto widgetScaleTrans = scaleWidget(info, pos, true, 0.5);
-          auto feedbackScaleTrans = scaleWidget(info, pos, false, 0.5);
+          auto feedbackScaleTrans = scaleWidget(info, pos, info.negate, 0.5);
           auto translateTrans = translateAxisWidget(info, pos, false, 0.5);
           widgetTrans = translateTrans * widgetScaleTrans;
           feedbackTrans = translateTrans * feedbackScaleTrans;
@@ -768,12 +780,12 @@ namespace SCIRun {
         }
         case WidgetMovement::SCALE_AXIS:
           widgetTrans = scaleAxisWidget(info, pos, true);
-          feedbackTrans = scaleAxisWidget(info, pos, false);
+          feedbackTrans = scaleAxisWidget(info, pos, info.negate);
           break;
         case WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL:
         {
           auto widgetScaleTrans = scaleAxisWidget(info, pos, true, 0.5);
-          auto feedbackScaleTrans = scaleAxisWidget(info, pos, false, 0.5);
+          auto feedbackScaleTrans = scaleAxisWidget(info, pos, info.negate, 0.5);
           auto translateTrans = translateAxisWidget(info, pos, false, 0.5);
           widgetTrans = translateTrans * widgetScaleTrans;
           feedbackTrans = translateTrans * feedbackScaleTrans;
@@ -787,7 +799,7 @@ namespace SCIRun {
           widgetGenTrans.transform = widgetTrans;
           feedbackGenTrans.transform = feedbackTrans;
 
-          if(pair.first == mMoveInfo[btn].moveType)
+          if(pair.first == mMoveInfo[mButtonClicked].moveType)
             mWidgetTransform = feedbackGenTrans;
           modifyWidgets(widgetGenTrans, pair.second);
         }

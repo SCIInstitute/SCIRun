@@ -110,8 +110,8 @@ namespace SCIRun {
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void inputMouseDown(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos, std::vector<Graphics::Datatypes::WidgetHandle> objList);
-      void inputMouseMove(Graphics::Datatypes::MouseButton btn, const glm::ivec2 &pos);
+      void inputMouseDown(Core::Datatypes::MouseButton btn, const glm::ivec2& pos, std::vector<Graphics::Datatypes::WidgetHandle> objList);
+      void inputMouseMove(Core::Datatypes::MouseButton btn, const glm::ivec2 &pos);
       void inputMouseUp(const glm::ivec2& pos);
       void inputMouseWheel(int32_t delta);
       void inputShiftKeyDown(bool shiftDown);
@@ -151,7 +151,7 @@ namespace SCIRun {
       std::string &getSelection()          {return mSelected;}
       gen::Transform &getWidgetTransform() {return mWidgetTransform;}
       void setSelectedWidgetToColor(glm::vec3 col, std::vector<Graphics::Datatypes::WidgetHandle> objList);
-      void initializeWidgetMovement(Graphics::Datatypes::MouseButton btn, const glm::ivec2 &pos);
+      void initializeWidgetMovement(Core::Datatypes::MouseButton btn, const glm::ivec2 &pos);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes *getClippingPlanes();
@@ -201,6 +201,7 @@ namespace SCIRun {
       size_t getScreenHeightPixels() const {return mScreenHeight;}
 
       //---------------- Widgets--------------------------------------------------------------------
+      Core::Datatypes::WidgetMovement getMovementType();
       bool isWidgetSelected();
 
     private:
@@ -214,7 +215,7 @@ namespace SCIRun {
       //---------------- Widgets -------------------------------------------------------------------
       void modifyWidgets(gen::Transform, std::vector<std::string> ids);
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
-      void updateWidget(Graphics::Datatypes::MouseButton btn, const glm::ivec2& pos);
+      void updateWidget(const glm::ivec2& pos);
       glm::mat4 rotateWidget(const glm::ivec2& pos);
       glm::mat4 translateWidget(const glm::ivec2& pos, float multiplier = 1.0);
       glm::mat4 translateAxisWidget(Graphics::Datatypes::WidgetInfo info, const glm::ivec2& pos,
@@ -340,6 +341,7 @@ namespace SCIRun {
       std::string                                      mSelected           {};       // Current selection
       GLfloat                                          mDepth              {};
       bool                                             mSelectionHack      {false};
+      Core::Datatypes::MouseButton                     mButtonClicked      {};
       std::vector<Graphics::Datatypes::WidgetInfo>     mMoveInfo           {};
       glm::vec3                                        mOriginWorld        {};
       glm::vec3                                        mOriginToSpos       {glm::vec3(0)};
@@ -350,8 +352,8 @@ namespace SCIRun {
       float                                            mSelectedDepth      {0};
       float                                            mSelectedRadius     {0};
       gen::Transform                                   mWidgetTransform    {};
-      std::unordered_map<Graphics::Datatypes::WidgetMovement,
-                         std::vector<std::pair<Graphics::Datatypes::WidgetMovement,
+      std::unordered_map<Core::Datatypes::WidgetMovement,
+                         std::vector<std::pair<Core::Datatypes::WidgetMovement,
                          std::vector<std::string>>>>   mMoveMap            {};
 
       size_t                                           mScreenWidth        {640};    // Screen width in pixels.

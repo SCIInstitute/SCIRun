@@ -77,24 +77,27 @@ void WidgetBase::setToTranslationAxis(MouseButton btn, const Vector& v)
   mMovementInfo[btn] = info;
 }
 
-void WidgetBase::setToScale(MouseButton btn, const Vector &flipAxis)
+void WidgetBase::setToScale(MouseButton btn, const Vector &flipAxis, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE);
   info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
   info.flipInvertedWidget = true;
+  info.negate = negate;
+  mMovementInfo[btn] = info;
 }
 
-void WidgetBase::setToScale(MouseButton btn)
+void WidgetBase::setToScale(MouseButton btn, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE);
   info.flipInvertedWidget = false;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, const Vector& flipAxis,
-                                glm::mat4 scaleTrans, int scaleAxisIndex)
+                                glm::mat4 scaleTrans, int scaleAxisIndex, bool negate)
 {
   if(btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS);
@@ -105,11 +108,12 @@ void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, const 
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = true;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::mat4 scaleTrans,
-                                int scaleAxisIndex)
+                                int scaleAxisIndex, bool negate)
 {
   if(btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS);
@@ -119,32 +123,35 @@ void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& scaleAxis, glm::m
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = false;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleUnidirectional(MouseButton btn, const Vector &translationAxis,
-                                          const Vector &flipAxis)
+                                          const Vector &flipAxis, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_UNIDIRECTIONAL);
   info.translationAxis = glm::vec3(translationAxis.x(), translationAxis.y(), translationAxis.z());
   info.flipAxis = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
   info.flipInvertedWidget = true;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
-void WidgetBase::setToScaleUnidirectional(MouseButton btn, const Vector &translationAxis)
+void WidgetBase::setToScaleUnidirectional(MouseButton btn, const Vector &translationAxis, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_UNIDIRECTIONAL);
   info.translationAxis = glm::vec3(translationAxis.x(), translationAxis.y(), translationAxis.z());
   info.flipInvertedWidget = false;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& scaleAxis,
                                               const Vector& flipAxis, glm::mat4 scaleTrans,
-                                              int scaleAxisIndex)
+                                              int scaleAxisIndex, bool negate)
 {
   if(btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL);
@@ -156,11 +163,12 @@ void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& sca
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = true;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& scaleAxis,
-                                              glm::mat4 scaleTrans, int scaleAxisIndex)
+                                              glm::mat4 scaleTrans, int scaleAxisIndex, bool negate)
 {
   if(btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS_UNIDIRECTIONAL);
@@ -170,12 +178,13 @@ void WidgetBase::setToScaleAxisUnidirectional(MouseButton btn, const Vector& sca
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = false;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
                                     const Vector& flipAxis, glm::mat4 scaleTrans,
-                                    int scaleAxisIndex)
+                                    int scaleAxisIndex, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS_HALF);
@@ -186,11 +195,12 @@ void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = true;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 
 void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
-                                    glm::mat4 scaleTrans, int scaleAxisIndex)
+                                    glm::mat4 scaleTrans, int scaleAxisIndex, bool negate)
 {
   if (btn == MouseButton::NONE) return;
   WidgetInfo info(WidgetMovement::SCALE_AXIS_HALF);
@@ -200,6 +210,7 @@ void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &scaleAxis,
   info.scaleAxisIndex = scaleAxisIndex;
   info.scaleTrans = scaleTrans;
   info.flipInvertedWidget = false;
+  info.negate = negate;
   mMovementInfo[btn] = info;
 }
 

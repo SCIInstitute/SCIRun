@@ -59,7 +59,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName ResetCenter;
         static const Core::Algorithms::AlgorithmParameterName DataSaved;
         //Input Field Attributes
-        //Input Field Attributes
         static const Core::Algorithms::AlgorithmParameterName InputCenterX;
         static const Core::Algorithms::AlgorithmParameterName InputCenterY;
         static const Core::Algorithms::AlgorithmParameterName InputCenterZ;
@@ -107,7 +106,9 @@ namespace SCIRun {
         void sendOutputPorts();
         void resetToInputField();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustGeometryFromTransform(const Core::Geometry::Transform& feedbackTrans);
+        void adjustGeometryFromTransform(Core::Datatypes::MouseButton btn,
+                                         Core::Datatypes::WidgetMovement move,
+                                         const Core::Geometry::Transform& feedbackTrans);
         void generateGeomsList();
         void saveToParameters();
         void loadFromParameters();
@@ -121,8 +122,10 @@ namespace SCIRun {
 
         std::vector<Graphics::Datatypes::GeometryHandle> mGeoms;
         Core::Geometry::Transform mTrans;
+        Core::Geometry::Transform mWidgetAxes;
         Core::Geometry::Transform mFieldTrans;
         bool mWidgetMoved;
+        bool mWidgetAxesRotated;
         bool mFirstRun;
       };
     }

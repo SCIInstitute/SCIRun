@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 #include <glm/glm.hpp>
+#include <Graphics/Widgets/Widget.h>
 
 namespace SCIRun
 {

@@ -64,7 +64,7 @@ public:
 
   std::shared_ptr<Render::SRInterface> getSpire() const {return mGraphics;}
   /// Retrieve mouse button from mouse event.
-  Graphics::Datatypes::MouseButton getSpireButton(QMouseEvent *event);
+  Core::Datatypes::MouseButton getSpireButton(QMouseEvent *event);
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.

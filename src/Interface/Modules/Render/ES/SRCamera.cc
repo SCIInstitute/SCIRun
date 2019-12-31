@@ -33,7 +33,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 using namespace SCIRun;
-using namespace Graphics::Datatypes;
+using namespace Core::Datatypes;
 
 namespace SCIRun {
   namespace Render {
@@ -112,7 +112,7 @@ namespace SCIRun {
           break;
 
         case SRInterface::MOUSE_NEWSCIRUN:
-          if (btn == Graphics::Datatypes::LEFT && !lockRotation_)
+          if (btn == MouseButton::LEFT && !lockRotation_)
           {
             mArcLookAt->doRotation(screenSpace);
             mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
@@ -123,7 +123,7 @@ namespace SCIRun {
               autoRotateVec = mouseMoveVec;
             lastMousePos = screenSpace;
           }
-          if (btn == Graphics::Datatypes::RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
+          if (btn == MouseButton::RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
           break;
       }
       setClippingPlanes();

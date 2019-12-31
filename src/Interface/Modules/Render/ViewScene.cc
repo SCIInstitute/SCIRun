@@ -807,6 +807,8 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::strin
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);
   vsf.selectionName = selName;
+  vsf.buttonClicked = buttonClicked_;
+  vsf.movementType = movementType_;
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
@@ -901,16 +903,17 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   auto x_window = event->x() - mGLWidget->pos().x();
   auto y_window = event->y() - mGLWidget->pos().y();
 
-  auto btn = mGLWidget->getSpireButton(event);
+  buttonClicked_ = mGLWidget->getSpireButton(event);
   auto spire = mSpire.lock();
   if (shiftdown_)
   {
-    auto objList = getObjList(x_window, y_window, btn);
-    spire->inputMouseDown(btn, glm::ivec2(x_window, y_window), objList);
+    auto objList = getObjList(x_window, y_window);
+    spire->inputMouseDown(buttonClicked_, glm::ivec2(x_window, y_window), objList);
     updateModifiedGeometries();
   }
   else
-    spire->inputMouseDown(btn, glm::ivec2(x_window, y_window), std::vector<WidgetHandle>());
+    spire->inputMouseDown(buttonClicked_, glm::ivec2(x_window, y_window), std::vector<WidgetHandle>());
+  movementType_ = spire->getMovementType();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1269,7 +1272,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
 }
 
 //--------------------------------------------------------------------------------------------------
-std::vector<WidgetHandle> ViewSceneDialog::getObjList(const int x, const int y, MouseButton btn)
+std::vector<WidgetHandle> ViewSceneDialog::getObjList(const int x, const int y)
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
   Guard lock(Modules::Render::ViewScene::mutex_.get());

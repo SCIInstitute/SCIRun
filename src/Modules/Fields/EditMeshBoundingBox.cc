@@ -59,6 +59,7 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
   mFirstRun = true;
   mWidgetMoved = true;
+  mWidgetAxesRotated = false;
 }
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
@@ -69,7 +70,7 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
     if (vsf.matchesWithModuleId(id()))
     {
       mWidgetMoved = true;
-      adjustGeometryFromTransform(vsf.transform);
+      adjustGeometryFromTransform(vsf.buttonClicked, vsf.movementType, vsf.transform);
       enqueueExecuteAgain(true);
     }
   }
@@ -79,11 +80,20 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackTrans)
+void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMovement move, const Transform& feedbackTrans)
 {
-  mFieldTrans = feedbackTrans * mFieldTrans;
-  mTrans = feedbackTrans * mTrans;
-  mTrans.orthogonalize();
+  if(btn == MouseButton::RIGHT && move == WidgetMovement::ROTATE)
+  {
+    mWidgetAxesRotated = true;
+  }
+  else
+  {
+    mFieldTrans = feedbackTrans * mFieldTrans;
+    mTrans = feedbackTrans * mTrans;
+    mTrans.orthogonalize();
+  }
+  mWidgetAxes = feedbackTrans * mWidgetAxes;
+  mWidgetAxes.orthogonalize();
 }
 
 void EditMeshBoundingBox::clearVals()
@@ -151,8 +161,15 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
   mWidgetMoved = false;
   bool inputResetRequested = transient_value_cast<bool>(state->getTransientValue(ResetToInput));
 
-  if (mFirstRun || inputsChanged() || inputResetRequested)
-    computeWidgetBox(field->vmesh()->get_bounding_box());
+  if(inputsChanged() || inputResetRequested)
+    mWidgetAxes = Transform(); // Identity matrix
+  if (mFirstRun || inputsChanged() || inputResetRequested || mWidgetAxesRotated)
+  {
+    auto fh = FieldHandle(mOutputField->deep_clone());
+    fh->vmesh()->transform(mWidgetAxes);
+    computeWidgetBox(fh->vmesh()->get_bounding_box());
+    mWidgetAxesRotated = false;
+  }
   if (mFirstRun && state->getValue(DataSaved).toBool())
   {
     mFirstRun = false;
@@ -272,7 +289,7 @@ void EditMeshBoundingBox::generateGeomsList()
 {
   static int widgetNum = 0;
   const auto bboxWidget = WidgetFactory::createBoundingBox(*this, "EMBB",
-    get_state()->getValue(Scale).toDouble(), mTrans, mTrans.get_translation_point(), widgetNum++);
+    get_state()->getValue(Scale).toDouble(), mWidgetAxes, mTrans.get_translation_point(), widgetNum++);
 
   mGeoms.clear();
   for (const auto& widget : bboxWidget->mWidgets)

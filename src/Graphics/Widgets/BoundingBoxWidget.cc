@@ -401,8 +401,8 @@ void BoundingBoxWidget::addCornerSpheres(const Core::GeometryIDGenerator& idGene
                                                    mSmallestEigval * mScale * mRESIZE_SPHERE_SCALE,
                                                    mRESIZE_COL, mCorners[iCorner], mCenter, mBbox, mRESOLUTION));
     Vector centerToCornerAxis = (mCorners[iCorner] - mCenter).normal();
-    mWidgets[mWidgetsIndex]->setToScale(MouseButton::LEFT);
-    mWidgets[mWidgetsIndex]->setToScaleUnidirectional(MouseButton::RIGHT, centerToCornerAxis);
+    mWidgets[mWidgetsIndex]->setToScale(MouseButton::LEFT, false);
+    mWidgets[mWidgetsIndex]->setToScaleUnidirectional(MouseButton::RIGHT, centerToCornerAxis, false);
     mScaleWidgets.push_back(mWidgets[mWidgetsIndex]);
   }
   mScaleIdsByFace.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
@@ -424,6 +424,7 @@ void BoundingBoxWidget::addFaceSphere(const Core::GeometryIDGenerator& idGenerat
                                                    mSmallestEigval * mScale * mROT_SPHERE_SCALE,
                                                    mDEFL_COL, mFacesStart[iFace], mCenter, mBbox, mRESOLUTION));
     mWidgets[mWidgetsIndex]->setToRotate(MouseButton::LEFT);
+    mWidgets[mWidgetsIndex]->setToRotate(MouseButton::RIGHT);
     mRotateWidgets.push_back(mWidgets[mWidgetsIndex]);
   }
   mRotateIdsByFace.resize(mDIMENSIONS, std::vector<std::vector<std::string>>());
@@ -452,10 +453,10 @@ void BoundingBoxWidget::addFaceCylinder(const Core::GeometryIDGenerator& idGener
                                                    mFacesStart[2*iDim + iSign], mFacesEnd[2*iDim + iSign],
                                                    mCenter, mBbox, mRESOLUTION));
       mWidgets[mWidgetsIndex]->setToScaleAxis(MouseButton::LEFT, signMultiplier * mScaledEigvecs[iDim],
-                                                scaleTrans, iDim);
+                                              scaleTrans, iDim, false);
       mWidgets[mWidgetsIndex]->setToScaleAxisUnidirectional(MouseButton::RIGHT,
                                                             signMultiplier * mScaledEigvecs[iDim],
-                                                            scaleTrans, iDim);
+                                                            scaleTrans, iDim, false);
       mScaleAxisWidgets[iDim][iSign].push_back(mWidgets[mWidgetsIndex]);
     }
 }

@@ -41,6 +41,30 @@
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
+  // These will give different types of widget movement through ViewScene.
+  // To use rotation and scaling, an origin point must be given.
+  enum class WidgetMovement
+  {
+    NONE,
+    TRANSLATE,
+    TRANSLATE_AXIS,
+    TRANSLATE_AXIS_HALF,
+    TRANSLATE_AXIS_REVERSE,
+    ROTATE,
+    SCALE,
+    SCALE_UNIDIRECTIONAL,
+    SCALE_AXIS,
+    SCALE_AXIS_HALF,
+    SCALE_AXIS_UNIDIRECTIONAL,
+  };
+
+  enum MouseButton {
+    NONE = 0,
+    LEFT,
+    MIDDLE,
+    RIGHT,
+    STATE_COUNT
+  };
 
   class SCISHARE ColorRGB
   {
@@ -82,6 +106,8 @@ namespace Datatypes {
   struct SCISHARE ViewSceneFeedback : ModuleFeedback
   {
     Geometry::Transform transform;
+    MouseButton buttonClicked;
+    WidgetMovement movementType;
     std::string selectionName;
     std::tuple<int,int> windowSize;
 

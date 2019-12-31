@@ -245,7 +245,9 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      std::vector<Graphics::Datatypes::WidgetHandle> getObjList(const int x, const int y, Graphics::Datatypes::MouseButton);
+      std::vector<Graphics::Datatypes::WidgetHandle> getObjList(const int x, const int y);
+      Core::Datatypes::MouseButton buttonClicked_;
+      Core::Datatypes::WidgetMovement movementType_;
       std::string restoreObjColor();
 
       //---------------- Clipping Planes -----------------------------------------------------------

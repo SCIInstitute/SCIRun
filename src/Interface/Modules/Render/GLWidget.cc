@@ -41,7 +41,7 @@
 #include <ctime>
 
 using namespace SCIRun;
-using namespace Graphics::Datatypes;
+using namespace Core::Datatypes;
 
 namespace SCIRun {
 namespace Gui {

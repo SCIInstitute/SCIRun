@@ -93,72 +93,58 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   Point center = bmin + dir/2.0 * scale;
 
   // Create glyphs
-  mWidgets.push_back(WidgetFactory::createSphere(
-                                idGenerator,
+  mWidgets.push_back(WidgetFactory::createSphere(idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, widget_num, widget_iter),
-                                sphereRadius_ * scale,
-                                sphereCol.toString(),
-                                bmin,
-                                bmin,
-                                bbox,
+                                sphereRadius_ * scale, sphereCol.toString(), bmin, bmin, bbox,
                                 resolution));
   mWidgets[0]->setToTranslate(MouseButton::LEFT);
+  mWidgets[0]->setToTranslationAxis(MouseButton::RIGHT, dir);
 
   if(show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (dir * scale * sphereRadius_);
 
-    mWidgets.push_back(WidgetFactory::createCylinder(
-                                  idGenerator,
+    mWidgets.push_back(WidgetFactory::createCylinder(idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, widget_num, widget_iter),
-                                  cylinderRadius_ * scale,
-                                  deflCol_.toString(),
-                                  cylinderStart,
-                                  center,
-                                  bmin,
-                                  bbox,
-                                  resolution));
+                                  cylinderRadius_ * scale, deflCol_.toString(), cylinderStart,
+                                  center, bmin, bbox, resolution));
     mWidgets[1]->setToTranslate(MouseButton::LEFT);
+    mWidgets[1]->setToTranslationAxis(MouseButton::RIGHT, dir);
 
-    mWidgets.push_back(WidgetFactory::createCone(
-                                  idGenerator,
+    mWidgets.push_back(WidgetFactory::createCone(idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, widget_num, widget_iter),
-                                  coneRadius_ * scale,
-                                  deflCol_.toString(),
-                                  center,
-                                  bmax,
-                                  bmin,
-                                  bbox,
-                                  true,
-                                  resolution));
+                                  coneRadius_ * scale, deflCol_.toString(), center, bmax, bmin, bbox,
+                                  true, resolution));
     mWidgets[2]->setToRotate(MouseButton::LEFT);
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
     Point dp2 = diskPos + diskWidth_ * dir * scale;
-    mWidgets.push_back(WidgetFactory::createDisk(
-                                  idGenerator,
+    mWidgets.push_back(WidgetFactory::createDisk(idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, widget_num, widget_iter),
-                                  diskRadius_ * scale,
-                                  resizeCol_.toString(),
-                                  dp1,
-                                  dp2,
-                                  bmin,
-                                  bbox,
+                                  diskRadius_ * scale, resizeCol_.toString(), dp1, dp2, bmin, bbox,
                                   resolution));
     Vector flipVec = dir.getArbitraryTangent().normal();
-    mWidgets[3]->setToScale(MouseButton::LEFT, flipVec);
+    mWidgets[3]->setToScale(MouseButton::LEFT, flipVec, true);
   }
 
-  std::vector<std::string> geom_ids;
+  std::vector<std::string> ids;
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    geom_ids.push_back(mWidgets[i]->uniqueID());
+    ids.push_back(mWidgets[i]->uniqueID());
 
-  for(int i = 0; i < 1 + 3*show_as_vector; i++)
+  mWidgets[0]->addMovementMap(WidgetMovement::TRANSLATE,
+                              std::make_pair(WidgetMovement::TRANSLATE, ids));
+  mWidgets[0]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+                              std::make_pair(WidgetMovement::TRANSLATE_AXIS, ids));
+  if(show_as_vector)
   {
-    // mWidgets[i]->connectedIds_ = geom_ids;
-    addToList(mWidgets[i]);
+    mWidgets[1]->addMovementMap(WidgetMovement::TRANSLATE,
+                                std::make_pair(WidgetMovement::TRANSLATE, ids));
+    mWidgets[1]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+                                std::make_pair(WidgetMovement::TRANSLATE_AXIS, ids));
+    mWidgets[2]->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, ids));
+    mWidgets[3]->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, ids));
   }
 }
 

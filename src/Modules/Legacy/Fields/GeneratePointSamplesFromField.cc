@@ -246,6 +246,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
           location,
           bbox,
           10);
+        seed->setToTranslate(MouseButton::LEFT);
+        std::vector<std::string> moves = {seed->uniqueID()};
+        seed->addMovementMap(WidgetMovement::TRANSLATE, std::make_pair(WidgetMovement::TRANSLATE, moves));
         impl_->pointWidgets_.push_back(seed);
       }
     }
@@ -266,6 +269,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
         oldWidget->position(),
         bbox,
         10);
+      seed->setToTranslate(MouseButton::LEFT);
+      std::vector<std::string> moves = {seed->uniqueID()};
+      seed->addMovementMap(WidgetMovement::TRANSLATE, std::make_pair(WidgetMovement::TRANSLATE, moves));
       newWidgets.push_back(seed);
     }
     impl_->pointWidgets_ = newWidgets;

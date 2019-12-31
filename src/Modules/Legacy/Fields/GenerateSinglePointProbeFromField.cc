@@ -479,7 +479,11 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
   mesh->begin(eiter);
   Point point;
   mesh->get_point(point, *eiter);
-  return WidgetFactory::createSphere(idGenerator, "GSPPFF",
-    radius, state->getValue(Parameters::ProbeColor).toString(),
-    point, point, mesh->get_bounding_box(), 10);
+  auto seed = WidgetFactory::createSphere(idGenerator, "GSPPFF", radius,
+                                          state->getValue(Parameters::ProbeColor).toString(),
+                                          point, point, mesh->get_bounding_box(), 10);
+  seed->setToTranslate(MouseButton::LEFT);
+  std::vector<std::string> moves = {seed->uniqueID()};
+  seed->addMovementMap(WidgetMovement::TRANSLATE, std::make_pair(WidgetMovement::TRANSLATE, moves));
+  return seed;
 }

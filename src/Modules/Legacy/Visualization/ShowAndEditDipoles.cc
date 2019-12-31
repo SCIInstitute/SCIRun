@@ -110,7 +110,7 @@ void ShowAndEditDipoles::execute()
   FieldInformation fi(fh);
   auto state = get_state();
 
-  // Point clouds must be linear, so we only loook for node-based data
+  // Point clouds must be linear, so we only look for node-based data
   if (!(fi.is_pointcloudmesh()))
   {
     error("Input field was not a valid point cloud.");

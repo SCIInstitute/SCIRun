@@ -40,40 +40,17 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      // These will give different types of widget movement through ViewScene.
-      // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
-      {
-        NONE,
-        TRANSLATE,
-        TRANSLATE_AXIS,
-        TRANSLATE_AXIS_HALF,
-        TRANSLATE_AXIS_REVERSE,
-        ROTATE,
-        SCALE,
-        SCALE_UNIDIRECTIONAL,
-        SCALE_AXIS,
-        SCALE_AXIS_HALF,
-        SCALE_AXIS_UNIDIRECTIONAL,
-      };
-      enum MouseButton {
-        NONE = 0,
-        LEFT,
-        MIDDLE,
-        RIGHT,
-        STATE_COUNT
-      };
-
       struct WidgetInfo
       {
-        WidgetInfo(WidgetMovement move) : moveType(move) {}
-        WidgetMovement moveType;
+        WidgetInfo(Core::Datatypes::WidgetMovement move) : moveType(move) {}
+        Core::Datatypes::WidgetMovement moveType;
         glm::mat4 scaleTrans;
         glm::vec3 origin;
         glm::vec3 scaleAxis;
         glm::vec3 flipAxis;
         glm::vec3 translationAxis;
         bool flipInvertedWidget;
+        bool negate;
         int scaleAxisIndex;
       };
 
@@ -88,30 +65,32 @@ namespace SCIRun
                    const Core::Geometry::Point& origin);
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        void setToTranslationAxis(MouseButton btn, const Core::Geometry::Vector& v);
-        void setToScale(MouseButton btn, const Core::Geometry::Vector& flipAxis);
-        void setToScale(MouseButton btn);
-        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+        void setToTranslationAxis(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& v);
+        void setToScale(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& flipAxis, bool negate);
+        void setToScale(Core::Datatypes::MouseButton btn, bool negate);
+        void setToScaleAxis(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
                             const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
-                            int scaleAxisIndex);
-        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
-                            glm::mat4 scaleTrans, int scaleAxisIndex);
-        void setToScaleUnidirectional(MouseButton btn, const Core::Geometry::Vector& translationAxis,
-                                      const Core::Geometry::Vector& flipAxis);
-        void setToScaleUnidirectional(MouseButton btn, const Core::Geometry::Vector& translationAxis);
-        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                            int scaleAxisIndex, bool negate);
+        void setToScaleAxis(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                            glm::mat4 scaleTrans, int scaleAxisIndex, bool negate);
+        void setToScaleUnidirectional(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& translationAxis,
+                                      const Core::Geometry::Vector& flipAxis, bool negate);
+        void setToScaleUnidirectional(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& translationAxis,
+                                      bool negate);
+        void setToScaleAxisUnidirectional(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
                                           const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
-                                          int scaleAxisIndex);
-        void setToScaleAxisUnidirectional(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
-                                          glm::mat4 scaleTrans, int scaleAxisIndex);
-        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                          int scaleAxisIndex, bool negate);
+        void setToScaleAxisUnidirectional(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                          glm::mat4 scaleTrans, int scaleAxisIndex, bool negate);
+        void setToScaleAxisHalf(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
                                 const Core::Geometry::Vector& flipAxis, glm::mat4 scaleTrans,
-                                int scaleAxisIndex);
-        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector& scaleAxis,
-                                glm::mat4 scaleTrans, int scaleAxisIndex);
-        void setToRotate(MouseButton btn);
-        void setToTranslate(MouseButton btn);
-        void addMovementMap(WidgetMovement key, std::pair<WidgetMovement, std::vector<std::string> > moves);
+                                int scaleAxisIndex, bool negate);
+        void setToScaleAxisHalf(Core::Datatypes::MouseButton btn, const Core::Geometry::Vector& scaleAxis,
+                                glm::mat4 scaleTrans, int scaleAxisIndex, bool negate);
+        void setToRotate(Core::Datatypes::MouseButton btn);
+        void setToTranslate(Core::Datatypes::MouseButton btn);
+        void addMovementMap(Core::Datatypes::WidgetMovement key,
+                            std::pair<Core::Datatypes::WidgetMovement, std::vector<std::string> > moves);
         glm::vec3 getFlipVector();
         glm::vec3 getScaleVector();
         glm::vec3 getTranslationVector();
@@ -123,8 +102,9 @@ namespace SCIRun
 
         glm::vec3 mOrigin;
         // std::vector<std::string> connectedIds;
-        std::unordered_map<WidgetMovement,
-                           std::vector<std::pair<WidgetMovement, std::vector<std::string>>>> mMoveMap;
+        std::unordered_map<Core::Datatypes::WidgetMovement,
+                           std::vector<std::pair<Core::Datatypes::WidgetMovement,
+                                                 std::vector<std::string>>>> mMoveMap;
         void addInitialId();
 
       protected:
