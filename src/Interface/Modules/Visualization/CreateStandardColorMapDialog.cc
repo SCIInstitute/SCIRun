@@ -71,13 +71,13 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
   auto defaultMap = StandardColorMapFactory::create();
-  auto turboIndex = colorMapNameComboBox_->findText("Turbo", Qt::MatchExactly);
-  if (turboIndex >= 0)
+  auto rainbowIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
+  if (rainbowIndex >= 0)
   {
-    colorMapNameComboBox_->setCurrentIndex(turboIndex);
+    colorMapNameComboBox_->setCurrentIndex(rainbowIndex);
   }
   else
-    qDebug() << "NO TURBO!";
+    qDebug() << "NO RAINBOW!";
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
   connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));

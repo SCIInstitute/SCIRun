@@ -47,7 +47,7 @@ CreateStandardColorMap::CreateStandardColorMap() : Module(staticInfo_)
 void CreateStandardColorMap::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::ColorMapName, std::string("Turbo"));
+  state->setValue(Parameters::ColorMapName, std::string("Rainbow"));
   state->setValue(Parameters::ColorMapResolution, 256);
   state->setValue(Parameters::ColorMapInvert, false);
   state->setValue(Parameters::ColorMapShift, 0.0);

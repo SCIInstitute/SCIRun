@@ -49,7 +49,7 @@ namespace Datatypes {
     // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
     // default input range, we need to transform by default the data into [0,1] range.
     explicit ColorMap(ColorMapStrategyHandle color,
-      const std::string& name = "Turbo", const size_t resolution = 256,
+      const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = .5, const double rescale_shift = 1.0,
                         const std::vector<double>& alphaPoints = {});
@@ -114,7 +114,7 @@ namespace Datatypes {
   {
   public:
    // See explanation for defaults above in ColorMap Constructor
-    static ColorMapHandle create(const std::string& name = "Turbo", const size_t &resolution = 256,
+    static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
                                     const double &shift = 0.0, const bool &invert = false,
                                     const double &rescale_scale = .5, const double &rescale_shift = 1.0,
                                     const std::vector<double>& alphaPoints = {});
