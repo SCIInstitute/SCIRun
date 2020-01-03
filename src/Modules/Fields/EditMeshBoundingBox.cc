@@ -92,6 +92,11 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMov
     mTrans = feedbackTrans * mTrans;
     mTrans.orthogonalize();
   }
+  if(move == WidgetMovement::ROTATE)
+  {
+    mWidgetAxesOrthonormal = feedbackTrans * mWidgetAxesOrthonormal;
+    mWidgetAxesOrthonormal.orthogonalize();
+  }
   mWidgetAxes = feedbackTrans * mWidgetAxes;
   mWidgetAxes.orthogonalize();
 }
@@ -162,12 +167,22 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
   bool inputResetRequested = transient_value_cast<bool>(state->getTransientValue(ResetToInput));
 
   if(inputsChanged() || inputResetRequested)
-    mWidgetAxes = Transform(); // Identity matrix
+  {
+    mTrans = Transform();
+    mWidgetAxes = Transform();
+    mWidgetAxesOrthonormal = Transform();
+  }
   if (mFirstRun || inputsChanged() || inputResetRequested || mWidgetAxesRotated)
   {
-    auto fh = FieldHandle(mOutputField->deep_clone());
+    auto ogPos = mTrans.get_translation_point();
+    auto fh = FieldHandle(field->deep_clone());
+
     fh->vmesh()->transform(mWidgetAxes);
     computeWidgetBox(fh->vmesh()->get_bounding_box());
+
+    mTrans = mWidgetAxesOrthonormal * Transform(Point(0,0,0), mEigvecs[0]*mEigvals[0], mEigvecs[1]*mEigvals[1], mEigvecs[2]*mEigvals[2]);
+    for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+      mTrans.set_mat_val(iDim, 3, ogPos[iDim]);
     mWidgetAxesRotated = false;
   }
   if (mFirstRun && state->getValue(DataSaved).toBool())
@@ -223,7 +238,7 @@ void EditMeshBoundingBox::sendOutputPorts()
 void EditMeshBoundingBox::resetToInputField()
 {
   mFieldTrans = Transform(); // Identity matrix
-  mTrans = Transform(mPos, mEigvecs[0]*mEigvals[0], mEigvecs[1]*mEigvals[1], mEigvecs[2]*mEigvals[2]);
+  // mTrans = Transform(mPos, mEigvecs[0]*mEigvals[0], mEigvecs[1]*mEigvals[1], mEigvecs[2]*mEigvals[2]);
   updateInputFieldAttributes();
 }
 
@@ -289,7 +304,7 @@ void EditMeshBoundingBox::generateGeomsList()
 {
   static int widgetNum = 0;
   const auto bboxWidget = WidgetFactory::createBoundingBox(*this, "EMBB",
-    get_state()->getValue(Scale).toDouble(), mWidgetAxes, mTrans.get_translation_point(), widgetNum++);
+    get_state()->getValue(Scale).toDouble(), mTrans, mTrans.get_translation_point(), widgetNum++);
 
   mGeoms.clear();
   for (const auto& widget : bboxWidget->mWidgets)

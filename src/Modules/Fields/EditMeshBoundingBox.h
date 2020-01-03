@@ -123,6 +123,7 @@ namespace SCIRun {
         std::vector<Graphics::Datatypes::GeometryHandle> mGeoms;
         Core::Geometry::Transform mTrans;
         Core::Geometry::Transform mWidgetAxes;
+        Core::Geometry::Transform mWidgetAxesOrthonormal;
         Core::Geometry::Transform mFieldTrans;
         bool mWidgetMoved;
         bool mWidgetAxesRotated;
