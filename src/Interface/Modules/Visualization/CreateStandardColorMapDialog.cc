@@ -71,10 +71,10 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
   auto defaultMap = StandardColorMapFactory::create();
-  auto rainboxIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
-  if (rainboxIndex >= 0)
+  auto rainbowIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
+  if (rainbowIndex >= 0)
   {
-    colorMapNameComboBox_->setCurrentIndex(rainboxIndex);
+    colorMapNameComboBox_->setCurrentIndex(rainbowIndex);
   }
   else
     qDebug() << "NO RAINBOW!";
