@@ -44,8 +44,8 @@ varying vec4    vPosView;
 void main( void )
 {
   vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * uModel * vPosWorld;
+  vPosView = uView * vPosWorld;
   vNormal = normalize((uView * uModel * vec4(aNormal, 0.0)).xyz);
-  
+
   gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }
