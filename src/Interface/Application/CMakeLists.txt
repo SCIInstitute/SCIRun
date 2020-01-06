@@ -115,6 +115,7 @@ SET(Interface_Application_FORMS
   Preferences.ui
   ProvenanceWindow.ui
   PythonWizardCodePage.ui
+  PythonSideWidget.ui
   IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui

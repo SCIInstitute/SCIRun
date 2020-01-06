@@ -40,6 +40,7 @@
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
 #include "ui_PythonWizardCodePage.h"
+#include "ui_PythonSideWidget.h"
 #include "ui_IntWithPythonPage.h"
 
 using namespace SCIRun::Gui;
@@ -312,10 +313,16 @@ QWizardPage* NewUserWizard::createOtherSettingsPage()
   return new OtherSettingsWizardPage(this);
 }
 
+class PythonSideWidget : public QWidget, public Ui::PythonSideWidget
+{
+
+};
+
 PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : displayPython_(display), QWizard(parent)
 {
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
+  setSideWidget(new PythonSideWidget);
 
   resize(1000,450);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
@@ -676,8 +683,7 @@ QWizardPage* PythonWizard::createAddIntPyPage()
   page->setTitle("Implementing InterfaceWithPython");
   page->setSubTitle("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
     "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
-    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
-    "The network should look like the image to the right.");
+    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module.");
   auto layout = new QVBoxLayout;
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/Wizard/int_with_py_network.png"));
