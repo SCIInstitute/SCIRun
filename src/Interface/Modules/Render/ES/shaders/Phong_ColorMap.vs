@@ -45,7 +45,7 @@ varying vec2    vTexCoords;
 void main( void )
 {
   vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * uModel * vPosWorld;
+  vPosView = uView * vPosWorld;
   vNormal = normalize((uView * uModel * vec4(aNormal, 0.0)).xyz);
   vTexCoords = aTexCoords;
 
