@@ -38,6 +38,7 @@
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
+#include <Core/Datatypes/Color.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -58,7 +59,6 @@
 #include <es-fs/fscomp/StaticFS.hpp>
 #include <es-fs/FilesystemSync.hpp>
 
-#include "Core/Datatypes/Color.h"
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
@@ -613,8 +613,8 @@ namespace SCIRun {
               widgetSelected_ = true;
 
               mMoveInfo = obj->getMovementInfo();
-              mOriginWorld = obj->mOrigin;
-              mMoveMap = obj->mMoveMap;
+              mOriginWorld = obj->origin_;
+              mMoveMap = obj->moveMap_;
             }
           }
         }
@@ -648,7 +648,7 @@ namespace SCIRun {
 
     void SRInterface::initializeWidgetMovement(MouseButton btn, const glm::ivec2& pos)
     {
-      if (mSelected == "") return;
+      if (mSelected.empty()) return;
 
       //Calculate w value
       float zFar = mCamera->getZFar();

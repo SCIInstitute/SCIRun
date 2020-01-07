@@ -93,58 +93,58 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   Point center = bmin + dir/2.0 * scale;
 
   // Create glyphs
-  mWidgets.push_back(WidgetFactory::createSphere(idGenerator,
+  widgets_.push_back(WidgetFactory::createSphere(idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, widget_num, widget_iter),
                                 sphereRadius_ * scale, sphereCol.toString(), bmin, bmin, bbox,
                                 resolution));
-  mWidgets[0]->setToTranslate(MouseButton::LEFT);
-  mWidgets[0]->setToTranslationAxis(MouseButton::RIGHT, dir);
+  widgets_[0]->setToTranslate(MouseButton::LEFT);
+  widgets_[0]->setToTranslationAxis(MouseButton::RIGHT, dir);
 
   if(show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (dir * scale * sphereRadius_);
 
-    mWidgets.push_back(WidgetFactory::createCylinder(idGenerator,
+    widgets_.push_back(WidgetFactory::createCylinder(idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, widget_num, widget_iter),
                                   cylinderRadius_ * scale, deflCol_.toString(), cylinderStart,
                                   center, bmin, bbox, resolution));
-    mWidgets[1]->setToTranslate(MouseButton::LEFT);
-    mWidgets[1]->setToTranslationAxis(MouseButton::RIGHT, dir);
+    widgets_[1]->setToTranslate(MouseButton::LEFT);
+    widgets_[1]->setToTranslationAxis(MouseButton::RIGHT, dir);
 
-    mWidgets.push_back(WidgetFactory::createCone(idGenerator,
+    widgets_.push_back(WidgetFactory::createCone(idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, widget_num, widget_iter),
                                   coneRadius_ * scale, deflCol_.toString(), center, bmax, bmin, bbox,
                                   true, resolution));
-    mWidgets[2]->setToRotate(MouseButton::LEFT);
+    widgets_[2]->setToRotate(MouseButton::LEFT);
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
     Point dp2 = diskPos + diskWidth_ * dir * scale;
-    mWidgets.push_back(WidgetFactory::createDisk(idGenerator,
+    widgets_.push_back(WidgetFactory::createDisk(idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, widget_num, widget_iter),
                                   diskRadius_ * scale, resizeCol_.toString(), dp1, dp2, bmin, bbox,
                                   resolution));
     Vector flipVec = dir.getArbitraryTangent().normal();
-    mWidgets[3]->setToScale(MouseButton::LEFT, flipVec, true);
+    widgets_[3]->setToScale(MouseButton::LEFT, flipVec, true);
   }
 
   std::vector<std::string> ids;
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    ids.push_back(mWidgets[i]->uniqueID());
+    ids.push_back(widgets_[i]->uniqueID());
 
-  mWidgets[0]->addMovementMap(WidgetMovement::TRANSLATE,
+  widgets_[0]->addMovementMap(WidgetMovement::TRANSLATE,
                               std::make_pair(WidgetMovement::TRANSLATE, ids));
-  mWidgets[0]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+  widgets_[0]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
                               std::make_pair(WidgetMovement::TRANSLATE_AXIS, ids));
   if(show_as_vector)
   {
-    mWidgets[1]->addMovementMap(WidgetMovement::TRANSLATE,
+    widgets_[1]->addMovementMap(WidgetMovement::TRANSLATE,
                                 std::make_pair(WidgetMovement::TRANSLATE, ids));
-    mWidgets[1]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
+    widgets_[1]->addMovementMap(WidgetMovement::TRANSLATE_AXIS,
                                 std::make_pair(WidgetMovement::TRANSLATE_AXIS, ids));
-    mWidgets[2]->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, ids));
-    mWidgets[3]->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, ids));
+    widgets_[2]->addMovementMap(WidgetMovement::ROTATE, std::make_pair(WidgetMovement::ROTATE, ids));
+    widgets_[3]->addMovementMap(WidgetMovement::SCALE, std::make_pair(WidgetMovement::SCALE, ids));
   }
 }
 

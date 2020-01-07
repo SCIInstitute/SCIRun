@@ -98,24 +98,18 @@ namespace SCIRun
         int getScaleAxisIndex();
         bool getFlipInvertedWidget();
         std::vector<WidgetInfo> getMovementInfo();
-        glm::vec3 mTranslationAxis;
+        glm::vec3 translationAxis_;
 
-        glm::vec3 mOrigin;
-        // std::vector<std::string> connectedIds;
+        glm::vec3 origin_;
         std::unordered_map<Core::Datatypes::WidgetMovement,
                            std::vector<std::pair<Core::Datatypes::WidgetMovement,
-                                                 std::vector<std::string>>>> mMoveMap;
+                                                 std::vector<std::string>>>> moveMap_;
         void addInitialId();
 
       protected:
-        Core::Geometry::Point mPosition;
+        Core::Geometry::Point position_;
       private:
-        std::vector<WidgetInfo> mMovementInfo;
-        glm::vec3 mScaleAxis;
-        glm::vec3 mFlipAxis;
-        int mScaleAxisIndex;
-        glm::mat4 mScaleTrans;
-        bool mFlipInvertedWidget;
+        std::vector<WidgetInfo> movementInfo_;
       };
 
         using WidgetHandle = SharedPointer<WidgetBase>;
@@ -139,7 +133,7 @@ namespace SCIRun
         template <typename WidgetIter>
           CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
                           WidgetIter begin, WidgetIter end)
-          : WidgetBase(idGenerator, tag, true), mWidgets(begin, end)
+          : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
           {}
         CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
           : WidgetBase(idGenerator, tag, true)
@@ -149,7 +143,7 @@ namespace SCIRun
         void addToList(WidgetHandle handle);
         std::vector<std::string> getListOfConnectedIds();
 
-        std::vector<WidgetHandle> mWidgets;
+        std::vector<WidgetHandle> widgets_;
       private:
       };
 

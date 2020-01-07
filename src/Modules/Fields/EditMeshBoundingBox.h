@@ -47,7 +47,7 @@ namespace SCIRun {
         public Has3OutputPorts < FieldPortTag, GeometryPortTag, MatrixPortTag >
       {
       public:
-        const int mDIMENSIONS = 3;
+        static const int mDIMENSIONS = 3;
         EditMeshBoundingBox();
         void execute() override;
         void setStateDefaults() override;
@@ -115,19 +115,19 @@ namespace SCIRun {
         std::string convertForLabel(double coord);
         void updateInputFieldAttributes();
 
-        Core::Geometry::Point mPos;
-        std::vector<Core::Geometry::Vector> mEigvecs;
-        std::vector<double> mEigvals;
-        FieldHandle mOutputField;
+        Core::Geometry::Point pos_;
+        std::vector<Core::Geometry::Vector> eigvecs_;
+        std::vector<double> eigvals_;
+        FieldHandle outputField_;
 
-        std::vector<Graphics::Datatypes::GeometryHandle> mGeoms;
-        Core::Geometry::Transform mTrans;
-        Core::Geometry::Transform mWidgetAxes;
-        Core::Geometry::Transform mWidgetAxesOrthonormal;
-        Core::Geometry::Transform mFieldTrans;
-        bool mWidgetMoved;
-        bool mWidgetAxesRotated;
-        bool mFirstRun;
+        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+        Core::Geometry::Transform trans_;
+        Core::Geometry::Transform widgetAxes_;
+        Core::Geometry::Transform widgetAxesOrthonormal_;
+        Core::Geometry::Transform fieldTrans_;
+        bool widgetMoved_;
+        bool widgetAxesRotated_;
+        bool firstRun_;
       };
     }
   }
