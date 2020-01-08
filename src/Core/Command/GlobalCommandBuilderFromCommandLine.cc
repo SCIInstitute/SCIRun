@@ -79,6 +79,13 @@ using namespace SCIRun::Core::Algorithms;
     if (params->dataDirectory())
       q->enqueue(cmdFactory_->create(GlobalCommands::SetupDataDirectory));
 
+    if (params->importNetworkFile())
+    {
+      auto import = cmdFactory_->create(GlobalCommands::ImportNetworkFile);
+      import->set(Variables::Filename, *params->importNetworkFile());
+      q->enqueue(import);
+    }
+
     if (params->pythonScriptFile())
     {
       if (params->executeNetworkAndQuit())
