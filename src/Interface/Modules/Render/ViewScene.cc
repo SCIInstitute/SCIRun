@@ -833,7 +833,6 @@ void ViewSceneDialog::runDelayedGC()
     auto spire = mSpire.lock();
     if (!spire) return;
     spire->runGCOnNextExecution();
-    std::cout << "ran gc\n";
     delayedGCRequested = false;
   }
   delayGC = false;
