@@ -125,7 +125,8 @@ using namespace SCIRun::Core::Algorithms;
     }
     else if (params->disableGui() && !params->interactiveMode())
     {
-      std::cout << "No input files: run with GUI or in interactive mode (-i)" << std::endl;
+      if (!params->importNetworkFile())
+        std::cout << "No input files: run with GUI or in interactive mode (-i)" << std::endl;
       q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
     }
 
