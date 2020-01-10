@@ -1012,6 +1012,7 @@ ModuleWidget::~ModuleWidget()
     removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
+  removeWidgetFromExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
 
