@@ -83,7 +83,14 @@ using namespace SCIRun::Core::Algorithms;
     {
       auto import = cmdFactory_->create(GlobalCommands::ImportNetworkFile);
       import->set(Variables::Filename, *params->importNetworkFile());
+
+      if (params->disableGui())
+        import->set(Core::Algorithms::AlgorithmParameterName("QuietMode"), true);
+
       q->enqueue(import);
+      auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
+      save->set(Variables::Filename, (*params->importNetworkFile()) + "_imported.srn5");
+      q->enqueue(save);
     }
 
     if (params->pythonScriptFile())
