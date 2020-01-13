@@ -39,8 +39,8 @@
 
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
+#include "ui_PythonWizardPage.h"
 #include "ui_PythonWizardCodePage.h"
-#include "ui_PythonSideWidget.h"
 #include "ui_IntWithPythonPage.h"
 
 using namespace SCIRun::Gui;
@@ -313,42 +313,52 @@ QWizardPage* NewUserWizard::createOtherSettingsPage()
   return new OtherSettingsWizardPage(this);
 }
 
-class PythonSideWidget : public QWidget, public Ui::PythonSideWidget
-{
-
-};
 
 PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : displayPython_(display), QWizard(parent)
 {
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
-  setSideWidget(new PythonSideWidget);
+  if(nextId()-1 != startId()) {
+    setOption(HaveCustomButton1, true);
+    setButtonText(CustomButton1, "Back To Home");
+    connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
+  }
 
   resize(1000,450);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
-  addPage(createIntroPage());
-  addPage(createSaveNetworkPage());
-  addPage(createLatVolPage());
-  addPage(createEditMeshBoundingBoxPage());
-  addPage(createConnectionPage());
-  addPage(createCalculateFieldDataPage());
-  addPage(createExtractIsosurfacePage());
-  addPage(createShowFieldPage());
-  addPage(createViewScenePage());
-  addPage(createExecutePage());
+  setPage(Page_Home, createIntroPage());
+  setPage(Page_Create_Intro, createCreateIntroPage());
+  setPage(Page_Save, createSaveNetworkPage());
+  setPage(Page_LatVol, createLatVolPage());
+  setPage(Page_MeshBox, createEditMeshBoundingBoxPage());
+  setPage(Page_Connection, createConnectionPage());
+  setPage(Page_CalcData, createCalculateFieldDataPage());
+  setPage(Page_Iso, createExtractIsosurfacePage());
+  setPage(Page_ShowField, createShowFieldPage());
+  setPage(Page_ViewScene, createViewScenePage());
+  setPage(Page_Execute, createExecutePage());
 
-  addPage(createLoadingNetworkIntroPage());
-  addPage(createLoadNetworkPage());
+  setPage(Page_Load_Intro, createLoadingNetworkIntroPage());
+  setPage(Page_Load, createLoadNetworkPage());
 
-  addPage(createWandIntroPage());
-  addPage(createWandPage());
+  setPage(Page_Wand_Intro, createWandIntroPage());
+  setPage(Page_Wand, createWandPage());
 
-  addPage(createInterfaceIntroPage());
-  addPage(createBaseNetworkPage());
-  addPage(createAddIntPyPage());
-  addPage(createSetPythonPage());
+  setPage(Page_Int_Intro, createInterfaceIntroPage());
+  setPage(Page_Base, createBaseNetworkPage());
+  setPage(Page_IntPy, createAddIntPyPage());
+  setPage(Page_SetPy, createSetPythonPage());
 
+  setStartId(Page_Home);
+
+
+}
+
+void PythonWizard::customClicked(int which) {
+  if (which == 6) {
+    restart();
+  }
 }
 
 PythonWizard::~PythonWizard()
@@ -356,30 +366,68 @@ PythonWizard::~PythonWizard()
   showPrefs();
 }
 
+void PythonWizard::switchPage(QAbstractButton* button)
+{
+  QString text = button -> text();
+  if(text == "Creating Network with Python Console") {
+    while(nextId()-1 != Page_Create_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Loading a Network") {
+    while(nextId()-1 != Page_Load_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Using Wand Feature") {
+    while(nextId()-1 != Page_Wand_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Using InterfaceWithPython Module") {
+    while(nextId()-1 != Page_Int_Intro) {
+      next();
+    }
+  }
+
+}
+
+
 void PythonWizard::showPrefs()
 {
   if (showPrefs_)
     SCIRunMainWindow::Instance()->actionPreferences_->trigger();
 }
 
+class PythonWizardPage : public QWizardPage, public Ui::PythonWizardPage
+{
+public:
+  PythonWizardPage()
+  {
+    setupUi(this);
+  }
+};
+
 QWizardPage* PythonWizard::createIntroPage()
 {
-  auto page = new QWizardPage;
+  auto page = new PythonWizardPage;
   page->setTitle("Welcome to Python Wizard");
 
-  page->setSubTitle("This wizard will help you implement Python in SCIRun for the first time.");
-  auto layout = new QVBoxLayout;
+  page->textArea->setText("This wizard will help you implement Python in SCIRun for the first time.");
   auto docLabel = new QLabel(
     "<p><a href = \"https://github.com/SCIInstitute/scirun.pages/blob/gh-pages/python.md\">Python Documentation</a>"
   );
-  docLabel->setStyleSheet("QLabel { background-color : gray; color : blue; }");
+  docLabel->setStyleSheet("QLabel {background-color : darkGray; color : blue; }");
   docLabel->setAlignment(Qt::AlignLeft);
   docLabel->setOpenExternalLinks(true);
-  layout->addWidget(docLabel);
+  page->textLayout->addWidget(docLabel);
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
-  layout->addWidget(pic);
-  page->setLayout(layout);
+  page->textLayout->addWidget(pic);
+  connect(page->tableOfContents, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(switchPage(QAbstractButton*)) );
   return page;
 }
 
@@ -391,6 +439,16 @@ public:
     setupUi(this);
   }
 };
+
+QWizardPage* PythonWizard::createCreateIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Creating a Network");
+  page->setSubTitle("This section of the wizard will demonstrate how to create a network using the Python Console");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
 
 QWizardPage* PythonWizard::createSaveNetworkPage()
 {
