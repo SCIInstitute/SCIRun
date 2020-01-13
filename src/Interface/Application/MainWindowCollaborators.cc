@@ -318,11 +318,9 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
 {
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
-  if(nextId()-1 != startId()) {
-    setOption(HaveCustomButton1, true);
-    setButtonText(CustomButton1, "Back To Home");
-    connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
-  }
+  setOption(HaveCustomButton1, true);
+  setButtonText(CustomButton1, "Back To Home");
+
 
   resize(1000,450);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
@@ -352,7 +350,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
 
   setStartId(Page_Home);
 
-
+  connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
 }
 
 void PythonWizard::customClicked(int which) {
@@ -741,7 +739,8 @@ QWizardPage* PythonWizard::createAddIntPyPage()
   page->setTitle("Implementing InterfaceWithPython");
   page->setSubTitle("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
     "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
-    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module.");
+    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
+    "The network should look like the image to the right.");
   auto layout = new QVBoxLayout;
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/Wizard/int_with_py_network.png"));
