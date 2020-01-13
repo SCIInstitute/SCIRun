@@ -900,8 +900,8 @@ void ViewSceneDialog::resizingDone()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  auto x_window = event->x() - mGLWidget->pos().x();
-  auto y_window = event->y() - mGLWidget->pos().y();
+  int x_window = event->x() - mGLWidget->pos().x();
+  int y_window = event->y() - mGLWidget->pos().y();
 
   buttonClicked_ = mGLWidget->getSpireButton(event);
   auto spire = mSpire.lock();

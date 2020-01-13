@@ -353,8 +353,8 @@ namespace SCIRun {
       float                                            mSelectedRadius     {0};
       gen::Transform                                   mWidgetTransform    {};
       std::unordered_map<Core::Datatypes::WidgetMovement,
-                         std::vector<std::pair<Core::Datatypes::WidgetMovement,
-                         std::vector<std::string>>>>   mMoveMap            {};
+                       std::vector<std::pair<Core::Datatypes::WidgetMovement, std::vector<std::string>>>,
+                       Core::Datatypes::EnumClassHash> mMoveMap            {};
 
       size_t                                           mScreenWidth        {640};    // Screen width in pixels.
       size_t                                           mScreenHeight       {480};    // Screen height in pixels.

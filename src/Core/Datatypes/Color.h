@@ -58,6 +58,15 @@ namespace Datatypes {
     SCALE_AXIS_UNIDIRECTIONAL,
   };
 
+  struct EnumClassHash
+  {
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+      return static_cast<std::size_t>(t);
+    }
+  };
+
   enum MouseButton {
     NONE = 0,
     LEFT,

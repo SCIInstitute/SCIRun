@@ -103,7 +103,8 @@ namespace SCIRun
         glm::vec3 origin_;
         std::unordered_map<Core::Datatypes::WidgetMovement,
                            std::vector<std::pair<Core::Datatypes::WidgetMovement,
-                                                 std::vector<std::string>>>> moveMap_;
+                                                 std::vector<std::string>>>,
+                           Core::Datatypes::EnumClassHash> moveMap_;
         void addInitialId();
 
       protected:
