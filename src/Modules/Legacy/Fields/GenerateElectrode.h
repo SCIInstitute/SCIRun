@@ -29,17 +29,11 @@
 #ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 #define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 
-//#include <Core/Datatypes/Geometry.h>
-//#include <Core/GeometryPrimitives/BBox.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
-//#include <Graphics/Datatypes/GeometryImpl.h>
-//#include <Graphics/Widgets/Widget.h>
-//#include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Fields/share.h>
 
-
-namespace SCIRun {
-
+namespace SCIRun
+{
   namespace Core
   {
     namespace Algorithms
@@ -56,8 +50,10 @@ namespace SCIRun {
     }
   }
 
-  namespace Modules {
-    namespace Fields {
+  namespace Modules
+  {
+    namespace Fields
+    {
 
       class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
