@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)

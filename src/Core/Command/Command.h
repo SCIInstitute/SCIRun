@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Command/Command.h
 
 #ifndef CORE_COMMAND_COMMAND_H

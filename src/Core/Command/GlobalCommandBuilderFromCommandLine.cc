@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Command/GlobalCommandBuilderFromCommandLine.cc
 
 #include <iostream>

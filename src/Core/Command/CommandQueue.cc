@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Command/CommandQueue.h>
 
 using namespace SCIRun::Core::Commands;
