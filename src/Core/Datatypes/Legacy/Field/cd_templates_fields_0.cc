@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_0.cc
+
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -90,13 +92,13 @@ namespace SCIRun
   template class GenericField<LVMesh, CFDlonglongBasis,FData3d<long long, LVMesh> >;
   template class GenericField<LVMesh, CFDshortBasis,   FData3d<short, LVMesh> >;
   template class GenericField<LVMesh, CFDcharBasis,    FData3d<char, LVMesh> >;
-  template class GenericField<LVMesh, CFDuintBasis,    
+  template class GenericField<LVMesh, CFDuintBasis,
     FData3d<unsigned int, LVMesh> >;
-  template class GenericField<LVMesh, CFDushortBasis,  
+  template class GenericField<LVMesh, CFDushortBasis,
     FData3d<unsigned short, LVMesh> >;
-  template class GenericField<LVMesh, CFDucharBasis,   
+  template class GenericField<LVMesh, CFDucharBasis,
     FData3d<unsigned char, LVMesh> >;
-  template class GenericField<LVMesh, CFDulongBasis,   
+  template class GenericField<LVMesh, CFDulongBasis,
     FData3d<unsigned long, LVMesh> >;
 
   //Linear
@@ -116,28 +118,28 @@ namespace SCIRun
 }
 
 PersistentTypeID backwards_compat_LVM("LatVolMesh", "Mesh",
-  LVMesh::maker,  
+  LVMesh::maker,
   LVMesh::maker);
 
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFT("LatVolField<Tensor>", "Field",
-		      GenericField<LVMesh, FDTensorBasis, 
-		      FData3d<Tensor, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDTensorBasis, 
+		      GenericField<LVMesh, FDTensorBasis,
+		      FData3d<Tensor, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDTensorBasis,
 		      FData3d<Tensor, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFV("LatVolField<Vector>", "Field",
-		      GenericField<LVMesh, FDVectorBasis, 
-		      FData3d<Vector, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDVectorBasis, 
+		      GenericField<LVMesh, FDVectorBasis,
+		      FData3d<Vector, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDVectorBasis,
 		      FData3d<Vector, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFd("LatVolField<double>", "Field",
-		      GenericField<LVMesh, FDdoubleBasis, 
-		      FData3d<double, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDdoubleBasis, 
+		      GenericField<LVMesh, FDdoubleBasis,
 		      FData3d<double, LVMesh> >::maker,
-		      GenericField<LVMesh, NDBasis, 
+		      GenericField<LVMesh, CFDdoubleBasis,
+		      FData3d<double, LVMesh> >::maker,
+		      GenericField<LVMesh, NDBasis,
 		      FData3d<double, LVMesh> >::maker);
 PersistentTypeID
 backwards_compat_LVFcd("LatVolField<complex>", "Field",
@@ -147,51 +149,51 @@ backwards_compat_LVFcd("LatVolField<complex>", "Field",
           FData3d<std::complex<double>, LVMesh> >::maker,
           GenericField<LVMesh, NDBasis,
           FData3d<std::complex<double>, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFf("LatVolField<float>", "Field",
-		      GenericField<LVMesh, FDfloatBasis, 
-		      FData3d<float, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDfloatBasis, 
+		      GenericField<LVMesh, FDfloatBasis,
+		      FData3d<float, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDfloatBasis,
 		      FData3d<float, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFi("LatVolField<int>", "Field",
-		      GenericField<LVMesh, FDintBasis, 
-		      FData3d<int, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDintBasis, 
+		      GenericField<LVMesh, FDintBasis,
+		      FData3d<int, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDintBasis,
 		      FData3d<int, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFs("LatVolField<short>", "Field",
-		      GenericField<LVMesh, FDshortBasis, 
-		      FData3d<short, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDshortBasis, 
+		      GenericField<LVMesh, FDshortBasis,
+		      FData3d<short, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDshortBasis,
 		      FData3d<short, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFc("LatVolField<char>", "Field",
-		      GenericField<LVMesh, FDcharBasis, 
-		      FData3d<char, LVMesh> >::maker, 
-		      GenericField<LVMesh, CFDcharBasis, 
+		      GenericField<LVMesh, FDcharBasis,
+		      FData3d<char, LVMesh> >::maker,
+		      GenericField<LVMesh, CFDcharBasis,
 		      FData3d<char, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFui("LatVolField<unsigned_int>", "Field",
-		       GenericField<LVMesh, FDuintBasis, 
-		       FData3d<unsigned int, LVMesh> >::maker, 
-		       GenericField<LVMesh, CFDuintBasis, 
+		       GenericField<LVMesh, FDuintBasis,
+		       FData3d<unsigned int, LVMesh> >::maker,
+		       GenericField<LVMesh, CFDuintBasis,
 		       FData3d<unsigned int, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFus("LatVolField<unsigned_short>", "Field",
-		       GenericField<LVMesh, FDushortBasis, 
+		       GenericField<LVMesh, FDushortBasis,
 		       FData3d<unsigned short, LVMesh> >::maker,
-		       GenericField<LVMesh, CFDushortBasis, 
+		       GenericField<LVMesh, CFDushortBasis,
 		       FData3d<unsigned short, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFuc("LatVolField<unsigned_char>", "Field",
-		       GenericField<LVMesh, FDucharBasis, 
-		       FData3d<unsigned char, LVMesh> >::maker, 
-		       GenericField<LVMesh, CFDucharBasis, 
+		       GenericField<LVMesh, FDucharBasis,
+		       FData3d<unsigned char, LVMesh> >::maker,
+		       GenericField<LVMesh, CFDucharBasis,
 		       FData3d<unsigned char, LVMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_LVFul("LatVolField<unsigned_long>", "Field",
-		       GenericField<LVMesh, FDulongBasis, 
-		       FData3d<unsigned long, LVMesh> >::maker, 
-		       GenericField<LVMesh, CFDulongBasis, 
+		       GenericField<LVMesh, FDulongBasis,
+		       FData3d<unsigned long, LVMesh> >::maker,
+		       GenericField<LVMesh, CFDulongBasis,
 		       FData3d<unsigned long, LVMesh> >::maker);

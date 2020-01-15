@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,16 +26,14 @@
 */
 
 
-
 ///
 ///@file  Image.cc
 ///
-///@author 
+///@author
 ///   Sourced from MeshPort.cc by David Weinstein
 ///   Department of Computer Science
 ///   University of Utah
 ///
-
 
 #include <Core/Datatypes/Image.h>
 #include <Core/Persistent/Persistent.h>
@@ -75,8 +72,8 @@ Image::Image(int xres, int yres)
 	    rows[y]=p;
 	    p+=xres*2;
     }
-  } 
-  else 
+  }
+  else
   {
     rows=0;
   }
@@ -137,7 +134,7 @@ void Image::io(Piostream& stream)
 	    delete[] rows[0];
 	    delete[] rows;
     }
-	    
+
     rows=new float*[yr];
     float* p=new float[xr*yr*2];
     for(int y=0;y<yr;y++)
@@ -169,4 +166,3 @@ float Image::max_abs()
 }
 
 } // End namespace SCIRun
-
