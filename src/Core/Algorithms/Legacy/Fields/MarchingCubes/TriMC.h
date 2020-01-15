@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,18 +23,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:          Michael Callahan
+   Date:            September 2002
 */
-
-
-/*
- *  TriMC.h
- *
- *   \author Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   \date September 2002
- *
- */
 
 
 #ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBES_TRIMC_H
@@ -60,15 +51,15 @@ namespace SCIRun {
 class TriMC : public BaseMC
 {
   public:
-    TriMC( FieldHandle field ) : field_handle_(field), 
+    TriMC( FieldHandle field ) : field_handle_(field),
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
                             //lines_(0),
-                            curve_handle_(0), 
+                            curve_handle_(0),
                             curve_(0) {}
 
     virtual ~TriMC() {}
-    
+
     void extract( VMesh::Elem::index_type, double );
     virtual void reset( int, bool build_field, bool build_geom, bool transparency );
     virtual FieldHandle get_field(double val);
@@ -78,23 +69,23 @@ class TriMC : public BaseMC
     void extract_f( VMesh::Elem::index_type, double );
 
     VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
-    
+
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &idx);
-     
+
     void find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge);
-    
+
     FieldHandle field_handle_;
     VField* field_;
     VMesh*  mesh_;
-    
+
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
      GeomLines   *lines_;
     #endif
-    
+
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };
-  
+
 } // End namespace SCIRun
- 
+
 #endif // TriMC_h

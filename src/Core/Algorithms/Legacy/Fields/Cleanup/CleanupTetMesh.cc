@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,10 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer
-   ported from SCIRun4 on 25/10/17
+
+   Author:              Moritz Dannhauer
+   Last Modification:   October 25 2017 (ported from SciRun4)
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -54,59 +54,59 @@ ALGORITHM_PARAMETER_DEF(Fields, FixOrientationCheckBox);
 ALGORITHM_PARAMETER_DEF(Fields, RemoveDegenerateCheckBox);
 
 bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
-{ 
+{
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   if(fi.is_nonlinear())
   {
    error("This algorithm has not yet been defined for non-linear elements yet");
    return true;
   }
-  
-  if (!(fi.is_tetvolmesh())) 
+
+  if (!(fi.is_tetvolmesh()))
   {
     error("This algorithm only works on a TetVolMesh");
     return true;
-  }  
-  
+  }
+
   VField* ifield = input->vfield();
   VMesh*  imesh  = input->vmesh();
-  
-  output = CreateField(fo);   
-  
+
+  output = CreateField(fo);
+
   if (!output)
   {
     error("Could not allocate output field");
     return true;
   }
-   
-  
+
+
   if (!output)
   {
     error("Could not allocate output field");
     return true;
   }
-  
+
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
-  
+
   bool fix_orientation = get(Parameters::FixOrientationCheckBox).toBool();
   bool remove_degenerate = get(Parameters::RemoveDegenerateCheckBox).toBool();
 
   omesh->copy_nodes(imesh);
-  
+
   VMesh::Node::array_type nodes;
   VMesh::size_type num_elems = imesh->num_elems();
   std::vector<Point> points;
-  
+
   int basis_order = ifield->basis_order();
 
   std::vector<VMesh::index_type> order;
   if (basis_order == 0) order.reserve(num_elems);
-  
+
   int cnt =0;
-  
+
   for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++, cnt++)
   {
     if (cnt == 200)
@@ -114,9 +114,9 @@ bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
       cnt = 0;
       this->update_progress(idx/num_elems);
     }
-    
+
     imesh->get_nodes(nodes,idx);
-    
+
     if (nodes.size() < 4) { continue; }
 
     if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[0] == nodes[3] ||
@@ -139,9 +139,9 @@ bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
       }
       VMesh::index_type eidx = omesh->add_elem(nodes);
       if (basis_order == 0) order.push_back(eidx);
-    }  
+    }
   }
-  
+
   ofield->resize_values();
   if (basis_order == 0)
   {
@@ -153,23 +153,23 @@ bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
   {
     ofield->copy_values(ifield);
   }
-  
+
  return true;
 }
 
 AlgorithmOutput CleanupTetMeshAlgo::run(const AlgorithmInput& input) const
 {
- 
+
   auto input_tet_mesh = input.get<Field>(InputTetMesh);
   FieldHandle output_mesh;
   AlgorithmOutput output;
-  
+
   if(!input_tet_mesh)
   {
    error("No input field");
    return output;
   }
-  
+
   if(!run(input_tet_mesh, output_mesh))
   {
     error("Algorithm failed!");
@@ -177,6 +177,5 @@ AlgorithmOutput CleanupTetMeshAlgo::run(const AlgorithmInput& input) const
 
   output[OutputTetMesh] = output_mesh;
   return output;
-  
-}
 
+}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,9 +27,9 @@
 
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h> 
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h>
 
-#include <Core/Datatypes/Legacy/Field/VMesh.h> 
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 // For mapping matrices
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -54,16 +53,16 @@ RefineMeshCurveAlgoV::RefineMeshCurveAlgoV()
 {
 }
 
-bool  
+bool
 RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const
 {
   /// Obtain information on what type of input field we have
   FieldInformation fi(input);
-  
+
   /// Alter the input so it will become a QuadSurf
   fi.make_curvemesh();
   output = CreateField(fi);
-  
+
   if (!output)
   {
     error("RefineMesh: Could not create an output field");
@@ -76,24 +75,24 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
   VField* rfield  = output->vfield();
 
   VMesh::Node::array_type onodes(2);
-  
+
   // get all values, make computation easier
   VMesh::size_type num_nodes = mesh->num_nodes();
   VMesh::size_type num_elems = mesh->num_elems();
-  
+
   std::vector<bool> values(num_nodes,false);
- 
+
   // Deal with data stored at different locations
   // If data is on the elements make sure that all nodes
   // of that element pass requirement.
 
   std::vector<double> ivalues;
   std::vector<double> evalues;
-  
+
   if (field->basis_order() == 0)
   {
     field->get_values(ivalues);
-    
+
     if (select == "equal")
     {
       for (VMesh::Elem::index_type i=0; i<num_elems; i++)
@@ -112,7 +111,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
         if (ivalues[i] < isoval)
           for (size_t j=0; j< onodes.size(); j++)
             values[onodes[j]] = true;
-      }    
+      }
     }
     else if (select == "greaterthan")
     {
@@ -122,7 +121,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
         if (ivalues[i] > isoval)
           for (size_t j=0; j< onodes.size(); j++)
             values[onodes[j]] = true;
-      }    
+      }
     }
     else if (select == "all")
     {
@@ -150,19 +149,19 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
       for (VMesh::Elem::index_type i=0; i<num_nodes; i++)
       {
         if (ivalues[i] < isoval) values[i] = true;
-      }    
+      }
     }
     else if (select == "greaterthan")
     {
       for (VMesh::Elem::index_type i=0; i<num_nodes; i++)
       {
         if (ivalues[i] > isoval) values[i] = true;
-      }    
+      }
     }
     else if (select == "all")
     {
       for (size_t j=0;j<values.size();j++) values[j] = true;
-    }    
+    }
     else
     {
       error("RefineMesh: Unknown region selection method encountered");
@@ -174,10 +173,10 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
   {
     for (size_t j=0;j<values.size();j++) values[j] = true;
   }
-  
+
   // Copy all of the nodes from mesh to refined.  They won't change,
   // we only add nodes.
-  
+
   VMesh::Node::iterator bni, eni;
   mesh->begin(bni); mesh->end(eni);
   while (bni != eni)
@@ -203,7 +202,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
     {
       mesh->get_center(p0,nodes[0]);
       mesh->get_center(p1,nodes[1]);
-    
+
       p = Point((p0 + p1)*0.5);
       enodes[*be] = refined->add_point(p);
 
@@ -215,10 +214,10 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
       nnodes[1] = nodes[1];
       refined->add_elem(nnodes);
 
-      if (field->basis_order() == 1) 
+      if (field->basis_order() == 1)
         ivalues.push_back(0.5*(ivalues[nodes[0]]+ivalues[nodes[1]]));
-      else if (field->basis_order() == 0) 
-	evalues.insert(evalues.end(),2,ivalues[*be]); 
+      else if (field->basis_order() == 0)
+	evalues.insert(evalues.end(),2,ivalues[*be]);
     }
     ++be;
   }
@@ -230,9 +229,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
   return (true);
 }
 
-AlgorithmOutput RefineMeshCurveAlgoV::run(const AlgorithmInput& input) const 
+AlgorithmOutput RefineMeshCurveAlgoV::run(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }
-
-    

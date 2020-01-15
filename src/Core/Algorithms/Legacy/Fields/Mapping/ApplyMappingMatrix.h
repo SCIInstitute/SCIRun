@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
@@ -55,7 +53,7 @@ class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
     static AlgorithmInputName Source;
     static AlgorithmInputName Destination;
     static AlgorithmInputName Mapping;
-    static AlgorithmOutputName Output;  
+    static AlgorithmOutputName Output;
     /// Algorithm defaults
     ApplyMappingMatrixAlgo();
 

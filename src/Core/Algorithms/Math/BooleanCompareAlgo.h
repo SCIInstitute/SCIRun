@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
 #define CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
@@ -53,7 +53,7 @@ namespace Math {
   ALGORITHM_PARAMETER_DECL(Then_Option);
   ALGORITHM_PARAMETER_DECL(Else_Option);
   ALGORITHM_PARAMETER_DECL(Comparison_Option);
-                           
+
 class SCISHARE BooleanCompareAlgo : public AlgorithmBase
 {
 

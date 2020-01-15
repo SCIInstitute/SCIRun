@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -53,7 +53,7 @@ ConvertMeshToPointCloudMeshAlgo::ConvertMeshToPointCloudMeshAlgo()
 bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToPointCloudMeshAlgo");
-  
+
   // check whether we have an input handle
   if (!input)
   {
@@ -78,25 +78,25 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
     output = input;
     return (true);
   }
-  
+
   // Alter type description to become a pointcloud
   fo.make_pointcloudmesh();
   fo.make_constantdata();
-  
+
   // If input is nodata, output should be node data
-  if (fi.is_nodata()) 
+  if (fi.is_nodata())
     fo.make_nodata();
 
   /// Check whether we are extracting the element centers or the node centers
   bool datalocation = getOption(Location) == "data";
   // If we extract locations of nodes (no data locations), constant data needs
   // to be voided as we cannot store it anywhere
-  if (!datalocation && fi.is_constantdata()) 
+  if (!datalocation && fi.is_constantdata())
     fo.make_nodata();
-  
+
   // Create the output field
   output = CreateField(fo);
-  
+
   // If it fails return an error
   if (!output)
   {
@@ -106,7 +106,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
 
   // Get the virtual interface classes
   VField* ifield = input->vfield();
-  VMesh*  imesh =  input->vmesh();  
+  VMesh*  imesh =  input->vmesh();
   VField* ofield = output->vfield();
   VMesh*  omesh =  output->vmesh();
 
@@ -122,8 +122,8 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
     VMesh::size_type num_elems = imesh->num_elems();
     // reserve space to put nodes (performance)
     omesh->reserve_nodes(num_elems);
-    
-    // Copy over the data locations 
+
+    // Copy over the data locations
     Point pnt;
     for(VMesh::Elem::index_type p=0; p < num_elems; p++)
     {
@@ -137,8 +137,8 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
     VMesh::size_type num_nodes = imesh->num_nodes();
     // reserve space to put nodes (performance)
     omesh->reserve_nodes(num_nodes);
-    
-    // Copy over the data locations 
+
+    // Copy over the data locations
     Point pnt;
     for(VMesh::Node::index_type p=0; p < num_nodes; p++)
     {
@@ -149,7 +149,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
 
   // Copy the data values
   ofield->resize_values();
-  ofield->copy_values(ifield);        
+  ofield->copy_values(ifield);
 
   /// Copy properties of the property manager
   CopyProperties(*input, *output);
