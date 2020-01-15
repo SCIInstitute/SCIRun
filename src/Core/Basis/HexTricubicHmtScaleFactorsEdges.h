@@ -1,33 +1,33 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///    @file    HexTricubicHmtScaleFactorsEdges.h
-///    @author  Martin Cole, Frank B. Sachse
-///    @date    Nov 5 2005
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole, Frank B. Sachse
+   Date:            November 5 2005
+*/
+
 
 #ifndef CORE_BASIS_HEXTRICUBICHMTSCALEFACTORSEDGES_H
 #define CORE_BASIS_HEXTRICUBICHMTSCALEFACTORSEDGES_H 1
@@ -40,7 +40,7 @@ namespace Core {
 namespace Basis {
 
 /// Class for describing unit geometry of HexTricubicHmtScaleFactorsEdges
-class HexTricubicHmtScaleFactorsEdgesUnitElement : 
+class HexTricubicHmtScaleFactorsEdgesUnitElement :
     public HexTrilinearLgnUnitElement {
 public:
   HexTricubicHmtScaleFactorsEdgesUnitElement() {}
@@ -50,13 +50,13 @@ public:
 };
 
 
-/// Class for handling of element of type hexahedron with 
+/// Class for handling of element of type hexahedron with
 /// tricubic hermitian interpolation with scale factors
 template <class T>
-class HexTricubicHmtScaleFactorsEdges : public BasisAddDerivativesScaleFactorsEdges<T>, 
-                                   public HexApprox, 
-				   public HexGaussian3<double>, 
-           public HexSamplingSchemes, 
+class HexTricubicHmtScaleFactorsEdges : public BasisAddDerivativesScaleFactorsEdges<T>,
+                                   public HexApprox,
+				   public HexGaussian3<double>,
+           public HexSamplingSchemes,
 				   public HexTricubicHmtScaleFactorsEdgesUnitElement,
            public HexElementWeights
 {
@@ -65,7 +65,7 @@ public:
 
   HexTricubicHmtScaleFactorsEdges() {}
   virtual ~HexTricubicHmtScaleFactorsEdges() {}
-  
+
   static int polynomial_order() { return 3; }
 
 
@@ -240,14 +240,14 @@ public:
 	       w[62] * sdxz7	 +
 	       w[63] * sdxyz7);
   }
-  
-  
+
+
   /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd,
 		VECTOR2 &derivs) const
   {
-    const double x=coords[0], y=coords[1], z=coords[2];  
+    const double x=coords[0], y=coords[1], z=coords[2];
     const double x2=x*x;
     const double y2=y*y;
     const double z2=z*z;
@@ -412,7 +412,7 @@ public:
 	+6*(-1 + x)*x*(-1 + y)*y2*(-1 + z)*z2*sdyz7
 	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*(-1 + z)*z2)*sdxz7
 	+(1 - 4*x + 3*x2)*(-1 + y)*y2*(-1 + z)*z2*sdxyz7);
-      
+
     derivs[1]=
       static_cast<typename VECTOR2::value_type>(6*x12*(1 + 2*x)*(-1 + y)*y*z12*(1 + 2*z)*cd.node0()
 	+6*x12*x*(-1 + y)*y*z12*(1 + 2*z)*sdx0
@@ -478,7 +478,7 @@ public:
 	+x12*(1 + 2*x)*y*(-2 + 3*y)*(-1 + z)*z2*sdyz7
 	-6*x12*x*(-1 + y)*y*(-1 + z)*z2*sdxz7
 	+x12*x*y*(-2 + 3*y)*(-1 + z)*z2*sdxyz7);
-      
+
     derivs[2]=
       static_cast<typename VECTOR2::value_type>(6*x12*(1 + 2*x)*y12*(1 + 2*y)*(-1 + z)*z*cd.node0()
 	+6*x12*x*y12*(1 + 2*y)*(-1 + z)*z*sdx0
@@ -544,12 +544,12 @@ public:
 	+x12*(1 + 2*x)*(-1 + y)*y2*z*(-2 + 3*z)*sdyz7
 	-(x12*x*y2*(-3 + 2*y)*z*(-2 + 3*z))*sdxz7
 	+x12*x*(-1 + y)*y2*z*(-2 + 3*z)*sdxyz7);
-  }  
+  }
 
   /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
-  bool get_coords(VECTOR &coords, const T& value, 
-		  const ElemData &cd) const  
+  bool get_coords(VECTOR &coords, const T& value,
+		  const ElemData &cd) const
   {
     HexLocate< HexTricubicHmtScaleFactorsEdges<T> > CL;
     return CL.get_coords(this, coords, value, cd);
@@ -557,21 +557,21 @@ public:
 
   /// get arc length for edge
   template <class ElemData>
-  double get_arc_length(const unsigned edge, const ElemData &cd) const  
+  double get_arc_length(const unsigned edge, const ElemData &cd) const
   {
     return get_arc3d_length<CrvGaussian2<double> >(this, edge, cd);
   }
- 
+
   /// get area
   template <class ElemData>
-    double get_area(const unsigned face, const ElemData &cd) const  
+    double get_area(const unsigned face, const ElemData &cd) const
   {
     return get_area3<QuadGaussian3<double> >(this, face, cd);
   }
-  
+
   /// get volume
   template <class ElemData>
-    double get_volume(const ElemData & cd) const  
+    double get_volume(const ElemData & cd) const
   {
     return get_volume3(this, cd);
   }
@@ -615,10 +615,10 @@ const TypeDescription*
     const TypeDescription *sub = get_type_description((T*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new TypeDescription("HexTricubicHmtScaleFactorsEdges", 
-      subs, 
+    td = new TypeDescription("HexTricubicHmtScaleFactorsEdges",
+      subs,
       std::string(__FILE__),
-      "SCIRun", 
+      "SCIRun",
       TypeDescription::BASIS_E);
   }
   return td;
