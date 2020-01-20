@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 /*
  *  FieldIEPlugin:  Data structure needed to make a SCIRun FieldIE Plugin
  *
@@ -46,13 +44,13 @@
 #include <Core/ImportExport/GenericIEPlugin.h>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   typedef GenericIEPluginInterface<Field> FieldIEPlugin;
 
   typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
 
-  class SCISHARE FieldIEPluginManager : public GenericIEPluginManager<Field> 
+  class SCISHARE FieldIEPluginManager : public GenericIEPluginManager<Field>
   {
 
   };
