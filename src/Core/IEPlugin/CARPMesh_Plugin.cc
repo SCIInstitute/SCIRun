@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/IEPlugin/CARPMesh_Plugin.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -190,21 +190,21 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   std::vector<double> fvalues;
   std::vector<VMesh::index_type> ivalues;
   std::string elem_type;
-    
-    
+
+
 // Check the element type
-    
+
 {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::badbit );
-        
+
         try
         {
             inputfile.open(elems_fn.c_str());
-            
+
             for (int lineno = 0; getline (inputfile,line) && lineno < 2; lineno++)
             {
-                
+
                 if (lineno != 0){
                     for (size_t k=0; k<line.size(); k++)
                     {
@@ -212,13 +212,13 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
                             else {elem_type += line[k];}
                     }
                 }
-        
+
             }
-            
+
             if ((elem_type != "Tt") && (elem_type != "Tr")) {
                 if (pr) pr->error("Mesh types other than Tet and Tri not supported");
                 return (result);
-            
+
             }
         }
         catch(...)
@@ -243,27 +243,27 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
 //  }
 
   // add data to elems (constant basis)
-    
+
 cout << "Loading element type: " << endl;
 cout << elem_type << endl;
 
 FieldInformation fi(nullptr);
-    
+
     int elem_n = (elem_type == "Tt") ? 4: 3;
-    
-    
+
+
     if (elem_type == "Tt")
     {
         fi= FieldInformation("TetVolMesh",-1,"double");
         fi.make_constantdata();
-        
+
     }
     else if (elem_type == "Tr")
     {
         fi= FieldInformation("TriSurfMesh",-1,"double");
-        
+
     }
-  
+
 result = CreateField(fi);
 
   VMesh *mesh = result->vmesh();
@@ -357,9 +357,9 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
   VMesh *mesh = fh->vmesh();
   VField *field = fh->vfield();
-  
+
   FieldInformation fi(fh);
-  
+
 
   // Points file
   {
@@ -400,7 +400,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->size(nodeSize);
 
      // N.B: not writing header
-     
+
      outputfile << nodeSize << std::endl;
 
       while (nodeIter != nodeIterEnd)
@@ -461,14 +461,14 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     if (fi.is_tetvolmesh())
   		{
 	    VMesh::Node::array_type cellNodes(4);
-	    
+
 		double scalaroutput;
-		
+
     while (cellIter != cellIterEnd) {
-      
+
       	field->get_value(scalaroutput,*cellIter);
       	mesh->get_nodes(cellNodes, *cellIter);
-      	
+
         outputfile << "Tt" << " " << cellNodes[0] << " " << cellNodes[1] << " " << cellNodes[2] << " " << cellNodes[3] << " " << scalaroutput << std::endl;
         ++cellIter;
       		}
@@ -495,7 +495,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       if (pr) pr->error("Please convert to TetVol mesh ");
       return false;
     	}
-      
+
     }
     catch (...)
     {
@@ -504,7 +504,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-  
+
    // Isotropic Fiber file
   {
     std::ofstream outputfile;
@@ -535,31 +535,31 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-	
-      
+
+
 
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
 #endif
 
 	outputfile << 1 << std::endl;
-	
+
 	cout << "The generated *.lon file assumes a bath in the smallest mask layer and assigns a fiber direction of [0 0 1] to all other data layers. If a different fiber file is required, please use the CarpFiber exporter/importer." << endl;
-	
+
 	 if (fi.is_tetvolmesh())
   		{
-	
+
 	    VMesh::Node::array_type cellNodes(4);
-	    
+
 	    vector<double> region;
 	    double scalaroutput;
 	    double min_region;
-	
+
       while (cellIter != cellIterEnd) {
-      
+
       	field->get_value(scalaroutput,*cellIter);
       	region.push_back(scalaroutput);
-      	
+
       	if (cellIter == 1){
       	min_region = scalaroutput;
       	}
@@ -568,30 +568,30 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       	}
       	++cellIter;
       	}
-      	
+
       	VMesh::Cell::iterator cellIter;
-      
+
        while (cellIter != cellIterEnd){
-      
-    
+
+
       	if (region[*cellIter] != min_region) {
       	outputfile << 0 << " " << 0 << " " << 1 << std::endl;
       	}
       	else {
       	outputfile << 0 << " " << 0 << " " << 0 << std::endl;
       	}
-              
+
         ++cellIter;
-      	   
+
       		}
       	}
-	
-      	else 
+
+      	else
 		{
       if (pr) pr->error("Please convert to Tetvol");
       return false;
     	}
-      
+
     }
     catch (...)
     {
@@ -600,8 +600,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-   
-   
+
+
   return true;
 }
-
