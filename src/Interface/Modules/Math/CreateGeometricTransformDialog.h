@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H
 #define INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H 1
 
@@ -38,7 +39,7 @@ namespace SCIRun {
       public Ui::CreateGeometricTransform
     {
       Q_OBJECT
-      
+
     public:
       CreateGeometricTransformDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,

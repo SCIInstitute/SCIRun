@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/DataIO/WriteG3DDialog.h>
 #include <Modules/DataIO/WriteG3D.h>
@@ -73,7 +73,7 @@ void WriteG3DDialog::pullSpecial()
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-  
+
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultColor_.red()) + "," +
     QString::number(defaultColor_.green()) + "," + QString::number(defaultColor_.blue()) + "); }";
   defaultColorDisplayLabel_->setStyleSheet(styleSheet);
