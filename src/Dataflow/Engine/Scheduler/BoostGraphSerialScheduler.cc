@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
@@ -39,10 +39,10 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
 
   ModuleExecutionOrder::ModuleIdList list;
   std::transform(
-    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
-    std::back_inserter(list), 
+    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(),
+    std::back_inserter(list),
     [&](int vertex){ return graphAnalyzer.moduleAt(vertex); }
   );
-  
+
   return ModuleExecutionOrder(list);
 }

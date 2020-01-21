@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Network/NetworkInterface.h>
@@ -44,14 +44,14 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
 
   // Parallel compilation ordering
   std::vector<int> time(graphAnalyzer.moduleCount(), 0);
-  for (auto i = graphAnalyzer.topologicalBegin(); i != graphAnalyzer.topologicalEnd(); ++i) 
-  {    
+  for (auto i = graphAnalyzer.topologicalBegin(); i != graphAnalyzer.topologicalEnd(); ++i)
+  {
     // Walk through the in_edges an calculate the maximum time.
-    if (in_degree (*i, g) > 0) 
+    if (in_degree (*i, g) > 0)
     {
       DirectedGraph::in_edge_iterator j, j_end;
       int maxdist = 0;
-      // Through the order from topological sort, we are sure that every 
+      // Through the order from topological sort, we are sure that every
       // time we are using here is already initialized.
       for (boost::tie(j, j_end) = in_edges(*i, g); j != j_end; ++j)
         maxdist = std::max(time[source(*j, g)], maxdist);
@@ -59,12 +59,12 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
       time[*i] = maxdist + 1;
     }
   }
-  
+
   ParallelModuleExecutionOrder::ModulesByGroup map;
 
   std::transform(
-    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
-    std::inserter(map, map.begin()), 
+    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(),
+    std::inserter(map, map.begin()),
     [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleAt(vertex)); }
   );
 
