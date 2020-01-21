@@ -208,6 +208,9 @@ public:
 
   /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   
   /// Return the transformation that takes a 0-1 space bounding box 
   /// to the current bounding box of this mesh.  
@@ -1363,6 +1366,34 @@ Core::Geometry::BBox
 PointCloudMesh<Basis>::get_bounding_box() const
 {
   Core::Geometry::BBox result;
+
+  typename Node::iterator i, ie;
+  begin(i);
+  end(ie);
+
+  while (i != ie)
+  {
+    result.extend(points_[*i]);
+    ++i;
+  }
+
+  // Make sure we have a bounding box
+  if (points_.size() == 1)
+  {
+    result.extend(points_[0]);
+    result.extend(1e-5);
+  }
+
+  return result;
+}
+
+template <class Basis>
+Core::Geometry::OrientedBBox
+PointCloudMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                 const Core::Geometry::Vector &e2,
+                                                 const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
 
   typename Node::iterator i, ie;
   begin(i);

@@ -854,6 +854,9 @@ public:
   Core::Geometry::Vector diagonal() const;
 
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
@@ -1323,6 +1326,32 @@ LatVolMesh<Basis>::get_bounding_box() const
   return result;
 }
 
+template <class Basis>
+Core::Geometry::OrientedBBox
+LatVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                             const Core::Geometry::Vector &e2,
+                                             const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
+  Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
+  Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
+  Core::Geometry::Point p3(min_i_,         min_j_ + nj_-1, min_k_);
+  Core::Geometry::Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
+  Core::Geometry::Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
+  Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
+  Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
+
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+  result.extend(transform_.project(p0))
+    .extend(transform_.project(p1))
+    .extend(transform_.project(p2))
+    .extend(transform_.project(p3))
+    .extend(transform_.project(p4))
+    .extend(transform_.project(p5))
+    .extend(transform_.project(p6))
+    .extend(transform_.project(p7));
+  return result;
+}
 
 template <class Basis>
 Core::Geometry::Vector

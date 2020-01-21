@@ -97,8 +97,6 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMov
     widgetAxesOrthonormal_ = feedbackTrans * widgetAxesOrthonormal_;
     widgetAxesOrthonormal_.orthogonalize();
   }
-  widgetAxes_ = feedbackTrans * widgetAxes_;
-  widgetAxes_.orthogonalize();
 }
 
 void EditMeshBoundingBox::clearVals()
@@ -167,22 +165,17 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
   bool inputResetRequested = transient_value_cast<bool>(state->getTransientValue(ResetToInput));
 
   if(inputsChanged() || inputResetRequested)
+    resetToInputField();
+  if (widgetAxesRotated_)
   {
-    trans_ = Transform();
-    widgetAxes_ = Transform();
+    for(auto &e : eigvecs_)
+      e = widgetAxesOrthonormal_ * e;
     widgetAxesOrthonormal_ = Transform();
-  }
-  if (firstRun_ || inputsChanged() || inputResetRequested || widgetAxesRotated_)
-  {
-    auto ogPos = trans_.get_translation_point();
+
     auto fh = FieldHandle(field->deep_clone());
-
-    fh->vmesh()->transform(widgetAxes_);
-    computeWidgetBox(fh->vmesh()->get_bounding_box());
-
-    trans_ = widgetAxesOrthonormal_ * Transform(Point(0,0,0), eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-    for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
-      trans_.set_mat_val(iDim, 3, ogPos[iDim]);
+    fh->vmesh()->transform(fieldTrans_);
+    computeWidgetBox(fh->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
+    trans_ = Transform(trans.get_translation_point(), eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
     widgetAxesRotated_ = false;
   }
   if (firstRun_ && state->getValue(DataSaved).toBool())
@@ -190,11 +183,6 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
     firstRun_ = false;
     loadFromParameters();
     updateInputFieldAttributes();
-  }
-  else if (inputsChanged() || inputResetRequested)
-  {
-    state->setTransientValue(ResetToInput, false);
-    resetToInputField();
   }
 
   // Sets the translation vector in the homogeneous matrices
@@ -237,8 +225,16 @@ void EditMeshBoundingBox::sendOutputPorts()
 
 void EditMeshBoundingBox::resetToInputField()
 {
-  fieldTrans_ = Transform(); // Identity matrix
-  // trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
+  trans_ = Transform();
+  fieldTrans_ = Transform();
+  widgetAxesOrthonormal_ = Transform();
+  eigvecs_.resize(mDIMENSIONS);
+  eigvecs_[0] = Vector(1,0,0);
+  eigvecs_[1] = Vector(0,1,0);
+  eigvecs_[2] = Vector(0,0,1);
+  state->setTransientValue(ResetToInput, false);
+  computeWidgetBox(outputField_->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
+  trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
   updateInputFieldAttributes();
 }
 
@@ -248,7 +244,7 @@ std::string EditMeshBoundingBox::convertForLabel(double coord)
 }
 
 
-void EditMeshBoundingBox::computeWidgetBox(const BBox& box)
+void EditMeshBoundingBox::computeWidgetBox(const OrientedBBox& box)
 {
   auto bbox(box);
   if (!bbox.valid())
@@ -281,14 +277,10 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box)
   }
 
   eigvals_.resize(mDIMENSIONS);
-  eigvecs_.resize(mDIMENSIONS);
   pos_ = bbox.center();
   eigvals_[0] = diag.x() * 0.5;
   eigvals_[1] = diag.y() * 0.5;
   eigvals_[2] = diag.z() * 0.5;
-  eigvecs_[0] = Vector(1,0,0);
-  eigvecs_[1] = Vector(0,1,0);
-  eigvecs_[2] = Vector(0,0,1);
 }
 
 namespace

@@ -215,6 +215,9 @@ public:
 
   /// get the mesh statistics
   virtual Core::Geometry::BBox get_bounding_box() const override;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   virtual void transform(const Core::Geometry::Transform &t) override;
 
   virtual bool get_dim(std::vector<size_type>&) const override;
@@ -1168,6 +1171,27 @@ Core::Geometry::BBox
 StructHexVolMesh<Basis>::get_bounding_box() const
 {
   Core::Geometry::BBox result;
+
+  typename LatVolMesh<Basis>::Node::iterator ni, nie;
+  this->begin(ni);
+  this->end(nie);
+  while (ni != nie)
+  {
+    Core::Geometry::Point p;
+    get_center(p, *ni);
+    result.extend(p);
+    ++ni;
+  }
+  return result;
+}
+
+template <class Basis>
+Core::Geometry::OrientedBBox
+StructHexVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                   const Core::Geometry::Vector &e2,
+                                                   const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
 
   typename LatVolMesh<Basis>::Node::iterator ni, nie;
   this->begin(ni);

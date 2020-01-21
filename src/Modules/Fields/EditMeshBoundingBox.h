@@ -100,7 +100,7 @@ namespace SCIRun {
 
       private:
         void clearVals();
-        void computeWidgetBox(const Core::Geometry::BBox& box);
+        void computeWidgetBox(const Core::Geometry::OrientedBBox& box);
         void buildGeometryObject();
         void updateState(FieldHandle field);
         void sendOutputPorts();
