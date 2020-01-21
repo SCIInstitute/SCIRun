@@ -1,14 +1,11 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +24,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Utils/Legacy/FullFileName.cc
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Utils/Legacy/FullFileName.h>
 #include <iostream>
@@ -41,25 +42,25 @@ namespace bfs=boost::filesystem;
 namespace bsys=boost::system;
 
 namespace SCIRun {
-  
+
 FullFileName::FullFileName(std::string filename)
 {
   name_ = make_absolute_filename(filename);
-}  
+}
 
 
 bool
 FullFileName::create_file_path()
 {
   bool result = false;
-  
+
   bfs::path filepath(name_);
   if (filepath.is_relative())
   {
     std::cerr << "FullFileName: internal path " << name_ << " is not absolute" << std::endl;
     return result;
   }
-  
+
   bfs::path parent = filepath.parent_path();
   if ( exists(parent) )
   {
@@ -91,8 +92,8 @@ FullFileName::create_file_path()
       std::cerr << "Error creating " << name_ << ": " << ex.what() << std::endl;
     }
   }
-  
-  return result;  
+
+  return result;
 }
 
 
@@ -127,7 +128,7 @@ FullFileName::get_abs_path()
 {
   std::string::size_type pos = name_.find_last_of("/");
   if (pos == std::string::npos) return("");
-  return(name_.substr(0,pos+1)); 
+  return(name_.substr(0,pos+1));
 }
 
 std::string
@@ -138,7 +139,7 @@ FullFileName::get_rel_path()
 
   std::string::size_type pos = relfile.find_last_of("/");
   if (pos == std::string::npos) return(relfile);
-  return(relfile.substr(pos+1));  
+  return(relfile.substr(pos+1));
 }
 
 std::string
@@ -148,7 +149,7 @@ FullFileName::get_rel_path(std::string path)
 
   std::string::size_type pos = relfile.find_last_of("/");
   if (pos == std::string::npos) return(relfile);
-  return(relfile.substr(pos+1));  
+  return(relfile.substr(pos+1));
 }
 
 std::string
@@ -158,7 +159,7 @@ FullFileName::get_rel_path(Dir path)
 
   std::string::size_type pos = relfile.find_last_of("/");
   if (pos == std::string::npos) return(relfile);
-  return(relfile.substr(pos+1));  
+  return(relfile.substr(pos+1));
 }
 
 std::string
@@ -200,13 +201,13 @@ FullFileName::make_absolute_filename(std::string name)
 
   // Remove backward slashes
   for (size_t i=0; i<name.size();i++) if (name[i] == '\\') name[i] = '/';
-	
+
   // Remove double slashes which confuses the clean up
   if (name.size() > 1) for (size_t i=0; i<(name.size()-1);i++) if (name[i] == '/' && name[i+1] == '/') { name = name.substr(0,i)+name.substr(i+1); i--; }
-  
+
 	// Check whether filename is absolute:
 
-	if (( name.size() > 0 && name[0] == '/') || 
+	if (( name.size() > 0 && name[0] == '/') ||
       ( name.size() > 2 && name[1] == ':' && ((name[2] == '\\')||(name[2] == '/'))))
   {
     // Unix name
@@ -224,17 +225,17 @@ FullFileName::make_absolute_filename(std::string name)
           {
             if ((name.substr(0,ddpos-1) != "..")&&(name.substr(0,ddpos-1) != "."))
             {
-              name = name.substr(ddpos+3); 
+              name = name.substr(ddpos+3);
               ddpos = name.find("../");
             }
-            else 
+            else
             {
               ddpos = name.find("../",ddpos+3);
             }
           }
           else
           {
-            if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+            if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!="."))
             {
               name = name.substr(0,slashpos+1)+name.substr(ddpos+3);
               ddpos = name.find("../");
@@ -244,7 +245,7 @@ FullFileName::make_absolute_filename(std::string name)
               ddpos = name.find("../",ddpos+3);
             }
           }
-          
+
         }
         else
         {
@@ -255,7 +256,7 @@ FullFileName::make_absolute_filename(std::string name)
     else
     {
       // Windows filename
-      
+
       // collapse name further
       std::string::size_type ddpos = name.find("../");
 
@@ -268,17 +269,17 @@ FullFileName::make_absolute_filename(std::string name)
           {
             if ((name.substr(0,ddpos-1) != "..")&&(name.substr(0,ddpos-1) != "."))
             {
-              name = name.substr(ddpos+3); 
+              name = name.substr(ddpos+3);
               ddpos = name.find("../");
             }
-            else 
+            else
             {
               ddpos = name.find("../",ddpos+3);
             }
           }
           else
           {
-            if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+            if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!="."))
             {
               name = name.substr(0,slashpos+1)+name.substr(ddpos+3);
               ddpos = name.find("../");
@@ -294,19 +295,19 @@ FullFileName::make_absolute_filename(std::string name)
         {
           ddpos = name.find("../",ddpos+3);
         }
-      }			
+      }
     }
-  
-    return (name); 
+
+    return (name);
 	}
-  
+
   Dir CWD = Dir::current_directory();
   std::string cwd = CWD.getName();
 
   for (size_t i=0; i<cwd.size();i++) if (cwd[i] == '\\') cwd[i] = '/';
-  if (cwd.size() > 1) for (size_t i=0; i<(cwd.size()-1);i++) 
+  if (cwd.size() > 1) for (size_t i=0; i<(cwd.size()-1);i++)
     if (cwd[i] == '/' && cwd[i+1] == '/') if (i+1 < cwd.size()) cwd = cwd.substr(0,i)+cwd.substr(i+1);
-	
+
   if (cwd.size() > 0)
 	{
 		if(cwd[0] == '/')
@@ -315,7 +316,7 @@ FullFileName::make_absolute_filename(std::string name)
 			if (cwd[cwd.size()-1]!='/') cwd +='/';
 			name = cwd+name;
       // collapse name further
-			
+
 			std::string::size_type ddpos = name.find("../");
 
 			while (ddpos != std::string::npos)
@@ -327,17 +328,17 @@ FullFileName::make_absolute_filename(std::string name)
 					{
 						if ((name.substr(0,ddpos-1) != "..")&&(name.substr(0,ddpos-1) != "."))
 						{
-							name = name.substr(ddpos+3); 
+							name = name.substr(ddpos+3);
 							ddpos = name.find("../");
 						}
-						else 
+						else
 						{
 							ddpos = name.find("../",ddpos+3);
 						}
 					}
 					else
 					{
-						if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+						if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!="."))
 						{
 							name = name.substr(0,slashpos+1)+name.substr(ddpos+3);
 							ddpos = name.find("../");
@@ -347,7 +348,7 @@ FullFileName::make_absolute_filename(std::string name)
 							ddpos = name.find("../",ddpos+3);
 						}
 					}
-					
+
 				}
 				else
 				{
@@ -358,13 +359,13 @@ FullFileName::make_absolute_filename(std::string name)
 		else
 		{
       // Windows filename
-      
+
 			if (cwd[cwd.size()-1]!='/') cwd +='/';
-			
+
 			name = cwd+name;
-			
+
 					// collapse name further
-			
+
 			std::string::size_type ddpos = name.find("../");
 
 			while (ddpos != std::string::npos)
@@ -376,17 +377,17 @@ FullFileName::make_absolute_filename(std::string name)
 					{
 						if ((name.substr(0,ddpos-1) != "..")&&(name.substr(0,ddpos-1) != "."))
 						{
-							name = name.substr(ddpos+3); 
+							name = name.substr(ddpos+3);
 							ddpos = name.find("../");
 						}
-						else 
+						else
 						{
 							ddpos = name.find("../",ddpos+3);
 						}
 					}
 					else
 					{
-						if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+						if ((name.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(name.substr(slashpos+1,ddpos-slashpos-2)!="."))
 						{
 							name = name.substr(0,slashpos+1)+name.substr(ddpos+3);
 							ddpos = name.find("../");
@@ -402,11 +403,11 @@ FullFileName::make_absolute_filename(std::string name)
 				{
 					ddpos = name.find("../",ddpos+3);
 				}
-			}			
+			}
 
 		}
 	}
-	
+
 	return (name);
 }
 
@@ -422,7 +423,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 	while (name.size() > 0 && ((name[name.size()-1] == ' ')||(name[name.size()-1] == '\t'))) name = name.substr(1,name.size()-1);
 
 	// Check whether filename is absolute:
-	
+
 	bool abspath = false;
 	if ( name.size() > 0 && name[0] == '/') abspath = true; // Unix absolute path
 	if ( name.size() > 2 && name[1] == ':' && ((name[2] == '\\') ||(name[2] == '/'))) abspath = true; // Windows absolute path
@@ -450,9 +451,9 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 			}
 			slashpos = npath.find("/");
 		}
-		
+
 		// collapse name further
-		
+
 		std::string::size_type ddpos = nname.find("../");
 
 		while (ddpos != std::string::npos)
@@ -464,17 +465,17 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 				{
 					if ((nname.substr(0,ddpos-1) != "..")&&(nname.substr(0,ddpos-1) != "."))
 					{
-						nname = nname.substr(ddpos+3); 
+						nname = nname.substr(ddpos+3);
 						ddpos = nname.find("../");
 					}
-					else 
+					else
 					{
 						ddpos = nname.find("../",ddpos+3);
 					}
 				}
 				else
 				{
-					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!="."))
 					{
 						nname = nname.substr(0,slashpos+1)+nname.substr(ddpos+3);
 						ddpos = nname.find("../");
@@ -484,7 +485,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 						ddpos = nname.find("../",ddpos+3);
 					}
 				}
-				
+
 			}
 			else
 			{
@@ -492,7 +493,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 			}
 		}
 
-		nname = "scisub_networkdir/"+nname;		
+		nname = "scisub_networkdir/"+nname;
 		return (nname);
 	}
 	else if ( name.size() > 2 && name[1] == ':' && ((name[2] == '\\')||(name[2] == '/' )))
@@ -513,7 +514,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 			std::cerr << "WARNING: Failed to convert network pathname to an absolute path name\n";
 			return (name);
 		}
-	
+
 		std::string npath = path;
 	  std::string nname = name;
 		std::string::size_type slashpos = path.find("/");
@@ -535,7 +536,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 		}
 
 		// collapse name further
-		
+
 		std::string::size_type ddpos = nname.find("../");
 
 
@@ -548,17 +549,17 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 				{
 					if ((nname.substr(0,ddpos-1) != "..")&&(nname.substr(0,ddpos-1) != "."))
 					{
-						nname = nname.substr(ddpos+3); 
+						nname = nname.substr(ddpos+3);
 						ddpos = nname.find("../");
 					}
-					else 
+					else
 					{
 						ddpos = nname.find("../",ddpos+3);
 					}
 				}
 				else
 				{
-					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!=".")) 
+					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!="."))
 					{
 						nname = nname.substr(0,slashpos+1)+nname.substr(ddpos+3);
 						ddpos = nname.find("../");
@@ -577,7 +578,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
     nname = "scisub_networkdir/"+nname;
 		return (nname);
 	}
-	
+
 	std::cerr << "WARNING: Could not convert filename into a relative filename\n";
 	return (name);
 }
