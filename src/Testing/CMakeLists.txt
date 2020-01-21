@@ -1,12 +1,10 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 IF(BUILD_TESTING OR TRAVIS_BUILD)
   ADD_SUBDIRECTORY(Utils)
@@ -84,7 +83,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FILE(GLOB_RECURSE scirun_srns_network "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Network/*.srn5")
   FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
   set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
-  
+
   IF(NOT BUILD_HEADLESS)
     FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
@@ -94,12 +93,12 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()
-  
+
   IF(WITH_OSPRAY)
     FILE(GLOB_RECURSE scirun_srns_ospray "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Ospray/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_ospray})
   ENDIF()
-  
+
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     ADD_TEST(".Test.Samples.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
