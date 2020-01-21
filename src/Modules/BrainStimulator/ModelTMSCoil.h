@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,13 +24,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 ///@file ModelTMSCoil
-///@brief 
-/// Generates 
+///@brief
+/// Generates
 /// a) spiral wire segments of single/figure-of-8 TMS coil with repsective current values
 /// b) Generates wire segments of single/figure-of-8 TMS coil (one ring wire for each wing) with repsective current values
 /// c) Point cloud with vector data (= magnetic dipoles) describing magnetic field output of single/figure-of-8 TMS coil
-/// 
+///
 ///@author
 /// Implementation: Petar Petrov for SCIRun 4.7
 /// Converted to SCIRun5 by Moritz Dannhauer
