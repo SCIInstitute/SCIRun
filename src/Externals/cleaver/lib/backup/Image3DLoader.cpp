@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
@@ -8,29 +36,6 @@
 //
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
-//
-// Copyright (c) 2011, Scientific Computing & Imaging Institute and
-// the University of Utah. All Rights Reserved.
-//
-// Redistribution and use in source and binary forms is strictly
-// prohibited without the direct consent of the author.
-//
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
-
 
 #include "Image3DLoader.h"
 //#include "ImageField3D.h"
@@ -433,7 +438,7 @@ BCCLattice3D* Image3DLoader::loadNRRDFiles(const std::vector<std::string> &filen
 //
 //=================================================================================================================================
 BCCLattice3D* Image3DLoader::loadNRRDFiles_OLD(const std::vector<std::string> &filenames, bool pad)
-{   
+{
     int w=0, h=0, d=0, p=0;
     int m = filenames.size();
     std::string line, token, datafilename;
@@ -701,7 +706,7 @@ BCCLattice3D* Image3DLoader::loadNRRDFiles_OLD(const std::vector<std::string> &f
                 }
             }
         }
-    }   
+    }
 
     //----------------------------------------
     //    Release File Pointers
@@ -3185,7 +3190,7 @@ BCCLattice3D* Image3DLoader::constructLatticeFromArray(int w, int h, int d, int 
             {
                 lattice->tree->createTet(v_c, v_p0, v_p3, v_p1, v_p0->label);
                 lattice->tree->createTet(v_c, v_p1, v_p3, v_p2, v_p0->label);
-            }        
+            }
             else{
                 lattice->tree->createTet(v_c, v_p0, v_p2, v_p1, v_p0->label);
                 lattice->tree->createTet(v_c, v_p2, v_p0, v_p3, v_p0->label);
@@ -3254,7 +3259,7 @@ BCCLattice3D* Image3DLoader::constructLatticeFromArray(int w, int h, int d, int 
 
         } else if (!Bcell) {
             //no back cell, this means we need two pyramids to match
-            Vertex3D* v_c = cell->vert[C];            
+            Vertex3D* v_c = cell->vert[C];
             Vertex3D* v_p0 = cell->vert[LLB];
             Vertex3D* v_p1 = cell->vert[LRB];
             Vertex3D* v_p2 = cell->vert[URB];
@@ -3807,7 +3812,7 @@ void Image3DLoader::interpolate_cell(OTCell *cell, BCCLattice3D *lattice)
 
     // make sure no values are equivalent to max
     for(int mat=0; mat < m; mat++){
-        if(cell->vert[C]->vals[mat] == max && mat != dom){            
+        if(cell->vert[C]->vals[mat] == max && mat != dom){
             float diff = 1E-6*fabs(max);
             diff = fmax(1E-6, diff);
             cell->vert[C]->vals[mat] = max - diff;

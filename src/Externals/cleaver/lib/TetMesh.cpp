@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
@@ -8,34 +36,6 @@
 // Primary Author: Josh Levine (jlevine@sci.utah.edu)
 // Secondary Author: Jonathan Bronson (bronson@sci.utah.ed)
 //
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
-//
-//  Copyright (C) 2011, 2012, Jonathan Bronson
-//  Scientific Computing & Imaging Institute
-//  University of Utah
-//
-//  Permission is  hereby  granted, free  of charge, to any person
-//  obtaining a copy of this software and associated documentation
-//  files  ( the "Software" ),  to  deal in  the  Software without
-//  restriction, including  without limitation the rights to  use,
-//  copy, modify,  merge, publish, distribute, sublicense,  and/or
-//  sell copies of the Software, and to permit persons to whom the
-//  Software is  furnished  to do  so,  subject  to  the following
-//  conditions:
-//
-//  The above  copyright notice  and  this permission notice shall
-//  be included  in  all copies  or  substantial  portions  of the
-//  Software.
-//
-//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
-//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
-//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
-//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
-//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-//  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
@@ -75,14 +75,14 @@ Face::~Face()
 }
 
 Tet::Tet() : mat_label(-1)
-{    
-    faces[0] = faces[1] = faces[2] = faces[3] = -1;    
-    marked = false;    
+{
+    faces[0] = faces[1] = faces[2] = faces[3] = -1;
+    marked = false;
 }
 
 Tet::Tet(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, Vertex3D *v4, int material) :
     mat_label(material)
-{    
+{
     // initialize face info to empty
     faces[0] = faces[1] = faces[2] = faces[3] = -1;
 
@@ -99,7 +99,7 @@ Tet::Tet(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, Vertex3D *v4, int material) :
     v4->tets.push_back(this);
 
     tets[0] = tets[1] = tets[2] = tets[3] = NULL;
-    marked = false;    
+    marked = false;
 }
 
 Tet::~Tet()
@@ -195,7 +195,7 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
         Tet *t2 = this->tets[t2_index];
 
         if(t1->mat_label != t2->mat_label)
-        {            
+        {
             interfaces.push_back(f);
 
             unsigned int color_key = (1 << (int)t1->mat_label) + (1 << (int)t2->mat_label);
@@ -213,7 +213,7 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
                 color_index = keys.size() - 1;
             }
 
-            colors.push_back(color_index);          
+            colors.push_back(color_index);
         }
     }
 
@@ -314,7 +314,7 @@ void TetMesh::writeMultiplePly(const vector<std::string> &inputs, const std::str
 {
     //-----------------------------------
     //           Initialize
-    //-----------------------------------    
+    //-----------------------------------
     std::vector<std::vector<unsigned int> > meshes;
     std::vector<unsigned int> interfaces;
     std::vector<unsigned int> colors;
@@ -365,7 +365,7 @@ void TetMesh::writeMultiplePly(const vector<std::string> &inputs, const std::str
             if(meshes.size() < keys.size()){
                 meshes.push_back(vector<unsigned int>());
             }
-            meshes[color_index].push_back(f);           
+            meshes[color_index].push_back(f);
 
         }
     }
@@ -806,7 +806,7 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
         std::cout << "Writing settings file: " << info_filename << std::endl;
     std::ofstream info_file(info_filename.c_str());
 
-    info_file.precision(8);    
+    info_file.precision(8);
     info_file << "min_angle = " << min_angle << std::endl;
     info_file << "max_angle = " << max_angle << std::endl;
     info_file << "tet_count = " << tets.size() << std::endl;
