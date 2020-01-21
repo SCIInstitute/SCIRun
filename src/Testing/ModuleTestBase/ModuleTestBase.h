@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -34,9 +34,9 @@
 #include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Testing/ModuleTestBase/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-  namespace Testing 
+  namespace Testing
   {
     class SCISHARE ModuleTestBase
     {
@@ -55,7 +55,7 @@ namespace SCIRun
 
     class SCISHARE ModuleTest : public ::testing::Test, public ModuleTestBase
     {
-    
+
     };
 
     template <typename Param>
