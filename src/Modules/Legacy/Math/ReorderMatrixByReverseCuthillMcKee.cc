@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Math/ReorderMatrix/ReorderMatrix.h>
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -34,7 +34,7 @@
 namespace SCIRun {
 
 /// @class ReorderMatrixByReverseCuthillMcKee
-/// @brief This module reorders a matrix to reduce the average bandwidth of the matrix. 
+/// @brief This module reorders a matrix to reduce the average bandwidth of the matrix.
 
 class ReorderMatrixByReverseCuthillMcKee : public Module {
   public:
@@ -59,12 +59,12 @@ void ReorderMatrixByReverseCuthillMcKee::execute()
   MatrixHandle Mat, Mapping, InverseMapping;
   if(!(get_input_handle("Matrix",Mat,true))) return;
 
-  if (inputs_changed_ || !oport_cached("Matrix") || !oport_cached("Mapping") || 
+  if (inputs_changed_ || !oport_cached("Matrix") || !oport_cached("Mapping") ||
         !oport_cached("InverseMapping"))
   {
     if(!(algo_.run(Mat,Mat,InverseMapping))) return;
     Mapping = InverseMapping->make_transpose();
-        
+
     send_output_handle("Matrix",Mat,true);
     send_output_handle("Mapping",Mapping,true);
     send_output_handle("InverseMapping",InverseMapping,true);
@@ -72,5 +72,3 @@ void ReorderMatrixByReverseCuthillMcKee::execute()
 }
 
 } // End namespace SCIRun
-
-

@@ -1,30 +1,30 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-  
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Bundle.h>
 
@@ -34,7 +34,7 @@
 using namespace SCIRun;
 
 /// @class InsertBundlesIntoBundle
-/// @brief This module inserts a bundle object into a bundle. 
+/// @brief This module inserts a bundle object into a bundle.
 
 class InsertBundlesIntoBundle : public Module {
 public:
@@ -48,14 +48,14 @@ private:
   GuiString     guiBundle4Name_;
   GuiString     guiBundle5Name_;
   GuiString     guiBundle6Name_;
-  
+
   GuiInt        guireplace1_;
   GuiInt        guireplace2_;
   GuiInt        guireplace3_;
   GuiInt        guireplace4_;
   GuiInt        guireplace5_;
   GuiInt        guireplace6_;
-  
+
   GuiString     guiBundleName_;
 };
 
@@ -92,9 +92,9 @@ void InsertBundlesIntoBundle::execute()
   get_input_handle("bundle4",bundle4,false);
   get_input_handle("bundle5",bundle5,false);
   get_input_handle("bundle6",bundle6,false);
-  
+
   if (inputs_changed_ || guiBundle1Name_.changed() || guiBundle2Name_.changed() ||
-      guiBundle3Name_.changed() || guiBundle4Name_.changed() || 
+      guiBundle3Name_.changed() || guiBundle4Name_.changed() ||
       guiBundle5Name_.changed() || guiBundle6Name_.changed() ||
       guireplace1_.changed() || guireplace2_.changed() ||
       guireplace3_.changed() || guireplace4_.changed() ||
@@ -102,7 +102,7 @@ void InsertBundlesIntoBundle::execute()
       guiBundleName_.changed() || !oport_cached("bundle"))
   {
     update_state(Executing);
-  
+
     std::string bundle1Name = guiBundle1Name_.get();
     std::string bundle2Name = guiBundle2Name_.get();
     std::string bundle3Name = guiBundle3Name_.get();
@@ -124,29 +124,29 @@ void InsertBundlesIntoBundle::execute()
         return;
       }
     }
-                
+
     if (bundle1.get_rep()
-        &&(guireplace1_.get()||!(handle->isBundle(bundle1Name)))) 
+        &&(guireplace1_.get()||!(handle->isBundle(bundle1Name))))
       handle->setBundle(bundle1Name,bundle1);
 
     if (bundle2.get_rep()
-        &&(guireplace2_.get()||!(handle->isBundle(bundle2Name)))) 
+        &&(guireplace2_.get()||!(handle->isBundle(bundle2Name))))
       handle->setBundle(bundle2Name,bundle2);
 
     if (bundle3.get_rep()
-        &&(guireplace3_.get()||!(handle->isBundle(bundle3Name)))) 
+        &&(guireplace3_.get()||!(handle->isBundle(bundle3Name))))
       handle->setBundle(bundle3Name,bundle3);
 
     if (bundle4.get_rep()
-        &&(guireplace4_.get()||!(handle->isBundle(bundle4Name)))) 
+        &&(guireplace4_.get()||!(handle->isBundle(bundle4Name))))
       handle->setBundle(bundle4Name,bundle4);
 
     if (bundle5.get_rep()
-        &&(guireplace5_.get()||!(handle->isBundle(bundle5Name)))) 
+        &&(guireplace5_.get()||!(handle->isBundle(bundle5Name))))
       handle->setBundle(bundle5Name,bundle5);
 
     if (bundle6.get_rep()
-        &&(guireplace6_.get()||!(handle->isBundle(bundle6Name)))) 
+        &&(guireplace6_.get()||!(handle->isBundle(bundle6Name))))
       handle->setBundle(bundle6Name,bundle6);
 
     if (bundleName != "")
@@ -157,4 +157,3 @@ void InsertBundlesIntoBundle::execute()
     send_output_handle("bundle", handle);
   }
 }
-

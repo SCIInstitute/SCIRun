@@ -1,12 +1,11 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Fields/SmoothVecFieldMedian.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -38,7 +38,7 @@ MODULE_INFO_DEF(SmoothVecFieldMedian, ChangeFieldData, SCIRun)
 
 /// @class SmoothVecFieldMedian
 /// @brief This function smoothes vectors assigned to the elements of a mesh
-/// using a median filter. 
+/// using a median filter.
 
 SmoothVecFieldMedian::SmoothVecFieldMedian() :
   Module(staticInfo_, HasUI<SmoothVecFieldMedian>::value)

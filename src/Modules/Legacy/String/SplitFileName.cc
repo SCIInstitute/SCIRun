@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file  SplitFileName.cc
+
+/// @file  SplitFileName.cc
 ///
-///@author
-///   jeroen
+/// @author
+///    jeroen
 
 #include <Modules/Legacy/String/SplitFileName.h>
 #include <Core/Datatypes/String.h>

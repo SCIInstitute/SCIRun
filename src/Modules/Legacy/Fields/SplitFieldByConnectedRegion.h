@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,16 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file SplitFieldByConnectedRegion.h
-///@brief
-/// Splits a domain into separate fields as defined by the input field's connectivity.
+
+/// @file SplitFieldByConnectedRegion.h
+/// @brief
+///  Splits a domain into separate fields as defined by the input field's connectivity.
 ///
-///@author
-/// Moritz Dannhauer (ported from SCIRun4)
+/// @author
+///  Moritz Dannhauer (ported from SCIRun4)
 ///
-///@details
-/// This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
-/// After execution, it also receives the 8 output fields and the bundle which contains all sub fields that could be separated.
+/// @details
+///  This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
+///  After execution, it also receives the 8 output fields and the bundle which contains all sub fields that could be separated.
 
 #ifndef MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
 #define MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__

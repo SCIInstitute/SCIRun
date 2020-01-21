@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Dataflow/Network/Module.h>
@@ -34,7 +34,7 @@
 using namespace SCIRun;
 
 /// @class JoinBundles
-/// @brief This module merges the contents of multiple bundles into one bundle. 
+/// @brief This module merges the contents of multiple bundles into one bundle.
 
 class JoinBundles : public Module {
 public:
@@ -53,7 +53,7 @@ void JoinBundles::execute()
 {
   /// vector of inputs
   std::vector<BundleHandle> inputs;
-  
+
   /// Get the handles from the module
   get_dynamic_input_handles("bundle",inputs,false);
 
@@ -64,8 +64,8 @@ void JoinBundles::execute()
     /// Create output object
     BundleHandle output;
     output = new Bundle;
-  
-    /// In case output object could not be allocated 
+
+    /// In case output object could not be allocated
     if (output.get_rep() == 0)
     {
       error("Could not allocate new bundle");
@@ -77,8 +77,7 @@ void JoinBundles::execute()
     {
       output->merge(inputs[p]);
     }
-    
+
     send_output_handle("bundle",output);
   }
 }
-

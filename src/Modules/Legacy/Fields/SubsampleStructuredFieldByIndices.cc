@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///    @file    SubsampleStructuredFieldByIndices.h
@@ -121,12 +121,12 @@ SubsampleStructuredFieldByIndices::execute()
 
   // Because the field slicer is index based it can only work on
   // structured data. For unstructured data SamplePlane should be used.
-  
+
   // Get the virtual interface
   VField* ifield = field_in_handle->vfield();
   VMesh*  imesh  = field_in_handle->vmesh();
 
-  if( imesh->is_unstructuredmesh()) 
+  if( imesh->is_unstructuredmesh())
   {
     error( "This module is only availible for topologically structured data." );
     return;
@@ -134,7 +134,7 @@ SubsampleStructuredFieldByIndices::execute()
 
   // For now slice only node and cell based data.
   if( ifield->basis_order() != 0 &&
-      ifield->basis_order() != 1 ) 
+      ifield->basis_order() != 1 )
   {
     error( "This module is only available for cell or node data." );
     return;
@@ -145,10 +145,10 @@ SubsampleStructuredFieldByIndices::execute()
     // Get the dimensions of the mesh.
     VMesh::dimension_type dims;
     imesh->get_dimensions( dims );
-    
+
     bool update_dims = false;
 
-    /// Structured data with irregular points can be wrapped 
+    /// Structured data with irregular points can be wrapped
     bool wrap = imesh->is_irregularmesh();
 
     /// Check to see if the gui wrap is different than the field.
@@ -157,31 +157,31 @@ SubsampleStructuredFieldByIndices::execute()
       gui_wrap_.set( wrap );
       update_dims = true;
     }
-    
-    if( dims.size() >= 1 ) 
+
+    if( dims.size() >= 1 )
     {
       /// Check to see if the gui dimensions are different than the field.
-      if( gui_dim_i_.get() != static_cast<int>(dims[0]) ) 
+      if( gui_dim_i_.get() != static_cast<int>(dims[0]) )
       {
         gui_dim_i_.set( dims[0] );
         update_dims = true;
       }
     }
-    
-    if( dims.size() >= 2 ) 
+
+    if( dims.size() >= 2 )
     {
       /// Check to see if the gui dimensions are different than the field.
-      if( gui_dim_j_.get() != static_cast<int>(dims[1]) ) 
+      if( gui_dim_j_.get() != static_cast<int>(dims[1]) )
       {
         gui_dim_j_.set( dims[1] );
         update_dims = true;
       }
     }
-    
-    if( dims.size() >= 3 ) 
+
+    if( dims.size() >= 3 )
     {
       /// Check to see if the gui dimensions are different than the field.
-      if( gui_dim_k_.get() != static_cast<int>(dims[2]) ) 
+      if( gui_dim_k_.get() != static_cast<int>(dims[2]) )
       {
         gui_dim_k_.set( dims[2] );
         update_dims = true;
@@ -190,14 +190,14 @@ SubsampleStructuredFieldByIndices::execute()
 
     /// Check to see if the gui dimensions are different than the field.
     /// This is last because the GUI var has a callback on it.
-    if( gui_dims_.get() != static_cast<int>(dims.size()) ) 
+    if( gui_dims_.get() != static_cast<int>(dims.size()) )
     {
       gui_dims_.set( dims.size() );
       update_dims = true;
     }
 
     /// If the gui dimensions are different than the field then update the gui.
-    if( update_dims ) 
+    if( update_dims )
     {
       std::ostringstream str;
       str << get_id() << " set_size ";
@@ -217,11 +217,11 @@ SubsampleStructuredFieldByIndices::execute()
   /// Column 2 stride value to subsample.
   /// Column 3 wrap flag.
   /// Column 4 dimensions of the data.
-  if( matrix_handle.get_rep() ) 
+  if( matrix_handle.get_rep() )
   {
     /// The matrix is optional. If present make sure it is a 3x5 matrix.
     /// The row indices is the axis index. The column is the data.
-    if( (matrix_handle->nrows() != 3 || matrix_handle->ncols() != 5) ) 
+    if( (matrix_handle->nrows() != 3 || matrix_handle->ncols() != 5) )
     {
       error( "Input matrix is not a 3x5 matrix" );
       return;
@@ -231,7 +231,7 @@ SubsampleStructuredFieldByIndices::execute()
     /// dimensions.
     if( gui_dim_i_.get() != matrix_handle->get(0, 4) ||
         gui_dim_j_.get() != matrix_handle->get(1, 4) ||
-        gui_dim_k_.get() != matrix_handle->get(2, 4) ) 
+        gui_dim_k_.get() != matrix_handle->get(2, 4) )
     {
       std::ostringstream str;
       str << "The dimensions of the matrix slicing do match the field. "
@@ -243,7 +243,7 @@ SubsampleStructuredFieldByIndices::execute()
           << matrix_handle->get(0, 4) << " "
           << matrix_handle->get(1, 4) << " "
           << matrix_handle->get(2, 4);
-            
+
       error( str.str() );
       return;
     }
@@ -264,7 +264,7 @@ SubsampleStructuredFieldByIndices::execute()
 
         gui_wrap_i_.get() != (int) matrix_handle->get(0, 3) ||
         gui_wrap_j_.get() != (int) matrix_handle->get(1, 3) ||
-        gui_wrap_k_.get() != (int) matrix_handle->get(2, 3) ) 
+        gui_wrap_k_.get() != (int) matrix_handle->get(2, 3) )
       {
 
       gui_start_i_.set( (int) matrix_handle->get(0, 0) );
@@ -287,7 +287,7 @@ SubsampleStructuredFieldByIndices::execute()
       str << get_id() << " update_index ";
 
       TCLInterface::execute(str.str().c_str());
-	
+
       reset_vars();
 
       inputs_changed_ = true;
@@ -304,24 +304,24 @@ SubsampleStructuredFieldByIndices::execute()
       gui_start_i_.changed(true) ||
       gui_start_j_.changed(true) ||
       gui_start_k_.changed(true) ||
-      
+
       gui_stop_i_.changed(true) ||
       gui_stop_j_.changed(true) ||
       gui_stop_k_.changed(true) ||
-      
+
       gui_stride_i_.changed(true) ||
       gui_stride_j_.changed(true) ||
       gui_stride_k_.changed(true) ||
-      
+
       gui_wrap_i_.changed(true) ||
       gui_wrap_j_.changed(true) ||
-      gui_wrap_k_.changed(true) ) 
+      gui_wrap_k_.changed(true) )
   {
 
     // Update the state. Other state changes are handled in either
     // getting handles or in the calling method Module::do_execute.
     update_state(Executing);
-    
+
     FieldHandle field_out_handle;
 
     VMesh::index_type i_start = gui_start_i_.get();
@@ -342,19 +342,19 @@ SubsampleStructuredFieldByIndices::execute()
 
     size_t rank = dims.size();
 
-    if( rank == 3 ) 
+    if( rank == 3 )
     {
       idim_in = dims[0];
       jdim_in = dims[1];
       kdim_in = dims[2];
-    } 
-    else if( rank == 2 ) 
+    }
+    else if( rank == 2 )
     {
       idim_in = dims[0];
       jdim_in = dims[1];
       kdim_in = 1;
-    } 
-    else if( rank == 1 ) 
+    }
+    else if( rank == 1 )
     {
       idim_in = dims[0];
       jdim_in = 1;
@@ -373,7 +373,7 @@ SubsampleStructuredFieldByIndices::execute()
 
     VMesh::index_type i_stop_stride;
     VMesh::index_type j_stop_stride;
-    VMesh::index_type k_stop_stride; 
+    VMesh::index_type k_stop_stride;
 
     if (imesh->is_structuredmesh() && !(imesh->is_regularmesh()))
     {
@@ -383,34 +383,34 @@ SubsampleStructuredFieldByIndices::execute()
       if( (j_stop - j_start) % j_stride ) jdim_out += (rank >= 2 ? 1 : 0);
       if( (k_stop - k_start) % k_stride ) kdim_out += (rank >= 3 ? 1 : 0);
 
-      i_stop_stride = i_stop + (rank >= 1 ? i_stride : 0); 
-      j_stop_stride = j_stop + (rank >= 2 ? j_stride : 0); 
-      k_stop_stride = k_stop + (rank >= 3 ? k_stride : 0); 
-    } 
-    else 
+      i_stop_stride = i_stop + (rank >= 1 ? i_stride : 0);
+      j_stop_stride = j_stop + (rank >= 2 ? j_stride : 0);
+      k_stop_stride = k_stop + (rank >= 3 ? k_stride : 0);
+    }
+    else
     {
       i_stop_stride = i_stop + (rank >= 1 ? 1 : 0);
       j_stop_stride = j_stop + (rank >= 2 ? 1 : 0);
-      k_stop_stride = k_stop + (rank >= 3 ? 1 : 0); 
+      k_stop_stride = k_stop + (rank >= 3 ? 1 : 0);
     }
 
     FieldInformation fi(field_in_handle);
     MeshHandle mesh;
-    
-    if( rank == 3 ) 
+
+    if( rank == 3 )
     {
       dims[0] = idim_out;
       dims[1] = jdim_out;
       dims[2] = kdim_out;
       mesh = CreateMesh(fi,dims[0],dims[1],dims[2]);
-    } 
-    else if( rank == 2 ) 
+    }
+    else if( rank == 2 )
     {
       dims[0] = idim_out;
       dims[1] = jdim_out;
       mesh = CreateMesh(fi,dims[0],dims[1]);
-    } 
-    else if( rank == 1 ) 
+    }
+    else if( rank == 1 )
     {
       dims[0] = idim_out;
       mesh = CreateMesh(fi,dims[0]);
@@ -426,10 +426,10 @@ SubsampleStructuredFieldByIndices::execute()
 
     Point pt;
     Point p, o;
-    
+
     VMesh::Node::index_type inodeIdx = 0, jnodeIdx = 0, knodeIdx = 0;
     VMesh::Node::index_type onodeIdx = 0;
-    
+
     VMesh::Elem::index_type ielemIdx = 0, jelemIdx = 0, kelemIdx = 0;
     VMesh::Elem::index_type oelemIdx = 0;
 
@@ -441,11 +441,11 @@ SubsampleStructuredFieldByIndices::execute()
       inodeIdx = 0;
 
       /// Get the orgin of mesh. */
-      imesh->get_center(o, inodeIdx);    
+      imesh->get_center(o, inodeIdx);
 
       /// Set the iterator to the first point.
       inodeIdx += (k_start*(jdim_in*idim_in)+j_start*(idim_in)+i_start);
-    
+
       /// Get the point.
       imesh->get_center(p, inodeIdx);
 
@@ -456,13 +456,13 @@ SubsampleStructuredFieldByIndices::execute()
       trans.pre_scale( Vector( i_stride, j_stride, k_stride ) );
       trans.pre_translate( (Vector) (o) );
       trans.pre_translate( (Vector) (p-o) );
-        
+
       omesh->transform( trans );
     }
 
     /// Index based on the old mesh so that we are assured of getting the last
     /// node even if it forms a "partial" elem.
-    for( k=k_start; k<k_stop_stride; k+=k_stride ) 
+    for( k=k_start; k<k_stop_stride; k+=k_stride )
     {
 
       /// Check for going past the stop.
@@ -477,18 +477,18 @@ SubsampleStructuredFieldByIndices::execute()
       {
         knode = k % kdim_in;
       }
-      
+
       /// A hack here so that an iterator can be used.
       /// Set this iterator to be at the correct kth index.
       knodeIdx = 0;
       kelemIdx = 0;
-      
+
       knodeIdx = knode*jdim_in*idim_in;
       kelemIdx = knode*(jdim_in-1)*(idim_in-1);
 
-      for( j=j_start; j<j_stop_stride; j+=j_stride ) 
+      for( j=j_start; j<j_stop_stride; j+=j_stride )
       {
-        
+
         /// Check for going past the stop.
         if( j > j_stop ) j = j_stop;
 
@@ -506,7 +506,7 @@ SubsampleStructuredFieldByIndices::execute()
         jnodeIdx += jnode*idim_in;
         jelemIdx += jnode*(idim_in-1);
 
-        for( i=i_start; i<i_stop_stride; i+=i_stride ) 
+        for( i=i_start; i<i_stop_stride; i+=i_stride )
         {
 
           /// Check for going past the stop.
@@ -521,7 +521,7 @@ SubsampleStructuredFieldByIndices::execute()
 
           /// A hack here so that an iterator can be used.
           /// Set this iterator to be at the correct ith index.
-          
+
           inodeIdx = jnodeIdx;
           ielemIdx = jelemIdx;
           inodeIdx += inode;
@@ -532,14 +532,14 @@ SubsampleStructuredFieldByIndices::execute()
             imesh->get_center(pt, inodeIdx);
             omesh->set_point(pt, onodeIdx);
           }
-          
-          switch( ifield->basis_order() ) 
+
+          switch( ifield->basis_order() )
           {
             case 0:
 
             if( i+i_stride<i_stop_stride &&
                 j+j_stride<j_stop_stride &&
-                k+k_stride<k_stop_stride ) 
+                k+k_stride<k_stop_stride )
             {
               ofield->copy_value(ifield,ielemIdx,oelemIdx);
               oelemIdx++;
@@ -552,17 +552,17 @@ SubsampleStructuredFieldByIndices::execute()
 
           default:
             break;
-          } 
+          }
 
           onodeIdx++;
         }
       }
     }
-      
+
     // Send the data downstream
     send_output_handle( "Output Field", field_out_handle );
-      
-    if( matrix_handle == 0 ) 
+
+    if( matrix_handle == 0 )
     {
       /// Create the output matrix with the stop, stop, stride, wrap, and
       /// dimensions.
@@ -585,7 +585,7 @@ SubsampleStructuredFieldByIndices::execute()
       selected->put(2, 2, gui_stride_k_.get() );
       selected->put(2, 3, gui_wrap_k_.get() );
       selected->put(2, 4, gui_dim_k_.get() );
-    
+
       matrix_handle = MatrixHandle(selected);
 
       // Send the data downstream

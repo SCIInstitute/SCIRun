@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +26,11 @@
 */
 
 
-///@author
-///   David Weinstein,
-///   Department of Computer Science,
-///   University of Utah
-///@date June 1999
+/// @author
+///    David Weinstein,
+///    Department of Computer Science,
+///    University of Utah
+/// @date June 1999
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -50,7 +49,7 @@
 
 namespace SCIRun {
 
-/// @class EvaluateLinAlgBinary 
+/// @class EvaluateLinAlgBinary
 /// @brief This module performs one of a number of selectable matrix operations
 /// using the two input matrices.
 ///
@@ -113,49 +112,49 @@ EvaluateLinAlgBinary::execute()
       return;
     }
     else if (op == "Function")
-    {    
+    {
       NewArrayMathEngine engine;
       engine.set_progress_reporter(this);
-      
+
       if (!(engine.add_input_fullmatrix("x",aH))) return;
       if (!(engine.add_input_fullmatrix("y",bH))) return;
-      
+
       std::string func = function_.get();
       func = "RESULT="+func;
       engine.add_expressions(func);
 
-      MatrixHandle omatrix = aH->clone();   
+      MatrixHandle omatrix = aH->clone();
       if(!(engine.add_output_fullmatrix("RESULT",omatrix))) return;
-      
+
       // Actual engine call, which does the dynamic compilation, the creation of the
-      // code for all the objects, as well as inserting the function and looping 
+      // code for all the objects, as well as inserting the function and looping
       // over every data point
 
       if (!(engine.run())) return;
-      
+
       send_output_handle("Output", omatrix);
-      return;   
+      return;
     }
     else if (op == "SelectColumns")
     {
       ColumnMatrix *bc = matrix_cast::as_column(bH);
-      if (!bc) 
+      if (!bc)
       {
         error("Second input to SelectColumns must be a ColumnMatrix.");
         return;
       }
       DenseMatrix *cd = new DenseMatrix(aH->nrows(), bc->nrows());
-      for (int i=0; i<cd->ncols(); i++) 
+      for (int i=0; i<cd->ncols(); i++)
       {
         int idx = (int)(*bc)[i];
         if (idx == -1) continue;
-        if (idx > aH->ncols()) 
+        if (idx > aH->ncols())
         {
           error("Tried to select column (" + to_string(idx) +
           ") that was out of range (" + to_string(aH->ncols()) + ").");
           return;
         }
-        for (int j=0; j<aH->nrows(); j++) 
+        for (int j=0; j<aH->nrows(); j++)
         {
           (*cd)[j][i]=aH->get(j,idx);
         }
@@ -165,7 +164,7 @@ EvaluateLinAlgBinary::execute()
         MatrixHandle mtmp(cd);
         send_output_handle("Output", mtmp);
       }
-      else if (matrix_is::column(aH)) 
+      else if (matrix_is::column(aH))
       {
         MatrixHandle mtmp(cd->column());
         delete cd;
@@ -188,13 +187,13 @@ EvaluateLinAlgBinary::execute()
       for (int i=0; i<cd->nrows(); i++) {
         int idx = (int)(*bc)[i];
         if (idx == -1) continue;
-        if (idx > aH->nrows()) 
+        if (idx > aH->nrows())
         {
           error("Tried to select a row (" + to_string(idx) +
           ") that was out of range (" + to_string(aH->nrows()) +").");
           return;
         }
-        for (int j=0; j<aH->ncols(); j++) 
+        for (int j=0; j<aH->ncols(); j++)
         {
           (*cd)[i][j]=aH->get(idx,j);
         }
@@ -222,13 +221,13 @@ EvaluateLinAlgBinary::execute()
         error("NormalizeAtoB does not currently support SparseRowMatrices.");
         return;
       }
-      
+
       if (aH->get_data_size() == 0 || bH->get_data_size() == 0)
       {
         error("Cannot NormalizeAtoB with empty matrices.");
         return;
       }
-      
+
       double amin, amax, bmin, bmax;
       double *a = aH->get_data_pointer();
       double *b = bH->get_data_pointer();

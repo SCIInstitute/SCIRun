@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +26,10 @@
 */
 
 
-
 ///
-///@file  MaskLatVolWithTriSurf.cc 
+///@file  MaskLatVolWithTriSurf.cc
 ///@brief Convert a LatVolField into a MaskedLatVolField and apply the given
-/// function to mask it out.  
+/// function to mask it out.
 ///
 ///@author
 ///   David Weinstein
@@ -75,7 +73,7 @@ void
 MaskLatVolWithTriSurf::execute()
 {
   FieldHandle latvolH, trisurfH;
-  
+
   get_input_handle("LatVolField", latvolH,true);
   get_input_handle("TriSurfField", trisurfH,true);
 
@@ -105,7 +103,7 @@ MaskLatVolWithTriSurf::execute()
     error("Input field was not a TriSurf.");
     return;
   }
-  
+
   VMesh* latvolM = latvolH->vmesh();
   VMesh* trisurfM = trisurfH->vmesh();
 
@@ -113,22 +111,22 @@ MaskLatVolWithTriSurf::execute()
   FieldHandle output = CreateField(mfi,latvolH->mesh());
   VField *mask = output->vfield();
 
-  VMesh::Elem::iterator fiter; 
-  VMesh::Elem::iterator fiter_end; 
+  VMesh::Elem::iterator fiter;
+  VMesh::Elem::iterator fiter_end;
   VMesh::Elem::size_type nfaces;
   VMesh::Node::array_type fac_nodes(3);
   trisurfM->begin(fiter);
   trisurfM->end(fiter_end);
   trisurfM->size(nfaces);
-  
+
   Array1<BBox> faceBBox(nfaces);
   int fidx=0;
   int i;
   BBox surfBBox;
-  while(fiter != fiter_end) 
+  while(fiter != fiter_end)
   {
     trisurfM->get_nodes(fac_nodes, *fiter);
-    for (i=0; i<3; i++) 
+    for (i=0; i<3; i++)
     {
       Point p;
       trisurfM->get_center(p, fac_nodes[i]);
@@ -138,30 +136,30 @@ MaskLatVolWithTriSurf::execute()
     ++fidx;
     ++fiter;
   }
-  
+
   VMesh::Node::iterator niter;
   VMesh::Node::iterator niter_end;
   latvolM->begin(niter);
   latvolM->end(niter_end);
-  while (niter != niter_end) 
+  while (niter != niter_end)
   {
     Point p;
     latvolM->get_center(p, *niter);
-    if (!surfBBox.inside(p)) 
-    { 
-      mask->set_value(static_cast<char>(0), *niter); 
-      ++niter; 
-      continue; 
+    if (!surfBBox.inside(p))
+    {
+      mask->set_value(static_cast<char>(0), *niter);
+      ++niter;
+      continue;
     }
-    
+
     int ncrossings=0;
     trisurfM->begin(fiter);
-    while (fiter != fiter_end) 
+    while (fiter != fiter_end)
     {
       if (faceBBox[*fiter].min().x() < p.x() &&
           faceBBox[*fiter].max().x() > p.x() &&
           faceBBox[*fiter].min().y() < p.y() &&
-          faceBBox[*fiter].max().y() > p.y()) 
+          faceBBox[*fiter].max().y() > p.y())
       {
         trisurfM->get_nodes(fac_nodes, *fiter);
         Point p1, p2, p3;
@@ -174,19 +172,19 @@ MaskLatVolWithTriSurf::execute()
         Vector pvec(Cross(Vector(0,0,1), e2));
         double det=Dot(e1, pvec);
 
-        if(det>1.e-9 || det<-1.e-9) 
+        if(det>1.e-9 || det<-1.e-9)
         {
           double idet=1.0/det;
           Vector tvec(p-p1);
           double u=Dot(tvec, pvec)*idet;
-          if (u>=0.0 && u<=1.0) 
+          if (u>=0.0 && u<=1.0)
           {
             Vector qvec(Cross(tvec, e1));
             double v=Dot(Vector(0,0,1), qvec)*idet;
-            if (v>=0.0 && u+v<=1.0) 
+            if (v>=0.0 && u+v<=1.0)
             {
               double t=Dot(e2, qvec)*idet;
-              if (t>0) 
+              if (t>0)
               {
                 ncrossings++;
               }
@@ -196,7 +194,7 @@ MaskLatVolWithTriSurf::execute()
       }
       ++fiter;
     }
-    
+
     if (ncrossings % 2) mask->set_value(static_cast<char>(1), *niter);
     else mask->set_value(static_cast<char>(0), *niter);
     ++niter;

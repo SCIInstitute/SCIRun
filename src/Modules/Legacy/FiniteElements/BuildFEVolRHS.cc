@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,17 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-////@file BuildFEVolRHS.h
-///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
+
+//// @file BuildFEVolRHS.h
+/// @brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
 ///
-///@author
-/// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
+/// @author
+///  ported by Moritz Dannhauer (09/24/2014) from SCIRun4
 ///
-///@details
-/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field
-/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of
-/// the function is GRAD dot F.
-/// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
+/// @details
+///  Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field
+///  (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of
+///  the function is GRAD dot F.
+///  Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
 
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>

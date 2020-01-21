@@ -1,30 +1,30 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-  
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/NrrdData.h>
@@ -36,7 +36,7 @@
 using namespace SCIRun;
 
 /// @class InsertNrrdsIntoBundle
-/// @brief This module inserts a nrrd object into a bundle. 
+/// @brief This module inserts a nrrd object into a bundle.
 
 class InsertNrrdsIntoBundle : public Module {
 public:
@@ -50,14 +50,14 @@ private:
   GuiString     guinrrd4name_;
   GuiString     guinrrd5name_;
   GuiString     guinrrd6name_;
-  
+
   GuiInt        guireplace1_;
   GuiInt        guireplace2_;
   GuiInt        guireplace3_;
   GuiInt        guireplace4_;
   GuiInt        guireplace5_;
   GuiInt        guireplace6_;
-  
+
   GuiString     guibundlename_;
 };
 
@@ -96,11 +96,11 @@ InsertNrrdsIntoBundle::execute()
   get_input_handle("nrrd4",nrrd4,false);
   get_input_handle("nrrd5",nrrd5,false);
   get_input_handle("nrrd6",nrrd6,false);
-  
-  if (inputs_changed_ || guinrrd1name_.changed() || 
-      guinrrd2name_.changed() || guinrrd3name_.changed() || 
-      guinrrd4name_.changed() || guinrrd5name_.changed() || 
-      guinrrd6name_.changed() ||       
+
+  if (inputs_changed_ || guinrrd1name_.changed() ||
+      guinrrd2name_.changed() || guinrrd3name_.changed() ||
+      guinrrd4name_.changed() || guinrrd5name_.changed() ||
+      guinrrd6name_.changed() ||
       guireplace1_.changed() || guireplace2_.changed() ||
       guireplace3_.changed() || guireplace4_.changed() ||
       guireplace5_.changed() || guireplace6_.changed() ||
@@ -108,7 +108,7 @@ InsertNrrdsIntoBundle::execute()
       guibundlename_.changed() || !oport_cached("bundle"))
   {
     update_state(Executing);
-  
+
     std::string nrrd1Name = guinrrd1name_.get();
     std::string nrrd2Name = guinrrd2name_.get();
     std::string nrrd3Name = guinrrd3name_.get();
@@ -132,27 +132,27 @@ InsertNrrdsIntoBundle::execute()
     }
 
     if (nrrd1.get_rep()
-        &&(guireplace1_.get()||!(handle->isNrrd(nrrd1Name)))) 
+        &&(guireplace1_.get()||!(handle->isNrrd(nrrd1Name))))
       handle->setNrrd(nrrd1Name,nrrd1);
 
     if (nrrd2.get_rep()
-        &&(guireplace2_.get()||!(handle->isNrrd(nrrd2Name)))) 
+        &&(guireplace2_.get()||!(handle->isNrrd(nrrd2Name))))
       handle->setNrrd(nrrd2Name,nrrd2);
 
     if (nrrd3.get_rep()
-        &&(guireplace3_.get()||!(handle->isNrrd(nrrd3Name)))) 
+        &&(guireplace3_.get()||!(handle->isNrrd(nrrd3Name))))
       handle->setNrrd(nrrd3Name,nrrd3);
 
     if (nrrd4.get_rep()
-        &&(guireplace4_.get()||!(handle->isNrrd(nrrd4Name)))) 
+        &&(guireplace4_.get()||!(handle->isNrrd(nrrd4Name))))
       handle->setNrrd(nrrd4Name,nrrd4);
 
     if (nrrd5.get_rep()
-        &&(guireplace5_.get()||!(handle->isNrrd(nrrd5Name)))) 
+        &&(guireplace5_.get()||!(handle->isNrrd(nrrd5Name))))
       handle->setNrrd(nrrd5Name,nrrd5);
-                      
+
     if (nrrd6.get_rep()
-        &&(guireplace6_.get()||!(handle->isNrrd(nrrd6Name)))) 
+        &&(guireplace6_.get()||!(handle->isNrrd(nrrd6Name))))
       handle->setNrrd(nrrd6Name,nrrd6);
 
     if (bundlename != "")
@@ -163,8 +163,3 @@ InsertNrrdsIntoBundle::execute()
     send_output_handle("bundle",handle);
   }
 }
-
-
-
-
-

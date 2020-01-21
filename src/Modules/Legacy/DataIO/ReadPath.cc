@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,13 +28,13 @@
 
 ///
 /// @file  ReadPath.cc
-/// 
+///
 /// @author
 ///    Steven G. Parker
 ///    Department of Computer Science
 ///    University of Utah
 /// @date  July 1994
-/// 
+///
 
 #include <Dataflow/Network/Ports/PathPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
