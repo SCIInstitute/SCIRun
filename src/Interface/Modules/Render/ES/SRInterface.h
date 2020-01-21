@@ -184,7 +184,9 @@ namespace SCIRun {
       // hash multimap with a list which assigns ids to names.
       uint64_t getEntityIDForName(const std::string& name, int port);
       Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
+
       bool hasShaderPromise() const;
+      void runGCOnNextExecution()//{mCore.runGCOnNextExecution();}
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
