@@ -186,7 +186,7 @@ namespace SCIRun {
       Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
 
       bool hasShaderPromise() const;
-      void runGCOnNextExecution()//{mCore.runGCOnNextExecution();}
+      void runGCOnNextExecution();
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.

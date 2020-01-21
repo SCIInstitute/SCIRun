@@ -26,6 +26,11 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+
+ #ifdef __APPLE__
+ #define GL_SILENCE_DEPRECATION
+ #endif
+
 #include <es-log/trace-log.h>
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
@@ -107,7 +112,12 @@ namespace SCIRun {
 
     bool SRInterface::hasShaderPromise() const
     {
-      return mCore.hasShaderPromise(); 
+      return mCore.hasShaderPromise();
+    }
+
+    void SRInterface::runGCOnNextExecution()
+    {
+      mCore.runGCOnNextExecution();
     }
 
     //----------------------------------------------------------------------------------------------
