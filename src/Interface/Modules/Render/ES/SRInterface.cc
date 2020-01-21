@@ -65,11 +65,11 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
+
 using namespace std::placeholders;
 
 namespace fs = spire;
@@ -1308,7 +1308,6 @@ namespace SCIRun {
             }
           }
           mCamera->setSceneBoundingBox(mSceneBBox);
-          mCore.runGCOnNextExecution();
         }
       }
       DEBUG_LOG_LINE_INFO

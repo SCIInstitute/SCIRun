@@ -185,6 +185,7 @@ namespace SCIRun {
       uint64_t getEntityIDForName(const std::string& name, int port);
       Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
       bool hasShaderPromise() const {return mCore.hasShaderPromise();}
+      void runGCOnNextExecution(){mCore.runGCOnNextExecution();}
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
