@@ -108,8 +108,9 @@ QTextEdit(parent), rootNetworkEditor_(rootNetworkEditor)
   f.setFixedPitch(true);
 
   // Set the tab width to 4 spaces
-  QFontMetrics fm(f, this);
-  this->setTabStopWidth(fm.width("    "));
+  //TODO deprecated
+  // QFontMetrics fm(f, this);
+  // this->setTabStopWidth(fm.width("    "));
 
   QTextCharFormat format;
   format.setFont(f);

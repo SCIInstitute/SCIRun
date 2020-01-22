@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -137,19 +137,38 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   originalSize_ = size();
 
   module_->setupPortSceneCollaborator(this);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "ctor" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~dtor" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::showAndColor(const QColor& color)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   showAndColorImpl(color, 4000);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   if (timeLine_)
     return;
 
@@ -158,21 +177,45 @@ void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
   timeLine_->start();
   ensureThisVisible();
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::findInNetwork()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   showAndColorImpl(Qt::white, 2000);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::loadAnimate(qreal val)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   setOpacity(val);
   setScale(val);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::colorAnimate(qreal val)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   if (val < 1)
   {
     auto effect = graphicsEffect();
@@ -195,22 +238,51 @@ void ModuleProxyWidget::colorAnimate(qreal val)
     delete timeLine_;
     timeLine_ = nullptr;
   }
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   auto p = pos();
   module_->setFixedHeight(originalSize_.height() + delta);
   setMaximumHeight(originalSize_.height() + delta);
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(), p.x(), p.y());
+#endif
+
   setPos(p);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::adjustWidth(int delta)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   auto p = pos();
   module_->setFixedWidth(originalSize_.width() + delta);
   setMaximumWidth(originalSize_.width() + delta);
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(), p.x(), p.y());
+#endif
+
   setPos(p);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::createStartupNote()
@@ -220,7 +292,15 @@ void ModuleProxyWidget::createStartupNote()
 
 void ModuleProxyWidget::ensureThisVisible()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   ensureItemVisible(this);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
@@ -239,7 +319,15 @@ void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   pressedSubWidget_ = widget()->childAt(event->pos().toPoint());
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 ModuleWidget* ModuleProxyWidget::getModuleWidget()
@@ -249,14 +337,26 @@ ModuleWidget* ModuleProxyWidget::getModuleWidget()
 
 void ModuleProxyWidget::disableModuleGUI(bool disabled)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   if (disabled)
     setGraphicsEffect(blurEffect(3));
   else
     setGraphicsEffect(nullptr);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   clearNoteCursor();
   auto taggingOn = data(TagLayerKey).toBool();
   auto currentTag = data(CurrentTagKey).toInt();
@@ -291,6 +391,9 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
     grabbedByWidget_ = false;
     position_ = pos();
   }
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 static int snapTo(int oldPos)
@@ -304,6 +407,10 @@ static int snapTo(int oldPos)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   stackDepth_ = 0;
   auto taggingOn = data(TagLayerKey).toBool();
   if (taggingOn)
@@ -328,18 +435,33 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::snapToGrid()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
   if (Preferences::Instance().modulesSnapToGrid)
   {
     setPos(snapTo(pos().x()), snapTo(pos().y()));
   }
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   stackDepth_++;
   if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
@@ -364,6 +486,10 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
@@ -375,6 +501,9 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 
 void ModuleProxyWidget::highlightIfSelected()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
   if (!isSelected_ && isSelected())
   {
     module_->setColorSelected();
@@ -385,43 +514,116 @@ void ModuleProxyWidget::highlightIfSelected()
     module_->setColorUnselected();
     isSelected_ = false;
   }
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(), pos().x(), pos().y());
+#endif
+
   createPortPositionProviders();
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+  qDebug() << "     " << change << " ?= " << ItemPositionHasChanged << "value=" << value;
+#endif
   if (pos() != QPointF(0,0))
+  {
     cachedPosition_ = pos();
-
+#ifdef MODULE_POSITION_LOGGING
+    logCritical("module proxy {} caching position to {},{}", module_->getModuleId(),
+      cachedPosition_.x(), cachedPosition_.y());
+#endif
+  }
   if (change == ItemPositionHasChanged)
   {
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
     module_->trackConnections();
+
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
     updateNotePosition();
+
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
   }
-  return QGraphicsItem::itemChange(change, value);
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
+  auto ret = QGraphicsItem::itemChange(change, value);
+
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
+  return ret;
 }
+
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+  logCritical("module proxy {} when is pos set back to 0,0 {},{}", module_->getModuleId(),
+    pos().x(), pos().y());
+#endif
+
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->realId().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
-    //qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << "Setting position provider for port " << QString::fromStdString(p->realId().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
     auto pp(boost::make_shared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
 
-    //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+    qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
+#endif
 
     p->setPositionObject(pp);
+
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
   }
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
+
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
   {
+#ifdef MODULE_POSITION_LOGGING
+    logCritical("module proxy {} setPos to cachedPosition_ {},{}", module_->getModuleId(),
+      cachedPosition_.x(), cachedPosition_.y());
+#endif
+
     setPos(cachedPosition_);
+
+#ifdef MODULE_POSITION_LOGGING
+    qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
   }
+#ifdef MODULE_POSITION_LOGGING
+  qDebug() << "~" << __FILE__ << __LINE__ << pos() << scenePos();
+#endif
 }
 
 void ModuleProxyWidget::updateNote(const Note& note)
@@ -456,22 +658,87 @@ void ModuleProxyWidget::setDefaultNoteSize(int size)
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hover at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
+
   if (doHighlight_)
   {
     module_->highlightPorts();
+
+#ifdef MODULE_POSITION_LOGGING
+    logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
+       pos().x(), pos().y());
+#endif
+
     createPortPositionProviders();
+
+#ifdef MODULE_POSITION_LOGGING
+    logCritical("{} module {} hover at proxy pos {},{} scenePos {},{}", __LINE__,
+      module_->getModuleId(),
+      pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
   }
+
+  {
+    auto dropShadow = new QGraphicsDropShadowEffect;
+    dropShadow->setColor(Qt::darkGray);
+    dropShadow->setOffset(5, 5);
+    dropShadow->setBlurRadius(30);
+    setGraphicsEffect(dropShadow);
+  }
+
   QGraphicsProxyWidget::hoverEnterEvent(event);
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hover at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
 }
 
 void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
   if (doHighlight_)
   {
     module_->unhighlightPorts();
+
+#ifdef MODULE_POSITION_LOGGING
+    logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
+      pos().x(), pos().y());
+#endif
+
     createPortPositionProviders();
   }
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
+
+  setGraphicsEffect(nullptr);
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
+
   QGraphicsProxyWidget::hoverLeaveEvent(event);
+
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,
+    module_->getModuleId(),
+    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+#endif
 }
 
 void ModuleProxyWidget::highlightPorts(int state)
