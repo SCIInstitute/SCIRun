@@ -76,6 +76,7 @@ void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
+  //TODO: check if cross is 0 before normalize. Crashes on Windows
   glm::vec3 axis = glm::normalize(glm::cross(from, to));
 
   // Give arbitrary non-zero vector because no rotation

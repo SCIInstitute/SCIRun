@@ -28,7 +28,6 @@
 #include <sstream>
 #include <QtGui>
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
@@ -613,11 +612,11 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   moduleWidget->postLoadAction();
   //proxy->setScale(1.6);--problematic with port positions
 
-  auto colorize = new QGraphicsDropShadowEffect;
-  colorize->setColor(Qt::darkGray);
-  colorize->setOffset(5, 5);
-  colorize->setBlurRadius(2);
-  proxy->setGraphicsEffect(colorize);
+  auto dropShadow = new QGraphicsDropShadowEffect;
+  dropShadow->setColor(Qt::darkGray);
+  dropShadow->setOffset(5, 5);
+  dropShadow->setBlurRadius(2);
+  proxy->setGraphicsEffect(dropShadow);
 
   auto pic = grabSubnetPic(rect, items);
   auto tooltipPic = convertToTooltip(pic);
@@ -689,7 +688,7 @@ QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsIt
     }
   }
 
-  auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
+  auto pic = grab(mapFromScene(rect).boundingRect());
 
   Q_FOREACH(QGraphicsItem* item, toHide)
   {

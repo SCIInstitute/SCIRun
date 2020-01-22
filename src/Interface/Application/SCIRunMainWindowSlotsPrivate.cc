@@ -410,7 +410,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    auto faves = item->textColor(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
+    auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -418,7 +418,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
       {
         auto fave = addFavoriteItem(faves, item);
         faves->sortChildren(0, Qt::AscendingOrder);
-        if (item->textColor(0) != CLIPBOARD_COLOR)
+        if (item->foreground(0) != CLIPBOARD_COLOR)
           favoriteModuleNames_ << item->text(0);
         else
         {
@@ -428,7 +428,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
     }
     else
     {
-      if (faves && item->textColor(0) != CLIPBOARD_COLOR)
+      if (faves && item->foreground(0) != CLIPBOARD_COLOR)
       {
         favoriteModuleNames_.removeAll(item->text(0));
         for (int i = 0; i < faves->childCount(); ++i)
@@ -551,7 +551,6 @@ void SCIRunMainWindow::highlightPortsChanged()
 void SCIRunMainWindow::resetWindowLayout()
 {
   configurationDockWidget_->hide();
-  devConsole_->hide();
   provenanceWindow_->hide();
   moduleSelectorDockWidget_->show();
   moduleSelectorDockWidget_->setFloating(false);
@@ -732,7 +731,7 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
   clip->setToolTip(0, "todo: xml translation");
   clip->setData(0, clipboardKey, xml);
-  clip->setTextColor(0, CLIPBOARD_COLOR);
+  clip->setForeground(0, CLIPBOARD_COLOR);
 
   const int clipMax = 5;
   if (clips->childCount() == clipMax)

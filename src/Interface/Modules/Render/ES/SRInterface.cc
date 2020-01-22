@@ -26,6 +26,11 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+
+ #ifdef __APPLE__
+ #define GL_SILENCE_DEPRECATION
+ #endif
+
 #include <es-log/trace-log.h>
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
@@ -67,11 +72,11 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
+
 using namespace std::placeholders;
 
 namespace fs = spire;
@@ -105,6 +110,16 @@ namespace SCIRun {
     SRInterface::~SRInterface()
     {
       glDeleteTextures(1, &mFontTexture);
+    }
+
+    bool SRInterface::hasShaderPromise() const
+    {
+      return mCore.hasShaderPromise();
+    }
+
+    void SRInterface::runGCOnNextExecution()
+    {
+      mCore.runGCOnNextExecution();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1461,7 +1476,6 @@ namespace SCIRun {
             }
           }
           mCamera->setSceneBoundingBox(mSceneBBox);
-          mCore.runGCOnNextExecution();
         }
       }
       DEBUG_LOG_LINE_INFO

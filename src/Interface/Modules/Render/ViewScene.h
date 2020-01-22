@@ -77,7 +77,6 @@ namespace SCIRun {
       void lockMutexForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
@@ -91,6 +90,7 @@ namespace SCIRun {
       void frameFinished();
       void lockMutex();
       void unblockExecution();
+      void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();
@@ -299,6 +299,8 @@ namespace SCIRun {
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
 
       bool                                  shown_                        {false};
+      bool                                  delayGC                       {false};
+      bool                                  delayedGCRequested            {false};
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
