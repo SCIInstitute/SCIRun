@@ -79,6 +79,20 @@ using namespace SCIRun::Core::Algorithms;
     if (params->dataDirectory())
       q->enqueue(cmdFactory_->create(GlobalCommands::SetupDataDirectory));
 
+    if (params->importNetworkFile())
+    {
+      auto import = cmdFactory_->create(GlobalCommands::ImportNetworkFile);
+      import->set(Variables::Filename, *params->importNetworkFile());
+
+      if (params->disableGui())
+        import->set(Core::Algorithms::AlgorithmParameterName("QuietMode"), true);
+
+      q->enqueue(import);
+      auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
+      save->set(Variables::Filename, (*params->importNetworkFile()) + "_imported.srn5");
+      q->enqueue(save);
+    }
+
     if (params->pythonScriptFile())
     {
       if (params->executeNetworkAndQuit())
@@ -111,7 +125,8 @@ using namespace SCIRun::Core::Algorithms;
     }
     else if (params->disableGui() && !params->interactiveMode())
     {
-      std::cout << "No input files: run with GUI or in interactive mode (-i)" << std::endl;
+      if (!params->importNetworkFile())
+        std::cout << "No input files: run with GUI or in interactive mode (-i)" << std::endl;
       q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
     }
 
