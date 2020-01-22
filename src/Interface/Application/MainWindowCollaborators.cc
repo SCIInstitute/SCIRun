@@ -645,8 +645,12 @@ QWizardPage* PythonWizard::createLoadNetworkPage()
     "\n\n"
     "Execute network with `scirun_execute_all()` command");
 
-  page->codeEdit->setPlainText("scirun_load_network(\"/Users/nidhipatel/myclone/"
-    "SCIRun/src/ExampleNets/IBBM2015/Isosurfacing_Cube.srn5\")"
+  auto dataDirString = Core::Application::Instance().parameters()->dataDirectory().get().string();
+
+  qDebug() << "DataDir:" << dataDirString;
+  page->codeEdit->setPlainText("scirun_load_network(\"" +
+    QString::fromStdString(dataDirString) +
+    "\")"
     "\n\n\n"
     "scirun_execute_all()");
 
