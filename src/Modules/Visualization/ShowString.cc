@@ -27,10 +27,11 @@
 */
 /// @todo Documentation Modules/Visualization/ShowString.cc
 
-#include <Modules/Visualization/ShowString.h>
-#include <Modules/Visualization/TextBuilder.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/String.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Modules/Visualization/ShowString.h>
+#include <Modules/Visualization/TextBuilder.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;

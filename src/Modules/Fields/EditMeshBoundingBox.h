@@ -105,6 +105,9 @@ namespace SCIRun {
         void updateState(FieldHandle field);
         void sendOutputPorts();
         void resetToInputField();
+        void changeAxesOrientation(FieldHandle field);
+        void setOutputCenter();
+        void resetOutputCenter();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(Core::Datatypes::MouseButton btn,
                                          Core::Datatypes::WidgetMovement move,
@@ -121,6 +124,7 @@ namespace SCIRun {
         FieldHandle outputField_;
 
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+        Core::Geometry::Point ogPos_;
         Core::Geometry::Transform trans_;
         Core::Geometry::Transform widgetAxes_;
         Core::Geometry::Transform widgetAxesOrthonormal_;

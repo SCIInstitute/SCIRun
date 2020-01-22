@@ -94,8 +94,8 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMov
   }
   if(move == WidgetMovement::ROTATE)
   {
-    widgetAxesOrthonormal_ = feedbackTrans * widgetAxesOrthonormal_;
-    widgetAxesOrthonormal_.orthogonalize();
+    widgetAxes_ = feedbackTrans * widgetAxes_;
+    widgetAxes_.orthogonalize();
   }
 }
 
@@ -167,17 +167,7 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
   if(inputsChanged() || inputResetRequested)
     resetToInputField();
   if (widgetAxesRotated_)
-  {
-    for(auto &e : eigvecs_)
-      e = widgetAxesOrthonormal_ * e;
-    widgetAxesOrthonormal_ = Transform();
-
-    auto fh = FieldHandle(field->deep_clone());
-    fh->vmesh()->transform(fieldTrans_);
-    computeWidgetBox(fh->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
-    trans_ = Transform(trans.get_translation_point(), eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-    widgetAxesRotated_ = false;
-  }
+    changeAxesOrientation(field);
   if (firstRun_ && state->getValue(DataSaved).toBool())
   {
     firstRun_ = false;
@@ -185,31 +175,10 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
     updateInputFieldAttributes();
   }
 
-  // Sets the translation vector in the homogeneous matrices
   if(transient_value_cast<bool>(state->getTransientValue(SetOutputCenter)))
-  {
-    state->setTransientValue(SetOutputCenter, false);
-
-    trans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble());
-    trans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble());
-    trans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble());
-
-    // Vector multiplication with Transform only does rotation, not translation
-    auto rotatedPositionVec = fieldTrans_ * Vector(pos_);
-    fieldTrans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble() - rotatedPositionVec[0]);
-    fieldTrans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble() - rotatedPositionVec[1]);
-    fieldTrans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble() - rotatedPositionVec[2]);
-  }
+    setOutputCenter();
   else if (transient_value_cast<bool>(state->getTransientValue(ResetCenter)))
-  {
-    state->setTransientValue(ResetCenter, false);
-
-    for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
-    {
-      trans_.set_mat_val(iDim, 3, pos_[iDim]);
-      fieldTrans_.set_mat_val(iDim, 3, 0);
-    }
-  }
+    resetOutputCenter();
 }
 
 void EditMeshBoundingBox::sendOutputPorts()
@@ -227,15 +196,57 @@ void EditMeshBoundingBox::resetToInputField()
 {
   trans_ = Transform();
   fieldTrans_ = Transform();
-  widgetAxesOrthonormal_ = Transform();
+  widgetAxes_ = Transform();
   eigvecs_.resize(mDIMENSIONS);
   eigvecs_[0] = Vector(1,0,0);
   eigvecs_[1] = Vector(0,1,0);
   eigvecs_[2] = Vector(0,0,1);
-  state->setTransientValue(ResetToInput, false);
+  get_state()->setTransientValue(ResetToInput, false);
   computeWidgetBox(outputField_->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
+  ogPos_ = pos_;
   trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
   updateInputFieldAttributes();
+}
+
+void EditMeshBoundingBox::changeAxesOrientation(FieldHandle field)
+{
+  for(auto &eigvec : eigvecs_)
+    eigvec = widgetAxes_ * eigvec;
+  widgetAxes_ = Transform();
+
+  auto fh = FieldHandle(field->deep_clone());
+  fh->vmesh()->transform(fieldTrans_);
+  computeWidgetBox(fh->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
+  trans_ = Transform(trans_.get_translation_point(), eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
+  widgetAxesRotated_ = false;
+}
+
+// Sets the translation vector in the homogeneous matrices
+void EditMeshBoundingBox::setOutputCenter()
+{
+  auto state = get_state();
+  state->setTransientValue(SetOutputCenter, false);
+
+  trans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble());
+  trans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble());
+  trans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble());
+
+  // Vector multiplication with Transform only does rotation, not translation
+  auto rotatedPositionVec = fieldTrans_ * Vector(ogPos_);
+  fieldTrans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble() - rotatedPositionVec[0]);
+  fieldTrans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble() - rotatedPositionVec[1]);
+  fieldTrans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble() - rotatedPositionVec[2]);
+}
+
+void EditMeshBoundingBox::resetOutputCenter()
+{
+  get_state()->setTransientValue(ResetCenter, false);
+
+  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
+  {
+    trans_.set_mat_val(iDim, 3, ogPos_[iDim]);
+    fieldTrans_.set_mat_val(iDim, 3, 0);
+  }
 }
 
 std::string EditMeshBoundingBox::convertForLabel(double coord)
@@ -313,9 +324,9 @@ void EditMeshBoundingBox::loadFromParameters()
 void EditMeshBoundingBox::updateInputFieldAttributes()
 {
   auto state = get_state();
-  state->setValue(InputCenterX, convertForLabel(pos_[0]));
-  state->setValue(InputCenterY, convertForLabel(pos_[1]));
-  state->setValue(InputCenterZ, convertForLabel(pos_[2]));
+  state->setValue(InputCenterX, convertForLabel(ogPos_[0]));
+  state->setValue(InputCenterY, convertForLabel(ogPos_[1]));
+  state->setValue(InputCenterZ, convertForLabel(ogPos_[2]));
   state->setValue(InputSizeX, convertForLabel(eigvals_[0]));
   state->setValue(InputSizeY, convertForLabel(eigvals_[1]));
   state->setValue(InputSizeZ, convertForLabel(eigvals_[2]));

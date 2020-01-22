@@ -29,6 +29,7 @@
 SET(Core_Datatypes_SRCS
   BlockMatrix.cc
   Color.cc
+  Feedback.cc
   ColorMap.cc
   Datatype.cc
   Geometry.cc
@@ -45,6 +46,7 @@ SET(Core_Datatypes_SRCS
 SET(Core_Datatypes_HEADERS
   BlockMatrix.h
   Color.h
+  Feedback.h
   ColorMap.h
   Datatype.h
   DatatypeFwd.h

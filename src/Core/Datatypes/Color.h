@@ -33,48 +33,12 @@
 
 #include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Algorithms/Base/Variable.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
-  // These will give different types of widget movement through ViewScene.
-  // To use rotation and scaling, an origin point must be given.
-  enum class WidgetMovement
-  {
-    NONE,
-    TRANSLATE,
-    TRANSLATE_AXIS,
-    TRANSLATE_AXIS_HALF,
-    TRANSLATE_AXIS_REVERSE,
-    ROTATE,
-    SCALE,
-    SCALE_UNIDIRECTIONAL,
-    SCALE_AXIS,
-    SCALE_AXIS_HALF,
-    SCALE_AXIS_UNIDIRECTIONAL,
-  };
-
-  struct EnumClassHash
-  {
-    template <typename T>
-    std::size_t operator()(T t) const
-    {
-      return static_cast<std::size_t>(t);
-    }
-  };
-
-  enum MouseButton {
-    NONE = 0,
-    LEFT,
-    MIDDLE,
-    RIGHT,
-    STATE_COUNT
-  };
-
   class SCISHARE ColorRGB
   {
   private:
@@ -108,31 +72,9 @@ namespace Datatypes {
     std::string toString() const;
   };
 
+  SCISHARE std::ostream &operator<<(std::ostream &out, const ColorRGB &color);
+
   typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
-
-  SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
-
-  struct SCISHARE ViewSceneFeedback : ModuleFeedback
-  {
-    Geometry::Transform transform;
-    MouseButton buttonClicked;
-    WidgetMovement movementType;
-    std::string selectionName;
-    std::tuple<int,int> windowSize;
-
-    bool matchesWithModuleId(const std::string& modId) const;
-  };
-
-  struct SCISHARE MeshComponentSelectionFeedback : ModuleFeedback
-  {
-    MeshComponentSelectionFeedback() {}
-    MeshComponentSelectionFeedback(const std::string& mod, const std::string& comp, bool sel) :
-      moduleId(mod), component(comp), selected(sel) {}
-    std::string moduleId;
-    std::string component;
-    bool selected {false};
-  };
-
 }}}
 
 

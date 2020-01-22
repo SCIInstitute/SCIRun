@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>

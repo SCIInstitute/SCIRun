@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Graphics_Widgets_Widget_H
 
 #include <unordered_map>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/share.h>
