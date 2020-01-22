@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-ERFACE_MODULES_BuildDerivedNrrdWithGageDialog_H
+#ifndef INTERFACE_MODULES_BuildDerivedNrrdWithGageDialog_H
 #define INTERFACE_MODULES_BuildDerivedNrrdWithGageDialog_H
 
 #include "Interface/Modules/Teem/ui_BuildDerivedNrrdWithGage.h"

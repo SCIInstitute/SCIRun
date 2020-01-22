@@ -25,7 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/
 
 #include <Modules/Math/ConvertMatrixToScalar.h>
 
