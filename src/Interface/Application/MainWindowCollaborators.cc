@@ -459,7 +459,11 @@ QWizardPage* PythonWizard::createSaveNetworkPage()
   "\n\n"
   "**The default path settings can be modified from Preferences > Paths**");
 
-  page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
+  auto dataDirString = Core::Preferences::Instance().dataDirectory().string();
+
+  page->codeEdit->setPlainText("scirun_save_network(\"" +
+  QString::fromStdString(dataDirString) +
+  "\")");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
@@ -637,6 +641,7 @@ QWizardPage* PythonWizard::createLoadingNetworkIntroPage()
   return page;
 }
 
+
 QWizardPage* PythonWizard::createLoadNetworkPage()
 {
   auto page = new PythonWizardCodePage;
@@ -645,9 +650,8 @@ QWizardPage* PythonWizard::createLoadNetworkPage()
     "\n\n"
     "Execute network with `scirun_execute_all()` command");
 
-  auto dataDirString = Core::Application::Instance().parameters()->dataDirectory().get().string();
-
-  qDebug() << "DataDir:" << dataDirString;
+  // TODO: direct path to a working example network
+  auto dataDirString = Core::Preferences::Instance().dataDirectory().string();
   page->codeEdit->setPlainText("scirun_load_network(\"" +
     QString::fromStdString(dataDirString) +
     "\")"
@@ -744,10 +748,11 @@ QWizardPage* PythonWizard::createAddIntPyPage()
   page->setSubTitle("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
     "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
     "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
-    "The network should look like the image to the right.");
+    "The network should look like the image below");
   auto layout = new QVBoxLayout;
   auto pic = new QLabel;
-  pic->setPixmap(QPixmap(":/general/Resources/Wizard/int_with_py_network.png"));
+  auto image = new QPixmap(":/general/Resources/Wizard/int_with_py_network.png");
+  pic->setPixmap(image->scaledToHeight(300, Qt::FastTransformation));
   layout->addWidget(pic);
   page->setLayout(layout);
   return page;
