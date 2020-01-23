@@ -744,17 +744,26 @@ QWizardPage* PythonWizard::createBaseNetworkPage()
 QWizardPage* PythonWizard::createAddIntPyPage()
 {
   auto page = new QWizardPage;
+  page->setSizePolicy(QSizePolicy::QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
   page->setTitle("Implementing InterfaceWithPython");
-  page->setSubTitle("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
+  auto layout = new QHBoxLayout;
+
+  auto text = new QTextBrowser;
+  text->setText("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
     "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
     "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
-    "The network should look like the image below");
-  auto layout = new QVBoxLayout;
+    "The network should look like the image to the right.");
+  layout->addWidget(text);
+  layout->setSizeConstraint(QLayout::SetDefaultConstraint);
+
   auto pic = new QLabel;
+  pic-> setScaledContents(true);
   auto image = new QPixmap(":/general/Resources/Wizard/int_with_py_network.png");
-  pic->setPixmap(image->scaledToHeight(300, Qt::FastTransformation));
+  pic->setPixmap(image->scaledToHeight(pic->height(), Qt::SmoothTransformation));
   layout->addWidget(pic);
+
   page->setLayout(layout);
+  page->setSizePolicy(QSizePolicy::QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored));
   return page;
 }
 
