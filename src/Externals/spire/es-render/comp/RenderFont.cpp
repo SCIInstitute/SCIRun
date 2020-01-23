@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #include "RenderFont.hpp"
 #include <glm/gtc/type_ptr.hpp>           // glm::value_ptr
 #include <var-buffer/VarBuffer.hpp>
@@ -13,7 +41,7 @@ bool RenderFont::isSetUp() const
 
 void RenderFont::setupAttributesAndUniforms(GLuint shaderID)
 {
-  std::vector<spire::ShaderAttribute> shaderAttribs = 
+  std::vector<spire::ShaderAttribute> shaderAttribs =
       spire::getProgramAttributes(shaderID);
   spire::sortAttributesAlphabetically(shaderAttribs);
 
@@ -52,7 +80,7 @@ void RenderFont::setupAttributesAndUniforms(GLuint shaderID)
   attribSize = static_cast<int>(std::get<0>(sizes));
   stride = std::get<1>(sizes);
 
-  std::vector<shaders::ShaderUniform> shaderUniforms = 
+  std::vector<shaders::ShaderUniform> shaderUniforms =
       shaders::getProgramUniforms(shaderID);
   for (const shaders::ShaderUniform& uniform : shaderUniforms)
   {
@@ -135,7 +163,7 @@ void RenderFont::constructFontGeometry(const StaticFontMan& fontMan, uint64_t fo
     float sLeft = static_cast<float>(left) * scaleX;
     float sBot = static_cast<float>(bottom) * scaleY;
     float sRight = static_cast<float>(right) * scaleX;
-    
+
     glm::vec2 toCenter;
     glm::vec2 curPoint;
 
@@ -189,7 +217,7 @@ void RenderFont::constructFontGeometry(const StaticFontMan& fontMan, uint64_t fo
     vboBuff.write<float>(uvRight);
     vboBuff.write<float>(uvBot);
     vboBuff.write<float>(static_cast<float>(i));
-    
+
     // Construct IBO
     uint16_t idx = static_cast<uint16_t>(i) * 4;
     uint16_t TL = idx;
@@ -219,7 +247,7 @@ void RenderFont::constructFontGeometry(const StaticFontMan& fontMan, uint64_t fo
   // Generate vbo
   GL(glGenBuffers(1, &vbo));
   GL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-  GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboBuff.getBufferSize()), 
+  GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboBuff.getBufferSize()),
                   vboBuff.getBuffer(), GL_STATIC_DRAW));
 
   // Generate ibo
@@ -236,11 +264,10 @@ void RenderFont::constructFontGeometry(const StaticFontMan& fontMan, uint64_t fo
 
   // These are the attributes we have to work with.
   //vboMan.addVBOAttributes(
-  //    vbo.glid, 
+  //    vbo.glid,
   //    { std::make_tuple("aPos2D", 2 * sizeof(float), false),
   //      std::make_tuple("aUV0", 2 * sizeof(float), false),
   //      std::make_tuple("aLetterIndex", sizeof(float), false)});
 }
 
 } // namespace ren
-

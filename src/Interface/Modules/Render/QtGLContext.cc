@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   March 2013
+/// author James Hughes
+/// date   March 2013
 
 #include <iostream>
 #include <Interface/Modules/Render/QtGLContext.h>

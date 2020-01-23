@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   April 2013
+/// author James Hughes
+/// date   April 2013
 
 #include "ArcLookAt.hpp"
 #include <arc-ball/ArcBall.hpp>

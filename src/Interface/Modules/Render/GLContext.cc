@@ -26,10 +26,10 @@
 */
 
 
-/// \author James Hughes
-/// \date   December 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an
-///         auxiliary file to the ViewScene render module.
+/// author James Hughes
+/// date   December 2012
+/// brief  Not sure this file should go in Modules/Render. But it is an
+///        auxiliary file to the ViewScene render module.
 
 #include <Interface/Modules/Render/GLContext.h>
 

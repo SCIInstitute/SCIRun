@@ -26,8 +26,8 @@
 */
 
 
-// author James Hughes
-// date   March 2013
+/// author James Hughes
+/// date   March 2013
 
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/ES/SRCamera.h>

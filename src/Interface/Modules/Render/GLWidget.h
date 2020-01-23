@@ -26,10 +26,10 @@
 */
 
 
-/// \author James Hughes
-/// \date   September 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an
-///         auxiliary file to the ViewScene render module.
+/// author James Hughes
+/// date   September 2012
+/// brief  Not sure this file should go in Modules/Render. But it is an
+///        auxiliary file to the ViewScene render module.
 
 #ifndef INTERFACE_MODULES_GLWIDGET_H
 #define INTERFACE_MODULES_GLWIDGET_H

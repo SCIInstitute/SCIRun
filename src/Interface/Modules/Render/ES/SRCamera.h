@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   February 2013
+/// author James Hughes
+/// date   February 2013
 
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H

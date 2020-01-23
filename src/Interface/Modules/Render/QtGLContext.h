@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   March 2013
+/// author James Hughes
+/// date   March 2013
 
 #ifndef INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
 #define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H

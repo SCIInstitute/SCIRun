@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   April 2013
+/// author James Hughes
+/// date   April 2013
 
 #ifndef SPIRE_ARC_LOOK_AT_H
 #define SPIRE_ARC_LOOK_AT_H

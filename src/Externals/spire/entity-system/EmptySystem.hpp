@@ -26,8 +26,8 @@
 */
 
 
-/// \author James Hughes
-/// \date   February 2014
+/// author James Hughes
+/// date   February 2014
 
 #ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
