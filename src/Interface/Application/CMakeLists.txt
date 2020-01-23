@@ -47,7 +47,6 @@ SET(Interface_Application_SOURCES
   SCIRunMainWindowCommandInterface.cc
   SCIRunMainWindowTreeFunctions.cc
   SCIRunMainWindowSetup.cc
-  Node.cc
   Note.cc
   NoteEditor.cc
   Port.cc
@@ -84,7 +83,6 @@ SET(Interface_Application_HEADERS
   ProvenanceWindow.h
   SCIRunMainWindow.h
   ShortcutsInterface.h
-  Node.h
   Note.h
   NoteEditor.h
   Connection.h

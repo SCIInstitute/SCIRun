@@ -280,7 +280,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 	auto preexecuteFunc = [this]() { preexecute(); };
   auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
   {
-    auto screen = QApplication::desktop()->screenGeometry();
+    auto screen = QGuiApplication::screens()[0]->size();
     if (screen.height() * screen.width() > 4096000) // 2560x1600
       highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
@@ -406,16 +406,20 @@ void SCIRunMainWindow::setupProvenanceWindow()
 
 void SCIRunMainWindow::setupDevConsole()
 {
+  actionDevConsole_->setEnabled(false);
+  #if 0 // disable dev console for now
   devConsole_ = new DeveloperConsole(this);
   connect(actionDevConsole_, SIGNAL(toggled(bool)), devConsole_, SLOT(setVisible(bool)));
   connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
+
   devConsole_->setVisible(false);
   devConsole_->setFloating(true);
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
+
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
-  //NetworkEditor::setViewUpdateFunc([this](const QString& s) { devConsole_->updateNetworkViewLog(s); });
+  #endif
 }
 
 void SCIRunMainWindow::setupPreferencesWindow()
@@ -465,7 +469,7 @@ void SCIRunMainWindow::addFragmentsToMenu(const QMap<QString, QVariant>& names, 
     boost::tie(name, xml, key) = tup;
     subnet->setText(0, name.toString());
     subnet->setData(0, clipboardKey, xml.toString());
-		subnet->setTextColor(0, CLIPBOARD_COLOR);
+		subnet->setForeground(0, CLIPBOARD_COLOR);
 		savedSubnetworks->addChild(subnet);
 		setupSubnetItem(subnet, false, key);
   }
@@ -522,7 +526,8 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-  tagManagerWindow_->hide();
+  tagManagerWindow_->setVisible(false);
+  addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
 
 #ifdef QT5_BUILD

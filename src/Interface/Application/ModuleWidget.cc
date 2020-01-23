@@ -57,6 +57,8 @@ using namespace Gui;
 using namespace Dataflow::Networks;
 using namespace Logging;
 
+//#define MODULE_POSITION_LOGGING
+
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu
@@ -71,6 +73,7 @@ namespace Gui {
         << disabled(new QAction("ID: " + QString::fromStdString(moduleId), parent))
         << separatorAction(parent)
         << new QAction("Execute", parent)
+        << new QAction("... Downstream Only", parent)
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
@@ -543,8 +546,10 @@ void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
+  addWidgetToExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
+  connect(actionsMenu_->getAction("... Downstream Only"), SIGNAL(triggered()), this, SLOT(executeTriggeredViaStateChange()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
@@ -1008,6 +1013,7 @@ ModuleWidget::~ModuleWidget()
     removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
+  removeWidgetFromExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
 
@@ -1039,6 +1045,10 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+#endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1271,7 +1281,7 @@ void ModuleWidget::toggleOptionsDialog()
         {
           auto maxX = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.x() < p2.x(); });
           auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
-          static const QRect rec = QApplication::desktop()->screenGeometry();
+          static const auto rec = QGuiApplication::screens()[0]->size();
           dockable_->move((maxX.x() + 30) % rec.width(), (maxY.y() + 30) % rec.height());
         }
         positions_.append(dockable_->pos());
@@ -1451,6 +1461,11 @@ void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1478,6 +1493,11 @@ void ModuleWidget::highlightPorts()
 {
   ports_->setHighlightPorts(true);
   setPortSpacing(true);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1521,6 +1541,11 @@ void ModuleWidget::unhighlightPorts()
 {
   ports_->setHighlightPorts(false);
   setPortSpacing(false);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 

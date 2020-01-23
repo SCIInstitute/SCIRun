@@ -35,6 +35,11 @@
 namespace SCIRun {
 namespace Gui {
 
+  struct MatchingPair
+  {
+    char left, right;
+  };
+
 class SCISHARE CodeEditor : public QPlainTextEdit
 {
   Q_OBJECT
@@ -60,8 +65,8 @@ private:
   QWidget* lineNumberArea_;
   class Highlighter* highlighter_;
   void createParenthesisSelection(int pos, const QColor& color);
-  bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);
-  bool matchRightParenthesis(QTextBlock currentBlock, int index, int numLeftParentheses);
+  bool matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numRightParentheses);
+  bool matchRightParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numLeftParentheses);
 };
 
 class LineNumberArea : public QWidget
@@ -124,14 +129,16 @@ struct ParenthesisInfo
   int position;
 };
 
+bool operator<(const MatchingPair& lhs, const MatchingPair& rhs);
+
 class TextBlockData : public QTextBlockUserData
 {
 public:
   TextBlockData();
-  std::vector<ParenthesisInfo> parentheses() const;
-  void insert(ParenthesisInfo&& info);
+  std::vector<ParenthesisInfo> parentheses(const MatchingPair& type) const;
+  void insert(const MatchingPair& type, ParenthesisInfo&& info);
 private:
-  std::vector<ParenthesisInfo> m_parentheses;
+  std::map<MatchingPair, std::vector<ParenthesisInfo>> parenthesesByType_;
 };
 
 }

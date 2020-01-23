@@ -42,6 +42,7 @@ namespace
 
 TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
+  setVisible(false);
   setupUi(this);
 
   tagButtons_ = { tagPushButton0_, tagPushButton1_, tagPushButton2_,
@@ -63,6 +64,7 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
   tagColors_.resize(NumberOfTags);
 
   connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
+  hide();
 }
 
 void TagManagerWindow::editTagColor()

@@ -112,4 +112,6 @@ namespace SCIRun
   }
 }
 
+//#define MODULE_POSITION_LOGGING
+
 #endif

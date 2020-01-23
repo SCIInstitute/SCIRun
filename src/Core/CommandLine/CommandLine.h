@@ -50,6 +50,7 @@ namespace SCIRun {
         virtual const std::vector<std::string>& inputFiles() const = 0;
         virtual boost::optional<boost::filesystem::path> pythonScriptFile() const = 0;
         virtual boost::optional<boost::filesystem::path> dataDirectory() const = 0;
+        virtual boost::optional<std::string> importNetworkFile() const = 0;
         virtual bool help() const = 0;
         virtual bool version() const = 0;
         virtual bool executeNetwork() const = 0;

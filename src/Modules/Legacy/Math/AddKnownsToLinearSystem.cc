@@ -33,16 +33,15 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 
-
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(AddKnownsToLinearSystem, Math, SCIRun)
 
-AddKnownsToLinearSystem::AddKnownsToLinearSystem()
-  : Module(ModuleLookupInfo("AddKnownsToLinearSystem","Math", "SCIRun"), false)
+AddKnownsToLinearSystem::AddKnownsToLinearSystem() : Module(staticInfo_, false)
 {
  INITIALIZE_PORT(LHS_Matrix);
  INITIALIZE_PORT(RHS_Vector);
@@ -59,9 +58,9 @@ void AddKnownsToLinearSystem::execute()
 
   if (needToExecute())
   {
-   auto output = algo().run(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
+    auto output = algo().run(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
 
-   sendOutputFromAlgorithm(OutPutLHSMatrix,output);
-   sendOutputFromAlgorithm(OutPutRHSVector,output);
+    sendOutputFromAlgorithm(OutPutLHSMatrix,output);
+    sendOutputFromAlgorithm(OutPutRHSVector,output);
   }
 }

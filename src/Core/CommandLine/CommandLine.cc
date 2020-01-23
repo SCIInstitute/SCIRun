@@ -61,6 +61,7 @@ public:
       ("input-file", po::value<std::vector<std::string>>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "Python script--interpret and drop into embedded console")
       ("Script,S", po::value<std::string>(), "Python script--interpret and quit after one SCIRun execution pass")
+      ("import", po::value<std::string>(), "Import a network from SCIRun 4.7")
       ("no_splash,0", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
       //("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
@@ -187,10 +188,12 @@ public:
     std::vector<std::string>&& inputFiles,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
     const boost::optional<boost::filesystem::path>& dataDirectory,
+    const boost::optional<std::string>& networkToImport,
     DeveloperParametersPtr devParams,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
+    networkToImport_(networkToImport),
     devParams_(devParams),
     flags_(flags)
   {}
@@ -208,6 +211,11 @@ public:
   boost::optional<boost::filesystem::path> dataDirectory() const override
   {
     return dataDirectory_;
+  }
+
+  boost::optional<std::string> importNetworkFile() const override
+  {
+    return networkToImport_;
   }
 
   bool help() const override
@@ -285,6 +293,7 @@ private:
   std::vector<std::string> inputFiles_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
+  boost::optional<std::string> networkToImport_;
   DeveloperParametersPtr devParams_;
   Flags flags_;
 };
@@ -330,12 +339,18 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
     }
+    auto importNetworkFile = boost::optional<std::string>();
+    if (parsed.count("import") != 0 && !parsed["import"].empty() && !parsed["import"].defaulted())
+    {
+      importNetworkFile = parsed["import"].as<std::string>();
+    }
 
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
       pythonScriptFile,
       dataDirectory,
+      importNetworkFile,
       boost::make_shared<DeveloperParametersImpl>(
         parseOptionalArg<std::string>(parsed, "threadMode"),
         parseOptionalArg<std::string>(parsed, "reexecuteMode"),

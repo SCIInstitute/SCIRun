@@ -241,15 +241,21 @@ bool NetworkFileProcessCommand::execute()
   {
     std::string message(e.what());
     GuiLogger::logErrorStd("File load failed (" + filename + "): SCIRun exception in load_xml, " + message);
-    if (message.find("InterfaceWithTetGen") != std::string::npos)
+
+    auto quiet = get(Core::Algorithms::AlgorithmParameterName("QuietMode")).toBool();
+
+    if (!quiet)
     {
-      QMessageBox::warning(SCIRunMainWindow::Instance(), "TetGen module not found",
-        "TetGen module not found, please rebuild with TetGen enabled or find a TetGen-enabled build.");
-    }
-    else if (message.find("Undefined module") != std::string::npos)
-    {
-      QMessageBox::warning(SCIRunMainWindow::Instance(), "Legacy module not found",
-        QString("If you just ran the network converter command, the error is: ") + e.what());
+      if (message.find("InterfaceWithTetGen") != std::string::npos)
+      {
+        QMessageBox::warning(SCIRunMainWindow::Instance(), "TetGen module not found",
+          "TetGen module not found, please rebuild with TetGen enabled or find a TetGen-enabled build.");
+      }
+      else if (message.find("Undefined module") != std::string::npos)
+      {
+        QMessageBox::warning(SCIRunMainWindow::Instance(), "Legacy module not found",
+          QString("If you just ran the network converter command, the error is: ") + e.what());
+      }
     }
   }
   catch (std::exception& ex)

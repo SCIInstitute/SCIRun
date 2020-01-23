@@ -359,7 +359,7 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   if (converterObj)
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
-    std::cout << "!!! Attempting state conversion function: name{" << converterObj->name << "} "
+    simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
       << (converterObj->valueConverter ? "<func>" : "null func") << std::endl;
     stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
@@ -1085,7 +1085,8 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
       {
         subst = std::string("sphere");
       }
-      while (idx != std::string::npos) {
+      while (idx != std::string::npos)
+      {
         src = src.replace(idx, key.size(), subst);
         idx = src.find(key);
       }
@@ -1099,12 +1100,11 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
-//  FullFileName netfile(net);
   net_file_ = net;
-  //sci_putenv("SCIRUN_NETFILE", net);
   if (!load_network())
     return nullptr;
 
+  std::cout << "Network import successful." << std::endl;
   return xmlData_;
 }
 

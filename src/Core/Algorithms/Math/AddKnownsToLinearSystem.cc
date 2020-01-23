@@ -52,17 +52,13 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-double AddKnownsToLinearSystemAlgo::bound_for_equality = 1e-7;
-
 bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   DenseMatrixHandle rhs,
   DenseMatrixHandle x,
   SparseRowMatrixHandle& output_stiff,
   DenseColumnMatrixHandle& output_rhs) const
 {
-
   SparseRowMatrixFromMap::Values additionalData;
-
 
   // Storing the number of columns in m and rows in n from the stiff matrix, m == n
   const unsigned int numCols = static_cast<unsigned int>(stiff->ncols());
@@ -168,11 +164,11 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   return true;
 }
 
-AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) const
 {

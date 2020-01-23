@@ -65,7 +65,8 @@ namespace Gui
 
   inline QAction* disabled(QAction* action)
   {
-    action->setEnabled(false);
+    if (action)
+      action->setEnabled(false);
     return action;
   }
 

@@ -127,6 +127,7 @@ namespace Commands
     FileCommand()
     {
       Base::addParameter(Core::Algorithms::Variables::Filename, std::string());
+      Base::addParameter(Core::Algorithms::AlgorithmParameterName("QuietMode"), false);  //TODO: make static instance
     }
   };
 

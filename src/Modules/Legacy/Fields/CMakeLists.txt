@@ -96,12 +96,13 @@ SET(Modules_Legacy_Fields_HEADERS
   GetCentroidsFromMesh.h
   SmoothVecFieldMedian.h
   CalculateMeshNodes.h
+  GenerateElectrode.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
   FlipSurfaceNormals.cc
   ClipVolumeByIsovalue.cc
-  #GenerateElectrode.cc
+  GenerateElectrode.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc
   #CalculateMeshConnector.cc
