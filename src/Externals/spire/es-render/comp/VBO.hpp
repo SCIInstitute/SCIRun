@@ -26,6 +26,7 @@
 */
 
 
+#ifndef SPIRE_RENDER_COMPONENT_VBO_HPP
 #define SPIRE_RENDER_COMPONENT_VBO_HPP
 
 #include <es-log/trace-log.h>

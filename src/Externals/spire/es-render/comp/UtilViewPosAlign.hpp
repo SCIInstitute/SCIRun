@@ -26,6 +26,7 @@
 */
 
 
+#ifndef SPIRE_RENDER_UTIL_VIEW_POS_ALIGN_HPP
 #define SPIRE_RENDER_UTIL_VIEW_POS_ALIGN_HPP
 
 #include <es-log/trace-log.h>

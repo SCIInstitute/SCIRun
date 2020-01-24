@@ -26,6 +26,7 @@
 */
 
 
+#ifndef SPIRE_RENDER_ARC_BALL_CAMERA_HPP
 #define SPIRE_RENDER_ARC_BALL_CAMERA_HPP
 
 #include <es-log/trace-log.h>

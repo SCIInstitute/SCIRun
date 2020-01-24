@@ -26,6 +26,7 @@
 */
 
 
+#include <gl-shaders/GLShader.hpp>
 #include <glm/gtc/type_ptr.hpp>           // glm::value_ptr
 
 #include "VecUniform.hpp"

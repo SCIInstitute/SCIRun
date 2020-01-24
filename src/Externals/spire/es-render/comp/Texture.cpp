@@ -26,6 +26,7 @@
 */
 
 
+#include <gl-shaders/GLShader.hpp>
 #include "Texture.hpp"
 
 namespace shaders = spire;

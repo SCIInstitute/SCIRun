@@ -26,6 +26,7 @@
 */
 
 
+#ifndef SPIRE_RENDER_COMPONENT_VEC_UNIFORM_HPP
 #define SPIRE_RENDER_COMPONENT_VEC_UNIFORM_HPP
 
 #include <es-log/trace-log.h>
