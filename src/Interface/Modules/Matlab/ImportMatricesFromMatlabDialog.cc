@@ -111,7 +111,7 @@ void ImportMatricesFromMatlabDialog::pullSpecial()
 
 void ImportMatricesFromMatlabDialog::pushPortChoices()
 {
-  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return portChoices_[i] >= 0 ? fieldNames_[portChoices_[i]] : "<none>"; }, portListWidget_->count());
+  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return portChoices_[i] >= 0 && (portChoices_[i] < fieldNames_.size()) ? fieldNames_[portChoices_[i]] : "<none>"; }, portListWidget_->count());
   state_->setValue(Parameters::PortChoices, portChoices);
 }
 
