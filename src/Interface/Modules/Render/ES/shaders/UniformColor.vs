@@ -26,26 +26,8 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-// Uniforms
-uniform mat4    uProjection;
-uniform mat4    uModel;
-uniform mat4    uView;
-
-// Attributes
 attribute vec3  aPos;
-attribute vec2  aTexCoords;
-
-// Outputs to the fragment shader.
-varying vec4    vPosWorld;
-varying vec4    vPosView;
-varying vec2    vTexCoords;
-
 void main( void )
 {
-  vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * vPosWorld;
-  vTexCoords = aTexCoords;
-
-  gl_Position = (uProjection * (vPosView));
-  gl_Position += vec4(0.0, 0.0, -0.00001, 0.0);
+  gl_Position = vec4(aPos, 1.0);
 }

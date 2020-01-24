@@ -108,8 +108,9 @@ QTextEdit(parent), rootNetworkEditor_(rootNetworkEditor)
   f.setFixedPitch(true);
 
   // Set the tab width to 4 spaces
-  QFontMetrics fm(f, this);
-  this->setTabStopWidth(fm.width("    "));
+  //TODO deprecated
+  // QFontMetrics fm(f, this);
+  // this->setTabStopWidth(fm.width("    "));
 
   QTextCharFormat format;
   format.setFont(f);
@@ -422,6 +423,14 @@ PythonConsoleWidget::~PythonConsoleWidget()
 void PythonConsoleWidget::showBanner()
 {
   PythonInterpreter::Instance().print_banner();
+}
+
+void PythonConsoleWidget::runWizardCommand(const QString& code)
+{
+  show();
+  activateWindow();
+  raise();
+  private_->console_edit_->replace_command_buffer(code);
 }
 
 #endif

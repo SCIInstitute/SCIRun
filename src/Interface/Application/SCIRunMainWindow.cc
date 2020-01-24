@@ -6,7 +6,7 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  License for the specific language governing rights and limitations under
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -39,7 +39,6 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
@@ -101,33 +100,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   QCoreApplication::setApplicationName("SCIRun5");
 
   setAttribute(Qt::WA_DeleteOnClose);
-
-  setStyleSheet(
-    "background-color: rgb(66,66,69);"
-    "color: white;"
-    "selection-color: yellow;"
-    "selection-background-color: blue;"//336699 lighter blue
-    "QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
-    "QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
-    "QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
-    "QPushButton {"
-    "  border: 2px solid #8f8f91;"
-    "  border - radius: 6px;"
-    "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-    "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
-    "  min - width: 80px;"
-    "}"
-    "QPushButton:pressed{"
-    "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-    "stop : 0 #dadbde, stop: 1 #f6f7fa);"
-    "}"
-    "QPushButton:flat{"
-    "          border: none; /* no border for a flat push button */"
-    "}"
-    "QPushButton:default {"
-    "border - color: navy; /* make the default button prominent */"
-    "}"
-  );
 
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 
