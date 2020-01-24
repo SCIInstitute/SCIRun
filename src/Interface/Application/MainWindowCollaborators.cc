@@ -489,6 +489,11 @@ int SCIRunGuiRunner::returnCode()
   return SCIRunMainWindow::Instance()->returnCode();
 }
 
+void SCIRunGuiRunner::reportIssue()
+{
+  SCIRunMainWindow::Instance()->reportIssue();
+}
+
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
   connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));

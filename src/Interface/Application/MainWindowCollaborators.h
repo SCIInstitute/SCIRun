@@ -256,6 +256,7 @@ namespace Gui {
   public:
     explicit SCIRunGuiRunner(QApplication& app);
     int returnCode();
+    static void reportIssue();
   };
 }
 }

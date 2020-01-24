@@ -88,6 +88,7 @@ public:
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
   void setupQuitAfterExecute();
+  void reportIssue();
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -258,7 +259,6 @@ private Q_SLOTS:
   void removeSavedSubnetwork();
   void removeToolkit();
   void renameSavedSubnetwork();
-  void reportIssue();
   void resetWindowLayout();
   void runNewModuleWizard();
   void runScript();
