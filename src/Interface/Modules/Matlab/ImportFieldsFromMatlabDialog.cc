@@ -59,7 +59,7 @@ ImportObjectsFromMatlabDialogBase::ImportObjectsFromMatlabDialogBase(ModuleState
   ModuleDialogGeneric(state, parent),
   portChoices_(Modules::Matlab::ImportFieldsFromMatlab::NUMPORTS, NONE_CHOICE)
 {
-
+  state_->connectSpecificStateChanged(Variables::Filename, [this]() { pullSpecialImpl(); });
 }
 
 void ImportObjectsFromMatlabDialogBase::openFile()
