@@ -485,11 +485,11 @@ void ViewSceneDialog::pullCameraState()
   float distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
   spire->setCameraDistance(distance);
 
-  auto lookAt = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toVector());
+  auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
   spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
 
-  auto rotation = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraRotation).toVector());
-  spire->setCameraRotation(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
+  std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
+  spire->setCameraRotation(stringToQuat(rotString));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -499,8 +499,8 @@ void ViewSceneDialog::pullCameraRotation()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto rotation = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraRotation).toVector());
-  spire->setCameraRotation(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
+  std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
+  spire->setCameraRotation(stringToQuat(rotString));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -510,8 +510,18 @@ void ViewSceneDialog::pullCameraLookAt()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto lookAt = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toVector());
+  auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
   spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+}
+
+//--------------------------------------------------------------------------------------------------
+glm::quat ViewSceneDialog::stringToQuat(std::string &s)
+{
+  std::istringstream is(s);
+  double w, x, y, z;
+  char st;
+  is >> st >> w >> st >> x >> st >> y >> st >> z >> st;
+  return glm::quat(w, x, y, z);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -535,11 +545,14 @@ void ViewSceneDialog::pushCameraState()
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 
   glm::vec3 v = spire->getCameraLookAt();
-  auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
-  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
+  auto lookAt = Point((double)v.x, (double)v.y, (double)v.z);
+  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt.get_string());
 
   glm::quat q = spire->getCameraRotation();
-  auto rotation = makeAnonymousVariableList((double)q.w, (double)q.x, (double)q.y, (double)q.z);
+  std::string rotation = "[" + std::to_string((double)q.w) + ", "
+                             + std::to_string((double)q.x) + ", "
+                             + std::to_string((double)q.y) + ", "
+                             + std::to_string((double)q.z) + "]";
   state_->setValue(Modules::Render::ViewScene::CameraRotation, rotation);
   pushingCameraState_ = false;
 }

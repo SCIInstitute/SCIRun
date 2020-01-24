@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <es-log/trace-log.h>
-#include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Logging/Log.h>
+#include <Modules/Render/ViewScene.h>
 #include <boost/thread.hpp>
+#include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -44,6 +45,7 @@ using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
 using namespace Render;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Logging;
@@ -118,8 +120,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
-  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
-  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
+  state->setValue(CameraRotation, std::string("[1.0, 0.0, 0.0, 0.0]"));
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

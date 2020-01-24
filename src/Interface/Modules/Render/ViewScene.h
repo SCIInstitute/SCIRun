@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <glm/gtc/quaternion.hpp>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
@@ -116,7 +117,7 @@ namespace SCIRun {
       void pullCameraRotation();
       void pullCameraLookAt();
       void pullCameraDistance();
-
+      glm::quat stringToQuat(std::string &s);
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
