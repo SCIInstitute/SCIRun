@@ -1026,7 +1026,6 @@ SCIRun::Core::Geometry::operator*(const Transform &t1, const Transform &t2)
                     + t1.get_mat_val(i,2)*t2.get_mat_val(2,j);
 
     pmat[index] += t1.get_mat_val(i,3); // displacement value
-
   }
   for(int i = 0; i < 3; i++)
     pmat[++index] = 0;

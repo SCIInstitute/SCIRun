@@ -122,6 +122,7 @@ namespace SCIRun {
         std::vector<Core::Geometry::Vector> eigvecs_;
         std::vector<double> eigvals_;
         FieldHandle outputField_;
+        int widgetNum_{0};
 
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         Core::Geometry::Point ogPos_;

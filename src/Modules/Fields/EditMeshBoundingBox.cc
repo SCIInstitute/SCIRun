@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include "Core/Datatypes/Feedback.h"
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
@@ -83,9 +84,7 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMovement move, const Transform& feedbackTrans)
 {
   if(btn == MouseButton::RIGHT && move == WidgetMovement::ROTATE)
-  {
     widgetAxesRotated_ = true;
-  }
   else
   {
     fieldTrans_ = feedbackTrans * fieldTrans_;
@@ -96,6 +95,14 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(MouseButton btn, WidgetMov
   {
     widgetAxes_ = feedbackTrans * widgetAxes_;
     widgetAxes_.orthogonalize();
+  }
+  else if(move == WidgetMovement::TRANSLATE || move == WidgetMovement::TRANSLATE_AXIS)
+  {
+    auto state = get_state();
+    auto pos = trans_.get_translation_point();
+    state->setValue(OutputCenterX, pos.x());
+    state->setValue(OutputCenterY, pos.y());
+    state->setValue(OutputCenterZ, pos.z());
   }
 }
 
@@ -206,6 +213,11 @@ void EditMeshBoundingBox::resetToInputField()
   ogPos_ = pos_;
   trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
   updateInputFieldAttributes();
+
+  auto state = get_state();
+  state->setValue(OutputCenterX, ogPos_.x());
+  state->setValue(OutputCenterY, ogPos_.y());
+  state->setValue(OutputCenterZ, ogPos_.z());
 }
 
 void EditMeshBoundingBox::changeAxesOrientation(FieldHandle field)
@@ -240,13 +252,17 @@ void EditMeshBoundingBox::setOutputCenter()
 
 void EditMeshBoundingBox::resetOutputCenter()
 {
-  get_state()->setTransientValue(ResetCenter, false);
+  auto state = get_state();
+  state->setTransientValue(ResetCenter, false);
 
   for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
   {
     trans_.set_mat_val(iDim, 3, ogPos_[iDim]);
     fieldTrans_.set_mat_val(iDim, 3, 0);
   }
+  state->setValue(OutputCenterX, ogPos_.x());
+  state->setValue(OutputCenterY, ogPos_.y());
+  state->setValue(OutputCenterZ, ogPos_.z());
 }
 
 std::string EditMeshBoundingBox::convertForLabel(double coord)
@@ -305,9 +321,8 @@ namespace
 
 void EditMeshBoundingBox::generateGeomsList()
 {
-  static int widgetNum = 0;
   const auto bboxWidget = WidgetFactory::createBoundingBox(*this, "EMBB",
-    get_state()->getValue(Scale).toDouble(), trans_, trans_.get_translation_point(), widgetNum++);
+    get_state()->getValue(Scale).toDouble(), trans_, trans_.get_translation_point(), widgetNum_++);
 
   geoms_.clear();
   for (const auto& widget : bboxWidget->widgets_)

@@ -110,6 +110,7 @@ namespace SCIRun
 
       protected:
         Core::Geometry::Point position_;
+
       private:
         std::vector<WidgetInfo> movementInfo_;
       };
