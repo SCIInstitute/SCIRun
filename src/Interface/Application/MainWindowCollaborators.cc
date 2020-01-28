@@ -744,7 +744,7 @@ QWizardPage* PythonWizard::createBaseNetworkPage()
 QWizardPage* PythonWizard::createAddIntPyPage()
 {
   auto page = new QWizardPage;
-  page->setSizePolicy(QSizePolicy::QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+  page->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   page->setTitle("Implementing InterfaceWithPython");
   auto layout = new QHBoxLayout;
 
@@ -763,7 +763,7 @@ QWizardPage* PythonWizard::createAddIntPyPage()
   layout->addWidget(pic);
 
   page->setLayout(layout);
-  page->setSizePolicy(QSizePolicy::QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored));
+  page->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
   return page;
 }
 
