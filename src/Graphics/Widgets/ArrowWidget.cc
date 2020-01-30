@@ -142,13 +142,13 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     widgets_.push_back(WidgetFactory::createDisk(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, widget_num, widget_iter),
-                                  diskRadius_ * scale,
+                                  {diskRadius_ * scale,
                                   resizeCol_.toString(),
                                   dp1,
                                   dp2,
                                   bmin,
                                   bbox,
-                                  resolution));
+                                  resolution}));
     //Vector flipVec = dir.getArbitraryTangent().normal();
     //widgets_[3]->setToScale(flipVec);
   }

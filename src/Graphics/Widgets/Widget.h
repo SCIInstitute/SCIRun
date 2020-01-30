@@ -65,6 +65,11 @@ namespace SCIRun
         //std::vector<std::string> connectedIds_;
       };
 
+      struct SCISHARE WidgetParameters
+      {
+        //TODO
+      };
+
       class SCISHARE WidgetBase : public GeometryObjectSpire
       {
       public:
@@ -141,6 +146,8 @@ namespace SCIRun
         Core::Geometry::BBox bbox;
         int resolution;
       };
+
+      using DiskParameters = CylinderParameters;
 
       struct SCISHARE ConeParameters
       {

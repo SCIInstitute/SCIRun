@@ -59,13 +59,7 @@ namespace SCIRun {
                                      const std::string &name, ConeParameters params);
 
       static WidgetHandle createDisk(const Core::GeometryIDGenerator &idGenerator,
-                                     const std::string &name, double scale,
-                                     const std::string &defaultColor,
-                                     const Core::Geometry::Point &p1,
-                                     const Core::Geometry::Point &p2,
-                                     const Core::Geometry::Point &origin,
-                                     const Core::Geometry::BBox &bbox,
-                                     int resolution);
+                                     const std::string &name, DiskParameters params);
 
       template <typename WidgetIter>
       static CompositeWidgetHandle

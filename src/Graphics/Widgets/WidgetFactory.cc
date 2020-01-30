@@ -99,15 +99,9 @@ WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenera
 
 WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenerator,
                                        const std::string& name,
-                                       double radius,
-                                       const std::string& defaultColor,
-                                       const Point& p1,
-                                       const Point& p2,
-                                       const Core::Geometry::Point& origin,
-                                       const BBox& bbox,
-                                       int resolution)
+                                       DiskParameters params)
 {
-  auto widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
+  auto widget = boost::make_shared<DiskWidget>(idGenerator, name, params);
   // widget->addInitialId();
   // widget->setToTranslate();
   return widget;
