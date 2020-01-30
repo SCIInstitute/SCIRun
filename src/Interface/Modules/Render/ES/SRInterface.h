@@ -349,7 +349,7 @@ namespace SCIRun {
       float                               mSelectedDepth      {};
       float                               mSelectedRadius     {};
       glm::mat4                           widgetTransform_    {};
-      Graphics::Datatypes::WidgetMovement mWidgetMovement     {};
+      Graphics::Datatypes::WidgetMovement mWidgetMovement     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
       std::vector<std::string>            mConnectedWidgets   {};
 
       size_t                              mScreenWidth        {640};    // Screen width in pixels.

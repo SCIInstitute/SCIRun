@@ -591,10 +591,10 @@ namespace SCIRun {
           {
             if (obj->uniqueID() == it->second)
             {
-              // mOriginWorld = obj->origin_;
-              // mFlipAxisWorld = obj->getFlipVector();
-              // mWidgetMovement = obj->getMovementType();
-              // mConnectedWidgets = obj->connectedIds_;
+              //mOriginWorld = obj->origin_;
+              //mFlipAxisWorld = obj->getFlipVector();
+              //mWidgetMovement = obj->getMovementType();
+              mConnectedWidgets = {obj->uniqueID()};
             }
           }
         }
