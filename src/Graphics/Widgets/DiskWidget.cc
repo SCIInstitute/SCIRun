@@ -47,7 +47,7 @@ DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
                        const Point& origin,
                        const BBox& bbox,
                        int resolution)
-  : WidgetBase(idGenerator, "DiskWidget::" + name, true, Point(p1 + p2)/2, origin)
+  : WidgetBase(idGenerator, "DiskWidget::" + name, true)//, Point(p1 + p2)/2, origin)
 {
   //std::cout << "DiskWidget() point: " << point.get_string() << std::endl;
   if (radius < 0) radius = 1.;

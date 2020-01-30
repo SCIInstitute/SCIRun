@@ -27,13 +27,19 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/ConeWidget.h>
+#include <Graphics/Widgets/CylinderWidget.h>
+#include <Graphics/Widgets/DiskWidget.h>
+#include <Graphics/Widgets/SphereWidget.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-ArrowWidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
+WidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
                                                        const std::string& name,
                                                        double scale,
                                                        const Point &pos,
@@ -55,24 +61,19 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
                                                const Point& origin,
                                                const BBox& bbox)
 {
-  auto widget = boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
-  widget->addInitialId();
-  widget->setToTranslate();
+  auto widget = boost::make_shared<BasicBoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
+  //widget->addInitialId();
+  //widget->setToTranslate();
   return widget;
 }
 
 WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
                                          const std::string& name,
-                                         double radius,
-                                         const std::string& defaultColor,
-                                         const Point& point,
-                                         const Core::Geometry::Point& origin,
-                                         const BBox& bbox,
-                                         int resolution)
+                                         SphereParameters params)
 {
-  auto widget = boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
+  auto widget = boost::make_shared<SphereWidget>(idGenerator, name, params);
+  //widget->addInitialId();
+  //widget->setToTranslate();
   return widget;
 }
 
@@ -87,8 +88,8 @@ WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGe
                                            int resolution)
 {
   auto widget = boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
+  // widget->addInitialId();
+  // widget->setToTranslate();
   return widget;
 }
 
@@ -104,8 +105,8 @@ WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenera
                                        int resolution)
 {
   auto widget = boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, renderBase, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
+  // widget->addInitialId();
+  // widget->setToTranslate();
   return widget;
 }
 
@@ -120,7 +121,7 @@ WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenera
                                        int resolution)
 {
   auto widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
+  // widget->addInitialId();
+  // widget->setToTranslate();
   return widget;
 }

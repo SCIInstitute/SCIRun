@@ -814,7 +814,7 @@ void ViewSceneDialog::frameFinished()
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
   auto spire = mSpire.lock();
-  auto trans = spire->getWidgetTransform().transform;
+  auto trans = spire->getWidgetTransform();
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);

@@ -158,7 +158,7 @@ namespace SCIRun {
       typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
       void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
-      gen::Transform &getWidgetTransform() {return mWidgetTransform;}
+      glm::mat4 getWidgetTransform() {return widgetTransform_;}
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes();
@@ -218,7 +218,7 @@ namespace SCIRun {
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
       //---------------- Widgets -------------------------------------------------------------------
-      void modifyWidgets();
+      void modifyWidgets(const gen::Transform& trans);
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(const glm::ivec2& pos);
       void rotateWidget(const glm::ivec2& pos);
@@ -348,7 +348,7 @@ namespace SCIRun {
       float                               mSelectedW          {};
       float                               mSelectedDepth      {};
       float                               mSelectedRadius     {};
-      gen::Transform                      mWidgetTransform    {};
+      glm::mat4                           widgetTransform_    {};
       Graphics::Datatypes::WidgetMovement mWidgetMovement     {};
       std::vector<std::string>            mConnectedWidgets   {};
 

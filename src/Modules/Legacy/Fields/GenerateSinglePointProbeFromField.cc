@@ -480,6 +480,6 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
   Point point;
   mesh->get_point(point, *eiter);
   return WidgetFactory::createSphere(idGenerator, "GSPPFF",
-    radius, state->getValue(Parameters::ProbeColor).toString(),
-    point, point, mesh->get_bounding_box(), 10);
+    {radius, state->getValue(Parameters::ProbeColor).toString(),
+    point, point, mesh->get_bounding_box(), 10});
 }

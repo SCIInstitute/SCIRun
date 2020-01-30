@@ -30,12 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Graphics_Widgets_WidgetFactory_H
 
 #include <Graphics/Datatypes/GeometryImpl.h>
-#include <Graphics/Widgets/ArrowWidget.h>
-#include <Graphics/Widgets/BoundingBoxWidget.h>
-#include <Graphics/Widgets/ConeWidget.h>
-#include <Graphics/Widgets/CylinderWidget.h>
-#include <Graphics/Widgets/DiskWidget.h>
-#include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
@@ -44,7 +38,7 @@ namespace SCIRun {
     namespace Datatypes {
     class SCISHARE WidgetFactory {
     public:
-      static ArrowWidgetHandle createArrowWidget(
+      static WidgetHandle createArrowWidget(
         const Core::GeometryIDGenerator &idGenerator, const std::string &name,
         double scale, const Core::Geometry::Point &pos,
         const Core::Geometry::Vector &dir, int resolution, bool show_as_vector,
@@ -54,12 +48,7 @@ namespace SCIRun {
                                     const Core::Geometry::Point &origin,
                                     const Core::Geometry::BBox &bbox);
       static WidgetHandle createSphere(const Core::GeometryIDGenerator &idGenerator,
-                                       const std::string &name, double radius,
-                                       const std::string &defaultColor,
-                                       const Core::Geometry::Point &point,
-                                       const Core::Geometry::Point &origin,
-                                       const Core::Geometry::BBox &bbox,
-                                       int resolution);
+                                       const std::string &name, SphereParameters params);
       static WidgetHandle createCylinder(
               const Core::GeometryIDGenerator &idGenerator, const std::string &name,
               double scale, const std::string &defaultColor,

@@ -71,7 +71,7 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   INITIALIZE_PORT(DipoleInputField);
   INITIALIZE_PORT(DipoleOutputField);
   INITIALIZE_PORT(DipoleWidget);
-
+#if 0
   firstRun_ = true;
   getFromFile_ = false;
   lastVectorShown_ = false;
@@ -83,6 +83,7 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   resolution_ = 20;
   previousScaleFactor_ = 0.0;
   zeroVectorRescale_ = 1.0e-3;
+  #endif
 }
 
 void ShowAndEditDipoles::setStateDefaults()
@@ -101,11 +102,14 @@ void ShowAndEditDipoles::setStateDefaults()
   state->setValue(DipoleScales, VariableList());
   state->setValue(LargestSize, 0.0);
 
+#if 0
   getOutputPort(DipoleWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
+#endif
 }
 
 void ShowAndEditDipoles::execute()
 {
+  #if 0
   auto fh = getRequiredInput(DipoleInputField);
   FieldInformation fi(fh);
   auto state = get_state();
@@ -157,8 +161,10 @@ void ShowAndEditDipoles::execute()
   widgetIter_++;
 
   saveToParameters();
+  #endif
 }
 
+#if 0
 void ShowAndEditDipoles::loadData()
 {
   auto state = get_state();
@@ -576,6 +582,7 @@ FieldHandle ShowAndEditDipoles::makePointCloud()
   }
   return ofield;
 }
+#endif
 
 const AlgorithmParameterName ShowAndEditDipoles::FieldName("FieldName");
 const AlgorithmParameterName ShowAndEditDipoles::WidgetScaleFactor("WidgetScaleFactor");

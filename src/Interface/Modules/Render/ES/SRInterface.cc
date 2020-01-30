@@ -407,7 +407,6 @@ namespace SCIRun {
       //modify and add each object to draw
       for (auto& obj : objList)
       {
-        // auto& obj = objList[i];
         std::string objectName = obj->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
@@ -592,36 +591,14 @@ namespace SCIRun {
           {
             if (obj->uniqueID() == it->second)
             {
-              mOriginWorld = obj->origin_;
-              mFlipAxisWorld = obj->getFlipVector();
-              mWidgetMovement = obj->getMovementType();
-              mConnectedWidgets = obj->connectedIds_;
+              // mOriginWorld = obj->origin_;
+              // mFlipAxisWorld = obj->getFlipVector();
+              // mWidgetMovement = obj->getMovementType();
+              // mConnectedWidgets = obj->connectedIds_;
             }
           }
         }
       }
-
-      /*
-      std::cout << "P3\n";
-      std::cout << mScreenWidth  << " " << mScreenHeight << "\n";
-      std::cout << "255\n";
-      for(int j = 0; j < mScreenHeight; ++j)
-      {
-        for(int i = 0; i < mScreenWidth; ++i)
-        {
-          if (fboMan->readFBO(mCore, fboName, i, j, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
-          {
-            std::cout << ((value >> 16) & 0xff) << " ";
-            std::cout << ((value >> 8) & 0xff) << " ";
-            std::cout << ((value >> 0) & 0xff) << "\n";
-          }
-          else
-          {
-            std::cout << "0 0 0\n";
-          }
-        }
-      }
-      */
 
       //release and restore fbo
       fboMan->unbindFBO();
@@ -728,15 +705,16 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::modifyWidgets()
+    void SRInterface::modifyWidgets(const gen::Transform& trans)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
       for (auto &widgetId : mConnectedWidgets)
       {
         auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
         if (component.first != nullptr)
-          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+          contTrans->modifyIndex(trans, component.second, 0);
       }
+      widgetTransform_ = trans.transform;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -747,10 +725,10 @@ namespace SCIRun {
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
       glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
-      mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
+      auto trans = gen::Transform();
+      trans.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
 
-      modifyWidgets();
+      modifyWidgets(trans);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -775,19 +753,19 @@ namespace SCIRun {
         scaling_factor = -scaling_factor;
       }
 
-      mWidgetTransform = gen::Transform();
+      auto trans = gen::Transform();
       glm::mat4 translation = glm::translate(-mOriginWorld);
-      glm::mat4 scale = glm::scale(mWidgetTransform.transform, glm::vec3(scaling_factor));
+      glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
-      mWidgetTransform.transform = scale * translation;
+      trans.transform = scale * translation;
 
       if(negativeScale)
-        mWidgetTransform.transform = flip * mWidgetTransform.transform;
+        trans.transform = flip * trans.transform;
 
-      mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
+      trans.transform = reverse_translation * trans.transform;
 
-      modifyWidgets();
+      modifyWidgets(trans);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -811,10 +789,10 @@ namespace SCIRun {
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
       glm::mat4 rotation = glm::mat4_cast(rotationWorld);
 
-      mWidgetTransform = gen::Transform();
-      mWidgetTransform.transform = reverse_translation * rotation * translation;
+      auto trans = gen::Transform();
+      trans.transform = reverse_translation * rotation * translation;
 
-      modifyWidgets();
+      modifyWidgets(trans);
     }
 
 

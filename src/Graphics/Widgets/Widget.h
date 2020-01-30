@@ -47,29 +47,38 @@ namespace SCIRun
         ROTATE,
         SCALE
       };
+
+      class SCISHARE WidgetManipulationStuff
+      {
+        //void setToScale(const Core::Geometry::Vector& flipAxis);
+        //void setToRotate();
+        //void setToTranslate();
+        //glm::vec3 getFlipVector();
+        //WidgetMovement getMovementType();
+
+        //void addInitialId();
+
+        //WidgetMovement movementType_;
+        //glm::vec3 flipAxis_;
+
+        //glm::vec3 origin_;
+        //std::vector<std::string> connectedIds_;
+      };
+
       class SCISHARE WidgetBase : public GeometryObjectSpire
       {
       public:
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
+        // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
+        // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
+
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        void setToScale(const Core::Geometry::Vector& flipAxis);
-        void setToRotate();
-        void setToTranslate();
-        glm::vec3 getFlipVector();
-        WidgetMovement getMovementType();
-
-        glm::vec3 origin_;
-        std::vector<std::string> connectedIds_;
-        void addInitialId();
 
       protected:
         Core::Geometry::Point position_;
       private:
-        WidgetMovement movementType_;
-        glm::vec3 flipAxis_;
+
       };
 
         using WidgetHandle = SharedPointer<WidgetBase>;
@@ -98,13 +107,13 @@ namespace SCIRun
       CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
                   : WidgetBase(idGenerator, tag, true)
         {}
-        ~CompositeWidget();
+
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
         void addToList(WidgetHandle handle);
-        std::vector<std::string> getListOfConnectedIds();
 
+      protected:
+        std::vector<std::string> getListOfConnectedIds();
         std::vector<WidgetHandle> widgets_;
-      private:
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
@@ -114,6 +123,16 @@ namespace SCIRun
       {
         return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
       }
+
+      struct SCISHARE SphereParameters
+      {
+        double radius;
+        std::string defaultColor;
+        Core::Geometry::Point point;
+        Core::Geometry::Point origin;
+        Core::Geometry::BBox bbox;
+        int resolution;
+      };
     }
   }
 }

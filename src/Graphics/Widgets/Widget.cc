@@ -26,7 +26,6 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/share.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -38,18 +37,18 @@ WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::
 {
 }
 
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& origin)
-  : GeometryObjectSpire(idGenerator, tag, isClippable),
-    origin_(glm::vec3(origin.x(), origin.y(), origin.z()))
-{
-}
-
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
-  : GeometryObjectSpire(idGenerator, tag, isClippable),
-    origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
-    position_(pos)
-{
-}
+// WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& origin)
+//   : GeometryObjectSpire(idGenerator, tag, isClippable),
+//     origin_(glm::vec3(origin.x(), origin.y(), origin.z()))
+// {
+// }
+//
+// WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
+//   : GeometryObjectSpire(idGenerator, tag, isClippable),
+//     origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
+//     position_(pos)
+// {
+// }
 
 Point WidgetBase::position() const
 {
@@ -60,38 +59,38 @@ void WidgetBase::setPosition(const Point& p)
 {
   position_ = p;
 }
-
-void WidgetBase::setToScale(const Vector& flipAxis)
-{
-  movementType_ = WidgetMovement::SCALE;
-  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
-}
-
-void WidgetBase::setToRotate()
-{
-  movementType_ = WidgetMovement::ROTATE;
-}
-
-void WidgetBase::setToTranslate()
-{
-  movementType_ = WidgetMovement::TRANSLATE;
-}
-
-glm::vec3 WidgetBase::getFlipVector()
-{
-  return flipAxis_;
-}
-
-WidgetMovement WidgetBase::getMovementType()
-{
-  return movementType_;
-}
-
-void WidgetBase::addInitialId() {
-  auto ids = std::vector<std::string>(1);
-  ids.push_back(uniqueID());
-  connectedIds_ = ids;
-}
+//
+// void WidgetBase::setToScale(const Vector& flipAxis)
+// {
+//   movementType_ = WidgetMovement::SCALE;
+//   flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+// }
+//
+// void WidgetBase::setToRotate()
+// {
+//   movementType_ = WidgetMovement::ROTATE;
+// }
+//
+// void WidgetBase::setToTranslate()
+// {
+//   movementType_ = WidgetMovement::TRANSLATE;
+// }
+//
+// glm::vec3 WidgetBase::getFlipVector()
+// {
+//   return flipAxis_;
+// }
+//
+// WidgetMovement WidgetBase::getMovementType()
+// {
+//   return movementType_;
+// }
+//
+// void WidgetBase::addInitialId() {
+//   auto ids = std::vector<std::string>(1);
+//   ids.push_back(uniqueID());
+//   connectedIds_ = ids;
+// }
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
@@ -114,8 +113,4 @@ std::vector<std::string> CompositeWidget::getListOfConnectedIds()
     ids[i] = widgets_[i]->uniqueID();
   }
   return ids;
-}
-
-CompositeWidget::~CompositeWidget()
-{
 }

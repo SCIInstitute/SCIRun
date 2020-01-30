@@ -53,11 +53,9 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
 
-
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
     Q_OBJECT;
-
 
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,

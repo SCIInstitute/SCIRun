@@ -26,47 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Graphics_Widgets_SRCS
-  Widget.cc
-  WidgetFactory.cc
-  BoundingBoxWidget.cc
-  SphereWidget.cc
-  CylinderWidget.cc
-  ConeWidget.cc
-  DiskWidget.cc
-  ArrowWidget.cc
+SET(Graphics_Widgets_Tests_SRCS
+  SphereWidgetTest.cc
 )
 
-SET(Graphics_Widgets_HEADERS
-  Widget.h
-  WidgetFactory.h
-  BoundingBoxWidget.h
-  SphereWidget.h
-  CylinderWidget.h
-  ConeWidget.h
-  ArrowWidget.h
-  share.h
+SCIRUN_ADD_UNIT_TEST(Graphics_Widgets_Tests
+  ${Graphics_Widgets_Tests_SRCS}
 )
 
-SCIRUN_ADD_LIBRARY(Graphics_Widgets
-  ${Graphics_Widgets_HEADERS}
-  ${Graphics_Widgets_SRCS}
+TARGET_LINK_LIBRARIES(Graphics_Widgets_Tests
+  Graphics_Widgets
+  gtest_main
+  gtest
+  gmock
 )
-
-TARGET_LINK_LIBRARIES(Graphics_Widgets
-  Core_Math
-  Core_Datatypes
-  Core_Geometry_Primitives
-  Graphics_Glyphs
-  Graphics_Datatypes
-  ${OPENGL_LIBRARIES}
-  ${SCI_BOOST_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-	ADD_DEFINITIONS(-DBUILD_Graphics_Widgets)
-ENDIF(BUILD_SHARED_LIBS)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-
-SCIRUN_ADD_TEST_DIR(Tests)

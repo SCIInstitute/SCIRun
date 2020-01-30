@@ -42,7 +42,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                          const Point &pos, const Vector &dir, int resolution,
                          bool show_as_vector, size_t widget_num, size_t widget_iter,
                          const BBox &bbox)
-    : CompositeWidget(idGenerator, name) {
+    : CompositeWidget(idGenerator, name)
+{
   static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
   static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
   static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
@@ -96,13 +97,14 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   widgets_.push_back(WidgetFactory::createSphere(
                                 idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, widget_num, widget_iter),
+                                {
                                 sphereRadius_ * scale,
                                 sphereCol.toString(),
                                 bmin,
                                 bmin,
                                 bbox,
-                                resolution));
-  widgets_[0]->setToTranslate();
+                                resolution}));
+  //widgets_[0]->setToTranslate();
 
   if(show_as_vector)
   {
@@ -119,7 +121,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bmin,
                                   bbox,
                                   resolution));
-    widgets_[1]->setToTranslate();
+    //widgets_[1]->setToTranslate();
 
     widgets_.push_back(WidgetFactory::createCone(
                                   idGenerator,
@@ -132,7 +134,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   true,
                                   resolution));
-    widgets_[2]->setToRotate();
+    //widgets_[2]->setToRotate();
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
@@ -147,8 +149,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bmin,
                                   bbox,
                                   resolution));
-    Vector flipVec = dir.getArbitraryTangent().normal();
-    widgets_[3]->setToScale(flipVec);
+    //Vector flipVec = dir.getArbitraryTangent().normal();
+    //widgets_[3]->setToScale(flipVec);
   }
 
   std::vector<std::string> geom_ids;
@@ -157,7 +159,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
 
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
   {
-    widgets_[i]->connectedIds_ = geom_ids;
+    //widgets_[i]->connectedIds_ = geom_ids;
     addToList(widgets_[i]);
   }
 }

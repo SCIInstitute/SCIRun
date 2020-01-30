@@ -48,7 +48,7 @@ ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
                        const BBox& bbox,
                        bool renderBase,
                        int resolution)
-  : WidgetBase(idGenerator, "ConeWidget::" + name, true, Point(p1 + p2)/2, origin)
+  : WidgetBase(idGenerator, "ConeWidget::" + name, true)//, Point(p1 + p2)/2, origin)
 {
   //std::cout << "ConeWidget() point: " << point.get_string() << std::endl;
   if (radius < 0) radius = 1.;
