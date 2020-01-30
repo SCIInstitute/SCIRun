@@ -39,7 +39,8 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBox)
 
   BasicBoundingBoxWidget box(idGen,
   {
-    10.0, {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}, {1,2,3}, {{0,0,0}, {1,1,1}}
+    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
   });
 
   EXPECT_EQ(Point(0,2,1), box.position());

@@ -84,16 +84,16 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& 
   //generate triangles for the cylinders.
   for (auto edge = 0; edge < 24; edge += 2)
   {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.scale, num_strips, ColorRGB(), ColorRGB());
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.common.scale, num_strips, ColorRGB(), ColorRGB());
   }
   //generate triangles for the spheres
   for (const auto& a : points)
   {
-    glyphs.addSphere(a, params.scale, num_strips, ColorRGB(1, 0, 0));
+    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0));
   }
 
   std::stringstream ss;
-  ss << params.scale;
+  ss << params.common.scale;
   for (const auto& a : points) ss << a.x() << a.y() << a.z();
 
   auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
@@ -109,5 +109,5 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& 
   renState.set(RenderState::IS_WIDGET, true);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 }

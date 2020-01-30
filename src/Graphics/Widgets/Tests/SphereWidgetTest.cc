@@ -39,7 +39,8 @@ TEST(SphereWidgetTest, CanCreateSingleSphere)
 
   SphereWidget sphere(idGen, "testSphere1",
   {
-    10.0, "red", {-1,1,0}, {1,2,3}, {{0,0,0}, {1,1,1}}, 10
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {-1,1,0}
   });
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());

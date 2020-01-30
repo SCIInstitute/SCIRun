@@ -39,7 +39,8 @@ TEST(ConeWidgetTest, CanCreateSingleCone)
 
   ConeWidget cone(idGen, "testCone1",
   {
-    10.0, "red", {1,1,0}, {2,2,0}, {1,2,3}, {{0,0,0}, {1,1,1}}, true, 10
+    {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}}, true
   });
 
   EXPECT_EQ(Point(1.5,1.5,0), cone.position());

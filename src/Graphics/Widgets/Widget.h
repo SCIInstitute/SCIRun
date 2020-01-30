@@ -130,53 +130,48 @@ namespace SCIRun
         return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
       }
 
-      struct SCISHARE SphereParameters
+      struct SCISHARE CommonWidgetParameters
       {
-        double radius;
+        double scale;
         std::string defaultColor;
-        Core::Geometry::Point point, origin;
+        Core::Geometry::Point origin;
         Core::Geometry::BBox bbox;
         int resolution;
       };
 
+      struct SCISHARE SphereParameters
+      {
+        CommonWidgetParameters common;
+        Core::Geometry::Point point;
+      };
+
       struct SCISHARE CylinderParameters
       {
-        double radius;
-        std::string defaultColor;
-        Core::Geometry::Point p1, p2, origin;
-        Core::Geometry::BBox bbox;
-        int resolution;
+        CommonWidgetParameters common;
+        Core::Geometry::Point p1, p2;
       };
 
       using DiskParameters = CylinderParameters;
 
       struct SCISHARE ConeParameters
       {
-        double radius;
-        std::string defaultColor;
-        Core::Geometry::Point p1, p2, origin;
-        Core::Geometry::BBox bbox;
+        CylinderParameters cylinder;
         bool renderBase;
-        int resolution;
       };
 
       struct SCISHARE BasicBoundingBoxParameters
       {
-        double scale;
+        CommonWidgetParameters common;
         BoxPosition pos;
-        Core::Geometry::Point origin;
-        Core::Geometry::BBox bbox;
       };
 
       struct SCISHARE ArrowParameters
       {
-        double scale;
+        CommonWidgetParameters common;
         Core::Geometry::Point pos;
         Core::Geometry::Vector dir;
-        int resolution;
         bool show_as_vector;
         size_t widget_num, widget_iter;
-        Core::Geometry::BBox bbox;
       };
     }
   }

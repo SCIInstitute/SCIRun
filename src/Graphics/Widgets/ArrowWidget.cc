@@ -58,7 +58,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   using namespace detail;
   ColorRGB sphereCol = (params.show_as_vector) ? deflPointCol_ : resizeCol_;
 
-  if (params.resolution < 3) params.resolution = 10;
+  if (params.common.resolution < 3) params.common.resolution = 10;
 
   isVector_ = params.show_as_vector;
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
@@ -73,7 +73,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
   // auto renState = getWidgetRenderState(defaultColor);
 
   Point bmin = params.pos;
-  Point bmax = params.pos + params.dir * params.scale;
+  Point bmax = params.pos + params.dir * params.common.scale;
 
   // Fix degenerate boxes.
   const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -93,66 +93,61 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     bmax.z(bmax.z() + size_estimate);
   }
 
-  Point center = bmin + params.dir/2.0 * params.scale;
+  Point center = bmin + params.dir/2.0 * params.common.scale;
 
   // Create glyphs
   widgets_.push_back(WidgetFactory::createSphere(
                                 idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter),
-                                {
-                                sphereRadius_ * params.scale,
+                                {{
+                                sphereRadius_ * params.common.scale,
                                 sphereCol.toString(),
                                 bmin,
-                                bmin,
-                                params.bbox,
-                                params.resolution}));
+
+                                params.common.bbox,
+                                params.common.resolution}, bmin}));
   //widgets_[0]->setToTranslate();
 
-  if(params.show_as_vector)
+  if (params.show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = bmin + 0.75 * (params.dir * params.scale * sphereRadius_);
+    Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius_);
 
     widgets_.push_back(WidgetFactory::createCylinder(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
-                                  {cylinderRadius_ * params.scale,
+                                  {{cylinderRadius_ * params.common.scale,
                                   deflCol_.toString(),
-                                  cylinderStart,
-                                  center,
                                   bmin,
-                                  params.bbox,
-                                  params.resolution}));
+                                  params.common.bbox,
+                                  params.common.resolution}, cylinderStart,
+                                  center}));
     //widgets_[1]->setToTranslate();
 
     widgets_.push_back(WidgetFactory::createCone(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
-                                  {coneRadius_ * params.scale,
+                                  {{{coneRadius_ * params.common.scale,
                                   deflCol_.toString(),
-                                  center,
-                                  bmax,
                                   bmin,
-                                  params.bbox,
-                                  true,
-                                  params.resolution}));
+                                  params.common.bbox,
+                                  params.common.resolution}, center,
+                                  bmax}, true}));
     //widgets_[2]->setToRotate();
 
     setPosition(widgets_.back()->position());
 
-    Point diskPos = bmin + params.dir * params.scale * diskDistFromCenter_;
-    Point dp1 = diskPos - diskWidth_ * params.dir * params.scale;
-    Point dp2 = diskPos + diskWidth_ * params.dir * params.scale;
+    Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter_;
+    Point dp1 = diskPos - diskWidth_ * params.dir * params.common.scale;
+    Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
     widgets_.push_back(WidgetFactory::createDisk(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
-                                  {diskRadius_ * params.scale,
+                                  {{diskRadius_ * params.common.scale,
                                   resizeCol_.toString(),
-                                  dp1,
-                                  dp2,
                                   bmin,
-                                  params.bbox,
-                                  params.resolution}));
+                                  params.common.bbox,
+                                  params.common.resolution}, dp1, dp2 }));
     //Vector flipVec = dir.getArbitraryTangent().normal();
     //widgets_[3]->setToScale(flipVec);
   }

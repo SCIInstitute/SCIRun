@@ -43,25 +43,25 @@ ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
                        ConeParameters params)
   : WidgetBase(idGenerator, "ConeWidget::" + name, true)//, Point(p1 + p2)/2, origin)
 {
-  if (params.radius < 0) params.radius = 1.;
-  if (params.resolution < 0) params.resolution = 10;
+  if (params.cylinder.common.scale < 0) params.cylinder.common.scale = 1.;
+  if (params.cylinder.common.resolution < 0) params.cylinder.common.resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << params.radius << params.resolution << static_cast<int>(colorScheme);
+  ss << params.cylinder.common.scale << params.cylinder.common.resolution << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
-  setPosition(Point(params.p1 + params.p2)/2);
+  setPosition(Point(params.cylinder.p1 + params.cylinder.p2)/2);
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addCone(params.p1, params.p2, params.radius, params.resolution, params.renderBase, node_color, node_color);
+  glyphs.addCone(params.cylinder.p1, params.cylinder.p2, params.cylinder.common.scale, params.cylinder.common.resolution, params.renderBase, node_color, node_color);
 
-  auto renState = getWidgetRenderState(params.defaultColor);
+  auto renState = getWidgetRenderState(params.cylinder.common.defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.cylinder.common.bbox);
 }
 
 RenderState ConeWidget::getWidgetRenderState(const std::string& defaultColor)

@@ -43,12 +43,12 @@ DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
                        DiskParameters params)
   : WidgetBase(idGenerator, "DiskWidget::" + name, true)//, Point(p1 + p2)/2, origin)
 {
-  if (params.radius < 0) params.radius = 1.;
-  if (params.resolution < 0) params.resolution = 10;
+  if (params.common.scale < 0) params.common.scale = 1.;
+  if (params.common.resolution < 0) params.common.resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << params.radius << params.resolution << static_cast<int>(colorScheme);
+  ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
@@ -56,12 +56,12 @@ DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addDisk(params.p1, params.p2, params.radius, params.resolution, node_color, node_color);
+  glyphs.addDisk(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
 
-  auto renState = getWidgetRenderState(params.defaultColor);
+  auto renState = getWidgetRenderState(params.common.defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 }
 
 RenderState DiskWidget::getWidgetRenderState(const std::string& defaultColor)

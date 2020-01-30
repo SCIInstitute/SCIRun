@@ -42,25 +42,25 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
                            SphereParameters params)
   : WidgetBase(idGenerator, "SphereWidget::" + name, true)//, point, origin)
 {
-  if (params.radius < 0) params.radius = 1.;
-  if (params.resolution < 0) params.resolution = 10;
+  if (params.common.scale < 0) params.common.scale = 1.;
+  if (params.common.resolution < 0) params.common.resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << params.radius << params.resolution << static_cast<int>(colorScheme);
+  ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addSphere(params.point, params.radius, params.resolution, node_color);
+  glyphs.addSphere(params.point, params.common.scale, params.common.resolution, node_color);
 
   setPosition(params.point);
 
-  auto renState = getWidgetRenderState(params.defaultColor);
+  auto renState = getWidgetRenderState(params.common.defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)
