@@ -41,27 +41,15 @@ using namespace SCIRun::Graphics::Datatypes;
 
 WidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
                                                        const std::string& name,
-                                                       double scale,
-                                                       const Point &pos,
-                                                       const Vector &dir,
-                                                       int resolution,
-                                                       bool show_as_vector,
-                                                       int widget_num,
-                                                       int widget_iter,
-                                                       const BBox &bbox)
+                                                       ArrowParameters params)
 {
-  return boost::make_shared<ArrowWidget>(idGenerator, name, scale, pos, dir,
-                                         resolution, show_as_vector,
-                                         widget_num, widget_iter, bbox);
+  return boost::make_shared<ArrowWidget>(idGenerator, name, params);
 }
 
 WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator,
-                                               double scale,
-                                               const BoxPosition& pos,
-                                               const Point& origin,
-                                               const BBox& bbox)
+                                               BasicBoundingBoxParameters params)
 {
-  auto widget = boost::make_shared<BasicBoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
+  auto widget = boost::make_shared<BasicBoundingBoxWidget>(idGenerator, params);
   //widget->addInitialId();
   //widget->setToTranslate();
   return widget;

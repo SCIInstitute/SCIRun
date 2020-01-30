@@ -88,7 +88,6 @@ public:
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
   void setupQuitAfterExecute();
-  void reportIssue();
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -105,6 +104,7 @@ public:
   QString mostRecentFile() const;
   static const int clipboardKey = 125;
 public Q_SLOTS:
+  void reportIssue();
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
   void setDataDirectoryFromGUI();

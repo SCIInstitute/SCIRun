@@ -38,22 +38,17 @@ namespace SCIRun {
     namespace Datatypes {
     class SCISHARE WidgetFactory {
     public:
-      static WidgetHandle createArrowWidget(
-        const Core::GeometryIDGenerator &idGenerator, const std::string &name,
-        double scale, const Core::Geometry::Point &pos,
-        const Core::Geometry::Vector &dir, int resolution, bool show_as_vector,
-        int widget_num, int widget_iter, const Core::Geometry::BBox &bbox);
+      static WidgetHandle createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
+                                            const std::string &name, ArrowParameters params);
 
       static WidgetHandle createBox(const Core::GeometryIDGenerator &idGenerator,
-                                    double scale, const BoxPosition &pos,
-                                    const Core::Geometry::Point &origin,
-                                    const Core::Geometry::BBox &bbox);
+                                    BasicBoundingBoxParameters params);
 
       static WidgetHandle createSphere(const Core::GeometryIDGenerator &idGenerator,
                                        const std::string &name, SphereParameters params);
 
-      static WidgetHandle createCylinder(const Core::GeometryIDGenerator &idGenerator, const std::string &name,
-              CylinderParameters params);
+      static WidgetHandle createCylinder(const Core::GeometryIDGenerator &idGenerator,
+                                         const std::string &name, CylinderParameters params);
 
       static WidgetHandle createCone(const Core::GeometryIDGenerator &idGenerator,
                                      const std::string &name, ConeParameters params);

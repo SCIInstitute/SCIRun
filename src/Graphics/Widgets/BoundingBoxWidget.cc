@@ -51,13 +51,14 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
 }
 
 BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
-  double scale, const BoxPosition& pos, const Point& origin, const BBox& bbox)
+  BasicBoundingBoxParameters params)
   : WidgetBase(idGenerator, "BasicBoundingBox", true)//, origin)
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   //get all the bbox edges
   Point c,r,d,b;
-  pos.getPosition(c,r,d,b);
+  params.pos.getPosition(c,r,d,b);
+  setPosition(c);
   auto x = r - c, y = d - c, z = b - c;
   std::vector<Point> points = {
     c + x + y + z,
@@ -83,16 +84,16 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& 
   //generate triangles for the cylinders.
   for (auto edge = 0; edge < 24; edge += 2)
   {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.scale, num_strips, ColorRGB(), ColorRGB());
   }
   //generate triangles for the spheres
   for (const auto& a : points)
   {
-    glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
+    glyphs.addSphere(a, params.scale, num_strips, ColorRGB(1, 0, 0));
   }
 
   std::stringstream ss;
-  ss << scale;
+  ss << params.scale;
   for (const auto& a : points) ss << a.x() << a.y() << a.z();
 
   auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
@@ -108,5 +109,5 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& 
   renState.set(RenderState::IS_WIDGET, true);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
 }

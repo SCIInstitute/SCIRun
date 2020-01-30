@@ -41,8 +41,7 @@ namespace SCIRun {
       class SCISHARE BasicBoundingBoxWidget : public WidgetBase
       {
       public:
-        BasicBoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
-          const BoxPosition& pos, const Core::Geometry::Point& origin, const Core::Geometry::BBox& bbox);
+        BasicBoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, BasicBoundingBoxParameters params);
       };
     }
   }

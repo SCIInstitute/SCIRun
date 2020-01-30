@@ -86,19 +86,20 @@ namespace SCIRun
 
       };
 
-        using WidgetHandle = SharedPointer<WidgetBase>;
+      using WidgetHandle = SharedPointer<WidgetBase>;
 
-        struct SCISHARE BoxPosition {
-          Core::Geometry::Point center_, right_, down_, in_;
+      struct SCISHARE BoxPosition
+      {
+        Core::Geometry::Point center_, right_, down_, in_;
 
-          void setPosition(const Core::Geometry::Point &center,
-                           const Core::Geometry::Point &right,
-                           const Core::Geometry::Point &down,
-                           const Core::Geometry::Point &in);
-          void getPosition(Core::Geometry::Point &center,
-                           Core::Geometry::Point &right,
-                           Core::Geometry::Point &down,
-                           Core::Geometry::Point &in) const;
+        void setPosition(const Core::Geometry::Point &center,
+                         const Core::Geometry::Point &right,
+                         const Core::Geometry::Point &down,
+                         const Core::Geometry::Point &in);
+        void getPosition(Core::Geometry::Point &center,
+                         Core::Geometry::Point &right,
+                         Core::Geometry::Point &down,
+                         Core::Geometry::Point &in) const;
       };
 
       class SCISHARE CompositeWidget : public WidgetBase
@@ -157,6 +158,25 @@ namespace SCIRun
         Core::Geometry::BBox bbox;
         bool renderBase;
         int resolution;
+      };
+
+      struct SCISHARE BasicBoundingBoxParameters
+      {
+        double scale;
+        BoxPosition pos;
+        Core::Geometry::Point origin;
+        Core::Geometry::BBox bbox;
+      };
+
+      struct SCISHARE ArrowParameters
+      {
+        double scale;
+        Core::Geometry::Point pos;
+        Core::Geometry::Vector dir;
+        int resolution;
+        bool show_as_vector;
+        size_t widget_num, widget_iter;
+        Core::Geometry::BBox bbox;
       };
     }
   }

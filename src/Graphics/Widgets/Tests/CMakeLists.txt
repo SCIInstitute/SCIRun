@@ -31,6 +31,8 @@ SET(Graphics_Widgets_Tests_SRCS
   CylinderWidgetTest.cc
   ConeWidgetTest.cc
   DiskWidgetTest.cc
+  BasicBoundingBoxWidgetTest.cc
+  ArrowWidgetTest.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Graphics_Widgets_Tests
