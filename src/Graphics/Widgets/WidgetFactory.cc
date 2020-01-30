@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/CylinderWidget.h>
 #include <Graphics/Widgets/DiskWidget.h>
 #include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/GlyphFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;

@@ -6,6 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -25,18 +26,31 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Widgets/SphereWidget.h>
-#include <Graphics/Widgets/GlyphFactory.h>
+#ifndef Graphics_Graphics_Widgets_GlyphFactory_H
+#define Graphics_Graphics_Widgets_GlyphFactory_H
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
+#include <Graphics/Widgets/WidgetParameters.h>
+#include <Graphics/Widgets/share.h>
 
-SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
-                           SphereParameters params)
-  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag})//, point, origin)
+namespace SCIRun
 {
-  name_ = gen.glyphMaker->sphere(params, *this);
-  setPosition(params.point);
+  namespace Graphics
+  {
+    namespace Datatypes
+    {
+      class WidgetBase;
+
+      class SCISHARE AbstractGlyphFactory
+      {
+      public:
+        virtual ~AbstractGlyphFactory() {}
+        std::string sphere(SphereParameters params, WidgetBase& widget);
+        RenderState getSphereRenderState(const std::string& defaultColor) const;
+      };
+
+
+    }
+  }
 }
+
+#endif
