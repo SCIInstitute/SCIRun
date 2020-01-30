@@ -41,9 +41,7 @@ namespace SCIRun {
       class SCISHARE ConeWidget : public WidgetBase
       {
       public:
-        ConeWidget(const Core::GeometryIDGenerator& idGenerator,
-                   const std::string& name,
-                   ConeParameters params);
+        ConeWidget(const GeneralWidgetParameters& gen, ConeParameters params);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };

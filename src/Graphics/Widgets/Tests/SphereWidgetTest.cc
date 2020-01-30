@@ -37,7 +37,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphere)
 {
   DummyGeometryIDGenerator idGen;
 
-  SphereWidget sphere(idGen, "testSphere1",
+  SphereWidget sphere({{idGen, "testSphere1"}, nullptr},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {-1,1,0}

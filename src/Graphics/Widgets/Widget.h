@@ -65,15 +65,31 @@ namespace SCIRun
         //std::vector<std::string> connectedIds_;
       };
 
-      struct SCISHARE WidgetParameters
+      class SCISHARE AbstractGlyphFactory
       {
-        //TODO
+      public:
+        virtual ~AbstractGlyphFactory() {}
+
+      };
+
+      using AbstractGlyphFactoryPtr = SharedPointer<AbstractGlyphFactory>;
+
+      struct SCISHARE WidgetBaseParameters
+      {
+        const Core::GeometryIDGenerator& idGenerator;
+        std::string tag;
+      };
+
+      struct SCISHARE GeneralWidgetParameters
+      {
+        WidgetBaseParameters base;
+        AbstractGlyphFactoryPtr glyphMaker;
       };
 
       class SCISHARE WidgetBase : public GeometryObjectSpire
       {
       public:
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
+        explicit WidgetBase(const WidgetBaseParameters& params);
         // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
         // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
 
@@ -106,12 +122,11 @@ namespace SCIRun
       {
       public:
         template <typename WidgetIter>
-                CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                CompositeWidget(const GeneralWidgetParameters& params,
                                 WidgetIter begin, WidgetIter end)
-                : WidgetBase(idGenerator, tag, true)
+                : WidgetBase(params.base)
         {}
-      CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
-                  : WidgetBase(idGenerator, tag, true)
+        CompositeWidget(const GeneralWidgetParameters& params) : WidgetBase(params.base)
         {}
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
@@ -124,11 +139,11 @@ namespace SCIRun
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
 
-      template <typename WidgetIter>
-        static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-      {
-        return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
-      }
+      // template <typename WidgetIter>
+      //   static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+      // {
+      //   return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
+      // }
 
       struct SCISHARE CommonWidgetParameters
       {

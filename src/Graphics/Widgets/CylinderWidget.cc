@@ -38,10 +38,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-CylinderWidget::CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
-                               const std::string& name,
+CylinderWidget::CylinderWidget(const GeneralWidgetParameters& gen,
                                CylinderParameters params)
-  : WidgetBase(idGenerator, "CylinderWidget::" + name, true)//, Point(p1 + p2)/2, origin)
+  : WidgetBase({gen.base.idGenerator, "CylinderWidget::" + gen.base.tag})//, Point(p1 + p2)/2, origin)
 {
   if (params.common.scale < 0) params.common.scale = 1.;
   if (params.common.resolution < 0) params.common.resolution = 10;

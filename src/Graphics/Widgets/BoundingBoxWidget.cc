@@ -50,9 +50,9 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
   in = in_;
 }
 
-BasicBoundingBoxWidget::BasicBoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
+BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& gen,
   BasicBoundingBoxParameters params)
-  : WidgetBase(idGenerator, "BasicBoundingBox", true)//, origin)
+  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox"})//, origin)
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   //get all the bbox edges

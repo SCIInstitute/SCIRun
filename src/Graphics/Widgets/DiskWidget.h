@@ -41,9 +41,7 @@ namespace SCIRun {
       class SCISHARE DiskWidget : public WidgetBase
       {
       public:
-        DiskWidget(const Core::GeometryIDGenerator& idGenerator,
-                   const std::string& name,
-                   DiskParameters params);
+        DiskWidget(const GeneralWidgetParameters& gen, DiskParameters params);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };

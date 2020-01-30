@@ -238,8 +238,8 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
         if (i < positions.size())
           location = pointFromString(positions[i].toString());
 
-        auto seed = WidgetFactory::createSphere(*this,
-          widgetName(i),
+        auto seed = WidgetFactory::createSphere({*this,
+          widgetName(i)},
           {{scale,
           "Color(0.5,0.5,0.5)",
           location,
@@ -257,8 +257,8 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     moveCount_++;
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      auto seed = WidgetFactory::createSphere(*this,
-        widgetName(counter++) + std::string(moveCount_, ' '),
+      auto seed = WidgetFactory::createSphere({*this,
+        widgetName(counter++) + std::string(moveCount_, ' ')},
         {{scale,
         "Color(0.5,0.5,0.5)",
         oldWidget->position(),

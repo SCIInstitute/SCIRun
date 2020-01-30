@@ -37,10 +37,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
-                           const std::string& name,
+SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
                            SphereParameters params)
-  : WidgetBase(idGenerator, "SphereWidget::" + name, true)//, point, origin)
+  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag})//, point, origin)
 {
   if (params.common.scale < 0) params.common.scale = 1.;
   if (params.common.resolution < 0) params.common.resolution = 10;
@@ -61,6 +60,8 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+
+
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)

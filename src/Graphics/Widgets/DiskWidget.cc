@@ -38,10 +38,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
-                       const std::string& name,
+DiskWidget::DiskWidget(const GeneralWidgetParameters& gen,
                        DiskParameters params)
-  : WidgetBase(idGenerator, "DiskWidget::" + name, true)//, Point(p1 + p2)/2, origin)
+  : WidgetBase({gen.base.idGenerator, "DiskWidget::" + gen.base.tag})//, Point(p1 + p2)/2, origin)
 {
   if (params.common.scale < 0) params.common.scale = 1.;
   if (params.common.resolution < 0) params.common.resolution = 10;

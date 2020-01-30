@@ -51,9 +51,8 @@ namespace detail
   static const double diskWidth_ = 0.05;
 }
 
-ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
-                         const std::string &name, ArrowParameters params)
-    : CompositeWidget(idGenerator, name)
+ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
+    : CompositeWidget(gen)
 {
   using namespace detail;
   ColorRGB sphereCol = (params.show_as_vector) ? deflPointCol_ : resizeCol_;
@@ -97,8 +96,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
 
   // Create glyphs
   widgets_.push_back(WidgetFactory::createSphere(
-                                idGenerator,
-                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter),
+                                {gen.base.idGenerator,
+                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter)},
                                 {{
                                 sphereRadius_ * params.common.scale,
                                 sphereCol.toString(),
@@ -114,8 +113,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius_);
 
     widgets_.push_back(WidgetFactory::createCylinder(
-                                  idGenerator,
-                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
+                                  {gen.base.idGenerator,
+                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter)},
                                   {{cylinderRadius_ * params.common.scale,
                                   deflCol_.toString(),
                                   bmin,
@@ -125,8 +124,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     //widgets_[1]->setToTranslate();
 
     widgets_.push_back(WidgetFactory::createCone(
-                                  idGenerator,
-                                  widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
+                                  {gen.base.idGenerator,
+                                  widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter)},
                                   {{{coneRadius_ * params.common.scale,
                                   deflCol_.toString(),
                                   bmin,
@@ -141,8 +140,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     Point dp1 = diskPos - diskWidth_ * params.dir * params.common.scale;
     Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
     widgets_.push_back(WidgetFactory::createDisk(
-                                  idGenerator,
-                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
+                                  {gen.base.idGenerator,
+                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter)},
                                   {{diskRadius_ * params.common.scale,
                                   resizeCol_.toString(),
                                   bmin,

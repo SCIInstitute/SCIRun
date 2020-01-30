@@ -197,7 +197,7 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 
 GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  return WidgetFactory::createBox(*this, {{get_state()->getValue(Scale).toDouble(), "", impl_->position_.center_, impl_->bbox_, 0},
+  return WidgetFactory::createBox({*this, ""}, {{get_state()->getValue(Scale).toDouble(), "", impl_->position_.center_, impl_->bbox_, 0},
                                   impl_->position_ });
 }
 

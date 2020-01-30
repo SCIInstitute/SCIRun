@@ -42,8 +42,7 @@ namespace SCIRun {
       class SCISHARE ArrowWidget : public CompositeWidget
       {
       public:
-        ArrowWidget(const Core::GeometryIDGenerator &idGenerator,
-                    const std::string &name, ArrowParameters params);
+        ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params);
 
         bool isVector() const;
 

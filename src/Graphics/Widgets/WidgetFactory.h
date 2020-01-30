@@ -33,40 +33,43 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
-namespace SCIRun {
-  namespace Graphics {
-    namespace Datatypes {
-    class SCISHARE WidgetFactory {
-    public:
-      static WidgetHandle createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
-                                            const std::string &name, ArrowParameters params);
+namespace SCIRun
+{
+  namespace Graphics
+  {
+    namespace Datatypes
+    {
+      class SCISHARE WidgetFactory
+      {
+      public:
+        static void setGlyphFactory(AbstractGlyphFactoryPtr glyphMaker) { glyphMaker_ = glyphMaker; }
 
-      static WidgetHandle createBox(const Core::GeometryIDGenerator &idGenerator,
-                                    BasicBoundingBoxParameters params);
+        static WidgetHandle createArrowWidget(const WidgetBaseParameters& gen, ArrowParameters params);
 
-      static WidgetHandle createSphere(const Core::GeometryIDGenerator &idGenerator,
-                                       const std::string &name, SphereParameters params);
+        static WidgetHandle createBox(const WidgetBaseParameters& gen,
+                                      BasicBoundingBoxParameters params);
 
-      static WidgetHandle createCylinder(const Core::GeometryIDGenerator &idGenerator,
-                                         const std::string &name, CylinderParameters params);
+        static WidgetHandle createSphere(const WidgetBaseParameters& gen, SphereParameters params);
 
-      static WidgetHandle createCone(const Core::GeometryIDGenerator &idGenerator,
-                                     const std::string &name, ConeParameters params);
+        static WidgetHandle createCylinder(const WidgetBaseParameters& gen, CylinderParameters params);
 
-      static WidgetHandle createDisk(const Core::GeometryIDGenerator &idGenerator,
-                                     const std::string &name, DiskParameters params);
+        static WidgetHandle createCone(const WidgetBaseParameters& gen, ConeParameters params);
 
-      template <typename WidgetIter>
-      static CompositeWidgetHandle
-      createComposite(const Core::GeometryIDGenerator &idGenerator,
-                      const std::string &tag, WidgetIter begin,
-                      WidgetIter end) {
-        return boost::make_shared<CompositeWidget>(idGenerator, tag, begin,
-                                                   end);
-      }
-    };
-    } // namespace Datatypes
-  } // namespace Graphics
-} // namespace SCIRun
+        static WidgetHandle createDisk(const WidgetBaseParameters& gen, DiskParameters params);
+
+        template <typename WidgetIter>
+        static WidgetHandle
+        createComposite(const WidgetBaseParameters& gen, WidgetIter begin, WidgetIter end)
+        {
+          return boost::make_shared<CompositeWidget>(gen, begin, end);
+        }
+
+      private:
+        static AbstractGlyphFactoryPtr glyphMaker_;
+        static GeneralWidgetParameters packageWithGlyph(const WidgetBaseParameters& params);
+      };
+    }
+  }
+}
 
 #endif

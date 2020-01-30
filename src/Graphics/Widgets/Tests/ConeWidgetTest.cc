@@ -37,7 +37,7 @@ TEST(ConeWidgetTest, CanCreateSingleCone)
 {
   DummyGeometryIDGenerator idGen;
 
-  ConeWidget cone(idGen, "testCone1",
+  ConeWidget cone({{idGen, "testCone1"}, nullptr},
   {
     {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}}, true

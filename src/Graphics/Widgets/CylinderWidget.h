@@ -41,9 +41,7 @@ namespace SCIRun {
       class SCISHARE CylinderWidget : public WidgetBase
       {
       public:
-        CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
-                       const std::string& name,
-                       CylinderParameters params);
+        CylinderWidget(const GeneralWidgetParameters& gen, CylinderParameters params);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };

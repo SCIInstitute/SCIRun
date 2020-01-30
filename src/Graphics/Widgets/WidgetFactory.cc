@@ -39,57 +39,59 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-WidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
-                                                       const std::string& name,
+AbstractGlyphFactoryPtr WidgetFactory::glyphMaker_;
+
+GeneralWidgetParameters WidgetFactory::packageWithGlyph(const WidgetBaseParameters& params)
+{
+  return {params, glyphMaker_};
+}
+
+WidgetHandle WidgetFactory::createArrowWidget(const WidgetBaseParameters& gen,
                                                        ArrowParameters params)
 {
-  return boost::make_shared<ArrowWidget>(idGenerator, name, params);
+  return boost::make_shared<ArrowWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator,
+WidgetHandle WidgetFactory::createBox(const WidgetBaseParameters& gen,
                                                BasicBoundingBoxParameters params)
 {
-  auto widget = boost::make_shared<BasicBoundingBoxWidget>(idGenerator, params);
+  auto widget = boost::make_shared<BasicBoundingBoxWidget>(packageWithGlyph(gen), params);
   //widget->addInitialId();
   //widget->setToTranslate();
   return widget;
 }
 
-WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
-                                         const std::string& name,
+WidgetHandle WidgetFactory::createSphere(const WidgetBaseParameters& gen,
                                          SphereParameters params)
 {
-  auto widget = boost::make_shared<SphereWidget>(idGenerator, name, params);
+  auto widget = boost::make_shared<SphereWidget>(packageWithGlyph(gen), params);
   //widget->addInitialId();
   //widget->setToTranslate();
   return widget;
 }
 
-WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGenerator,
-                                           const std::string& name,
+WidgetHandle WidgetFactory::createCylinder(const WidgetBaseParameters& gen,
                                            CylinderParameters params)
 {
-  auto widget = boost::make_shared<CylinderWidget>(idGenerator, name, params);
+  auto widget = boost::make_shared<CylinderWidget>(packageWithGlyph(gen), params);
   // widget->addInitialId();
   // widget->setToTranslate();
   return widget;
 }
 
-WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
+WidgetHandle WidgetFactory::createCone(const WidgetBaseParameters& gen,
                                        ConeParameters params)
 {
-  auto widget = boost::make_shared<ConeWidget>(idGenerator, name, params);
+  auto widget = boost::make_shared<ConeWidget>(packageWithGlyph(gen), params);
   // widget->addInitialId();
   // widget->setToTranslate();
   return widget;
 }
 
-WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
+WidgetHandle WidgetFactory::createDisk(const WidgetBaseParameters& gen,
                                        DiskParameters params)
 {
-  auto widget = boost::make_shared<DiskWidget>(idGenerator, name, params);
+  auto widget = boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
   // widget->addInitialId();
   // widget->setToTranslate();
   return widget;

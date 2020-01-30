@@ -32,8 +32,8 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
-  : GeometryObjectSpire(idGenerator, tag, isClippable)
+WidgetBase::WidgetBase(const WidgetBaseParameters& params)
+  : GeometryObjectSpire(params.idGenerator, params.tag, true)
 {
 }
 
