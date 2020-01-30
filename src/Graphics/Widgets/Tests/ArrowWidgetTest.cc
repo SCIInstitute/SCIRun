@@ -28,22 +28,45 @@
 #include <gtest/gtest.h>
 
 #include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(ArrowWidgetTest, CanCreateSingleArrow)
+TEST(ArrowWidgetTest, CanCreateSingleArrowReal)
 {
-  DummyGeometryIDGenerator idGen;
+  StubGeometryIDGenerator idGen;
+  auto rgf = boost::make_shared<RealGlyphFactory>();
+  WidgetFactory::setGlyphFactory(rgf);
 
-  ArrowWidget arrow({{idGen, "testArrow1"}, boost::make_shared<RealGlyphFactory>()},
+  ArrowWidget arrow({{idGen, "testArrow1"}, rgf},
   {
     {10.0, "", {0,1,2}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}, true, 2, 4
   });
 
   EXPECT_EQ(Point(16,16,0), arrow.position());
+  EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
+
+
+  //FAIL() << "todo";
+}
+
+TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
+{
+  StubGeometryIDGenerator idGen;
+  auto sgf = boost::make_shared<StubGlyphFactory>();
+  WidgetFactory::setGlyphFactory(sgf);
+
+  ArrowWidget arrow({{idGen, "testArrow1"}, sgf},
+  {
+    {10.0, "", {0,1,2}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}, true, 2, 4
+  });
+
+  EXPECT_EQ(Point(16,16,0), arrow.position());
+  //arrow does not get name from factory--generates it in constructor.
   EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
 
 

@@ -39,13 +39,25 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      class SCISHARE DummyGeometryIDGenerator : public SCIRun::Core::GeometryIDGenerator
+      class SCISHARE StubGeometryIDGenerator : public SCIRun::Core::GeometryIDGenerator
       {
       public:
         std::string generateGeometryID(const std::string& tag) const override
         {
           return "<dummyGeomId>" + tag;
         }
+      };
+
+      class SCISHARE StubGlyphFactory : public AbstractGlyphFactory
+      {
+      public:
+        std::string sphere(SphereParameters params, WidgetBase& widget) const override { return "__sphere__" + std::to_string(instanceCount_++); }
+        std::string disk(DiskParameters params, WidgetBase& widget) const override { return "__disk__" + std::to_string(instanceCount_++); }
+        std::string cone(ConeParameters params, WidgetBase& widget) const override { return "__cone__" + std::to_string(instanceCount_++); }
+        std::string cylinder(CylinderParameters params, WidgetBase& widget) const override { return "__cylinder__" + std::to_string(instanceCount_++); }
+        std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const override { return "__basicBox__" + std::to_string(instanceCount_++); }
+      private:
+        mutable int instanceCount_{0};
       };
     }
   }

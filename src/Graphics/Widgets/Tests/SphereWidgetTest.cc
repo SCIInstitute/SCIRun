@@ -33,9 +33,9 @@
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(SphereWidgetTest, CanCreateSingleSphere)
+TEST(SphereWidgetTest, CanCreateSingleSphereReal)
 {
-  DummyGeometryIDGenerator idGen;
+  StubGeometryIDGenerator idGen;
 
   SphereWidget sphere({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
   {
@@ -45,5 +45,20 @@ TEST(SphereWidgetTest, CanCreateSingleSphere)
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
   EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere.name());
+  //FAIL() << "todo";
+}
+
+TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
+{
+  StubGeometryIDGenerator idGen;
+
+  SphereWidget sphere({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {-1,1,0}
+  });
+
+  EXPECT_EQ(Point(-1,1,0), sphere.position());
+  EXPECT_EQ("__sphere__0", sphere.name());
   //FAIL() << "todo";
 }

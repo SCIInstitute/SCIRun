@@ -33,9 +33,9 @@
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(DiskWidgetTest, CanCreateSingleDisk)
+TEST(DiskWidgetTest, CanCreateSingleDiskReal)
 {
-  DummyGeometryIDGenerator idGen;
+  StubGeometryIDGenerator idGen;
 
   DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<RealGlyphFactory>()},
   {
@@ -45,6 +45,23 @@ TEST(DiskWidgetTest, CanCreateSingleDisk)
 
   EXPECT_EQ(Point(1.5,1.5,0), disk.position());
   EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk1widget10100", disk.name());
+
+
+  //FAIL() << "todo";
+}
+
+TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}
+  });
+
+  EXPECT_EQ(Point(1.5,1.5,0), disk.position());
+  EXPECT_EQ("__disk__0", disk.name());
 
 
   //FAIL() << "todo";

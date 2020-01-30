@@ -33,9 +33,9 @@
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(CylinderWidgetTest, CanCreateSingleCylinder)
+TEST(CylinderWidgetTest, CanCreateSingleCylinderReal)
 {
-  DummyGeometryIDGenerator idGen;
+  StubGeometryIDGenerator idGen;
 
   CylinderWidget cylinder({{idGen, "testCylinder1"}, boost::make_shared<RealGlyphFactory>()},
   {
@@ -45,6 +45,23 @@ TEST(CylinderWidgetTest, CanCreateSingleCylinder)
 
   EXPECT_EQ(Point(1.5,1.5,0), cylinder.position());
   EXPECT_EQ("<dummyGeomId>CylinderWidget::testCylinder1widget10100", cylinder.name());
+
+
+  //FAIL() << "todo";
+}
+
+TEST(CylinderWidgetTest, CanCreateSingleCylinderStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  CylinderWidget cylinder({{idGen, "testCylinder1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}
+  });
+
+  EXPECT_EQ(Point(1.5,1.5,0), cylinder.position());
+  EXPECT_EQ("__cylinder__0", cylinder.name());
 
 
   //FAIL() << "todo";

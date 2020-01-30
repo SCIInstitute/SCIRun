@@ -33,9 +33,9 @@
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBox)
+TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxReal)
 {
-  DummyGeometryIDGenerator idGen;
+  StubGeometryIDGenerator idGen;
 
   BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
   {
@@ -45,6 +45,23 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBox)
 
   EXPECT_EQ(Point(0,2,1), box.position());
   EXPECT_EQ("bounding_box_cylinders102-21201021041001021-241-261", box.name());
+
+
+  //FAIL() << "todo";
+}
+
+TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
+  });
+
+  EXPECT_EQ(Point(0,2,1), box.position());
+  EXPECT_EQ("__basicBox__0", box.name());
 
 
   //FAIL() << "todo";

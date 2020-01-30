@@ -66,10 +66,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
   name_ = uniqueID() + "widget" + ss.str();
 
-  // Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-
-  // auto renState = getWidgetRenderState(defaultColor);
 
   Point bmin = params.pos;
   Point bmax = params.pos + params.dir * params.common.scale;
