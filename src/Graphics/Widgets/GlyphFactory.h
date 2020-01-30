@@ -44,7 +44,14 @@ namespace SCIRun
       {
       public:
         virtual ~AbstractGlyphFactory() {}
-        std::string sphere(SphereParameters params, WidgetBase& widget);
+        virtual std::string sphere(SphereParameters params, WidgetBase& widget) const = 0;
+      };
+
+      class SCISHARE RealGlyphFactory : public AbstractGlyphFactory
+      {
+      public:
+        std::string sphere(SphereParameters params, WidgetBase& widget) const override;
+      private:
         RenderState getSphereRenderState(const std::string& defaultColor) const;
       };
 

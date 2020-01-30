@@ -35,7 +35,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-std::string AbstractGlyphFactory::sphere(SphereParameters params, WidgetBase& widget)
+std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget) const
 {
   if (params.common.scale < 0) params.common.scale = 1.;
   if (params.common.resolution < 0) params.common.resolution = 10;
@@ -58,7 +58,7 @@ std::string AbstractGlyphFactory::sphere(SphereParameters params, WidgetBase& wi
   return name;
 }
 
-RenderState AbstractGlyphFactory::getSphereRenderState(const std::string& defaultColor) const
+RenderState RealGlyphFactory::getSphereRenderState(const std::string& defaultColor) const
 {
   RenderState renState;
 
