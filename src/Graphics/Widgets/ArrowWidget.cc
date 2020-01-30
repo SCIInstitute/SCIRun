@@ -126,14 +126,14 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     widgets_.push_back(WidgetFactory::createCone(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, widget_num, widget_iter),
-                                  coneRadius_ * scale,
+                                  {coneRadius_ * scale,
                                   deflCol_.toString(),
                                   center,
                                   bmax,
                                   bmin,
                                   bbox,
                                   true,
-                                  resolution));
+                                  resolution}));
     //widgets_[2]->setToRotate();
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;

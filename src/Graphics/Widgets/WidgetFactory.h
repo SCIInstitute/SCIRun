@@ -43,7 +43,7 @@ namespace SCIRun {
         double scale, const Core::Geometry::Point &pos,
         const Core::Geometry::Vector &dir, int resolution, bool show_as_vector,
         int widget_num, int widget_iter, const Core::Geometry::BBox &bbox);
-        
+
       static WidgetHandle createBox(const Core::GeometryIDGenerator &idGenerator,
                                     double scale, const BoxPosition &pos,
                                     const Core::Geometry::Point &origin,
@@ -56,13 +56,7 @@ namespace SCIRun {
               CylinderParameters params);
 
       static WidgetHandle createCone(const Core::GeometryIDGenerator &idGenerator,
-                                     const std::string &name, double scale,
-                                     const std::string &defaultColor,
-                                     const Core::Geometry::Point &p1,
-                                     const Core::Geometry::Point &p2,
-                                     const Core::Geometry::Point &origin,
-                                     const Core::Geometry::BBox &bbox,
-                                     bool renderBase, int resolution);
+                                     const std::string &name, ConeParameters params);
 
       static WidgetHandle createDisk(const Core::GeometryIDGenerator &idGenerator,
                                      const std::string &name, double scale,

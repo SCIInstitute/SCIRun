@@ -89,16 +89,9 @@ WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGe
 
 WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
                                        const std::string& name,
-                                       double radius,
-                                       const std::string& defaultColor,
-                                       const Point& p1,
-                                       const Point& p2,
-                                       const Core::Geometry::Point& origin,
-                                       const BBox& bbox,
-                                       bool renderBase,
-                                       int resolution)
+                                       ConeParameters params)
 {
-  auto widget = boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, renderBase, resolution);
+  auto widget = boost::make_shared<ConeWidget>(idGenerator, name, params);
   // widget->addInitialId();
   // widget->setToTranslate();
   return widget;

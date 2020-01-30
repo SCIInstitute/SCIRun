@@ -141,6 +141,16 @@ namespace SCIRun
         Core::Geometry::BBox bbox;
         int resolution;
       };
+
+      struct SCISHARE ConeParameters
+      {
+        double radius;
+        std::string defaultColor;
+        Core::Geometry::Point p1, p2, origin;
+        Core::Geometry::BBox bbox;
+        bool renderBase;
+        int resolution;
+      };
     }
   }
 }
