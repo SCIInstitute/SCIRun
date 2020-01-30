@@ -65,11 +65,72 @@ namespace SCIRun
         //std::vector<std::string> connectedIds_;
       };
 
+      struct SCISHARE CommonWidgetParameters
+      {
+        double scale;
+        std::string defaultColor;
+        Core::Geometry::Point origin;
+        Core::Geometry::BBox bbox;
+        int resolution;
+      };
+
+      struct SCISHARE SphereParameters
+      {
+        CommonWidgetParameters common;
+        Core::Geometry::Point point;
+      };
+
+      struct SCISHARE CylinderParameters
+      {
+        CommonWidgetParameters common;
+        Core::Geometry::Point p1, p2;
+      };
+
+      using DiskParameters = CylinderParameters;
+
+      struct SCISHARE ConeParameters
+      {
+        CylinderParameters cylinder;
+        bool renderBase;
+      };
+
+      struct SCISHARE BoxPosition
+      {
+        Core::Geometry::Point center_, right_, down_, in_;
+
+        void setPosition(const Core::Geometry::Point &center,
+                         const Core::Geometry::Point &right,
+                         const Core::Geometry::Point &down,
+                         const Core::Geometry::Point &in);
+        void getPosition(Core::Geometry::Point &center,
+                         Core::Geometry::Point &right,
+                         Core::Geometry::Point &down,
+                         Core::Geometry::Point &in) const;
+      };
+
+      struct SCISHARE BasicBoundingBoxParameters
+      {
+        CommonWidgetParameters common;
+        BoxPosition pos;
+      };
+
+      struct SCISHARE ArrowParameters
+      {
+        CommonWidgetParameters common;
+        Core::Geometry::Point pos;
+        Core::Geometry::Vector dir;
+        bool show_as_vector;
+        size_t widget_num, widget_iter;
+      };
+
+      class WidgetBase;
+
       class SCISHARE AbstractGlyphFactory
       {
       public:
         virtual ~AbstractGlyphFactory() {}
-
+        std::string sphere(SphereParameters params, WidgetBase& widget);
+        RenderState getSphereRenderState(const std::string& defaultColor) const;
       };
 
       using AbstractGlyphFactoryPtr = SharedPointer<AbstractGlyphFactory>;
@@ -107,20 +168,6 @@ namespace SCIRun
 
       using WidgetHandle = SharedPointer<WidgetBase>;
 
-      struct SCISHARE BoxPosition
-      {
-        Core::Geometry::Point center_, right_, down_, in_;
-
-        void setPosition(const Core::Geometry::Point &center,
-                         const Core::Geometry::Point &right,
-                         const Core::Geometry::Point &down,
-                         const Core::Geometry::Point &in);
-        void getPosition(Core::Geometry::Point &center,
-                         Core::Geometry::Point &right,
-                         Core::Geometry::Point &down,
-                         Core::Geometry::Point &in) const;
-      };
-
       class SCISHARE CompositeWidget : public WidgetBase
       {
       public:
@@ -141,56 +188,6 @@ namespace SCIRun
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
-
-      // template <typename WidgetIter>
-      //   static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-      // {
-      //   return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
-      // }
-
-      struct SCISHARE CommonWidgetParameters
-      {
-        double scale;
-        std::string defaultColor;
-        Core::Geometry::Point origin;
-        Core::Geometry::BBox bbox;
-        int resolution;
-      };
-
-      struct SCISHARE SphereParameters
-      {
-        CommonWidgetParameters common;
-        Core::Geometry::Point point;
-      };
-
-      struct SCISHARE CylinderParameters
-      {
-        CommonWidgetParameters common;
-        Core::Geometry::Point p1, p2;
-      };
-
-      using DiskParameters = CylinderParameters;
-
-      struct SCISHARE ConeParameters
-      {
-        CylinderParameters cylinder;
-        bool renderBase;
-      };
-
-      struct SCISHARE BasicBoundingBoxParameters
-      {
-        CommonWidgetParameters common;
-        BoxPosition pos;
-      };
-
-      struct SCISHARE ArrowParameters
-      {
-        CommonWidgetParameters common;
-        Core::Geometry::Point pos;
-        Core::Geometry::Vector dir;
-        bool show_as_vector;
-        size_t widget_num, widget_iter;
-      };
     }
   }
 }

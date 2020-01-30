@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-AbstractGlyphFactoryPtr WidgetFactory::glyphMaker_;
+AbstractGlyphFactoryPtr WidgetFactory::glyphMaker_(new AbstractGlyphFactory);
 
 GeneralWidgetParameters WidgetFactory::packageWithGlyph(const WidgetBaseParameters& params)
 {

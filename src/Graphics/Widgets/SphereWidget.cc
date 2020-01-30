@@ -37,9 +37,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
-                           SphereParameters params)
-  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag})//, point, origin)
+std::string AbstractGlyphFactory::sphere(SphereParameters params, WidgetBase& widget)
 {
   if (params.common.scale < 0) params.common.scale = 1.;
   if (params.common.resolution < 0) params.common.resolution = 10;
@@ -48,21 +46,29 @@ SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
   std::stringstream ss;
   ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
 
-  name_ = uniqueID() + "widget" + ss.str();
+  auto name = widget.uniqueID() + "widget" + ss.str();
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addSphere(params.point, params.common.scale, params.common.resolution, node_color);
 
-  setPosition(params.point);
+  auto renState = getSphereRenderState(params.common.defaultColor);
 
-  auto renState = getWidgetRenderState(params.common.defaultColor);
-
-  glyphs.buildObject(*this, name_, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+
+  return name;
 }
 
-RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)
+SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
+                           SphereParameters params)
+  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag})//, point, origin)
+{
+  name_ = gen.glyphMaker->sphere(params, *this);
+  setPosition(params.point);
+}
+
+RenderState AbstractGlyphFactory::getSphereRenderState(const std::string& defaultColor) const
 {
   RenderState renState;
 
