@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Widgets_WidgetTestingUtility_H
 
 #include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/share.h>
 
 namespace SCIRun

@@ -27,14 +27,9 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Widgets/DiskWidget.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Color.h>
+#include <Graphics/Widgets/GlyphFactory.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
@@ -42,47 +37,6 @@ DiskWidget::DiskWidget(const GeneralWidgetParameters& gen,
                        DiskParameters params)
   : WidgetBase({gen.base.idGenerator, "DiskWidget::" + gen.base.tag})//, Point(p1 + p2)/2, origin)
 {
-  if (params.common.scale < 0) params.common.scale = 1.;
-  if (params.common.resolution < 0) params.common.resolution = 10;
-
-  auto colorScheme = ColorScheme::COLOR_UNIFORM;
-  std::stringstream ss;
-  ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
-
-  name_ = uniqueID() + "widget" + ss.str();
-
+  name_ = gen.glyphMaker->disk(params, *this);
   setPosition(Point(params.p1 + params.p2)/2);
-
-  Graphics::GlyphGeom glyphs;
-  ColorRGB node_color;
-  glyphs.addDisk(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
-
-  auto renState = getWidgetRenderState(params.common.defaultColor);
-
-  glyphs.buildObject(*this, name_, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
-}
-
-RenderState DiskWidget::getWidgetRenderState(const std::string& defaultColor)
-{
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(defaultColor);
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
-
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  return renState;
 }

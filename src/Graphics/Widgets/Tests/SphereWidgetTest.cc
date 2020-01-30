@@ -37,7 +37,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphere)
 {
   DummyGeometryIDGenerator idGen;
 
-  SphereWidget sphere({{idGen, "testSphere1"}, nullptr},
+  SphereWidget sphere({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {-1,1,0}

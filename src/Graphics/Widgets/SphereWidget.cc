@@ -29,9 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/GlyphFactory.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
 
 SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
                            SphereParameters params)

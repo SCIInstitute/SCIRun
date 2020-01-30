@@ -37,7 +37,7 @@ TEST(DiskWidgetTest, CanCreateSingleDisk)
 {
   DummyGeometryIDGenerator idGen;
 
-  DiskWidget disk({{idGen, "testDisk1"}, nullptr},
+  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<RealGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}

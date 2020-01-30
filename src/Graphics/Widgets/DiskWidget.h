@@ -42,8 +42,6 @@ namespace SCIRun {
       {
       public:
         DiskWidget(const GeneralWidgetParameters& gen, DiskParameters params);
-      private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
       };
 
       using DiskWidgetHandle = SharedPointer<DiskWidget>;

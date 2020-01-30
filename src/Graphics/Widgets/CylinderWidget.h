@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Widgets_CylinderWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
@@ -42,8 +41,6 @@ namespace SCIRun {
       {
       public:
         CylinderWidget(const GeneralWidgetParameters& gen, CylinderParameters params);
-      private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
       };
 
       using CylinderWidgetHandle = SharedPointer<CylinderWidget>;

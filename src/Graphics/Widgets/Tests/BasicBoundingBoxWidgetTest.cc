@@ -37,7 +37,7 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBox)
 {
   DummyGeometryIDGenerator idGen;
 
-  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, nullptr},
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
   {
     {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
