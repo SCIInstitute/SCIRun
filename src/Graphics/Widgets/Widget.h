@@ -128,8 +128,16 @@ namespace SCIRun
       {
         double radius;
         std::string defaultColor;
-        Core::Geometry::Point point;
-        Core::Geometry::Point origin;
+        Core::Geometry::Point point, origin;
+        Core::Geometry::BBox bbox;
+        int resolution;
+      };
+
+      struct SCISHARE CylinderParameters
+      {
+        double radius;
+        std::string defaultColor;
+        Core::Geometry::Point p1, p2, origin;
         Core::Geometry::BBox bbox;
         int resolution;
       };

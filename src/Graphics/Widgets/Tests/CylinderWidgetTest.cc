@@ -27,22 +27,22 @@
 
 #include <gtest/gtest.h>
 
-#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/CylinderWidget.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(SphereWidgetTest, CanCreateSingleSphere)
+TEST(CylinderWidgetTest, CanCreateSingleCylinder)
 {
   DummyGeometryIDGenerator idGen;
 
-  SphereWidget sphere(idGen, "testSphere1",
+  CylinderWidget cylinder(idGen, "testCylinder1",
   {
-    10.0, "red", {-1,1,0}, {1,2,3}, {{0,0,0}, {1,1,1}}, 10
+    10.0, "red", {1,1,0}, {2,2,0}, {1,2,3}, {{0,0,0}, {1,1,1}}, 10
   });
 
-  EXPECT_EQ(Point(-1,1,0), sphere.position());
+  EXPECT_EQ(Point(1.5,1.5,0), cylinder.position());
 
 
   //FAIL() << "todo";

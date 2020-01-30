@@ -40,32 +40,28 @@ using namespace SCIRun::Core::Geometry;
 
 CylinderWidget::CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
                                const std::string& name,
-                               double radius,
-                               const std::string& defaultColor,
-                               const Point& p1,
-                               const Point& p2,
-                               const Point& origin,
-                               const BBox& bbox,
-                               int resolution)
+                               CylinderParameters params)
   : WidgetBase(idGenerator, "CylinderWidget::" + name, true)//, Point(p1 + p2)/2, origin)
 {
-  if (radius < 0) radius = 1.;
-  if (resolution < 0) resolution = 10;
+  if (params.radius < 0) params.radius = 1.;
+  if (params.resolution < 0) params.resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << radius << resolution << static_cast<int>(colorScheme);
+  ss << params.radius << params.resolution << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+  glyphs.addCylinder(params.p1, params.p2, params.radius, params.resolution, node_color, node_color);
 
-  auto renState = getWidgetRenderState(defaultColor);
+  setPosition(Point(params.p1 + params.p2)/2);
+
+  auto renState = getWidgetRenderState(params.defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.bbox);
 }
 
 RenderState CylinderWidget::getWidgetRenderState(const std::string& defaultColor)

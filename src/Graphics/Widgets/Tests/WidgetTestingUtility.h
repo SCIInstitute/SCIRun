@@ -26,29 +26,26 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef Graphics_Widgets_CylinderWidget_H
-#define Graphics_Widgets_CylinderWidget_H
+#ifndef Graphics_Widgets_WidgetTestingUtility_H
+#define Graphics_Widgets_WidgetTestingUtility_H
 
-#include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
-namespace SCIRun {
-  namespace Graphics {
-    namespace Datatypes {
-
-      class SCISHARE CylinderWidget : public WidgetBase
+namespace SCIRun
+{
+  namespace Graphics
+  {
+    namespace Datatypes
+    {
+      class SCISHARE DummyGeometryIDGenerator : public SCIRun::Core::GeometryIDGenerator
       {
       public:
-        CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
-                       const std::string& name,
-                       CylinderParameters params);
-      private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
+        std::string generateGeometryID(const std::string& tag) const override
+        {
+          return "dummyGeomId" + tag;
+        }
       };
-
-      using CylinderWidgetHandle = SharedPointer<CylinderWidget>;
     }
   }
 }

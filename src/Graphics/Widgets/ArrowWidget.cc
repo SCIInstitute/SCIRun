@@ -114,13 +114,13 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
     widgets_.push_back(WidgetFactory::createCylinder(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, widget_num, widget_iter),
-                                  cylinderRadius_ * scale,
+                                  {cylinderRadius_ * scale,
                                   deflCol_.toString(),
                                   cylinderStart,
                                   center,
                                   bmin,
                                   bbox,
-                                  resolution));
+                                  resolution}));
     //widgets_[1]->setToTranslate();
 
     widgets_.push_back(WidgetFactory::createCone(

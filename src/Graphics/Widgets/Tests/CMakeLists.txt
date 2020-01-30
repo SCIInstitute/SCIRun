@@ -28,6 +28,7 @@
 
 SET(Graphics_Widgets_Tests_SRCS
   SphereWidgetTest.cc
+  CylinderWidgetTest.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Graphics_Widgets_Tests
