@@ -64,7 +64,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   std::stringstream ss;
   ss << params.pos << params.dir << static_cast<int>(colorScheme);
 
-  auto uniqueNodeID = uniqueID() + "widget" + ss.str();
+  name_ = uniqueID() + "widget" + ss.str();
 
   // Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
@@ -102,7 +102,6 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                 sphereRadius_ * params.common.scale,
                                 sphereCol.toString(),
                                 bmin,
-
                                 params.common.bbox,
                                 params.common.resolution}, bmin}));
   //widgets_[0]->setToTranslate();

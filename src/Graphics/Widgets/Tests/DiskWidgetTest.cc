@@ -44,6 +44,7 @@ TEST(DiskWidgetTest, CanCreateSingleDisk)
   });
 
   EXPECT_EQ(Point(1.5,1.5,0), disk.position());
+  EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk1widget10100", disk.name());
 
 
   //FAIL() << "todo";

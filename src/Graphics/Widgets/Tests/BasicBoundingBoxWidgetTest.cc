@@ -44,6 +44,7 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBox)
   });
 
   EXPECT_EQ(Point(0,2,1), box.position());
+  EXPECT_EQ("bounding_box_cylinders102-21201021041001021-241-261", box.name());
 
 
   //FAIL() << "todo";

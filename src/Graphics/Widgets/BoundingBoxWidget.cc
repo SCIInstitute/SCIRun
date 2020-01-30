@@ -96,7 +96,7 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& ge
   ss << params.common.scale;
   for (const auto& a : points) ss << a.x() << a.y() << a.z();
 
-  auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
+  name_ = "bounding_box_cylinders" + ss.str();
 
   RenderState renState;
 
@@ -108,6 +108,6 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& ge
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*this, name_, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 }

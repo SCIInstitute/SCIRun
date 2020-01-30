@@ -44,6 +44,7 @@ TEST(ConeWidgetTest, CanCreateSingleCone)
   });
 
   EXPECT_EQ(Point(1.5,1.5,0), cone.position());
+  EXPECT_EQ("<dummyGeomId>ConeWidget::testCone1widget10100", cone.name());
 
 
   //FAIL() << "todo";

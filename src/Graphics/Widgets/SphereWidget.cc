@@ -48,7 +48,7 @@ SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
   std::stringstream ss;
   ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
 
-  auto uniqueNodeID = uniqueID() + "widget" + ss.str();
+  name_ = uniqueID() + "widget" + ss.str();
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
@@ -58,10 +58,8 @@ SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
 
   auto renState = getWidgetRenderState(params.common.defaultColor);
 
-  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*this, name_, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
-
-
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)

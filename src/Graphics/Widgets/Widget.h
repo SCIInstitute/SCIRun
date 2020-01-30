@@ -96,8 +96,11 @@ namespace SCIRun
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
 
+        const std::string& name() const { return name_; }
+
       protected:
         Core::Geometry::Point position_;
+        std::string name_;
       private:
 
       };

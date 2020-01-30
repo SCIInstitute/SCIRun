@@ -44,7 +44,6 @@ TEST(SphereWidgetTest, CanCreateSingleSphere)
   });
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
-
-
+  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere.name());
   //FAIL() << "todo";
 }

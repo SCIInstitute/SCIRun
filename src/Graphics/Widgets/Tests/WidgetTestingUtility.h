@@ -43,7 +43,7 @@ namespace SCIRun
       public:
         std::string generateGeometryID(const std::string& tag) const override
         {
-          return "dummyGeomId" + tag;
+          return "<dummyGeomId>" + tag;
         }
       };
     }

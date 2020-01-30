@@ -49,7 +49,7 @@ ConeWidget::ConeWidget(const GeneralWidgetParameters& gen,
   std::stringstream ss;
   ss << params.cylinder.common.scale << params.cylinder.common.resolution << static_cast<int>(colorScheme);
 
-  auto uniqueNodeID = uniqueID() + "widget" + ss.str();
+  name_ = uniqueID() + "widget" + ss.str();
 
   setPosition(Point(params.cylinder.p1 + params.cylinder.p2)/2);
 
@@ -59,7 +59,7 @@ ConeWidget::ConeWidget(const GeneralWidgetParameters& gen,
 
   auto renState = getWidgetRenderState(params.cylinder.common.defaultColor);
 
-  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*this, name_, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.cylinder.common.bbox);
 }
 

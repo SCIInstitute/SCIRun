@@ -44,6 +44,7 @@ TEST(ArrowWidgetTest, CanCreateSingleArrow)
   });
 
   EXPECT_EQ(Point(16,16,0), arrow.position());
+  EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
 
 
   //FAIL() << "todo";
