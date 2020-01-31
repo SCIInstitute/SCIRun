@@ -218,6 +218,7 @@ namespace SCIRun {
     {
       widgetSelected_ = false;
       widgetBall_.reset();
+      translateImpl_.reset();
       tryAutoRotate = doAutoRotateOnDrag;
     }
 
@@ -639,6 +640,11 @@ namespace SCIRun {
           widgetBall_->beginDrag(glm::vec2(sposView));
         }
 
+        {
+          auto cam = mCore.getStaticComponent<gen::StaticCamera>();
+          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection, {mScreenWidth, mScreenHeight, mSelectedPos, mSelectedW}));
+        }
+
         updateWidget(pos);
       }
 
@@ -717,18 +723,18 @@ namespace SCIRun {
       widgetTransform_ = trans.transform;
     }
 
+
+std::ostream& operator<<(std::ostream& o, const glm::mat4& m)
+{
+  return o << m[3].x << " " << m[3].y << " " << m[3].z;
+}
+
+
     //----------------------------------------------------------------------------------------------
     void SRInterface::translateWidget(const glm::ivec2& pos)
     {
-      auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
-                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
-      auto trans = gen::Transform();
-      trans.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
-
-      modifyWidgets(trans);
+      modifyWidgets(translateImpl_->computeTranslateTransform(pos.x, pos.y));
     }
 
     //----------------------------------------------------------------------------------------------

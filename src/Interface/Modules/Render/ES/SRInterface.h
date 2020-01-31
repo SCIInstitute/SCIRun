@@ -322,6 +322,42 @@ namespace SCIRun {
       };
 
 
+      struct ScreenParams
+      {
+        size_t width, height;
+        glm::vec2 selectedPos;
+        float selectedW;
+      };
+
+
+      class WidgetTranslationImpl
+      {
+      public:
+        WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
+          invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
+
+        gen::Transform computeTranslateTransform(double x, double y) const
+        {
+          // std::cout << "ScreenParams: " << screen_.width << " " << screen_.height <<
+          //   " " << screen_.selectedW << " ..selectedPos: " << screen_.selectedPos.x << "," << screen_.selectedPos.y
+          //   << std::endl;
+          // std::cout << "\tviewProj: " << viewProj_ << std::endl;
+          glm::vec2 spos(float(x) / float(screen_.width) * 2.0 - 1.0,
+                         -(float(y) / float(screen_.height) * 2.0 - 1.0));
+
+          glm::vec2 transVec = (spos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
+          auto trans = gen::Transform();
+          trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+          return trans;
+        }
+      private:
+        glm::mat4 invViewProj_;
+        ScreenParams screen_;
+      };
+
+      std::unique_ptr<WidgetTranslationImpl> translateImpl_;
+
+
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.
       bool                                selectWidget_       {false};  // Whether mouse click will select a widget.
