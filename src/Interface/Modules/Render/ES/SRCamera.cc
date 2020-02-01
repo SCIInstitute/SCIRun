@@ -75,7 +75,7 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
+    void SRCamera::mouseDownEvent(const glm::ivec2& pos, MouseButton)
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       mArcLookAt->doReferenceDown(screenSpace);
@@ -86,16 +86,16 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
+    void SRCamera::mouseMoveEvent(const glm::ivec2& pos, MouseButton btn)
     {
       static const float avFac = 0.2f;
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (mInterface.getMouseMode())
       {
-        case SRInterface::MOUSE_OLDSCIRUN:
-          if (btn == SRInterface::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
-          if (btn == SRInterface::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(screenSpace);
-          if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_)
+        case MouseMode::MOUSE_OLDSCIRUN:
+          if (btn == MouseButton::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
+          if (btn == MouseButton::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(screenSpace);
+          if (btn == MouseButton::MOUSE_MIDDLE && !lockRotation_)
           {
             mArcLookAt->doRotation(screenSpace);
             mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
@@ -108,8 +108,8 @@ namespace SCIRun {
           }
           break;
 
-        case SRInterface::MOUSE_NEWSCIRUN:
-          if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)
+        case MouseMode::MOUSE_NEWSCIRUN:
+          if (btn == MouseButton::MOUSE_LEFT && !lockRotation_)
           {
             mArcLookAt->doRotation(screenSpace);
             mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
@@ -120,7 +120,7 @@ namespace SCIRun {
               autoRotateVec = mouseMoveVec;
             lastMousePos = screenSpace;
           }
-          if (btn == SRInterface::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
+          if (btn == MouseButton::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
           break;
       }
       setClippingPlanes();
@@ -129,7 +129,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
     {
-      if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN && !lockZoom_)
+      if (mInterface.getMouseMode() != MouseMode::MOUSE_OLDSCIRUN && !lockZoom_)
       {
         mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
         setClippingPlanes();

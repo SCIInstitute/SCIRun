@@ -52,10 +52,10 @@ namespace SCIRun{
       void setAsOrthographic(float halfWidth, float halfHeight);
 
       /// Handle mouse down.
-      void mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      void mouseDownEvent(const glm::ivec2& pos, MouseButton btn);
 
       /// Handle mouse movement.
-      void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      void mouseMoveEvent(const glm::ivec2& pos, MouseButton btn);
 
       /// Handle mouse wheel event.
       void mouseWheelEvent(int32_t delta, int zoomSpeed);

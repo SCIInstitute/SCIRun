@@ -70,19 +70,19 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 using namespace std::placeholders;
+using namespace SCIRun::Render;
 
 namespace fs = spire;
 
-namespace SCIRun {
-  namespace Render {
-
-
+namespace
+{
     static glm::vec4 inverseGammaCorrect(glm::vec4 in)
     {
       return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
@@ -92,7 +92,7 @@ namespace SCIRun {
     {
       return glm::pow(in, glm::vec3(2.2));
     }
-
+}
     //----------------------------------------------------------------------------------------------
     SRInterface::SRInterface(int frameInitLimit) :
       frameInitLimit_(frameInitLimit),
@@ -1891,16 +1891,16 @@ namespace SCIRun {
     {
       switch (factor)
       {
-      case MAT_AMBIENT:
+      case MatFactor::MAT_AMBIENT:
         mMatAmbient = value;
         break;
-      case MAT_DIFFUSE:
+      case MatFactor::MAT_DIFFUSE:
         mMatDiffuse = value;
         break;
-      case MAT_SPECULAR:
+      case MatFactor::MAT_SPECULAR:
         mMatSpecular = value;
         break;
-      case MAT_SHINE:
+      case MatFactor::MAT_SHINE:
         mMatShine = value;
         break;
       }
@@ -1911,17 +1911,29 @@ namespace SCIRun {
     {
       switch (factor)
       {
-      case FOG_INTENSITY:
+      case FogFactor::FOG_INTENSITY:
         mFogIntensity = value;
         break;
-      case FOG_START:
+      case FogFactor::FOG_START:
         mFogStart = value;
         break;
-      case FOG_END:
+      case FogFactor::FOG_END:
         mFogEnd = value;
         break;
       }
     }
 
-  } // namespace Render
-} // namespace SCIRun
+gen::Transform WidgetTranslationImpl::computeTranslateTransform(double x, double y) const
+{
+  // std::cout << "ScreenParams: " << screen_.width << " " << screen_.height <<
+  //   " " << screen_.selectedW << " ..selectedPos: " << screen_.selectedPos.x << "," << screen_.selectedPos.y
+  //   << std::endl;
+  // std::cout << "\tviewProj: " << viewProj_ << std::endl;
+  glm::vec2 spos(float(x) / float(screen_.width) * 2.0 - 1.0,
+                 -(float(y) / float(screen_.height) * 2.0 - 1.0));
+
+  glm::vec2 transVec = (spos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
+  auto trans = gen::Transform();
+  trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+  return trans;
+}

@@ -38,6 +38,7 @@
 #include <QTimer>
 #include <QtDebug>
 #include <Core/Application/Application.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
 #include <ctime>
 
 namespace SCIRun {
@@ -66,6 +67,10 @@ GLWidget::~GLWidget()
   }
 }
 
+void GLWidget::setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
+void GLWidget::setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
+void GLWidget::setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
+
 //------------------------------------------------------------------------------
 void GLWidget::initializeGL()
 {
@@ -87,15 +92,15 @@ void GLWidget::paintGL()
 }
 
 //------------------------------------------------------------------------------
-SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  auto btn = SCIRun::Render::SRInterface::MOUSE_NONE;
+  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = Render::SRInterface::MOUSE_LEFT;
+    btn = Render::MouseButton::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = Render::SRInterface::MOUSE_RIGHT;
+    btn = Render::MouseButton::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = Render::SRInterface::MOUSE_MIDDLE;
+    btn = Render::MouseButton::MOUSE_MIDDLE;
 
   return btn;
 }

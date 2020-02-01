@@ -38,6 +38,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Interface/Modules/Render/ES/RendererCollaborators.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -257,10 +259,10 @@ namespace SCIRun {
       void toggleLightOnOff(int index, bool value);
 
       //---------------- Materials -----------------------------------------------------------------
-      void setMaterialFactor(int factor, double value);
+      void setMaterialFactor(Render::MatFactor factor, double value);
 
       //---------------- Fog -----------------------------------------------------------------------
-      void setFog(int factor, double value);
+      void setFog(Render::FogFactor factor, double value);
       void setFogColor(const glm::vec4 &color);
 
       //---------------- Misc. ---------------------------------------------------------------------
@@ -285,7 +287,7 @@ namespace SCIRun {
 
 
       GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
-      std::weak_ptr<Render::SRInterface>    mSpire                        {};         ///< Instance of Spire.
+      Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
       QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
       QToolBar*                             mViewBar                      {nullptr};  ///< Tool bar for view options.
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.

@@ -51,11 +51,11 @@ struct StaticSRInterface
 
     bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
     {
-        return true;
+      return true;
     }
 };
 
 } // namespace Render
 } // namespace SCIRun
 
-#endif 
+#endif

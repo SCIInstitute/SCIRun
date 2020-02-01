@@ -107,7 +107,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
-  mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+  mSpire = RendererWeakPtr(mGLWidget->getSpire());
 
   //Set background Color
   auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
@@ -120,12 +120,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
     if (Preferences::Instance().useNewViewSceneMouseControls)
     {
-      spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+      spire->setMouseMode(MouseMode::MOUSE_NEWSCIRUN);
       spire->setZoomInverted(Preferences::Instance().invertMouseZoom);
     }
     else
     {
-      spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+      spire->setMouseMode(MouseMode::MOUSE_OLDSCIRUN);
     }
 
     spire->setBackgroundColor(bgColor_);
@@ -1052,12 +1052,12 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 
   if (index == 0)
   {
-    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    spire->setMouseMode(MouseMode::MOUSE_OLDSCIRUN);
     Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
   }
   else
   {
-    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    spire->setMouseMode(MouseMode::MOUSE_NEWSCIRUN);
     Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
   mConfigurationDock->updateZoomOptionVisibility();
@@ -1066,7 +1066,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::invertZoomClicked(bool value)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setZoomInverted(value);
   Preferences::Instance().invertMouseZoom.setValue(value);
 }
@@ -1074,7 +1074,7 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::adjustZoomSpeed(int value)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setZoomSpeed(value);
 }
 
@@ -2036,7 +2036,7 @@ void ViewSceneDialog::updateLightDirection(int light)
 void ViewSceneDialog::setAmbientValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Ambient, value);
-  setMaterialFactor(SRInterface::MAT_AMBIENT, value);
+  setMaterialFactor(MatFactor::MAT_AMBIENT, value);
   updateAllGeometries();
 }
 
@@ -2044,7 +2044,7 @@ void ViewSceneDialog::setAmbientValue(double value)
 void ViewSceneDialog::setDiffuseValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Diffuse, value);
-  setMaterialFactor(SRInterface::MAT_DIFFUSE, value);
+  setMaterialFactor(MatFactor::MAT_DIFFUSE, value);
   updateAllGeometries();
 }
 
@@ -2052,7 +2052,7 @@ void ViewSceneDialog::setDiffuseValue(double value)
 void ViewSceneDialog::setSpecularValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Specular, value);
-  setMaterialFactor(SRInterface::MAT_SPECULAR, value);
+  setMaterialFactor(MatFactor::MAT_SPECULAR, value);
   updateAllGeometries();
 }
 
@@ -2063,7 +2063,7 @@ void ViewSceneDialog::setShininessValue(double value)
   const static int minSpecExp = 1;
   state_->setValue(Modules::Render::ViewScene::Shine, value);
   //taking square of value makes the ui a little more intuitive in my opinion
-  setMaterialFactor(SRInterface::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
+  setMaterialFactor(MatFactor::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
   updateAllGeometries();
 }
 
@@ -2084,9 +2084,9 @@ void ViewSceneDialog::setFogOn(bool value)
 {
   state_->setValue(Modules::Render::ViewScene::FogOn, value);
   if (value)
-    setFog(SRInterface::FOG_INTENSITY, 1.0);
+    setFog(FogFactor::FOG_INTENSITY, 1.0);
   else
-    setFog(SRInterface::FOG_INTENSITY, 0.0);
+    setFog(FogFactor::FOG_INTENSITY, 0.0);
   updateAllGeometries();
 }
 
@@ -2130,7 +2130,7 @@ void ViewSceneDialog::assignFogColor()
 void ViewSceneDialog::setFogStartValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogStart, value);
-  setFog(SRInterface::FOG_START, value);
+  setFog(FogFactor::FOG_START, value);
   updateAllGeometries();
 }
 
@@ -2138,24 +2138,24 @@ void ViewSceneDialog::setFogStartValue(double value)
 void ViewSceneDialog::setFogEndValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogEnd, value);
-  setFog(SRInterface::FOG_END, value);
+  setFog(FogFactor::FOG_END, value);
   updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setMaterialFactor(int factor, double value)
+void ViewSceneDialog::setMaterialFactor(MatFactor factor, double value)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setMaterialFactor(static_cast<SRInterface::MatFactor>(factor), value);
+    spire->setMaterialFactor(factor, value);
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setFog(int factor, double value)
+void ViewSceneDialog::setFog(FogFactor factor, double value)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setFog(static_cast<SRInterface::FogFactor>(factor), value);
+    spire->setFog(factor, value);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2182,7 +2182,7 @@ void ViewSceneDialog::assignBackgroundColor()
     bgColor_ = newColor;
     mConfigurationDock->setSampleColor(bgColor_);
     state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
     bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
     if (useBg)
@@ -2196,7 +2196,7 @@ void ViewSceneDialog::assignBackgroundColor()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
   updateAllGeometries();
 }
@@ -2204,7 +2204,7 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
   updateAllGeometries();
 }
@@ -2212,7 +2212,7 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
   updateAllGeometries();
 }

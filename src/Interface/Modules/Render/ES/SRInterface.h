@@ -46,27 +46,21 @@
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/Widget.h>
-#include <Interface/Modules/Render/share.h>
 #include <glm/gtc/quaternion.hpp>
 #include <QOpenGLContext>
+#include <Interface/Modules/Render/ES/RendererInterface.h>
+#include <Interface/Modules/Render/share.h>
 
 
-namespace SCIRun {
-  namespace Render {
-
-    class SRCamera;
-
-    class SRInterfaceFailure : public std::runtime_error
-    {
-    public:
-      explicit SRInterfaceFailure(const std::string& message) : std::runtime_error(message) {}
-    };
-
+namespace SCIRun
+{
+  namespace Render
+  {
     // This class will be executing on a remote thread using boost lock free
     // structures. The view scene dialog on qt widgets only serve one purpose:
     // to relay information to this thread so that rendering can take place.
     // Information such as mouse clicks and user settings.
-    class SCISHARE SRInterface
+    class SCISHARE SRInterface : public RendererInterface
     {
       //we use a static component for assigning entity IDs
       //For assigning asset entity ids. This can be removed if
@@ -75,139 +69,101 @@ namespace SCIRun {
     public:
       explicit SRInterface(int frameInitLimit = 100);
       ~SRInterface();
-      std::string toString(std::string prefix) const;
+      std::string toString(std::string prefix) const override;
 
-      void setContext(QOpenGLContext* context) {mContext = context;}
-
-      /// todo Specify what buttons are pressed.
-      enum MouseButton
-      {
-        MOUSE_NONE,
-        MOUSE_LEFT,
-        MOUSE_RIGHT,
-        MOUSE_MIDDLE,
-      };
-
-      enum MouseMode
-      {
-        MOUSE_OLDSCIRUN,
-        MOUSE_NEWSCIRUN
-      };
-
-      enum MatFactor
-      {
-        MAT_AMBIENT,
-        MAT_DIFFUSE,
-        MAT_SPECULAR,
-        MAT_SHINE
-      };
-
-      enum FogFactor
-      {
-        FOG_INTENSITY,
-        FOG_START,
-        FOG_END
-      };
-
-      struct ClippingPlane
-      {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
+      void setContext(QOpenGLContext* context) override {mContext = context;}
 
       // todo Obtaining data from mesh objects in order to spatially partition
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
-      void inputMouseMove(const glm::ivec2& pos, MouseButton btn);
-      void inputMouseUp(const glm::ivec2& pos, MouseButton btn);
-      void inputMouseWheel(int32_t delta);
-      void inputShiftKeyDown(bool shiftDown);
-      void setMouseMode(MouseMode mode) {mMouseMode = mode;}
-      MouseMode getMouseMode() const    {return mMouseMode;}
+      void inputMouseDown(const glm::ivec2& pos, MouseButton btn) override;
+      void inputMouseMove(const glm::ivec2& pos, MouseButton btn) override;
+      void inputMouseUp(const glm::ivec2& pos, MouseButton btn) override;
+      void inputMouseWheel(int32_t delta) override;
+      void inputShiftKeyDown(bool shiftDown) override;
+      void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
+      MouseMode getMouseMode() const override    {return mMouseMode;}
 
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
-      void eventResize(size_t width, size_t height);
-      void doAutoView();
+      void eventResize(size_t width, size_t height) override;
+      void doAutoView() override;
       // Sets the selected View of the window
-      void setCameraDistance(const float distance);
-      float getCameraDistance() const;
-      void setCameraLookAt(const glm::vec3 lookAt);
-      glm::vec3 getCameraLookAt() const;
-      void setCameraRotation(const glm::quat rotation);
-      glm::quat getCameraRotation() const;
-      void setView(const glm::vec3& view, const glm::vec3& up);
-      void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
-      void setZoomInverted(bool value);
-      void setLockZoom(bool lock);
-      void setLockPanning(bool lock);
-      void setLockRotation(bool lock);
-      void setAutoRotateVector(glm::vec2 axis);
-      void setAutoRotateSpeed(double speed);
-      void setAutoRotateOnDrag(bool value);
-      const glm::mat4& getWorldToProjection() const;
-      const glm::mat4& getWorldToView() const;
-      const glm::mat4& getViewToWorld() const;
-      const glm::mat4& getViewToProjection() const;
+      void setCameraDistance(const float distance) override;
+      float getCameraDistance() const override;
+      void setCameraLookAt(const glm::vec3 lookAt) override;
+      glm::vec3 getCameraLookAt() const override;
+      void setCameraRotation(const glm::quat rotation) override;
+      glm::quat getCameraRotation() const override;
+      void setView(const glm::vec3& view, const glm::vec3& up) override;
+      void setZoomSpeed(int zoomSpeed) override {mZoomSpeed = zoomSpeed;}
+      void setZoomInverted(bool value) override;
+      void setLockZoom(bool lock) override;
+      void setLockPanning(bool lock) override;
+      void setLockRotation(bool lock) override;
+      void setAutoRotateVector(glm::vec2 axis) override;
+      void setAutoRotateSpeed(double speed) override;
+      void setAutoRotateOnDrag(bool value) override;
+      const glm::mat4& getWorldToProjection() const override;
+      const glm::mat4& getWorldToView() const override;
+      const glm::mat4& getViewToProjection() const override;
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      void toggleSelectionHack(bool b) {mSelectionHack = b;}
-      typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
-      void select(const glm::ivec2& pos, WidgetList& objList, int port);
-      std::string &getSelection()          {return mSelected;}
-      glm::mat4 getWidgetTransform() {return widgetTransform_;}
+      void toggleSelectionHack(bool b) override {mSelectionHack = b;}
+      void select(const glm::ivec2& pos, WidgetList& objList, int port) override;
+      std::string &getSelection() override          {return mSelected;}
+      glm::mat4 getWidgetTransform() override {return widgetTransform_;}
 
       //---------------- Clipping Planes -----------------------------------------------------------
-      StaticClippingPlanes* getClippingPlanes();
-      void setClippingPlaneVisible(bool value);
-      void setClippingPlaneFrameOn(bool value);
-      void reverseClippingPlaneNormal(bool value);
-      void setClippingPlaneX(double value);
-      void setClippingPlaneY(double value);
-      void setClippingPlaneZ(double value);
-      void setClippingPlaneD(double value);
-      void setClippingPlaneIndex(int index) {clippingPlaneIndex_ = index;}
+      StaticClippingPlanes* getClippingPlanes() override;
+      void setClippingPlaneVisible(bool value) override;
+      void setClippingPlaneFrameOn(bool value) override;
+      void reverseClippingPlaneNormal(bool value) override;
+      void setClippingPlaneX(double value) override;
+      void setClippingPlaneY(double value) override;
+      void setClippingPlaneZ(double value) override;
+      void setClippingPlaneD(double value) override;
+      void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
 
       //---------------- Data Handeling ------------------------------------------------------------
       // Handles a new geometry object.
-      void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port);
+      void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) override;
       // Remove all SCIRun 5 objects.
-      void removeAllGeomObjects();
-      bool hasObject(const std::string& object);
+      void removeAllGeomObjects() override;
+      bool hasObject(const std::string& object) override;
       // Garbage collect all invalid objects not given in the valid objects vector.
-      void gcInvalidObjects(const std::vector<std::string>& validObjects);
+      void gcInvalidObjects(const std::vector<std::string>& validObjects) override;
       // Simple hash function. Modify if hash collisions occur due to string
       // hashing. The simplest approach would be to have all names placed in a
       // hash multimap with a list which assigns ids to names.
-      uint64_t getEntityIDForName(const std::string& name, int port);
-      Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
+      uint64_t getEntityIDForName(const std::string& name, int port) override;
+      Core::Geometry::BBox getSceneBox() override {return mSceneBBox;}
 
-      bool hasShaderPromise() const;
-      void runGCOnNextExecution();
+      bool hasShaderPromise() const override;
+      void runGCOnNextExecution() override;
 
       //---------------- Rendering -----------------------------------------------------------------
-      void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
-      void setLightColor(int index, float r, float g, float b);
-      void setLightOn(int index, bool value);
-      void setLightAzimuth(int index, float azimuth);
-      void setLightInclination(int index, float inclination);
-      void updateLightDirection(int index);
-      void setMaterialFactor(MatFactor factor, double value);
-      void setFog(FogFactor factor, double value);
-      void setOrientSize(int size) {orientSize = size/10.0f;}      //Remap 1:100 to 0.1:10
-      void setOrientPosX(int pos)  {orientPosX = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
-      void setOrientPosY(int pos)  {orientPosY = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
-      void showOrientation(bool value) {showOrientation_ = value;}
-      void setBackgroundColor(const QColor& color);
-      void setFogColor(const glm::vec4 &color) {mFogColor = color;}
-      void setTransparencyRendertype(RenderState::TransparencySortType rType) {mRenderSortType = rType;}
+      void doFrame(double currentTime, double constantDeltaTime) override; // Performs a frame.
+      void setLightColor(int index, float r, float g, float b) override;
+      void setLightOn(int index, bool value) override;
+      void setLightAzimuth(int index, float azimuth) override;
+      void setLightInclination(int index, float inclination) override;
+      void updateLightDirection(int index) override;
+      void setMaterialFactor(MatFactor factor, double value) override;
+      void setFog(FogFactor factor, double value) override;
+      void setOrientSize(int size) override {orientSize = size/10.0f;}      //Remap 1:100 to 0.1:10
+      void setOrientPosX(int pos) override  {orientPosX = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
+      void setOrientPosY(int pos) override  {orientPosY = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
+      void showOrientation(bool value) override {showOrientation_ = value;}
+      void setBackgroundColor(const QColor& color) override;
+      void setFogColor(const glm::vec4 &color) override {mFogColor = color;}
+      void setTransparencyRendertype(RenderState::TransparencySortType rType) override {mRenderSortType = rType;}
 
       // Screen width retrieval. Dimensions are pixels.
-      size_t getScreenWidthPixels() const  {return mScreenWidth;}
-      size_t getScreenHeightPixels() const {return mScreenHeight;}
+      size_t getScreenWidthPixels() const override  {return mScreenWidth;}
+      size_t getScreenHeightPixels() const override {return mScreenHeight;}
 
     private:
       void setupCore();
@@ -254,107 +210,6 @@ namespace SCIRun {
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
-
-      class DepthIndex
-      {
-      public:
-        size_t mIndex;
-        double mDepth;
-
-        DepthIndex() :
-          mIndex(0),
-          mDepth(0.0)
-        {}
-
-        DepthIndex(size_t index, double depth) :
-          mIndex(index),
-          mDepth(depth)
-        {}
-
-        bool operator<(const DepthIndex& di) const
-        {
-          return this->mDepth < di.mDepth;
-        }
-      };
-
-      class SRObject
-      {
-      public:
-        SRObject(const std::string& name, const glm::mat4& objToWorld,
-          const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
-          mName(name),
-          mObjectToWorld(objToWorld),
-          mBBox(bbox),
-          mColorMap(colorMap),
-          mPort(port)
-        {}
-
-        // Different types of uniform transformations that are associated
-        // with the object (based off of the unsatisfied uniforms detected
-        // by the Spire object).
-        enum ObjectTransforms
-        {
-          OBJECT_TO_WORLD,
-          OBJECT_TO_CAMERA,
-          OBJECT_TO_CAMERA_PROJECTION,
-        };
-
-        struct SRPass
-        {
-          SRPass(const std::string& name, Graphics::Datatypes::RenderType renType) :
-            passName(name),
-            renderType(renType)
-          {}
-
-          std::string passName;
-          std::list<ObjectTransforms> transforms;
-          Graphics::Datatypes::RenderType renderType;
-        };
-
-        std::string mName;
-        glm::mat4 mObjectToWorld;
-        std::list<SRPass> mPasses;
-        Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
-
-        boost::optional<std::string> mColorMap;
-
-        int	mPort;
-      };
-
-
-      struct ScreenParams
-      {
-        size_t width, height;
-        glm::vec2 selectedPos;
-        float selectedW;
-      };
-
-
-      class WidgetTranslationImpl
-      {
-      public:
-        WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
-          invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
-
-        gen::Transform computeTranslateTransform(double x, double y) const
-        {
-          // std::cout << "ScreenParams: " << screen_.width << " " << screen_.height <<
-          //   " " << screen_.selectedW << " ..selectedPos: " << screen_.selectedPos.x << "," << screen_.selectedPos.y
-          //   << std::endl;
-          // std::cout << "\tviewProj: " << viewProj_ << std::endl;
-          glm::vec2 spos(float(x) / float(screen_.width) * 2.0 - 1.0,
-                         -(float(y) / float(screen_.height) * 2.0 - 1.0));
-
-          glm::vec2 transVec = (spos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
-          auto trans = gen::Transform();
-          trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
-          return trans;
-        }
-      private:
-        glm::mat4 invViewProj_;
-        ScreenParams screen_;
-      };
-
       std::unique_ptr<WidgetTranslationImpl> translateImpl_;
 
 
@@ -372,7 +227,7 @@ namespace SCIRun {
 
       uint64_t                            mSelectedID         {0};
       int                                 mZoomSpeed          {65};
-      MouseMode                           mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
+      MouseMode                           mMouseMode          {MouseMode::MOUSE_OLDSCIRUN};  // Current mouse mode.
 
       std::string                         mSelected           {};       // Current selection
       bool                                mSelectionHack      {false};
