@@ -30,14 +30,15 @@
 // date   March 2013
 
 #include <gl-platform/GLPlatform.hpp>
+#include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 namespace SCIRun {
   namespace Render {
 
     //----------------------------------------------------------------------------------------------
-    SRCamera::SRCamera(SRInterface& iface) :
-        mInterface(iface),
+    SRCamera::SRCamera(const ScreenParameters* screen) :
+        screenParameters_(screen),
         mArcLookAt(new spire::ArcLookAt())
     {
       setAsPerspective();
@@ -74,6 +75,9 @@ namespace SCIRun {
       setClippingPlanes();
     }
 
+    float SRCamera::getAspect() {return static_cast<float>(screenParameters_->getScreenWidthPixels()) /
+                              static_cast<float>(screenParameters_->getScreenHeightPixels());}
+
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseDownEvent(const glm::ivec2& pos, MouseButton)
     {
@@ -90,7 +94,7 @@ namespace SCIRun {
     {
       static const float avFac = 0.2f;
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
-      switch (mInterface.getMouseMode())
+      switch (screenParameters_->getMouseMode())
       {
         case MouseMode::MOUSE_OLDSCIRUN:
           if (btn == MouseButton::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
@@ -129,7 +133,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
     {
-      if (mInterface.getMouseMode() != MouseMode::MOUSE_OLDSCIRUN && !lockZoom_)
+      if (screenParameters_->getMouseMode() != MouseMode::MOUSE_OLDSCIRUN && !lockZoom_)
       {
         mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
         setClippingPlanes();
@@ -225,9 +229,9 @@ namespace SCIRun {
       // Transform incoming mouse coordinates into screen space.
       glm::vec2 mouseScreenSpace;
       mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX)
-        / static_cast<float>(mInterface.getScreenWidthPixels()) - 1.0f;
+        / static_cast<float>(screenParameters_->getScreenWidthPixels()) - 1.0f;
       mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
-        / static_cast<float>(mInterface.getScreenHeightPixels()) - 1.0f;
+        / static_cast<float>(screenParameters_->getScreenHeightPixels()) - 1.0f;
 
       // Rotation with flipped axes feels much more natural. It places it inside the
       // correct OpenGL coordinate system (with origin in the center of the screen).

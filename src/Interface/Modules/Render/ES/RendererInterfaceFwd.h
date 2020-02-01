@@ -36,6 +36,7 @@ namespace SCIRun
   namespace Render
   {
     class RendererInterface;
+    class ScreenParameters;
     struct StaticClippingPlanes;
     class SRCamera;
 
@@ -43,6 +44,8 @@ namespace SCIRun
 
     using RendererPtr = std::shared_ptr<RendererInterface>;
     using RendererWeakPtr = std::weak_ptr<RendererInterface>;
+
+    using ScreenParametersPtr = std::shared_ptr<ScreenParameters>;
   }
 }
 

@@ -95,9 +95,9 @@ namespace
 }
     //----------------------------------------------------------------------------------------------
     SRInterface::SRInterface(int frameInitLimit) :
-      frameInitLimit_(frameInitLimit),
-      mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
+      frameInitLimit_(frameInitLimit)
     {
+      mCamera.reset(new SRCamera(this));
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
       setupCore();

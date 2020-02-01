@@ -40,7 +40,17 @@ namespace SCIRun
 {
   namespace Render
   {
-    class SCISHARE RendererInterface
+    class SCISHARE ScreenParameters
+    {
+    public:
+      virtual ~ScreenParameters() {}
+
+      virtual size_t getScreenWidthPixels() const = 0;
+      virtual size_t getScreenHeightPixels() const = 0;
+      virtual MouseMode getMouseMode() const = 0;
+    };
+
+    class SCISHARE RendererInterface : public ScreenParameters
     {
     public:
       virtual ~RendererInterface() {}
@@ -53,7 +63,7 @@ namespace SCIRun
       virtual void inputMouseWheel(int32_t delta) = 0;
       virtual void inputShiftKeyDown(bool shiftDown) = 0;
       virtual void setMouseMode(MouseMode mode) = 0;
-      virtual MouseMode getMouseMode() const = 0;
+
       virtual void eventResize(size_t width, size_t height) = 0;
       virtual void doAutoView() = 0;
       virtual void setCameraDistance(const float distance) = 0;
@@ -110,8 +120,7 @@ namespace SCIRun
       virtual void setBackgroundColor(const QColor& color) = 0;
       virtual void setFogColor(const glm::vec4 &color) = 0;
       virtual void setTransparencyRendertype(RenderState::TransparencySortType rType) = 0;
-      virtual size_t getScreenWidthPixels() const = 0;
-      virtual size_t getScreenHeightPixels() const = 0;
+
     };
 
   } // namespace Render
