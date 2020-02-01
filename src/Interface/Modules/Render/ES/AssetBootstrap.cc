@@ -12,9 +12,6 @@
 #include <es-render/comp/StaticFontMan.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 
-#include "SRInterface.h"
-#include "comp/StaticSRInterface.h"
-
 #include "AssetBootstrap.h"
 #include "Core.h"
 

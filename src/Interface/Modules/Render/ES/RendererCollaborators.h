@@ -36,10 +36,10 @@ namespace SCIRun
 {
   namespace Render
   {
-    class SCISHARE SRInterfaceFailure : public std::runtime_error
+    class SCISHARE FatalRendererError : public std::runtime_error
     {
     public:
-      explicit SRInterfaceFailure(const std::string& message) : std::runtime_error(message) {}
+      explicit FatalRendererError(const std::string& message) : std::runtime_error(message) {}
     };
 
     enum class MouseButton

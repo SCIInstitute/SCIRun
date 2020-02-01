@@ -45,7 +45,6 @@
 #include <es-render/comp/CommonUniforms.hpp>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
-#include <Graphics/Widgets/Widget.h>
 #include <glm/gtc/quaternion.hpp>
 #include <QOpenGLContext>
 #include <Interface/Modules/Render/ES/RendererInterface.h>
@@ -92,9 +91,9 @@ namespace SCIRun
       // Sets the selected View of the window
       void setCameraDistance(const float distance) override;
       float getCameraDistance() const override;
-      void setCameraLookAt(const glm::vec3 lookAt) override;
+      void setCameraLookAt(const glm::vec3& lookAt) override;
       glm::vec3 getCameraLookAt() const override;
-      void setCameraRotation(const glm::quat rotation) override;
+      void setCameraRotation(const glm::quat& rotation) override;
       glm::quat getCameraRotation() const override;
       void setView(const glm::vec3& view, const glm::vec3& up) override;
       void setZoomSpeed(int zoomSpeed) override {mZoomSpeed = zoomSpeed;}
@@ -102,7 +101,7 @@ namespace SCIRun
       void setLockZoom(bool lock) override;
       void setLockPanning(bool lock) override;
       void setLockRotation(bool lock) override;
-      void setAutoRotateVector(glm::vec2 axis) override;
+      void setAutoRotateVector(const glm::vec2& axis) override;
       void setAutoRotateSpeed(double speed) override;
       void setAutoRotateOnDrag(bool value) override;
       const glm::mat4& getWorldToProjection() const override;
@@ -113,7 +112,7 @@ namespace SCIRun
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
       void select(const glm::ivec2& pos, WidgetList& objList, int port) override;
-      std::string &getSelection() override          {return mSelected;}
+      std::string getSelection() override          {return mSelected;}
       glm::mat4 getWidgetTransform() override {return widgetTransform_;}
 
       //---------------- Clipping Planes -----------------------------------------------------------

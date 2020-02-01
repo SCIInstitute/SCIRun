@@ -36,6 +36,7 @@ namespace SCIRun
   namespace Render
   {
     class RendererInterface;
+    struct StaticClippingPlanes;
     class SRCamera;
 
     using WidgetList = std::vector<Graphics::Datatypes::WidgetHandle>;

@@ -41,6 +41,7 @@
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -63,7 +64,6 @@
 #include <es-fs/FilesystemSync.hpp>
 
 #include "CoreBootstrap.h"
-#include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
@@ -146,12 +146,6 @@ namespace
         fs::StaticFS fileSystem((std::make_shared<fs::FilesystemSync>(filesystemRoot)));
         mCore.addStaticComponent(fileSystem);
         mCore.disableComponentSerialization<fs::StaticFS>();
-      }
-
-      // Add StaticSRInterface
-      {
-        StaticSRInterface iface(this);
-        mCore.addStaticComponent(iface);
       }
     }
 
@@ -335,7 +329,7 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::setAutoRotateVector(glm::vec2 axis)
+    void SRInterface::setAutoRotateVector(const glm::vec2& axis)
     {
       tryAutoRotate = false;
       if(autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
@@ -351,9 +345,9 @@ namespace
     //Getters/Setters-------------------------------------------------------------------------------
     void SRInterface::setCameraDistance(const float distance) {mCamera->setDistance(distance);}
     float SRInterface::getCameraDistance() const {return mCamera->getDistance();}
-    void SRInterface::setCameraLookAt(const glm::vec3 lookAt) {mCamera->setLookAt(lookAt);}
+    void SRInterface::setCameraLookAt(const glm::vec3& lookAt) {mCamera->setLookAt(lookAt);}
     glm::vec3 SRInterface::getCameraLookAt() const {return mCamera->getLookAt();}
-    void SRInterface::setCameraRotation(const glm::quat roation) {mCamera->setRotation(roation);}
+    void SRInterface::setCameraRotation(const glm::quat& roation) {mCamera->setRotation(roation);}
     glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
     void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
@@ -1578,7 +1572,7 @@ namespace
             {
               axesFailCount_++;
               if (axesFailCount_ > frameInitLimit_)
-                throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+                throw FatalRendererError("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
               return;
             }
 

@@ -30,7 +30,11 @@
 
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
+#include <glm/gtc/quaternion.hpp>
 #include <Interface/Modules/Render/share.h>
+
+class QOpenGLContext;
+class QColor;
 
 namespace SCIRun
 {
@@ -54,9 +58,9 @@ namespace SCIRun
       virtual void doAutoView() = 0;
       virtual void setCameraDistance(const float distance) = 0;
       virtual float getCameraDistance() const = 0;
-      virtual void setCameraLookAt(const glm::vec3 lookAt) = 0;
+      virtual void setCameraLookAt(const glm::vec3& lookAt) = 0;
       virtual glm::vec3 getCameraLookAt() const = 0;
-      virtual void setCameraRotation(const glm::quat rotation) = 0;
+      virtual void setCameraRotation(const glm::quat& rotation) = 0;
       virtual glm::quat getCameraRotation() const = 0;
       virtual void setView(const glm::vec3& view, const glm::vec3& up) = 0;
       virtual void setZoomSpeed(int zoomSpeed) = 0;
@@ -64,7 +68,7 @@ namespace SCIRun
       virtual void setLockZoom(bool lock) = 0;
       virtual void setLockPanning(bool lock) = 0;
       virtual void setLockRotation(bool lock) = 0;
-      virtual void setAutoRotateVector(glm::vec2 axis) = 0;
+      virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void setAutoRotateOnDrag(bool value) = 0;
       virtual const glm::mat4& getWorldToProjection() const = 0;
@@ -72,7 +76,7 @@ namespace SCIRun
       virtual const glm::mat4& getViewToProjection() const = 0;
       virtual void toggleSelectionHack(bool b) = 0;
       virtual void select(const glm::ivec2& pos, WidgetList& objList, int port) = 0;
-      virtual std::string &getSelection() = 0;
+      virtual std::string getSelection() = 0;
       virtual glm::mat4 getWidgetTransform() = 0;
       virtual StaticClippingPlanes* getClippingPlanes() = 0;
       virtual void setClippingPlaneVisible(bool value) = 0;

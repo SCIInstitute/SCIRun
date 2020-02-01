@@ -38,12 +38,14 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Thread/Mutex.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/timer.hpp>
+#include <QOpenGLContext>
+#include <glm/gtc/quaternion.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -546,11 +548,11 @@ void ViewSceneDialog::pushCameraState()
 
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 
-  glm::vec3 v = spire->getCameraLookAt();
+  auto v = spire->getCameraLookAt();
   auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
   state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
 
-  glm::quat q = spire->getCameraRotation();
+  auto q = spire->getCameraRotation();
   auto rotation = makeAnonymousVariableList((double)q.w, (double)q.x, (double)q.y, (double)q.z);
   state_->setValue(Modules::Render::ViewScene::CameraRotation, rotation);
   pushingCameraState_ = false;
@@ -1140,13 +1142,11 @@ void ViewSceneDialog::unlockAllTriggered()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewOnLoadChecked(bool value)
 {
-  //TODO: Add to SRInterface
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::useOrthoViewChecked(bool value)
 {
-  //TODO: Add to SRInterface
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1512,7 +1512,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 
   clippingPlaneGeoms_.clear();
   int index = 0;
-  for (auto i : clippingPlanes->clippingPlanes)
+  for (const auto& i : clippingPlanes->clippingPlanes)
   {
     if (clippingPlanes_[index].showFrame)
       buildGeometryClippingPlane(index, i, spire->getSceneBox());
@@ -1521,7 +1521,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, const BBox& bbox)
+void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& plane, const BBox& bbox)
 {
   BBox mBBox;
   mBBox.reset();
