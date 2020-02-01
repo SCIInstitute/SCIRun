@@ -724,16 +724,15 @@ namespace SCIRun {
     }
 
 
-std::ostream& operator<<(std::ostream& o, const glm::mat4& m)
-{
-  return o << m[3].x << " " << m[3].y << " " << m[3].z;
-}
+    // std::ostream& operator<<(std::ostream& o, const glm::mat4& m)
+    // {
+    //   return o << m[3].x << " " << m[3].y << " " << m[3].z;
+    // }
 
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::translateWidget(const glm::ivec2& pos)
     {
-
       modifyWidgets(translateImpl_->computeTranslateTransform(pos.x, pos.y));
     }
 
