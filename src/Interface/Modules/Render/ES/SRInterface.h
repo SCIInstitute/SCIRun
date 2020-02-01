@@ -104,7 +104,6 @@ namespace SCIRun
       void setAutoRotateVector(const glm::vec2& axis) override;
       void setAutoRotateSpeed(double speed) override;
       void setAutoRotateOnDrag(bool value) override;
-      const glm::mat4& getWorldToProjection() const override;
       const glm::mat4& getWorldToView() const override;
       const glm::mat4& getViewToProjection() const override;
 
@@ -134,10 +133,6 @@ namespace SCIRun
       bool hasObject(const std::string& object) override;
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects) override;
-      // Simple hash function. Modify if hash collisions occur due to string
-      // hashing. The simplest approach would be to have all names placed in a
-      // hash multimap with a list which assigns ids to names.
-      uint64_t getEntityIDForName(const std::string& name, int port) override;
       Core::Geometry::BBox getSceneBox() override {return mSceneBBox;}
 
       bool hasShaderPromise() const override;
@@ -149,7 +144,7 @@ namespace SCIRun
       void setLightOn(int index, bool value) override;
       void setLightAzimuth(int index, float azimuth) override;
       void setLightInclination(int index, float inclination) override;
-      void updateLightDirection(int index) override;
+      void updateLightDirection(int index);
       void setMaterialFactor(MatFactor factor, double value) override;
       void setFog(FogFactor factor, double value) override;
       void setOrientSize(int size) override {orientSize = size/10.0f;}      //Remap 1:100 to 0.1:10
@@ -167,6 +162,11 @@ namespace SCIRun
     private:
       void setupCore();
       void setupLights();
+
+      // Simple hash function. Modify if hash collisions occur due to string
+      // hashing. The simplest approach would be to have all names placed in a
+      // hash multimap with a list which assigns ids to names.
+      static uint64_t getEntityIDForName(const std::string& name, int port);
 
       //---------------- Camera ----------------------------------------------------------------------
       void applyAutoRotation();

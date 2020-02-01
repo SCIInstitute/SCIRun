@@ -80,7 +80,6 @@ namespace SCIRun{
       void rotate(glm::vec2);
 
       // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
-      const glm::mat4& getWorldToProjection() const  {return mVP;}
       const glm::mat4& getWorldToView() const        {return mV;}
       const glm::mat4& getViewToProjection() const   {return mP;}
 

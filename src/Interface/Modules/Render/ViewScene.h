@@ -172,7 +172,6 @@ namespace SCIRun {
       void toggleLight3(bool value);
       void setLight3Azimuth(int value);
       void setLight3Inclination(int value);
-      void updateLightDirection(int light);
       void lightingChecked(bool value);
 
       //---------------- Material Settings ---------------------------------------------------------

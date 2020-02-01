@@ -50,77 +50,83 @@ namespace SCIRun
       virtual MouseMode getMouseMode() const = 0;
     };
 
-    class SCISHARE RendererInterface : public ScreenParameters
+    class SCISHARE RendererWidgetInterface
     {
     public:
-      virtual ~RendererInterface() {}
+      virtual ~RendererWidgetInterface() {}
 
-      virtual std::string toString(std::string prefix) const = 0;
-      virtual void setContext(QOpenGLContext* context) = 0;
+      virtual void setLockZoom(bool lock) = 0;
+      virtual void setLockPanning(bool lock) = 0;
+      virtual void setLockRotation(bool lock) = 0;
+      virtual bool hasShaderPromise() const = 0;
       virtual void inputMouseDown(const glm::ivec2& pos, MouseButton btn) = 0;
       virtual void inputMouseMove(const glm::ivec2& pos, MouseButton btn) = 0;
       virtual void inputMouseUp(const glm::ivec2& pos, MouseButton btn) = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;
       virtual void inputShiftKeyDown(bool shiftDown) = 0;
-      virtual void setMouseMode(MouseMode mode) = 0;
-
       virtual void eventResize(size_t width, size_t height) = 0;
-      virtual void doAutoView() = 0;
+      virtual void doFrame(double currentTime, double constantDeltaTime) = 0;
+    };
+
+    class SCISHARE RendererModuleInterface
+    {
+    public:
+      virtual ~RendererModuleInterface() {}
+      
+      virtual void setContext(QOpenGLContext* context) = 0;
+      virtual void setMouseMode(MouseMode mode) = 0;
+      virtual void setBackgroundColor(const QColor& color) = 0;
       virtual void setCameraDistance(const float distance) = 0;
-      virtual float getCameraDistance() const = 0;
       virtual void setCameraLookAt(const glm::vec3& lookAt) = 0;
-      virtual glm::vec3 getCameraLookAt() const = 0;
       virtual void setCameraRotation(const glm::quat& rotation) = 0;
+      virtual bool hasObject(const std::string& object) = 0;
+      virtual void removeAllGeomObjects() = 0;
+      virtual void runGCOnNextExecution() = 0;
+      virtual void setLightOn(int index, bool value) = 0;
+      virtual void setLightColor(int index, float r, float g, float b) = 0;
       virtual glm::quat getCameraRotation() const = 0;
-      virtual void setView(const glm::vec3& view, const glm::vec3& up) = 0;
-      virtual void setZoomSpeed(int zoomSpeed) = 0;
+      virtual std::string toString(std::string prefix) const = 0;
       virtual void setZoomInverted(bool value) = 0;
-      virtual void setLockZoom(bool lock) = 0;
-      virtual void setLockPanning(bool lock) = 0;
-      virtual void setLockRotation(bool lock) = 0;
+      virtual float getCameraDistance() const = 0;
+      virtual glm::vec3 getCameraLookAt() const = 0;
+      virtual void gcInvalidObjects(const std::vector<std::string>& validObjects) = 0;
+      virtual glm::mat4 getWidgetTransform() = 0;
+      virtual void setView(const glm::vec3& view, const glm::vec3& up) = 0;
+      virtual void doAutoView() = 0;
+      virtual void setZoomSpeed(int zoomSpeed) = 0;
       virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void setAutoRotateOnDrag(bool value) = 0;
-      virtual const glm::mat4& getWorldToProjection() const = 0;
-      virtual const glm::mat4& getWorldToView() const = 0;
-      virtual const glm::mat4& getViewToProjection() const = 0;
-      virtual void toggleSelectionHack(bool b) = 0;
+      virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
       virtual void select(const glm::ivec2& pos, WidgetList& objList, int port) = 0;
       virtual std::string getSelection() = 0;
-      virtual glm::mat4 getWidgetTransform() = 0;
-      virtual StaticClippingPlanes* getClippingPlanes() = 0;
-      virtual void setClippingPlaneVisible(bool value) = 0;
+      virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;
       virtual void reverseClippingPlaneNormal(bool value) = 0;
       virtual void setClippingPlaneX(double value) = 0;
       virtual void setClippingPlaneY(double value) = 0;
       virtual void setClippingPlaneZ(double value) = 0;
       virtual void setClippingPlaneD(double value) = 0;
-      virtual void setClippingPlaneIndex(int index) = 0;
-      virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
-      virtual void removeAllGeomObjects() = 0;
-      virtual bool hasObject(const std::string& object) = 0;
-      virtual void gcInvalidObjects(const std::vector<std::string>& validObjects) = 0;
-      virtual uint64_t getEntityIDForName(const std::string& name, int port) = 0;
-      virtual Core::Geometry::BBox getSceneBox() = 0;
-      virtual bool hasShaderPromise() const = 0;
-      virtual void runGCOnNextExecution() = 0;
-      virtual void doFrame(double currentTime, double constantDeltaTime) = 0;
-      virtual void setLightColor(int index, float r, float g, float b) = 0;
-      virtual void setLightOn(int index, bool value) = 0;
+      virtual void showOrientation(bool value) = 0;
       virtual void setLightAzimuth(int index, float azimuth) = 0;
       virtual void setLightInclination(int index, float inclination) = 0;
-      virtual void updateLightDirection(int index) = 0;
       virtual void setMaterialFactor(MatFactor factor, double value) = 0;
       virtual void setFog(FogFactor factor, double value) = 0;
+      virtual const glm::mat4& getViewToProjection() const = 0;
       virtual void setOrientSize(int size) = 0;
       virtual void setOrientPosX(int pos) = 0;
       virtual void setOrientPosY(int pos) = 0;
-      virtual void showOrientation(bool value) = 0;
-      virtual void setBackgroundColor(const QColor& color) = 0;
       virtual void setFogColor(const glm::vec4 &color) = 0;
       virtual void setTransparencyRendertype(RenderState::TransparencySortType rType) = 0;
+      virtual StaticClippingPlanes* getClippingPlanes() = 0;
+      virtual void setClippingPlaneVisible(bool value) = 0;
+      virtual Core::Geometry::BBox getSceneBox() = 0;
+      virtual void toggleSelectionHack(bool b) = 0;
+      virtual const glm::mat4& getWorldToView() const = 0;
+    };
 
+    class SCISHARE RendererInterface : public ScreenParameters, public RendererModuleInterface, public RendererWidgetInterface
+    {
     };
 
   } // namespace Render

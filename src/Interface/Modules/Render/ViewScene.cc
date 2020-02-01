@@ -2021,12 +2021,6 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
     spire->setLightOn(index, value);
 }
 
-void ViewSceneDialog::updateLightDirection(int light)
-{
-
-}
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Materials -----------------------------------------------------------------------
