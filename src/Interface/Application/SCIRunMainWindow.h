@@ -88,7 +88,6 @@ public:
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
   void setupQuitAfterExecute();
-  void reportIssue();
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -110,6 +109,7 @@ public Q_SLOTS:
   void setDataDirectoryFromGUI();
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
+  void reportIssue();
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
