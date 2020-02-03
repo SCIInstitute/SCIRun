@@ -67,26 +67,6 @@ void ExportMatricesToMatlab::setStateDefaults()
   get_state()->setValue(Parameters::MatrixFormats, Variable::List());
 }
 
-namespace
-{
-  matlabarray::mitype convertdataformat(const std::string& dataformat)
-  {
-    matlabarray::mitype type = matlabarray::miUNKNOWN;
-    if (dataformat == "same as data")  { type = matlabarray::miSAMEASDATA; }
-    else if (dataformat == "double")   { type = matlabarray::miDOUBLE; }
-    else if (dataformat == "single")   { type = matlabarray::miSINGLE; }
-    else if (dataformat == "uint64")   { type = matlabarray::miUINT64; }
-    else if (dataformat == "int64")    { type = matlabarray::miINT64; }
-    else if (dataformat == "uint32")   { type = matlabarray::miUINT32; }
-    else if (dataformat == "int32")    { type = matlabarray::miINT32; }
-    else if (dataformat == "uint16")   { type = matlabarray::miUINT16; }
-    else if (dataformat == "int16")    { type = matlabarray::miINT16; }
-    else if (dataformat == "uint8")    { type = matlabarray::miUINT8; }
-    else if (dataformat == "int8")     { type = matlabarray::miINT8; }
-    return (type);
-  }
-}
-
 void ExportMatricesToMatlab::execute()
 {
   auto filenameInputOption = getOptionalInput(Filename);
@@ -102,7 +82,6 @@ void ExportMatricesToMatlab::execute()
       auto filename = (*filenameInputOption)->value();
       state->setValue(Variables::Filename, filename);
     }
-
 
     auto filename = state->getValue(Variables::Filename).toFilename();
 
@@ -197,7 +176,9 @@ void ExportMatricesToMatlab::execute()
           // only store the numeric parts of the data
           translate.converttonumericmatrix();
         }
-        translate.setdatatype(convertdataformat(format));
+
+        // for now, only use double--not sure why there are different matrix types available
+        translate.setdatatype(matlabarray::miDOUBLE);
 
         translate.sciMatrixTOmlArray(matrix, ma);
 
@@ -209,7 +190,6 @@ void ExportMatricesToMatlab::execute()
         // Every thing seems OK, so proceed and store the matrix in the file
         mfile.putmatlabarray(ma, name);
       }
-
       mfile.close();
     }
     catch (matlabconverter::error_type&)
@@ -230,7 +210,7 @@ void ExportMatricesToMatlab::execute()
     }
     catch (matlabfile::unknown_type&)
     {
-      error("ExportMatricesToMatlab: Unknow type encountered");
+      error("ExportMatricesToMatlab: Unknown type encountered");
     }
     catch (matlabfile::empty_matlabarray&)
     {
