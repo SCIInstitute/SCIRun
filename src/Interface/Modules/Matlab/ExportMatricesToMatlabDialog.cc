@@ -61,6 +61,7 @@ void ExportMatricesToMatlabDialog::updateFromPortChange(int, const std::string& 
   {
     { 2, [this]() { return makeInputArrayTypeComboBoxItem(); } }
   });
+  pushArrayType();
 }
 
 QComboBox* ExportMatricesToMatlabDialog::makeInputArrayTypeComboBoxItem() const
