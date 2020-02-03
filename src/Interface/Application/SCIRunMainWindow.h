@@ -236,6 +236,7 @@ private Q_SLOTS:
   void importLegacyNetwork();
   void launchNewInstance();
   void launchNewUserWizard();
+  void launchPythonWizard();
   void loadNetwork();
   void loadPythonAPIDoc();
   void loadRecentNetwork();
