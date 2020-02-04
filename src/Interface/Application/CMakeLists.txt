@@ -112,6 +112,9 @@ SET(Interface_Application_FORMS
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
+  PythonWizardPage.ui
+  PythonWizardCodePage.ui
+  IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
