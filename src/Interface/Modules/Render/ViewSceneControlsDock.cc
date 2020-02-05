@@ -281,6 +281,7 @@ void ViewSceneControlsDock::removeGroup()
 void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
 {
   QTreeWidgetItem* p = widgetItem->parent();
+  if(!p) return;
   uint16_t g = p->data(1, Qt::EditRole).toInt();
   if (widgetItem->checkState(column) == Qt::Unchecked)
   {
