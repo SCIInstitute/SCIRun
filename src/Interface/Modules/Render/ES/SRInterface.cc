@@ -692,7 +692,7 @@ namespace
       switch(mWidgetMovement)
       {
       case WidgetMovement::TRANSLATE:
-        translateWidget(pos);
+        translateWidget(pos.x, pos.y);
         break;
       case WidgetMovement::ROTATE:
         rotateWidget(pos);
@@ -722,11 +722,11 @@ namespace
     //   return o << m[3].x << " " << m[3].y << " " << m[3].z;
     // }
 
+//const glm::ivec2& pos
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::translateWidget(const glm::ivec2& pos)
+    void SRInterface::translateWidget(int x, int y)
     {
-      modifyWidgets(translateImpl_->computeTranslateTransform(pos.x, pos.y));
+      modifyWidgets(translateImpl_->computeTranslateTransform(x, y));
     }
 
     //----------------------------------------------------------------------------------------------

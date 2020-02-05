@@ -177,7 +177,7 @@ namespace SCIRun
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(const glm::ivec2& pos);
       void rotateWidget(const glm::ivec2& pos);
-      void translateWidget(const glm::ivec2& pos);
+      void translateWidget(int x, int y);
       void scaleWidget(const glm::ivec2& pos);
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
