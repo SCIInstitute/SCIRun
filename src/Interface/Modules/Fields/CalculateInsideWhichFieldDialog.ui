@@ -291,5 +291,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>useNanForUnassignedValuesCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>outsideValue_</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>128</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
