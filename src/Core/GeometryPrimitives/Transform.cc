@@ -658,8 +658,8 @@ SCIRun::Core::Geometry::operator<<( std::ostream& os, const Transform& t)
   os << '[';
   for(int i = 0; i < 4; i++)
   {
-    os << t.get_mat_val(0,i) << ' ' << t.get_mat_val(1,i) << ' ' << t.get_mat_val(2,i);
-    if(i < 4)
+    os << t.get_mat_val(0,i) << ", " << t.get_mat_val(1,i) << ", " << t.get_mat_val(2,i);
+    if(i < 3)
       os << "; ";
   }
   os << ']';

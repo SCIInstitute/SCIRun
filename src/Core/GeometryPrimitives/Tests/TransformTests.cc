@@ -47,6 +47,8 @@ const static double testMat[] =
    6.6, 9.5, 2.4, 8.5,
    2.4, 7.4, 5.1, 1.7,
    0.0, 0.0, 0.0, 1.0};
+const static std::string expectedStringFromTestMat =
+  "[1.2, 6.6, 2.4; 3.1, 9.5, 7.4; 7.9, 2.4, 5.1; 3.8, 8.5, 1.7]";
 
 const static Point testPos(3.5, 2.7, 8.8);
 const static Vector testRot[] =
@@ -64,16 +66,10 @@ const static double expectedMatFromPosRot[] =
    0.1, 0.8, 0.1, 8.8,
    0.0, 0.0, 0.0, 1.0};
 
-void checkTransformEqual(const double* mat, const Transform t)
+void checkTransformEqual(const double *mat, const Transform t)
 {
   Transform expected(mat);
   EXPECT_EQ(expected, t);
-}
-
-TEST(TransformTests, CanPrint)
-{
-  Transform t;
-  t.print();
 }
 
 TEST(TransformTests, ArrayConstructor)
@@ -108,6 +104,37 @@ TEST(TransformTests, CopyConstructor)
   Transform t2(t1);
   checkTransformEqual(expectedMatFromPosRot, t2);
 }
+
+TEST(TransformTests, CanPrint)
+{
+  Transform t;
+  t.print();
+}
+
+TEST(TransformTests, StringOut)
+{
+  Transform t(testMat);
+  std::stringstream ss;
+  ss << t;
+  EXPECT_EQ(expectedStringFromTestMat, ss.str());
+}
+
+TEST(TransformTests, StringIn)
+{
+  Transform t;
+  std::stringstream ss(expectedStringFromTestMat);
+  ss >> t;
+  Transform expectedT(testMat);
+  EXPECT_EQ(expectedT, t);
+}
+
+TEST(TransformTests, TransformFromString)
+{
+  Transform t = transformFromString(expectedStringFromTestMat);
+  Transform expectedT(testMat);
+  EXPECT_EQ(expectedT, t);
+}
+
 
 TEST(TransformTests, Equals)
 {
