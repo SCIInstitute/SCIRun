@@ -51,7 +51,6 @@ namespace Gui {
 
 class NetworkEditor;
 class ProvenanceWindow;
-class DeveloperConsole;
 class PreferencesWindow;
 class ShortcutsInterface;
 class TagManagerWindow;
@@ -122,8 +121,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   ProvenanceWindow* provenanceWindow_;
-  TagManagerWindow* tagManagerWindow_;
-  DeveloperConsole* devConsole_;
+  TagManagerWindow* tagManagerWindow_ {nullptr};
   PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
   ShortcutsInterface* shortcuts_ { nullptr };
@@ -238,6 +236,7 @@ private Q_SLOTS:
   void importLegacyNetwork();
   void launchNewInstance();
   void launchNewUserWizard();
+  void launchPythonWizard();
   void loadNetwork();
   void loadPythonAPIDoc();
   void loadRecentNetwork();

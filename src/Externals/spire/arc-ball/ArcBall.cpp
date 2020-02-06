@@ -6,9 +6,9 @@ namespace spire {
 //------------------------------------------------------------------------------
   ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted, const glm::mat4& screenToTCS) :
     mScreenToTCS(screenToTCS),
-    invertHemisphere(inverted),
     mCenter(center),
-    mRadius(radius)
+    mRadius(radius),
+    invertHemisphere(inverted)
 {
   // glm uses the following format for quaternions: w,x,y,z.
   //        w,    x,    y,    z
@@ -76,6 +76,7 @@ void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
+  //TODO: check if cross is 0 before normalize. Crashes on Windows
   glm::vec3 axis = glm::normalize(glm::cross(from, to));
 
   // Give arbitrary non-zero vector because no rotation

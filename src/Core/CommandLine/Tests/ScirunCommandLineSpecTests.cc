@@ -52,6 +52,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "                          console\n"
     "  -S [ --Script ] arg     Python script--interpret and quit after one SCIRun \n"
     "                          execution pass\n"
+    "  --import arg            Import a network from SCIRun 4.7\n"
     "  -0 [ --no_splash ]      Turn off splash screen\n"
     "  --verbose               Turn on debug log information\n"
     "  --guiExpandFactor arg   Expansion factor for high resolution displays\n"
@@ -186,5 +187,15 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     EXPECT_TRUE(!!aph->pythonScriptFile());
     EXPECT_EQ("scr1.py", *aph->pythonScriptFile());
     EXPECT_TRUE(aph->quitAfterOneScriptedExecution());
+  }
+
+  {
+    const char* argv[] = { "scirun.exe", "--import", "oldnetwork.srn" };
+    int argc = sizeof(argv) / sizeof(char*);
+
+    auto aph = parser.parse(argc, argv);
+
+    EXPECT_TRUE(!!aph->importNetworkFile());
+    EXPECT_EQ("oldnetwork.srn", *aph->importNetworkFile());
   }
 }

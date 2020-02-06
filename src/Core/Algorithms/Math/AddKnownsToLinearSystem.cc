@@ -54,17 +54,13 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-double AddKnownsToLinearSystemAlgo::bound_for_equality = 1e-7;
-
 bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   DenseMatrixHandle rhs,
   DenseMatrixHandle x,
   SparseRowMatrixHandle& output_stiff,
   DenseColumnMatrixHandle& output_rhs) const
 {
-
   SparseRowMatrixFromMap::Values additionalData;
-
 
   // Storing the number of columns in m and rows in n from the stiff matrix, m == n
   const unsigned int numCols = static_cast<unsigned int>(stiff->ncols());
@@ -75,7 +71,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   {
     if ( !(((rhs->ncols() == numCols) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == numCols))) )
     {
-      THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
+      THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A");
     }
   }
 
@@ -92,7 +88,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   else if ( !(((x->ncols() == numCols) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == numCols))) )
   {
     THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector x do not match the dimensions of matrix A");
-  } 
+  }
 
   // casting x to be a column
   auto xCol = castMatrix::toColumn(x);
@@ -112,7 +108,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   for (index_type i=0; i<numRows; i++)
   {
     for (SparseRowMatrix::InnerIterator it(*stiff,i); it; ++it)
-    //for (index_type p=0; p<numCols; p++)    
+    //for (index_type p=0; p<numCols; p++)
     {
       const int p = it.col();
       // making sure the rhs vector is finite
@@ -170,19 +166,19 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   return true;
 }
 
-AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) const
-{ 
+{
   auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
   auto input_rhs = input.get<DenseMatrix>(RHS_Vector);
   auto input_x = input.get<DenseMatrix>(X_Vector);
 
-  if (input_lhs->nrows() != input_lhs->ncols()) 
+  if (input_lhs->nrows() != input_lhs->ncols())
     THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse square matrix!");
 
   SparseRowMatrixHandle output_lhs;
@@ -191,7 +187,7 @@ AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) c
   if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
     THROW_ALGORITHM_INPUT_ERROR("False returned on legacy run call.");
 
-  AlgorithmOutput output; 
+  AlgorithmOutput output;
   output[OutPutLHSMatrix] = output_lhs;
   output[OutPutRHSVector] = output_rhs;
 

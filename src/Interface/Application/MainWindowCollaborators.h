@@ -194,6 +194,55 @@ namespace Gui {
     bool showPrefs_{ false };
   };
 
+  class PythonWizard : public QWizard
+  {
+    Q_OBJECT
+  public:
+    enum {  Page_Home, Page_Create_Intro, Page_Save, Page_LatVol, Page_MeshBox, Page_Connection,
+            Page_CalcData, Page_Iso, Page_ShowField, Page_ViewScene, Page_Execute,
+            Page_Load_Intro, Page_Load,
+            Page_Wand_Intro, Page_Wand,
+            Page_Int_Intro, Page_Base, Page_IntPy, Page_SetPy};
+    explicit PythonWizard(std:: function<void(const QString&)> display, QWidget* parent);
+    ~PythonWizard();
+  public Q_SLOTS:
+    void setShowPrefs(int state);
+  private Q_SLOTS:
+    void updatePathLabel(const QString& dir);
+    void showPrefs();
+    void customClicked(int which);
+    void switchPage(QAbstractButton* button);
+
+
+  private:
+    QWizardPage* createIntroPage();
+    QWizardPage* createCreateIntroPage();
+    QWizardPage* createSaveNetworkPage();
+    QWizardPage* createLatVolPage();
+    QWizardPage* createEditMeshBoundingBoxPage();
+    QWizardPage* createConnectionPage();
+    QWizardPage* createCalculateFieldDataPage();
+    QWizardPage* createExtractIsosurfacePage();
+    QWizardPage* createShowFieldPage();
+    QWizardPage* createViewScenePage();
+    QWizardPage* createExecutePage();
+
+    QWizardPage* createLoadingNetworkIntroPage();
+    QWizardPage* createLoadNetworkPage();
+
+    QWizardPage* createWandIntroPage();
+    QWizardPage* createWandPage();
+
+    QWizardPage* createInterfaceIntroPage();
+    QWizardPage* createBaseNetworkPage();
+    QWizardPage* createAddIntPyPage();
+    QWizardPage* createSetPythonPage();
+
+    QLineEdit* pathWidget_;
+    bool showPrefs_{ false };
+    std::function<void(const QString&)> displayPython_;
+  };
+
   struct ToolkitInfo
   {
     static const char* ToolkitIconURL;

@@ -35,8 +35,8 @@ public:
   ///                       default is 0.75.
   /// \param screenToTCS    Transformation from screen coordinates
   ///                       to TCS. \p center and \p radius are given in TCS.
-ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted = false,
-        const glm::mat4& screenToTCS = glm::mat4());
+  ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted = false,
+          const glm::mat4& screenToTCS = glm::mat4());
 
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
   /// \param mouseScreenCoords  Mouse screen coordinates.
