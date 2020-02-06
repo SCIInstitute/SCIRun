@@ -84,7 +84,7 @@ void GLWidget::paintGL()
   mCurrentTime += lUpdateTime;
   mGraphics->doFrame(mCurrentTime, lUpdateTime);
 
-  if(mFrameRequested && !mGraphics->hasShaderPromise())
+  if (mFrameRequested && !mGraphics->hasShaderPromise())
   {
     mFrameRequested = false;
     finishedFrame();
@@ -110,7 +110,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
   auto btn = getSpireButton(event);
-  mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
+  mGraphics->inputMouseMove(event->x(), event->y(), btn);
   event->ignore();
 }
 
@@ -119,15 +119,14 @@ void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   makeCurrent();
   auto btn = getSpireButton(event);
-  mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
+  mGraphics->inputMouseDown(event->x(), event->y(), btn);
   event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
+  mGraphics->inputMouseUp();
   event->ignore();
 }
 

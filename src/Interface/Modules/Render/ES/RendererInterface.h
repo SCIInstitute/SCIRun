@@ -59,9 +59,9 @@ namespace SCIRun
       virtual void setLockPanning(bool lock) = 0;
       virtual void setLockRotation(bool lock) = 0;
       virtual bool hasShaderPromise() const = 0;
-      virtual void inputMouseDown(const glm::ivec2& pos, MouseButton btn) = 0;
-      virtual void inputMouseMove(const glm::ivec2& pos, MouseButton btn) = 0;
-      virtual void inputMouseUp(const glm::ivec2& pos, MouseButton btn) = 0;
+      virtual void inputMouseDown(int x, int y, MouseButton btn) = 0;
+      virtual void inputMouseMove(int x, int y, MouseButton btn) = 0;
+      virtual void inputMouseUp() = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;
       virtual void inputShiftKeyDown(bool shiftDown) = 0;
       virtual void eventResize(size_t width, size_t height) = 0;
@@ -99,7 +99,6 @@ namespace SCIRun
       virtual void setAutoRotateOnDrag(bool value) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
       virtual Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) = 0;
-      virtual std::string getSelection() = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;
       virtual void reverseClippingPlaneNormal(bool value) = 0;

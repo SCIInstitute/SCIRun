@@ -193,7 +193,7 @@ namespace
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
+    void SRInterface::inputMouseDown(int x, int y, MouseButton btn)
     {
       if (selectWidget_ && widgetExists_)
       {
@@ -204,11 +204,11 @@ namespace
       }
       autoRotateVector = glm::vec2(0.0, 0.0);
       tryAutoRotate = false;
-      mCamera->mouseDownEvent(pos, btn);
+      mCamera->mouseDownEvent(glm::ivec2{x,y}, btn);
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
+    void SRInterface::inputMouseUp()
     {
       widgetSelected_ = false;
       widgetBall_.reset();
@@ -217,15 +217,15 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
+    void SRInterface::inputMouseMove(int x, int y, MouseButton btn)
     {
       if (widgetSelected_)
       {
-        updateWidget(pos);
+        updateWidget(x, y);
       }
       else
       {
-        mCamera->mouseMoveEvent(pos, btn);
+        mCamera->mouseMoveEvent(glm::ivec2{x,y}, btn);
         updateCamera();
       }
     }
@@ -637,27 +637,13 @@ namespace
             {mScreenWidth, mScreenHeight, selected_.position_, selected_.w_}));
         }
 
-        updateWidget(glm::ivec2{x, y});
+        updateWidget(x, y);
       }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
 
       return selected_.widget_;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    bool SRInterface::foundWidget(const glm::ivec2&)
-    {
-      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-      {
-        for (const auto& pass : it->mPasses)
-        {
-          uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-          mCore.getComponentContainer(entityID);
-        }
-      }
-      return true;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -687,18 +673,18 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::updateWidget(const glm::ivec2& pos)
+    void SRInterface::updateWidget(int x, int y)
     {
-      switch(mWidgetMovement)
+      switch (mWidgetMovement)
       {
       case WidgetMovement::TRANSLATE:
-        translateWidget(pos.x, pos.y);
+        translateWidget(x, y);
         break;
       case WidgetMovement::ROTATE:
-        rotateWidget(pos);
+        rotateWidget(x, y);
         break;
       case WidgetMovement::SCALE:
-        scaleWidget(pos);
+        scaleWidget(x, y);
         break;
       }
     }
@@ -722,10 +708,10 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::scaleWidget(const glm::ivec2& pos)
+    void SRInterface::scaleWidget(int x, int y)
     {
-      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
-                    -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+      glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
+                    -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       currentSposView.z = -selected_.w_;
@@ -759,13 +745,13 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::rotateWidget(const glm::ivec2& pos)
+    void SRInterface::rotateWidget(int x, int y)
     {
       if (!widgetBall_)
         return;
 
-      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
-                   -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+      glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
+                   -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
 
       glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       widgetBall_->drag(sposView);

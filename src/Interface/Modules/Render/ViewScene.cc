@@ -107,7 +107,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
-  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
+  connect(this, SIGNAL(mousePressSignalForGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
   mSpire = RendererWeakPtr(mGLWidget->getSpire());
 
@@ -938,13 +938,13 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-  if (selected_)
+  if (selectedWidget_)
   {
-    selected_ = false;
-    auto selName = restoreObjColor();
+    restoreObjColor();
     updateModifiedGeometries();
     unblockExecution();
-    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
+    Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
+    selectedWidget_.reset();
   }
 
   pushCameraState();
@@ -1283,6 +1283,35 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
+namespace
+{
+  void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
+  {
+    for (auto& pass : widget->passes())
+    {
+      pass.addUniform("uAmbientColor", ambient);
+      pass.addUniform("uDiffuseColor", diffuse);
+      pass.addUniform("uSpecularColor", specular);
+    }
+  }
+
+  void colorWidgetRed(WidgetHandle widget)
+  {
+    colorWidget(widget,
+      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
+      glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
+  }
+
+  void restoreWidgetColor(WidgetHandle widget)
+  {
+    colorWidget(widget,
+      glm::vec4{0.1f, 0.1f, 0.1f, 1.0f},
+      glm::vec4{1.0f, 1.0f, 1.0f, 1.0f},
+      glm::vec4{0.1f, 1.0f, 1.0f, 1.0f});
+  }
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::selectObject(const int x, const int y)
 {
@@ -1308,26 +1337,17 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     }
 
     auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
-    auto selectedWidget = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
+    selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
-    if (selectedWidget)
+    if (selectedWidget_)
     {
-      selected_ = true;
-      for (auto& pass : selectedWidget->passes())
-      {
-        pass.addUniform("uAmbientColor",
-          glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-        pass.addUniform("uDiffuseColor",
-          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        pass.addUniform("uSpecularColor",
-          glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-      }
+      colorWidgetRed(selectedWidget_);
     }
   }
 }
 
 //--------------------------------------------------------------------------------------------------
-std::string ViewSceneDialog::restoreObjColor()
+void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
@@ -1335,46 +1355,11 @@ std::string ViewSceneDialog::restoreObjColor()
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-  auto spire = mSpire.lock();
-  if (!spire)
-    return "";
-
-  std::string selName = spire->getSelection();
-  if (!selName.empty())
+  if (selectedWidget_)
   {
-    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-    if (geomDataTransient && !geomDataTransient->empty())
-    {
-      auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-      if (!geomData)
-      {
-        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-        return "";
-      }
-      for (auto it = geomData->begin(); it != geomData->end(); ++it)
-      {
-        auto obj = *it;
-        auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-        if (realObj->uniqueID() == selName)
-        {
-          for (auto& pass : realObj->passes())
-          {
-            pass.addUniform("uAmbientColor",
-              glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-            pass.addUniform("uDiffuseColor",
-              glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-            pass.addUniform("uSpecularColor",
-              glm::vec4(0.1f, 1.0f, 1.0f, 1.0f));
-          }
-          break;
-        }
-      }
-    }
+    restoreWidgetColor(selectedWidget_);
   }
-  return selName;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Clipping Planes -----------------------------------------------------------------

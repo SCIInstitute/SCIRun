@@ -72,7 +72,7 @@ namespace SCIRun {
       void cameraLookAtChangeForwarder();
       void cameraDistnaceChangeForwarder();
       void lockMutexForwarder();
-      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
+      void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
@@ -242,7 +242,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       void selectObject(const int x, const int y);
-      std::string restoreObjColor();
+      void restoreObjColor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
@@ -298,7 +298,7 @@ namespace SCIRun {
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
-      bool                                  selected_                     {false};
+      Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},

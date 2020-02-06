@@ -76,9 +76,9 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void inputMouseDown(const glm::ivec2& pos, MouseButton btn) override;
-      void inputMouseMove(const glm::ivec2& pos, MouseButton btn) override;
-      void inputMouseUp(const glm::ivec2& pos, MouseButton btn) override;
+      void inputMouseDown(int x, int y, MouseButton btn) override;
+      void inputMouseMove(int x, int y, MouseButton btn) override;
+      void inputMouseUp() override;
       void inputMouseWheel(int32_t delta) override;
       void inputShiftKeyDown(bool shiftDown) override;
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
@@ -111,7 +111,6 @@ namespace SCIRun
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
       Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) override;
-      std::string getSelection() override          { return selectedWidgetId_; }
       glm::mat4 getWidgetTransform() override {return widgetTransform_;}
 
       //---------------- Clipping Planes -----------------------------------------------------------
@@ -174,11 +173,10 @@ namespace SCIRun
 
       //---------------- Widgets -------------------------------------------------------------------
       void modifyWidgets(const gen::Transform& trans);
-      bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
-      void updateWidget(const glm::ivec2& pos);
-      void rotateWidget(const glm::ivec2& pos);
+      void updateWidget(int x, int y);
+      void rotateWidget(int x, int y);
       void translateWidget(int x, int y);
-      void scaleWidget(const glm::ivec2& pos);
+      void scaleWidget(int x, int y);
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
@@ -188,7 +186,7 @@ namespace SCIRun
       double getMaxProjLength(const glm::vec3 &n);
       void updateClippingPlanes();
 
-      //---------------- Data Handeling ------------------------------------------------------------
+      //---------------- Data Handling ------------------------------------------------------------
       // Adds a VBO to the given entityID.
       void addVBOToEntity(uint64_t entityID, const std::string& vboName);
       // Adds an IBO to the given entityID.
