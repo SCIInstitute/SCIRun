@@ -72,7 +72,7 @@ namespace SCIRun
     {
     public:
       virtual ~RendererModuleInterface() {}
-      
+
       virtual void setContext(QOpenGLContext* context) = 0;
       virtual void setMouseMode(MouseMode mode) = 0;
       virtual void setBackgroundColor(const QColor& color) = 0;
@@ -98,7 +98,7 @@ namespace SCIRun
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void setAutoRotateOnDrag(bool value) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
-      virtual void select(const glm::ivec2& pos, WidgetList& objList, int port) = 0;
+      virtual void select(const glm::ivec2& pos, WidgetList& widgets) = 0;
       virtual std::string getSelection() = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;

@@ -110,8 +110,8 @@ namespace SCIRun
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
-      void select(const glm::ivec2& pos, WidgetList& objList, int port) override;
-      std::string getSelection() override          {return mSelected;}
+      void select(const glm::ivec2& pos, WidgetList& widgets) override;
+      std::string getSelection() override          { return selectedWidgetId_; }
       glm::mat4 getWidgetTransform() override {return widgetTransform_;}
 
       //---------------- Clipping Planes -----------------------------------------------------------
@@ -125,7 +125,7 @@ namespace SCIRun
       void setClippingPlaneD(double value) override;
       void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
 
-      //---------------- Data Handeling ------------------------------------------------------------
+      //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.
       void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) override;
       // Remove all SCIRun 5 objects.
@@ -228,19 +228,25 @@ namespace SCIRun
       int                                 mZoomSpeed          {65};
       MouseMode                           mMouseMode          {MouseMode::MOUSE_OLDSCIRUN};  // Current mouse mode.
 
-      std::string                         mSelected           {};       // Current selection
+      std::string                         selectedWidgetId_;
       bool                                mSelectionHack      {false};
       glm::vec3                           mOriginWorld        {};
       glm::vec3                           mFlipAxisWorld      {};
       glm::vec3                           mOriginToSpos       {};
       glm::vec3                           mOriginView         {};
-      glm::vec2                           mSelectedPos        {};
-      float                               mSelectedW          {};
-      float                               mSelectedDepth      {};
-      float                               mSelectedRadius     {};
+      struct SelectionParameters
+      {
+        glm::vec2                           position_ {};
+        float                               w_ {0};
+        float                               depth_ {0};
+        float                               radius_ {0};
+        std::vector<std::string>            connectedWidgetIds_;
+      };
+      SelectionParameters selected_;
+
       glm::mat4                           widgetTransform_    {};
       Graphics::Datatypes::WidgetMovement mWidgetMovement     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
-      std::vector<std::string>            mConnectedWidgets   {};
+
 
       size_t                              mScreenWidth        {640};    // Screen width in pixels.
       size_t                              mScreenHeight       {480};    // Screen height in pixels.

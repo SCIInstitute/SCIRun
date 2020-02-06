@@ -375,7 +375,6 @@ void ShowAndEditDipoles::moveDipolesTogether(const Transform& transform)
 void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
 {
   auto state = get_state();
-  DenseMatrix center(4, 1);
 
   auto fh = getRequiredInput(DipoleInputField);
   auto bbox = fh->vmesh()->get_bounding_box();

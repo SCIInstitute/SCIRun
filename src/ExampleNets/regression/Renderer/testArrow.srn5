@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>4</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -106,6 +106,310 @@
 						<stateMap>
 							<count>0</count>
 							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EditMeshBoundingBox:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeMesh</category_name_>
+						<module_name_>EditMeshBoundingBox</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>24</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BoxMode</name>
+								</first>
+								<second>
+									<name>BoxMode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BoxRealScale</name>
+								</first>
+								<second>
+									<name>BoxRealScale</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterX</name>
+								</first>
+								<second>
+									<name>InputCenterX</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterY</name>
+								</first>
+								<second>
+									<name>InputCenterY</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterZ</name>
+								</first>
+								<second>
+									<name>InputCenterZ</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeX</name>
+								</first>
+								<second>
+									<name>InputSizeX</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeY</name>
+								</first>
+								<second>
+									<name>InputSizeY</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeZ</name>
+								</first>
+								<second>
+									<name>InputSizeZ</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NoTranslation</name>
+								</first>
+								<second>
+									<name>NoTranslation</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterX</name>
+								</first>
+								<second>
+									<name>OutputCenterX</name>
+									<value>
+										<which>1</which>
+										<value>-6.61497384309768677e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterY</name>
+								</first>
+								<second>
+									<name>OutputCenterY</name>
+									<value>
+										<which>1</which>
+										<value>-2.51996621489524841e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterZ</name>
+								</first>
+								<second>
+									<name>OutputCenterZ</name>
+									<value>
+										<which>1</which>
+										<value>9.82361359521746635e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeX</name>
+								</first>
+								<second>
+									<name>OutputSizeX</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeY</name>
+								</first>
+								<second>
+									<name>OutputSizeY</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeZ</name>
+								</first>
+								<second>
+									<name>OutputSizeZ</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RDITranslation</name>
+								</first>
+								<second>
+									<name>RDITranslation</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictD</name>
+								</first>
+								<second>
+									<name>RestrictD</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictI</name>
+								</first>
+								<second>
+									<name>RestrictI</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictR</name>
+								</first>
+								<second>
+									<name>RestrictR</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictX</name>
+								</first>
+								<second>
+									<name>RestrictX</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictY</name>
+								</first>
+								<second>
+									<name>RestrictY</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictZ</name>
+								</first>
+								<second>
+									<name>RestrictZ</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XYZTranslation</name>
+								</first>
+								<second>
+									<name>XYZTranslation</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -638,7 +942,7 @@
 									<name>CameraDistance</name>
 									<value>
 										<which>1</which>
-										<value>6.34255695343017578e+00</value>
+										<value>8.79321289062500000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -693,28 +997,28 @@
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>8.42596590518951416e-03</value>
+													<value>3.77611219882965088e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>3.94707649946212769e-01</value>
+													<value>5.46224832534790039e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-8.70014190673828125e-01</value>
+													<value>-4.18768882751464844e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-2.95313835144042969e-01</value>
+													<value>-6.19419693946838379e-01</value>
 												</value>
 											</item>
 										</value>
@@ -1255,11 +1559,23 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>3</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -1282,6 +1598,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
+				<port1_>
+					<name>Transformation_Widget</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowField:0</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -1296,7 +1624,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>4</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -1310,6 +1638,13 @@
 			<second>
 				<first>3.00000000000000000e+01</first>
 				<second>1.30000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>EditMeshBoundingBox:0</first>
+			<second>
+				<first>3.21000000000000000e+02</first>
+				<second>2.66000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1349,7 +1684,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>4</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -1357,6 +1692,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>CreateTestingArrow:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>EditMeshBoundingBox:0</first>
 			<second>-1</second>
 		</item>
 		<item>

@@ -1308,20 +1308,20 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     }
 
     //get widgets
-    auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+    auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
 
     //select widget
-    spire->select(glm::ivec2(x - mGLWidget->pos().x(), y - mGLWidget->pos().y()), objList, 0);
+    spire->select(glm::ivec2(x - mGLWidget->pos ().x(), y - mGLWidget->pos().y()), widgets);
 
     std::string selName = spire->getSelection();
-    if (selName != "")
+    if (!selName.empty())
     {
-      for (const auto &obj : objList)
+      for (const auto& widget : widgets)
       {
-        if (obj->uniqueID() == selName)
+        if (widget->uniqueID() == selName)
         {
           selected_ = true;
-          for (auto& pass : obj->passes())
+          for (auto& pass : widget->passes())
           {
             pass.addUniform("uAmbientColor",
               glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));

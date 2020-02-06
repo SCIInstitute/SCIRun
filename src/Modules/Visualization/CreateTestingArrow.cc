@@ -64,24 +64,22 @@ CreateTestingArrow::CreateTestingArrow() : GeometryGeneratingModule(staticInfo_)
 
 void CreateTestingArrow::setStateDefaults()
 {
-  //auto state = get_state();
-
   getOutputPort(Arrow)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void CreateTestingArrow::execute()
 {
-  std::cout << impl_->origin_ << std::endl;
+  //std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
   CommonWidgetParameters common
   {
     1.0, "red", impl_->origin_,
-    {Point(impl_->origin_ + Point{1,1,1}), Point(impl_->origin_ - Point{1,1,1})},
+    {impl_->origin_, Point(impl_->origin_ + Point{1,1,1})},
     10
   };
   ArrowParameters arrowParams
   {
     common,
-    impl_->origin_, Vector(impl_->origin_) + Vector{1,1,1}, true, 2, 4
+    impl_->origin_, Vector{1,1,1}, true, 2, 4
   };
   auto arrow = WidgetFactory::createArrowWidget(
     {*this, "testArrow1"},
@@ -109,15 +107,6 @@ void CreateTestingArrow::processWidgetFeedback(const ModuleFeedback& var)
 
 void CreateTestingArrow::adjustGeometryFromTransform(const Transform& transformMatrix)
 {
-  DenseMatrix center(4, 1);
-  center << impl_->origin_.x(), impl_->origin_.y(), impl_->origin_.z(), 1.0;
-  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
-
-  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
-                    newTransform(1, 0) / newTransform(3, 0),
-                    newTransform(2, 0) / newTransform(3, 0));
-
-  impl_->origin_ = newLocation;
-
+  impl_->origin_ = transformMatrix * impl_->origin_;
   impl_->userWidgetTransform_ = transformMatrix;
 }

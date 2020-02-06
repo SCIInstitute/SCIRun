@@ -358,19 +358,16 @@ namespace
     const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
     const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
 
-
-
     //----------------------------------------------------------------------------------------------
     //---------------- Widgets ---------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::select(const glm::ivec2& pos, WidgetList& objList, int port)
+    void SRInterface::select(const glm::ivec2& pos, WidgetList& widgets)
     {
       if(!mContext || !mContext->isValid()) return;
       mContext->makeCurrent(mContext->surface());
 
-      mSelected = "";
+      selectedWidgetId_.clear();
       widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
 
@@ -399,9 +396,9 @@ namespace
 
       int nameIndex = 0;
       //modify and add each object to draw
-      for (auto& obj : objList)
+      for (auto& widget : widgets)
       {
-        std::string objectName = obj->uniqueID();
+        std::string objectName = widget->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
         glm::vec4 selCol = getVectorForID(selid);
@@ -409,7 +406,7 @@ namespace
         // Add vertex buffer objects.
         std::vector<char*> vbo_buffer;
         std::vector<size_t> stride_vbo;
-        for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
+        for (auto it = widget->vbos().cbegin(); it != widget->vbos().cend(); ++it, ++nameIndex)
         {
           const auto& vbo = *it;
 
@@ -434,7 +431,7 @@ namespace
 
         // Add index buffer objects.
         nameIndex = 0;
-        for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
+        for (auto it = widget->ibos().cbegin(); it != widget->ibos().cend(); ++it, ++nameIndex)
         {
           const auto& ibo = *it;
           GLenum primType = GL_UNSIGNED_SHORT;
@@ -486,9 +483,9 @@ namespace
         if (auto shaderMan = sm.lock())
         {
           // Add passes
-          for (auto& pass : obj->passes())
+          for (auto& pass : widget->passes())
           {
-            uint64_t entityID = getEntityIDForName(pass.passName, port);
+            uint64_t entityID = getEntityIDForName(pass.passName, 0);
 
             if (pass.renderType == RenderType::RENDER_VBO_IBO)
             {
@@ -579,16 +576,17 @@ namespace
         auto it = selMap.find(value);
         if (it != selMap.end())
         {
-          mSelected = it->second;
+          selectedWidgetId_ = it->second;
 
-          for (auto &obj : objList)
+          for (auto& widget : widgets)
           {
-            if (obj->uniqueID() == it->second)
+            if (widget->uniqueID() == selectedWidgetId_)
             {
               //mOriginWorld = obj->origin_;
               //mFlipAxisWorld = obj->getFlipVector();
               //mWidgetMovement = obj->getMovementType();
-              mConnectedWidgets = {obj->uniqueID()};
+              std::cout << "FOUND WIDGET SELECTED: " << selectedWidgetId_ << std::endl;
+              selected_.connectedWidgetIds_ = { widget->uniqueID() };
             }
           }
         }
@@ -598,7 +596,7 @@ namespace
       fboMan->unbindFBO();
 
       //calculate position
-      if (mSelected != "")
+      if (!selectedWidgetId_.empty())
       {
         widgetSelected_ = true;
 
@@ -606,41 +604,41 @@ namespace
         float zFar = mCamera->getZFar();
         float zNear = mCamera->getZNear();
         float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
-        mSelectedW = -z;
+        selected_.w_ = -z;
 
         mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
 
         // Get w value in of origin if scaling
-        if(mWidgetMovement == WidgetMovement::SCALE)
+        if (mWidgetMovement == WidgetMovement::SCALE)
         {
           glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
-          mSelectedW = projectedOrigin.w;
+          selected_.w_ = projectedOrigin.w;
         }
 
         glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                        -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
-        mSelectedPos = spos;
-        mSelectedDepth = depth * 2.0 - 1.0;
+        selected_.position_ = spos;
+        selected_.depth_ = depth * 2.0 - 1.0;
 
-        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
-        sposView.z = -mSelectedW;
+        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
+        sposView.z = -selected_.w_;
         mOriginToSpos = sposView - mOriginView;
-        mSelectedRadius = glm::length(mOriginToSpos);
+        selected_.radius_ = glm::length(mOriginToSpos);
 
-        if(mWidgetMovement == WidgetMovement::ROTATE)
+        if (mWidgetMovement == WidgetMovement::ROTATE)
         {
-          widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
+          widgetBall_.reset(new spire::ArcBall(mOriginView, selected_.radius_, (mOriginToSpos.z < 0.0)));
           widgetBall_->beginDrag(glm::vec2(sposView));
         }
 
         {
           auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection, {mScreenWidth, mScreenHeight, mSelectedPos, mSelectedW}));
+          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection,
+            {mScreenWidth, mScreenHeight, selected_.position_, selected_.w_}));
         }
 
         updateWidget(pos);
       }
-
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
@@ -707,7 +705,7 @@ namespace
     void SRInterface::modifyWidgets(const gen::Transform& trans)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for (auto &widgetId : mConnectedWidgets)
+      for (const auto& widgetId : selected_.connectedWidgetIds_)
       {
         auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
         if (component.first != nullptr)
@@ -715,14 +713,6 @@ namespace
       }
       widgetTransform_ = trans.transform;
     }
-
-
-    // std::ostream& operator<<(std::ostream& o, const glm::mat4& m)
-    // {
-    //   return o << m[3].x << " " << m[3].y << " " << m[3].z;
-    // }
-
-//const glm::ivec2& pos
 
     void SRInterface::translateWidget(int x, int y)
     {
@@ -735,8 +725,8 @@ namespace
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
-      currentSposView.z = -mSelectedW;
+      glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
+      currentSposView.z = -selected_.w_;
       glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
 
       float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
@@ -769,12 +759,13 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::rotateWidget(const glm::ivec2& pos)
     {
-      if(!widgetBall_) return;
+      if (!widgetBall_)
+        return;
 
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                    -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       widgetBall_->drag(sposView);
 
 
@@ -1244,7 +1235,7 @@ namespace
                 widgetExists_ = true;
               }
 
-              if (widgetSelected_ && objectName == mSelected)
+              if (widgetSelected_ && objectName == selectedWidgetId_)
               {
                 mSelectedID = entityID;
               }
