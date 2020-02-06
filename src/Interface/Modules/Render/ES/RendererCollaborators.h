@@ -30,6 +30,8 @@
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERCOLLABORATORS_H
 
 #include <es-general/comp/Transform.hpp>
+#include <Externals/spire/arc-ball/ArcBall.hpp>
+#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun
@@ -143,27 +145,89 @@ namespace SCIRun
         int	mPort;
       };
 
+      struct SCISHARE SelectedParams2
+      {
+        glm::vec2 selectedPos;
+        float selectedW;
+      };
+
       struct SCISHARE ScreenParams
       {
         size_t width {640}, height {480};
-        glm::vec2 selectedPos;
-        float selectedW;
-
         glm::vec2 positionFromClick(int x, int y) const;
       };
 
-      class SCISHARE WidgetTranslationImpl
+      class SCISHARE WidgetTransformer
       {
       public:
-        WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
+        virtual ~WidgetTransformer() {}
+        virtual gen::Transform computeTransform(int x, int y) const = 0;
+      };
+
+      class SCISHARE WidgetTranslationImpl : public WidgetTransformer
+      {
+      public:
+        WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected) :
+          invViewProj_(glm::inverse(viewProj)), screen_(screen), selected2_(selected) {}
+
+        gen::Transform computeTransform(int x, int y) const override;
+      private:
+        glm::mat4 invViewProj_;
+        ScreenParams screen_;
+        SelectedParams2 selected2_;
+      };
+
+      class SCISHARE WidgetScaleImpl : public WidgetTransformer
+      {
+      public:
+        WidgetScaleImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
           invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
 
-        gen::Transform computeTranslateTransform(double x, double y) const;
+        gen::Transform computeTransform(int x, int y) const override;
       private:
         glm::mat4 invViewProj_;
         ScreenParams screen_;
       };
-  } // namespace Render
-} // namespace SCIRun
+
+      class SCISHARE WidgetRotateImpl : public WidgetTransformer
+      {
+      public:
+        WidgetRotateImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
+          invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
+
+        gen::Transform computeTransform(int x, int y) const override;
+      private:
+        glm::mat4 invViewProj_;
+        ScreenParams screen_;
+      };
+
+    class SCISHARE WidgetUpdateService
+    {
+    public:
+      explicit WidgetUpdateService(ObjectTranformer* transformer) :
+        //screen_(screen), 
+        transformer_(transformer) {}
+      void modifyWidget(const gen::Transform& trans);
+      void updateWidget(int x, int y);
+      void rotateWidget(int x, int y);
+      void translateWidget(int x, int y);
+      void scaleWidget(int x, int y);
+
+      void setupRotate(const glm::vec3& originView, float radius, bool negativeZ, const glm::vec2& posView);
+      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected);
+      void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
+      void reset();
+
+      Graphics::Datatypes::WidgetMovement movement_     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
+      Graphics::Datatypes::WidgetHandle   widget_;
+      glm::mat4                           widgetTransform_    {};
+    private:
+      std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
+      //ScreenParams& screen_;
+      ObjectTranformer* transformer_ {nullptr};
+      std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
+    };
+  }
+}
 
 #endif

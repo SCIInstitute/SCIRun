@@ -39,6 +39,7 @@ namespace SCIRun
     class ScreenParameters;
     struct StaticClippingPlanes;
     class SRCamera;
+    class ObjectTranformer;
 
     using WidgetList = std::vector<Graphics::Datatypes::WidgetHandle>;
 

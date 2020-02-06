@@ -34,7 +34,6 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/ES/Core.h>
-#include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <es-general/comp/Transform.hpp>
 
 //freetype
@@ -59,7 +58,7 @@ namespace SCIRun
     // structures. The view scene dialog on qt widgets only serve one purpose:
     // to relay information to this thread so that rendering can take place.
     // Information such as mouse clicks and user settings.
-    class SCISHARE SRInterface : public RendererInterface
+    class SCISHARE SRInterface : public RendererInterface, public ObjectTranformer
     {
       //we use a static component for assigning entity IDs
       //For assigning asset entity ids. This can be removed if
@@ -110,7 +109,7 @@ namespace SCIRun
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
       Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) override;
-      glm::mat4 getWidgetTransform() override {return widgetTransform_;}
+      glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform_; }
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;
@@ -157,6 +156,8 @@ namespace SCIRun
       size_t getScreenWidthPixels() const override  { return screen_.width; }
       size_t getScreenHeightPixels() const override { return screen_.height; }
 
+      void modifyObject(const std::string& id, const gen::Transform& trans) override;
+
     private:
       void setupCore();
       void setupLights();
@@ -170,12 +171,8 @@ namespace SCIRun
       void applyAutoRotation();
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
-      //---------------- Widgets -------------------------------------------------------------------
-      void modifyWidgets(const gen::Transform& trans);
-      void updateWidget(int x, int y);
-      void rotateWidget(int x, int y);
-      void translateWidget(int x, int y);
-      void scaleWidget(int x, int y);
+
+
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
@@ -206,9 +203,6 @@ namespace SCIRun
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
-      std::unique_ptr<WidgetTranslationImpl> translateImpl_;
-
-
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.
       bool                                tryAutoRotate       {false};
@@ -233,15 +227,13 @@ namespace SCIRun
         float                               w_ {0};
         float                               depth_ {0};
         float                               radius_ {0};
-        std::vector<std::string>            connectedWidgetIds_;
-        Graphics::Datatypes::WidgetHandle   widget_;
       };
       SelectionParameters selected_;
-
-      glm::mat4                           widgetTransform_    {};
-      Graphics::Datatypes::WidgetMovement mWidgetMovement     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
-
       ScreenParams screen_;
+
+      //---------------- Widgets -------------------------------------------------------------------
+
+      WidgetUpdateService widgetUpdater_;
 
       GLuint                              mFontTexture        {};       // 2D texture for fonts
 
@@ -281,7 +273,6 @@ namespace SCIRun
 
       const int                         frameInitLimit_ {};
       QOpenGLContext*                   mContext        {};
-      std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
 	    std::unique_ptr<SRCamera>         mCamera;			// Primary camera.
     };
 

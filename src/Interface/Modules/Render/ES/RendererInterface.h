@@ -28,7 +28,6 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACE_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACE_H
 
-#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
 #include <glm/gtc/quaternion.hpp>
 #include <Interface/Modules/Render/share.h>
@@ -48,6 +47,14 @@ namespace SCIRun
       virtual size_t getScreenWidthPixels() const = 0;
       virtual size_t getScreenHeightPixels() const = 0;
       virtual MouseMode getMouseMode() const = 0;
+    };
+
+    class SCISHARE ObjectTranformer
+    {
+    public:
+      virtual ~ObjectTranformer() {}
+
+      virtual void modifyObject(const std::string& id, const gen::Transform& trans) = 0;
     };
 
     class SCISHARE RendererWidgetInterface

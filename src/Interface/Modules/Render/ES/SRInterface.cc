@@ -95,6 +95,7 @@ namespace
 }
     //----------------------------------------------------------------------------------------------
     SRInterface::SRInterface(int frameInitLimit) :
+      widgetUpdater_(this),
       frameInitLimit_(frameInitLimit)
     {
       mCamera.reset(new SRCamera(this));
@@ -203,18 +204,16 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseUp()
     {
-      selected_.widget_ = nullptr;
-      widgetBall_.reset();
-      translateImpl_.reset();
+      widgetUpdater_.reset();
       tryAutoRotate = doAutoRotateOnDrag;
     }
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(int x, int y, MouseButton btn)
     {
-      if (selected_.widget_)
+      if (widgetUpdater_.widget_)
       {
-        updateWidget(x, y);
+        widgetUpdater_.updateWidget(x, y);
       }
       else
       {
@@ -226,7 +225,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
-      if (!selected_.widget_)
+      if (!widgetUpdater_.widget_)
       {
         mCamera->mouseWheelEvent(delta, mZoomSpeed);
         updateCamera();
@@ -347,6 +346,13 @@ namespace
     //---------------- Widgets ---------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
+    void WidgetUpdateService::reset()
+    {
+      widgetBall_.reset();
+      widget_.reset();
+      translateImpl_.reset();
+    }
+
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
       if (!mContext || !mContext->isValid())
@@ -354,7 +360,7 @@ namespace
       // Ensure our rendering context is current on our thread.
       mContext->makeCurrent(mContext->surface());
 
-      selected_.widget_ = nullptr;
+      widgetUpdater_.reset();
 
       //get vbo ibo man
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
@@ -570,8 +576,8 @@ namespace
               //mOriginWorld = obj->origin_;
               //mFlipAxisWorld = obj->getFlipVector();
               //mWidgetMovement = obj->getMovementType();
-              selected_.connectedWidgetIds_ = { widgetId };
-              selected_.widget_ = widget;
+              //selected_.connectedWidgetIds_ = { widgetId };
+              widgetUpdater_.widget_ = widget;
               break;
             }
           }
@@ -582,7 +588,7 @@ namespace
       fboMan->unbindFBO();
 
       //calculate position
-      if (selected_.widget_)
+      if (widgetUpdater_.widget_)
       {
         //Calculate w value
         float zFar = mCamera->getZFar();
@@ -593,7 +599,7 @@ namespace
         mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
 
         // Get w value in of origin if scaling
-        if (mWidgetMovement == WidgetMovement::SCALE)
+        if (widgetUpdater_.movement_ == WidgetMovement::SCALE)
         {
           glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
           selected_.w_ = projectedOrigin.w;
@@ -608,27 +614,39 @@ namespace
         mOriginToSpos = sposView - mOriginView;
         selected_.radius_ = glm::length(mOriginToSpos);
 
-        if (mWidgetMovement == WidgetMovement::ROTATE)
+        if (widgetUpdater_.movement_ == WidgetMovement::ROTATE)
         {
-          widgetBall_.reset(new spire::ArcBall(mOriginView, selected_.radius_, (mOriginToSpos.z < 0.0)));
-          widgetBall_->beginDrag(glm::vec2(sposView));
+          widgetUpdater_.setupRotate(mOriginView, selected_.radius_, (mOriginToSpos.z < 0.0), glm::vec2(sposView));
         }
 
+        if (widgetUpdater_.movement_ == WidgetMovement::TRANSLATE)
         {
-          //TODO: split up data objects
-          screen_.selectedPos = selected_.position_;
-          screen_.selectedW = selected_.w_;
           auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection, screen_));
+          widgetUpdater_.setupTranslate(cam->data.viewProjection, screen_, { selected_.position_, selected_.w_ });
         }
 
-        updateWidget(x, y);
+        widgetUpdater_.updateWidget(x, y);
       }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
 
-      return selected_.widget_;
+      return widgetUpdater_.widget_;
+    }
+
+    void WidgetUpdateService::setupRotate(const glm::vec3& originView, float radius, bool negativeZ, const glm::vec2& posView)
+    {
+      widgetBall_.reset(new spire::ArcBall(originView, radius, negativeZ));
+      widgetBall_->beginDrag(posView);
+    }
+
+    void WidgetUpdateService::setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected)
+    {
+      //TODO: split up data objects
+      //screen_.selectedPos = selected_.position_;
+      //screen_.selectedW = selected_.w_;
+
+      translateImpl_.reset(new WidgetTranslationImpl(viewProj, screen, selected));
     }
 
     //----------------------------------------------------------------------------------------------
@@ -658,9 +676,9 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::updateWidget(int x, int y)
+    void WidgetUpdateService::updateWidget(int x, int y)
     {
-      switch (mWidgetMovement)
+      switch (movement_)
       {
       case WidgetMovement::TRANSLATE:
         translateWidget(x, y);
@@ -675,26 +693,46 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::modifyWidgets(const gen::Transform& trans)
+
+    void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for (const auto& widgetId : selected_.connectedWidgetIds_)
-      {
-        auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
-        if (component.first != nullptr)
-          contTrans->modifyIndex(trans, component.second, 0);
-      }
+
+      auto component = contTrans->getComponent(mEntityIdMap[id]);
+      if (component.first != nullptr)
+        contTrans->modifyIndex(trans, component.second, 0);
+    }
+
+    void WidgetUpdateService::modifyWidget(const gen::Transform& trans)
+    {
+      transformer_->modifyObject(widget_->uniqueID(), trans);
+
       widgetTransform_ = trans.transform;
     }
 
-    void SRInterface::translateWidget(int x, int y)
+    void WidgetUpdateService::translateWidget(int x, int y)
     {
-      modifyWidgets(translateImpl_->computeTranslateTransform(x, y));
+      modifyWidget(translateImpl_->computeTransform(x, y));
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::scaleWidget(int x, int y)
+    void WidgetUpdateService::setupScale(const glm::mat4& viewProj, const ScreenParams& screen)
     {
+      scaleImpl_.reset(new WidgetScaleImpl(viewProj, screen));
+    }
+
+    gen::Transform WidgetScaleImpl::computeTransform(int x, int y) const
+    {
+      throw 1;
+    }
+
+    gen::Transform WidgetRotateImpl::computeTransform(int x, int y) const
+    {
+      throw 1;
+    }
+
+    void WidgetUpdateService::scaleWidget(int x, int y)
+    {
+      #if 0
       auto spos = screen_.positionFromClick(x, y);
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
@@ -707,7 +745,7 @@ namespace
       // Flip if negative to avoid inverted normals
       glm::mat4 flip;
       bool negativeScale = scaling_factor < 0.0;
-      if(negativeScale)
+      if (negativeScale)
       {
         flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
         scaling_factor = -scaling_factor;
@@ -725,7 +763,8 @@ namespace
 
       trans.transform = reverse_translation * trans.transform;
 
-      modifyWidgets(trans);
+      modifyWidget(trans);
+      #endif
     }
 
     glm::vec2 ScreenParams::positionFromClick(int x, int y) const
@@ -735,8 +774,9 @@ namespace
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::rotateWidget(int x, int y)
+    void WidgetUpdateService::rotateWidget(int x, int y)
     {
+      #if 0
       if (!widgetBall_)
         return;
 
@@ -744,7 +784,6 @@ namespace
 
       glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       widgetBall_->drag(sposView);
-
 
       glm::quat rotationView = widgetBall_->getQuat();
       glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
@@ -758,12 +797,13 @@ namespace
       auto trans = gen::Transform();
       trans.transform = reverse_translation * rotation * translation;
 
-      modifyWidgets(trans);
+      modifyWidget(trans);
+      #endif
     }
 
 
     //----------------------------------------------------------------------------------------------
-    //---------------- Clipping Planes -------------------------------------------------------------N
+    //---------------- Clipping Planes -------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
@@ -1207,7 +1247,7 @@ namespace
               RENDERER_LOG("Add transformation");
               gen::Transform trafo;
 
-              if (selected_.widget_ && objectName == selected_.widget_->uniqueID())
+              if (widgetUpdater_.widget_ && objectName == widgetUpdater_.widget_->uniqueID())
               {
                 mSelectedID = entityID;
               }
@@ -1878,10 +1918,10 @@ namespace
       }
     }
 
-gen::Transform WidgetTranslationImpl::computeTranslateTransform(double x, double y) const
+gen::Transform WidgetTranslationImpl::computeTransform(int x, int y) const
 {
   auto screenPos = screen_.positionFromClick(x, y);
-  glm::vec2 transVec = (screenPos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
+  glm::vec2 transVec = (screenPos - selected2_.selectedPos) * glm::vec2(selected2_.selectedW, selected2_.selectedW);
   auto trans = gen::Transform();
   trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
   return trans;
