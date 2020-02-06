@@ -80,7 +80,6 @@ namespace SCIRun
       void inputMouseMove(int x, int y, MouseButton btn) override;
       void inputMouseUp() override;
       void inputMouseWheel(int32_t delta) override;
-      void inputShiftKeyDown(bool shiftDown) override;
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
       MouseMode getMouseMode() const override    {return mMouseMode;}
 
@@ -155,8 +154,8 @@ namespace SCIRun
       void setTransparencyRendertype(RenderState::TransparencySortType rType) override {mRenderSortType = rType;}
 
       // Screen width retrieval. Dimensions are pixels.
-      size_t getScreenWidthPixels() const override  {return mScreenWidth;}
-      size_t getScreenHeightPixels() const override {return mScreenHeight;}
+      size_t getScreenWidthPixels() const override  { return screen_.width; }
+      size_t getScreenHeightPixels() const override { return screen_.height; }
 
     private:
       void setupCore();
@@ -212,9 +211,6 @@ namespace SCIRun
 
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.
-      bool                                selectWidget_       {false};  // Whether mouse click will select a widget.
-      bool                                widgetSelected_     {false};  // Whether or not a widget is currently selected.
-      bool                                widgetExists_       {false};  // Geometry contains a widget to find.
       bool                                tryAutoRotate       {false};
       bool                                doAutoRotateOnDrag  {false};
 
@@ -226,7 +222,6 @@ namespace SCIRun
       int                                 mZoomSpeed          {65};
       MouseMode                           mMouseMode          {MouseMode::MOUSE_OLDSCIRUN};  // Current mouse mode.
 
-      std::string                         selectedWidgetId_;
       bool                                mSelectionHack      {false};
       glm::vec3                           mOriginWorld        {};
       glm::vec3                           mFlipAxisWorld      {};
@@ -246,9 +241,7 @@ namespace SCIRun
       glm::mat4                           widgetTransform_    {};
       Graphics::Datatypes::WidgetMovement mWidgetMovement     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
 
-
-      size_t                              mScreenWidth        {640};    // Screen width in pixels.
-      size_t                              mScreenHeight       {480};    // Screen height in pixels.
+      ScreenParams screen_;
 
       GLuint                              mFontTexture        {};       // 2D texture for fonts
 
@@ -290,7 +283,6 @@ namespace SCIRun
       QOpenGLContext*                   mContext        {};
       std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
 	    std::unique_ptr<SRCamera>         mCamera;			// Primary camera.
-
     };
 
   } // namespace Render

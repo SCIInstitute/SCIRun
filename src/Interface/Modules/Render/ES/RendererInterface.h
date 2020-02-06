@@ -63,7 +63,6 @@ namespace SCIRun
       virtual void inputMouseMove(int x, int y, MouseButton btn) = 0;
       virtual void inputMouseUp() = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;
-      virtual void inputShiftKeyDown(bool shiftDown) = 0;
       virtual void eventResize(size_t width, size_t height) = 0;
       virtual void doFrame(double currentTime, double constantDeltaTime) = 0;
     };

@@ -145,9 +145,11 @@ namespace SCIRun
 
       struct SCISHARE ScreenParams
       {
-        size_t width, height;
+        size_t width {640}, height {480};
         glm::vec2 selectedPos;
         float selectedW;
+
+        glm::vec2 positionFromClick(int x, int y) const;
       };
 
       class SCISHARE WidgetTranslationImpl

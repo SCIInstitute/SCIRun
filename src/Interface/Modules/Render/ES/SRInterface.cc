@@ -128,8 +128,8 @@ namespace
       // Add screen height / width static component.
       {
         gen::StaticScreenDims dims;
-        dims.width = static_cast<uint32_t>(mScreenWidth);
-        dims.height = static_cast<uint32_t>(mScreenHeight);
+        dims.width = static_cast<uint32_t>(screen_.width);
+        dims.height = static_cast<uint32_t>(screen_.height);
         mCore.addStaticComponent(dims);
       }
 
@@ -195,13 +195,6 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(int x, int y, MouseButton btn)
     {
-      if (selectWidget_ && widgetExists_)
-      {
-        if (btn == MouseButton::MOUSE_LEFT)
-        {
-          //todo make this select widget
-        }
-      }
       autoRotateVector = glm::vec2(0.0, 0.0);
       tryAutoRotate = false;
       mCamera->mouseDownEvent(glm::ivec2{x,y}, btn);
@@ -210,7 +203,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseUp()
     {
-      widgetSelected_ = false;
+      selected_.widget_ = nullptr;
       widgetBall_.reset();
       translateImpl_.reset();
       tryAutoRotate = doAutoRotateOnDrag;
@@ -219,7 +212,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(int x, int y, MouseButton btn)
     {
-      if (widgetSelected_)
+      if (selected_.widget_)
       {
         updateWidget(x, y);
       }
@@ -233,20 +226,12 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
-      if(!widgetSelected_)
+      if (!selected_.widget_)
       {
         mCamera->mouseWheelEvent(delta, mZoomSpeed);
         updateCamera();
       }
     }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::inputShiftKeyDown(bool shiftDown)
-    {
-      //make sure this function is getting called
-      selectWidget_ = shiftDown;
-    }
-
 
 
     //----------------------------------------------------------------------------------------------
@@ -256,8 +241,8 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::eventResize(size_t width, size_t height)
     {
-      mScreenWidth = width;
-      mScreenHeight = height;
+      screen_.width = width;
+      screen_.height = height;
 
       GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
 
@@ -315,7 +300,7 @@ namespace
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
-        camera->data.winWidth = static_cast<float>(mScreenWidth);
+        camera->data.winWidth = static_cast<float>(screen_.width);
         camera->data.setView(view);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
@@ -364,12 +349,12 @@ namespace
 
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
-      if (!mContext || !mContext->isValid()) return nullptr;
+      if (!mContext || !mContext->isValid())
+        return nullptr;
+      // Ensure our rendering context is current on our thread.
       mContext->makeCurrent(mContext->surface());
 
-      selectedWidgetId_.clear();
-      widgetSelected_ = false;
-      // Ensure our rendering context is current on our thread.
+      selected_.widget_ = nullptr;
 
       //get vbo ibo man
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
@@ -386,7 +371,7 @@ namespace
         return nullptr;
       std::string fboName = "Selection:FBO:0";
       GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D,
-        mScreenWidth, mScreenHeight, 1,
+        screen_.width, screen_.height, 1,
         fboName);
       fboMan->bindFBO(fboId);
 
@@ -576,17 +561,18 @@ namespace
         auto it = selMap.find(value);
         if (it != selMap.end())
         {
-          selectedWidgetId_ = it->second;
+          auto widgetId = it->second;
 
           for (auto& widget : widgets)
           {
-            if (widget->uniqueID() == selectedWidgetId_)
+            if (widget->uniqueID() == widgetId)
             {
               //mOriginWorld = obj->origin_;
               //mFlipAxisWorld = obj->getFlipVector();
               //mWidgetMovement = obj->getMovementType();
-              selected_.connectedWidgetIds_ = { widget->uniqueID() };
+              selected_.connectedWidgetIds_ = { widgetId };
               selected_.widget_ = widget;
+              break;
             }
           }
         }
@@ -596,10 +582,8 @@ namespace
       fboMan->unbindFBO();
 
       //calculate position
-      if (!selectedWidgetId_.empty())
+      if (selected_.widget_)
       {
-        widgetSelected_ = true;
-
         //Calculate w value
         float zFar = mCamera->getZFar();
         float zNear = mCamera->getZNear();
@@ -615,8 +599,7 @@ namespace
           selected_.w_ = projectedOrigin.w;
         }
 
-        glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
-                       -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
+        auto spos = screen_.positionFromClick(x, y);
         selected_.position_ = spos;
         selected_.depth_ = depth * 2.0 - 1.0;
 
@@ -632,9 +615,11 @@ namespace
         }
 
         {
+          //TODO: split up data objects
+          screen_.selectedPos = selected_.position_;
+          screen_.selectedW = selected_.w_;
           auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection,
-            {mScreenWidth, mScreenHeight, selected_.position_, selected_.w_}));
+          translateImpl_.reset(new WidgetTranslationImpl(cam->data.viewProjection, screen_));
         }
 
         updateWidget(x, y);
@@ -710,8 +695,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::scaleWidget(int x, int y)
     {
-      glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
-                    -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
+      auto spos = screen_.positionFromClick(x, y);
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       currentSposView.z = -selected_.w_;
@@ -744,14 +728,19 @@ namespace
       modifyWidgets(trans);
     }
 
+    glm::vec2 ScreenParams::positionFromClick(int x, int y) const
+    {
+      return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
+                   -(float(y) / float(height) * 2.0 - 1.0));
+    }
+
     //----------------------------------------------------------------------------------------------
     void SRInterface::rotateWidget(int x, int y)
     {
       if (!widgetBall_)
         return;
 
-      glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
-                   -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
+      auto spos = screen_.positionFromClick(x, y);
 
       glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       widgetBall_->drag(sposView);
@@ -1218,12 +1207,7 @@ namespace
               RENDERER_LOG("Add transformation");
               gen::Transform trafo;
 
-              if (pass.renderState.get(RenderState::IS_WIDGET))
-              {
-                widgetExists_ = true;
-              }
-
-              if (widgetSelected_ && objectName == selectedWidgetId_)
+              if (selected_.widget_ && objectName == selected_.widget_->uniqueID())
               {
                 mSelectedID = entityID;
               }
@@ -1299,7 +1283,6 @@ namespace
       mEntityIdMap.clear();
 
       mCore.renormalize(true);
-      widgetExists_ = false;
       mSRObjects.clear();
     }
 
@@ -1897,14 +1880,8 @@ namespace
 
 gen::Transform WidgetTranslationImpl::computeTranslateTransform(double x, double y) const
 {
-  // std::cout << "ScreenParams: " << screen_.width << " " << screen_.height <<
-  //   " " << screen_.selectedW << " ..selectedPos: " << screen_.selectedPos.x << "," << screen_.selectedPos.y
-  //   << std::endl;
-  // std::cout << "\tviewProj: " << viewProj_ << std::endl;
-  glm::vec2 spos(float(x) / float(screen_.width) * 2.0 - 1.0,
-                 -(float(y) / float(screen_.height) * 2.0 - 1.0));
-
-  glm::vec2 transVec = (spos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
+  auto screenPos = screen_.positionFromClick(x, y);
+  glm::vec2 transVec = (screenPos - screen_.selectedPos) * glm::vec2(screen_.selectedW, screen_.selectedW);
   auto trans = gen::Transform();
   trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
   return trans;

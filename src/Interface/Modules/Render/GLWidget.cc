@@ -138,20 +138,6 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::keyPressEvent(QKeyEvent* event)
-{
-  mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
-  event->ignore();
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::keyReleaseEvent(QKeyEvent* event)
-{
-  mGraphics->inputShiftKeyDown(false);
-  event->ignore();
-}
-
-//------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
   makeCurrent();
