@@ -66,6 +66,8 @@ namespace SCIRun
         //std::vector<std::string> connectedIds_;
       };
 
+      using SimpleWidgetEvent = std::function<void(const std::string&)>;
+
       class SCISHARE WidgetBase : public GeometryObjectSpire
       {
       public:
@@ -77,6 +79,8 @@ namespace SCIRun
         void setPosition(const Core::Geometry::Point& p);
 
         const std::string& name() const { return name_; }
+
+        virtual void propagateEvent(SimpleWidgetEvent e);
 
       protected:
         Core::Geometry::Point position_;
@@ -100,9 +104,10 @@ namespace SCIRun
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
         void addToList(WidgetHandle handle);
+        void propagateEvent(SimpleWidgetEvent e) override;
 
       protected:
-        std::vector<std::string> getListOfConnectedIds();
+        //std::vector<std::string> getListOfConnectedIds();
         std::vector<WidgetHandle> widgets_;
       };
 

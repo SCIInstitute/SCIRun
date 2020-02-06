@@ -201,16 +201,31 @@ namespace SCIRun
         ScreenParams screen_;
       };
 
+    class SCISHARE WidgetEventBase
+    {
+    public:
+      explicit WidgetEventBase(const gen::Transform& t) : transform(t) {}
+      gen::Transform transform;
+    };
+
+    using WidgetEventPtr = SharedPointer<WidgetEventBase>;
+
+    class SCISHARE WidgetTranslateEvent : public WidgetEventBase
+    {
+    public:
+      explicit WidgetTranslateEvent(const gen::Transform& t) : WidgetEventBase(t) {}
+    };
+
     class SCISHARE WidgetUpdateService
     {
     public:
       explicit WidgetUpdateService(ObjectTranformer* transformer) :
-        //screen_(screen), 
         transformer_(transformer) {}
-      void modifyWidget(const gen::Transform& trans);
+
+      void modifyWidget(WidgetEventPtr event);
       void updateWidget(int x, int y);
       void rotateWidget(int x, int y);
-      void translateWidget(int x, int y);
+      WidgetEventPtr translateWidget(int x, int y);
       void scaleWidget(int x, int y);
 
       void setupRotate(const glm::vec3& originView, float radius, bool negativeZ, const glm::vec2& posView);
@@ -218,12 +233,15 @@ namespace SCIRun
       void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
       void reset();
 
+      void setCurrentWidget(Graphics::Datatypes::WidgetHandle w) { widget_ = w; }
+      Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
+
       Graphics::Datatypes::WidgetMovement movement_     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
-      Graphics::Datatypes::WidgetHandle   widget_;
+
       glm::mat4                           widgetTransform_    {};
     private:
+      Graphics::Datatypes::WidgetHandle   widget_;
       std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
-      //ScreenParams& screen_;
       ObjectTranformer* transformer_ {nullptr};
       std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
     };

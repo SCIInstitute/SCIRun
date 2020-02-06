@@ -59,6 +59,13 @@ void WidgetBase::setPosition(const Point& p)
 {
   position_ = p;
 }
+
+void WidgetBase::propagateEvent(SimpleWidgetEvent e)
+{
+  std::cout << __FILE__ << " " << __LINE__ << ": " << uniqueID() << std::endl;
+  e(uniqueID());
+}
+
 //
 // void WidgetBase::setToScale(const Vector& flipAxis)
 // {
@@ -105,12 +112,18 @@ void CompositeWidget::addToList(WidgetHandle widget)
   widgets_.push_back(widget);
 }
 
-std::vector<std::string> CompositeWidget::getListOfConnectedIds()
+void CompositeWidget::propagateEvent(SimpleWidgetEvent e)
 {
-  std::vector<std::string> ids(widgets_.size());
-  for(int i = 0; i < ids.size(); i++)
-  {
-    ids[i] = widgets_[i]->uniqueID();
-  }
-  return ids;
+  for (auto& w : widgets_)
+    w->propagateEvent(e);
 }
+
+// std::vector<std::string> CompositeWidget::getListOfConnectedIds()
+// {
+//   std::vector<std::string> ids(widgets_.size());
+//   for(int i = 0; i < ids.size(); i++)
+//   {
+//     ids[i] = widgets_[i]->uniqueID();
+//   }
+//   return ids;
+// }

@@ -211,7 +211,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(int x, int y, MouseButton btn)
     {
-      if (widgetUpdater_.widget_)
+      if (widgetUpdater_.currentWidget())
       {
         widgetUpdater_.updateWidget(x, y);
       }
@@ -225,7 +225,7 @@ namespace
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
-      if (!widgetUpdater_.widget_)
+      if (!widgetUpdater_.currentWidget())
       {
         mCamera->mouseWheelEvent(delta, mZoomSpeed);
         updateCamera();
@@ -577,7 +577,7 @@ namespace
               //mFlipAxisWorld = obj->getFlipVector();
               //mWidgetMovement = obj->getMovementType();
               //selected_.connectedWidgetIds_ = { widgetId };
-              widgetUpdater_.widget_ = widget;
+              widgetUpdater_.setCurrentWidget(widget);
               break;
             }
           }
@@ -588,7 +588,7 @@ namespace
       fboMan->unbindFBO();
 
       //calculate position
-      if (widgetUpdater_.widget_)
+      if (widgetUpdater_.currentWidget())
       {
         //Calculate w value
         float zFar = mCamera->getZFar();
@@ -631,7 +631,7 @@ namespace
       for (auto& it : entityList)
         mCore.removeEntity(it);
 
-      return widgetUpdater_.widget_;
+      return widgetUpdater_.currentWidget();
     }
 
     void WidgetUpdateService::setupRotate(const glm::vec3& originView, float radius, bool negativeZ, const glm::vec2& posView)
@@ -678,10 +678,11 @@ namespace
     //----------------------------------------------------------------------------------------------
     void WidgetUpdateService::updateWidget(int x, int y)
     {
+      WidgetEventPtr event;
       switch (movement_)
       {
       case WidgetMovement::TRANSLATE:
-        translateWidget(x, y);
+        event = translateWidget(x, y);
         break;
       case WidgetMovement::ROTATE:
         rotateWidget(x, y);
@@ -690,6 +691,7 @@ namespace
         scaleWidget(x, y);
         break;
       }
+      modifyWidget(event);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -703,16 +705,20 @@ namespace
         contTrans->modifyIndex(trans, component.second, 0);
     }
 
-    void WidgetUpdateService::modifyWidget(const gen::Transform& trans)
+    void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
     {
-      transformer_->modifyObject(widget_->uniqueID(), trans);
-
-      widgetTransform_ = trans.transform;
+      auto boundEvent = [&](const std::string& id)
+      {
+        transformer_->modifyObject(id, event->transform);
+      };
+      widget_->propagateEvent(boundEvent);
+      widgetTransform_ = event->transform.transform;
     }
 
-    void WidgetUpdateService::translateWidget(int x, int y)
+    WidgetEventPtr WidgetUpdateService::translateWidget(int x, int y)
     {
-      modifyWidget(translateImpl_->computeTransform(x, y));
+      WidgetEventPtr translate(new WidgetTranslateEvent(translateImpl_->computeTransform(x, y)));
+      return translate;
     }
 
     void WidgetUpdateService::setupScale(const glm::mat4& viewProj, const ScreenParams& screen)
@@ -1247,7 +1253,7 @@ namespace
               RENDERER_LOG("Add transformation");
               gen::Transform trafo;
 
-              if (widgetUpdater_.widget_ && objectName == widgetUpdater_.widget_->uniqueID())
+              if (widgetUpdater_.currentWidget() && objectName == widgetUpdater_.currentWidget()->uniqueID())
               {
                 mSelectedID = entityID;
               }
