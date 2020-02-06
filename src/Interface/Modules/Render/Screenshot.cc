@@ -54,14 +54,14 @@ void Screenshot::takeScreenshot()
 
 QImage Screenshot::getScreenshot()
 {
+  static constexpr int ALPHA_INDEX = 3;
+  static constexpr int OPAQUE = 255;
 	QImage image = viewport_->grabFramebuffer();
 	for (int j = 0; j < image.height(); ++j)
 	{
-		QRgb *row = (QRgb*)image.scanLine(j);
+    auto row = reinterpret_cast<QRgb*>(image.scanLine(j));
 		for (int i = 0; i < image.width(); ++i)
-		{
-			((uint8_t*)&row[i])[3] = 255;
-		}
+			reinterpret_cast<uint8_t*>(row + i)[ALPHA_INDEX] = OPAQUE;
 	}
 	return image;
 }
