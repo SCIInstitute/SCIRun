@@ -61,16 +61,15 @@ Transform::Transform()
 
 std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Transform& t)
 {
-  std::vector<Vector> vecs;
-  double x, y, z;
+  double val;
   char st;
   is >> st;
-  for(int i = 0; i < 4; i++)
-  {
-    is >> x >> st >> y >> st >> z >> st;
-    vecs.push_back(Vector(x,y,z));
-  }
-  t = Transform(Point(vecs[3]), vecs[0], vecs[1], vecs[2]);
+  for(int i = 0; i < 4; ++i)
+    for(int j = 0; j < 4; ++j)
+    {
+      is >> val >> st;
+      t.set_mat_val(j, i, val);
+    }
   return is;
 }
 
@@ -647,7 +646,7 @@ Transform::get_string() const
   std::ostringstream oss;
   oss << "[";
   for(int i = 0; i < 4; i++)
-    oss << mat[0][i] << ", " << mat[1][i] << ", " << mat[2][i] << ";";
+    oss << mat[0][i] << ", " << mat[1][i] << ", " << mat[2][i] << ", " << mat[3][i] << ";";
   oss << "]";
   return (oss.str());
 }
@@ -658,7 +657,7 @@ SCIRun::Core::Geometry::operator<<( std::ostream& os, const Transform& t)
   os << '[';
   for(int i = 0; i < 4; i++)
   {
-    os << t.get_mat_val(0,i) << ", " << t.get_mat_val(1,i) << ", " << t.get_mat_val(2,i);
+    os << t.get_mat_val(0,i) << ", " << t.get_mat_val(1,i) << ", " << t.get_mat_val(2,i) << ", " << t.get_mat_val(3,i);
     if(i < 3)
       os << "; ";
   }

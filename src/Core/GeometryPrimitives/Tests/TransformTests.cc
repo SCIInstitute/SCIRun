@@ -48,7 +48,7 @@ const static double testMat[] =
    2.4, 7.4, 5.1, 1.7,
    0.0, 0.0, 0.0, 1.0};
 const static std::string expectedStringFromTestMat =
-  "[1.2, 6.6, 2.4; 3.1, 9.5, 7.4; 7.9, 2.4, 5.1; 3.8, 8.5, 1.7]";
+  "[1.2, 6.6, 2.4, 0; 3.1, 9.5, 7.4, 0; 7.9, 2.4, 5.1, 0; 3.8, 8.5, 1.7, 1]";
 
 const static Point testPos(3.5, 2.7, 8.8);
 const static Vector testRot[] =
