@@ -38,6 +38,8 @@ namespace SCIRun
   {
     namespace Visualization
     {
+      class CreateTestingArrowImpl;
+      
       class SCISHARE CreateTestingArrow : public Dataflow::Networks::GeometryGeneratingModule,
         public HasNoInputPorts,
         public Has1OutputPort<GeometryPortTag>
@@ -50,6 +52,11 @@ namespace SCIRun
         void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+      private:
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
+
+        boost::shared_ptr<CreateTestingArrowImpl> impl_;
       };
     }
   }

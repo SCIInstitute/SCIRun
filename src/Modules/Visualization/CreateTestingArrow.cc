@@ -27,15 +27,37 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/CreateTestingArrow.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
 using namespace Graphics::Datatypes;
+using namespace Core::Datatypes;
+using namespace Dataflow::Networks;
+using namespace Core::Geometry;
+
+namespace SCIRun
+{
+  namespace Modules
+  {
+    namespace Visualization
+    {
+      class CreateTestingArrowImpl
+      {
+      public:
+        Transform userWidgetTransform_;
+        BBox box_initial_bounds_;
+        BBox bbox_;
+        Point origin_ {0,0,0};
+      };
+    }
+  }
+}
 
 MODULE_INFO_DEF(CreateTestingArrow, Visualization, SCIRun)
 
-CreateTestingArrow::CreateTestingArrow() : GeometryGeneratingModule(staticInfo_)
+CreateTestingArrow::CreateTestingArrow() : GeometryGeneratingModule(staticInfo_), impl_(new CreateTestingArrowImpl)
 {
   INITIALIZE_PORT(Arrow);
 }
@@ -43,16 +65,59 @@ CreateTestingArrow::CreateTestingArrow() : GeometryGeneratingModule(staticInfo_)
 void CreateTestingArrow::setStateDefaults()
 {
   //auto state = get_state();
+
+  getOutputPort(Arrow)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void CreateTestingArrow::execute()
 {
+  std::cout << impl_->origin_ << std::endl;
+  CommonWidgetParameters common
+  {
+    1.0, "red", impl_->origin_,
+    {Point(impl_->origin_ + Point{1,1,1}), Point(impl_->origin_ - Point{1,1,1})},
+    10
+  };
+  ArrowParameters arrowParams
+  {
+    common,
+    impl_->origin_, Vector(impl_->origin_) + Vector{1,1,1}, true, 2, 4
+  };
   auto arrow = WidgetFactory::createArrowWidget(
     {*this, "testArrow1"},
-    {
-      {10.0, "", {0,1,2}, {{0,0,0}, {1,1,1}}, 10},
-      {1,1,0}, {2,2,0}, true, 2, 4
-    }
+    arrowParams
   );
   sendOutput(Arrow, arrow);
+}
+
+void CreateTestingArrow::processWidgetFeedback(const ModuleFeedback& var)
+{
+  try
+  {
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.matchesWithModuleId(id()) && impl_->userWidgetTransform_ != vsf.transform)
+    {
+      adjustGeometryFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
+  }
+}
+
+void CreateTestingArrow::adjustGeometryFromTransform(const Transform& transformMatrix)
+{
+  DenseMatrix center(4, 1);
+  center << impl_->origin_.x(), impl_->origin_.y(), impl_->origin_.z(), 1.0;
+  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
+
+  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
+                    newTransform(1, 0) / newTransform(3, 0),
+                    newTransform(2, 0) / newTransform(3, 0));
+
+  impl_->origin_ = newLocation;
+
+  impl_->userWidgetTransform_ = transformMatrix;
 }
