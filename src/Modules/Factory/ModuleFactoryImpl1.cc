@@ -92,6 +92,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
+#include <Modules/Visualization/CreateTestingArrow.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
@@ -197,4 +198,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackReceiver>("...", "...");
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
+  addModuleDesc<CreateTestingArrow>("...", "...");
 }
