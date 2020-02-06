@@ -1307,31 +1307,20 @@ void ViewSceneDialog::selectObject(const int x, const int y)
       return;
     }
 
-    //get widgets
     auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+    auto selectedWidget = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
-    //select widget
-    spire->select(glm::ivec2(x - mGLWidget->pos ().x(), y - mGLWidget->pos().y()), widgets);
-
-    std::string selName = spire->getSelection();
-    if (!selName.empty())
+    if (selectedWidget)
     {
-      for (const auto& widget : widgets)
+      selected_ = true;
+      for (auto& pass : selectedWidget->passes())
       {
-        if (widget->uniqueID() == selName)
-        {
-          selected_ = true;
-          for (auto& pass : widget->passes())
-          {
-            pass.addUniform("uAmbientColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uDiffuseColor",
-              glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uSpecularColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-          }
-          break;
-        }
+        pass.addUniform("uAmbientColor",
+          glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+        pass.addUniform("uDiffuseColor",
+          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        pass.addUniform("uSpecularColor",
+          glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
       }
     }
   }

@@ -110,7 +110,7 @@ namespace SCIRun
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
-      void select(const glm::ivec2& pos, WidgetList& widgets) override;
+      Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) override;
       std::string getSelection() override          { return selectedWidgetId_; }
       glm::mat4 getWidgetTransform() override {return widgetTransform_;}
 
@@ -241,6 +241,7 @@ namespace SCIRun
         float                               depth_ {0};
         float                               radius_ {0};
         std::vector<std::string>            connectedWidgetIds_;
+        Graphics::Datatypes::WidgetHandle   widget_;
       };
       SelectionParameters selected_;
 

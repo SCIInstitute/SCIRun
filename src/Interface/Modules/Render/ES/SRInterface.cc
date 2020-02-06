@@ -362,9 +362,9 @@ namespace
     //---------------- Widgets ---------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    void SRInterface::select(const glm::ivec2& pos, WidgetList& widgets)
+    WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
-      if(!mContext || !mContext->isValid()) return;
+      if (!mContext || !mContext->isValid()) return nullptr;
       mContext->makeCurrent(mContext->surface());
 
       selectedWidgetId_.clear();
@@ -377,13 +377,13 @@ namespace
       std::shared_ptr<ren::VBOMan> vboMan = vm.lock();
       std::shared_ptr<ren::IBOMan> iboMan = im.lock();
       if (!vboMan || !iboMan)
-        return;
+        return nullptr;
 
       //retrieve and bind fbo for selection
       std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
       std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
       if (!fboMan)
-        return;
+        return nullptr;
       std::string fboName = "Selection:FBO:0";
       GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D,
         mScreenWidth, mScreenHeight, 1,
@@ -570,7 +570,7 @@ namespace
 
       GLuint value;
       GLfloat depth;
-      if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
+      if (fboMan->readFBO(mCore, fboName, x, y, 1, 1,
                           (GLvoid*)&value, (GLvoid*)&depth))
       {
         auto it = selMap.find(value);
@@ -585,8 +585,8 @@ namespace
               //mOriginWorld = obj->origin_;
               //mFlipAxisWorld = obj->getFlipVector();
               //mWidgetMovement = obj->getMovementType();
-              std::cout << "FOUND WIDGET SELECTED: " << selectedWidgetId_ << std::endl;
               selected_.connectedWidgetIds_ = { widget->uniqueID() };
+              selected_.widget_ = widget;
             }
           }
         }
@@ -615,8 +615,8 @@ namespace
           selected_.w_ = projectedOrigin.w;
         }
 
-        glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
-                       -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+        glm::vec2 spos(float(x) / float(mScreenWidth) * 2.0 - 1.0,
+                       -(float(y) / float(mScreenHeight) * 2.0 - 1.0));
         selected_.position_ = spos;
         selected_.depth_ = depth * 2.0 - 1.0;
 
@@ -637,15 +637,17 @@ namespace
             {mScreenWidth, mScreenHeight, selected_.position_, selected_.w_}));
         }
 
-        updateWidget(pos);
+        updateWidget(glm::ivec2{x, y});
       }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
+
+      return selected_.widget_;
     }
 
     //----------------------------------------------------------------------------------------------
-    bool SRInterface::foundWidget(const glm::ivec2& pos)
+    bool SRInterface::foundWidget(const glm::ivec2&)
     {
       for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
       {
