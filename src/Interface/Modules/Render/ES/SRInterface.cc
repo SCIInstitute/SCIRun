@@ -711,7 +711,7 @@ namespace
       {
         transformer_->modifyObject(id, event->transform);
       };
-      widget_->propagateEvent(boundEvent);
+      widget_->propagateEvent({movement_, boundEvent});
       widgetTransform_ = event->transform.transform;
     }
 

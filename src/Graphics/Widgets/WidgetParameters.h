@@ -111,6 +111,60 @@ namespace SCIRun
         WidgetBaseParameters base;
         AbstractGlyphFactoryPtr glyphMaker;
       };
+
+      // These will give different types of widget movement through ViewScene.
+      // To use rotation and scaling, an origin point must be given.
+      enum class WidgetMovement
+      {
+        TRANSLATE,
+        ROTATE,
+        SCALE
+      };
+
+      using SimpleWidgetEventFunc = std::function<void(const std::string&)>;
+      struct SimpleWidgetEvent
+      {
+        WidgetMovement moveType;
+        SimpleWidgetEventFunc func;
+      };
+
+      //TODO: generify
+      struct SimpleWidgetEventKey
+      {
+        WidgetMovement operator()(const SimpleWidgetEvent& e) const { return e.moveType; }
+      };
+
+      struct SimpleWidgetEventValue
+      {
+        SimpleWidgetEventFunc operator()(const SimpleWidgetEvent& e) const { return e.func; }
+      };
+
+      template <class Observer, class EventKey, class Event, class KeyFunc, class ObserveFunc, class IdFunc>
+      class SCISHARE Observable
+      {
+      public:
+        Observable() {}
+        void registerObserver(EventKey&& event, Observer&& observer)
+        {
+          observers_[std::move(event)].push_back(observer);
+        }
+
+        void notify(const Event& event) const
+        {
+          auto eventObservers = observers_.find(keyFunc_(event));
+          if (eventObservers != observers_.cend())
+          {
+            for (const auto& obs : eventObservers->second)
+              observeFunc_(event)(idFunc_(obs));
+          }
+        }
+
+      private:
+        KeyFunc keyFunc_;
+        ObserveFunc observeFunc_;
+        IdFunc idFunc_;
+        std::map<EventKey, std::vector<Observer>> observers_;
+      };
     }
   }
 }

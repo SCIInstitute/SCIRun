@@ -40,15 +40,6 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      // These will give different types of widget movement through ViewScene.
-      // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
-      {
-        TRANSLATE,
-        ROTATE,
-        SCALE
-      };
-
       class SCISHARE WidgetManipulationStuff
       {
         //void setToScale(const Core::Geometry::Vector& flipAxis);
@@ -66,9 +57,18 @@ namespace SCIRun
         //std::vector<std::string> connectedIds_;
       };
 
-      using SimpleWidgetEvent = std::function<void(const std::string&)>;
+      class WidgetBase;
 
-      class SCISHARE WidgetBase : public GeometryObjectSpire
+      struct GeometryIdGetter
+      {
+        std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
+      };
+
+      using WidgetObservable = Observable<WidgetBase*, WidgetMovement, SimpleWidgetEvent,
+        SimpleWidgetEventKey, SimpleWidgetEventValue, GeometryIdGetter>;
+
+      class SCISHARE WidgetBase : public GeometryObjectSpire,
+        public WidgetObservable
       {
       public:
         explicit WidgetBase(const WidgetBaseParameters& params);
@@ -80,8 +80,7 @@ namespace SCIRun
 
         const std::string& name() const { return name_; }
 
-        virtual void propagateEvent(SimpleWidgetEvent e);
-
+        virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
         std::string name_;
@@ -106,13 +105,15 @@ namespace SCIRun
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
         void addToList(WidgetHandle handle);
-        void propagateEvent(SimpleWidgetEvent e) override;
+        void propagateEvent(const SimpleWidgetEvent& e) override;
         WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
         WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
 
       protected:
         WidgetList widgets_;
       };
+
+      SCISHARE void registerAllSiblingWidgetsForTranslation(WidgetHandle selected, WidgetList& compositeList);
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
     }

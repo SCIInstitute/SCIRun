@@ -145,16 +145,9 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   params.common.resolution}, dp1, dp2 }));
     //Vector flipVec = dir.getArbitraryTangent().normal();
     //widgets_[3]->setToScale(flipVec);
-  }
 
-  std::vector<std::string> geom_ids;
-  for(int i = 0; i < 1 + 3*params.show_as_vector; i++)
-    geom_ids.push_back(widgets_[i]->uniqueID());
-
-  for(int i = 0; i < 1 + 3*params.show_as_vector; i++)
-  {
-    //widgets_[i]->connectedIds_ = geom_ids;
-    //addToList(widgets_[i]);
+    registerAllSiblingWidgetsForTranslation(widgets_[0], widgets_);
+    registerAllSiblingWidgetsForTranslation(widgets_[1], widgets_);
   }
 }
 

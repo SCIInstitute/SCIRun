@@ -60,10 +60,20 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-void WidgetBase::propagateEvent(SimpleWidgetEvent e)
+void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
 {
-  std::cout << __FILE__ << " " << __LINE__ << ": " << uniqueID() << std::endl;
-  e(uniqueID());
+  //std::cout << __FILE__ << " " << __LINE__ << ": " << uniqueID() << std::endl;
+  e.func(uniqueID());
+  notify(e);
+}
+
+void SCIRun::Graphics::Datatypes::registerAllSiblingWidgetsForTranslation(WidgetHandle selected, WidgetList& compositeList)
+{
+  for (auto& subwidget : compositeList)
+  {
+    if (selected.get() != subwidget.get())
+      selected->registerObserver(WidgetMovement::TRANSLATE, subwidget.get());
+  }
 }
 
 //
@@ -112,7 +122,7 @@ void CompositeWidget::addToList(WidgetHandle widget)
   widgets_.push_back(widget);
 }
 
-void CompositeWidget::propagateEvent(SimpleWidgetEvent e)
+void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
 {
   for (auto& w : widgets_)
     w->propagateEvent(e);
