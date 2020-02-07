@@ -32,6 +32,7 @@
 #include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun
@@ -44,162 +45,143 @@ namespace SCIRun
       explicit FatalRendererError(const std::string& message) : std::runtime_error(message) {}
     };
 
-    enum class MouseButton
-    {
-      MOUSE_NONE,
-      MOUSE_LEFT,
-      MOUSE_RIGHT,
-      MOUSE_MIDDLE,
-    };
 
-    enum class MouseMode
+    class SCISHARE DepthIndex
     {
-      MOUSE_OLDSCIRUN,
-      MOUSE_NEWSCIRUN
-    };
+    public:
+      size_t mIndex;
+      double mDepth;
 
-    enum class MatFactor
-    {
-      MAT_AMBIENT,
-      MAT_DIFFUSE,
-      MAT_SPECULAR,
-      MAT_SHINE
-    };
+      DepthIndex() :
+        mIndex(0),
+        mDepth(0.0)
+      {}
 
-    enum class FogFactor
-    {
-      FOG_INTENSITY,
-      FOG_START,
-      FOG_END
-    };
+      DepthIndex(size_t index, double depth) :
+        mIndex(index),
+        mDepth(depth)
+      {}
 
-    struct SCISHARE ClippingPlane
-    {
-      bool visible, showFrame, reverseNormal;
-      double x, y, z, d;
-    };
-
-      class SCISHARE DepthIndex
+      bool operator<(const DepthIndex& di) const
       {
-      public:
-        size_t mIndex;
-        double mDepth;
+        return this->mDepth < di.mDepth;
+      }
+    };
 
-        DepthIndex() :
-          mIndex(0),
-          mDepth(0.0)
+    class SCISHARE SRObject
+    {
+    public:
+      SRObject(const std::string& name, const glm::mat4& objToWorld,
+        const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
+        mName(name),
+        mObjectToWorld(objToWorld),
+        mBBox(bbox),
+        mColorMap(colorMap),
+        mPort(port)
+      {}
+
+      // Different types of uniform transformations that are associated
+      // with the object (based off of the unsatisfied uniforms detected
+      // by the Spire object).
+      enum ObjectTransforms
+      {
+        OBJECT_TO_WORLD,
+        OBJECT_TO_CAMERA,
+        OBJECT_TO_CAMERA_PROJECTION,
+      };
+
+      struct SCISHARE SRPass
+      {
+        SRPass(const std::string& name, Graphics::Datatypes::RenderType renType) :
+          passName(name),
+          renderType(renType)
         {}
 
-        DepthIndex(size_t index, double depth) :
-          mIndex(index),
-          mDepth(depth)
-        {}
-
-        bool operator<(const DepthIndex& di) const
-        {
-          return this->mDepth < di.mDepth;
-        }
+        std::string passName;
+        std::list<ObjectTransforms> transforms;
+        Graphics::Datatypes::RenderType renderType;
       };
 
-      class SCISHARE SRObject
-      {
-      public:
-        SRObject(const std::string& name, const glm::mat4& objToWorld,
-          const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
-          mName(name),
-          mObjectToWorld(objToWorld),
-          mBBox(bbox),
-          mColorMap(colorMap),
-          mPort(port)
-        {}
+      std::string mName;
+      glm::mat4 mObjectToWorld;
+      std::list<SRPass> mPasses;
+      Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
 
-        // Different types of uniform transformations that are associated
-        // with the object (based off of the unsatisfied uniforms detected
-        // by the Spire object).
-        enum ObjectTransforms
-        {
-          OBJECT_TO_WORLD,
-          OBJECT_TO_CAMERA,
-          OBJECT_TO_CAMERA_PROJECTION,
-        };
+      boost::optional<std::string> mColorMap;
 
-        struct SCISHARE SRPass
-        {
-          SRPass(const std::string& name, Graphics::Datatypes::RenderType renType) :
-            passName(name),
-            renderType(renType)
-          {}
+      int	mPort;
+    };
 
-          std::string passName;
-          std::list<ObjectTransforms> transforms;
-          Graphics::Datatypes::RenderType renderType;
-        };
+    struct SCISHARE SelectionParameters
+    {
+      glm::vec2                           position_ {};
+      float                               w_ {0};
+      float                               depth_ {0};
+      float                               radius_ {0};
+      glm::vec3                           flipAxisWorldUsedForScaling_ {};
+      glm::vec3                           originWorldUsedForScalingAndRotation_ {};
+      glm::vec3                           originToSposUsedForScalingAndRotation_       {};
+      glm::vec3                           originViewUsedForScalingAndRotation_         {};
+    };
 
-        std::string mName;
-        glm::mat4 mObjectToWorld;
-        std::list<SRPass> mPasses;
-        Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
+    struct SCISHARE SelectedParams2
+    {
+      glm::vec2 selectedPos;
+      float selectedW;
+    };
 
-        boost::optional<std::string> mColorMap;
+    struct SCISHARE ScreenParams
+    {
+      size_t width {640}, height {480};
+      glm::vec2 positionFromClick(int x, int y) const;
+    };
 
-        int	mPort;
-      };
+    class SCISHARE WidgetTransformer
+    {
+    public:
+      virtual ~WidgetTransformer() {}
+      virtual gen::Transform computeTransform(int x, int y) const = 0;
+    };
 
-      struct SCISHARE SelectedParams2
-      {
-        glm::vec2 selectedPos;
-        float selectedW;
-      };
+    class SCISHARE WidgetTranslationImpl : public WidgetTransformer
+    {
+    public:
+      WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected) :
+        invViewProj_(glm::inverse(viewProj)), screen_(screen), selected2_(selected) {}
 
-      struct SCISHARE ScreenParams
-      {
-        size_t width {640}, height {480};
-        glm::vec2 positionFromClick(int x, int y) const;
-      };
+      gen::Transform computeTransform(int x, int y) const override;
+    private:
+      glm::mat4 invViewProj_;
+      ScreenParams screen_;
+      SelectedParams2 selected2_;
+    };
 
-      class SCISHARE WidgetTransformer
-      {
-      public:
-        virtual ~WidgetTransformer() {}
-        virtual gen::Transform computeTransform(int x, int y) const = 0;
-      };
+    class SCISHARE WidgetScaleImpl : public WidgetTransformer
+    {
+    public:
+      WidgetScaleImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
+        invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
 
-      class SCISHARE WidgetTranslationImpl : public WidgetTransformer
-      {
-      public:
-        WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected) :
-          invViewProj_(glm::inverse(viewProj)), screen_(screen), selected2_(selected) {}
+      gen::Transform computeTransform(int x, int y) const override;
+    private:
+      glm::mat4 invViewProj_;
+      ScreenParams screen_;
+    };
 
-        gen::Transform computeTransform(int x, int y) const override;
-      private:
-        glm::mat4 invViewProj_;
-        ScreenParams screen_;
-        SelectedParams2 selected2_;
-      };
+    class SCISHARE WidgetRotateImpl : public WidgetTransformer
+    {
+    public:
+      WidgetRotateImpl(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
+        const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera);
 
-      class SCISHARE WidgetScaleImpl : public WidgetTransformer
-      {
-      public:
-        WidgetScaleImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
-          invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
-
-        gen::Transform computeTransform(int x, int y) const override;
-      private:
-        glm::mat4 invViewProj_;
-        ScreenParams screen_;
-      };
-
-      class SCISHARE WidgetRotateImpl : public WidgetTransformer
-      {
-      public:
-        WidgetRotateImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
-          invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
-
-        gen::Transform computeTransform(int x, int y) const override;
-      private:
-        glm::mat4 invViewProj_;
-        ScreenParams screen_;
-      };
+      gen::Transform computeTransform(int x, int y) const override;
+    private:
+      std::shared_ptr<spire::ArcBall>	  widgetBall_;
+      glm::mat4 invViewProj_;
+      ScreenParams screen_;
+      const SelectionParameters& selected_;
+      SRCamera& camera_;
+    };
 
     class SCISHARE WidgetEventBase
     {
@@ -213,7 +195,13 @@ namespace SCIRun
     class SCISHARE WidgetTranslateEvent : public WidgetEventBase
     {
     public:
-      explicit WidgetTranslateEvent(const gen::Transform& t) : WidgetEventBase(t) {}
+      using WidgetEventBase::WidgetEventBase;
+    };
+
+    class SCISHARE WidgetRotateEvent : public WidgetEventBase
+    {
+    public:
+      using WidgetEventBase::WidgetEventBase;
     };
 
     class SCISHARE WidgetUpdateService
@@ -224,11 +212,12 @@ namespace SCIRun
 
       void modifyWidget(WidgetEventPtr event);
       void updateWidget(int x, int y);
-      void rotateWidget(int x, int y);
+      WidgetEventPtr rotateWidget(int x, int y);
       WidgetEventPtr translateWidget(int x, int y);
       void scaleWidget(int x, int y);
 
-      void setupRotate(const glm::vec3& originView, float radius, bool negativeZ, const glm::vec2& posView);
+      void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
+        const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera);
       void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected);
       void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
       void reset();
@@ -236,12 +225,11 @@ namespace SCIRun
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w) { widget_ = w; }
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      Graphics::Datatypes::WidgetMovement movement_     {Graphics::Datatypes::WidgetMovement::TRANSLATE};
+      Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::ROTATE};
 
-      glm::mat4                           widgetTransform_    {};
+      glm::mat4 widgetTransform_    {};
     private:
       Graphics::Datatypes::WidgetHandle   widget_;
-      std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
       ObjectTranformer* transformer_ {nullptr};
       std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
     };

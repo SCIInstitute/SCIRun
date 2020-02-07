@@ -144,7 +144,7 @@ namespace SCIRun
       {
       public:
         Observable() {}
-        void registerObserver(const EventKey& event, Observer&& observer)
+        void registerObserver(const EventKey& event, const Observer& observer)
         {
           observers_[event].push_back(observer);
         }

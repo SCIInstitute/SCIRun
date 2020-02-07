@@ -101,7 +101,6 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                 bmin,
                                 params.common.bbox,
                                 params.common.resolution}, bmin}));
-  //widgets_[0]->setToTranslate();
 
   if (params.show_as_vector)
   {
@@ -117,7 +116,6 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   params.common.bbox,
                                   params.common.resolution}, cylinderStart,
                                   center}));
-    //widgets_[1]->setToTranslate();
 
     widgets_.push_back(WidgetFactory::createCone(
                                   {gen.base.idGenerator,
@@ -148,6 +146,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
     registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
     registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);
+    registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
   }
 }
 

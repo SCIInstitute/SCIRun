@@ -34,7 +34,6 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/ES/Core.h>
-#include <es-general/comp/Transform.hpp>
 
 //freetype
 #include <ft2build.h>
@@ -47,6 +46,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <QOpenGLContext>
 #include <Interface/Modules/Render/ES/RendererInterface.h>
+#include <Interface/Modules/Render/ES/RendererCollaborators.h>
 #include <Interface/Modules/Render/share.h>
 
 
@@ -171,8 +171,6 @@ namespace SCIRun
       void applyAutoRotation();
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
-
-
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
@@ -217,22 +215,9 @@ namespace SCIRun
       MouseMode                           mMouseMode          {MouseMode::MOUSE_OLDSCIRUN};  // Current mouse mode.
 
       bool                                mSelectionHack      {false};
-      glm::vec3                           mOriginWorld        {};
-      glm::vec3                           mFlipAxisWorld      {};
-      glm::vec3                           mOriginToSpos       {};
-      glm::vec3                           mOriginView         {};
-      struct SelectionParameters
-      {
-        glm::vec2                           position_ {};
-        float                               w_ {0};
-        float                               depth_ {0};
-        float                               radius_ {0};
-      };
+
       SelectionParameters selected_;
       ScreenParams screen_;
-
-      //---------------- Widgets -------------------------------------------------------------------
-
       WidgetUpdateService widgetUpdater_;
 
       GLuint                              mFontTexture        {};       // 2D texture for fonts

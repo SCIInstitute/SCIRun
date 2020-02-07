@@ -119,10 +119,24 @@ TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
 
   int eventCounter = 0;
   auto eventFunc = [&eventCounter](const std::string& id) { std::cout << "Translating: " << id << std::endl; eventCounter++; };
-  SimpleWidgetEvent ev{WidgetMovement::TRANSLATE, eventFunc};
+  SimpleWidgetEvent transEvent{WidgetMovement::TRANSLATE, eventFunc};
   // sphere takes translate events
-  sphere->propagateEvent(ev);
+  sphere->propagateEvent(transEvent);
 
   EXPECT_EQ(eventCounter, internals.size());
 
+  eventCounter = 0;
+  // shaft takes translate events too
+  shaft->propagateEvent(transEvent);
+  EXPECT_EQ(eventCounter, internals.size());
+
+  eventCounter = 0;
+  // cone takes rotate events
+  cone->propagateEvent({WidgetMovement::ROTATE, [&eventCounter](const std::string& id) { std::cout << "Rotating: " << id << std::endl; eventCounter++; }});
+  EXPECT_EQ(eventCounter, internals.size());
+
+  eventCounter = 0;
+  // disk takes scale events
+  disk->propagateEvent({WidgetMovement::SCALE, [&eventCounter](const std::string& id) { std::cout << "Scaling: " << id << std::endl; eventCounter++; }});
+  EXPECT_EQ(eventCounter, internals.size());
 }

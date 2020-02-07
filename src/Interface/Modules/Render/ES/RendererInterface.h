@@ -28,8 +28,10 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACE_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACE_H
 
-#include <Interface/Modules/Render/ES/RendererCollaborators.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <glm/gtc/quaternion.hpp>
+#include <es-general/comp/Transform.hpp>
 #include <Interface/Modules/Render/share.h>
 
 class QOpenGLContext;
@@ -134,7 +136,7 @@ namespace SCIRun
     {
     };
 
-  } // namespace Render
-} // namespace SCIRun
+  }
+}
 
 #endif

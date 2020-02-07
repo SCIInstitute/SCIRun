@@ -64,6 +64,7 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/RendererInterface.h
   ES/RendererInterfaceFwd.h
   ES/RendererCollaborators.h
+  ES/RendererInterfaceCollaborators.h
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
