@@ -108,7 +108,7 @@ namespace SCIRun
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       void toggleSelectionHack(bool b) override {mSelectionHack = b;}
-      Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) override;
+      Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform_; }
 
       //---------------- Clipping Planes -----------------------------------------------------------

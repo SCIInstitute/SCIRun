@@ -154,7 +154,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   for(int i = 0; i < 1 + 3*params.show_as_vector; i++)
   {
     //widgets_[i]->connectedIds_ = geom_ids;
-    addToList(widgets_[i]);
+    //addToList(widgets_[i]);
   }
 }
 

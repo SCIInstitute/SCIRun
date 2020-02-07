@@ -48,9 +48,6 @@ TEST(ArrowWidgetTest, CanCreateSingleArrowReal)
 
   EXPECT_EQ(Point(16,16,0), arrow.position());
   EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
-
-
-  //FAIL() << "todo";
 }
 
 TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
@@ -68,7 +65,34 @@ TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
   EXPECT_EQ(Point(16,16,0), arrow.position());
   //arrow does not get name from factory--generates it in constructor.
   EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
+}
 
+TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
+{
+  StubGeometryIDGenerator idGen;
 
-  //FAIL() << "todo";
+  Point origin(0,0,0);
+  CommonWidgetParameters common
+  {
+    1.0, "red", origin,
+    {origin, Point(origin + Point{1,1,1})},
+    10
+  };
+  ArrowParameters arrowParams
+  {
+    common,
+    origin, Vector{1,1,1}, true, 2, 4
+  };
+  auto arrow = WidgetFactory::createArrowWidget(
+    {idGen, "testArrow1"},
+    arrowParams
+  );
+
+  ASSERT_TRUE(arrow != nullptr);
+
+  auto compositeArrow = boost::dynamic_pointer_cast<CompositeWidget>(arrow);
+  ASSERT_TRUE(compositeArrow != nullptr);
+
+  WidgetList internals(compositeArrow->subwidgetBegin(), compositeArrow->subwidgetEnd());
+  ASSERT_EQ(internals.size(), 4);
 }

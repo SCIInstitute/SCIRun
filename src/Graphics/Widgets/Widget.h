@@ -90,6 +90,8 @@ namespace SCIRun
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;
+      using WidgetList = std::vector<WidgetHandle>;
+      using WidgetListIterator = WidgetList::const_iterator;
 
       class SCISHARE CompositeWidget : public WidgetBase
       {
@@ -105,10 +107,11 @@ namespace SCIRun
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
         void addToList(WidgetHandle handle);
         void propagateEvent(SimpleWidgetEvent e) override;
+        WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
+        WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
 
       protected:
-        //std::vector<std::string> getListOfConnectedIds();
-        std::vector<WidgetHandle> widgets_;
+        WidgetList widgets_;
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;

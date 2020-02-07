@@ -104,7 +104,7 @@ namespace SCIRun
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void setAutoRotateOnDrag(bool value) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
-      virtual Graphics::Datatypes::WidgetHandle select(int x, int y, WidgetList& widgets) = 0;
+      virtual Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;
       virtual void reverseClippingPlaneNormal(bool value) = 0;

@@ -41,8 +41,6 @@ namespace SCIRun
     class SRCamera;
     class ObjectTranformer;
 
-    using WidgetList = std::vector<Graphics::Datatypes::WidgetHandle>;
-
     using RendererPtr = std::shared_ptr<RendererInterface>;
     using RendererWeakPtr = std::weak_ptr<RendererInterface>;
 
