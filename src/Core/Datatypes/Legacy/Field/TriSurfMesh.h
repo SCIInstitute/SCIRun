@@ -38,6 +38,7 @@
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/Containers/StackVector.h>
@@ -326,6 +327,9 @@ public:
 
   /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
 
   /// Return the transformation that takes a 0-1 space bounding box
   /// to the current bounding box of this mesh.
@@ -2207,6 +2211,24 @@ Core::Geometry::BBox
 TriSurfMesh<Basis>::get_bounding_box() const
 {
   Core::Geometry::BBox result;
+  typename Node::iterator ni, nie;
+  begin(ni);
+  end(nie);
+  while (ni != nie)
+  {
+    result.extend(points_[*ni]);
+    ++ni;
+  }
+  return (result);
+}
+
+template <class Basis>
+Core::Geometry::OrientedBBox
+TriSurfMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                              const Core::Geometry::Vector &e2,
+                                              const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);

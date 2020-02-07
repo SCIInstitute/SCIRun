@@ -31,13 +31,13 @@
 #define CORE_DATATYPES_VMESH_H
 
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/OrientedBBox.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/Containers/StackBasedVector.h>
 #include <Core/Containers/StackVector.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
-
-#include <Core/GeometryPrimitives/SearchGridT.h>
 
 #include <Core/Utils/Legacy/Debug.h>
 
@@ -968,6 +968,9 @@ public:
   /// Rerouting of some of the virtual mesh function calls
 
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
 
   /// This call is for synchronizing tables of precomputed elements
   virtual bool synchronize(unsigned int sync);

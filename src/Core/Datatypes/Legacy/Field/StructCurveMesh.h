@@ -110,6 +110,9 @@ public:
   /// get the mesh statistics
   double get_cord_length() const;
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
@@ -942,6 +945,26 @@ StructCurveMesh<Basis>::get_bounding_box() const
   return result;
 }
 
+template <class Basis>
+Core::Geometry::OrientedBBox
+StructCurveMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                  const Core::Geometry::Vector &e2,
+                                                  const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+
+  typename ScanlineMesh<Basis>::Node::iterator i, ie;
+  this->begin(i);
+  this->end(ie);
+
+  while (i != ie)
+  {
+    result.extend(points_[*i]);
+    ++i;
+  }
+
+  return result;
+}
 
 template <class Basis>
 void

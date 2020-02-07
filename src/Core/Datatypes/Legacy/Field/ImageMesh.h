@@ -40,6 +40,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/OrientedBBox.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -670,6 +671,9 @@ public:
   virtual bool get_dim(std::vector<size_type>&) const;
   Core::Geometry::Vector diagonal() const;
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
   virtual bool synchronize(mask_type sync);
@@ -1043,6 +1047,23 @@ ImageMesh<Basis>::get_bounding_box() const
   return result;
 }
 
+template<class Basis> Core::Geometry::OrientedBBox
+ImageMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                            const Core::Geometry::Vector &e2,
+                                            const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::Point p0(0.0, 0.0, 0.0);
+  Core::Geometry::Point p1(ni_ - 1, 0.0, 0.0);
+  Core::Geometry::Point p2(ni_ - 1, nj_ - 1, 0.0);
+  Core::Geometry::Point p3(0.0, nj_ - 1, 0.0);
+
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+  result.extend(transform_.project(p0));
+  result.extend(transform_.project(p1));
+  result.extend(transform_.project(p2));
+  result.extend(transform_.project(p3));
+  return result;
+}
 
 template<class Basis>
 Core::Geometry::Vector

@@ -137,6 +137,9 @@ public:
   virtual bool clear_synchronization();
 
   virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                                                 const Core::Geometry::Vector &e2,
+                                                                 const Core::Geometry::Vector &e3) const;
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual double get_epsilon() const;
@@ -231,6 +234,15 @@ Core::Geometry::BBox
 VMeshShared<MESH>::get_bounding_box() const
 {
   return(mesh_->get_bounding_box());
+}
+
+template <class MESH>
+Core::Geometry::OrientedBBox
+VMeshShared<MESH>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                             const Core::Geometry::Vector &e2,
+                                             const Core::Geometry::Vector &e3) const
+{
+  return(mesh_->get_oriented_bounding_box(e1, e2, e3));
 }
 
 template <class MESH>

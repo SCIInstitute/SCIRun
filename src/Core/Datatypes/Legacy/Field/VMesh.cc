@@ -31,6 +31,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/OrientedBBox.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -809,6 +810,14 @@ BBox
 VMesh::get_bounding_box() const
 {
   ASSERTFAIL("VMesh interface: get_bounding_box has not yet been implemented");  
+}
+
+OrientedBBox
+VMesh::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                 const Core::Geometry::Vector &e2,
+                                 const Core::Geometry::Vector &e3) const
+{
+  ASSERTFAIL("VMesh interface: get_oriented_bounding_box has not yet been implemented");
 }
 
 bool
