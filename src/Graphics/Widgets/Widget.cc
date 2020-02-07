@@ -67,12 +67,12 @@ void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
   notify(e);
 }
 
-void SCIRun::Graphics::Datatypes::registerAllSiblingWidgetsForTranslation(WidgetHandle selected, WidgetList& compositeList)
+void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement)
 {
-  for (auto& subwidget : compositeList)
+  for (auto& subwidget : widgets_)
   {
     if (selected.get() != subwidget.get())
-      selected->registerObserver(WidgetMovement::TRANSLATE, subwidget.get());
+      selected->registerObserver(movement, subwidget.get());
   }
 }
 

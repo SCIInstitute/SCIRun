@@ -144,9 +144,9 @@ namespace SCIRun
       {
       public:
         Observable() {}
-        void registerObserver(EventKey&& event, Observer&& observer)
+        void registerObserver(const EventKey& event, Observer&& observer)
         {
-          observers_[std::move(event)].push_back(observer);
+          observers_[event].push_back(observer);
         }
 
         void notify(const Event& event) const

@@ -146,8 +146,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     //Vector flipVec = dir.getArbitraryTangent().normal();
     //widgets_[3]->setToScale(flipVec);
 
-    registerAllSiblingWidgetsForTranslation(widgets_[0], widgets_);
-    registerAllSiblingWidgetsForTranslation(widgets_[1], widgets_);
+    registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
+    registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);
   }
 }
 
