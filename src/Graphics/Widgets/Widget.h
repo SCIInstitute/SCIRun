@@ -111,11 +111,8 @@ namespace SCIRun
 
       protected:
         WidgetList widgets_;
-
         void registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement);
       };
-
-      SCISHARE void registerAllSiblingWidgetsForTranslation(WidgetHandle selected, WidgetList& compositeList);
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
     }
