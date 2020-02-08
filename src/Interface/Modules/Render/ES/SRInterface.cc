@@ -644,7 +644,7 @@ void SRInterface::runGCOnNextExecution()
 
       if (movement_ == WidgetMovement::TRANSLATE)
       {
-        setupTranslate(staticViewProjection, screen, { selected.position_, selected.w_ });
+        setupTranslate(staticViewProjection, screen, selected);
       }
     }
 
@@ -669,7 +669,7 @@ void SRInterface::runGCOnNextExecution()
       rotateImpl_.reset(new WidgetRotateImpl(selected, negativeZ, posView, screen, camera));
     }
 
-    void WidgetUpdateService::setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected)
+    void WidgetUpdateService::setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected)
     {
       translateImpl_.reset(new WidgetTranslationImpl(viewProj, screen, selected));
     }
@@ -1953,7 +1953,7 @@ void SRInterface::runGCOnNextExecution()
 gen::Transform WidgetTranslationImpl::computeTransform(int x, int y) const
 {
   auto screenPos = screen_.positionFromClick(x, y);
-  glm::vec2 transVec = (screenPos - selected2_.selectedPos) * glm::vec2(selected2_.selectedW, selected2_.selectedW);
+  glm::vec2 transVec = (screenPos - selected_.position_) * glm::vec2(selected_.w_, selected_.w_);
   auto trans = gen::Transform();
   trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
   return trans;

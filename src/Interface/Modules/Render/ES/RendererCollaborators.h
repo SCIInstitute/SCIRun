@@ -124,12 +124,6 @@ namespace SCIRun
       glm::vec3                           originViewUsedForScalingAndRotation_         {};
     };
 
-    struct SCISHARE SelectedParams2
-    {
-      glm::vec2 selectedPos;
-      float selectedW;
-    };
-
     struct SCISHARE ScreenParams
     {
       size_t width {640}, height {480};
@@ -146,14 +140,14 @@ namespace SCIRun
     class SCISHARE WidgetTranslationImpl : public WidgetTransformer
     {
     public:
-      WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected) :
-        invViewProj_(glm::inverse(viewProj)), screen_(screen), selected2_(selected) {}
+      WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected) :
+        invViewProj_(glm::inverse(viewProj)), screen_(screen), selected_(selected) {}
 
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::mat4 invViewProj_;
       ScreenParams screen_;
-      SelectedParams2 selected2_;
+      const SelectionParameters& selected_;
     };
 
     class SCISHARE WidgetScaleImpl : public WidgetTransformer
@@ -230,7 +224,7 @@ namespace SCIRun
     private:
       void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
         const ScreenParams& screen, SRCamera& camera);
-      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected);
+      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected);
       void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
 
       Graphics::Datatypes::WidgetHandle   widget_;

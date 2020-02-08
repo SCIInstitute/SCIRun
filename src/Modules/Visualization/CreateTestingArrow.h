@@ -34,20 +34,33 @@ DEALINGS IN THE SOFTWARE.
 
 namespace SCIRun
 {
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(XLocation);
+        ALGORITHM_PARAMETER_DECL(YLocation);
+        ALGORITHM_PARAMETER_DECL(ZLocation);
+      }
+    }
+  }
   namespace Modules
   {
     namespace Visualization
     {
       class CreateTestingArrowImpl;
-      
+
       class SCISHARE CreateTestingArrow : public Dataflow::Networks::GeometryGeneratingModule,
         public HasNoInputPorts,
-        public Has1OutputPort<GeometryPortTag>
+        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
       {
       public:
         CreateTestingArrow();
         void execute() override;
         OUTPUT_PORT(0, Arrow, GeometryObject);
+        OUTPUT_PORT(1, GeneratedPoint, Field);
 
         void setStateDefaults() override;
 

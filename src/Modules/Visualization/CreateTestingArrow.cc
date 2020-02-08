@@ -34,6 +34,7 @@ using namespace SCIRun;
 using namespace Modules::Visualization;
 using namespace Graphics::Datatypes;
 using namespace Core::Datatypes;
+using namespace Core::Algorithms::Visualization;
 using namespace Dataflow::Networks;
 using namespace Core::Geometry;
 
@@ -50,26 +51,40 @@ namespace SCIRun
         BBox box_initial_bounds_;
         BBox bbox_;
         Point origin_ {0,0,0};
+
+        Point currentLocation(ModuleStateHandle state) const;
       };
     }
   }
 }
+
+ALGORITHM_PARAMETER_DEF(Visualization, XLocation);
+ALGORITHM_PARAMETER_DEF(Visualization, YLocation);
+ALGORITHM_PARAMETER_DEF(Visualization, ZLocation);
 
 MODULE_INFO_DEF(CreateTestingArrow, Visualization, SCIRun)
 
 CreateTestingArrow::CreateTestingArrow() : GeometryGeneratingModule(staticInfo_), impl_(new CreateTestingArrowImpl)
 {
   INITIALIZE_PORT(Arrow);
+  INITIALIZE_PORT(GeneratedPoint);
 }
 
 void CreateTestingArrow::setStateDefaults()
 {
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, 0.0);
+  state->setValue(YLocation, 0.0);
+  state->setValue(ZLocation, 0.0);
+
   getOutputPort(Arrow)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void CreateTestingArrow::execute()
 {
   //std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
+  impl_->origin_ = impl_->currentLocation(get_state());
   CommonWidgetParameters common
   {
     1.0, "red", impl_->origin_,
@@ -105,8 +120,19 @@ void CreateTestingArrow::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
+Point CreateTestingArrowImpl::currentLocation(ModuleStateHandle state) const
+{
+  using namespace Parameters;
+  return Point(state->getValue(XLocation).toDouble(), state->getValue(YLocation).toDouble(), state->getValue(ZLocation).toDouble());
+}
+
 void CreateTestingArrow::adjustGeometryFromTransform(const Transform& transformMatrix)
 {
   impl_->origin_ = transformMatrix * impl_->origin_;
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, impl_->origin_.x());
+  state->setValue(YLocation, impl_->origin_.y());
+  state->setValue(ZLocation, impl_->origin_.z());
   impl_->userWidgetTransform_ = transformMatrix;
 }
