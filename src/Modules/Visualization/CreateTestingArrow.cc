@@ -28,7 +28,12 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/CreateTestingArrow.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/ArrowWidget.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -83,8 +88,8 @@ void CreateTestingArrow::setStateDefaults()
 
 void CreateTestingArrow::execute()
 {
-  //std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
   impl_->origin_ = impl_->currentLocation(get_state());
+  std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
   CommonWidgetParameters common
   {
     1.0, "red", impl_->origin_,
@@ -100,7 +105,17 @@ void CreateTestingArrow::execute()
     {*this, "testArrow1"},
     arrowParams
   );
+  std::cout << __FILE__ << __LINE__ << " " << (*(dynamic_cast<ArrowWidget*>(arrow.get())->subwidgetBegin()))->origin() << std::endl;
   sendOutput(Arrow, arrow);
+
+  {
+    FieldInformation fi("PointCloudMesh", 0, "double");
+    auto mesh = CreateMesh(fi);
+    mesh->vmesh()->add_point(impl_->origin_);
+    auto ofield = CreateField(fi, mesh);
+    ofield->vfield()->resize_values();
+    sendOutput(GeneratedPoint, ofield);
+  }
 }
 
 void CreateTestingArrow::processWidgetFeedback(const ModuleFeedback& var)
