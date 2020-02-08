@@ -97,10 +97,30 @@ namespace SCIRun
         size_t widget_num, widget_iter;
       };
 
+      // These will give different types of widget movement through ViewScene.
+      // To use rotation and scaling, an origin point must be given.
+      enum class WidgetMovement
+      {
+        NONE,
+        TRANSLATE,
+        ROTATE,
+        SCALE
+      };
+
+      enum class WidgetInteraction
+      {
+        CLICK,
+        OTHER_TYPE_OF_CLICK //TODO
+      };
+
+      using TransformMapping = std::map<WidgetInteraction, WidgetMovement>;
+      using TransformMappingParams = std::initializer_list<TransformMapping::value_type>;
+
       struct SCISHARE WidgetBaseParameters
       {
         const Core::GeometryIDGenerator& idGenerator;
         std::string tag;
+        TransformMappingParams mapping;
       };
 
       class AbstractGlyphFactory;
@@ -110,15 +130,6 @@ namespace SCIRun
       {
         WidgetBaseParameters base;
         AbstractGlyphFactoryPtr glyphMaker;
-      };
-
-      // These will give different types of widget movement through ViewScene.
-      // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
-      {
-        TRANSLATE,
-        ROTATE,
-        SCALE
       };
 
       using SimpleWidgetEventFunc = std::function<void(const std::string&)>;
@@ -140,7 +151,7 @@ namespace SCIRun
       };
 
       template <class Observer, class EventKey, class Event, class KeyFunc, class ObserveFunc, class IdFunc>
-      class SCISHARE Observable
+      class Observable
       {
       public:
         Observable() {}
@@ -164,6 +175,15 @@ namespace SCIRun
         ObserveFunc observeFunc_;
         IdFunc idFunc_;
         std::map<EventKey, std::vector<Observer>> observers_;
+      };
+
+      class SCISHARE InputTransformMapper
+      {
+      public:
+        explicit InputTransformMapper(TransformMappingParams pairs);
+        WidgetMovement movementType(WidgetInteraction interaction) const;
+      private:
+        TransformMapping interactionMap_;
       };
     }
   }

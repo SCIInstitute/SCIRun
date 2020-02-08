@@ -68,24 +68,26 @@ namespace SCIRun
         SimpleWidgetEventKey, SimpleWidgetEventValue, GeometryIdGetter>;
 
       class SCISHARE WidgetBase : public GeometryObjectSpire,
-        public WidgetObservable
+        public WidgetObservable,
+        public InputTransformMapper
       {
       public:
         explicit WidgetBase(const WidgetBaseParameters& params);
-        // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
-        // WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
 
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
 
         const std::string& name() const { return name_; }
 
+        Core::Geometry::Point origin() const { return origin_; }
+        void setOrigin(const Core::Geometry::Point& p) { origin_ = p; }
+
         virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
         std::string name_;
       private:
-
+        Core::Geometry::Point origin_;
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;
@@ -104,7 +106,6 @@ namespace SCIRun
         {}
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
-        void addToList(WidgetHandle handle);
         void propagateEvent(const SimpleWidgetEvent& e) override;
         WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
         WidgetListIterator subwidgetEnd() const { return widgets_.end(); }

@@ -172,12 +172,11 @@ namespace SCIRun
     {
     public:
       WidgetRotateImpl(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
-        const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera);
+        const ScreenParams& screen, SRCamera& camera);
 
       gen::Transform computeTransform(int x, int y) const override;
     private:
       std::shared_ptr<spire::ArcBall>	  widgetBall_;
-      glm::mat4 invViewProj_;
       ScreenParams screen_;
       const SelectionParameters& selected_;
       SRCamera& camera_;
@@ -210,28 +209,36 @@ namespace SCIRun
       explicit WidgetUpdateService(ObjectTranformer* transformer) :
         transformer_(transformer) {}
 
+      void setCamera(SRCamera* cam) { camera_ = cam; }
+
       void modifyWidget(WidgetEventPtr event);
       void updateWidget(int x, int y);
       WidgetEventPtr rotateWidget(int x, int y);
       WidgetEventPtr translateWidget(int x, int y);
-      void scaleWidget(int x, int y);
+      WidgetEventPtr scaleWidget(int x, int y);
 
-      void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
-        const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera);
-      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected);
-      void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
       void reset();
 
-      void setCurrentWidget(Graphics::Datatypes::WidgetHandle w) { widget_ = w; }
+      void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::ROTATE};
+      void doPostSelectSetup(int x, int y, float depth, SelectionParameters& selected,
+        const ScreenParams& screen, const glm::mat4& staticViewProjection);
 
-      glm::mat4 widgetTransform_    {};
+      glm::mat4 widgetTransform() const { return widgetTransform_; }
+
     private:
+      void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
+        const ScreenParams& screen, SRCamera& camera);
+      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected);
+      void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
+
       Graphics::Datatypes::WidgetHandle   widget_;
+      Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTranformer* transformer_ {nullptr};
       std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
+      SRCamera* camera_ {nullptr};
+      glm::mat4 widgetTransform_ {};
     };
   }
 }

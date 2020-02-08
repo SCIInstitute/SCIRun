@@ -94,7 +94,9 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   // Create glyphs
   widgets_.push_back(WidgetFactory::createSphere(
                                 {gen.base.idGenerator,
-                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter)},
+                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter),
+                                {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}
+                                },
                                 {{
                                 sphereRadius_ * params.common.scale,
                                 sphereCol.toString(),
@@ -109,7 +111,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
     widgets_.push_back(WidgetFactory::createCylinder(
                                   {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter)},
+                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
+                                  {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}},
                                   {{cylinderRadius_ * params.common.scale,
                                   deflCol_.toString(),
                                   bmin,
@@ -119,7 +122,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
     widgets_.push_back(WidgetFactory::createCone(
                                   {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter)},
+                                  widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
+                                  {{WidgetInteraction::CLICK, WidgetMovement::ROTATE}}},
                                   {{{coneRadius_ * params.common.scale,
                                   deflCol_.toString(),
                                   bmin,

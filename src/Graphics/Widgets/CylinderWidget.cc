@@ -35,8 +35,9 @@ using namespace SCIRun::Core::Geometry;
 
 CylinderWidget::CylinderWidget(const GeneralWidgetParameters& gen,
                                CylinderParameters params)
-  : WidgetBase({gen.base.idGenerator, "CylinderWidget::" + gen.base.tag})//, Point(p1 + p2)/2, origin)
+  : WidgetBase({gen.base.idGenerator, "CylinderWidget::" + gen.base.tag, gen.base.mapping})//, Point(p1 + p2)/2, origin)
 {
   name_ = gen.glyphMaker->cylinder(params, *this);
   setPosition(Point(params.p1 + params.p2)/2);
+  setOrigin(params.common.origin);
 }

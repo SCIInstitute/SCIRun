@@ -84,43 +84,43 @@ namespace fs = spire;
 
 namespace
 {
-    static glm::vec4 inverseGammaCorrect(glm::vec4 in)
-    {
-      return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
-    }
+  static glm::vec4 inverseGammaCorrect(glm::vec4 in)
+  {
+    return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
+  }
 
-    static glm::vec3 inverseGammaCorrect(glm::vec3 in)
-    {
-      return glm::pow(in, glm::vec3(2.2));
-    }
+  static glm::vec3 inverseGammaCorrect(glm::vec3 in)
+  {
+    return glm::pow(in, glm::vec3(2.2));
+  }
 }
-    //----------------------------------------------------------------------------------------------
-    SRInterface::SRInterface(int frameInitLimit) :
-      widgetUpdater_(this),
-      frameInitLimit_(frameInitLimit)
-    {
-      mCamera.reset(new SRCamera(this));
-      // Construct ESCore. We will need to bootstrap the core. We should also
-      // probably add utility static classes.
-      setupCore();
-      setupLights();
-    }
 
-    //----------------------------------------------------------------------------------------------
-    SRInterface::~SRInterface()
-    {
-      glDeleteTextures(1, &mFontTexture);
-    }
+SRInterface::SRInterface(int frameInitLimit) :
+  widgetUpdater_(this),
+  frameInitLimit_(frameInitLimit)
+{
+  mCamera.reset(new SRCamera(this));
+  widgetUpdater_.setCamera(mCamera.get());
+  // Construct ESCore. We will need to bootstrap the core. We should also
+  // probably add utility static classes.
+  setupCore();
+  setupLights();
+}
 
-    bool SRInterface::hasShaderPromise() const
-    {
-      return mCore.hasShaderPromise();
-    }
+SRInterface::~SRInterface()
+{
+  glDeleteTextures(1, &mFontTexture);
+}
 
-    void SRInterface::runGCOnNextExecution()
-    {
-      mCore.runGCOnNextExecution();
-    }
+bool SRInterface::hasShaderPromise() const
+{
+  return mCore.hasShaderPromise();
+}
+
+void SRInterface::runGCOnNextExecution()
+{
+  mCore.runGCOnNextExecution();
+}
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::setupCore()
@@ -592,42 +592,8 @@ namespace
       //calculate position
       if (widgetUpdater_.currentWidget())
       {
-        //Calculate w value
-        float zFar = mCamera->getZFar();
-        float zNear = mCamera->getZNear();
-        float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
-        selected_.w_ = -z;
-
-        selected_.originViewUsedForScalingAndRotation_ = glm::vec3(mCamera->getWorldToView() * glm::vec4(selected_.originWorldUsedForScalingAndRotation_, 1.0));
-
-        // Get w value in of origin if scaling
-        if (widgetUpdater_.movement_ == WidgetMovement::SCALE)
-        {
-          glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(selected_.originViewUsedForScalingAndRotation_, 1.0);
-          selected_.w_ = projectedOrigin.w;
-        }
-
-        auto spos = screen_.positionFromClick(x, y);
-        selected_.position_ = spos;
-        selected_.depth_ = depth * 2.0 - 1.0;
-
-        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
-        sposView.z = -selected_.w_;
-        selected_.originToSposUsedForScalingAndRotation_ = sposView - selected_.originViewUsedForScalingAndRotation_;
-        selected_.radius_ = glm::length(selected_.originToSposUsedForScalingAndRotation_);
-
-        if (widgetUpdater_.movement_ == WidgetMovement::ROTATE)
-        {
-          widgetUpdater_.setupRotate(selected_, (selected_.originToSposUsedForScalingAndRotation_.z < 0.0), glm::vec2(sposView),
-            mCamera->getViewToProjection(), screen_, *mCamera);
-        }
-
-        if (widgetUpdater_.movement_ == WidgetMovement::TRANSLATE)
-        {
-          auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-          widgetUpdater_.setupTranslate(cam->data.viewProjection, screen_, { selected_.position_, selected_.w_ });
-        }
-
+        auto cam = mCore.getStaticComponent<gen::StaticCamera>();
+        widgetUpdater_.doPostSelectSetup(x, y, depth, selected_, screen_, cam->data.viewProjection);
         widgetUpdater_.updateWidget(x, y);
       }
 
@@ -637,18 +603,70 @@ namespace
       return widgetUpdater_.currentWidget();
     }
 
+    static glm::vec3 toVec3(const Point& p)
+    {
+      return glm::vec3{p.x(), p.y(), p.z()};
+    }
+
+    void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth,
+      SelectionParameters& selected, const ScreenParams& screen, const glm::mat4& staticViewProjection)
+    {
+      selected.originWorldUsedForScalingAndRotation_ = toVec3(widget_->origin());
+      //Calculate w value
+      float zFar = camera_->getZFar();
+      float zNear = camera_->getZNear();
+      float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+      selected.w_ = -z;
+
+      selected.originViewUsedForScalingAndRotation_ = glm::vec3(camera_->getWorldToView() * glm::vec4(selected.originWorldUsedForScalingAndRotation_, 1.0));
+
+      // Get w value in of origin if scaling
+      if (movement_ == WidgetMovement::SCALE)
+      {
+        glm::vec4 projectedOrigin = camera_->getViewToProjection() * glm::vec4(selected.originViewUsedForScalingAndRotation_, 1.0);
+        selected.w_ = projectedOrigin.w;
+      }
+
+      auto spos = screen.positionFromClick(x, y);
+      selected.position_ = spos;
+      selected.depth_ = depth * 2.0 - 1.0;
+
+      glm::vec3 sposView = glm::vec3(glm::inverse(camera_->getViewToProjection()) * glm::vec4(spos * selected.w_, 0.0, 1.0));
+      sposView.z = -selected.w_;
+      selected.originToSposUsedForScalingAndRotation_ = sposView - selected.originViewUsedForScalingAndRotation_;
+      selected.radius_ = glm::length(selected.originToSposUsedForScalingAndRotation_);
+
+      if (movement_ == WidgetMovement::ROTATE)
+      {
+        setupRotate(selected, (selected.originToSposUsedForScalingAndRotation_.z < 0.0), glm::vec2(sposView),
+          screen, *camera_);
+      }
+
+      if (movement_ == WidgetMovement::TRANSLATE)
+      {
+        setupTranslate(staticViewProjection, screen, { selected.position_, selected.w_ });
+      }
+    }
+
+    void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
+    {
+      widget_ = w;
+      movement_ = w->movementType(WidgetInteraction::CLICK);
+      std::cout << "movement_ set to: " << static_cast<int>(movement_) << std::endl;
+    }
+
     WidgetRotateImpl::WidgetRotateImpl(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
-      const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera) :
-      invViewProj_(glm::inverse(viewProj)), screen_(screen), selected_(selected), camera_(camera)
+      const ScreenParams& screen, SRCamera& camera) :
+      screen_(screen), selected_(selected), camera_(camera)
     {
       widgetBall_.reset(new spire::ArcBall(selected_.originViewUsedForScalingAndRotation_, selected_.radius_, negativeZ));
       widgetBall_->beginDrag(posView);
     }
 
     void WidgetUpdateService::setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
-      const glm::mat4& viewProj, const ScreenParams& screen, SRCamera& camera)
+      const ScreenParams& screen, SRCamera& camera)
     {
-      rotateImpl_.reset(new WidgetRotateImpl(selected, negativeZ, posView, viewProj, screen, camera));
+      rotateImpl_.reset(new WidgetRotateImpl(selected, negativeZ, posView, screen, camera));
     }
 
     void WidgetUpdateService::setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectedParams2& selected)
@@ -695,8 +713,10 @@ namespace
         event = rotateWidget(x, y);
         break;
       case WidgetMovement::SCALE:
-        scaleWidget(x, y);
+        event = scaleWidget(x, y);
         break;
+      case WidgetMovement::NONE:
+        return;
       }
       modifyWidget(event);
     }
@@ -745,7 +765,7 @@ namespace
 
       auto spos = screen_.positionFromClick(x, y);
 
-      glm::vec2 sposView = glm::vec2(invViewProj_ * glm::vec4(spos * selected_.w_, 0.0, 1.0));
+      glm::vec2 sposView = glm::vec2(glm::inverse(camera_.getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
       widgetBall_->drag(sposView);
 
       glm::quat rotationView = widgetBall_->getQuat();
@@ -762,8 +782,9 @@ namespace
       return trans;
     }
 
-    void WidgetUpdateService::scaleWidget(int x, int y)
+    WidgetEventPtr WidgetUpdateService::scaleWidget(int x, int y)
     {
+      return nullptr;
       #if 0
       auto spos = screen_.positionFromClick(x, y);
 

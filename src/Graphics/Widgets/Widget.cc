@@ -33,7 +33,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
 WidgetBase::WidgetBase(const WidgetBaseParameters& params)
-  : GeometryObjectSpire(params.idGenerator, params.tag, true)
+  : GeometryObjectSpire(params.idGenerator, params.tag, true),
+  InputTransformMapper(params.mapping)
 {
 }
 
@@ -88,26 +89,14 @@ void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, W
 //   movementType_ = WidgetMovement::ROTATE;
 // }
 //
-// void WidgetBase::setToTranslate()
-// {
-//   movementType_ = WidgetMovement::TRANSLATE;
-// }
 //
 // glm::vec3 WidgetBase::getFlipVector()
 // {
 //   return flipAxis_;
 // }
 //
-// WidgetMovement WidgetBase::getMovementType()
-// {
-//   return movementType_;
-// }
-//
-// void WidgetBase::addInitialId() {
-//   auto ids = std::vector<std::string>(1);
-//   ids.push_back(uniqueID());
-//   connectedIds_ = ids;
-// }
+
+
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
@@ -115,11 +104,6 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   {
     list.insert(widgets_.begin(), widgets_.end());
   }
-}
-
-void CompositeWidget::addToList(WidgetHandle widget)
-{
-  widgets_.push_back(widget);
 }
 
 void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
@@ -137,3 +121,14 @@ void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
 //   }
 //   return ids;
 // }
+
+  InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
+    : interactionMap_(pairs)
+  {
+  }
+
+  WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
+  {
+    auto i = interactionMap_.find(interaction);
+    return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
+  }
