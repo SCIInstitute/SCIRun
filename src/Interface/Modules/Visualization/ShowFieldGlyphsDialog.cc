@@ -202,12 +202,12 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
 
 void ShowFieldGlyphsDialog::emphasisSliderChanged(int val)
 {
-  superquadricEmphasisDoubleSpinBox_->setValue(val * 0.01);
+  superquadricEmphasisDoubleSpinBox_->setValue(val * 0.1);
 }
 
 void ShowFieldGlyphsDialog::emphasisSpinBoxChanged(double val)
 {
-  superquadricEmphasisSlider_->setValue(int(val * 100));
+  superquadricEmphasisSlider_->setValue(int(val * 10));
 }
 
 void ShowFieldGlyphsDialog::setupTensorsTab()

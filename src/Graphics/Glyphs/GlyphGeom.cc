@@ -219,9 +219,10 @@ void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, int resolu
   generateEllipsoid(p, t, scale, resolution, color, false, normalize);
 }
 
-void GlyphGeom::addSuperEllipsoid(const Point& p, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+void GlyphGeom::addSuperquadricTensor(const Point& p, Tensor& t, double scale, int resolution,
+                                      const ColorRGB& color, bool normalize, double emphasis)
 {
-  generateSuperEllipsoid(p, t, scale, resolution, color, normalize, emphasis);
+  generateSuperquadricTensor(p, t, scale, resolution, color, normalize, emphasis);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
@@ -992,7 +993,9 @@ inline double spow(double e, double x)
   }
 }
 
-void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+void GlyphGeom::generateSuperquadricTensor(const Point& center, Tensor& t, double scale,
+                                           int resolution, const ColorRGB& color, bool normalize,
+                                           double emphasis)
 {
   static const double zeroThreshold = 0.000001;
   std::vector<Vector> eigvectors(3);
@@ -1057,8 +1060,9 @@ void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double sc
 
   double cl = (eigvals[0] - eigvals[1]) / (eigvals[0] + eigvals[1] + eigvals[2]);
   double cp = 2.0 * (eigvals[1] - eigvals[2]) / (eigvals[0] + eigvals[1] + eigvals[2]);
-  double A = spow((1.0 - cl), emphasis);
-  double B = spow((1.0 - cp), emphasis);
+  bool linear = cl >= cp;
+  double A = linear ? spow((1.0 - cp), emphasis) : spow((1.0 - cl), emphasis);
+  double B = linear ? spow((1.0 - cl), emphasis) : spow((1.0 - cp), emphasis);
 
   double nr[2];
   double nz[2];
@@ -1077,27 +1081,47 @@ void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double sc
       double ny = tab1.cos(u);
 
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-      for( unsigned int i=0; i<2; i++ )
+      for(unsigned int i=0; i<2; i++)
       {
         // Transorm points and add to points list
-        const double x = spow(nr[i], B) * spow(nx, A);
-        const double y = spow(nr[i], B) * spow(ny, A);
-        const double z = spow(nz[i], B);
-        Vector  point  = Vector(trans  * Point( x, y, z ));
+        double x, y, z;
+        if(linear) // Generate around x-axis
+        {
+          x =  spow(nz[i], B);
+          y = -spow(nr[i], B) * spow(ny, A);
+          z =  spow(nr[i], B) * spow(nx, A);
+        }
+        else       // Generate around z-axis
+        {
+          x = spow(nr[i], B) * spow(nx, A);
+          y = spow(nr[i], B) * spow(ny, A);
+          z = spow(nz[i], B);
+        }
+        Vector point = Vector(trans * Point(x, y, z));
         points_.push_back(point);
 
         // Add normals
-        const float nnx = spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
-        const float nny = spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
-        const float nnz = spow(nz[i], 2.0-B);
-        Vector normal = rotate * Vector( nnx, nny, nnz );
+        double nnx, nny, nnz;
+        if(linear)
+        {
+          nnx =  spow(nz[i], 2.0-B);
+          nny = -spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
+          nnz =  spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
+        }
+        else
+        {
+          nnx = spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
+          nny = spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
+          nnz = spow(nz[i], 2.0-B);
+        }
+        Vector normal = rotate * Vector(nnx, nny, nnz);
         normal.safe_normalize();
         normals_.push_back(normal);
 
         // Add color vectors from parameters
         colors_.push_back(color);
 
-        numVBOElements_ ++;
+        numVBOElements_++;
       }
 
       indices_.push_back(0 + offset);
