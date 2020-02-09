@@ -130,7 +130,6 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   params.common.bbox,
                                   params.common.resolution}, center,
                                   bmax}, true}));
-    //widgets_[2]->setToRotate();
 
     setPosition(widgets_.back()->position());
 
@@ -139,7 +138,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
     widgets_.push_back(WidgetFactory::createDisk(
                                   {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter)},
+                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
+                                  {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},
                                   {{diskRadius_ * params.common.scale,
                                   resizeCol_.toString(),
                                   bmin,
@@ -151,6 +151,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
     registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);
     registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
+    registerAllSiblingWidgetsForEvent(widgets_[3], WidgetMovement::SCALE);
   }
 }
 

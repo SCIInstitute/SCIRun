@@ -3,9 +3,8 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
+Copyright (c) 2020 Scientific Computing and Imaging Institute,
 University of Utah.
-
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -46,15 +45,10 @@ namespace SCIRun
         //void setToRotate();
         //void setToTranslate();
         //glm::vec3 getFlipVector();
-        //WidgetMovement getMovementType();
 
-        //void addInitialId();
-
-        //WidgetMovement movementType_;
         //glm::vec3 flipAxis_;
 
         //glm::vec3 origin_;
-        //std::vector<std::string> connectedIds_;
       };
 
       class WidgetBase;

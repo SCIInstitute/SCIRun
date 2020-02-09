@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
+Copyright (c) 2020 Scientific Computing and Imaging Institute,
 University of Utah.
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,19 +38,6 @@ WidgetBase::WidgetBase(const WidgetBaseParameters& params)
 {
 }
 
-// WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& origin)
-//   : GeometryObjectSpire(idGenerator, tag, isClippable),
-//     origin_(glm::vec3(origin.x(), origin.y(), origin.z()))
-// {
-// }
-//
-// WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
-//   : GeometryObjectSpire(idGenerator, tag, isClippable),
-//     origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
-//     position_(pos)
-// {
-// }
-
 Point WidgetBase::position() const
 {
   return position_;
@@ -63,7 +50,6 @@ void WidgetBase::setPosition(const Point& p)
 
 void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
 {
-  //std::cout << __FILE__ << " " << __LINE__ << ": " << uniqueID() << std::endl;
   e.func(uniqueID());
   notify(e);
 }
@@ -84,19 +70,11 @@ void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, W
 //   flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
 // }
 //
-// void WidgetBase::setToRotate()
-// {
-//   movementType_ = WidgetMovement::ROTATE;
-// }
-//
-//
 // glm::vec3 WidgetBase::getFlipVector()
 // {
 //   return flipAxis_;
 // }
 //
-
-
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
@@ -112,23 +90,14 @@ void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
     w->propagateEvent(e);
 }
 
-// std::vector<std::string> CompositeWidget::getListOfConnectedIds()
-// {
-//   std::vector<std::string> ids(widgets_.size());
-//   for(int i = 0; i < ids.size(); i++)
-//   {
-//     ids[i] = widgets_[i]->uniqueID();
-//   }
-//   return ids;
-// }
 
-  InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
-    : interactionMap_(pairs)
-  {
-  }
+InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
+  : interactionMap_(pairs)
+{
+}
 
-  WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
-  {
-    auto i = interactionMap_.find(interaction);
-    return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
-  }
+WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
+{
+  auto i = interactionMap_.find(interaction);
+  return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
+}

@@ -575,10 +575,6 @@ void SRInterface::runGCOnNextExecution()
           {
             if (widget->uniqueID() == widgetId)
             {
-              //selected_.originWorldUsedForScalingAndRotation_ = obj->origin_;
-              //mFlipAxisWorld = obj->getFlipVector();
-              //mWidgetMovement = obj->getMovementType();
-              //selected_.connectedWidgetIds_ = { widgetId };
               widgetUpdater_.setCurrentWidget(widget);
               break;
             }
@@ -652,6 +648,7 @@ void SRInterface::runGCOnNextExecution()
     {
       widget_ = w;
       movement_ = w->movementType(WidgetInteraction::CLICK);
+
       std::cout << "movement_ set to: " << static_cast<int>(movement_) << std::endl;
     }
 
@@ -748,14 +745,44 @@ void SRInterface::runGCOnNextExecution()
       return translate;
     }
 
-    void WidgetUpdateService::setupScale(const glm::mat4& viewProj, const ScreenParams& screen)
+    void WidgetUpdateService::setupScale(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera)
     {
-      scaleImpl_.reset(new WidgetScaleImpl(viewProj, screen));
+      scaleImpl_.reset(new WidgetScaleImpl(selected, screen, camera));
     }
 
     gen::Transform WidgetScaleImpl::computeTransform(int x, int y) const
     {
-      throw 1;
+      selected_.flipAxisWorldUsedForScaling_ = obj->getFlipVector();
+      auto spos = screen_.positionFromClick(x, y);
+
+      glm::vec3 currentSposView = glm::vec3(glm::inverse(camera_.getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
+      currentSposView.z = -selected_.w_;
+      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(selected_.originViewUsedForScalingAndRotation_.xy(), selected_.originViewUsedForScalingAndRotation_.z);
+
+      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(selected_.originToSposUsedForScalingAndRotation_))
+        * (glm::length(originToCurrentSpos) / glm::length(selected_.originToSposUsedForScalingAndRotation_));
+
+      // Flip if negative to avoid inverted normals
+      glm::mat4 flip;
+      bool negativeScale = scaling_factor < 0.0;
+      if (negativeScale)
+      {
+        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, selected_.flipAxisWorldUsedForScaling_);
+        scaling_factor = -scaling_factor;
+      }
+
+      auto trans = gen::Transform();
+      glm::mat4 translation = glm::translate(-selected_.originWorldUsedForScalingAndRotation_);
+      glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
+      glm::mat4 reverse_translation = glm::translate(selected_.originWorldUsedForScalingAndRotation_);
+
+      trans.transform = scale * translation;
+
+      if (negativeScale)
+        trans.transform = flip * trans.transform;
+
+      trans.transform = reverse_translation * trans.transform;
+      return trans;
     }
 
     gen::Transform WidgetRotateImpl::computeTransform(int x, int y) const
@@ -784,40 +811,8 @@ void SRInterface::runGCOnNextExecution()
 
     WidgetEventPtr WidgetUpdateService::scaleWidget(int x, int y)
     {
-      return nullptr;
-      #if 0
-      auto spos = screen_.positionFromClick(x, y);
-
-      glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
-      currentSposView.z = -selected_.w_;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
-
-      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
-        * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
-
-      // Flip if negative to avoid inverted normals
-      glm::mat4 flip;
-      bool negativeScale = scaling_factor < 0.0;
-      if (negativeScale)
-      {
-        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
-        scaling_factor = -scaling_factor;
-      }
-
-      auto trans = gen::Transform();
-      glm::mat4 translation = glm::translate(-mOriginWorld);
-      glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
-      glm::mat4 reverse_translation = glm::translate(mOriginWorld);
-
-      trans.transform = scale * translation;
-
-      if(negativeScale)
-        trans.transform = flip * trans.transform;
-
-      trans.transform = reverse_translation * trans.transform;
-
-      modifyWidget(trans);
-      #endif
+      WidgetEventPtr scale(new WidgetScaleEvent(scaleImpl_->computeTransform(x, y)));
+      return scale;
     }
 
     glm::vec2 ScreenParams::positionFromClick(int x, int y) const
@@ -832,7 +827,6 @@ void SRInterface::runGCOnNextExecution()
       WidgetEventPtr rotate(new WidgetRotateEvent(rotateImpl_->computeTransform(x, y)));
       return rotate;
     }
-
 
     //----------------------------------------------------------------------------------------------
     //---------------- Clipping Planes -------------------------------------------------------------

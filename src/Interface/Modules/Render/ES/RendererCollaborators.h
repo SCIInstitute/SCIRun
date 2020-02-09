@@ -153,13 +153,14 @@ namespace SCIRun
     class SCISHARE WidgetScaleImpl : public WidgetTransformer
     {
     public:
-      WidgetScaleImpl(const glm::mat4& viewProj, const ScreenParams& screen) :
-        invViewProj_(glm::inverse(viewProj)), screen_(screen) {}
+      WidgetScaleImpl(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera) :
+        screen_(screen), selected_(selected), camera_(camera) {}
 
       gen::Transform computeTransform(int x, int y) const override;
     private:
-      glm::mat4 invViewProj_;
       ScreenParams screen_;
+      SelectionParameters& selected_;
+      SRCamera& camera_;
     };
 
     class SCISHARE WidgetRotateImpl : public WidgetTransformer
@@ -197,6 +198,12 @@ namespace SCIRun
       using WidgetEventBase::WidgetEventBase;
     };
 
+    class SCISHARE WidgetScaleEvent : public WidgetEventBase
+    {
+    public:
+      using WidgetEventBase::WidgetEventBase;
+    };
+
     class SCISHARE WidgetUpdateService
     {
     public:
@@ -225,7 +232,7 @@ namespace SCIRun
       void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
         const ScreenParams& screen, SRCamera& camera);
       void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected);
-      void setupScale(const glm::mat4& viewProj, const ScreenParams& screen);
+      void setupScale(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera);
 
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
