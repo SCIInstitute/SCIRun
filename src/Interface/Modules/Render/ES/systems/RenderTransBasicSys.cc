@@ -26,6 +26,10 @@
  DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <entity-system/GenericSystem.hpp>
