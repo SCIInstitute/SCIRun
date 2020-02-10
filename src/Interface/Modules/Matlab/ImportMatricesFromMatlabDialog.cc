@@ -27,22 +27,16 @@
 */
 
 #include <Interface/Modules/Matlab/ImportMatricesFromMatlabDialog.h>
-#include <Modules/Legacy/Matlab/DataIO/ImportMatricesFromMatlab.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#ifndef Q_MOC_RUN
-#include <Core/Utils/StringUtil.h>
-#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Matlab;
 
 ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  portChoices_(Modules::Matlab::ImportFieldsFromMatlab::NUMPORTS, NONE_CHOICE)
+  : ImportObjectsFromMatlabDialogBase(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -54,81 +48,4 @@ ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
   connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
-}
-
-void ImportMatricesFromMatlabDialog::openFile()
-{
-  auto file = QFileDialog::getOpenFileName(this, "Open Matlab File", dialogDirectory(), "*.mat");
-  if (file.length() > 0)
-  {
-    fileNameLineEdit_->setText(file);
-    updateRecentFile(file);
-    pushFileNameToState();
-  }
-}
-
-void ImportMatricesFromMatlabDialog::pushFileNameToState()
-{
-  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
-}
-
-void ImportMatricesFromMatlabDialog::pullSpecial()
-{
-  auto fields = transient_value_cast<VariableList>(state_->getTransientValue(Parameters::FieldInfoStrings));
-  auto infos = toStringVector(fields);
-  auto names = toNameVector(fields);
-  if (fieldNames_ != names) // probably need to compare info vectors too
-  {
-    fieldNames_ = names;
-
-    matlabObjectListWidget_->clear();
-
-    for (auto&& infoTup : zip(infos, fieldNames_))
-    {
-      std::string name, info;
-      boost::tie(info, name) = infoTup;
-      auto qinfo = QString::fromStdString(info);
-      matlabObjectListWidget_->addItem(qinfo);
-    }
-
-    auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
-    size_t port = 0;
-    for (const auto& choice : choices)
-    {
-      auto found = std::find(fieldNames_.cbegin(), fieldNames_.cend(), choice);
-      if (found != fieldNames_.cend())
-      {
-        auto index = found - fieldNames_.cbegin();
-        portChoices_[port] = index;
-      }
-      else
-        portChoices_[port] = NONE_CHOICE;
-      port++;
-    }
-    matlabObjectListWidget_->addItem("<none>");
-  }
-}
-
-void ImportMatricesFromMatlabDialog::pushPortChoices()
-{
-  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return portChoices_[i] >= 0 ? fieldNames_[portChoices_[i]] : "<none>"; }, portListWidget_->count());
-  state_->setValue(Parameters::PortChoices, portChoices);
-}
-
-void ImportMatricesFromMatlabDialog::portItemClicked(int row)
-{
-  auto choice = portChoices_[row];
-  if (NONE_CHOICE == choice)
-    choice = matlabObjectListWidget_->count() - 1;
-  
-  if (choice >= 0)
-    matlabObjectListWidget_->item(choice)->setSelected(true);
-}
-
-void ImportMatricesFromMatlabDialog::matlabItemClicked(int row)
-{
-  auto currentRow = portListWidget_->currentRow();
-  if (currentRow >= 0)
-    portChoices_[currentRow] = row;
-  pushPortChoices();
 }
