@@ -67,7 +67,7 @@ QString TreeViewModuleGetter::text() const
 bool TreeViewModuleGetter::isModule() const
 {
   auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
+  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->foreground(0) != CLIPBOARD_COLOR;
 }
 
 QString TreeViewModuleGetter::clipboardXML() const
@@ -78,7 +78,7 @@ QString TreeViewModuleGetter::clipboardXML() const
 bool TreeViewModuleGetter::isClipboardXML() const
 {
   auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
+  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->foreground(0) == CLIPBOARD_COLOR);
 }
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
@@ -314,7 +314,7 @@ QWizardPage* NewUserWizard::createOtherSettingsPage()
 }
 
 
-PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : displayPython_(display), QWizard(parent)
+PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : QWizard(parent), displayPython_(display)
 {
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
@@ -1005,6 +1005,11 @@ int SCIRunGuiRunner::returnCode()
   return SCIRunMainWindow::Instance()->returnCode();
 }
 
+void SCIRunGuiRunner::reportIssue()
+{
+  SCIRunMainWindow::Instance()->reportIssue();
+}
+
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
   connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
@@ -1095,7 +1100,7 @@ void ToolkitDownloader::showMessageBox()
     auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
-      toolkitDir_ = dir;
+      toolkitDir_.setPath(dir);
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
     }

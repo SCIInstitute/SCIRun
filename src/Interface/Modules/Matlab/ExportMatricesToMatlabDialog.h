@@ -24,36 +24,39 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
-#define INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
+#ifndef INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
 
-#include "Interface/Modules/Matlab/ui_ImportMatricesFromMatlab.h"
-#include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
+#include "Interface/Modules/Matlab/ui_ExportMatricesToMatlab.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Matlab/share.h>
 
 namespace SCIRun {
-  namespace Gui {
+namespace Gui {
 
-    class SCISHARE ImportMatricesFromMatlabDialog :
-      public ImportObjectsFromMatlabDialogBase,
-      public Ui::ImportFieldsFromMatlab
-    {
-      Q_OBJECT
+class SCISHARE ExportMatricesToMatlabDialog : public ModuleDialogGeneric,
+  public Ui::ExportMatricesToMatlab, public RemembersFileDialogDirectory
+{
+	Q_OBJECT
 
-    public:
-      ImportMatricesFromMatlabDialog(const std::string& name,
-        Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = nullptr);
-    protected:
-      void pullSpecial() override { pullSpecialImpl(); }
-      QLineEdit* fileNameLineEdit() override { return fileNameLineEdit_; }
-      QListWidget* matlabObjectListWidget() override { return matlabObjectListWidget_; }
-      QListWidget* portListWidget() override { return portListWidget_; }
-    };
+public:
+  ExportMatricesToMatlabDialog(const std::string& name,
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
+private Q_SLOTS:
+  void pushArrayType();
+  void saveFile();
+  void pushFileNameToState();
+private:
+  QComboBox* makeInputArrayTypeComboBoxItem() const;
+};
 
-  }
+}
 }
 
 #endif
