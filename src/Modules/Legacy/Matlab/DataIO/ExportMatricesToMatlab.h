@@ -24,36 +24,47 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
-#define INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
+#ifndef MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
+#define MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
 
-#include "Interface/Modules/Matlab/ui_ImportMatricesFromMatlab.h"
-#include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
-#include <Interface/Modules/Matlab/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
-  namespace Gui {
 
-    class SCISHARE ImportMatricesFromMatlabDialog :
-      public ImportObjectsFromMatlabDialogBase,
-      public Ui::ImportFieldsFromMatlab
+  namespace Core
+  {
+    namespace Algorithms
     {
-      Q_OBJECT
-
-    public:
-      ImportMatricesFromMatlabDialog(const std::string& name,
-        Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = nullptr);
-    protected:
-      void pullSpecial() override { pullSpecialImpl(); }
-      QLineEdit* fileNameLineEdit() override { return fileNameLineEdit_; }
-      QListWidget* matlabObjectListWidget() override { return matlabObjectListWidget_; }
-      QListWidget* portListWidget() override { return portListWidget_; }
-    };
-
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(MatrixNames);
+        ALGORITHM_PARAMETER_DECL(MatrixFormats);
+      }
+    }
   }
-}
+
+namespace Modules {
+namespace Matlab {
+
+  class SCISHARE ExportMatricesToMatlab : public Dataflow::Networks::Module,
+    public Has2InputPorts<DynamicPortTag<MatrixPortTag>, StringPortTag>,
+    public HasNoOutputPorts
+  {
+  public:
+    ExportMatricesToMatlab();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
+    INPUT_PORT(1, Filename, String);
+    HAS_DYNAMIC_PORTS
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+    LEGACY_MATLAB_MODULE
+  };
+}}}
 
 #endif

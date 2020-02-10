@@ -39,8 +39,6 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 
-
-using namespace std;
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
@@ -60,26 +58,26 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     try
     {
       std::ifstream inputfile;
-      inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+      inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
       inputfile.open(elems_fn.c_str());
     }
 
     catch (...)
     {
-      if (pr) pr->error("Could not open file: "+elems_fn);
+      if (pr) pr->error("Could not open file: " + elems_fn);
       return (result);
     }
   }
   else
   {
-    std::string base = elems_fn.substr(0,pos);
-    std::string ext  = elems_fn.substr(pos);
-    if ((ext != ".elem" ))
+    std::string base = elems_fn.substr(0, pos);
+    std::string ext = elems_fn.substr(pos);
+    if ((ext != ".elem"))
     {
       try
       {
         std::ifstream inputfile;
-        inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+        inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         elems_fn = base + ".elem";
         inputfile.open(elems_fn.c_str());
       }
@@ -88,13 +86,13 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
         try
         {
           std::ifstream inputfile;
-          inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+          inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
           elems_fn = base + ".tet";
           inputfile.open(elems_fn.c_str());
         }
         catch (...)
         {
-          if (pr) pr->error("Could not open file: "+base + ".elem");
+          if (pr) pr->error("Could not open file: " + base + ".elem");
           return (result);
         }
       }
@@ -104,13 +102,13 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       try
       {
         std::ifstream inputfile;
-        inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+        inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         inputfile.open(elems_fn.c_str());
       }
 
       catch (...)
       {
-        if (pr) pr->error("Could not open file: "+elems_fn);
+        if (pr) pr->error("Could not open file: " + elems_fn);
         return (result);
       }
     }
@@ -123,26 +121,26 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     try
     {
       std::ifstream inputfile;
-      inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+      inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
       inputfile.open(pts_fn.c_str());
     }
 
     catch (...)
     {
-      if (pr) pr->error("Could not open file: "+pts_fn);
+      if (pr) pr->error("Could not open file: " + pts_fn);
       return (result);
     }
   }
   else
   {
-    std::string base = pts_fn.substr(0,pos);
-    std::string ext  = pts_fn.substr(pos);
-    if ((ext != ".pts" )||(ext != ".pos"))
+    std::string base = pts_fn.substr(0, pos);
+    std::string ext = pts_fn.substr(pos);
+    if ((ext != ".pts") || (ext != ".pos"))
     {
       try
       {
         std::ifstream inputfile;
-        inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+        inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         pts_fn = base + ".pts";
         inputfile.open(pts_fn.c_str());
       }
@@ -151,14 +149,14 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
         try
         {
           std::ifstream inputfile;
-          inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+          inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
           pts_fn = base + ".pos";
           inputfile.open(pts_fn.c_str());
         }
 
         catch (...)
         {
-          if (pr) pr->error("Could not open file: "+base + ".pts");
+          if (pr) pr->error("Could not open file: " + base + ".pts");
           return (result);
         }
       }
@@ -168,13 +166,13 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       try
       {
         std::ifstream inputfile;
-        inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+        inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         inputfile.open(pts_fn.c_str());
       }
 
       catch (...)
       {
-        if (pr) pr->error("Could not open file: "+pts_fn);
+        if (pr) pr->error("Could not open file: " + pts_fn);
         return (result);
       }
     }
@@ -185,86 +183,70 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
-  int num_nodes = 0; int num_elems =0;
+  int num_nodes = 0; int num_elems = 0;
   std::vector<double> values;
   std::vector<double> fvalues;
   std::vector<VMesh::index_type> ivalues;
   std::string elem_type;
-    
-    
-// Check the element type
-    
-{
-        std::ifstream inputfile;
-        inputfile.exceptions( std::ifstream::badbit );
-        
-        try
-        {
-            inputfile.open(elems_fn.c_str());
-            
-            for (int lineno = 0; getline (inputfile,line) && lineno < 2; lineno++)
-            {
-                
-                if (lineno != 0){
-                    for (size_t k=0; k<line.size(); k++)
-                    {
-                            if (line[k]==' '){ break;}
-                            else {elem_type += line[k];}
-                    }
-                }
-        
-            }
-            
-            if ((elem_type != "Tt") && (elem_type != "Tr")) {
-                if (pr) pr->error("Mesh types other than Tet and Tri not supported");
-                return (result);
-            
-            }
-        }
-        catch(...)
-        {
-            if (pr) pr->error("Could not read element type");
-            return (result);
-        }
-}
 
 
-//  if (nrows != num_nodes)
-//  {
-//    if (pr) pr->warning("Number of nodes listed in header (" + boost::lexical_cast<std::string>(num_nodes) +
-//                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
-//  }
-//
-//
-//  if ( nrows != num_elems)
-//  {
-//    if (pr) pr->warning("Number of elements listed in header (" + boost::lexical_cast<std::string>(num_elems) +
-//                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
-//  }
+  // Check the element type
+
+  {
+    std::ifstream inputfile;
+    inputfile.exceptions(std::ifstream::badbit);
+
+    try
+    {
+      inputfile.open(elems_fn.c_str());
+
+      for (int lineno = 0; getline(inputfile, line) && lineno < 2; lineno++)
+      {
+        if (lineno != 0)
+        {
+          for (size_t k = 0; k < line.size(); k++)
+          {
+            if (line[k] == ' ') { break; }
+            else { elem_type += line[k]; }
+          }
+        }
+      }
+
+      if ((elem_type != "Tt") && (elem_type != "Tr"))
+      {
+        if (pr) pr->error("Mesh types other than Tet and Tri not supported");
+        return (result);
+      }
+    }
+    catch (...)
+    {
+      if (pr) pr->error("Could not read element type");
+      return (result);
+    }
+  }
 
   // add data to elems (constant basis)
-    
-cout << "Loading element type: " << endl;
-cout << elem_type << endl;
 
-FieldInformation fi(nullptr);
-    
-    int elem_n = (elem_type == "Tt") ? 4: 3;
-    
-    
-    if (elem_type == "Tt")
-    {
-        fi= FieldInformation("TetVolMesh",-1,"double");
-        fi.make_constantdata();
-        
-    }
-    else if (elem_type == "Tr")
-    {
-        fi= FieldInformation("TriSurfMesh",-1,"double");
-        
-    }
-  
-result = CreateField(fi);
+//std::cout << "Loading element type: " << std::endl;
+//std::cout << elem_type << std::endl;
+
+  FieldInformation fi(nullptr);
+
+  int elem_n = (elem_type == "Tt") ? 4 : 3;
+
+  if (elem_type == "Tt")
+  {
+    fi = FieldInformation("TetVolMesh", -1, "double");
+    fi.make_constantdata();
+
+  }
+  else if (elem_type == "Tr")
+  {
+    fi = FieldInformation("TriSurfMesh", -1, "double");
+
+  }
+
+  result = CreateField(fi);
 
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
@@ -273,7 +255,7 @@ result = CreateField(fi);
 
   {
     std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
+    inputfile.exceptions(std::ifstream::badbit);
 
     try
     {
@@ -282,22 +264,22 @@ result = CreateField(fi);
       VMesh::Node::array_type vdata;
       vdata.resize(elem_n);
 
-      getline(inputfile,line,'\n');
-      multiple_from_string(line,values);
-      num_elems=static_cast<int>(values[0]);
+      getline(inputfile, line, '\n');
+      multiple_from_string(line, values);
+      num_elems = static_cast<int>(values[0]);
       mesh->elem_reserve(num_elems);
 
-      for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
+      for (int i = 0; i < num_elems && getline(inputfile, line, '\n'); ++i)
       {
 
-        multiple_from_string(line,ivalues);
+        multiple_from_string(line, ivalues);
 
-        for (size_t j=0; j<ivalues.size() && j< elem_n; j++)
+        for (size_t j = 0; j < ivalues.size() && j < elem_n; j++)
         {
           vdata[j] = ivalues[j];
         }
 
-        fvalues.push_back(ivalues[ivalues.size()-1]);
+        fvalues.push_back(ivalues[ivalues.size() - 1]);
 
         mesh->add_elem(vdata);
 
@@ -312,27 +294,27 @@ result = CreateField(fi);
   }
 
 
-    // Points file
+  // Points file
 
   {
     std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
+    inputfile.exceptions(std::ifstream::badbit);
 
     try
     {
       inputfile.open(pts_fn.c_str());
 
       std::vector<double> vdata(3);
-      getline(inputfile,line,'\n');
-      multiple_from_string(line,values);
-      num_nodes=static_cast<int>(values[0]);
+      getline(inputfile, line, '\n');
+      multiple_from_string(line, values);
+      num_nodes = static_cast<int>(values[0]);
 
-      for (int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i) {
+      for (int i = 0; i < num_nodes && getline(inputfile, line, '\n'); ++i) {
 
-          multiple_from_string(line, values);
-          int sf = 1000;
+        multiple_from_string(line, values);
+        int sf = 1000;
 
-          if (values.size() == 3) mesh->add_point(Point(values[0]/sf, values[1]/sf, values[2]/sf));
+        if (values.size() == 3) mesh->add_point(Point(values[0] / sf, values[1] / sf, values[2] / sf));
 
       }
     }
@@ -344,8 +326,8 @@ result = CreateField(fi);
     inputfile.close();
   }
 
-    field->resize_values();
-    field->set_values(fvalues);
+  field->resize_values();
+  field->set_values(fvalues);
 
   return (result);
 }
@@ -357,18 +339,18 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
   VMesh *mesh = fh->vmesh();
   VField *field = fh->vfield();
-  
+
   FieldInformation fi(fh);
-  
+
 
   // Points file
   {
     std::ofstream outputfile;
-    outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
+    outputfile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     std::string pts_fn(filename);
     std::string::size_type pos = pts_fn.find_last_of(".");
     std::string base = pts_fn.substr(0, pos);
-    std::string ext  = pts_fn.substr(pos);
+    std::string ext = pts_fn.substr(pos);
     const char* fileExt = ".pts";
 
     if (pos == std::string::npos)
@@ -399,9 +381,9 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->end(nodeIterEnd);
       mesh->size(nodeSize);
 
-     // N.B: not writing header
-     
-     outputfile << nodeSize << std::endl;
+      // N.B: not writing header
+
+      outputfile << nodeSize << std::endl;
 
       while (nodeIter != nodeIterEnd)
       {
@@ -422,11 +404,11 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
   // Elements file
   {
     std::ofstream outputfile;
-    outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
+    outputfile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     std::string elems_fn(filename);
     std::string::size_type pos = elems_fn.find_last_of(".");
     std::string base = elems_fn.substr(0, pos);
-    std::string ext  = elems_fn.substr(pos);
+    std::string ext = elems_fn.substr(pos);
     const char* fileExt = ".elem";
 
     if (pos == std::string::npos)
@@ -456,46 +438,46 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       std::cerr << "Number of tets = " << cellSize << std::endl;
 #endif
 
-	outputfile << cellSize << std::endl;
+      outputfile << cellSize << std::endl;
 
-    if (fi.is_tetvolmesh())
-  		{
-	    VMesh::Node::array_type cellNodes(4);
-	    
-		double scalaroutput;
-		
-    while (cellIter != cellIterEnd) {
-      
-      	field->get_value(scalaroutput,*cellIter);
-      	mesh->get_nodes(cellNodes, *cellIter);
-      	
-        outputfile << "Tt" << " " << cellNodes[0] << " " << cellNodes[1] << " " << cellNodes[2] << " " << cellNodes[3] << " " << scalaroutput << std::endl;
-        ++cellIter;
-      		}
-      	}
-    else if (fi.is_trisurfmesh())
-       {
+      if (fi.is_tetvolmesh())
+      {
+        VMesh::Node::array_type cellNodes(4);
 
-	    VMesh::Node::array_type faceNodes(3);
+        double scalaroutput;
 
-		double scalaroutput;
+        while (cellIter != cellIterEnd) {
 
-      while (cellIter != cellIterEnd) {
+          field->get_value(scalaroutput, *cellIter);
+          mesh->get_nodes(cellNodes, *cellIter);
 
-      	field->get_value(scalaroutput,*cellIter);
-      	mesh->get_nodes(faceNodes, *cellIter);
+          outputfile << "Tt" << " " << cellNodes[0] << " " << cellNodes[1] << " " << cellNodes[2] << " " << cellNodes[3] << " " << scalaroutput << std::endl;
+          ++cellIter;
+        }
+      }
+      else if (fi.is_trisurfmesh())
+      {
 
-        outputfile << "Tr" << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << " " << scalaroutput << std::endl;
-        ++cellIter;
-      		}
-      	}
-     else
-		{
+        VMesh::Node::array_type faceNodes(3);
 
-      if (pr) pr->error("Please convert to TetVol mesh ");
-      return false;
-    	}
-      
+        double scalaroutput;
+
+        while (cellIter != cellIterEnd) {
+
+          field->get_value(scalaroutput, *cellIter);
+          mesh->get_nodes(faceNodes, *cellIter);
+
+          outputfile << "Tr" << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << " " << scalaroutput << std::endl;
+          ++cellIter;
+        }
+      }
+      else
+      {
+
+        if (pr) pr->error("Please convert to TetVol mesh ");
+        return false;
+      }
+
     }
     catch (...)
     {
@@ -504,15 +486,15 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-  
-   // Isotropic Fiber file
+
+  // Isotropic Fiber file
   {
     std::ofstream outputfile;
-    outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
+    outputfile.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     std::string lon_fn(filename);
     std::string::size_type pos = lon_fn.find_last_of(".");
     std::string base = lon_fn.substr(0, pos);
-    std::string ext  = lon_fn.substr(pos);
+    std::string ext = lon_fn.substr(pos);
     const char* fileExt = ".lon";
 
     if (pos == std::string::npos)
@@ -535,63 +517,62 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-	
-      
 
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
 #endif
 
-	outputfile << 1 << std::endl;
-	
-	cout << "The generated *.lon file assumes a bath in the smallest mask layer and assigns a fiber direction of [0 0 1] to all other data layers. If a different fiber file is required, please use the CarpFiber exporter/importer." << endl;
-	
-	 if (fi.is_tetvolmesh())
-  		{
-	
-	    VMesh::Node::array_type cellNodes(4);
-	    
-	    vector<double> region;
-	    double scalaroutput;
-	    double min_region;
-	
-      while (cellIter != cellIterEnd) {
-      
-      	field->get_value(scalaroutput,*cellIter);
-      	region.push_back(scalaroutput);
-      	
-      	if (cellIter == 1){
-      	min_region = scalaroutput;
-      	}
-      	else if (scalaroutput < min_region){
-      	min_region=scalaroutput;
-      	}
-      	++cellIter;
-      	}
-      	
-      	VMesh::Cell::iterator cellIter;
-      
-       while (cellIter != cellIterEnd){
-      
-    
-      	if (region[*cellIter] != min_region) {
-      	outputfile << 0 << " " << 0 << " " << 1 << std::endl;
-      	}
-      	else {
-      	outputfile << 0 << " " << 0 << " " << 0 << std::endl;
-      	}
-              
-        ++cellIter;
-      	   
-      		}
-      	}
-	
-      	else 
-		{
-      if (pr) pr->error("Please convert to Tetvol");
-      return false;
-    	}
-      
+      outputfile << 1 << std::endl;
+
+      std::cout << "The generated *.lon file assumes a bath in the smallest mask layer and assigns a fiber direction of [0 0 1] to all other data layers. If a different fiber file is required, please use the CarpFiber exporter/importer." << std::endl;
+
+      if (fi.is_tetvolmesh())
+      {
+
+        VMesh::Node::array_type cellNodes(4);
+
+        std::vector<double> region;
+        double scalaroutput;
+        double min_region;
+
+        while (cellIter != cellIterEnd)
+        {
+          field->get_value(scalaroutput, *cellIter);
+          region.push_back(scalaroutput);
+
+          if (cellIter == 1)
+          {
+            min_region = scalaroutput;
+          }
+          else if (scalaroutput < min_region)
+          {
+            min_region = scalaroutput;
+          }
+          ++cellIter;
+        }
+
+        VMesh::Cell::iterator cellIter;
+
+        while (cellIter != cellIterEnd)
+        {
+          if (region[*cellIter] != min_region)
+          {
+            outputfile << 0 << " " << 0 << " " << 1 << std::endl;
+          }
+          else
+          {
+            outputfile << 0 << " " << 0 << " " << 0 << std::endl;
+          }
+
+          ++cellIter;
+        }
+      }
+      else
+      {
+        if (pr) pr->error("Please convert to Tetvol");
+        return false;
+      }
+
     }
     catch (...)
     {
@@ -600,8 +581,8 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-   
-   
+
+
   return true;
 }
 
