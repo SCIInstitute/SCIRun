@@ -171,9 +171,9 @@ namespace SCIRun
       void applyAutoRotation();
       void updateCamera(); // Places mCamera's transform into our static camera component.
 
-      uint32_t getSelectIDForName(const std::string& name);
-      glm::vec4 getVectorForID(const uint32_t id);
-      uint32_t getIDForVector(const glm::vec4& vec);
+      static uint32_t getSelectIDForName(const std::string& name);
+      static glm::vec4 getVectorForID(const uint32_t id);
+      static uint32_t getIDForVector(const glm::vec4& vec);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void checkClippingPlanes(int n);// make sure clipping plane number matches

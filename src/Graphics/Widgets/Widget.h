@@ -53,7 +53,7 @@ namespace SCIRun
 
       class WidgetBase;
 
-      struct GeometryIdGetter
+      struct SCISHARE GeometryIdGetter
       {
         std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
       };

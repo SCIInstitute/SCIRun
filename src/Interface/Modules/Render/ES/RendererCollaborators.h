@@ -112,6 +112,7 @@ namespace SCIRun
       int	mPort;
     };
 
+    // TODO: this class is weird, need to check if it can live within the WidgetUpdateService
     struct SCISHARE SelectionParameters
     {
       glm::vec2                           position_ {};

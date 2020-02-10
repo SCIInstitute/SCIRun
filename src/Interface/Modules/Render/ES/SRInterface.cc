@@ -621,6 +621,7 @@ void SRInterface::runGCOnNextExecution()
       {
         glm::vec4 projectedOrigin = camera_->getViewToProjection() * glm::vec4(selected.originViewUsedForScalingAndRotation_, 1.0);
         selected.w_ = projectedOrigin.w;
+        setupScale(selected, screen, *camera_);
       }
 
       auto spos = screen.positionFromClick(x, y);
@@ -718,8 +719,6 @@ void SRInterface::runGCOnNextExecution()
       modifyWidget(event);
     }
 
-    //----------------------------------------------------------------------------------------------
-
     void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
     {
       auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
@@ -752,7 +751,7 @@ void SRInterface::runGCOnNextExecution()
 
     gen::Transform WidgetScaleImpl::computeTransform(int x, int y) const
     {
-      selected_.flipAxisWorldUsedForScaling_ = obj->getFlipVector();
+      selected_.flipAxisWorldUsedForScaling_ = glm::vec3{1,0,0};//obj->getFlipVector();
       auto spos = screen_.positionFromClick(x, y);
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(camera_.getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
