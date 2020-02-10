@@ -55,13 +55,13 @@ void Screenshot::takeScreenshot()
 QImage Screenshot::getScreenshot()
 {
   static constexpr int ALPHA_INDEX = 3;
-  static constexpr int OPAQUE = 255;
+  static constexpr uint8_t COLOR_CHANNEL_MAX = 255;
 	QImage image = viewport_->grabFramebuffer();
 	for (int j = 0; j < image.height(); ++j)
 	{
     auto row = reinterpret_cast<QRgb*>(image.scanLine(j));
 		for (int i = 0; i < image.width(); ++i)
-			reinterpret_cast<uint8_t*>(row + i)[ALPHA_INDEX] = OPAQUE;
+			reinterpret_cast<uint8_t*>(row + i)[ALPHA_INDEX] = COLOR_CHANNEL_MAX;
 	}
 	return image;
 }
