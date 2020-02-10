@@ -41,8 +41,7 @@ using namespace SCIRun::Core::Algorithms::Matlab;
 
 ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  portChoices_(Modules::Matlab::ImportFieldsFromMatlab::NUMPORTS, NONE_CHOICE)
+  : ImportObjectsFromMatlabDialogBase(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -56,78 +55,87 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
   connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
 }
 
-void ImportFieldsFromMatlabDialog::openFile()
+ImportObjectsFromMatlabDialogBase::ImportObjectsFromMatlabDialogBase(ModuleStateHandle state, QWidget* parent) :
+  ModuleDialogGeneric(state, parent),
+  portChoices_(Modules::Matlab::ImportFieldsFromMatlab::NUMPORTS, NONE_CHOICE)
+{
+  state_->connectSpecificStateChanged(Variables::Filename, [this]() { pullSpecialImpl(); });
+}
+
+void ImportObjectsFromMatlabDialogBase::openFile()
 {
   auto file = QFileDialog::getOpenFileName(this, "Open Matlab File", dialogDirectory(), "*.mat");
   if (file.length() > 0)
   {
-    fileNameLineEdit_->setText(file);
+    fileNameLineEdit()->setText(file);
     updateRecentFile(file);
     pushFileNameToState();
   }
 }
 
-void ImportFieldsFromMatlabDialog::pushFileNameToState()
+void ImportObjectsFromMatlabDialogBase::pushFileNameToState()
 {
-  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit()->text().trimmed().toStdString());
 }
 
-void ImportFieldsFromMatlabDialog::pullSpecial()
+void ImportObjectsFromMatlabDialogBase::pullSpecialImpl()
 {
   auto fields = transient_value_cast<VariableList>(state_->getTransientValue(Parameters::FieldInfoStrings));
   auto infos = toStringVector(fields);
   auto names = toNameVector(fields);
-  if (fieldNames_ != names) // probably need to compare info vectors too
+  if (objectNames_ != names) // probably need to compare info vectors too
   {
-    fieldNames_ = names;
+    objectNames_ = names;
 
-    matlabObjectListWidget_->clear();
+    matlabObjectListWidget()->clear();
 
-    for (auto&& infoTup : zip(infos, fieldNames_))
+    for (auto&& infoTup : zip(infos, objectNames_))
     {
       std::string name, info;
       boost::tie(info, name) = infoTup;
       auto qinfo = QString::fromStdString(info);
-      matlabObjectListWidget_->addItem(qinfo);
+      matlabObjectListWidget()->addItem(qinfo);
     }
 
     auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
     size_t port = 0;
     for (const auto& choice : choices)
     {
-      auto found = std::find(fieldNames_.cbegin(), fieldNames_.cend(), choice);
-      if (found != fieldNames_.cend())
+      auto found = std::find(objectNames_.cbegin(), objectNames_.cend(), choice);
+      if (found != objectNames_.cend())
       {
-        auto index = found - fieldNames_.cbegin();
+        auto index = found - objectNames_.cbegin();
         portChoices_[port] = index;
       }
       else
         portChoices_[port] = NONE_CHOICE;
       port++;
     }
-    matlabObjectListWidget_->addItem("<none>");
+    matlabObjectListWidget()->addItem("<none>");
   }
 }
 
-void ImportFieldsFromMatlabDialog::pushPortChoices()
+void ImportObjectsFromMatlabDialogBase::pushPortChoices()
 {
-  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return portChoices_[i] >= 0 ? fieldNames_[portChoices_[i]] : "<none>"; }, portListWidget_->count());
+  auto portChoices = makeHomogeneousVariableList([this](size_t i)
+    { return portChoices_[i] >= 0 && (portChoices_[i] < objectNames_.size()) ? objectNames_[portChoices_[i]] : "<none>"; },
+    portListWidget()->count());
   state_->setValue(Parameters::PortChoices, portChoices);
 }
 
-void ImportFieldsFromMatlabDialog::portItemClicked(int row)
+void ImportObjectsFromMatlabDialogBase::portItemClicked(int row)
 {
   auto choice = portChoices_[row];
   if (NONE_CHOICE == choice)
-    choice = matlabObjectListWidget_->count() - 1;
-  
+    choice = matlabObjectListWidget()->count() - 1;
+
   if (choice >= 0)
-    matlabObjectListWidget_->item(choice)->setSelected(true);
+    matlabObjectListWidget()->item(choice)->setSelected(true);
 }
 
-void ImportFieldsFromMatlabDialog::matlabItemClicked(int row)
+void ImportObjectsFromMatlabDialogBase::matlabItemClicked(int row)
 {
-  auto currentRow = portListWidget_->currentRow();
+  auto currentRow = portListWidget()->currentRow();
   if (currentRow >= 0)
     portChoices_[currentRow] = row;
   pushPortChoices();

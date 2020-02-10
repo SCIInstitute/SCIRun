@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Matlab/ExportFieldsToMatlabDialog.h>
+#include <Interface/Modules/Matlab/ExportMatricesToMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
+#include <Modules/Legacy/Matlab/DataIO/ExportMatricesToMatlab.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Matlab;
 
-ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, ModuleStateHandle state,
+ExportMatricesToMatlabDialog::ExportMatricesToMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -50,12 +50,12 @@ ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, 
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
 
-void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& portName, DynamicPortChange type)
+void ExportMatricesToMatlabDialog::updateFromPortChange(int, const std::string& portName, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
-  static const std::string typeName = "Field";
+  static const std::string typeName = "Matrix";
   const int lineEditColumn = 1;
   syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, TableItemMakerMap(),
   {
@@ -64,14 +64,14 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& po
   pushArrayType();
 }
 
-QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
+QComboBox* ExportMatricesToMatlabDialog::makeInputArrayTypeComboBoxItem() const
 {
   QStringList bcList;
   bcList << "numeric array" << "struct array";
   auto bcBox = new QComboBox();
   bcBox->addItems(bcList);
 
-  auto formats = state_->getValue(Parameters::FieldFormats).toVector();
+  auto formats = state_->getValue(Parameters::MatrixFormats).toVector();
   if (formats.size() >= tableWidget->rowCount())
   {
     bcBox->setCurrentIndex(
@@ -88,13 +88,13 @@ QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
   return bcBox;
 }
 
-void ExportFieldsToMatlabDialog::pushArrayType()
+void ExportMatricesToMatlabDialog::pushArrayType()
 {
   auto types = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 2))->currentText().toStdString(); }, tableWidget->rowCount());
-  state_->setValue(Parameters::FieldFormats, types);
+  state_->setValue(Parameters::MatrixFormats, types);
 }
 
-void ExportFieldsToMatlabDialog::saveFile()
+void ExportMatricesToMatlabDialog::saveFile()
 {
   auto file = QFileDialog::getSaveFileName(this, "Save Matlab File", dialogDirectory(), "*.mat");
   if (file.length() > 0)
@@ -105,7 +105,7 @@ void ExportFieldsToMatlabDialog::saveFile()
   }
 }
 
-void ExportFieldsToMatlabDialog::pushFileNameToState()
+void ExportMatricesToMatlabDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }

@@ -327,7 +327,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded
@@ -451,7 +451,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded
