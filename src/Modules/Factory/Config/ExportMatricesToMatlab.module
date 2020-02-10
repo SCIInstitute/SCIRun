@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ExportMatricesToMatlab",
+    "namespace": "Matlab",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Matlab/DataIO/ExportMatricesToMatlab.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ExportMatricesToMatlabDialog",
+    "header": "Interface/Modules/Matlab/ExportMatricesToMatlabDialog.h"
+  }
+}
