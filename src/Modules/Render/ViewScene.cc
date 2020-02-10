@@ -128,7 +128,7 @@ void ViewScene::setStateDefaults()
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
   state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
-  state->setValue(CameraRotation, std::string("[1.0, 0.0, 0.0, 0.0]"));
+  state->setValue(CameraRotation, std::string("Quaternion(1.0,0.0,0.0,0.0)"));
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

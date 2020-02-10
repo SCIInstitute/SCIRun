@@ -33,7 +33,6 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
-#include <glm/glm.hpp>
 
 namespace SCIRun
 {

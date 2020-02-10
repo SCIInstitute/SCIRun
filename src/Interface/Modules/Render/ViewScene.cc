@@ -35,7 +35,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
-#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Thread/Mutex.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
@@ -44,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Modules/Render/ViewScene.h>
 #include <boost/timer.hpp>
+#include <Interface/Modules/Render/ViewSceneUtility.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -56,6 +56,7 @@ using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
+using namespace SCIRun::Render::Gui;
 using namespace SCIRun::Modules::Render;
 
 namespace
@@ -491,17 +492,9 @@ void ViewSceneDialog::setupScaleBar()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraState()
 {
-  auto spire = mSpire.lock();
-  if(!spire) return;
-
-  float distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
-  spire->setCameraDistance(distance);
-
-  auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
-  spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
-
-  std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
-  spire->setCameraRotation(stringToQuat(rotString));
+  pullCameraDistance();
+  pullCameraLookAt();
+  pullCameraRotation();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -512,7 +505,11 @@ void ViewSceneDialog::pullCameraRotation()
   if(!spire) return;
 
   std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
-  spire->setCameraRotation(stringToQuat(rotString));
+  glm::quat q = ViewSceneUtility::stringToQuat(rotString);
+  spire->setCameraRotation(q);
+  spire.reset();
+
+  pushCameraRotation();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -524,16 +521,9 @@ void ViewSceneDialog::pullCameraLookAt()
 
   auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
   spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
-}
+  spire.reset();
 
-//--------------------------------------------------------------------------------------------------
-glm::quat ViewSceneDialog::stringToQuat(std::string &s)
-{
-  std::istringstream is(s);
-  double w, x, y, z;
-  char st;
-  is >> st >> w >> st >> x >> st >> y >> st >> z >> st;
-  return glm::quat(w, x, y, z);
+  pushCameraLookAt();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -543,29 +533,55 @@ void ViewSceneDialog::pullCameraDistance()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  float distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
+  double distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
+  distance = std::max(std::abs(distance), 1e-10);
   spire->setCameraDistance(distance);
+  spire.reset();
+
+  pushCameraDistance();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraState()
+{
+  pushCameraDistance();
+  pushCameraLookAt();
+  pushCameraRotation();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pushCameraDistance()
 {
   pushingCameraState_ = true;
   auto spire = mSpire.lock();
   if(!spire) return;
 
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
+  pushingCameraState_ = false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pushCameraLookAt()
+{
+  pushingCameraState_ = true;
+  auto spire = mSpire.lock();
+  if(!spire) return;
 
   glm::vec3 v = spire->getCameraLookAt();
   auto lookAt = Point((double)v.x, (double)v.y, (double)v.z);
   state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt.get_string());
+  pushingCameraState_ = false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pushCameraRotation()
+{
+  pushingCameraState_ = true;
+  auto spire = mSpire.lock();
+  if(!spire) return;
 
   glm::quat q = spire->getCameraRotation();
-  std::string rotation = "[" + std::to_string((double)q.w) + ", "
-                             + std::to_string((double)q.x) + ", "
-                             + std::to_string((double)q.y) + ", "
-                             + std::to_string((double)q.z) + "]";
-  state_->setValue(Modules::Render::ViewScene::CameraRotation, rotation);
+  state_->setValue(Modules::Render::ViewScene::CameraRotation, ViewSceneUtility::quatToString(q));
   pushingCameraState_ = false;
 }
 
