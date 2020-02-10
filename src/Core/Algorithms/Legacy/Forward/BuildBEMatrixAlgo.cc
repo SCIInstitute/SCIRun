@@ -1090,7 +1090,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   }
 
   std::vector<int> fieldNodeSize(fields.size());
-  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
   DenseBlockMatrix EE(fieldNodeSize, fieldNodeSize);
 
   // Calculate EE in block matrix form
@@ -1119,7 +1119,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
   //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
-  std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
 
   DenseBlockMatrix EJ(fieldNodeSize, sourceFieldNodeSize);
 
@@ -1162,7 +1162,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
   //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
-  std::transform(measFields.begin(), measFields.end(), measurementNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(measFields.begin(), measFields.end(), measurementNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
 
   // Split EE apart into Pmm, Pss, Pms, and Psm
   // -----------------------------------------------
