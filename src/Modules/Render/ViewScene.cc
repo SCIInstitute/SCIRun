@@ -127,6 +127,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
+  state->setValue(CameraDistanceMinimum, 1e-10);
   state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
   state->setValue(CameraRotation, std::string("Quaternion(1.0,0.0,0.0,0.0)"));
 
@@ -328,5 +329,6 @@ const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
 const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
 const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
 const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
+const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");
 const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
 const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");

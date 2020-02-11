@@ -532,7 +532,8 @@ void ViewSceneDialog::pullCameraDistance()
   if(!spire) return;
 
   double distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
-  distance = std::max(std::abs(distance), 1e-10);
+  double distanceMin = state_->getValue(Modules::Render::ViewScene::CameraDistanceMinimum).toDouble();
+  distance = std::max(std::abs(distance), distanceMin);
   spire->setCameraDistance(distance);
 
   pushCameraDistance();
