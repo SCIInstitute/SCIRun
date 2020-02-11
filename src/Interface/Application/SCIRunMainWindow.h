@@ -110,6 +110,7 @@ public Q_SLOTS:
   void setDataDirectoryFromGUI();
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
+  void reportIssue();
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
@@ -237,6 +238,7 @@ private Q_SLOTS:
   void importLegacyNetwork();
   void launchNewInstance();
   void launchNewUserWizard();
+  void launchPythonWizard();
   void loadNetwork();
   void loadPythonAPIDoc();
   void loadRecentNetwork();

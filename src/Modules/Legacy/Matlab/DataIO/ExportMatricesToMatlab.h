@@ -6,6 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,32 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
-#define INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
+#ifndef MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
+#define MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
 
-#include "Interface/Modules/Fields/ui_CalculateInsideWhichFieldDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
-namespace Gui {
 
-class SCISHARE CalculateInsideWhichFieldDialog : public ModuleDialogGeneric,
-  public Ui::CalculateInsideWhichFieldDialog
-{
-	Q_OBJECT
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(MatrixNames);
+        ALGORITHM_PARAMETER_DECL(MatrixFormats);
+      }
+    }
+  }
 
-public:
-  CalculateInsideWhichFieldDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
-private Q_SLOTS:
-  void setUseNanForUnassignedValues(int state);
-};
+namespace Modules {
+namespace Matlab {
 
-}
-}
+  class SCISHARE ExportMatricesToMatlab : public Dataflow::Networks::Module,
+    public Has2InputPorts<DynamicPortTag<MatrixPortTag>, StringPortTag>,
+    public HasNoOutputPorts
+  {
+  public:
+    ExportMatricesToMatlab();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
+    INPUT_PORT(1, Filename, String);
+    HAS_DYNAMIC_PORTS
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+    LEGACY_MATLAB_MODULE
+  };
+}}}
 
 #endif

@@ -563,6 +563,12 @@ void SCIRunMainWindow::launchNewUserWizard()
   wiz.exec();
 }
 
+void SCIRunMainWindow::launchPythonWizard()
+{
+  PythonWizard *wiz = new PythonWizard( [this](const  QString& code) {pythonConsole_->runWizardCommand(code); }, this);
+  wiz->show();
+}
+
 void SCIRunMainWindow::adjustModuleDock(int state)
 {
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();

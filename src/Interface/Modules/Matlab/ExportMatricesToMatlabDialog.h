@@ -6,6 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,29 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
-#define INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
+#ifndef INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
 
-#include "Interface/Modules/Fields/ui_CalculateInsideWhichFieldDialog.h"
+#include "Interface/Modules/Matlab/ui_ExportMatricesToMatlab.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE CalculateInsideWhichFieldDialog : public ModuleDialogGeneric,
-  public Ui::CalculateInsideWhichFieldDialog
+class SCISHARE ExportMatricesToMatlabDialog : public ModuleDialogGeneric,
+  public Ui::ExportMatricesToMatlab, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 
 public:
-  CalculateInsideWhichFieldDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
+  ExportMatricesToMatlabDialog(const std::string& name,
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 private Q_SLOTS:
-  void setUseNanForUnassignedValues(int state);
+  void pushArrayType();
+  void saveFile();
+  void pushFileNameToState();
+private:
+  QComboBox* makeInputArrayTypeComboBoxItem() const;
 };
 
 }
