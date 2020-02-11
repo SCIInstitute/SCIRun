@@ -59,7 +59,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Datatype of Destination Field</string>
@@ -101,7 +101,7 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>Value Assigned to First Field</string>
@@ -133,7 +133,7 @@
         </item>
        </widget>
       </item>
-      <item row="6" column="2">
+      <item row="7" column="2">
        <widget class="QComboBox" name="dataLocation_">
         <property name="minimumSize">
          <size>
@@ -153,7 +153,7 @@
         </item>
        </widget>
       </item>
-      <item row="5" column="2">
+      <item row="6" column="2">
        <widget class="QComboBox" name="outputType_">
         <property name="minimumSize">
          <size>
@@ -203,7 +203,7 @@
         </item>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>Output Data Location</string>
@@ -254,6 +254,19 @@
        </widget>
       </item>
       <item row="4" column="2">
+       <widget class="QCheckBox" name="useNanForUnassignedValuesCheckBox_">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Use NaN</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
        <widget class="QDoubleSpinBox" name="startValue_">
         <property name="minimumSize">
          <size>
@@ -278,5 +291,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>useNanForUnassignedValuesCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>outsideValue_</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>128</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
