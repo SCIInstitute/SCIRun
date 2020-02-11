@@ -507,7 +507,6 @@ void ViewSceneDialog::pullCameraRotation()
   std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
   glm::quat q = ViewSceneUtility::stringToQuat(rotString);
   spire->setCameraRotation(q);
-  spire.reset();
 
   pushCameraRotation();
 }
@@ -521,7 +520,6 @@ void ViewSceneDialog::pullCameraLookAt()
 
   auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
   spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
-  spire.reset();
 
   pushCameraLookAt();
 }
@@ -536,7 +534,6 @@ void ViewSceneDialog::pullCameraDistance()
   double distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
   distance = std::max(std::abs(distance), 1e-10);
   spire->setCameraDistance(distance);
-  spire.reset();
 
   pushCameraDistance();
 }
