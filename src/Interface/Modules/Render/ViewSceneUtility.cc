@@ -34,8 +34,9 @@ using namespace SCIRun::Render::Gui;
 
 glm::quat ViewSceneUtility::stringToQuat(const std::string &s)
 {
-  double w = 1.0;
-  double x, y, z = 0.0f;
+  double w, x, y, z;
+  w = 1.0;
+  x = y = z = 0.0f;
   if (!s.empty())
   {
     try
