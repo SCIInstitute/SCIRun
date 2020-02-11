@@ -730,7 +730,6 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlma
   if (matrixIs::dense(scimat))
   {
     DenseMatrix tmatrix = castMatrix::toDense(scimat)->transpose();
-              
     std::vector<int> dims(2);
     dims[1] = tmatrix.nrows();
     dims[0] = tmatrix.ncols();
@@ -1050,7 +1049,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
                           
           nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoCenter,centerdata); 
                                            
-          scinrrd = scinrrd;
+          //scinrrd = scinrrd;
         }
         catch (...)
         {

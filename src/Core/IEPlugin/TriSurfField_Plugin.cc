@@ -789,7 +789,7 @@ bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char 
     {
       Point p;
       mesh->get_center(p, *nodeIter);
-      outputfile << "Vertex " << count++ << " " << p.x() << " " << p.y() << " " << p.z() << std::endl;
+      outputfile << "Vertex " << count++ << " " << p.x() << " " << p.y() << " " << p.z() << '\n';
       ++nodeIter;
     }
 
@@ -802,9 +802,10 @@ bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char 
     mesh->begin(faceIter);
     mesh->end(faceIterEnd);
     count = 1;
-    while (faceIter != faceIterEnd) {
+    while (faceIter != faceIterEnd) 
+    {
       mesh->get_nodes(faceNodes, *faceIter);
-      outputfile << "Face " << count++ << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
+      outputfile << "Face " << count++ << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << '\n';
       ++faceIter;
     }
   }
@@ -855,9 +856,9 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
     outputfile.flags(ff);
 
-    outputfile << "# vtk DataFile Version 3.0" << std::endl
-               << "vtk output\nASCII"<< std::endl
-              << "DATASET POLYDATA" << std::endl << std::endl;
+    outputfile << "# vtk DataFile Version 3.0" << '\n'
+               << "vtk output\nASCII"<< '\n'
+              << "DATASET POLYDATA" << '\n' << '\n';
 
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
@@ -872,7 +873,7 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     {
       Point p;
       mesh->get_center(p, *nodeIter);
-      outputfile << p.x() << " " << p.y() << " " << p.z() << std::endl;
+      outputfile << p.x() << " " << p.y() << " " << p.z() << '\n';
       ++nodeIter;
     }
 
@@ -886,9 +887,10 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     mesh->end(faceIterEnd);
 
     outputfile << "POLYGONS " << faceSize << " " << faceSize * 4 << std::endl;
-    while (faceIter != faceIterEnd) {
+    while (faceIter != faceIterEnd) 
+    {
       mesh->get_nodes(faceNodes, *faceIter);
-      outputfile << "3 " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
+      outputfile << "3 " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << '\n';
       ++faceIter;
     }
   }

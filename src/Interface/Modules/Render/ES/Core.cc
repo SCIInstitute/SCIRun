@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include "Core.h"
 
 #include <es-fs/Registration.hpp>

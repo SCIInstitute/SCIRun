@@ -69,6 +69,7 @@ void ImportMatricesFromMatlab::setStateDefaults()
   auto nones = makeHomogeneousVariableList([](size_t) { return std::string("<none>"); }, NUMPORTS);
   get_state()->setValue(Parameters::PortChoices, nones);
   get_state()->setValue(Variables::Filename, std::string());
+  get_state()->connectSpecificStateChanged(Variables::Filename, [this]() { indexmatlabfile(); });
 }
 
 void ImportMatricesFromMatlab::postStateChangeInternalSignalHookup()
