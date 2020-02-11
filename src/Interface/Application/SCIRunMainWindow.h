@@ -104,7 +104,6 @@ public:
   QString mostRecentFile() const;
   static const int clipboardKey = 125;
 public Q_SLOTS:
-  void reportIssue();
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
   void setDataDirectoryFromGUI();
