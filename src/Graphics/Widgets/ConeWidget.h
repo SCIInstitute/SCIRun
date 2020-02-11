@@ -42,8 +42,6 @@ namespace SCIRun {
       {
       public:
         ConeWidget(const GeneralWidgetParameters& gen, ConeParameters params);
-      private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
       };
 
       using ConeWidgetHandle = SharedPointer<ConeWidget>;

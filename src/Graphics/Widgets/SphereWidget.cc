@@ -33,9 +33,8 @@ using namespace SCIRun::Graphics::Datatypes;
 
 SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
                            SphereParameters params)
-  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag, gen.base.mapping})//, point, origin)
+  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag, gen.base.mapping})
 {
   name_ = gen.glyphMaker->sphere(params, *this);
   setPosition(params.point);
-  setOrigin(params.common.origin);
 }

@@ -185,6 +185,38 @@ namespace SCIRun
       private:
         TransformMapping interactionMap_;
       };
+
+      struct SCISHARE TransformParameters
+      {
+        virtual ~TransformParameters() {}
+      };
+
+      using TransformParametersPtr = std::shared_ptr<TransformParameters>;
+
+      struct SCISHARE Rotation : TransformParameters
+      {
+        explicit Rotation(const Core::Geometry::Point& p) : origin(p) {}
+        const Core::Geometry::Point origin;
+      };
+
+      struct SCISHARE Scaling : Rotation
+      {
+        explicit Scaling(const Core::Geometry::Point& p, const Core::Geometry::Vector& v) : Rotation(p), flip(v) {}
+        const Core::Geometry::Vector flip;
+      };
+
+      SCISHARE Core::Geometry::Point getRotationOrigin(TransformParametersPtr t);
+      SCISHARE Core::Geometry::Vector getScaleFlipVector(TransformParametersPtr t);
+
+      class SCISHARE Transformable
+      {
+      public:
+        TransformParametersPtr transformParameters() const { return transformParameters_; }
+        template <class TransformType, class ... Params>
+        void setTransformParameters(Params&&... t) { transformParameters_ = std::make_shared<TransformType>(t...); }
+      private:
+        TransformParametersPtr transformParameters_;
+      };
     }
   }
 }

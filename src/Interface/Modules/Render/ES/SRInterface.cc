@@ -588,8 +588,7 @@ void SRInterface::runGCOnNextExecution()
       //calculate position
       if (widgetUpdater_.currentWidget())
       {
-        auto cam = mCore.getStaticComponent<gen::StaticCamera>();
-        widgetUpdater_.doPostSelectSetup(x, y, depth, selected_, screen_, cam->data.viewProjection);
+        widgetUpdater_.doPostSelectSetup(x, y, depth, selected_, screen_, getStaticCameraViewProjection());
         widgetUpdater_.updateWidget(x, y);
       }
 
@@ -599,7 +598,14 @@ void SRInterface::runGCOnNextExecution()
       return widgetUpdater_.currentWidget();
     }
 
-    static glm::vec3 toVec3(const Point& p)
+    glm::mat4 SRInterface::getStaticCameraViewProjection()
+    {
+      auto cam = mCore.getStaticComponent<gen::StaticCamera>();
+      return cam->data.viewProjection;
+    }
+
+    template <class P>
+    static glm::vec3 toVec3(const P& p)
     {
       return glm::vec3{p.x(), p.y(), p.z()};
     }
@@ -607,7 +613,7 @@ void SRInterface::runGCOnNextExecution()
     void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth,
       SelectionParameters& selected, const ScreenParams& screen, const glm::mat4& staticViewProjection)
     {
-      selected.originWorldUsedForScalingAndRotation_ = toVec3(widget_->origin());
+      selected.originWorldUsedForScalingAndRotation_ = toVec3(getRotationOrigin(widget_->transformParameters()));
       //Calculate w value
       float zFar = camera_->getZFar();
       float zNear = camera_->getZNear();
@@ -649,8 +655,7 @@ void SRInterface::runGCOnNextExecution()
     {
       widget_ = w;
       movement_ = w->movementType(WidgetInteraction::CLICK);
-
-      std::cout << "movement_ set to: " << static_cast<int>(movement_) << std::endl;
+      //std::cout << "movement_ set to: " << static_cast<int>(movement_) << std::endl;
     }
 
     WidgetRotateImpl::WidgetRotateImpl(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
@@ -746,12 +751,12 @@ void SRInterface::runGCOnNextExecution()
 
     void WidgetUpdateService::setupScale(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera)
     {
+      selected.flipAxisWorldUsedForScaling_ = toVec3(getScaleFlipVector(widget_->transformParameters()));
       scaleImpl_.reset(new WidgetScaleImpl(selected, screen, camera));
     }
 
     gen::Transform WidgetScaleImpl::computeTransform(int x, int y) const
     {
-      selected_.flipAxisWorldUsedForScaling_ = glm::vec3{1,0,0};//obj->getFlipVector();
       auto spos = screen_.positionFromClick(x, y);
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(camera_.getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));

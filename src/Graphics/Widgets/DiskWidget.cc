@@ -35,9 +35,8 @@ using namespace SCIRun::Core::Geometry;
 
 DiskWidget::DiskWidget(const GeneralWidgetParameters& gen,
                        DiskParameters params)
-  : WidgetBase({gen.base.idGenerator, "DiskWidget::" + gen.base.tag, gen.base.mapping})//, Point(p1 + p2)/2, origin)
+  : WidgetBase({gen.base.idGenerator, "DiskWidget::" + gen.base.tag, gen.base.mapping})
 {
   name_ = gen.glyphMaker->disk(params, *this);
   setPosition(Point(params.p1 + params.p2)/2);
-  setOrigin(params.common.origin);
 }

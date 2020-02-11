@@ -200,6 +200,7 @@ namespace SCIRun
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+      glm::mat4 getStaticCameraViewProjection();
 
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.

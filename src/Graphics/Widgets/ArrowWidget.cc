@@ -139,20 +139,22 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     widgets_.push_back(WidgetFactory::createDisk(
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},
+                                  {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},  //TODO: concern #1--how user interaction maps to transform type
                                   {{diskRadius_ * params.common.scale,
                                   resizeCol_.toString(),
                                   bmin,
                                   params.common.bbox,
                                   params.common.resolution}, dp1, dp2 }));
-    //Vector flipVec = dir.getArbitraryTangent().normal();
-    //widgets_[3]->setToScale(flipVec);
 
-    registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
-    registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);
+    //TODO: create cool operator syntax for wiring these up.
+    registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
     registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
+    widgets_[2]->setTransformParameters<Rotation>(bmin);                        //TODO: concern #3--what data transform of "root" requires
     registerAllSiblingWidgetsForEvent(widgets_[3], WidgetMovement::SCALE);
+    Vector flipVec = params.dir.getArbitraryTangent().normal();
+    widgets_[3]->setTransformParameters<Scaling>(bmin, flipVec);
   }
+  registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
 }
 
 bool ArrowWidget::isVector() const

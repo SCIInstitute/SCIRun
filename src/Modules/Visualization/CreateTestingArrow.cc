@@ -89,7 +89,7 @@ void CreateTestingArrow::setStateDefaults()
 void CreateTestingArrow::execute()
 {
   impl_->origin_ = impl_->currentLocation(get_state());
-  std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
+  //std::cout << __FILE__ << __LINE__ << " " << impl_->origin_ << std::endl;
   CommonWidgetParameters common
   {
     1.0, "red", impl_->origin_,
@@ -105,7 +105,7 @@ void CreateTestingArrow::execute()
     {*this, "testArrow1"},
     arrowParams
   );
-  std::cout << __FILE__ << __LINE__ << " " << (*(dynamic_cast<ArrowWidget*>(arrow.get())->subwidgetBegin()))->origin() << std::endl;
+  //std::cout << __FILE__ << __LINE__ << " " << (*(dynamic_cast<ArrowWidget*>(arrow.get())->subwidgetBegin()))->origin() << std::endl;
   sendOutput(Arrow, arrow);
 
   {

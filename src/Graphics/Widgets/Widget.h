@@ -39,18 +39,6 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      class SCISHARE WidgetManipulationStuff
-      {
-        //void setToScale(const Core::Geometry::Vector& flipAxis);
-        //void setToRotate();
-        //void setToTranslate();
-        //glm::vec3 getFlipVector();
-
-        //glm::vec3 flipAxis_;
-
-        //glm::vec3 origin_;
-      };
-
       class WidgetBase;
 
       struct SCISHARE GeometryIdGetter
@@ -63,7 +51,8 @@ namespace SCIRun
 
       class SCISHARE WidgetBase : public GeometryObjectSpire,
         public WidgetObservable,
-        public InputTransformMapper
+        public InputTransformMapper,
+        public Transformable
       {
       public:
         explicit WidgetBase(const WidgetBaseParameters& params);
@@ -73,15 +62,10 @@ namespace SCIRun
 
         const std::string& name() const { return name_; }
 
-        Core::Geometry::Point origin() const { return origin_; }
-        void setOrigin(const Core::Geometry::Point& p) { origin_ = p; }
-
         virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
         std::string name_;
-      private:
-        Core::Geometry::Point origin_;
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;

@@ -6,7 +6,6 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -56,44 +55,29 @@ WidgetHandle WidgetFactory::createArrowWidget(const WidgetBaseParameters& gen,
 WidgetHandle WidgetFactory::createBox(const WidgetBaseParameters& gen,
                                                BasicBoundingBoxParameters params)
 {
-  auto widget = boost::make_shared<BasicBoundingBoxWidget>(packageWithGlyph(gen), params);
-  //widget->addInitialId();
-  //widget->setToTranslate();
-  return widget;
+  return boost::make_shared<BasicBoundingBoxWidget>(packageWithGlyph(gen), params);
 }
 
 WidgetHandle WidgetFactory::createSphere(const WidgetBaseParameters& gen,
                                          SphereParameters params)
 {
-  auto widget = boost::make_shared<SphereWidget>(packageWithGlyph(gen), params);
-  //widget->addInitialId();
-  //widget->setToTranslate();
-  return widget;
+  return boost::make_shared<SphereWidget>(packageWithGlyph(gen), params);
 }
 
 WidgetHandle WidgetFactory::createCylinder(const WidgetBaseParameters& gen,
                                            CylinderParameters params)
 {
-  auto widget = boost::make_shared<CylinderWidget>(packageWithGlyph(gen), params);
-  // widget->addInitialId();
-  // widget->setToTranslate();
-  return widget;
+  return boost::make_shared<CylinderWidget>(packageWithGlyph(gen), params);
 }
 
 WidgetHandle WidgetFactory::createCone(const WidgetBaseParameters& gen,
                                        ConeParameters params)
 {
-  auto widget = boost::make_shared<ConeWidget>(packageWithGlyph(gen), params);
-  // widget->addInitialId();
-  // widget->setToTranslate();
-  return widget;
+  return boost::make_shared<ConeWidget>(packageWithGlyph(gen), params);
 }
 
 WidgetHandle WidgetFactory::createDisk(const WidgetBaseParameters& gen,
                                        DiskParameters params)
 {
-  auto widget = boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
-  // widget->addInitialId();
-  // widget->setToTranslate();
-  return widget;
+  return boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
 }

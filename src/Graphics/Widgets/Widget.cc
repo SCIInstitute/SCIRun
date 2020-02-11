@@ -63,19 +63,6 @@ void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, W
   }
 }
 
-//
-// void WidgetBase::setToScale(const Vector& flipAxis)
-// {
-//   movementType_ = WidgetMovement::SCALE;
-//   flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
-// }
-//
-// glm::vec3 WidgetBase::getFlipVector()
-// {
-//   return flipAxis_;
-// }
-//
-
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
   if (handle.get() == this)
@@ -100,4 +87,16 @@ WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction)
 {
   auto i = interactionMap_.find(interaction);
   return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
+}
+
+Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(TransformParametersPtr t)
+{
+  auto rot = std::dynamic_pointer_cast<Rotation>(t);
+  return rot ? rot->origin : Point();
+}
+
+Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(TransformParametersPtr t)
+{
+  auto sc = std::dynamic_pointer_cast<Scaling>(t);
+  return sc ? sc->flip : Vector();
 }

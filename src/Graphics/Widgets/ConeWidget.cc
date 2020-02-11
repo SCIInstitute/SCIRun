@@ -35,9 +35,8 @@ using namespace SCIRun::Core::Geometry;
 
 ConeWidget::ConeWidget(const GeneralWidgetParameters& gen,
                        ConeParameters params)
-  : WidgetBase({gen.base.idGenerator, "ConeWidget::" + gen.base.tag, gen.base.mapping})//, Point(p1 + p2)/2, origin)
+  : WidgetBase({gen.base.idGenerator, "ConeWidget::" + gen.base.tag, gen.base.mapping})
 {
   name_ = gen.glyphMaker->cone(params, *this);
   setPosition(Point(params.cylinder.p1 + params.cylinder.p2)/2);
-  setOrigin(params.cylinder.common.origin);
 }
