@@ -112,13 +112,13 @@ namespace SCIRun
       int	mPort;
     };
 
-    // TODO: this class is weird, need to check if it can live within the WidgetUpdateService
+    // these need to be set-once parameters
     struct SCISHARE SelectionParameters
     {
-      glm::vec2                           position_ {};
+      glm::vec2                           position_TRANSLATE_NEEDED_ {};
+      //TODO: w_ is set multiple times, refactor
       float                               w_ {0};
-      float                               depth_ {0};
-      float                               radius_ {0};
+      float                               radius_ROTATION_ONLY_ {0};
       glm::vec3                           flipAxisWorldUsedForScaling_ {};
       glm::vec3                           originWorldUsedForScalingAndRotation_ {};
       glm::vec3                           originToSposUsedForScalingAndRotation_       {};
@@ -136,46 +136,6 @@ namespace SCIRun
     public:
       virtual ~WidgetTransformer() {}
       virtual gen::Transform computeTransform(int x, int y) const = 0;
-    };
-
-    class SCISHARE WidgetTranslationImpl : public WidgetTransformer
-    {
-    public:
-      WidgetTranslationImpl(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected) :
-        invViewProj_(glm::inverse(viewProj)), screen_(screen), selected_(selected) {}
-
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      glm::mat4 invViewProj_;
-      ScreenParams screen_;
-      const SelectionParameters& selected_;
-    };
-
-    class SCISHARE WidgetScaleImpl : public WidgetTransformer
-    {
-    public:
-      WidgetScaleImpl(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera) :
-        screen_(screen), selected_(selected), camera_(camera) {}
-
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      ScreenParams screen_;
-      SelectionParameters& selected_;
-      SRCamera& camera_;
-    };
-
-    class SCISHARE WidgetRotateImpl : public WidgetTransformer
-    {
-    public:
-      WidgetRotateImpl(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
-        const ScreenParams& screen, SRCamera& camera);
-
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      std::shared_ptr<spire::ArcBall>	  widgetBall_;
-      ScreenParams screen_;
-      const SelectionParameters& selected_;
-      SRCamera& camera_;
     };
 
     class SCISHARE WidgetEventBase
@@ -205,11 +165,20 @@ namespace SCIRun
       using WidgetEventBase::WidgetEventBase;
     };
 
-    class SCISHARE WidgetUpdateService
+    class SCISHARE WidgetUpdateServiceInterface
     {
     public:
-      explicit WidgetUpdateService(ObjectTranformer* transformer) :
-        transformer_(transformer) {}
+      virtual ~WidgetUpdateServiceInterface() {}
+      virtual const SelectionParameters& selectedParameters() const = 0;
+      virtual SRCamera& camera() const = 0;
+      virtual const ScreenParams& screen() const = 0;
+    };
+
+    class SCISHARE WidgetUpdateService : public WidgetUpdateServiceInterface
+    {
+    public:
+      explicit WidgetUpdateService(ObjectTranformer* transformer, const ScreenParams& screen) :
+        transformer_(transformer), screen_(screen) {}
 
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
@@ -219,29 +188,73 @@ namespace SCIRun
       WidgetEventPtr translateWidget(int x, int y);
       WidgetEventPtr scaleWidget(int x, int y);
 
+      const SelectionParameters& selectedParameters() const override { return selected_; }
+      SRCamera& camera() const override { return *camera_; }
+      const ScreenParams& screen() const override { return screen_; };
+
       void reset();
 
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      void doPostSelectSetup(int x, int y, float depth,
-        const ScreenParams& screen, const glm::mat4& staticViewProjection);
+      void doPostSelectSetup(int x, int y, float depth, const glm::mat4& staticViewProjection);
 
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      SelectionParameters selected_;
-      void setupRotate(bool negativeZ, const glm::vec2& posView,
-        const ScreenParams& screen, SRCamera& camera);
-      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen);
-      void setupScale(const ScreenParams& screen, SRCamera& camera);
+      void setupRotate(bool negativeZ, const glm::vec2& posView);
+      void setupTranslate(const glm::mat4& viewProj);
+      void setupScale();
 
+      float setInitialW(float depth) const;
+
+      SelectionParameters selected_;
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTranformer* transformer_ {nullptr};
+      const ScreenParams& screen_;
       std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
+    };
+
+    class SCISHARE WidgetTransformerBase : public WidgetTransformer
+    {
+    public:
+      explicit WidgetTransformerBase(const WidgetUpdateServiceInterface* s) :
+        service_(s) {}
+    protected:
+      const WidgetUpdateServiceInterface* service_;
+    };
+
+    class SCISHARE WidgetTranslationImpl : public WidgetTransformerBase
+    {
+    public:
+      WidgetTranslationImpl(const WidgetUpdateServiceInterface* s,
+        const glm::mat4& viewProj) : WidgetTransformerBase(s),
+        invViewProj_(glm::inverse(viewProj)) {}
+
+      gen::Transform computeTransform(int x, int y) const override;
+    private:
+      glm::mat4 invViewProj_;
+    };
+
+    class SCISHARE WidgetScaleImpl : public WidgetTransformerBase
+    {
+    public:
+      using WidgetTransformerBase::WidgetTransformerBase;
+
+      gen::Transform computeTransform(int x, int y) const override;
+    };
+
+    class SCISHARE WidgetRotateImpl : public WidgetTransformerBase
+    {
+    public:
+      WidgetRotateImpl(const WidgetUpdateServiceInterface* s, bool negativeZ, const glm::vec2& posView);
+
+      gen::Transform computeTransform(int x, int y) const override;
+    private:
+      std::shared_ptr<spire::ArcBall>	widgetBall_;
     };
   }
 }
