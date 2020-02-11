@@ -217,7 +217,6 @@ namespace SCIRun
 
       bool                                mSelectionHack      {false};
 
-      SelectionParameters selected_;
       ScreenParams screen_;
       WidgetUpdateService widgetUpdater_;
 

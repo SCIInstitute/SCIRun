@@ -224,16 +224,17 @@ namespace SCIRun
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      void doPostSelectSetup(int x, int y, float depth, SelectionParameters& selected,
+      void doPostSelectSetup(int x, int y, float depth,
         const ScreenParams& screen, const glm::mat4& staticViewProjection);
 
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      void setupRotate(const SelectionParameters& selected, bool negativeZ, const glm::vec2& posView,
+      SelectionParameters selected_;
+      void setupRotate(bool negativeZ, const glm::vec2& posView,
         const ScreenParams& screen, SRCamera& camera);
-      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen, const SelectionParameters& selected);
-      void setupScale(SelectionParameters& selected, const ScreenParams& screen, SRCamera& camera);
+      void setupTranslate(const glm::mat4& viewProj, const ScreenParams& screen);
+      void setupScale(const ScreenParams& screen, SRCamera& camera);
 
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
