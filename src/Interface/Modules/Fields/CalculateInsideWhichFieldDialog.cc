@@ -32,6 +32,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -52,5 +53,20 @@ CalculateInsideWhichFieldDialog::CalculateInsideWhichFieldDialog(const std::stri
   addDoubleSpinBoxManager(startValue_, Parameters::StartValue);
   addComboBoxManager(outputType_, Parameters::OutputType);
   addComboBoxManager(dataLocation_, Parameters::DataLocation);
+  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
 }
-
+void CalculateInsideWhichFieldDialog::pullSpecial()
+{
+  if (IsNan(state_->getValue(Parameters::OutsideValue).toDouble()))
+  {
+    useNanForUnassignedValuesCheckBox_->setChecked(true);
+  }
+}
+void CalculateInsideWhichFieldDialog::setUseNanForUnassignedValues(int state)
+{
+  if (!pulling_)
+  {
+    if (0 != state)
+    state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
+  }
+}
