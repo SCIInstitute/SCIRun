@@ -644,73 +644,67 @@ void SRInterface::runGCOnNextExecution()
       updateWidget(x, y);
     }
 
-    TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
-    {
-      TranslateParameters p;
-      p.initialPosition_ = initPos;
-      p.w_ = initW;
-      p.viewProj = transformer_->getStaticCameraViewProjection();
-      return p;
-    }
+TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
+{
+  TranslateParameters p;
+  p.initialPosition_ = initPos;
+  p.w_ = initW;
+  p.viewProj = transformer_->getStaticCameraViewProjection();
+  return p;
+}
 
-    ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
-    {
-      ScaleParameters p;
-      p.initialPosition_ = initPos;
-      p.w_ = initW;
-      auto widgetTransformParameters = widget_->transformParameters();
-      p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
-      p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-      return p;
-    }
+ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
+{
+  ScaleParameters p;
+  p.initialPosition_ = initPos;
+  p.w_ = initW;
+  auto widgetTransformParameters = widget_->transformParameters();
+  p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
+  p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
+  return p;
+}
 
-    RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
-    {
-      RotateParameters p;
-      p.initialPosition_ = initPos;
-      p.w_ = initW;
-      p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
-      return p;
-    }
+RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
+{
+  RotateParameters p;
+  p.initialPosition_ = initPos;
+  p.w_ = initW;
+  p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
+  return p;
+}
 
-    void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
-    {
-      auto initialW = getInitialW(depth);
-      auto initialPosition = screen_.positionFromClick(x, y);
+#define makeCalcFunc(memFn) [this](const glm::vec2& initPos, float initW) \
+                              { return transformFactory_.create(memFn(initPos, initW)); }
 
-      switch (movement_)
-      {
-        case WidgetMovement::TRANSLATE:
-        {
-          objectTransformCalculator_ = transformFactory_.create(buildTranslation(initialPosition, initialW));
-          break;
-        }
-        case WidgetMovement::SCALE:
-        {
-          objectTransformCalculator_ = transformFactory_.create(buildScale(initialPosition, initialW));
-          break;
-        }
-        case WidgetMovement::ROTATE:
-        {
-          objectTransformCalculator_ = transformFactory_.create(buildRotation(initialPosition, initialW));
-          break;
-        }
-        default:
-          break;
-      }
-    }
+WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
+  transformer_(transformer), screen_(screen), transformFactory_(this)
+{
+  transformCalcMakerMapping_ =
+  {
+    {WidgetMovement::TRANSLATE, makeCalcFunc(buildTranslation)},
+    {WidgetMovement::ROTATE, makeCalcFunc(buildRotation)},
+    {WidgetMovement::SCALE, makeCalcFunc(buildScale)}
+  };
+}
 
-    void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
-    {
-      widget_ = w;
-      movement_ = w->movementType(WidgetInteraction::CLICK);
-    }
+void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
+{
+  auto initialW = getInitialW(depth);
+  auto initialPosition = screen_.positionFromClick(x, y);
+  objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
+}
 
-    //----------------------------------------------------------------------------------------------
-    uint32_t SRInterface::getSelectIDForName(const std::string& name)
-    {
-      return static_cast<uint32_t>(std::hash<std::string>()(name));
-    }
+void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
+{
+  widget_ = w;
+  movement_ = w->movementType(WidgetInteraction::CLICK);
+}
+
+//----------------------------------------------------------------------------------------------
+uint32_t SRInterface::getSelectIDForName(const std::string& name)
+{
+  return static_cast<uint32_t>(std::hash<std::string>()(name));
+}
 
     //----------------------------------------------------------------------------------------------
     glm::vec4 SRInterface::getVectorForID(const uint32_t id)

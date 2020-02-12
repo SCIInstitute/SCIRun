@@ -193,16 +193,16 @@ namespace SCIRun
       const BasicRendererObjectProvider* brop_;
     };
 
+    using TransformCalcMaker = std::function<ObjectTransformCalculatorPtr(const glm::vec2&, float)>;
+    using TransformCalcMakerMapping = std::map<Graphics::Datatypes::WidgetMovement, TransformCalcMaker>;
+
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider
     {
     public:
-      explicit WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
-        transformer_(transformer), screen_(screen), transformFactory_(this) {}
-
+      WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen);
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
       void modifyWidget(WidgetEventPtr event);
-
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
 
@@ -229,6 +229,7 @@ namespace SCIRun
       const ScreenParams& screen_;
       ObjectTransformCalculatorPtr objectTransformCalculator_;
       ObjectTransformCalculatorFactory transformFactory_;
+      TransformCalcMakerMapping transformCalcMakerMapping_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
     };
