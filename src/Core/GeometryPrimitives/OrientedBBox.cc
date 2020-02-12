@@ -37,7 +37,7 @@ OrientedBBox::OrientedBBox(const Vector &e1, const Vector &e2, const Vector &e3)
   eigvecs_ = {e1, e2, e3};
 }
 
-std::ostream& operator<<(std::ostream& out, const OrientedBBox& b)
+std::ostream& SCIRun::Core::Geometry::operator<<(std::ostream& out, const OrientedBBox& b)
 {
   return out << b.get_min() << " : " << b.get_max();
 }
