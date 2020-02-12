@@ -202,6 +202,8 @@ namespace SCIRun
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
       void modifyWidget(WidgetEventPtr event);
+
+      void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
 
       SRCamera& camera() const override { return *camera_; }
@@ -212,14 +214,16 @@ namespace SCIRun
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      void doPostSelectSetup(int x, int y, float depth);
-
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      float setInitialW(float depth) const;
+      void doPostSelectSetup(int x, int y, float depth);
+      float getInitialW(float depth) const;
+      TranslateParameters buildTranslation(const glm::vec2& initPos, float initW);
+      ScaleParameters buildScale(const glm::vec2& initPos, float initW);
+      RotateParameters buildRotation(const glm::vec2& initPos, float initW);
 
-      Graphics::Datatypes::WidgetHandle   widget_;
+      Graphics::Datatypes::WidgetHandle widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;

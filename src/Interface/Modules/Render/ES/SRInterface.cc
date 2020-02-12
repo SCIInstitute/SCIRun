@@ -585,8 +585,7 @@ void SRInterface::runGCOnNextExecution()
 
       if (widgetUpdater_.currentWidget())
       {
-        widgetUpdater_.doPostSelectSetup(x, y, depth);
-        widgetUpdater_.updateWidget(x, y);
+        widgetUpdater_.doInitialUpdate(x, y, depth);
       }
 
       for (auto& it : entityList)
@@ -607,7 +606,7 @@ void SRInterface::runGCOnNextExecution()
       return glm::vec3{p.x(), p.y(), p.z()};
     }
 
-    float WidgetUpdateService::setInitialW(float depth) const
+    float WidgetUpdateService::getInitialW(float depth) const
     {
       float zFar = camera_->getZFar();
       float zNear = camera_->getZNear();
@@ -639,40 +638,61 @@ void SRInterface::runGCOnNextExecution()
       return boost::make_shared<ObjectRotateImpl>(brop_, p);
     }
 
+    void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
+    {
+      doPostSelectSetup(x, y, depth);
+      updateWidget(x, y);
+    }
+
+    TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
+    {
+      TranslateParameters p;
+      p.initialPosition_ = initPos;
+      p.w_ = initW;
+      p.viewProj = transformer_->getStaticCameraViewProjection();
+      return p;
+    }
+
+    ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
+    {
+      ScaleParameters p;
+      p.initialPosition_ = initPos;
+      p.w_ = initW;
+      auto widgetTransformParameters = widget_->transformParameters();
+      p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
+      p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
+      return p;
+    }
+
+    RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
+    {
+      RotateParameters p;
+      p.initialPosition_ = initPos;
+      p.w_ = initW;
+      p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
+      return p;
+    }
+
     void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
     {
-      auto initialW = setInitialW(depth);
+      auto initialW = getInitialW(depth);
       auto initialPosition = screen_.positionFromClick(x, y);
 
       switch (movement_)
       {
         case WidgetMovement::TRANSLATE:
         {
-          TranslateParameters p;
-          p.initialPosition_ = initialPosition;
-          p.w_ = initialW;
-          p.viewProj = transformer_->getStaticCameraViewProjection();
-          objectTransformCalculator_ = transformFactory_.create(p);
+          objectTransformCalculator_ = transformFactory_.create(buildTranslation(initialPosition, initialW));
           break;
         }
         case WidgetMovement::SCALE:
         {
-          ScaleParameters p;
-          p.initialPosition_ = initialPosition;
-          p.w_ = initialW;
-          auto widgetTransformParameters = widget_->transformParameters();
-          p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
-          p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-          objectTransformCalculator_ = transformFactory_.create(p);
+          objectTransformCalculator_ = transformFactory_.create(buildScale(initialPosition, initialW));
           break;
         }
         case WidgetMovement::ROTATE:
         {
-          RotateParameters p;
-          p.initialPosition_ = initialPosition;
-          p.w_ = initialW;
-          p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
-          objectTransformCalculator_ = transformFactory_.create(p);
+          objectTransformCalculator_ = transformFactory_.create(buildRotation(initialPosition, initialW));
           break;
         }
         default:
@@ -684,7 +704,6 @@ void SRInterface::runGCOnNextExecution()
     {
       widget_ = w;
       movement_ = w->movementType(WidgetInteraction::CLICK);
-      //std::cout << "movement_ set to: " << static_cast<int>(movement_) << std::endl;
     }
 
     //----------------------------------------------------------------------------------------------
