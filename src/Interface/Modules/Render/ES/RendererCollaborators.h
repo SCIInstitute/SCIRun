@@ -129,9 +129,7 @@ namespace SCIRun
     {
       glm::vec2 initialPosition_;
       float w_;
-      glm::vec3 originView_;
       glm::vec3 flipAxisWorld_;
-      glm::vec3 originToSpos_;
       glm::vec3 originWorld_;
     };
 
@@ -179,7 +177,6 @@ namespace SCIRun
     {
     public:
       virtual ~WidgetUpdateServiceInterface() {}
-      //virtual const SelectionParameters& selectedParameters() const = 0;
       virtual SRCamera& camera() const = 0;
       virtual const ScreenParams& screen() const = 0;
     };
@@ -198,7 +195,6 @@ namespace SCIRun
       WidgetEventPtr translateWidget(int x, int y);
       WidgetEventPtr scaleWidget(int x, int y);
 
-      //const SelectionParameters& selectedParameters() const override { return selected_; }
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; };
 
@@ -218,7 +214,6 @@ namespace SCIRun
 
       float setInitialW(float depth) const;
 
-      //SelectionParameters selected_;
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTransformer* transformer_ {nullptr};
@@ -253,6 +248,12 @@ namespace SCIRun
     public:
       explicit WidgetScaleImpl(const WidgetUpdateServiceInterface* s, const ScaleParameters& p);
       gen::Transform computeTransform(int x, int y) const override;
+    private:
+      glm::vec3 originView_;
+      float projectedW_;
+      glm::vec3 flipAxisWorld_;
+      glm::vec3 originToSpos_;
+      glm::vec3 originWorld_;
     };
 
     class SCISHARE WidgetRotateImpl : public WidgetTransformerBase
