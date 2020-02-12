@@ -51,12 +51,14 @@ namespace SCIRun
       virtual MouseMode getMouseMode() const = 0;
     };
 
-    class SCISHARE ObjectTranformer
+    class SCISHARE ObjectTransformer
     {
     public:
-      virtual ~ObjectTranformer() {}
+      virtual ~ObjectTransformer() {}
 
       virtual void modifyObject(const std::string& id, const gen::Transform& trans) = 0;
+      //TODO: move
+      virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
     class SCISHARE RendererWidgetInterface

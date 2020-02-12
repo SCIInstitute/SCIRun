@@ -45,7 +45,6 @@ namespace SCIRun
       explicit FatalRendererError(const std::string& message) : std::runtime_error(message) {}
     };
 
-
     class SCISHARE DepthIndex
     {
     public:
@@ -118,7 +117,6 @@ namespace SCIRun
       glm::vec2                           position_TRANSLATE_NEEDED_ {};
       //TODO: w_ is set multiple times, refactor
       float                               w_ {0};
-      float                               radius_ROTATION_ONLY_ {0};
       glm::vec3                           flipAxisWorldUsedForScaling_ {};
       glm::vec3                           originWorldUsedForScalingAndRotation_ {};
       glm::vec3                           originToSposUsedForScalingAndRotation_       {};
@@ -177,7 +175,7 @@ namespace SCIRun
     class SCISHARE WidgetUpdateService : public WidgetUpdateServiceInterface
     {
     public:
-      explicit WidgetUpdateService(ObjectTranformer* transformer, const ScreenParams& screen) :
+      explicit WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
         transformer_(transformer), screen_(screen) {}
 
       void setCamera(SRCamera* cam) { camera_ = cam; }
@@ -197,13 +195,13 @@ namespace SCIRun
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
       Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
 
-      void doPostSelectSetup(int x, int y, float depth, const glm::mat4& staticViewProjection);
+      void doPostSelectSetup(int x, int y, float depth);
 
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      void setupRotate(bool negativeZ, const glm::vec2& posView);
-      void setupTranslate(const glm::mat4& viewProj);
+      void setupRotate(const glm::vec2& posView);
+      void setupTranslate();
       void setupScale();
 
       float setInitialW(float depth) const;
@@ -211,7 +209,7 @@ namespace SCIRun
       SelectionParameters selected_;
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
-      ObjectTranformer* transformer_ {nullptr};
+      ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
       SRCamera* camera_ {nullptr};
@@ -230,8 +228,7 @@ namespace SCIRun
     class SCISHARE WidgetTranslationImpl : public WidgetTransformerBase
     {
     public:
-      WidgetTranslationImpl(const WidgetUpdateServiceInterface* s,
-        const glm::mat4& viewProj) : WidgetTransformerBase(s),
+      explicit WidgetTranslationImpl(const WidgetUpdateServiceInterface* s, const glm::mat4& viewProj) : WidgetTransformerBase(s),
         invViewProj_(glm::inverse(viewProj)) {}
 
       gen::Transform computeTransform(int x, int y) const override;
@@ -250,7 +247,7 @@ namespace SCIRun
     class SCISHARE WidgetRotateImpl : public WidgetTransformerBase
     {
     public:
-      WidgetRotateImpl(const WidgetUpdateServiceInterface* s, bool negativeZ, const glm::vec2& posView);
+      WidgetRotateImpl(const WidgetUpdateServiceInterface* s, const glm::vec2& posView);
 
       gen::Transform computeTransform(int x, int y) const override;
     private:

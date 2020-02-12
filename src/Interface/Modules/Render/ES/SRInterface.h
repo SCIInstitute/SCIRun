@@ -58,7 +58,7 @@ namespace SCIRun
     // structures. The view scene dialog on qt widgets only serve one purpose:
     // to relay information to this thread so that rendering can take place.
     // Information such as mouse clicks and user settings.
-    class SCISHARE SRInterface : public RendererInterface, public ObjectTranformer
+    class SCISHARE SRInterface : public RendererInterface, public ObjectTransformer
     {
       //we use a static component for assigning entity IDs
       //For assigning asset entity ids. This can be removed if
@@ -155,6 +155,7 @@ namespace SCIRun
       // Screen width retrieval. Dimensions are pixels.
       size_t getScreenWidthPixels() const override  { return screen_.width; }
       size_t getScreenHeightPixels() const override { return screen_.height; }
+      glm::mat4 getStaticCameraViewProjection() override;
 
       void modifyObject(const std::string& id, const gen::Transform& trans) override;
 
@@ -200,7 +201,6 @@ namespace SCIRun
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
-      glm::mat4 getStaticCameraViewProjection();
 
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.

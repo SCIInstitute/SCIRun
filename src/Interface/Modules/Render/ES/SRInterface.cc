@@ -588,7 +588,7 @@ void SRInterface::runGCOnNextExecution()
       //calculate position
       if (widgetUpdater_.currentWidget())
       {
-        widgetUpdater_.doPostSelectSetup(x, y, depth, getStaticCameraViewProjection());
+        widgetUpdater_.doPostSelectSetup(x, y, depth);
         widgetUpdater_.updateWidget(x, y);
       }
 
@@ -618,7 +618,7 @@ void SRInterface::runGCOnNextExecution()
       return -z;
     }
 
-    void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth, const glm::mat4& staticViewProjection)
+    void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
     {
       auto initialW = setInitialW(depth);
       selected_.w_ = initialW;//TODO
@@ -626,7 +626,7 @@ void SRInterface::runGCOnNextExecution()
       selected_.originWorldUsedForScalingAndRotation_ = toVec3(getRotationOrigin(widget_->transformParameters()));
       selected_.originViewUsedForScalingAndRotation_ = glm::vec3(camera_->getWorldToView() * glm::vec4(selected_.originWorldUsedForScalingAndRotation_, 1.0));
 
-      auto spos = screen_.positionFromClick(x, y);
+      auto initialScreenPosition = screen_.positionFromClick(x, y);
 
       // Get w value in of origin if scaling
       if (movement_ == WidgetMovement::SCALE)
@@ -637,19 +637,19 @@ void SRInterface::runGCOnNextExecution()
 
       if (movement_ == WidgetMovement::TRANSLATE)
       {
-        selected_.position_TRANSLATE_NEEDED_ = spos;
-        setupTranslate(staticViewProjection);
+        selected_.position_TRANSLATE_NEEDED_ = initialScreenPosition;
+        setupTranslate();
         return;
       }
 
       // scale needs the following, but after changing w_!!!
-      glm::vec3 sposView = glm::vec3(glm::inverse(camera_->getViewToProjection()) * glm::vec4(spos * selected_.w_, 0.0, 1.0));
+      glm::vec3 sposView = glm::vec3(glm::inverse(camera_->getViewToProjection()) * glm::vec4(initialScreenPosition * selected_.w_, 0.0, 1.0));
       sposView.z = -selected_.w_;
       selected_.originToSposUsedForScalingAndRotation_ = sposView - selected_.originViewUsedForScalingAndRotation_;
 
       if (movement_ == WidgetMovement::ROTATE)
       {
-        setupRotate((selected_.originToSposUsedForScalingAndRotation_.z < 0.0), glm::vec2(sposView));
+        setupRotate(glm::vec2(sposView));
       }
     }
 
@@ -661,21 +661,24 @@ void SRInterface::runGCOnNextExecution()
     }
 
     WidgetRotateImpl::WidgetRotateImpl(const WidgetUpdateServiceInterface* s,
-      bool negativeZ, const glm::vec2& posView) : WidgetTransformerBase(s)
+      const glm::vec2& posView) : WidgetTransformerBase(s)
     {
+      auto originToSpos = service_->selectedParameters().originToSposUsedForScalingAndRotation_;
+      auto radius = glm::length(originToSpos);
+      bool negativeZ = (originToSpos.z < 0.0);
       widgetBall_.reset(new spire::ArcBall(service_->selectedParameters().originViewUsedForScalingAndRotation_,
-        service_->selectedParameters().radius_ROTATION_ONLY_, negativeZ));
+        radius, negativeZ));
       widgetBall_->beginDrag(posView);
     }
 
-    void WidgetUpdateService::setupRotate(bool negativeZ, const glm::vec2& posView)
+    void WidgetUpdateService::setupRotate(const glm::vec2& posView)
     {
-      selected_.radius_ROTATION_ONLY_ = glm::length(selected_.originToSposUsedForScalingAndRotation_);
-      rotateImpl_.reset(new WidgetRotateImpl(this, negativeZ, posView));
+      rotateImpl_.reset(new WidgetRotateImpl(this, posView));
     }
 
-    void WidgetUpdateService::setupTranslate(const glm::mat4& viewProj)
+    void WidgetUpdateService::setupTranslate()
     {
+      auto viewProj = transformer_->getStaticCameraViewProjection();
       translateImpl_.reset(new WidgetTranslationImpl(this, viewProj));
     }
 
