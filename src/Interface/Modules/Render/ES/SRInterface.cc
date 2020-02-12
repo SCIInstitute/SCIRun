@@ -615,6 +615,30 @@ void SRInterface::runGCOnNextExecution()
       return -z;
     }
 
+    template <class Params>
+    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const Params& p)
+    {
+      return nullptr;
+    }
+
+    template <>
+    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const TranslateParameters& p)
+    {
+      return boost::make_shared<ObjectTranslationImpl>(brop_, p);
+    }
+
+    template <>
+    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ScaleParameters& p)
+    {
+      return boost::make_shared<ObjectScaleImpl>(brop_, p);
+    }
+
+    template <>
+    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const RotateParameters& p)
+    {
+      return boost::make_shared<ObjectRotateImpl>(brop_, p);
+    }
+
     void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
     {
       auto initialW = setInitialW(depth);
@@ -628,7 +652,7 @@ void SRInterface::runGCOnNextExecution()
           p.initialPosition_ = initialPosition;
           p.w_ = initialW;
           p.viewProj = transformer_->getStaticCameraViewProjection();
-          setupTranslate(p);
+          objectTransformCalculator_ = transformFactory_.create(p);
           break;
         }
         case WidgetMovement::SCALE:
@@ -639,7 +663,7 @@ void SRInterface::runGCOnNextExecution()
           auto widgetTransformParameters = widget_->transformParameters();
           p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
           p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-          setupScale(p);
+          objectTransformCalculator_ = transformFactory_.create(p);
           break;
         }
         case WidgetMovement::ROTATE:
@@ -648,7 +672,7 @@ void SRInterface::runGCOnNextExecution()
           p.initialPosition_ = initialPosition;
           p.w_ = initialW;
           p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
-          setupRotate(p);
+          objectTransformCalculator_ = transformFactory_.create(p);
           break;
         }
         default:
@@ -692,21 +716,7 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void WidgetUpdateService::updateWidget(int x, int y)
     {
-      WidgetEventPtr event;
-      switch (movement_)
-      {
-      case WidgetMovement::TRANSLATE:
-        event = translateWidget(x, y);
-        break;
-      case WidgetMovement::ROTATE:
-        event = rotateWidget(x, y);
-        break;
-      case WidgetMovement::SCALE:
-        event = scaleWidget(x, y);
-        break;
-      case WidgetMovement::NONE:
-        return;
-      }
+      WidgetEventPtr event(new WidgetEventBase(objectTransformCalculator_->computeTransform(x, y)));
       modifyWidget(event);
     }
 
@@ -729,17 +739,6 @@ void SRInterface::runGCOnNextExecution()
       widgetTransform_ = event->transform.transform;
     }
 
-    WidgetEventPtr WidgetUpdateService::translateWidget(int x, int y)
-    {
-      WidgetEventPtr translate(new WidgetTranslateEvent(objectTransformCalculator_->computeTransform(x, y)));
-      return translate;
-    }
-
-    void WidgetUpdateService::setupTranslate(const TranslateParameters& t)
-    {
-      objectTransformCalculator_.reset(new ObjectTranslationImpl(this, t));
-    }
-
     ObjectTranslationImpl::ObjectTranslationImpl(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
       ObjectTransformCalculatorBase(s),
       initialPosition_(t.initialPosition_),
@@ -754,11 +753,6 @@ void SRInterface::runGCOnNextExecution()
       auto trans = gen::Transform();
       trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
       return trans;
-    }
-
-    void WidgetUpdateService::setupScale(const ScaleParameters& p)
-    {
-      objectTransformCalculator_.reset(new ObjectScaleImpl(this, p));
     }
 
     ObjectScaleImpl::ObjectScaleImpl(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
@@ -807,11 +801,6 @@ void SRInterface::runGCOnNextExecution()
       return trans;
     }
 
-    void WidgetUpdateService::setupRotate(const RotateParameters& p)
-    {
-      objectTransformCalculator_.reset(new ObjectRotateImpl(this, p));
-    }
-
     ObjectRotateImpl::ObjectRotateImpl(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
       originWorld_(p.originWorld_), initialW_(p.w_)
     {
@@ -849,23 +838,10 @@ void SRInterface::runGCOnNextExecution()
       return trans;
     }
 
-    WidgetEventPtr WidgetUpdateService::scaleWidget(int x, int y)
-    {
-      WidgetEventPtr scale(new WidgetScaleEvent(objectTransformCalculator_->computeTransform(x, y)));
-      return scale;
-    }
-
     glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     {
       return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
                    -(float(y) / float(height) * 2.0 - 1.0));
-    }
-
-    //----------------------------------------------------------------------------------------------
-    WidgetEventPtr WidgetUpdateService::rotateWidget(int x, int y)
-    {
-      WidgetEventPtr rotate(new WidgetRotateEvent(objectTransformCalculator_->computeTransform(x, y)));
-      return rotate;
     }
 
     //----------------------------------------------------------------------------------------------

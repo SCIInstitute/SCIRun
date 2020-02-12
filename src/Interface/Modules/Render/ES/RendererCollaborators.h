@@ -146,6 +146,8 @@ namespace SCIRun
       virtual gen::Transform computeTransform(int x, int y) const = 0;
     };
 
+    using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
+
     class SCISHARE WidgetEventBase
     {
     public:
@@ -155,23 +157,23 @@ namespace SCIRun
 
     using WidgetEventPtr = SharedPointer<WidgetEventBase>;
 
-    class SCISHARE WidgetTranslateEvent : public WidgetEventBase
-    {
-    public:
-      using WidgetEventBase::WidgetEventBase;
-    };
-
-    class SCISHARE WidgetRotateEvent : public WidgetEventBase
-    {
-    public:
-      using WidgetEventBase::WidgetEventBase;
-    };
-
-    class SCISHARE WidgetScaleEvent : public WidgetEventBase
-    {
-    public:
-      using WidgetEventBase::WidgetEventBase;
-    };
+    // class SCISHARE WidgetTranslateEvent : public WidgetEventBase
+    // {
+    // public:
+    //   using WidgetEventBase::WidgetEventBase;
+    // };
+    //
+    // class SCISHARE WidgetRotateEvent : public WidgetEventBase
+    // {
+    // public:
+    //   using WidgetEventBase::WidgetEventBase;
+    // };
+    //
+    // class SCISHARE WidgetScaleEvent : public WidgetEventBase
+    // {
+    // public:
+    //   using WidgetEventBase::WidgetEventBase;
+    // };
 
     class SCISHARE BasicRendererObjectProvider
     {
@@ -181,19 +183,26 @@ namespace SCIRun
       virtual const ScreenParams& screen() const = 0;
     };
 
+    class ObjectTransformCalculatorFactory
+    {
+    public:
+      explicit ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop) : brop_(brop) {}
+      template <class Params>
+      ObjectTransformCalculatorPtr create(const Params& p);
+    private:
+      const BasicRendererObjectProvider* brop_;
+    };
+
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider
     {
     public:
       explicit WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
-        transformer_(transformer), screen_(screen) {}
+        transformer_(transformer), screen_(screen), transformFactory_(this) {}
 
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
       void modifyWidget(WidgetEventPtr event);
       void updateWidget(int x, int y);
-      WidgetEventPtr rotateWidget(int x, int y);
-      WidgetEventPtr translateWidget(int x, int y);
-      WidgetEventPtr scaleWidget(int x, int y);
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; };
@@ -208,17 +217,14 @@ namespace SCIRun
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      void setupRotate(const RotateParameters& p);
-      void setupTranslate(const TranslateParameters& p);
-      void setupScale(const ScaleParameters& p);
-
       float setInitialW(float depth) const;
 
       Graphics::Datatypes::WidgetHandle   widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
-      std::unique_ptr<ObjectTransformCalculator> objectTransformCalculator_;
+      ObjectTransformCalculatorPtr objectTransformCalculator_;
+      ObjectTransformCalculatorFactory transformFactory_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
     };
