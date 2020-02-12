@@ -114,13 +114,14 @@ namespace SCIRun
     // these need to be set-once parameters
     struct SCISHARE SelectionParameters
     {
-      glm::vec2                           position_TRANSLATE_NEEDED_ {};
+      glm::vec2 position_;
       //TODO: w_ is set multiple times, refactor
-      float                               w_ {0};
-      glm::vec3                           flipAxisWorldUsedForScaling_ {};
-      glm::vec3                           originWorldUsedForScalingAndRotation_ {};
-      glm::vec3                           originToSposUsedForScalingAndRotation_       {};
-      glm::vec3                           originViewUsedForScalingAndRotation_         {};
+      float w_ {0};
+      glm::vec3 flipAxisWorld_;
+      glm::vec3 originWorld_;
+      glm::vec3 originToSpos_;
+      glm::vec3 originView_;
+      glm::vec2 posView_;
     };
 
     struct SCISHARE ScreenParams
@@ -200,7 +201,7 @@ namespace SCIRun
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
     private:
-      void setupRotate(const glm::vec2& posView);
+      void setupRotate();
       void setupTranslate();
       void setupScale();
 
@@ -228,9 +229,8 @@ namespace SCIRun
     class SCISHARE WidgetTranslationImpl : public WidgetTransformerBase
     {
     public:
-      explicit WidgetTranslationImpl(const WidgetUpdateServiceInterface* s, const glm::mat4& viewProj) : WidgetTransformerBase(s),
+      WidgetTranslationImpl(const WidgetUpdateServiceInterface* s, const glm::mat4& viewProj) : WidgetTransformerBase(s),
         invViewProj_(glm::inverse(viewProj)) {}
-
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::mat4 invViewProj_;
@@ -240,15 +240,13 @@ namespace SCIRun
     {
     public:
       using WidgetTransformerBase::WidgetTransformerBase;
-
       gen::Transform computeTransform(int x, int y) const override;
     };
 
     class SCISHARE WidgetRotateImpl : public WidgetTransformerBase
     {
     public:
-      WidgetRotateImpl(const WidgetUpdateServiceInterface* s, const glm::vec2& posView);
-
+      explicit WidgetRotateImpl(const WidgetUpdateServiceInterface* s);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       std::shared_ptr<spire::ArcBall>	widgetBall_;
