@@ -350,9 +350,7 @@ void SRInterface::runGCOnNextExecution()
     void WidgetUpdateService::reset()
     {
       widget_.reset();
-      translateImpl_.reset();
-      rotateImpl_.reset();
-      scaleImpl_.reset();
+      objectTransformCalculator_.reset();
     }
 
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
@@ -733,23 +731,23 @@ void SRInterface::runGCOnNextExecution()
 
     WidgetEventPtr WidgetUpdateService::translateWidget(int x, int y)
     {
-      WidgetEventPtr translate(new WidgetTranslateEvent(translateImpl_->computeTransform(x, y)));
+      WidgetEventPtr translate(new WidgetTranslateEvent(objectTransformCalculator_->computeTransform(x, y)));
       return translate;
     }
 
     void WidgetUpdateService::setupTranslate(const TranslateParameters& t)
     {
-      translateImpl_.reset(new WidgetTranslationImpl(this, t));
+      objectTransformCalculator_.reset(new ObjectTranslationImpl(this, t));
     }
 
-    WidgetTranslationImpl::WidgetTranslationImpl(const WidgetUpdateServiceInterface* s, const TranslateParameters& t) :
-      WidgetTransformerBase(s),
+    ObjectTranslationImpl::ObjectTranslationImpl(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
+      ObjectTransformCalculatorBase(s),
       initialPosition_(t.initialPosition_),
       w_(t.w_),
       invViewProj_(glm::inverse(t.viewProj))
     {}
 
-    gen::Transform WidgetTranslationImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectTranslationImpl::computeTransform(int x, int y) const
     {
       auto screenPos = service_->screen().positionFromClick(x, y);
       glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
@@ -760,10 +758,10 @@ void SRInterface::runGCOnNextExecution()
 
     void WidgetUpdateService::setupScale(const ScaleParameters& p)
     {
-      scaleImpl_.reset(new WidgetScaleImpl(this, p));
+      objectTransformCalculator_.reset(new ObjectScaleImpl(this, p));
     }
 
-    WidgetScaleImpl::WidgetScaleImpl(const WidgetUpdateServiceInterface* s, const ScaleParameters& p) : WidgetTransformerBase(s),
+    ObjectScaleImpl::ObjectScaleImpl(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
       flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
     {
       originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
@@ -774,7 +772,7 @@ void SRInterface::runGCOnNextExecution()
       originToSpos_ = sposView - originView_;
     }
 
-    gen::Transform WidgetScaleImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectScaleImpl::computeTransform(int x, int y) const
     {
       auto spos = service_->screen().positionFromClick(x, y);
 
@@ -811,10 +809,10 @@ void SRInterface::runGCOnNextExecution()
 
     void WidgetUpdateService::setupRotate(const RotateParameters& p)
     {
-      rotateImpl_.reset(new WidgetRotateImpl(this, p));
+      objectTransformCalculator_.reset(new ObjectRotateImpl(this, p));
     }
 
-    WidgetRotateImpl::WidgetRotateImpl(const WidgetUpdateServiceInterface* s, const RotateParameters& p) : WidgetTransformerBase(s),
+    ObjectRotateImpl::ObjectRotateImpl(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
       originWorld_(p.originWorld_), initialW_(p.w_)
     {
       auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
@@ -827,7 +825,7 @@ void SRInterface::runGCOnNextExecution()
       widgetBall_->beginDrag(glm::vec2(sposView));
     }
 
-    gen::Transform WidgetRotateImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectRotateImpl::computeTransform(int x, int y) const
     {
       if (!widgetBall_)
         return {};
@@ -853,7 +851,7 @@ void SRInterface::runGCOnNextExecution()
 
     WidgetEventPtr WidgetUpdateService::scaleWidget(int x, int y)
     {
-      WidgetEventPtr scale(new WidgetScaleEvent(scaleImpl_->computeTransform(x, y)));
+      WidgetEventPtr scale(new WidgetScaleEvent(objectTransformCalculator_->computeTransform(x, y)));
       return scale;
     }
 
@@ -866,7 +864,7 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     WidgetEventPtr WidgetUpdateService::rotateWidget(int x, int y)
     {
-      WidgetEventPtr rotate(new WidgetRotateEvent(rotateImpl_->computeTransform(x, y)));
+      WidgetEventPtr rotate(new WidgetRotateEvent(objectTransformCalculator_->computeTransform(x, y)));
       return rotate;
     }
 

@@ -139,10 +139,10 @@ namespace SCIRun
       glm::vec2 positionFromClick(int x, int y) const;
     };
 
-    class SCISHARE WidgetTransformer
+    class SCISHARE ObjectTransformCalculator
     {
     public:
-      virtual ~WidgetTransformer() {}
+      virtual ~ObjectTransformCalculator() {}
       virtual gen::Transform computeTransform(int x, int y) const = 0;
     };
 
@@ -173,15 +173,15 @@ namespace SCIRun
       using WidgetEventBase::WidgetEventBase;
     };
 
-    class SCISHARE WidgetUpdateServiceInterface
+    class SCISHARE BasicRendererObjectProvider
     {
     public:
-      virtual ~WidgetUpdateServiceInterface() {}
+      virtual ~BasicRendererObjectProvider() {}
       virtual SRCamera& camera() const = 0;
       virtual const ScreenParams& screen() const = 0;
     };
 
-    class SCISHARE WidgetUpdateService : public WidgetUpdateServiceInterface
+    class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider
     {
     public:
       explicit WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
@@ -218,24 +218,24 @@ namespace SCIRun
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
-      std::unique_ptr<WidgetTransformer> translateImpl_, scaleImpl_, rotateImpl_;
+      std::unique_ptr<ObjectTransformCalculator> objectTransformCalculator_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
     };
 
-    class SCISHARE WidgetTransformerBase : public WidgetTransformer
+    class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator
     {
     public:
-      explicit WidgetTransformerBase(const WidgetUpdateServiceInterface* s) :
+      explicit ObjectTransformCalculatorBase(const BasicRendererObjectProvider* s) :
         service_(s) {}
     protected:
-      const WidgetUpdateServiceInterface* service_;
+      const BasicRendererObjectProvider* service_;
     };
 
-    class SCISHARE WidgetTranslationImpl : public WidgetTransformerBase
+    class SCISHARE ObjectTranslationImpl : public ObjectTransformCalculatorBase
     {
     public:
-      WidgetTranslationImpl(const WidgetUpdateServiceInterface* s, const TranslateParameters& t);
+      ObjectTranslationImpl(const BasicRendererObjectProvider* s, const TranslateParameters& t);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec2 initialPosition_;
@@ -243,10 +243,10 @@ namespace SCIRun
       glm::mat4 invViewProj_;
     };
 
-    class SCISHARE WidgetScaleImpl : public WidgetTransformerBase
+    class SCISHARE ObjectScaleImpl : public ObjectTransformCalculatorBase
     {
     public:
-      explicit WidgetScaleImpl(const WidgetUpdateServiceInterface* s, const ScaleParameters& p);
+      explicit ObjectScaleImpl(const BasicRendererObjectProvider* s, const ScaleParameters& p);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec3 originView_;
@@ -256,10 +256,10 @@ namespace SCIRun
       glm::vec3 originWorld_;
     };
 
-    class SCISHARE WidgetRotateImpl : public WidgetTransformerBase
+    class SCISHARE ObjectRotateImpl : public ObjectTransformCalculatorBase
     {
     public:
-      explicit WidgetRotateImpl(const WidgetUpdateServiceInterface* s, const RotateParameters& p);
+      explicit ObjectRotateImpl(const BasicRendererObjectProvider* s, const RotateParameters& p);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec3 originWorld_;
