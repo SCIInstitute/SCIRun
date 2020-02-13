@@ -61,7 +61,8 @@ namespace Gui {
     {
       STARTS_WITH,
       WILDCARDS,
-      FUZZY_SEARCH
+      FUZZY_SEARCH,
+      HIDE_NON_UI
     };
 
     explicit HideItemsNotMatchingString(SearchType searchType, const QString& pattern);

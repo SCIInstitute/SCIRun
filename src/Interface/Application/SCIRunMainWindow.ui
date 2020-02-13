@@ -201,6 +201,7 @@
     <addaction name="actionLicense_"/>
     <addaction name="actionKeyboardShortcuts_"/>
     <addaction name="helpActionNewUserWizard_"/>
+    <addaction name="helpActionPythonWizard_"/>
     <addaction name="menuNew_Features"/>
     <addaction name="actionReportIssue_"/>
    </widget>
@@ -1152,6 +1153,11 @@
     <string>New User Wizard...</string>
    </property>
   </action>
+  <action name="helpActionPythonWizard_">
+   <property name="text">
+    <string>Python Wizard...</string>
+   </property>
+  </action>
   <action name="actionSearchBar_">
    <property name="checkable">
     <bool>true</bool>
@@ -1332,6 +1338,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="actionPython_Wizard">
+   <property name="text">
+    <string>Python Wizard...</string>
+   </property>
+  </action>
+  <action name="actionPython_Wizard_2">
+   <property name="text">
+    <string>Python Wizard...</string>
    </property>
   </action>
  </widget>

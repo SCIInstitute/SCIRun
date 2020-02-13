@@ -74,6 +74,7 @@ void ImportFieldsFromMatlab::setStateDefaults()
   auto nones = makeHomogeneousVariableList([](size_t) { return std::string("<none>"); }, NUMPORTS);
   get_state()->setValue(Parameters::PortChoices, nones);
   get_state()->setValue(Variables::Filename, std::string());
+  get_state()->connectSpecificStateChanged(Variables::Filename, [this]() { indexmatlabfile(); });
 }
 
 void ImportFieldsFromMatlab::postStateChangeInternalSignalHookup()
@@ -102,86 +103,90 @@ int ImportFieldsFromMatlab::indexMatlabFile(matlabconverter& converter, const ma
 void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut)
 {
   auto fileOption = getOptionalInput(filenameIn);
-  auto state = get_state();
-  if (fileOption && *fileOption)
-	{
-    state->setValue(Variables::Filename, (*fileOption)->value());
-	}
 
-  auto filename = state->getValue(Variables::Filename).toFilename().string();
-
-  if (filename.empty())
+  if (needToExecute())
   {
-    error("No file name was specified");
-    return;
-  }
+    auto state = get_state();
+    if (fileOption && *fileOption)
+  	{
+      state->setValue(Variables::Filename, (*fileOption)->value());
+  	}
 
-  indexmatlabfile();
+    auto filename = state->getValue(Variables::Filename).toFilename().string();
 
-  auto choices = toStringVector(state->getValue(Parameters::PortChoices).toVector());
-
-  try
-  {
-    ScopedMatlabFileReader smfr(filename);
-    for (int p = 0; p < numOutputPorts() - 1; ++p)
+    if (filename.empty())
     {
-      // Now read the matrix from file
-      // The next function will open, read, and close the file
-      // Any error will be exported as an exception.
-      // The matlab classes are all based in the matfilebase class
-      // which carries the definitions of the exceptions. These
-      // definitions are inherited by all other "matlab classes"
-
-      auto ma = readmatlabarray(smfr.mfile, choices[p]);
-
-      // An empty array means something must have gone wrong
-      // Or there is no data to put on this port.
-      // Do not translate empty arrays, but continue to the
-      // next output port.
-
-      if (ma.isempty())
-      {
-        continue;
-      }
-
-      // The data is still in matlab format and the next function
-      // creates a SCIRun matrix object
-
-      auto data = processMatlabData(ma);
-
-      send_output_handle(outputPorts()[p]->id(), data);
+      error("No file name was specified");
+      return;
     }
 
-    StringHandle filenameH(new String(filename));
-    sendOutput(filenameOut, filenameH);
-  }
-  catch (matlabfile::could_not_open_file&)
-  {
-    error("Could not open file");
-  }
-  catch (matlabfile::invalid_file_format&)
-  {
-    error("Invalid file format");
-  }
-  catch (matlabfile::io_error&)
-  {
-    error("IO error");
-  }
-  catch (matlabfile::out_of_range&)
-  {
-    error("Out of range");
-  }
-  catch (matlabfile::invalid_file_access&)
-  {
-    error("Invalid file access");
-  }
-  catch (matlabfile::empty_matlabarray&)
-  {
-    error("Empty matlab array");
-  }
-  catch (matlabfile::matfileerror&)
-  {
-    error("Internal error in reader");
+    indexmatlabfile();
+
+    auto choices = toStringVector(state->getValue(Parameters::PortChoices).toVector());
+
+    try
+    {
+      ScopedMatlabFileReader smfr(filename);
+      for (int p = 0; p < numOutputPorts() - 1; ++p)
+      {
+        // Now read the matrix from file
+        // The next function will open, read, and close the file
+        // Any error will be exported as an exception.
+        // The matlab classes are all based in the matfilebase class
+        // which carries the definitions of the exceptions. These
+        // definitions are inherited by all other "matlab classes"
+
+        auto ma = readmatlabarray(smfr.mfile, choices[p]);
+
+        // An empty array means something must have gone wrong
+        // Or there is no data to put on this port.
+        // Do not translate empty arrays, but continue to the
+        // next output port.
+
+        if (ma.isempty())
+        {
+          continue;
+        }
+
+        // The data is still in matlab format and the next function
+        // creates a SCIRun matrix object
+
+        auto data = processMatlabData(ma);
+
+        send_output_handle(outputPorts()[p]->id(), data);
+      }
+
+      StringHandle filenameH(new String(filename));
+      sendOutput(filenameOut, filenameH);
+    }
+    catch (matlabfile::could_not_open_file&)
+    {
+      error("Could not open file");
+    }
+    catch (matlabfile::invalid_file_format&)
+    {
+      error("Invalid file format");
+    }
+    catch (matlabfile::io_error&)
+    {
+      error("IO error");
+    }
+    catch (matlabfile::out_of_range&)
+    {
+      error("Out of range");
+    }
+    catch (matlabfile::invalid_file_access&)
+    {
+      error("Invalid file access");
+    }
+    catch (matlabfile::empty_matlabarray&)
+    {
+      error("Empty matlab array");
+    }
+    catch (matlabfile::matfileerror&)
+    {
+      error("Internal error in reader");
+    }
   }
 }
 

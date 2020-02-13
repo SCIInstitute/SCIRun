@@ -39,6 +39,9 @@
 
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
+#include "ui_PythonWizardPage.h"
+#include "ui_PythonWizardCodePage.h"
+#include "ui_IntWithPythonPage.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -64,7 +67,7 @@ QString TreeViewModuleGetter::text() const
 bool TreeViewModuleGetter::isModule() const
 {
   auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
+  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->foreground(0) != CLIPBOARD_COLOR;
 }
 
 QString TreeViewModuleGetter::clipboardXML() const
@@ -75,7 +78,7 @@ QString TreeViewModuleGetter::clipboardXML() const
 bool TreeViewModuleGetter::isClipboardXML() const
 {
   auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
+  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->foreground(0) == CLIPBOARD_COLOR);
 }
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
@@ -310,6 +313,519 @@ QWizardPage* NewUserWizard::createOtherSettingsPage()
   return new OtherSettingsWizardPage(this);
 }
 
+
+PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : QWizard(parent), displayPython_(display)
+{
+  setWindowTitle("SCIRun Python Help");
+  setOption(NoBackButtonOnStartPage);
+  setOption(HaveCustomButton1, true);
+  setButtonText(CustomButton1, "Back To Home");
+
+
+  resize(1000,450);
+  setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
+
+  setPage(Page_Home, createIntroPage());
+  setPage(Page_Create_Intro, createCreateIntroPage());
+  setPage(Page_Save, createSaveNetworkPage());
+  setPage(Page_LatVol, createLatVolPage());
+  setPage(Page_MeshBox, createEditMeshBoundingBoxPage());
+  setPage(Page_Connection, createConnectionPage());
+  setPage(Page_CalcData, createCalculateFieldDataPage());
+  setPage(Page_Iso, createExtractIsosurfacePage());
+  setPage(Page_ShowField, createShowFieldPage());
+  setPage(Page_ViewScene, createViewScenePage());
+  setPage(Page_Execute, createExecutePage());
+
+  setPage(Page_Load_Intro, createLoadingNetworkIntroPage());
+  setPage(Page_Load, createLoadNetworkPage());
+
+  setPage(Page_Wand_Intro, createWandIntroPage());
+  setPage(Page_Wand, createWandPage());
+
+  setPage(Page_Int_Intro, createInterfaceIntroPage());
+  setPage(Page_Base, createBaseNetworkPage());
+  setPage(Page_IntPy, createAddIntPyPage());
+  setPage(Page_SetPy, createSetPythonPage());
+
+  setStartId(Page_Home);
+
+  connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
+}
+
+void PythonWizard::customClicked(int which) {
+  if (which == 6) {
+    restart();
+  }
+}
+
+PythonWizard::~PythonWizard()
+{
+  showPrefs();
+}
+
+void PythonWizard::switchPage(QAbstractButton* button)
+{
+  QString text = button -> text();
+  if(text == "Creating Network with Python Console") {
+    while(nextId()-1 != Page_Create_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Loading a Network") {
+    while(nextId()-1 != Page_Load_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Using Wand Feature") {
+    while(nextId()-1 != Page_Wand_Intro) {
+      next();
+    }
+  }
+
+  if(text == "Using InterfaceWithPython Module") {
+    while(nextId()-1 != Page_Int_Intro) {
+      next();
+    }
+  }
+
+}
+
+
+void PythonWizard::showPrefs()
+{
+  if (showPrefs_)
+    SCIRunMainWindow::Instance()->actionPreferences_->trigger();
+}
+
+class PythonWizardPage : public QWizardPage, public Ui::PythonWizardPage
+{
+public:
+  PythonWizardPage()
+  {
+    setupUi(this);
+  }
+};
+
+QWizardPage* PythonWizard::createIntroPage()
+{
+  auto page = new PythonWizardPage;
+  page->setTitle("Welcome to Python Wizard");
+
+  page->textArea->setText("This wizard will help you implement Python in SCIRun for the first time.");
+  auto docLabel = new QLabel(
+    "<p><a href = \"https://github.com/SCIInstitute/scirun.pages/blob/gh-pages/python.md\">Python Documentation</a>"
+  );
+  docLabel->setStyleSheet("QLabel {background-color : darkGray; color : blue; }");
+  docLabel->setAlignment(Qt::AlignLeft);
+  docLabel->setOpenExternalLinks(true);
+  page->textLayout->addWidget(docLabel);
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
+  page->textLayout->addWidget(pic);
+  connect(page->tableOfContents, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(switchPage(QAbstractButton*)) );
+  return page;
+}
+
+class PythonWizardCodePage : public QWizardPage, public Ui::PythonWizardCodePage
+{
+public:
+  PythonWizardCodePage()
+  {
+    setupUi(this);
+  }
+};
+
+QWizardPage* PythonWizard::createCreateIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Creating a Network");
+  page->setSubTitle("This section of the wizard will demonstrate how to create a network using the Python Console");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createSaveNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Saving Network");
+  page->infoText->setText("     Start by saving a new network to your SCIRun default path. "
+  "To save to a different location, edit the parameter to the desired filename path."
+  "\n\n"
+  "     Click the \"Send to Python Console\"  to send and execute the code in the python console."
+  "\n\n"
+  "**The default path settings can be modified from Preferences > Paths**");
+
+  auto dataDirString = Core::Preferences::Instance().dataDirectory().string();
+
+  page->codeEdit->setPlainText("scirun_save_network(\"" +
+  QString::fromStdString(dataDirString) +
+  "\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+
+QWizardPage* PythonWizard::createLatVolPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with the LatVol Module");
+  page->infoText->setText("    Create a CreateLatVol module by using the command `scirun_add_module()`."
+    "\n\n"
+    "     Then edit the module's parameters using \'scirun_set_module_state\'."
+    "**To view all module states of a module, toggle the Metadata Layer and hover over a module.**");
+
+  page->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
+    "\n\n"
+    "scirun_set_module_state(lat, \"XSize\", 20)\n"
+    "\n"
+    "scirun_set_module_state(lat, \"YSize\", 20)\n"
+    "\n"
+    "scirun_set_module_state(lat, \"ZSize\", 20)\n"
+    "\n"
+    "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with the EditMeshBoundingBox Module");
+  page->infoText->setText("     Create EditMeshBoundingBox module, and edit its parameters using the same commands."
+    "\n\n"
+    "**For more information about a module, click on the Question Mark icon on the module in the network, "
+    "or visit https://sciinstitute.github.io/scirun.pages/modules.html**");
+
+  page->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
+    "\n\n\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterX\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterY\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterZ\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeX\", 20)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeY\", 20)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeZ\", 20)\n");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createConnectionPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Connecting Modules");
+  page->infoText->setText("     Use the 'scirun_connect_modules()' command to connect the CreateLatVol module to the EditMeshBoundingBox module.");
+
+  page->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createCalculateFieldDataPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with the CalculateFieldData Module");
+  page->infoText->setText("     Create a CalculateFieldData module, then  connect it to the EditMeshBoundingBox module."
+    "\n\n"
+    "     To make the LatVol spherical, assign the equation of a sphere to the CalculateFieldData module");
+
+  page->codeEdit->setPlainText("calc = scirun_add_module(\"CalculateFieldData\")\n"
+    "\n"
+    "scirun_connect_modules(edit_box, 0, calc, 0)"
+    "\n"
+    "scirun_set_module_state(calc, \"FunctionString\", \"RESULT = sqrt((X * X) + (Y * Y) + (Z * Z))\")\n");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createExtractIsosurfacePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with the ExtractSimpleIsosurface Module");
+  page->infoText->setText("     Create ExtractSimpleIsosurface module and connect it to the CalculateFieldData module."
+    "\n\n"
+    "     Change the module to a list and set the values.");
+
+  page->codeEdit->setPlainText("iso = scirun_add_module(\"ExtractSimpleIsosurface\")\n"
+    "\n"
+    "scirun_connect_modules(calc, 0, iso, 0)\n"
+    "\n"
+    "scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
+    "\n"
+    "scirun_set_module_state(iso, \"ListOfIsovalues\", \"1,5,10,15,18\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createShowFieldPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with ShowField Module");
+  page->infoText->setText("Create a ShowField modules and turn off its ShowEdges parameter. "
+    "Connect it to the ExtractSimpleIsosurface module."
+    "\n\n"
+    "Create a ColorMap module and rescale it by connecting it to a new RescaleColorMap module, "
+    "then connecting the CalculateFieldData module to the RescaleColorMap module."
+    "\n\n"
+    "To show the color map, connect the RescaleColorMap module to the ShowField module.");
+
+  page->codeEdit->setPlainText("iso_show_field = scirun_add_module(\"ShowField\")\n"
+    "\n"
+    "scirun_set_module_state(iso_show_field, \"ShowEdges\", 0)\n"
+    "\n"
+    "scirun_connect_modules(iso, 0, iso_show_field, 0)\n"
+    "\n"
+    "color_map = scirun_add_module(\"CreateStandardColorMap\")\n"
+    "\n"
+    "rescale_color_map = scirun_add_module(\"RescaleColorMap\")\n"
+    "\n"
+    "scirun_connect_modules(color_map, 0, rescale_color_map, 0)\n"
+    "\n"
+    "scirun_connect_modules(calc, 0, rescale_color_map, 1)\n"
+    "\n"
+    "scirun_connect_modules(rescale_color_map, 0, iso_show_field, 1)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+
+QWizardPage* PythonWizard::createViewScenePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Working with ViewScene Module");
+  page->infoText->setText("To be able to view the volume, "
+  "you will need to create a ViewScene module and connect it to the ShowField module.");
+
+  page->codeEdit->setPlainText("view_scene = scirun_add_module(\"ViewScene\")\n"
+    "\n\n"
+    "scirun_connect_modules(iso_show_field, 0, view_scene, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+
+QWizardPage* PythonWizard::createExecutePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Executing the Network");
+  page->infoText->setText("Execute the network by running the command 'scirun_execute_all()'");
+
+  page->codeEdit->setPlainText("scirun_execute_all()");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createLoadingNetworkIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Loading a Network");
+  page->setSubTitle("This section of the wizard will demonstrate how to load then execute a network");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
+
+
+QWizardPage* PythonWizard::createLoadNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Load and Execute a Network");
+  page->infoText->setText("Use the command `scirun_load_network()` to load a saved network from sample networks provided"
+    "\n\n"
+    "Execute network with `scirun_execute_all()` command");
+
+  // TODO: direct path to a working example network
+  auto dataDirString = Core::Preferences::Instance().dataDirectory().string();
+  page->codeEdit->setPlainText("scirun_load_network(\"" +
+    QString::fromStdString(dataDirString) +
+    "\")"
+    "\n\n\n"
+    "scirun_execute_all()");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createWandIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Using the Wand Tool");
+  page->setSubTitle("This section of the wizard will demonstrate how to use the wand tool to load a python script");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createWandPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Using the Wand Tool");
+  page->setSubTitle("Download the sample python script below"
+    "\n\n"
+    "Click the yellow wand icon at the top of the screen to select the script downloaded"
+    "\n\n"
+    "** If there is no wand at the top of the screen, you may need to go to Windows > Toolbars > Advanced"
+    "to make the advanced toolbar appear**");
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/new/general/wand.png"));
+  layout->addWidget(pic);
+  page -> setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createInterfaceIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Implementing InterfaceWithPython");
+  page->setSubTitle("This section of the wizard will demonstrate how InterfaceWithPython can be used in a network");
+  auto layout = new QVBoxLayout;
+  page->setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createBaseNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Creating the base network");
+  page->infoText->setText("Run this code in the python console to create a base network."
+    "\n\n"
+    "This network will create a latvol, create field data with the equation of a sphere, and extract its isosurface ");
+
+  page->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\");"
+    "\n\n"
+    "convert = scirun_add_module(\"ConvertHexVolToTetVol\")"
+    "\n\n"
+    "scirun_connect_modules(lat, 0, convert, 0)"
+    "\n\n"
+    "data = scirun_add_module(\"CreateFieldData\")"
+    "\n\n"
+    "scirun_set_module_state(data, \"FunctionString\", \"RESULT = X*X + Y*Y + Z*Z;\")"
+    "\n\n"
+    "scirun_connect_modules(convert, 0, data, 0)"
+    "\n\n"
+    "iso = scirun_add_module(\"ExtractIsosurface\")"
+    "\n\n"
+    "scirun_set_module_state(iso, \"SingleIsoValue\", 1)"
+    "\n\n"
+    "scirun_connect_modules(data, 0, iso, 0)"
+    "\n\n"
+    "show = scirun_add_module(\"ShowField\")"
+    "\n\n"
+    "scirun_connect_modules(iso, 0, show, 0)"
+    "\n\n"
+    "view = scirun_add_module(\"ViewScene\")"
+    "\n\n"
+    "scirun_connect_modules(show, 0, view, 0)"
+    "\n\n"
+    "scirun_execute_all();");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+
+  return page;
+}
+
+QWizardPage* PythonWizard::createAddIntPyPage()
+{
+  auto page = new QWizardPage;
+  page->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  page->setTitle("Implementing InterfaceWithPython");
+  auto layout = new QHBoxLayout;
+
+  auto text = new QTextBrowser;
+  text->setText("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
+    "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
+    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
+    "The network should look like the image to the right.");
+  layout->addWidget(text);
+  layout->setSizeConstraint(QLayout::SetDefaultConstraint);
+
+  auto pic = new QLabel;
+  pic-> setScaledContents(true);
+  auto image = new QPixmap(":/general/Resources/Wizard/int_with_py_network.png");
+  pic->setPixmap(image->scaledToHeight(pic->height(), Qt::SmoothTransformation));
+  layout->addWidget(pic);
+
+  page->setLayout(layout);
+  page->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+  return page;
+}
+
+class IntWithPythonPage : public QWizardPage, public Ui::IntWithPythonPage
+{
+public:
+  IntWithPythonPage()
+  {
+    setupUi(this);
+  }
+};
+
+QWizardPage* PythonWizard::createSetPythonPage()
+{
+  auto page = new IntWithPythonPage;
+  page->setTitle("Implementing InterfaceWithPython");
+  page->infoText->setText("Implement the python code provided to the InterfaceWithPython module"
+    "For every node, if it is less than zero, it will halve the value. If it is larger than zero, it will remain the same"
+    "It will then outout the new values of the nodes.");
+  page->codeEdit->setPlainText("Nodes = Field[\"node\"]"
+    "\n"
+    "new_nodes = []"
+    "\n\n"
+    "for n in Nodes:"
+    "\n"
+    "  nn = [[]]*3"
+    "  \n\n"
+    "  if n[0]>0:"
+    "  \n"
+    "    nn[0] = n[0]"
+    "    \n\n"
+    "  else:"
+    "  \n"
+    "    nn[0] = n[0]/2"
+    "  \n\n"
+    "  nn[1] = n[1]"
+    "  \n"
+    "  nn[2] = n[2]"
+    "  \n\n"
+    "  new_nodes.append(nn)"
+    "\n\n"
+    "Field[\"node\"] = new_nodes"
+    "\n\n"
+    "fieldOutput1 = Field");
+    return page;
+}
+
+
+
+
+
+void PythonWizard::updatePathLabel(const QString& dir)
+{
+  pathWidget_->setText(dir);
+}
+
+void PythonWizard::setShowPrefs(int state)
+{
+  showPrefs_ = state != 0;
+}
+
+
 void ToolkitInfo::setupAction(QAction* action, QObject* window) const
 {
   QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
@@ -468,12 +984,30 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->initialize();
 
+  app.setStyleSheet("*{"
+                    "color:white;"
+                    "selection-background-color:blue;" // 336699 lighter blue
+                    "background-color:rgb(66,66,69);"
+                    "selection-color:yellow;}"
+                    "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
+                    "QLineEdit{border:1px solid white}"
+                    "QToolBar{"
+                    "border:1px solid black;"
+                    "color:black;}"
+                    "QProgressBar{"
+                    "border:0px solid black;"
+                    "color:black;}");
   app.exec();
 }
 
 int SCIRunGuiRunner::returnCode()
 {
   return SCIRunMainWindow::Instance()->returnCode();
+}
+
+void SCIRunGuiRunner::reportIssue()
+{
+  SCIRunMainWindow::Instance()->reportIssue();
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
@@ -566,7 +1100,7 @@ void ToolkitDownloader::showMessageBox()
     auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
-      toolkitDir_ = dir;
+      toolkitDir_.setPath(dir);
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
     }

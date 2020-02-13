@@ -70,12 +70,20 @@ GLWidget::~GLWidget()
 void GLWidget::initializeGL()
 {
 	spire::glPlatformInit();
-}	
+}
 
 void GLWidget::paintGL()
 {
-  mCurrentTime += updateTime;
-  mGraphics->doFrame(mCurrentTime, updateTime);
+  //set to 200ms to force promise fullfilment every frame if a good frame as been requested
+  double lUpdateTime = mFrameRequested ? 0.2 : updateTime;
+  mCurrentTime += lUpdateTime;
+  mGraphics->doFrame(mCurrentTime, lUpdateTime);
+
+  if(mFrameRequested && !mGraphics->hasShaderPromise())
+  {
+    mFrameRequested = false;
+    finishedFrame();
+  }
 }
 
 //------------------------------------------------------------------------------

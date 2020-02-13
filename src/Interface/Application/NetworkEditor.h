@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -162,6 +162,20 @@ namespace Gui {
     enum { INITIAL_Z = 1000 };
   };
 
+  class ModuleWidgetPlacementManager
+  {
+  public:
+    void updateLatestFromDuplicate(const QPointF& scenePos);
+    void updateLatestFromConnectNew(const QPointF& scenePos, bool isInputPort);
+    void updateLatestFromReplace(const QPointF& scenePos);
+    QPointF getLast() const { return lastModulePosition_; }
+    QPointF getLastForDoubleClickedItem() const;
+    void setLastFromAddingNew(const QPointF& p) { lastModulePosition_ = p; }
+  private:
+    QPointF lastModulePosition_{ 30, 30 };
+    static QPointF connectNewIncrement(bool isInput);
+  };
+
   class ConnectionLine;
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
@@ -250,8 +264,6 @@ namespace Gui {
     void updateBackground(bool forceGrid);
 
     int connectionPipelineType() const;
-
-    QPixmap sceneGrab();
 
     SharedPointer<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
@@ -363,7 +375,6 @@ namespace Gui {
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void defaultNoteSizeChanged(int size);
-    void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
     void highlightPorts(int state);
     void zoomLevelChanged(int zoom);
@@ -410,6 +421,7 @@ namespace Gui {
     void alignViewport();
     void deleteImpl(QList<QGraphicsItem*> items);
     QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    void deselectAll();
 
     // default constructed
     bool modulesSelectedByCL_{ false };
@@ -420,7 +432,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_{ false };
     bool showTagGroupsOnFileLoad_{ false };
     bool visibleItems_{ true };
-    QPointF lastModulePosition_{ 30, 30 };
+    ModuleWidgetPlacementManager modulePlacement_;
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
 

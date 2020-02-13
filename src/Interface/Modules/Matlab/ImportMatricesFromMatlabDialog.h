@@ -30,15 +30,15 @@
 #define INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
 
 #include "Interface/Modules/Matlab/ui_ImportMatricesFromMatlab.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
 #include <Interface/Modules/Matlab/share.h>
 
 namespace SCIRun {
   namespace Gui {
 
-    class SCISHARE ImportMatricesFromMatlabDialog : public ModuleDialogGeneric,
-      public Ui::ImportMatricesFromMatlab, public RemembersFileDialogDirectory
+    class SCISHARE ImportMatricesFromMatlabDialog :
+      public ImportObjectsFromMatlabDialogBase,
+      public Ui::ImportFieldsFromMatlab
     {
       Q_OBJECT
 
@@ -47,17 +47,10 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
     protected:
-      virtual void pullSpecial() override;
-    private Q_SLOTS:
-      void openFile();
-      void pushFileNameToState();
-      void pushPortChoices();
-      void portItemClicked(int index);
-      void matlabItemClicked(int row);
-    private:
-      enum { NONE_CHOICE = -1 };
-      std::vector<int> portChoices_;
-      std::vector<std::string> fieldNames_;
+      void pullSpecial() override { pullSpecialImpl(); }
+      QLineEdit* fileNameLineEdit() override { return fileNameLineEdit_; }
+      QListWidget* matlabObjectListWidget() override { return matlabObjectListWidget_; }
+      QListWidget* portListWidget() override { return portListWidget_; }
     };
 
   }

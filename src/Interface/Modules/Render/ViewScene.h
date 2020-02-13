@@ -72,15 +72,23 @@ namespace SCIRun {
       void cameraRotationChangeForwarder();
       void cameraLookAtChangeForwarder();
       void cameraDistnaceChangeForwarder();
+      void lockMutexForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-
     protected Q_SLOTS:
+      void printToString() const {std::cout << toString("");}
+      void sendBugReport();
+
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
+      void updateModifiedGeometriesAndSendScreenShot();
       void updateAllGeometries();
       void newGeometryValue(bool forceAllObjectsToUpdate);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void frameFinished();
+      void lockMutex();
+      void unblockExecution();
+      void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();
@@ -117,9 +125,9 @@ namespace SCIRun {
       void pullCameraLookAt();
       void pullCameraDistance();
 
-
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
+      void toggleSelectionHack(bool b);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void setClippingPlaneIndex(int index);
@@ -287,6 +295,8 @@ namespace SCIRun {
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
 
       bool                                  shown_                        {false};
+      bool                                  delayGC                       {false};
+      bool                                  delayedGCRequested            {false};
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};

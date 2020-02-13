@@ -48,7 +48,6 @@ SET(Interface_Application_SOURCES
   SCIRunMainWindowCommandInterface.cc
   SCIRunMainWindowTreeFunctions.cc
   SCIRunMainWindowSetup.cc
-  Node.cc
   Note.cc
   NoteEditor.cc
   Port.cc
@@ -85,7 +84,6 @@ SET(Interface_Application_HEADERS
   ProvenanceWindow.h
   SCIRunMainWindow.h
   ShortcutsInterface.h
-  Node.h
   Note.h
   NoteEditor.h
   Connection.h
@@ -114,6 +112,9 @@ SET(Interface_Application_FORMS
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
+  PythonWizardPage.ui
+  PythonWizardCodePage.ui
+  IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
@@ -131,6 +132,10 @@ scirun5.qrc
 QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
 QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
 QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
+
+IF(BUILD_BUNDLE)
+  ADD_DEFINITIONS(-DBUILD_BUNDLE)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}

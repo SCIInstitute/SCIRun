@@ -38,10 +38,8 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
-#include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
@@ -206,7 +204,7 @@ QTreeWidgetItem* SCIRunMainWindow::addFavoriteItem(QTreeWidgetItem* faves, QTree
   guiLogDebug("Adding item to favorites: {}", module->text(0).toStdString());
   auto copy = new QTreeWidgetItem(*module);
   copy->setData(0, Qt::CheckStateRole, QVariant());
-  if (copy->textColor(0) == CLIPBOARD_COLOR)
+  if (copy->foreground(0) == CLIPBOARD_COLOR)
   {
     copy->setFlags(copy->flags() | Qt::ItemIsEditable);
   }
@@ -251,6 +249,7 @@ void SCIRunMainWindow::fillTreeWidget(QTreeWidget* tree, const ModuleDescription
         moduleItem->setForeground(1, Qt::lightGray);
         moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
         moduleItem->setForeground(2, Qt::lightGray);
+        moduleItem->setData(0, Qt::UserRole, module.second.hasUI_);
         categoryItem->addChild(moduleItem);
         totalModules++;
       }

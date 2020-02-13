@@ -51,7 +51,6 @@ namespace Gui {
 
 class NetworkEditor;
 class ProvenanceWindow;
-class DeveloperConsole;
 class PreferencesWindow;
 class ShortcutsInterface;
 class TagManagerWindow;
@@ -110,6 +109,7 @@ public Q_SLOTS:
   void setDataDirectoryFromGUI();
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
+  void reportIssue();
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
@@ -122,8 +122,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   ProvenanceWindow* provenanceWindow_;
-  TagManagerWindow* tagManagerWindow_;
-  DeveloperConsole* devConsole_;
+  TagManagerWindow* tagManagerWindow_ {nullptr};
   PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
   ShortcutsInterface* shortcuts_ { nullptr };
@@ -238,6 +237,7 @@ private Q_SLOTS:
   void importLegacyNetwork();
   void launchNewInstance();
   void launchNewUserWizard();
+  void launchPythonWizard();
   void loadNetwork();
   void loadPythonAPIDoc();
   void loadRecentNetwork();
@@ -260,7 +260,6 @@ private Q_SLOTS:
   void removeSavedSubnetwork();
   void removeToolkit();
   void renameSavedSubnetwork();
-  void reportIssue();
   void resetWindowLayout();
   void runNewModuleWizard();
   void runScript();
