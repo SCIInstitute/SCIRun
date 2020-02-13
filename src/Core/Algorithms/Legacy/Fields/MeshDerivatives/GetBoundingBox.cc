@@ -45,7 +45,7 @@ run(FieldHandle input, FieldHandle& output)
     algo_end(); return (false);
   }
 
-  BBox bbox = input->vmesh()->get_bounding_box();
+  AxisAlignedBBox bbox = input->vmesh()->get_bounding_box();
   
   FieldInformation fi("LatVolMesh","Linear","NoData","double");
   MeshHandle mesh = CreateMesh(fi,2,2,2,bbox.min(),bbox.max());

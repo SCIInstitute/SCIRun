@@ -90,7 +90,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
     VMesh::Node::array_type anodes;
     tmesh->get_nodes(anodes, idx);
     Point apoints[3];
-    BBox tribox;
+    AxisAlignedBBox tribox;
     for (int i = 0; i < 3; i++)
     {
       tmesh->get_point(apoints[i], anodes[i]);

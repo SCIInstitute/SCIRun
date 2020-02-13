@@ -85,7 +85,7 @@ namespace detail
     static void initialize(AlgorithmBase* algo);
 
     Core::Thread::Guard guard_;
-    Core::Geometry::BBox imageBox_;
+    Core::Geometry::AxisAlignedBBox imageBox_;
     osp::vec2i imgSize_;
     OSPCamera camera_;
     OSPModel world_;
@@ -102,7 +102,7 @@ namespace detail
     OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, ColorMapHandle colorMap);
     void visualizeScalarField(OsprayGeometryObjectHandle obj);
     void visualizeStreamline(OsprayGeometryObjectHandle obj);
-    void adjustCameraPosition(const BBox& bbox);
+    void adjustCameraPosition(const AxisAlignedBBox& bbox);
     Vector getCameraUp(float* newDir, float* cam_up);
 
   public:
@@ -167,7 +167,7 @@ namespace detail
     ospCommit(world_);
   }
 
-  void OsprayImpl::adjustCameraPosition(const BBox& bbox)
+  void OsprayImpl::adjustCameraPosition(const AxisAlignedBBox& bbox)
   {
     if (algo_->get(Parameters::AutoCameraView).toBool())
     {

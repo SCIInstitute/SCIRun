@@ -103,7 +103,7 @@ run(FieldHandle input,
   // Get number of nodes in mesh
   VMesh::size_type num_nodes = imesh->num_nodes();
 
-  BBox bbox;
+  AxisAlignedBBox bbox;
   bbox.extend(Point(0.0,0.0,0.0));
 
   // compute a bounding box around the projection field

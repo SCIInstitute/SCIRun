@@ -127,7 +127,7 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
   }
   else if(method=="boundingBoxCenter")
   {
-    BBox b=imesh->get_bounding_box();
+    AxisAlignedBBox b=imesh->get_bounding_box();
     center=(0.5*(b.get_max()+b.get_min())).point();
   }
   else if(method=="midNodeIndex")

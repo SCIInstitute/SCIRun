@@ -42,7 +42,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Widgets/SphereWidget.h>
@@ -78,7 +78,7 @@ namespace SCIRun
       class GeneratePointSamplesFromFieldImpl
       {
       public:
-        BBox last_bounds_;
+        AxisAlignedBBox last_bounds_;
         std::vector<SphereWidgetHandle> pointWidgets_;
         std::vector<Transform> previousTransforms_;
         double l2norm_;

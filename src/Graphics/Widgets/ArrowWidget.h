@@ -47,7 +47,7 @@ namespace SCIRun {
                     const Core::Geometry::Point &pos,
                     const Core::Geometry::Vector &dir, int resolution,
                     bool show_as_vector, size_t widget_num, size_t widget_iter,
-                    const Core::Geometry::BBox &bbox);
+                    const Core::Geometry::AxisAlignedBBox &bbox);
 
         bool isVector();
 

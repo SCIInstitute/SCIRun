@@ -61,7 +61,7 @@ namespace SCIRun{
       void mouseWheelEvent(int32_t delta, int zoomSpeed);
 
       //set zNear and zFar using scene bounding box
-      void setSceneBoundingBox(const Core::Geometry::BBox& bbox);
+      void setSceneBoundingBox(const Core::Geometry::AxisAlignedBBox& bbox);
 
       /// Perform autoview.
       void doAutoView();
@@ -134,7 +134,7 @@ namespace SCIRun{
 
       SRInterface&                        mInterface;           ///< SRInterface.
       std::shared_ptr<spire::ArcLookAt>   mArcLookAt{};
-      Core::Geometry::BBox                mSceneBBox{};
+      Core::Geometry::AxisAlignedBBox                mSceneBBox{};
 
     };
 

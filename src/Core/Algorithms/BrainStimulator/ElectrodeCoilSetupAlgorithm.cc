@@ -792,7 +792,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
         if (compute_third_output) /// a lot of code is inside this if (make sure it creates proper results)
         {
-          BBox proto_bb = prototype->vmesh()->get_bounding_box();
+          AxisAlignedBBox proto_bb = prototype->vmesh()->get_bounding_box();
           Vector proto_diameter = proto_bb.diagonal();
           double maxi = 2 * Max(proto_diameter.x(), proto_diameter.y(), proto_diameter.z()); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes 
 

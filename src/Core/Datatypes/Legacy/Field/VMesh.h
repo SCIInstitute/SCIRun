@@ -589,7 +589,7 @@ public:
   /// uses the underlying search structure to find candidates that are close.
   /// This functionality is general intended to speed up searching for elements
   /// in a certain region.
-  virtual bool locate(VMesh::Elem::array_type &a, const Core::Geometry::BBox& bbox) const;
+  virtual bool locate(VMesh::Elem::array_type &a, const Core::Geometry::AxisAlignedBBox& bbox) const;
 
   /// Find the closest point on a surface or a curve
 
@@ -967,10 +967,11 @@ public:
 
   /// Rerouting of some of the virtual mesh function calls
 
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
 
   /// This call is for synchronizing tables of precomputed elements
   virtual bool synchronize(unsigned int sync);

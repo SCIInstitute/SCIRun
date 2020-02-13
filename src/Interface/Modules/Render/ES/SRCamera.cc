@@ -137,7 +137,7 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::setSceneBoundingBox(const Core::Geometry::BBox& bbox)
+    void SRCamera::setSceneBoundingBox(const Core::Geometry::AxisAlignedBBox& bbox)
     {
       mSceneBBox = bbox;
       setClippingPlanes();

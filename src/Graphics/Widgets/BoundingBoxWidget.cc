@@ -51,7 +51,7 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
 }
 
 BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
-  double scale, const BoxPosition& pos, const Point& origin, const BBox& bbox)
+  double scale, const BoxPosition& pos, const Point& origin, const AxisAlignedBBox& bbox)
   : WidgetBase(idGenerator, "BoundingBox", true, origin)
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);

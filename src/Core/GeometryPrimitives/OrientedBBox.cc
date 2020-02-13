@@ -32,8 +32,8 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 OrientedBBox::OrientedBBox(const Vector &e1, const Vector &e2, const Vector &e3)
-    : is_valid_(false)
 {
+  is_valid_ = false;
   eigvecs_ = {e1, e2, e3};
 }
 

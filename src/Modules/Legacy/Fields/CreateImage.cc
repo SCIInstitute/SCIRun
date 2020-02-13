@@ -213,7 +213,7 @@ void CreateImage::execute()
 
       if (inputField)
       {
-        BBox box = (*inputField)->vmesh()->get_bounding_box();
+        AxisAlignedBBox box = (*inputField)->vmesh()->get_bounding_box();
         Vector diag(box.diagonal());
         dg = diag.maxComponent();
         trans.pre_scale(Vector(dg, dg, dg));
@@ -335,7 +335,7 @@ void CreateImage::execute()
 
       if (axis != 3)
       {
-        BBox box = (*inputField)->vmesh()->get_bounding_box();
+        AxisAlignedBBox box = (*inputField)->vmesh()->get_bounding_box();
         Vector diag(box.diagonal());
         trans.pre_scale(diag);
 

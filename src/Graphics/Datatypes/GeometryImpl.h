@@ -30,7 +30,7 @@
 #define GRAPHICS_DATATYPES_GEOMETRY_H
 
 #include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 //freetype
@@ -85,7 +85,7 @@ namespace SCIRun {
         SpireVBO() : numElements(0), onGPU(false) {}
         SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
           std::shared_ptr<spire::VarBuffer> vboData,
-          size_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
+          size_t numVBOElements, const Core::Geometry::AxisAlignedBBox& bbox, bool placeOnGPU) :
           name(vboName),
           attributes(attribs),
           data(vboData),
@@ -98,7 +98,7 @@ namespace SCIRun {
         std::vector<AttributeData>            attributes;
         std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
         size_t                                numElements;
-        Core::Geometry::BBox                  boundingBox;
+        Core::Geometry::AxisAlignedBBox                  boundingBox;
         bool                                  onGPU;
       };
 

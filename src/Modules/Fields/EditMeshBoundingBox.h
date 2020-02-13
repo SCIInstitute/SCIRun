@@ -95,7 +95,7 @@ namespace SCIRun {
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
-        void computeWidgetBox(const Core::Geometry::BBox& box) const;
+        void computeWidgetBox(const Core::Geometry::AxisAlignedBBox& box) const;
         Graphics::Datatypes::GeometryHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);

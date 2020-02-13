@@ -31,7 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
@@ -76,7 +76,7 @@ namespace SCIRun
       public:
         GenerateSinglePointProbeFromFieldImpl() :
           widgetid_(0), l2norm_(0), color_changed_(false) {}
-        BBox last_bounds_;
+        AxisAlignedBBox last_bounds_;
         Point widgetLocation_;
         int widgetid_;
         double l2norm_;
@@ -201,7 +201,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   using namespace Parameters;
 
   // Maybe update the widget.
-  BBox bbox;
+  AxisAlignedBBox bbox;
   if (ifieldOption && *ifieldOption)
   {
     ifield = *ifieldOption;

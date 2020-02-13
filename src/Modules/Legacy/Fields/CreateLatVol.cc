@@ -154,7 +154,7 @@ CreateLatVol::execute()
       {
         datatype = TENSOR;
       }
-      BBox bbox = (*ifieldhandleOption)->vmesh()->get_bounding_box();
+      AxisAlignedBBox bbox = (*ifieldhandleOption)->vmesh()->get_bounding_box();
       minb = bbox.get_min();
       maxb = bbox.get_max();
     }

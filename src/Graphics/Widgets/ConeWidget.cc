@@ -45,7 +45,7 @@ ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
                        const Point& p1,
                        const Point& p2,
                        const Point& origin,
-                       const BBox& bbox,
+                       const AxisAlignedBBox& bbox,
                        bool renderBase,
                        int resolution)
   : WidgetBase(idGenerator, "ConeWidget::" + name, true, Point(p1 + p2)/2, origin)

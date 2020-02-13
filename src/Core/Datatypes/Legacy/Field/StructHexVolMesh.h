@@ -214,10 +214,11 @@ public:
   friend class ElemData;
 
   /// get the mesh statistics
-  virtual Core::Geometry::BBox get_bounding_box() const override;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const override;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <class T> void extend_bounding_box(T &bbox) const;
   virtual void transform(const Core::Geometry::Transform &t) override;
 
   virtual bool get_dim(std::vector<size_type>&) const override;
@@ -818,7 +819,7 @@ public:
     typename LatVolMesh<Basis>::Node::array_type nodes;
     this->get_nodes(nodes,idx);
 
-    Core::Geometry::BBox bbox;
+    Core::Geometry::AxisAlignedBBox bbox;
     bbox.extend(points_(nodes[0].k_,nodes[0].j_,nodes[0].i_));
     bbox.extend(points_(nodes[1].k_,nodes[1].j_,nodes[1].i_));
     bbox.extend(points_(nodes[2].k_,nodes[2].j_,nodes[2].i_));
@@ -880,7 +881,7 @@ public:
   }
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::AxisAlignedBBox &b) const
   {
 
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -1057,9 +1058,9 @@ private:
   void insert_node_into_grid(typename LatVolMesh<Basis>::Node::index_type idx);
   void remove_node_from_grid(typename LatVolMesh<Basis>::Node::index_type idx);
 
-  void compute_node_grid(Core::Geometry::BBox& bb);
-  void compute_elem_grid(Core::Geometry::BBox& bb);
-  void compute_epsilon(Core::Geometry::BBox& bb);
+  void compute_node_grid(Core::Geometry::AxisAlignedBBox& bb);
+  void compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb);
+  void compute_epsilon(Core::Geometry::AxisAlignedBBox& bb);
 
   double polygon_area(const typename LatVolMesh<Basis>::Node::array_type &,
                       const Core::Geometry::Vector) const;
@@ -1167,21 +1168,11 @@ StructHexVolMesh<Basis>::get_dim(std::vector<size_type> &array) const
 
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 StructHexVolMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::BBox result;
-
-  typename LatVolMesh<Basis>::Node::iterator ni, nie;
-  this->begin(ni);
-  this->end(nie);
-  while (ni != nie)
-  {
-    Core::Geometry::Point p;
-    get_center(p, *ni);
-    result.extend(p);
-    ++ni;
-  }
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
   return result;
 }
 
@@ -1192,7 +1183,15 @@ StructHexVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector 
                                                    const Core::Geometry::Vector &e3) const
 {
   Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
 
+template <class Basis>
+template <class T>
+void
+StructHexVolMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   typename LatVolMesh<Basis>::Node::iterator ni, nie;
   this->begin(ni);
   this->end(nie);
@@ -1200,10 +1199,9 @@ StructHexVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector 
   {
     Core::Geometry::Point p;
     get_center(p, *ni);
-    result.extend(p);
+    bbox.extend(p);
     ++ni;
   }
-  return result;
 }
 
 template <class Basis>
@@ -1700,7 +1698,7 @@ StructHexVolMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
     /// These computations share the evaluation of the bounding box
-    Core::Geometry::BBox bb = get_bounding_box();
+    Core::Geometry::AxisAlignedBBox bb = get_bounding_box();
 
     /// Compute the epsilon for geometrical closeness comparisons
     /// Mainly used by the grid lookup tables
@@ -1763,7 +1761,7 @@ StructHexVolMesh<Basis>::insert_elem_into_grid(typename LatVolMesh<Basis>::Elem:
   /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_(idx.k_,idx.j_,idx.i_));
   box.extend(points_(idx.k_+1,idx.j_,idx.i_));
   box.extend(points_(idx.k_,idx.j_+1,idx.i_));
@@ -1781,7 +1779,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::remove_elem_from_grid(typename LatVolMesh<Basis>::Elem::index_type idx)
 {
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_(idx.k_,idx.j_,idx.i_));
   box.extend(points_(idx.k_+1,idx.j_,idx.i_));
   box.extend(points_(idx.k_,idx.j_+1,idx.i_));
@@ -1813,7 +1811,7 @@ StructHexVolMesh<Basis>::remove_node_from_grid(typename LatVolMesh<Basis>::Node:
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
+StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb)
 {
   if (bb.valid())
   {
@@ -1830,7 +1828,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bb; b.extend(10*epsilon_);
     elem_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename LatVolMesh<Basis>::Elem::iterator ci, cie;
@@ -1848,7 +1846,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
+StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::AxisAlignedBBox& bb)
 {
   if (bb.valid())
   {
@@ -1865,7 +1863,7 @@ StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bb; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename LatVolMesh<Basis>::Node::iterator ni, nie;
@@ -1885,7 +1883,7 @@ StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
+StructHexVolMesh<Basis>::compute_epsilon(Core::Geometry::AxisAlignedBBox& bb)
 {
   epsilon_ = bb.diagonal().length()*1e-8;
   epsilon2_ = epsilon_*epsilon_;

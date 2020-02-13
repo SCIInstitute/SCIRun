@@ -38,7 +38,7 @@
 #include <Core/Persistent/PersistentSTL.h>
 
 #include <Core/GeometryPrimitives/SearchGridT.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -387,10 +387,11 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   /// Get the bounding box of the field
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
 
   /// Return the transformation that takes a 0-1 space bounding box
   /// to the current bounding box of this mesh.
@@ -2138,7 +2139,7 @@ protected:
 
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::AxisAlignedBBox &b) const
   {
 
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -2621,7 +2622,7 @@ protected:
   // Which tables are currently being computed
   mask_type                     synchronizing_;
 
-  Core::Geometry::BBox                  bbox_;
+  Core::Geometry::AxisAlignedBBox                  bbox_;
   Basis                 basis_;
   double                epsilon_;
   double                epsilon2_;
@@ -2842,19 +2843,12 @@ TetVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 }
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 TetVolMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::BBox result;
-  typename Node::iterator ni, nie;
-  begin(ni);
-  end(nie);
-  while (ni != nie)
-  {
-    result.extend(points_[*ni]);
-    ++ni;
-  }
-  return (result);
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
+  return result;
 }
 
 template <class Basis>
@@ -2864,15 +2858,23 @@ TetVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                              const Core::Geometry::Vector &e3) const
 {
   Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
+
+template <class Basis>
+template <class T>
+void
+TetVolMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
   while (ni != nie)
   {
-    result.extend(points_[*ni]);
+    bbox.extend(points_[*ni]);
     ++ni;
   }
-  return (result);
 }
 
 template <class Basis>
@@ -2880,7 +2882,7 @@ void
 TetVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  Core::Geometry::BBox bbox = get_bounding_box();
+  Core::Geometry::AxisAlignedBBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }
@@ -3750,7 +3752,7 @@ TetVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
   // Need to recompute grid at that point.
 
   const index_type idx = ci*4;
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_[cells_[idx]]);
   box.extend(points_[cells_[idx+1]]);
   box.extend(points_[cells_[idx+2]]);
@@ -3765,7 +3767,7 @@ void
 TetVolMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ci)
 {
   const index_type idx = ci*4;
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_[cells_[idx]]);
   box.extend(points_[cells_[idx+1]]);
   box.extend(points_[cells_[idx+2]]);
@@ -3809,7 +3811,7 @@ TetVolMesh<Basis>::compute_elem_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bbox_; b.extend(10*epsilon_);
     elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Elem::iterator ci, cie;
@@ -3830,7 +3832,7 @@ template <class Basis>
 void
 TetVolMesh<Basis>::compute_node_grid()
 {
-  ASSERTMSG(bbox_.valid(),"TetVolMesh BBox not valid");
+  ASSERTMSG(bbox_.valid(),"TetVolMesh AxisAlignedBBox not valid");
   if (bbox_.valid())
   {
     // Cubed root of number of cells to get a subdivision ballpark.
@@ -3846,7 +3848,7 @@ TetVolMesh<Basis>::compute_node_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bbox_; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Node::iterator ni, nie;

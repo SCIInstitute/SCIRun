@@ -41,7 +41,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                          const std::string &name, double scale,
                          const Point &pos, const Vector &dir, int resolution,
                          bool show_as_vector, size_t widget_num, size_t widget_iter,
-                         const BBox &bbox)
+                         const AxisAlignedBBox &bbox)
     : CompositeWidget(idGenerator, name) {
   static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
   static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);

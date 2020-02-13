@@ -31,7 +31,7 @@
 //    Date   : Wed Dec  5 16:05:07 MST 2001
 
 #include <Core/Algorithms/Geometry/CoregPts.h>
-#include <Core/Geometry/BBox.h>
+#include <Core/Geometry/AxisAlignedBBox.h>
 #include <Core/Math/MiscMath.h>
 #include <iostream>
 
@@ -407,7 +407,7 @@ CoregPtsSimplexSearch::simplex_step(std::vector<double>& sum, double factor,
 int
 CoregPtsSimplexSearch::computeTrans()
 {
-  BBox bbox;
+  AxisAlignedBBox bbox;
   origPtsCenter_ = origPtsA_[0];
   bbox.extend(origPtsA_[0]);
   int i,j;

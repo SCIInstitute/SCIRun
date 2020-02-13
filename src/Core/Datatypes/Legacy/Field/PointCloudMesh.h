@@ -38,7 +38,7 @@
 #include <Core/Containers/StackVector.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 
@@ -208,13 +208,13 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   /// Get the bounding box of the field
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
-
-  /// Return the transformation that takes a 0-1 space bounding box 
-  /// to the current bounding box of this mesh.  
+  template<class T> void extend_bounding_box(T &bbox) const;
+  /// Return the transformation that takes a 0-1 space bounding box
+  /// to the current bounding box of this mesh.
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
   /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
@@ -695,7 +695,7 @@ public:
   }
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::AxisAlignedBBox &b) const
   {
   
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -1267,8 +1267,8 @@ protected:
   }
 
 protected:
-  void compute_grid(Core::Geometry::BBox& bb);
-  void compute_epsilon(Core::Geometry::BBox& bb);
+  void compute_grid(Core::Geometry::AxisAlignedBBox& bb);
+  void compute_epsilon(Core::Geometry::AxisAlignedBBox& bb);
   
   void insert_elem_into_grid(typename Elem::index_type ci);
   void remove_elem_from_grid(typename Elem::index_type ci);
@@ -1363,28 +1363,11 @@ PointCloudMesh<Basis>::pointcloud_typeid(type_name(-1), "Mesh",
 
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 PointCloudMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::BBox result;
-
-  typename Node::iterator i, ie;
-  begin(i);
-  end(ie);
-
-  while (i != ie)
-  {
-    result.extend(points_[*i]);
-    ++i;
-  }
-
-  // Make sure we have a bounding box
-  if (points_.size() == 1)
-  {
-    result.extend(points_[0]);
-    result.extend(1e-5);
-  }
-
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
   return result;
 }
 
@@ -1395,25 +1378,31 @@ PointCloudMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e
                                                  const Core::Geometry::Vector &e3) const
 {
   Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
 
+template <class Basis>
+template <class T>
+void
+PointCloudMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   typename Node::iterator i, ie;
   begin(i);
   end(ie);
 
   while (i != ie)
   {
-    result.extend(points_[*i]);
+    bbox.extend(points_[*i]);
     ++i;
   }
 
   // Make sure we have a bounding box
   if (points_.size() == 1)
   {
-    result.extend(points_[0]);
-    result.extend(1e-5);
+    bbox.extend(points_[0]);
+    bbox.extend(1e-5);
   }
-
-  return result;
 }
 
 template <class Basis>
@@ -1421,7 +1410,7 @@ void
 PointCloudMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  Core::Geometry::BBox bbox = get_bounding_box();
+  Core::Geometry::AxisAlignedBBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }
@@ -1625,7 +1614,7 @@ PointCloudMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
     /// These computations share the evalution of the bounding box
-    Core::Geometry::BBox bb = get_bounding_box(); 
+    Core::Geometry::AxisAlignedBBox bb = get_bounding_box(); 
 
     /// Compute the epsilon for geometrical closeness comparisons
     /// Mainly used by the grid lookup tables
@@ -1694,7 +1683,7 @@ PointCloudMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ni)
 
 template <class Basis>
 void
-PointCloudMesh<Basis>::compute_grid(Core::Geometry::BBox& bb)
+PointCloudMesh<Basis>::compute_grid(Core::Geometry::AxisAlignedBBox& bb)
 {
   if (bb.valid())
   {
@@ -1711,7 +1700,7 @@ PointCloudMesh<Basis>::compute_grid(Core::Geometry::BBox& bb)
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
-    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bb; b.extend(10*epsilon_);
     grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Elem::iterator ci, cie;
@@ -1733,7 +1722,7 @@ PointCloudMesh<Basis>::compute_grid(Core::Geometry::BBox& bb)
 
 template<class Basis>
 void
-PointCloudMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
+PointCloudMesh<Basis>::compute_epsilon(Core::Geometry::AxisAlignedBBox& bb)
 {
   bb = get_bounding_box();
   epsilon_ = bb.diagonal().length()*1e-8;

@@ -30,7 +30,7 @@
 #define MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 
 #include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/Widget.h>
@@ -79,7 +79,7 @@ namespace SCIRun {
         std::vector<Core::Geometry::Point> pos_;
         std::vector<Core::Geometry::Vector> direction_;
         std::vector<double> scale_;
-        Core::Geometry::BBox last_bounds_;
+        Core::Geometry::AxisAlignedBBox last_bounds_;
         std::vector<Graphics::Datatypes::ArrowWidgetHandle> arrows_;
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         std::vector<Core::Geometry::Transform> previousTransforms_;
@@ -113,7 +113,7 @@ namespace SCIRun {
         void makeScalesPositive();
         void resetData();
         std::string widgetName(size_t i, size_t id, size_t iter);
-        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
+        void createDipoleWidget(Core::Geometry::AxisAlignedBBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
         void moveDipolesTogether(const Core::Geometry::Transform &transform);
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);

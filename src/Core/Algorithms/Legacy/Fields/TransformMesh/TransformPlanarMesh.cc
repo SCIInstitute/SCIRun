@@ -95,7 +95,7 @@ run(FieldHandle input, FieldHandle& output)
     /// For a surface assume that it is planar.
 
     // Translate the mesh to the center of the view.
-    const BBox bbox = vmesh->get_bounding_box();
+    const AxisAlignedBBox bbox = vmesh->get_bounding_box();
     
     if (bbox.valid()) 
     {
@@ -167,7 +167,7 @@ run(FieldHandle input, FieldHandle& output)
   // Optionally translate the mesh away from the center of the view.
   if (tx || ty) 
   {
-    const BBox bbox = vmesh->get_bounding_box();
+    const AxisAlignedBBox bbox = vmesh->get_bounding_box();
       
     if (bbox.valid()) 
     {

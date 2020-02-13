@@ -100,7 +100,7 @@ CreateStructHex::execute()
     {
       datatype = TENSOR;
     }
-    BBox bbox = ifieldhandle->vmesh()->get_bounding_box();
+    AxisAlignedBBox bbox = ifieldhandle->vmesh()->get_bounding_box();
     minb = bbox.min();
     maxb = bbox.max();
   }

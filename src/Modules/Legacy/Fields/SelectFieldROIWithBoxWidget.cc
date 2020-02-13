@@ -72,7 +72,7 @@ class SelectFieldROIWithBoxWidget : public Module
     GuiInt mode_;  // 0 nothing 1 accumulate 2 replace
 
     int  last_generation_;
-    BBox last_bounds_;
+    AxisAlignedBBox last_bounds_;
     int  widgetid_;
     GuiDouble widget_scale_;
     GuiInt    widget_mode_;
@@ -160,13 +160,13 @@ SelectFieldROIWithBoxWidget::execute()
     
     last_generation_ = ifieldhandle->generation;
 
-    BBox obox = output_field_->vmesh()->get_bounding_box();
+    AxisAlignedBBox obox = output_field_->vmesh()->get_bounding_box();
     if (!(last_bounds_.valid() && obox.valid() &&
 	  obox.min() == last_bounds_.min() &&
 	  obox.max() == last_bounds_.max()))
     {
       // Update the widget.
-      const BBox bbox = output_field_->vmesh()->get_bounding_box();
+      const AxisAlignedBBox bbox = output_field_->vmesh()->get_bounding_box();
       const Point &bmin = bbox.min();
       const Point &bmax = bbox.max();
 

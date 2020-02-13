@@ -63,7 +63,7 @@ class ClipFieldToFieldOrWidget : public Module
   private:
     BoxWidget *box_;
     CrowdMonitor widget_lock_;
-    BBox last_bounds_;
+    AxisAlignedBBox last_bounds_;
     GuiString clip_location_;
     GuiString clip_mode_;
     GuiInt    autoexec_;
@@ -218,7 +218,7 @@ ClipFieldToFieldOrWidget::execute()
   update_state(Executing);
 
   // Update the widget.
-  const BBox bbox = ifieldhandle->vmesh()->get_bounding_box();
+  const AxisAlignedBBox bbox = ifieldhandle->vmesh()->get_bounding_box();
   if (first_pass_ && points_differ())
   {
     Point center(center_x_.get(), center_y_.get(), center_z_.get());

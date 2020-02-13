@@ -88,7 +88,7 @@ ConvertToNrrdAlgo::runImpl(FieldHandle input, NrrdDataHandle& points,
     for (size_t j=0;j<dims.size(); j++) ndims.push_back(dims[j]);
 
     // regular
-    BBox bbox = mesh->get_bounding_box();
+    AxisAlignedBBox bbox = mesh->get_bounding_box();
     minP = bbox.get_min();
     maxP = bbox.get_max();
     spc = maxP - minP;

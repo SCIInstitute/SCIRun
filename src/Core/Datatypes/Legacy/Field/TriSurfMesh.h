@@ -37,7 +37,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
@@ -326,10 +326,11 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   /// Get the bounding box of the field
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
 
   /// Return the transformation that takes a 0-1 space bounding box
   /// to the current bounding box of this mesh.
@@ -1897,7 +1898,7 @@ protected:
   }
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::AxisAlignedBBox &b) const
   {
 
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -2054,7 +2055,7 @@ protected:
 
   Basis                 basis_;             // Interpolation basis
 
-  Core::Geometry::BBox                  bbox_;
+  Core::Geometry::AxisAlignedBBox                  bbox_;
   double                epsilon_;           // Epsilon to use for computation 1e-8 of bbox diagonal
   double                epsilon2_;          // Square of epsilon
 
@@ -2207,19 +2208,12 @@ TriSurfMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 TriSurfMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::BBox result;
-  typename Node::iterator ni, nie;
-  begin(ni);
-  end(nie);
-  while (ni != nie)
-  {
-    result.extend(points_[*ni]);
-    ++ni;
-  }
-  return (result);
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
+  return result;
 }
 
 template <class Basis>
@@ -2229,15 +2223,23 @@ TriSurfMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                               const Core::Geometry::Vector &e3) const
 {
   Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
+
+template <class Basis>
+template <class T>
+void
+TriSurfMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
   while (ni != nie)
   {
-    result.extend(points_[*ni]);
+    bbox.extend(points_[*ni]);
     ++ni;
   }
-  return (result);
 }
 
 template <class Basis>
@@ -2245,7 +2247,7 @@ void
 TriSurfMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  Core::Geometry::BBox bbox = get_bounding_box();
+  Core::Geometry::AxisAlignedBBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }
@@ -3614,7 +3616,7 @@ TriSurfMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
   /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   const index_type idx = ci*3;
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_[faces_[idx]]);
   box.extend(points_[faces_[idx+1]]);
   box.extend(points_[faces_[idx+2]]);
@@ -3628,7 +3630,7 @@ void
 TriSurfMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ci)
 {
   const index_type idx = ci*3;
-  Core::Geometry::BBox box;
+  Core::Geometry::AxisAlignedBBox box;
   box.extend(points_[faces_[idx]]);
   box.extend(points_[faces_[idx+1]]);
   box.extend(points_[faces_[idx+2]]);
@@ -3674,7 +3676,7 @@ TriSurfMesh<Basis>::compute_elem_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bbox_; b.extend(10*epsilon_);
     elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Elem::iterator ci, cie;
@@ -3711,7 +3713,7 @@ TriSurfMesh<Basis>::compute_node_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::AxisAlignedBBox b = bbox_; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Node::iterator ni, nie;

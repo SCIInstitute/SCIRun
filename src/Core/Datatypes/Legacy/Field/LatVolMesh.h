@@ -40,7 +40,7 @@
 #include <Core/Basis/HexTrilinearLgn.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/Math/MiscMath.h>
 
@@ -854,10 +854,11 @@ public:
   virtual bool get_dim(std::vector<size_type>&) const;
   Core::Geometry::Vector diagonal() const;
 
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
@@ -937,14 +938,14 @@ public:
   }
 
   /// return all cell_indecies that overlap the BBox in arr.
-  void get_cells(typename Cell::array_type &arr, const Core::Geometry::BBox &box);
-  /// returns the min and max indices that fall within or on the BBox
+  void get_cells(typename Cell::array_type &arr, const Core::Geometry::AxisAlignedBBox &box);
+  /// returns the min and max indices that fall within or on the AxisAlignedBBox
   void get_cells(typename Cell::index_type &begin,
                  typename Cell::index_type &end,
-                 const Core::Geometry::BBox &bbox);
+                 const Core::Geometry::AxisAlignedBBox &bbox);
   void get_nodes(typename Node::index_type &begin,
                  typename Node::index_type &end,
-                 const Core::Geometry::BBox &bbox);
+                 const Core::Geometry::AxisAlignedBBox &bbox);
 
   bool get_neighbor(typename Cell::index_type &neighbor,
                     const typename Cell::index_type &from,
@@ -1303,27 +1304,11 @@ LatVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 LatVolMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
-  Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
-  Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p3(min_i_,         min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
-  Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
-
-  Core::Geometry::BBox result;
-  result.extend(transform_.project(p0))
-    .extend(transform_.project(p1))
-    .extend(transform_.project(p2))
-    .extend(transform_.project(p3))
-    .extend(transform_.project(p4))
-    .extend(transform_.project(p5))
-    .extend(transform_.project(p6))
-    .extend(transform_.project(p7));
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
   return result;
 }
 
@@ -1333,6 +1318,16 @@ LatVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                              const Core::Geometry::Vector &e2,
                                              const Core::Geometry::Vector &e3) const
 {
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
+
+template <class Basis>
+template <class T>
+void
+LatVolMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
   Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
   Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
@@ -1342,16 +1337,14 @@ LatVolMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
   Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
   Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
 
-  Core::Geometry::OrientedBBox result(e1, e2, e3);
-  result.extend(transform_.project(p0))
-    .extend(transform_.project(p1))
-    .extend(transform_.project(p2))
-    .extend(transform_.project(p3))
-    .extend(transform_.project(p4))
-    .extend(transform_.project(p5))
-    .extend(transform_.project(p6))
-    .extend(transform_.project(p7));
-  return result;
+  bbox.extend(transform_.project(p0));
+  bbox.extend(transform_.project(p1));
+  bbox.extend(transform_.project(p2));
+  bbox.extend(transform_.project(p3));
+  bbox.extend(transform_.project(p4));
+  bbox.extend(transform_.project(p5));
+  bbox.extend(transform_.project(p6));
+  bbox.extend(transform_.project(p7));
 }
 
 template <class Basis>
@@ -1815,7 +1808,7 @@ LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometry::BBox &bbox)
+LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometry::AxisAlignedBBox &bbox)
 {
   // Get our min and max
   typename Cell::index_type min, max;
@@ -1836,7 +1829,7 @@ LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometr
 }
 
 
-/// Returns the min and max indices that fall within or on the BBox.
+/// Returns the min and max indices that fall within or on the AxisAlignedBBox.
 
 // If the max index lies "in front of" (meaning that any of the
 // indexes are negative) then the max will be set to [0,0,0] and the
@@ -1846,7 +1839,7 @@ LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometr
 template <class Basis>
 void
 LatVolMesh<Basis>::get_cells(typename Cell::index_type &begin, typename Cell::index_type &end,
-                             const Core::Geometry::BBox &bbox) {
+                             const Core::Geometry::AxisAlignedBBox &bbox) {
 
   const Core::Geometry::Point minp = transform_.unproject(bbox.get_min());
   index_type mini = (index_type)floor(minp.x());
@@ -1967,11 +1960,11 @@ template <class Basis>
 void
 LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
                              typename Node::index_type &end,
-                             const Core::Geometry::BBox &bbox)
+                             const Core::Geometry::AxisAlignedBBox &bbox)
 {
   // get the min and max points of the bbox and make sure that they lie
   // inside the mesh boundaries.
-  Core::Geometry::BBox mesh_boundary = get_bounding_box();
+  Core::Geometry::AxisAlignedBBox mesh_boundary = get_bounding_box();
   // crop by min boundary
   Core::Geometry::Point min = Max(bbox.get_min(), mesh_boundary.get_min());
   Core::Geometry::Point max = Max(bbox.get_max(), mesh_boundary.get_min());
@@ -1986,7 +1979,7 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
   if (!min_located && !max_located)
   {
     // first check to see if there is a bbox overlap
-    Core::Geometry::BBox box;
+    Core::Geometry::AxisAlignedBBox box;
     box.extend(min);
     box.extend(max);
     if ( box.overlaps(mesh_boundary) )

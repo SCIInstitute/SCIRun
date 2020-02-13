@@ -54,7 +54,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
@@ -257,10 +257,11 @@ public:
   size_type get_ni() const { return ni_; }
   virtual bool get_dim(std::vector<size_type>&) const;
   Core::Geometry::Vector diagonal() const;
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
@@ -865,30 +866,35 @@ ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
 
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 ScanlineMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::Point p0(0.0, 0.0, 0.0);
-  Core::Geometry::Point p1(ni_ - 1, 0.0, 0.0);
-
-  Core::Geometry::BBox result;
-  result.extend(transform_.project(p0));
-  result.extend(transform_.project(p1));
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
   return result;
 }
 
 template <class Basis>
-Core::Geometry::OrientedBBox ScanlineMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                                                            const Core::Geometry::Vector &e2,
-                                                                            const Core::Geometry::Vector &e3) const
+Core::Geometry::OrientedBBox
+ScanlineMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                               const Core::Geometry::Vector &e2,
+                                               const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
+
+template <class Basis>
+template <class T>
+void
+ScanlineMesh<Basis>::extend_bounding_box(T &bbox) const
 {
   Core::Geometry::Point p0(0.0, 0.0, 0.0);
   Core::Geometry::Point p1(ni_ - 1, 0.0, 0.0);
 
-  Core::Geometry::OrientedBBox result(e1, e2, e3);
-  result.extend(transform_.project(p0));
-  result.extend(transform_.project(p1));
-  return result;
+  bbox.extend(transform_.project(p0));
+  bbox.extend(transform_.project(p1));
 }
 
 template <class Basis>

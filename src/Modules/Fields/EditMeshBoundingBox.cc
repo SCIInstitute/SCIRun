@@ -30,7 +30,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Fields/EditMeshBoundingBox.h>
@@ -58,8 +58,8 @@ namespace SCIRun
       public:
         Transform userWidgetTransform_;
         Transform field_initial_transform_;
-        BBox box_initial_bounds_;
-        BBox bbox_;
+        AxisAlignedBBox box_initial_bounds_;
+        AxisAlignedBBox bbox_;
         BoxPosition position_;
       };
     }
@@ -201,7 +201,7 @@ GeometryHandle EditMeshBoundingBox::buildGeometryObject()
                                   impl_->position_, impl_->position_.center_, impl_->bbox_);
 }
 
-void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
+void EditMeshBoundingBox::computeWidgetBox(const AxisAlignedBBox& box) const
 {
   auto bbox(box);
   if (!bbox.valid())

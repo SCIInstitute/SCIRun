@@ -43,7 +43,7 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
                            const std::string& defaultColor,
                            const Point& point,
                            const Point& origin,
-                           const BBox& bbox,
+                           const AxisAlignedBBox& bbox,
                            int resolution)
   : WidgetBase(idGenerator, "SphereWidget::" + name, true, point, origin)
 {

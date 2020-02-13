@@ -39,7 +39,7 @@
 #include <Core/Basis/QuadBilinearLgn.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
@@ -670,10 +670,11 @@ public:
   size_type get_nj() const { return nj_; }
   virtual bool get_dim(std::vector<size_type>&) const;
   Core::Geometry::Vector diagonal() const;
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template <typename T> void extend_bounding_box(T &bbox) const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
   virtual bool synchronize(mask_type sync);
@@ -754,7 +755,7 @@ public:
   }
 
   /// return all face_indecies that overlap the BBox in arr.
-  void get_faces(typename Face::array_type &arr, const Core::Geometry::BBox &box);
+  void get_faces(typename Face::array_type &arr, const Core::Geometry::AxisAlignedBBox &box);
 
   /// Get the size of an element (length, area, volume)
   double get_size(const typename Node::index_type &/*i*/) const { return 0.0; }
@@ -1031,38 +1032,39 @@ ImageMesh<Basis>::get_epsilon() const
 }
 
 template<class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 ImageMesh<Basis>::get_bounding_box() const
+{
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
+  return result;
+}
+
+template<class Basis>
+Core::Geometry::OrientedBBox
+ImageMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
+                                            const Core::Geometry::Vector &e2,
+                                            const Core::Geometry::Vector &e3) const
+{
+  Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
+
+template <class Basis>
+template <class T>
+void
+ImageMesh<Basis>::extend_bounding_box(T &bbox) const
 {
   Core::Geometry::Point p0(0.0,   0.0,   0.0);
   Core::Geometry::Point p1(ni_-1, 0.0,   0.0);
   Core::Geometry::Point p2(ni_-1, nj_-1, 0.0);
   Core::Geometry::Point p3(0.0,   nj_-1, 0.0);
 
-  Core::Geometry::BBox result;
-  result.extend(transform_.project(p0));
-  result.extend(transform_.project(p1));
-  result.extend(transform_.project(p2));
-  result.extend(transform_.project(p3));
-  return result;
-}
-
-template<class Basis> Core::Geometry::OrientedBBox
-ImageMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                            const Core::Geometry::Vector &e2,
-                                            const Core::Geometry::Vector &e3) const
-{
-  Core::Geometry::Point p0(0.0, 0.0, 0.0);
-  Core::Geometry::Point p1(ni_ - 1, 0.0, 0.0);
-  Core::Geometry::Point p2(ni_ - 1, nj_ - 1, 0.0);
-  Core::Geometry::Point p3(0.0, nj_ - 1, 0.0);
-
-  Core::Geometry::OrientedBBox result(e1, e2, e3);
-  result.extend(transform_.project(p0));
-  result.extend(transform_.project(p1));
-  result.extend(transform_.project(p2));
-  result.extend(transform_.project(p3));
-  return result;
+  bbox.extend(transform_.project(p0));
+  bbox.extend(transform_.project(p1));
+  bbox.extend(transform_.project(p2));
+  bbox.extend(transform_.project(p3));
 }
 
 template<class Basis>
@@ -1332,10 +1334,10 @@ ImageMesh<Basis>::get_elems(typename Elem::array_type &result, const typename No
 }
 
 
-/// return all face_indecies that overlap the Core::Geometry::BBox in arr.
+/// return all face_indecies that overlap the Core::Geometry::AxisAlignedBBox in arr.
 template<class Basis>
 void
-ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const Core::Geometry::BBox &bbox)
+ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const Core::Geometry::AxisAlignedBBox &bbox)
 {
   arr.clear();
   typename Face::index_type min;

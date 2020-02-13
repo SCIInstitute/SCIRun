@@ -77,7 +77,7 @@ public:
                       VMesh::coords_type& coords,
                       const Core::Geometry::Point &point) const;
 
-  virtual bool locate(VMesh::Elem::array_type &i, const Core::Geometry::BBox &bbox) const;
+  virtual bool locate(VMesh::Elem::array_type &i, const Core::Geometry::AxisAlignedBBox &bbox) const;
 
   virtual void mlocate(std::vector<VMesh::Node::index_type> &i, const std::vector<Core::Geometry::Point> &point) const;
   virtual void mlocate(std::vector<VMesh::Elem::index_type> &i, const std::vector<Core::Geometry::Point> &point) const;
@@ -334,7 +334,7 @@ locate(VMesh::Elem::index_type &idx, const Core::Geometry::Point &point) const
 template <class MESH>
 bool 
 VUnstructuredMesh<MESH>::
-locate(VMesh::Elem::array_type &array, const Core::Geometry::BBox &bbox) const
+locate(VMesh::Elem::array_type &array, const Core::Geometry::AxisAlignedBBox &bbox) const
 {
   return(this->mesh_->locate_elems(array,bbox));
 }

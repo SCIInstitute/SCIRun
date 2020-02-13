@@ -343,7 +343,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
   
-  const BBox bbox = vmesh->get_bounding_box();
+  const AxisAlignedBBox bbox = vmesh->get_bounding_box();
   Vector size = bbox.diagonal();
   Point center = bbox.center();
   VMesh::dimension_type dim;

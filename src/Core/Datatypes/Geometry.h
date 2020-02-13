@@ -30,7 +30,7 @@
 #define CORE_DATATYPES_GEOMETRY_H
 
 #include <Core/Datatypes/Datatype.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <set>
 #include <vector>
 #include <Core/Datatypes/share.h>
@@ -84,7 +84,7 @@ namespace Datatypes
     virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
 
     //TODO: 
-    Core::Geometry::BBox box;
+    Core::Geometry::AxisAlignedBBox box;
     struct FieldData
     {
       std::vector<float> vertex, color, vertex_normal;

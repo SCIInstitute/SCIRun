@@ -174,7 +174,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     }
   }
 
-  BBox box;
+  AxisAlignedBBox box;
   Handle<SearchGridT<index_type> > node_grid;
   size_type ni = 0, nj = 0, nk = 0;    
         

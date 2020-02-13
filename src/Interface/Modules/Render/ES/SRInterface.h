@@ -182,7 +182,7 @@ namespace SCIRun {
       // hashing. The simplest approach would be to have all names placed in a
       // hash multimap with a list which assigns ids to names.
       uint64_t getEntityIDForName(const std::string& name, int port);
-      Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
+      Core::Geometry::AxisAlignedBBox getSceneBox() {return mSceneBBox;}
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
@@ -277,7 +277,7 @@ namespace SCIRun {
       {
       public:
         SRObject(const std::string& name, const glm::mat4& objToWorld,
-          const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
+          const Core::Geometry::AxisAlignedBBox& bbox, boost::optional<std::string> colorMap, int port) :
           mName(name),
           mObjectToWorld(objToWorld),
           mBBox(bbox),
@@ -310,7 +310,7 @@ namespace SCIRun {
         std::string mName;
         glm::mat4 mObjectToWorld;
         std::list<SRPass> mPasses;
-        Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
+        Core::Geometry::AxisAlignedBBox mBBox;          // Objects bounding box (calculated from VBO).
 
         boost::optional<std::string> mColorMap;
 
@@ -354,7 +354,7 @@ namespace SCIRun {
 
       int                                 axesFailCount_      {0};
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
-      Core::Geometry::BBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
+      Core::Geometry::AxisAlignedBBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
 
       ESCore                              mCore               {};       // Entity system core.

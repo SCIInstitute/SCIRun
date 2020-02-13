@@ -105,7 +105,7 @@ class EditMeshBoundingBox : public Module {
     BoxWidget *     box_;
     Transform       box_initial_transform_;
     Transform       field_initial_transform_;
-    BBox            box_initial_bounds_;
+    AxisAlignedBBox            box_initial_bounds_;
     int             generation_;
     int             widgetid_;
 
@@ -349,7 +349,7 @@ EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   Point center;
   Vector size;
   
-  BBox bbox = f->vmesh()->get_bounding_box();
+  AxisAlignedBBox bbox = f->vmesh()->get_bounding_box();
 
   if (!bbox.valid()) {
     warning("Input field is empty -- using unit cube.");
@@ -379,7 +379,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
   {
     Point center;
     Vector size;
-    BBox bbox = f->vmesh()->get_bounding_box();
+    AxisAlignedBBox bbox = f->vmesh()->get_bounding_box();
     if (!bbox.valid()) {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0,0,0));
@@ -505,7 +505,7 @@ EditMeshBoundingBox::execute()
     // get and display the attributes of the input field
     update_input_attributes(fh);
     build_widget(fh, resetting_.get());
-    BBox bbox = fh->vmesh()->get_bounding_box();
+    AxisAlignedBBox bbox = fh->vmesh()->get_bounding_box();
     if (!bbox.valid()) {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0,0,0));

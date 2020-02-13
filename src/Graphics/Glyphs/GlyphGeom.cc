@@ -45,7 +45,7 @@ GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
   const bool isTransparent, const double transparencyValue, const ColorScheme& colorScheme,
-  RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const bool isClippable,
+  RenderState state, const SpireIBO::PRIMITIVE& primIn, const AxisAlignedBBox& bbox, const bool isClippable,
   const Core::Datatypes::ColorMapHandle colorMap)
 {
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
@@ -136,7 +136,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     for (auto a : indices_) if(a >= startOfPass && a < endOfPass)
       iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
 
-    BBox newBBox;
+    AxisAlignedBBox newBBox;
     for (size_t i = startOfPass; i < endOfPass; ++i)
     {
       Vector point = points_.at(i);

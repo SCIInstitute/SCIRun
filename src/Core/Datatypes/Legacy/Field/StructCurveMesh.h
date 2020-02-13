@@ -109,10 +109,11 @@ public:
 
   /// get the mesh statistics
   double get_cord_length() const;
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
+  template<class T> void extend_bounding_box(T &bbox) const;
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
@@ -927,21 +928,11 @@ StructCurveMesh<Basis>::compute_epsilon()
 }
 
 template <class Basis>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 StructCurveMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::BBox result;
-
-  typename ScanlineMesh<Basis>::Node::iterator i, ie;
-  this->begin(i);
-  this->end(ie);
-
-  while (i != ie) 
-  {
-    result.extend(points_[*i]);
-    ++i;
-  }
-
+  Core::Geometry::AxisAlignedBBox result;
+  extend_bounding_box(result);
   return result;
 }
 
@@ -952,18 +943,24 @@ StructCurveMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &
                                                   const Core::Geometry::Vector &e3) const
 {
   Core::Geometry::OrientedBBox result(e1, e2, e3);
+  extend_bounding_box(result);
+  return result;
+}
 
+template <class Basis>
+template <class T>
+void
+StructCurveMesh<Basis>::extend_bounding_box(T &bbox) const
+{
   typename ScanlineMesh<Basis>::Node::iterator i, ie;
   this->begin(i);
   this->end(ie);
 
   while (i != ie)
   {
-    result.extend(points_[*i]);
+    bbox.extend(points_[*i]);
     ++i;
   }
-
-  return result;
 }
 
 template <class Basis>

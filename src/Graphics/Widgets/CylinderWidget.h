@@ -48,7 +48,7 @@ namespace SCIRun {
                        const Core::Geometry::Point& p1,
                        const Core::Geometry::Point& p2,
                        const Core::Geometry::Point& origin,
-                       const Core::Geometry::BBox& bbox,
+                       const Core::Geometry::AxisAlignedBBox& bbox,
                        int resolution);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);

@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
 using namespace SCIRun::Core::Geometry;
@@ -71,7 +71,7 @@ TEST(OrientedBBoxTests, MatchesBBox)
   obbox.extend(Point(1,2,3));
   obbox.extend(Point(4,5,6));
 
-  BBox bbox;
+  AxisAlignedBBox bbox;
   bbox.extend(Point(1,2,3));
   bbox.extend(Point(4,5,6));
 

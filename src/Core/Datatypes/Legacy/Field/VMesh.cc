@@ -30,7 +30,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
 using namespace SCIRun;
@@ -526,9 +526,9 @@ VMesh::locate(VMesh::Elem::index_type &,
 }
 
 bool 
-VMesh::locate(VMesh::Elem::array_type &, const BBox &) const
+VMesh::locate(VMesh::Elem::array_type &, const AxisAlignedBBox &) const
 {
-  ASSERTFAIL("VMesh interface: locate(Elem::array_type,BBox) has not been implemented");
+  ASSERTFAIL("VMesh interface: locate(Elem::array_type,AxisAlignedBBox) has not been implemented");
 }
 
 void 
@@ -806,7 +806,7 @@ VMesh::get_elem_dimensions(dimension_type& dim)
 }
 
 
-BBox
+AxisAlignedBBox
 VMesh::get_bounding_box() const
 {
   ASSERTFAIL("VMesh interface: get_bounding_box has not yet been implemented");  

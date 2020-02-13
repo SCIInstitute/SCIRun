@@ -241,7 +241,7 @@ namespace SCIRun {
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
       void buildGeomClippingPlanes();
-      void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::BBox& bbox);
+      void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::AxisAlignedBBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
       void updateScaleBarLength();

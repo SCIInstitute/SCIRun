@@ -27,14 +27,14 @@
 */
 
 #include <cmath>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/Persistent/Persistent.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 void
-BBox::extend_disk(const Point& cen, const Vector& normal, double r)
+AxisAlignedBBox::extend_disk(const Point& cen, const Vector& normal, double r)
 {
   if (normal.length2() < 1.e-12) { extend(cen); return; }
   Vector n(normal);
@@ -49,7 +49,7 @@ BBox::extend_disk(const Point& cen, const Vector& normal, double r)
 // if diff is 1.0, the two bboxes have to have about 50% overlap each for x,y,z
 // if diff is 0.0, they have to have 100% overlap
 bool
-BBox::is_similar_to(const BBox &b, double diff) const
+AxisAlignedBBox::is_similar_to(const AxisAlignedBBox &b, double diff) const
 {
   if (!is_valid_ || !b.valid()) return false;
   Vector acceptable_diff=((diagonal()+b.diagonal())/2.0)*diff;
@@ -67,14 +67,14 @@ BBox::is_similar_to(const BBox &b, double diff) const
 }
 
 void
-BBox::translate(const Vector &v)
+AxisAlignedBBox::translate(const Vector &v)
 {
   cmin_+=v;
   cmax_+=v;
 }
 
 void
-BBox::scale(double s, const Vector&o)
+AxisAlignedBBox::scale(double s, const Vector&o)
 {
   cmin_-=o;
   cmax_-=o;
@@ -85,7 +85,7 @@ BBox::scale(double s, const Vector&o)
 }
 
 bool
-BBox::overlaps(const BBox & bb) const
+AxisAlignedBBox::overlaps(const AxisAlignedBBox & bb) const
 {
   if( bb.cmin_.x() > cmax_.x() || bb.cmax_.x() < cmin_.x())
     return false;
@@ -98,7 +98,7 @@ BBox::overlaps(const BBox & bb) const
 }
 
 bool
-BBox::overlaps_inside(const BBox & bb) const
+AxisAlignedBBox::overlaps_inside(const AxisAlignedBBox & bb) const
 {
   if( bb.cmin_.x() >= cmax_.x() || bb.cmax_.x() <= cmin_.x())
     return false;
@@ -111,7 +111,7 @@ BBox::overlaps_inside(const BBox & bb) const
 }
 
 bool
-BBox::intersect(const Point& origin, const Vector& dir, Point& hitPoint) const
+AxisAlignedBBox::intersect(const Point& origin, const Vector& dir, Point& hitPoint) const
 {
   Vector t1 = (cmin_ - origin) / dir;
   Vector t2 = (cmax_ - origin) / dir;
@@ -130,7 +130,7 @@ BBox::intersect(const Point& origin, const Vector& dir, Point& hitPoint) const
   }
 }
 
-void SCIRun::Core::Geometry::Pio(Piostream &stream, BBox & box)
+void SCIRun::Core::Geometry::Pio(Piostream &stream, AxisAlignedBBox & box)
 {
   stream.begin_cheap_delim();
 
@@ -157,7 +157,7 @@ void SCIRun::Core::Geometry::Pio(Piostream &stream, BBox & box)
   stream.end_cheap_delim();
 }
 
-std::ostream& SCIRun::Core::Geometry::operator<<(std::ostream& out, const BBox& b)
+std::ostream& SCIRun::Core::Geometry::operator<<(std::ostream& out, const AxisAlignedBBox& b)
 {
   return out << b.get_min() << " : " << b.get_max();
 }

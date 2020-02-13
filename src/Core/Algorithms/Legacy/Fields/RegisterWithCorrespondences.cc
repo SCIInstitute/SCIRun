@@ -625,7 +625,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
 
 #if 0
   {
-    const BBox bbox = omesh->get_bounding_box();
+    const AxisAlignedBBox bbox = omesh->get_bounding_box();
     if (bbox.valid())
     {
       std::cout << "output size: " << bbox.diagonal() << " center: " << bbox.center() << std::endl;
@@ -924,7 +924,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
     
 #if 0
     {
-        const BBox bbox = omesh->get_bounding_box();
+        const AxisAlignedBBox bbox = omesh->get_bounding_box();
         if (bbox.valid())
         {
             std::cout << "output size: " << bbox.diagonal() << " center: " << bbox.center() << std::endl;

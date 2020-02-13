@@ -205,12 +205,12 @@ MedialAxisAlgo::run(FieldHandle surfH, FieldHandle maskLatVolH, FieldHandle& med
     algo_end(); return (false);
   }
 
-  BBox bbox = tsm->get_bounding_box();
+  AxisAlignedBBox bbox = tsm->get_bounding_box();
 
   FieldInformation tmpFI(maskLatVolH);
   if (maskLatVolH.get_rep() == 0 || !tmpFI.is_constantdata())
   {
-    BBox bbox = tsm->get_bounding_box();
+    AxisAlignedBBox bbox = tsm->get_bounding_box();
     FieldInformation fi("LatVolMesh", 1, 0, "unsigned_char");
     MeshHandle lvm = CreateMesh(fi, 64, 64, 64, bbox.min(), bbox.max());
     maskLatVolH = CreateField(fi, lvm);

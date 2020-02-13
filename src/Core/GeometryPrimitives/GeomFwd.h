@@ -41,6 +41,7 @@ class Transform;
 class Tensor;
 class Plane;
 class BBox;
-
+class AxisAlignedBBox;
+class OrientedBBox;
 }}}
 #endif

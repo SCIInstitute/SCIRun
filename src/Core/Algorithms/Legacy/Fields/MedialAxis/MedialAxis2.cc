@@ -121,7 +121,7 @@ MedialAxisP::parallel(int proc, int nproc)
   // Build initial grid
   if (proc==0)
   {
-    BBox bbox = surface_field_->vmesh()->get_bounding_box(); // bounding box of the mesh
+    AxisAlignedBBox bbox = surface_field_->vmesh()->get_bounding_box(); // bounding box of the mesh
 
     Point min = bbox.min();  // min and max points of cartisian system will define box
     Point max = bbox.max();

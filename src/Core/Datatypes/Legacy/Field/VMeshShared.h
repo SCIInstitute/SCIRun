@@ -136,7 +136,7 @@ public:
   virtual bool unsynchronize(unsigned int sync);
   virtual bool clear_synchronization();
 
-  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
   virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
                                                                  const Core::Geometry::Vector &e2,
                                                                  const Core::Geometry::Vector &e3) const;
@@ -230,7 +230,7 @@ VMeshShared<MESH>::get_derivate_weights(const VMesh::coords_type& coords,
 
 
 template <class MESH>
-Core::Geometry::BBox
+Core::Geometry::AxisAlignedBBox
 VMeshShared<MESH>::get_bounding_box() const
 {
   return(mesh_->get_bounding_box());

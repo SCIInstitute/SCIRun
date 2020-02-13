@@ -130,9 +130,9 @@ class GeneratePointSamplesFromFieldOrWidgetImpl
 
     bool widget_change_;
 
-    BBox  rake_bbox_;
-    BBox  ring_bbox_;
-    BBox  frame_bbox_;
+    AxisAlignedBBox  rake_bbox_;
+    AxisAlignedBBox  ring_bbox_;
+    AxisAlignedBBox  frame_bbox_;
     Point endpoint0_;
     Point endpoint1_;
 
@@ -234,7 +234,7 @@ GeneratePointSamplesFromFieldOrWidget::widget_moved(bool last, BaseWidget*)
 void
 GeneratePointSamplesFromFieldOrWidget::initialize_rake(FieldHandle ifield)
 {
-  const BBox ibox = ifield->vmesh()->get_bounding_box();
+  const AxisAlignedBBox ibox = ifield->vmesh()->get_bounding_box();
   const Point &min = ibox.min();
   const Point &max = ibox.max();
 
@@ -262,7 +262,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
   GeometryOPortHandle ogport;
   get_oport_handle("Sampling Widget",ogport);
 
-  const BBox ibox = ifield->vmesh()->get_bounding_box();
+  const AxisAlignedBBox ibox = ifield->vmesh()->get_bounding_box();
   bool reset = gui_force_rake_reset_.get();
   gui_force_rake_reset_.set(0);
   bool resize = rake_bbox_.valid() && !ibox.is_similar_to(rake_bbox_);
@@ -377,7 +377,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
   GeometryOPortHandle ogport;
   get_oport_handle("Sampling Widget",ogport);
 
-  const BBox ibox = ifield->vmesh()->get_bounding_box();
+  const AxisAlignedBBox ibox = ifield->vmesh()->get_bounding_box();
   bool reset = gui_force_rake_reset_.get();
   gui_force_rake_reset_.set(0);
   bool resize = ring_bbox_.valid() && !ibox.is_similar_to(ring_bbox_);
@@ -507,7 +507,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
   GeometryOPortHandle ogport;
   get_oport_handle("Sampling Widget",ogport);
 
-  const BBox ibox = ifield->vmesh()->get_bounding_box();
+  const AxisAlignedBBox ibox = ifield->vmesh()->get_bounding_box();
   bool reset = gui_force_rake_reset_.get();
   gui_force_rake_reset_.set(0);
   bool resize = frame_bbox_.valid() && !ibox.is_similar_to(frame_bbox_);

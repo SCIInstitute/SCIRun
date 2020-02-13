@@ -42,7 +42,7 @@ ArrowWidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerat
                                                        bool show_as_vector,
                                                        int widget_num,
                                                        int widget_iter,
-                                                       const BBox &bbox)
+                                                       const AxisAlignedBBox &bbox)
 {
   return boost::make_shared<ArrowWidget>(idGenerator, name, scale, pos, dir,
                                          resolution, show_as_vector,
@@ -53,7 +53,7 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
                                                double scale,
                                                const BoxPosition& pos,
                                                const Point& origin,
-                                               const BBox& bbox)
+                                               const AxisAlignedBBox& bbox)
 {
   auto widget = boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
   widget->addInitialId();
@@ -67,7 +67,7 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
                                          const std::string& defaultColor,
                                          const Point& point,
                                          const Core::Geometry::Point& origin,
-                                         const BBox& bbox,
+                                         const AxisAlignedBBox& bbox,
                                          int resolution)
 {
   auto widget = boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, origin, bbox, resolution);
@@ -83,7 +83,7 @@ WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGe
                                            const Point& p1,
                                            const Point& p2,
                                            const Core::Geometry::Point& origin,
-                                           const BBox& bbox,
+                                           const AxisAlignedBBox& bbox,
                                            int resolution)
 {
   auto widget = boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
@@ -99,7 +99,7 @@ WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenera
                                        const Point& p1,
                                        const Point& p2,
                                        const Core::Geometry::Point& origin,
-                                       const BBox& bbox,
+                                       const AxisAlignedBBox& bbox,
                                        bool renderBase,
                                        int resolution)
 {
@@ -116,7 +116,7 @@ WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenera
                                        const Point& p1,
                                        const Point& p2,
                                        const Core::Geometry::Point& origin,
-                                       const BBox& bbox,
+                                       const AxisAlignedBBox& bbox,
                                        int resolution)
 {
   auto widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);

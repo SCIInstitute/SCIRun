@@ -934,7 +934,7 @@ namespace SCIRun {
       DEBUG_LOG_LINE_INFO
 
       std::string objectName = obj->uniqueID();
-      BBox bbox; // Bounding box containing all vertex buffer objects.
+      AxisAlignedBBox bbox; // Bounding box containing all vertex buffer objects.
 
       if(!mContext || !mContext->isValid()) return;
       mContext->makeCurrent(mContext->surface());
