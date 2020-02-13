@@ -374,7 +374,7 @@ FEMBuilder<T>::build_local_matrix(VMesh::Elem::index_type c_ind,
       // If Jacobian is negative there is a problem with the mesh
       if (detJ <= 0.0)
       {
-        algo_->error("Mesh has elements with negative jacobians, check the order of the nodes that define an element 377");
+        algo_->error("Mesh has elements with negative jacobians, check the order of the nodes that define an element");
         return false;
       }
 
@@ -495,7 +495,7 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         // we should be more flexible on this point
         if (detJ <= 0.0)
         {
-          algo_->error("Mesh has elements with negative jacobians, check the order of the nodes that define an element 498");
+          algo_->error("Mesh has elements with negative jacobians, check the order of the nodes that define an element");
           return false;
         }
         // Volume associated with the local Gaussian Quadrature point:
