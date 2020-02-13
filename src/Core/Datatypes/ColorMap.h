@@ -78,7 +78,7 @@ namespace Datatypes {
     ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
     double alpha(double transformedValue) const;
 
-    ColorMapStrategyHandle color_;
+    std::vector<ColorRGB> color_;
     ///<< The colormap's name.
     std::string nameInfo_;
     ///<< The resolution of the map [2,256].
@@ -93,6 +93,8 @@ namespace Datatypes {
     double rescale_shift_;
 
     std::vector<double> alphaLookup_;
+
+    std::vector<ColorRGB> customColors_ {{0.0, 0.0, 0.5}, {0.5, 0.0, 0.0}};
   };
 
   class SCISHARE ColorMapStrategy
