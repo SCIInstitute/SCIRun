@@ -491,7 +491,6 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
 
   FieldInformation fi(fh);
 
-
    // Isotropic Fiber file
   {
     std::ofstream outputfile;
@@ -523,51 +522,36 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
 
-
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
+      std::cout << *cellIterEnd << std::endl;
 #endif
 
-	std::cout << *cellIterEnd << std::endl;
-
-	 if (fi.is_tensor())
-  		{
-
-  		outputfile << 2 << std::endl;
-
-
-     	Tensor tensor;
-          for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
-          {
-            field->get_value(tensor, idx);
-            outputfile << tensor.val(0, 0) << " " << tensor.val(0, 1) << " " << tensor.val(0, 2) << " " << tensor.val(1, 1) << " " << tensor.val(1, 2) << " " << tensor.val(2, 2) << std::endl;
-          }
-
-
-      		}
-      	else if (fi.is_vector())
-      	{
-
-      	outputfile << 1 << std::endl;
-
-		Vector val;
-          for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
-          {
-            field->get_value(val, idx);
-            outputfile << val.x() << " " << val.y() << " " << val.z() << std::endl;
-          }
-
-
-      	}
-
-
-
-      	else
-		{
-      if (pr) pr->error("Please convert to Tetvol");
-      return false;
-    	}
-
+      if (fi.is_tensor())
+      {
+        outputfile << 2 << std::endl;
+        Tensor tensor;
+        for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
+        {
+          field->get_value(tensor, idx);
+          outputfile << tensor.val(0, 0) << " " << tensor.val(0, 1) << " " << tensor.val(0, 2) << " " << tensor.val(1, 1) << " " << tensor.val(1, 2) << " " << tensor.val(2, 2) << '\n';
+        }
+      }
+      else if (fi.is_vector())
+      {
+        outputfile << 1 << std::endl;
+        Vector val;
+        for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
+        {
+          field->get_value(val, idx);
+          outputfile << val.x() << " " << val.y() << " " << val.z() << '\n';
+        }
+      }
+      else
+      {
+        if (pr) pr->error("Please convert to Tetvol");
+        return false;
+      }
     }
     catch (...)
     {

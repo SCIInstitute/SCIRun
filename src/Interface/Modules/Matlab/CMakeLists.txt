@@ -31,6 +31,7 @@ SET(Interface_Modules_Matlab_FORMS
   ImportFieldsFromMatlab.ui
   ImportMatricesFromMatlab.ui
   ExportFieldsToMatlab.ui
+  ExportMatricesToMatlab.ui
 )
 
 SET(Interface_Modules_Matlab_HEADERS
@@ -38,6 +39,7 @@ SET(Interface_Modules_Matlab_HEADERS
   ImportFieldsFromMatlabDialog.h
   ImportMatricesFromMatlabDialog.h
   ExportFieldsToMatlabDialog.h
+  ExportMatricesToMatlabDialog.h
   share.h
 )
 
@@ -46,6 +48,7 @@ SET(Interface_Modules_Matlab_SOURCES
   ImportFieldsFromMatlabDialog.cc
   ImportMatricesFromMatlabDialog.cc
   ExportFieldsToMatlabDialog.cc
+  ExportMatricesToMatlabDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Matlab_FORMS_HEADERS "${Interface_Modules_Matlab_FORMS}")

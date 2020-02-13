@@ -1156,7 +1156,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   // Check whether algorithm succeeded
@@ -1284,7 +1284,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded

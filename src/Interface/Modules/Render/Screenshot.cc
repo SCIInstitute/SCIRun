@@ -49,11 +49,21 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
 
 void Screenshot::takeScreenshot()
 {
-  screenshot_ = viewport_->grabFramebuffer();
+	screenshot_ = getScreenshot();
 }
 
-QImage Screenshot::getScreenshot() {
-  return viewport_->grabFramebuffer();
+QImage Screenshot::getScreenshot()
+{
+  static constexpr int ALPHA_INDEX = 3;
+  static constexpr uint8_t ALPHA_CHANNEL_MAX = 255;
+	QImage image = viewport_->grabFramebuffer();
+	for (int j = 0; j < image.height(); ++j)
+	{
+    auto row = reinterpret_cast<QRgb*>(image.scanLine(j));
+		for (int i = 0; i < image.width(); ++i)
+			reinterpret_cast<uint8_t*>(row + i)[ALPHA_INDEX] = ALPHA_CHANNEL_MAX;
+	}
+	return image;
 }
 
 void Screenshot::saveScreenshot()

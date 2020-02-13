@@ -36,10 +36,40 @@
 
 using namespace SCIRun::Gui;
 
+class SCIRunGuiApplication : public QApplication
+{
+public:
+  SCIRunGuiApplication(int& argc, char** argv) :
+    QApplication(argc, argv) {}
+
+  bool notify(QObject* receiver, QEvent* event) override
+  {
+    try
+    {
+      return QApplication::notify(receiver, event);
+    }
+    catch (const std::exception& e)
+    {
+      QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nPlease report an issue describing what caused this message.");
+      SCIRun::logCritical("Unhandled exception: {}", e.what());
+      SCIRunGuiRunner::reportIssue();
+      return false;
+    }
+    catch (...)
+    {
+      QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: please report an issue describing what caused this message.");
+      SCIRun::logCritical("Unhandled exception: Unknown type");
+      SCIRunGuiRunner::reportIssue();
+      return false;
+    }
+  }
+};
+
+
 int GuiApplication::run(int argc, const char* argv[])
 {
   QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-  QApplication app(argc, const_cast<char**>(argv));
+  SCIRunGuiApplication app(argc, const_cast<char**>(argv));
 
   try
   {

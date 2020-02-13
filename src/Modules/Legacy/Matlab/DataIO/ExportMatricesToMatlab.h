@@ -3,9 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,27 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
+#define MODULES_LEGACY_MATLAB_DATAIO_EXPORTMATRICESTOMATLAB_H
 
-#include <Interface/Modules/Matlab/ImportMatricesFromMatlabDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Core;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+namespace SCIRun {
 
-ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ImportObjectsFromMatlabDialogBase(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(MatrixNames);
+        ALGORITHM_PARAMETER_DECL(MatrixFormats);
+      }
+    }
+  }
 
-  addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
-  connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
-}
+namespace Modules {
+namespace Matlab {
+
+  class SCISHARE ExportMatricesToMatlab : public Dataflow::Networks::Module,
+    public Has2InputPorts<DynamicPortTag<MatrixPortTag>, StringPortTag>,
+    public HasNoOutputPorts
+  {
+  public:
+    ExportMatricesToMatlab();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
+    INPUT_PORT(1, Filename, String);
+    HAS_DYNAMIC_PORTS
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+    LEGACY_MATLAB_MODULE
+  };
+}}}
+
+#endif

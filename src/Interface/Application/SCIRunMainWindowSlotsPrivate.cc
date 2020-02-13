@@ -512,7 +512,7 @@ void SCIRunMainWindow::reportIssue()
   if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
     "Click OK to be taken to SCIRun's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok|QMessageBox::Cancel))
   {
-    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new/choose", QUrl::TolerantMode));
   }
 }
 

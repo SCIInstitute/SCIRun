@@ -33,6 +33,7 @@ SET(Modules_Legacy_Matlab_DataIO_SRCS
   ImportFieldsFromMatlab.cc
   ImportMatricesFromMatlab.cc
   ExportFieldsToMatlab.cc
+  ExportMatricesToMatlab.cc
   #ExportDatatypesToMatlab.cc
 )
 
@@ -41,6 +42,7 @@ SET(Modules_Legacy_Matlab_DataIO_HEADERS
   ImportFieldsFromMatlab.h
   ImportMatricesFromMatlab.h
   ExportFieldsToMatlab.h
+  ExportMatricesToMatlab.h
   #ExportDatatypesToMatlab.h
   share.h
 )

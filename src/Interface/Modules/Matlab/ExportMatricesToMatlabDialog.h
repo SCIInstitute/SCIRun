@@ -3,9 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,27 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ExportMatricesToMatlabDialog_H
 
-#include <Interface/Modules/Matlab/ImportMatricesFromMatlabDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include "Interface/Modules/Matlab/ui_ExportMatricesToMatlab.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/share.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Core;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+namespace SCIRun {
+namespace Gui {
 
-ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ImportObjectsFromMatlabDialogBase(state, parent)
+class SCISHARE ExportMatricesToMatlabDialog : public ModuleDialogGeneric,
+  public Ui::ExportMatricesToMatlab, public RemembersFileDialogDirectory
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+	Q_OBJECT
 
-  addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
-  connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
+public:
+  ExportMatricesToMatlabDialog(const std::string& name,
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
+private Q_SLOTS:
+  void pushArrayType();
+  void saveFile();
+  void pushFileNameToState();
+private:
+  QComboBox* makeInputArrayTypeComboBoxItem() const;
+};
+
 }
+}
+
+#endif
