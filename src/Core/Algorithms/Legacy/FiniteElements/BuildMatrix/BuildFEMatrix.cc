@@ -976,7 +976,12 @@ FEMBuilder<T>::parallel(int proc_num)
           {
             if (na[k] == i)
             {
-              build_local_matrix_regular(ca[j], k , lsml, ni_points, ni_weights, ni_derivatives,precompute);
+              auto successLocal = build_local_matrix_regular(ca[j], k , lsml, ni_points, ni_weights, ni_derivatives,precompute);
+							if (!successLocal)
+							{
+								success_[proc_num] = false;
+								return;
+							}
               add_lcl_gbl(i, neib_dofs, lsml);
             }
           }
@@ -1008,7 +1013,12 @@ FEMBuilder<T>::parallel(int proc_num)
           {
             if (na[k] == i)
             {
-              build_local_matrix(ca[j], k , lsml, ni_points, ni_weights, ni_derivatives);
+              auto successLocal = build_local_matrix(ca[j], k , lsml, ni_points, ni_weights, ni_derivatives);
+							if (!successLocal)
+							{
+								success_[proc_num] = false;
+								return;
+							}
               add_lcl_gbl(i, neib_dofs, lsml);
             }
           }
@@ -1019,7 +1029,12 @@ FEMBuilder<T>::parallel(int proc_num)
             {
               if (global_dimension + static_cast<int>(ea[k]) == i)
               {
-                build_local_matrix(ca[j], k+na.size(), lsml, ni_points, ni_weights, ni_derivatives);
+                auto successLocal = build_local_matrix(ca[j], k+na.size(), lsml, ni_points, ni_weights, ni_derivatives);
+								if (!successLocal)
+								{
+									success_[proc_num] = false;
+									return;
+								}
                 add_lcl_gbl(i, neib_dofs, lsml);
               }
             }

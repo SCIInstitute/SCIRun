@@ -320,8 +320,8 @@ ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) co
 
 double ColorMap::alpha(double transformedValue) const
 {
-  if(alphaLookup_.size() == 0) return 0.5;
-  uint i;
+  if (alphaLookup_.empty()) return 0.5;
+  size_t i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;
