@@ -127,7 +127,6 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
-      void toggleSelectionHack(bool b);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void setClippingPlaneIndex(int index);

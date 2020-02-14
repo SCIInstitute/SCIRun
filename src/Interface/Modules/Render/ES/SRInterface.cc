@@ -40,6 +40,7 @@
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -70,6 +71,7 @@
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -555,7 +557,7 @@ namespace SCIRun {
             mCore.addComponent(entityID, commonUniforms);
 
             applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
-            applyUniform(entityID, SpireSubPass::Uniform("hack", mSelectionHack));
+            applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
 
             // Add components associated with entity. We just need a base class which
             // we can pass in an entity ID, then a derived class which bundles
