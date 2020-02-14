@@ -56,6 +56,7 @@ namespace SCIRun
       {
       public:
         explicit WidgetBase(const WidgetBaseParameters& params);
+        WidgetBase(const WidgetBase&) = delete;
 
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
@@ -76,11 +77,10 @@ namespace SCIRun
       {
       public:
         template <typename WidgetIter>
-                CompositeWidget(const GeneralWidgetParameters& params,
-                                WidgetIter begin, WidgetIter end)
-                : WidgetBase(params.base)
+        CompositeWidget(const WidgetBaseParameters& params, WidgetIter begin, WidgetIter end)
+          : WidgetBase(params), widgets_(begin, end)
         {}
-        CompositeWidget(const GeneralWidgetParameters& params) : WidgetBase(params.base)
+        explicit CompositeWidget(const WidgetBaseParameters& params) : WidgetBase(params)
         {}
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
@@ -94,6 +94,32 @@ namespace SCIRun
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
+
+      //TODO: ideas
+      class SCISHARE ResultantTransformationWidgetMap
+      {
+      private:
+        std::map<WidgetMovement, WidgetHandle> subscribersByResultantMovement_;
+      };
+
+      class SCISHARE RootMovementSubscribers
+      {
+      private:
+        std::map<WidgetMovement, ResultantTransformationWidgetMap> subscribedResultantTransformablesByRootMovement_;
+      };
+
+      class SCISHARE WidgetMovementTree
+      {
+      private:
+        WidgetHandle rootWidget_;
+        RootMovementSubscribers subscribers_;
+      };
+
+      class SCISHARE WidgetMovementTreeBuilder
+      {
+      public:
+        explicit WidgetMovementTreeBuilder(WidgetHandle w);
+      };
     }
   }
 }

@@ -29,6 +29,7 @@
 
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -45,7 +46,6 @@ TEST(SphereWidgetTest, CanCreateSingleSphereReal)
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
   EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere.name());
-  //FAIL() << "todo";
 }
 
 TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
@@ -60,5 +60,45 @@ TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
   EXPECT_EQ("__sphere__0", sphere.name());
-  //FAIL() << "todo";
+}
+
+TEST(WidgetMovementTreeTest, CanCreate)
+{
+  StubGeometryIDGenerator idGen;
+
+  Point origin1(0,0,0);
+  Point origin2(1,0,0);
+
+  auto sphere1 = WidgetFactory::createSphere(
+    {idGen, "testSphere1"},
+    {
+      {10.0, "red", origin1, {{0,0,0}, {1,1,1}}, 10},
+      {-1,1,0}
+    }
+  );
+
+  auto sphere2 = WidgetFactory::createSphere(
+    {idGen, "testSphere2"},
+    {
+      {10.0, "red", origin2, {{0,0,0}, {1,1,1}}, 10},
+      {-1,1,0}
+    }
+  );
+
+  auto spheres = {sphere1, sphere2};
+  auto dualSphere = WidgetFactory::createComposite({idGen, "spheres"},
+    std::begin(spheres), std::end(spheres));
+
+#if 0 // next week
+  WidgetMovementTreeBuilder(sphere1) >> WidgetMovement::TRANSLATE, sphere2;
+
+  int eventCounter = 0;
+  auto eventFunc = [&eventCounter](const std::string& id) { std::cout << "Translating: " << id << std::endl; eventCounter++; };
+  SimpleWidgetEvent transEvent{WidgetMovement::TRANSLATE, eventFunc};
+  // sphere takes translate events
+  sphere1->propagateEvent(transEvent);
+
+  EXPECT_EQ(eventCounter, 2);
+#endif
+  FAIL() << "todo";
 }

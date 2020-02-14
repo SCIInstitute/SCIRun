@@ -52,7 +52,7 @@ namespace detail
 }
 
 ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
-    : CompositeWidget(gen)
+    : CompositeWidget(gen.base)
 {
   using namespace detail;
   ColorRGB sphereCol = (params.show_as_vector) ? deflPointCol_ : resizeCol_;

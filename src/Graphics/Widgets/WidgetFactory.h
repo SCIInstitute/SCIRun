@@ -58,8 +58,7 @@ namespace SCIRun
         static WidgetHandle createDisk(const WidgetBaseParameters& gen, DiskParameters params);
 
         template <typename WidgetIter>
-        static WidgetHandle
-        createComposite(const WidgetBaseParameters& gen, WidgetIter begin, WidgetIter end)
+        static WidgetHandle createComposite(const WidgetBaseParameters& gen, WidgetIter begin, WidgetIter end)
         {
           return boost::make_shared<CompositeWidget>(gen, begin, end);
         }
