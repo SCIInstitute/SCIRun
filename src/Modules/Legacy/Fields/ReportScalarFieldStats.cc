@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@author
 ///   Michael Callahan
@@ -46,8 +46,8 @@
 
 namespace SCIRun {
 
-/// @class ReportScalarFieldStats 
-/// @brief Analyze data from a scalarfield. 
+/// @class ReportScalarFieldStats
+/// @brief Analyze data from a scalarfield.
 
 class SCISHARE ReportScalarFieldStats : public Module
 {
@@ -55,7 +55,7 @@ class SCISHARE ReportScalarFieldStats : public Module
     ReportScalarFieldStats(GuiContext* ctx);
     virtual ~ReportScalarFieldStats() {}
     virtual void execute();
-    
+
     void fill_histogram( std::vector<int>& hits);
     void clear_histogram();
     void local_reset_vars(){ reset_vars(); }
@@ -66,7 +66,7 @@ class SCISHARE ReportScalarFieldStats : public Module
     GuiDouble mean_;
     GuiDouble median_;
     GuiDouble sigma_;   //standard deviation
-    
+
     GuiInt is_fixed_;
     GuiInt nbuckets_;
 
@@ -77,7 +77,7 @@ DECLARE_MAKER(ReportScalarFieldStats)
 
 ReportScalarFieldStats::ReportScalarFieldStats(GuiContext* ctx)
   : Module("ReportScalarFieldStats", ctx, Filter, "MiscField", "SCIRun"),
-    min_(get_ctx()->subVar("min"), 0.0), 
+    min_(get_ctx()->subVar("min"), 0.0),
     max_(get_ctx()->subVar("max"), 0.0),
     mean_(get_ctx()->subVar("mean"), 0.0),
     median_(get_ctx()->subVar("median"), 0.0),
@@ -103,7 +103,7 @@ ReportScalarFieldStats::fill_histogram( std::vector<int>& hits)
   std::vector<int>::iterator it = hits.begin();
   nmin = 0;  nmax = *it;
   ostr << *it;  ++it;
-  
+
   for(; it != hits.end(); ++it)
   {
     ostr <<" "<<*it;
@@ -148,7 +148,7 @@ ReportScalarFieldStats::execute()
   double mean = 0;
   double mmin = min_.get();
   double mmax = max_.get();
-  
+
   if ( is_fixed_.get() == 1 )
   {
     VField::size_type num_values = ifield->num_values();
@@ -163,7 +163,7 @@ ReportScalarFieldStats::execute()
         ++counter;
       }
     }
-    
+
     mean = value/double(counter);
     mean_.set( mean );
   }
@@ -202,7 +202,7 @@ ReportScalarFieldStats::execute()
   {
     int nbuckets = nbuckets_.get();
     std::vector<int> hits(nbuckets, 0);
-    
+
     double frac = 1.0;
     frac = (nbuckets-1)/(max_.get() - min_.get());
 
@@ -219,7 +219,7 @@ ReportScalarFieldStats::execute()
       sigma += (*vit - mean)*(*vit - mean);
     }
     sigma_.set( sqrt( sigma / double(values.size()) ));
-    
+
     vit = values.begin();
     nth_element(vit, vit+values.size()/2, vit_end);
     median_.set( double ( values[ values.size()/2] ) );

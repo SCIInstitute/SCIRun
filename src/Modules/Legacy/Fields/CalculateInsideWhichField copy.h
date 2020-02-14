@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_FIELDS_CalculateInsideWhichField_H
 #define MODULES_FIELDS_CalculateInsideWhichField_H
 #include <Dataflow/Network/Module.h>
@@ -43,7 +44,7 @@ namespace Fields {
     void execute() override;
     void setStateDefaults() override;
 
-    
+
     INPUT_PORT(0, InputField, Field);
     HAS_DYNAMIC_PORTS
     INPUT_PORT_DYNAMIC(1, InputFields, Field);

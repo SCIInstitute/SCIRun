@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <sstream>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -44,12 +44,12 @@ using namespace SCIRun::Core::Datatypes::MatrixMath;
 void MatrixIOBase::io(Piostream& stream)
 {
   int version = stream.begin_class("Matrix", MATRIX_VERSION);
-  if (version < 2) 
+  if (version < 2)
   {
     int tmpsym;
     stream.io(tmpsym);
   }
-  if (version > 2) 
+  if (version > 2)
   {
     PropertyManager().io(stream);
   }

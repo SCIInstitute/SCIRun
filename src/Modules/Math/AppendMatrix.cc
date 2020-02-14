@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Math/AppendMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -57,11 +57,11 @@ void AppendMatrix::execute()
   auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
   auto input_matrices = getOptionalDynamicInputs(InputMatrices);
   algo().set(Variables::RowsOrColumns, param);
-  
+
   if (needToExecute())
   {
    AlgorithmOutput output;
-   output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));    
+   output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));
    sendOutputFromAlgorithm(ResultMatrix, output);
   }
 }

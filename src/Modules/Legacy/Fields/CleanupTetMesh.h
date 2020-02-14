@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
 #define MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
 
@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
 	/// @class CleanupTetMesh
-	/// @brief Repairs tetrahedral meshes: (1) removing regenerate elements, (2) fixing its orientation  
+	/// @brief Repairs tetrahedral meshes: (1) removing regenerate elements, (2) fixing its orientation
 
       class SCISHARE CleanupTetMesh : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,

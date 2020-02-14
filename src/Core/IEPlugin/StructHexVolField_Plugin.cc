@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/Mesh.h> 
-#include <Core/Datatypes/FieldInformation.h> 
+
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/FieldInformation.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Util/StringUtil.h>
 
@@ -62,7 +62,7 @@ FieldHandle StructHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       if (pr) pr->error("Could not open file: " + pts_fn);
       return (result);
-    }      
+    }
   }
   else
   {
@@ -245,7 +245,7 @@ bool StructHexVolField_writer(ProgressReporter *pr, FieldHandle fh, const char *
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  {	
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -256,16 +256,16 @@ bool StructHexVolField_writer(ProgressReporter *pr, FieldHandle fh, const char *
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      pts_fn = base + fileExt; 
-    }	
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());						
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -276,7 +276,7 @@ bool StructHexVolField_writer(ProgressReporter *pr, FieldHandle fh, const char *
 
       std::vector<Mesh::index_type> dims;
       mesh->get_dimensions(dims);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -295,7 +295,7 @@ bool StructHexVolField_writer(ProgressReporter *pr, FieldHandle fh, const char *
         outputfile << p.x() << " " << p.y() << " " << p.z() << "\n";
         ++nodeIter;
       }
-    }			
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write file: "+ pts_fn);

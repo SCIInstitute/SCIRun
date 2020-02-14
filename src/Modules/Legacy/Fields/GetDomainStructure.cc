@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/GetFieldDomainStructure.cc
 
 #include <Core/Algorithms/Fields/DomainFields/GetDomainStructure.h>
@@ -42,7 +43,7 @@ class GetDomainStructure : public Module {
     virtual ~GetDomainStructure() {}
 
     virtual void execute();
-    
+
   private:
     SCIRunAlgo::GetDomainStructureAlgo algo_;
 };
@@ -60,13 +61,13 @@ void
 GetDomainStructure::execute()
 {
   FieldHandle domainfield, separationsurfaces, separationedges, separationpoints;
-  
+
   get_input_handle("DomainField",domainfield,true);
   if (inputs_changed_ || !oport_cached("SeparationSurfaces") ||
       !oport_cached("SeparationEdges") || !oport_cached("SeparationPoints"))
   {
     update_state(Executing);
-    
+
     if(!(algo_.run(domainfield,separationsurfaces, separationedges, separationpoints))) return;
     send_output_handle("SeparationSurfaces",separationsurfaces);
     send_output_handle("SeparationEdges",separationedges);
@@ -75,5 +76,3 @@ GetDomainStructure::execute()
 }
 
 } // End namespace SCIRun
-
-

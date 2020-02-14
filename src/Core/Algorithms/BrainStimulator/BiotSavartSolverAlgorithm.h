@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
 #define ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
 
@@ -37,14 +37,14 @@
 #include <Core/Algorithms/BrainStimulator/share.h>
 
 ///@file BiotSavartSolverAlgorithm
-///@brief 
-///  
+///@brief
+///
 ///
 ///@author
 /// Implementation: Petar Petrov for SCIRun 4.7
 /// Converted to SCIRun5 by Moritz Dannhauer
 ///@details
-/// 
+///
 ///
 
 namespace SCIRun {
@@ -70,10 +70,10 @@ namespace BrainStimulator {
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     bool run(FieldHandle mesh, FieldHandle coil, Datatypes::MatrixHandle &outdata, int outtype) const;
 
-  private:	
+  private:
     //double istep;
     //unsigned int tfactor;
-  
+
   };
 
 }}}}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/GetMeshQualityFieldDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -42,11 +42,11 @@ GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-    
+
   map_.insert(StringPair("Scaled Jacobian","scaled_jacobian"));
   map_.insert(StringPair("Jacobian","jacobian"));
   map_.insert(StringPair("Volume","volume"));
   map_.insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
-    
+
   addComboBoxManager(metricComboBox_, Metric,map_);
 }

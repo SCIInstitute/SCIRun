@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/PointCloudMesh.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h> 
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 
 using namespace SCIRun;
@@ -45,7 +45,7 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
 {
   FieldHandle result;
   std::string pts_fn(filename);
-	
+
 	// Check whether the .pts file exists
 	std::string::size_type pos = pts_fn.find_last_of(".");
 	if (pos == std::string::npos)
@@ -61,9 +61,9 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
 		{
 			try
 			{
-				std::ifstream inputfile;		
+				std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-				pts_fn = base + ".pts"; 
+				pts_fn = base + ".pts";
 				inputfile.open(pts_fn.c_str());
 			}
 			catch (...)
@@ -72,8 +72,8 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
 				{
 					std::ifstream inputfile;
           inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-					pts_fn = base + ".pos"; 
-					inputfile.open(pts_fn.c_str());						
+					pts_fn = base + ".pos";
+					inputfile.open(pts_fn.c_str());
 				}
 				catch (...)
 				{
@@ -81,8 +81,8 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
           {
             std::ifstream inputfile;
             inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-            pts_fn = base + ".txt"; 
-            inputfile.open(pts_fn.c_str());						
+            pts_fn = base + ".txt";
+            inputfile.open(pts_fn.c_str());
           }
           catch (...)
           {
@@ -98,34 +98,34 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
 			{
 				std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-				inputfile.open(pts_fn.c_str());						
+				inputfile.open(pts_fn.c_str());
 			}
-			
+
 			catch (...)
 			{
 				if (pr) pr->error("Could not open file: " + pts_fn);
 				return (result);
-			}				
+			}
 		}
-	}	
+	}
 
   int ncols = 0;
   int nrows = 0;
   int line_ncols = 0;
   int num_pts = 0;
-	
+
   std::string line;
 
-  // Read file, get number of rows, cols... 
+  // Read file, get number of rows, cols...
 
 	bool has_header_pts = false;
 	bool first_line_pts = true;
-  
+
   std::vector<double> values;
 
   FieldInformation fi("PointCloudMesh", "ConstantBasis", "double");
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
 
@@ -143,16 +143,16 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
-        multiple_from_string(line,values);      
+
+        multiple_from_string(line,values);
         line_ncols = values.size();
-        
+
         if (first_line_pts)
         {
           if (line_ncols > 0)
@@ -205,7 +205,7 @@ FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *fi
     {
       if (pr) pr->error("Could not open and read file: " + pts_fn);
       return (result);
-    }    
+    }
     inputfile.close();
   }
 
@@ -220,12 +220,12 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
   std::string pts_fn(filename);
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
-	
+
 	// Check whether the .pts file exists
 	std::string::size_type pos = pts_fn.find_last_of(".");
 	if (pos == std::string::npos)
   {
-    pts_fn += ".pts"; 
+    pts_fn += ".pts";
   }
   else
   {
@@ -233,13 +233,13 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
     std::string ext  = pts_fn.substr(pos);
 		if ((ext != ".pts" )||(ext != ".pos" )||(ext != ".txt" ))
 		{
-      pts_fn = base + ".pts"; 
+      pts_fn = base + ".pts";
     }
-	}	
+	}
 
   try
   {
-    outputfile.open(pts_fn.c_str());						
+    outputfile.open(pts_fn.c_str());
 
     // these appear to be reasonable formatting flags for output
     auto ff = outputfile.flags();
@@ -247,15 +247,15 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
     outputfile.precision(15);
     outputfile.flags(ff);
-    
+
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
     VMesh::Node::size_type nodeSize;
-    
+
     mesh->begin(nodeIter);
     mesh->end(nodeIterEnd);
     mesh->size(nodeSize);
-    
+
     // N.B: not writing header
 
     while (nodeIter != nodeIterEnd)
@@ -265,7 +265,7 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
       outputfile << p.x() << " " << p.y() << " " << p.z() << "\n";
       ++nodeIter;
     }
-  }			
+  }
   catch (...)
   {
     if (pr) pr->error("Could not open and write to file: "+ pts_fn);
@@ -274,6 +274,3 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
   outputfile.close();
   return (true);
 }
-
-
-

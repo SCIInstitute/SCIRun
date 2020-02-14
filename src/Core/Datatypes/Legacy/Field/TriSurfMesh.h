@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_TRISURFMESH_H
 #define CORE_DATATYPES_TRISURFMESH_H 1
@@ -795,11 +795,11 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
@@ -892,18 +892,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; 
+    if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -963,18 +963,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
     if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -1069,16 +1069,16 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) 
-      bi = ni; 
-    if (bi < 0) 
+    if (bi > ni)
+      bi = ni;
+    if (bi < 0)
       bi = 0;
-    if (bj > nj) 
-      bj = nj; 
-    if (bj < 0) 
+    if (bj > nj)
+      bj = nj;
+    if (bj < 0)
       bj = 0;
-    if (bk > nk) 
-      bk = nk; 
+    if (bk > nk)
+      bk = nk;
     if (bk < 0)
       bk = 0;
 
@@ -1116,31 +1116,31 @@ public:
                 {
                   Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
-                  
+
                   closest_point_on_tri(r, p, points_[faces_[idx]], points_[faces_[idx+1]], points_[faces_[idx+2]]);
                   double dtmp = (p - r).length2();
-                  
-                  
+
+
                   //test triangle size for scaling
                   Core::Geometry::Vector v1= Core::Geometry::Vector(points_[faces_[idx+1]]-points_[faces_[idx  ]]); v1.normalize();
                   Core::Geometry::Vector v2= Core::Geometry::Vector(points_[faces_[idx+2]]-points_[faces_[idx  ]]); v2.normalize();
-                  
+
                   Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
                   Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
-                  
+
                   if (std::abs(Dot(pr,n))>1-perturb)
                   {
                     r_pert=r;
                   }
                   else
                   {
-                      
+
                     Core::Geometry::Vector pp=Cross(n,pr); pp.normalize();
                     Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
-                    
+
                     r_pert=Core::Geometry::Point(r+vect*perturb);
                   }
-                  
+
                   double dtmp2=(p-r_pert).length2();
 
                   //check for closest face and check within precision
@@ -1153,13 +1153,13 @@ public:
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
-                      
+
                       if (dmin < epsilon2_)
                       {
-                        
+
                         pdist = sqrt(dmin);
                         pdist = sqrt(dmean);
-                            
+
                         ElemData ed(*this,face);
                         basis_.get_coords(coords,result,ed);
                         return (true);
@@ -1182,10 +1182,10 @@ public:
                       dmean =dtmp2;
                       if (dmin < epsilon2_)
                       {
-                        
+
                         pdist = sqrt(dmin);
                         pdist = sqrt(dmean);
-                        
+
                         ElemData ed(*this,face);
                         basis_.get_coords(coords,result,ed);
                       }
@@ -1198,7 +1198,7 @@ public:
                       dmean =dtmp2;
                     }
                   }
-                  
+
 
                   ++it;
                 }
@@ -1292,16 +1292,16 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) 
-      bi = ni; 
-    if (bi < 0) 
+    if (bi > ni)
+      bi = ni;
+    if (bi < 0)
       bi = 0;
-    if (bj > nj) 
-      bj = nj; 
-    if (bj < 0) 
+    if (bj > nj)
+      bj = nj;
+    if (bj < 0)
       bj = 0;
-    if (bk > nk) 
-      bk = nk; 
+    if (bk > nk)
+      bk = nk;
     if (bk < 0)
       bk = 0;
 
@@ -1758,9 +1758,9 @@ protected:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi =ni; 
+    if (bi > ni) bi =ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj =nj; 
+    if (bj > nj) bj =nj;
     if (bj < 0) bj = 0;
     if (bk > nk) bk =nk;
     if (bk < 0) bk = 0;

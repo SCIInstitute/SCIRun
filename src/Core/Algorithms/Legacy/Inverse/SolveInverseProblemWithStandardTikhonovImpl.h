@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:              Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+   Last Modification:   September 6 2017
 */
 
-//    File       : SolveInverseProblemWithTikhonov.h
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : September 06th, 2017 (last update)
 
 #ifndef BioPSE_SolveInverseProblemWithTikhonovChild_H__
 #define BioPSE_SolveInverseProblemWithTikhonovChild_H__

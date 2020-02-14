@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -56,7 +55,7 @@ class SCISHARE CalculateFieldDataMetricAlgo : public AlgoBase
       add_option("method","value-mean","min|max|median|value-mean|geom-mean|sum|integral|volthreshold");
       add_scalar("threshold",0.5);
     }
-  
+
     bool run(std::vector<FieldHandle>& input, MatrixHandle& output);
     bool run(FieldHandle input, MatrixHandle& output);
 };
@@ -64,4 +63,3 @@ class SCISHARE CalculateFieldDataMetricAlgo : public AlgoBase
 } // end namespace SCIRunAlgo
 
 #endif
-

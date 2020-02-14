@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/IEPlugin/CARPFiber_Plugin.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -488,9 +488,9 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
 
   VMesh *mesh = fh->vmesh();
   VField *field = fh->vfield();
-  
+
   FieldInformation fi(fh);
-  
+
    // Isotropic Fiber file
   {
     std::ofstream outputfile;
@@ -564,4 +564,3 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
 
   return true;
 }
-

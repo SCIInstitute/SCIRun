@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -58,7 +57,7 @@ BuildBEMatrixImpl::BuildBEMatrixImpl(const VariableList& names,
   const VariableList& bdyConds,
   const VariableList& outside,
   const VariableList& inside,
-  LegacyLoggerInterface* log) : 
+  LegacyLoggerInterface* log) :
   names_(names),
   bdyConds_(bdyConds),
   outside_(outside),
@@ -114,7 +113,7 @@ MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs)
       bemfield& field = fields[i];
       field.insideconductivity = inside_[i].toDouble();
       field.outsideconductivity = outside_[i].toDouble();
-        
+
       std::string surface_type = bdyConds_[i].toString();
       if (surface_type.find("Dirichlet") != std::string::npos)
       {

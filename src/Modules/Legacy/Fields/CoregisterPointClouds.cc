@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@author
 ///   David Weinstein
@@ -93,7 +93,7 @@ CoregisterPointClouds::execute()
 {
   FieldHandle fixedH, mobileH;
   VMesh::Node::size_type nnodes;
-  
+
   get_input_handle("Fixed PointCloudField", fixedH, true);
 
   FieldInformation ffi(fixedH);
@@ -107,7 +107,7 @@ CoregisterPointClouds::execute()
   VMesh* fixedM = fixedH->vmesh();
 
   get_input_handle("Mobile PointCloudField", mobileH, true);
-  
+
 
   FieldInformation mfi(mobileH);
   if (!(mfi.is_pointcloudmesh()))
@@ -122,14 +122,14 @@ CoregisterPointClouds::execute()
   update_state(Executing);
 
   fixedM->size(nnodes);
-  if (nnodes < 3) 
+  if (nnodes < 3)
   {
     error("Fixed PointCloudField needs at least 3 input points.");
     return;
   }
-  
+
   mobileM->size(nnodes);
-  if (nnodes < 3) 
+  if (nnodes < 3)
   {
     error("Mobile PointCloudField needs at least 3 input points.");
     return;
@@ -142,13 +142,13 @@ CoregisterPointClouds::execute()
   fixedM->begin(fni); fixedM->end(fne);
   mobileM->begin(mni); mobileM->end(mne);
   Point p;
-  while (fni != fne) 
+  while (fni != fne)
   {
     fixedM->get_center(p, *fni);
     fixedPts.push_back(p);
     ++fni;
   }
-  while (mni != mne) 
+  while (mni != mne)
   {
     mobileM->get_center(p, *mni);
     mobilePts.push_back(p);
@@ -159,17 +159,17 @@ CoregisterPointClouds::execute()
   int allowRotate = allowRotate_.get();
   int allowTranslate = allowTranslate_.get();
   std::string method = method_.get();
-  
+
   boost::scoped_ptr<CoregPts> coreg;
-  if (method == "Analytic") 
+  if (method == "Analytic")
   {
     coreg.reset(new CoregPtsAnalytic(allowScale, allowRotate, allowTranslate));
-  } 
-  else if (method == "Procrustes") 
+  }
+  else if (method == "Procrustes")
   {
     coreg.reset(new CoregPtsProcrustes(allowScale, allowRotate, allowTranslate));
-  } 
-  else 
+  }
+  else
   { // method == "Simplex"
     FieldHandle dfieldH;
     if (!get_input_handle("DistanceField From Fixed", dfieldH))
@@ -177,21 +177,21 @@ CoregisterPointClouds::execute()
       error("Simplex needs a distance field.");
       return;
     }
-    
+
     VField* dfieldP = dfieldH->vfield();
 
-    if (!dfieldP->is_scalar()) 
+    if (!dfieldP->is_scalar())
     {
       error("Simplex needs a distance field.");
       return;
     }
-    
+
     int seed = seed_.get();
     seed_.set(seed+1);
     mr_.reset(new MusilRNG(seed));
     (*mr_)();
     abort_=0;
-    coreg.reset(new CoregPtsSimplexSearch(iters_.get(), misfitTol_.get(), abort_, dfieldP, 
+    coreg.reset(new CoregPtsSimplexSearch(iters_.get(), misfitTol_.get(), abort_, dfieldP,
                                       *mr_, allowScale, allowRotate, allowTranslate));
   }
   coreg->setOrigPtsA(mobilePts);
@@ -210,11 +210,11 @@ CoregisterPointClouds::execute()
 void
 CoregisterPointClouds::tcl_command(GuiArgs& args, void* userdata)
 {
-  if (args[1] == "stop") 
+  if (args[1] == "stop")
   {
     abort_ = 1;
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }

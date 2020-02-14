@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Get all the class definitions. 
+
+// Get all the class definitions.
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -55,41 +55,41 @@ bool ConvertMeshToUnstructuredMeshAlgo::runImpl(FieldHandle input, FieldHandle& 
 
  // Step 1: determine the type of the input fields and determine what type the
   // output field should be.
-  
+
   // FieldInformation is a helper class that will store all the names of all the
   // components a field is made of. It takes a handle to a field and then
   // determines what the actual type is of the field.
-  
+
   // As the current Field class has a variety of functions to query for its type
   // the FieldInformation object will do this for you and will contain a summary of all
   // the type information.
-  
-  // As the output field will be a variation on the input field we initialize 
+
+  // As the output field will be a variation on the input field we initialize
   // both with the input handle.
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
-  // Recent updates to the software allow for quadratic and cubic hermitian 
+
+  // Recent updates to the software allow for quadratic and cubic hermitian
   // representations. However these methods have not fully been exposed yet.
   // Hence the iterators in the field will not consider the information needed
   // to define these non-linear elements. And hence although the algorithm may
   // provide output for these cases and may not fail, the output is mathematically
   // improper and hence for a proper implementation we have to wait until the
   // mesh and field classes are fully completed.
-  
-  // Here we test whether the class is part of any of these newly defined 
+
+  // Here we test whether the class is part of any of these newly defined
   // non-linear classes. If so we return an error.
    if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return (false);
   }
-  
+
   // If the mesh is already unstructured, we only need to copy the input to the
   // output. No algorithm is needed in this case.
-  if (fi.is_unstructuredmesh()) 
+  if (fi.is_unstructuredmesh())
   {
-    // Notify the user that no action is done  
+    // Notify the user that no action is done
     remark("Mesh already is unstructured; copying input to output");
     // Copy input to output (output is a reference to the input)
     output = input;
@@ -119,19 +119,19 @@ bool ConvertMeshToUnstructuredMeshAlgo::runImpl(FieldHandle input, FieldHandle& 
   output = CreateField(fo);
 
   if (!output)
-  { 
+  {
     // Error reporting:
     // we forward the specific message to the ProgressReporter and return a
     // false to indicate that an error has occured.
     error("Could not obtain input field");
     return (false);
-  }  
+  }
 
   // Get the virtual interface of the objects
   // These two calls get the interfaces to the input and output field
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
-  
+
   // These two calls get the interfaces to the meshes
   VMesh*  imesh = input->vmesh();
   VMesh*  omesh = output->vmesh();
@@ -139,11 +139,11 @@ bool ConvertMeshToUnstructuredMeshAlgo::runImpl(FieldHandle input, FieldHandle& 
   // Get the number of nodes and elements
   VMesh::size_type num_nodes = imesh->num_nodes();
   VMesh::size_type num_elems = imesh->num_elems();
-  
+
   // Reserve space
   omesh->reserve_nodes(num_nodes);
   omesh->reserve_elems(num_elems);
-  
+
   // Copy all nodes
   for (VMesh::Node::index_type i=0; i<num_nodes; i++)
   {
@@ -164,7 +164,7 @@ bool ConvertMeshToUnstructuredMeshAlgo::runImpl(FieldHandle input, FieldHandle& 
   ofield->copy_values(ifield);
 
   CopyProperties(*input, *output);
-   
+
   return (true);
 }
 

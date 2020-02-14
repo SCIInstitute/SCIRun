@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,9 +26,8 @@
 */
 
 
-
 ///
-///@file   Array3.h 
+///@file   Array3.h
 ///@brief  Interface to dynamic 3D array class
 ///
 ///@author Steven G. Parker
@@ -60,8 +58,8 @@
 
 namespace SCIRun {
 
-template<class T> 
-class Array3 
+template<class T>
+class Array3
 {
 public:
   typedef boost::multi_array<T, 3> impl_type;
@@ -69,7 +67,7 @@ public:
 
   Array3() {}
 
-  Array3(size_t size1, size_t size2, size_t size3) 
+  Array3(size_t size1, size_t size2, size_t size3)
   {
     resize(size1, size2, size3);
   }
@@ -100,7 +98,7 @@ public:
     return impl_[i1][i2][i3];
   }
 
-  T& operator()(size_t i1, size_t i2, size_t i3) 
+  T& operator()(size_t i1, size_t i2, size_t i3)
   {
     return impl_[i1][i2][i3];
   }
@@ -134,7 +132,7 @@ Pio(Piostream& stream, Array3<T>& data)
       Pio(stream, d1);
       Pio(stream, d2);
       Pio(stream, d3);
-      data.resize(d1, d2, d3);      
+      data.resize(d1, d2, d3);
     }
     else
     {
@@ -143,12 +141,12 @@ Pio(Piostream& stream, Array3<T>& data)
       Pio(stream, d1);
       Pio(stream, d2);
       Pio(stream, d3);
-      data.resize(static_cast<size_type>(d1), 
+      data.resize(static_cast<size_type>(d1),
                   static_cast<size_type>(d2),
-                  static_cast<size_type>(d3));            
+                  static_cast<size_type>(d3));
     }
   }
-  else 
+  else
   {
     long long d1, d2, d3;
     d1 = static_cast<long long>(data.dim1());
@@ -158,7 +156,7 @@ Pio(Piostream& stream, Array3<T>& data)
     Pio(stream, d2);
     Pio(stream, d3);
   }
-  
+
   if (stream.supports_block_io())
   {
     stream.block_io(reinterpret_cast<void*>(&data[0]), sizeof(T), data.size());
@@ -182,9 +180,9 @@ Pio(Piostream& stream, Array3<T>& data)
 
 template<class T>
 void
-Pio(Piostream& stream, Array3<T>*& data) 
+Pio(Piostream& stream, Array3<T>*& data)
 {
-  if (stream.reading()) 
+  if (stream.reading())
   {
     data= new Array3<T>;
   }
@@ -194,7 +192,7 @@ Pio(Piostream& stream, Array3<T>*& data)
 
 template<class T>
 void
-Pio( Piostream& stream, Array3<T>& data, 
+Pio( Piostream& stream, Array3<T>& data,
      const std::string& filename )
 {
   int version=stream.begin_class("Array3", ARRAY3_VERSION);
@@ -218,13 +216,13 @@ Pio( Piostream& stream, Array3<T>& data,
       Pio(stream, d1);
       Pio(stream, d2);
       Pio(stream, d3);
-      data.resize(static_cast<size_type>(d1), 
+      data.resize(static_cast<size_type>(d1),
                   static_cast<size_type>(d2),
                   static_cast<size_type>(d3));
       data.input( filename );
     }
   }
-  else 
+  else
   {
     long long d1, d2, d3;
     d1 = static_cast<long long>(data.dm1);
@@ -235,13 +233,13 @@ Pio( Piostream& stream, Array3<T>& data,
     Pio(stream, d3);
     data.output( filename );
   }
-    
+
   stream.end_class();
 }
 #if 0
 template<class T>
 int
-Array3<T>::input( const std::string &filename ) 
+Array3<T>::input( const std::string &filename )
 {
   std::cerr << "Array3: Split input\n";
 
@@ -251,22 +249,22 @@ Array3<T>::input( const std::string &filename )
     printf("can not open file %s\n", filename.c_str());
     return 0;
   }
-  
+
   int maxiosz=1024*1024;
   size_type size = dm1*dm2*dm3*sizeof(T);
   int n = int(size / maxiosz);
   char *p = reinterpret_cast<char *>(objs[0][0]);
 
-  for ( ; n> 0 ; n--, p+= maxiosz) 
+  for ( ; n> 0 ; n--, p+= maxiosz)
   {
     int i = read( file, p, maxiosz);
-    if ( i != maxiosz ) 
+    if ( i != maxiosz )
       perror( "io read ");
   }
   int i =  read( file, p, size % maxiosz);
-  if ( i != (size % maxiosz) ) 
+  if ( i != (size % maxiosz) )
     perror("on last io");
-        
+
   fsync(file);
   close(file);
 
@@ -275,7 +273,7 @@ Array3<T>::input( const std::string &filename )
 
 template<class T>
 int
-Array3<T>::output( const std::string &filename ) 
+Array3<T>::output( const std::string &filename )
 {
   // get raw data
   //  printf("output [%s] [%s]\n", filename.c_str(), rawfile() );
@@ -284,7 +282,7 @@ Array3<T>::output( const std::string &filename )
     perror("open file");
     return 0;
   }
-  
+
   int maxiosz=1024*1024;
 
   size_type size = dm1*dm2*dm3*sizeof(T);
@@ -295,23 +293,22 @@ Array3<T>::output( const std::string &filename )
 
   for ( ; n> 0 ; n--, p+= maxiosz) {
     int l = write( file, p, maxiosz);
-    if ( l != maxiosz ) 
+    if ( l != maxiosz )
       perror("write ");
   }
   int sz = (size % maxiosz );
-  int l = write( file, p, sz); 
+  int l = write( file, p, sz);
   if ( l != (size % maxiosz ) ) {
-    printf("Error: wrote %d / %d\n", l,(size % maxiosz )); 
+    printf("Error: wrote %d / %d\n", l,(size % maxiosz ));
     perror("write ");
   }
-        
+
   fsync(file);
   close(file);
 
   return 1;
-} 
+}
 #endif
 }
 
-#endif 
-
+#endif

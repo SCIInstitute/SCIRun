@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -69,7 +67,7 @@ class CrowdMonitor;
   ... critical section ...</blockquote>
   } // mutex is released when mlock goes out of scope
   </pre></blockquote>
-   
+
 ****************************************/
 class SCISHARE Guard {
 public:
@@ -84,7 +82,7 @@ public:
     Read,
     Write
   };
-    
+
   //////////
   /// Attach the <b>Guard</b> to the <i>CrowdMonitor</pre> and
   /// acquire one of the locks.  If <i>action</i> is
@@ -93,7 +91,7 @@ public:
   /// acquired.  The appropriate lock will then be released by the
   /// destructor
   Guard(CrowdMonitor* crowdMonitor, Which action);
-    
+
   //////////
   /// Release the lock acquired by the constructor.
   ~Guard();
@@ -110,4 +108,3 @@ private:
 } // End namespace SCIRun
 
 #endif
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -51,7 +50,7 @@ class SCISHARE CalculateMeshConnectorAlgo : public AlgoBase
     CalculateMeshConnectorAlgo()
     {
     }
-  
+
     /// run the algorithm
     bool run(FieldHandle input1, FieldHandle input2, FieldHandle& output);
 };
@@ -59,4 +58,3 @@ class SCISHARE CalculateMeshConnectorAlgo : public AlgoBase
 } // end namespace SCIRunAlgo
 
 #endif
-

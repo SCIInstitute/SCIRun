@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_GEOMETRY_H
 #define CORE_DATATYPES_GEOMETRY_H
@@ -83,7 +83,7 @@ namespace Datatypes
 
     virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
 
-    //TODO: 
+    //TODO:
     Core::Geometry::BBox box;
     struct FieldData
     {
@@ -101,7 +101,7 @@ namespace Datatypes
       std::vector<float> opacities;
     };
     transferFunc tfn;
-    
+
     double radius;
 
     bool isStreamline{ false };

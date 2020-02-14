@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -48,7 +46,7 @@ namespace SCIRun {
 class Barrier_private;
 
 /**************************************
- 
+
 @class
  Barrier
 
@@ -65,7 +63,7 @@ class Barrier_private;
  ThreadGroup should not access the barrier, or undefined behavior will
  result. In addition, threads should not be added or removed from the
  ThreadGroup while the Barrier is being accessed.
-   
+
 ****************************************/
 
 class SCISHARE Barrier {
@@ -75,11 +73,11 @@ public:
   /// of threads.   <tt>name</tt> should be a static string
   /// which describes the primitive for debugging purposes.
   explicit Barrier(const char* name);
-    
+
   //////////
   /// Destroy the barrier
   virtual ~Barrier();
-    
+
   //////////
   /// This causes all of the threads to block at this method
   /// until all numThreads threads have called the method.
@@ -99,4 +97,3 @@ private:
 } // End namespace SCIRun
 
 #endif
-

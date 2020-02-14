@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -57,7 +56,7 @@ class SCISHARE MedialAxis2Algo : public AlgoBase
       add_scalar("normal_minimum_angle",50.0);
       add_scalar("maximum_distance_difference",-1.0);
 	  add_scalar("forward_projection_multiplier",2.0);
-	  add_scalar("backward_projection_multiplier",4.0); 
+	  add_scalar("backward_projection_multiplier",4.0);
     }
 
     /// run the algorithm
@@ -66,5 +65,4 @@ class SCISHARE MedialAxis2Algo : public AlgoBase
 
 } // end namespace SCIRunAlgo
 
-#endif 
-
+#endif

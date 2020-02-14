@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -48,41 +48,41 @@ ConvertFieldDataTypeAlgo::ConvertFieldDataTypeAlgo()
 bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ConvertFieldData");
-  
+
   if (!input)
   {
     error("No input field");
     return (false);
   }
-  
+
   /// Get the information of the input field
   FieldInformation fo(input);
-  
+
   std::string datatype = getOption(Parameters::FieldDatatype);
-  
+
   fo.set_data_type(datatype);
-  
+
   output = CreateField(fo,input->mesh());
-  
+
   if (!output)
   {
     error("Could no create output field");
     return (false);
   }
-  
+
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
-  
+
   ofield->resize_values();
   ofield->copy_values(ifield);
   CopyProperties(*input, *output);
-  
+
   /// Support for quadratic fields
   if (ofield->basis_order() == 2)
   {
     ofield->copy_evalues(ifield);
   }
-  
+
   return (true);
 }
 

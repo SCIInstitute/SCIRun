@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
 
@@ -34,17 +34,17 @@
 //#include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DatatypeFwd.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
-  
+
   class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
   {
   public:
-			BuildMatrixOfSurfaceNormalsAlgo(); 
+			BuildMatrixOfSurfaceNormalsAlgo();
 			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
 			virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
   };

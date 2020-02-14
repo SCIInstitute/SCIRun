@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -42,23 +42,23 @@ namespace SCIRun {
 
 /// @class CalculateFieldDataMetric
 /// @brief Reads in a field file(s), allows parser edits to the data, and
-/// exports 1 of 7 metrics selected by the user as a matrix file. 
+/// exports 1 of 7 metrics selected by the user as a matrix file.
 
 class CalculateFieldDataMetric : public Module {
   public:
     CalculateFieldDataMetric(GuiContext*);
     virtual ~CalculateFieldDataMetric() {}
-    
+
     virtual void execute();
     virtual void presave();
-    
+
   private:
     GuiString guimethod_;
     GuiString guifunction_;         // function code
     GuiInt    guienable_function_;  // Whether to transform data
     GuiString guimetric_;
-    SCIRunAlgo::CalculateFieldDataMetricAlgo algo_; 
-    
+    SCIRunAlgo::CalculateFieldDataMetricAlgo algo_;
+
 };
 
 
@@ -73,22 +73,22 @@ CalculateFieldDataMetric::CalculateFieldDataMetric(GuiContext* ctx)
   algo_.set_progress_reporter(this);
 }
 
-void 
+void
 CalculateFieldDataMetric::execute()
 {
   // Define local handles of data objects:
   StringHandle func;
   std::vector<FieldHandle> fields;
 
-  // Get the new input data:  
+  // Get the new input data:
   if (get_input_handle("Function",func,false))
   {
     if (func.get_rep())
     {
       guifunction_.set(func->get());
-      get_ctx()->reset();  
+      get_ctx()->reset();
     }
-  }  
+  }
   get_dynamic_input_handles("Fields",fields,false);
 
   TCLInterface::eval(get_id()+" update_text");
@@ -102,7 +102,7 @@ CalculateFieldDataMetric::execute()
 
     std::vector<FieldHandle> mfields(fields.size(),0);
     // If not caching set the field and count to zero.
-    
+
     if (guienable_function_.get())
     {
       for (size_t j=0;j<fields.size();j++)
@@ -115,8 +115,8 @@ CalculateFieldDataMetric::execute()
           // Create the DATA object for the function
           // DATA is the data on the field
           if(!(engine.add_input_fielddata("DATA",fields[j]))) return;
-       
-          // Create the POS, X,Y,Z, data location objects.  
+
+          // Create the POS, X,Y,Z, data location objects.
 
           if(!(engine.add_input_fielddata_location("POS",fields[j]))) return;
           if(!(engine.add_input_fielddata_coordinates("X","Y","Z",fields[j]))) return;
@@ -124,13 +124,13 @@ CalculateFieldDataMetric::execute()
 
           // Create the ELEMENT object describing element properties
           if(!(engine.add_input_fielddata_element("ELEMENT",fields[j]))) return;
-          
+
           int basis_order = fields[j]->vfield()->basis_order();
-          
+
           std::string function = guifunction_.get();
 
           if(!(engine.add_output_fielddata("RESULT",fields[j],basis_order,"double"))) return;
-          
+
           // Add an object for getting the index and size of the array.
 
           if(!(engine.add_index("INDEX"))) return;
@@ -139,7 +139,7 @@ CalculateFieldDataMetric::execute()
           if(!(engine.add_expressions(function))) return;
 
           // Actual engine call, which does the dynamic compilation, the creation of the
-          // code for all the objects, as well as inserting the function and looping 
+          // code for all the objects, as well as inserting the function and looping
           // over every data point
 
           if (!(engine.run()))
@@ -147,24 +147,24 @@ CalculateFieldDataMetric::execute()
             return;
           }
           // Get the result from the engine
-          
+
           engine.get_field("RESULT",mfields[j]);
         }
       }
     }
     else
     {
-      for (size_t j=0; j<fields.size(); j++) mfields[j] = fields[j];    
+      for (size_t j=0; j<fields.size(); j++) mfields[j] = fields[j];
     }
-    
+
     MatrixHandle metric;
     algo_.set_option("method",guimethod_.get());
     if (!(algo_.run(mfields,metric))) return;
 
     guimetric_.set(to_string(metric));
 
-    // send new output if there is any: 
-    send_output_handle("Metric", metric);    
+    // send new output if there is any:
+    send_output_handle("Metric", metric);
   }
 }
 
@@ -176,5 +176,3 @@ CalculateFieldDataMetric::presave()
 }
 
 } // End namespace SCIRun
-
-

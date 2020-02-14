@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@file  InsertHexSheet.cc
 ///
@@ -49,27 +49,27 @@
 namespace SCIRun {
 
 /// @class RemoveHexVolSheetAlgo
-/// @brief This module removes a layer of hexes corresponding to the input edge ids. 
+/// @brief This module removes a layer of hexes corresponding to the input edge ids.
 
 /// @todo: change vector param to ref
 class RemoveHexVolSheetAlgo
 {
 public:
-    /// virtual interface. 
+    /// virtual interface.
   void execute(
-      ProgressReporter *reporter, 
-      FieldHandle hexfieldh, 
-      std::vector<unsigned int> edges, 
-      FieldHandle& keptfield, 
+      ProgressReporter *reporter,
+      FieldHandle hexfieldh,
+      std::vector<unsigned int> edges,
+      FieldHandle& keptfield,
       FieldHandle& extractedfield );
 
-  void get_opposite_edges( 
-      VMesh::Edge::index_type &opp_edge1, 
-      VMesh::Edge::index_type &opp_edge2, 
+  void get_opposite_edges(
+      VMesh::Edge::index_type &opp_edge1,
+      VMesh::Edge::index_type &opp_edge2,
       VMesh::Edge::index_type &opp_edge3,
       VMesh *mesh,
-      VMesh::Elem::index_type hex_id, 
-      VMesh::Edge::index_type edge_id ); 
+      VMesh::Elem::index_type hex_id,
+      VMesh::Edge::index_type edge_id );
 
   void node_get_edges(VMesh *mesh,
                       std::set<VMesh::Edge::index_type> &result,
@@ -78,8 +78,8 @@ public:
 
 void
 RemoveHexVolSheetAlgo::execute(
-    ProgressReporter *pr, 
-    FieldHandle hexfieldh, std::vector<unsigned int> edges, 
+    ProgressReporter *pr,
+    FieldHandle hexfieldh, std::vector<unsigned int> edges,
     FieldHandle& keptfield, FieldHandle& extractedfield )
 {
 #ifdef HAVE_HASH_MAP
@@ -105,49 +105,49 @@ RemoveHexVolSheetAlgo::execute(
   FieldInformation fi(hexfieldh);
   fi.make_nodata();
   fi.make_hexvolmesh();
-  
+
   keptfield = CreateField(fi);
   extractedfield = CreateField(fi);
 
   VMesh *kept_mesh = keptfield->vmesh();
   kept_mesh->copy_properties( mesh_rep );
-  
+
   VMesh *extracted_mesh = extractedfield->vmesh();
   extracted_mesh->copy_properties( mesh_rep );
 
   original_mesh->synchronize( Mesh::EDGES_E | Mesh::NODE_NEIGHBORS_E );
-  
+
   std::stack<VMesh::Edge::index_type> edge_stack;
   std::set<VMesh::Elem::index_type> extracted_hex_set;
   std::set<VMesh::Edge::index_type> used_edge_set;
-  
+
   for( size_t i = 0; i < edges.size(); i++ )
-  {        
+  {
     if( used_edge_set.find( (VMesh::Edge::index_type)edges[i] ) != used_edge_set.end() )
         continue;
 
     edge_stack.push( (VMesh::Edge::index_type)edges[i] );
     used_edge_set.insert( (VMesh::Edge::index_type)edges[i] );
-    
+
     while( edge_stack.size() != 0 )
     {
       VMesh::Edge::index_type edge_id = edge_stack.top();
       edge_stack.pop();
-      
+
       VMesh::Elem::array_type hex_array;
-      
+
       original_mesh->get_elems( hex_array, edge_id );
       if( hex_array.size() == 0 )
       {
         pr->warning("ERROR: Edge "+to_string(edge_id)+" does not exist in the mesh.\n");
         continue;
       }
-      
+
       for( size_t j = 0; j < hex_array.size(); j++ )
       {
         VMesh::Edge::index_type opp_edge1, opp_edge2, opp_edge3;
         get_opposite_edges( opp_edge1, opp_edge2, opp_edge3, original_mesh, hex_array[j], edge_id );
-        
+
         if( used_edge_set.find( opp_edge1 ) == used_edge_set.end() )
         {
           edge_stack.push( opp_edge1 );
@@ -163,14 +163,14 @@ RemoveHexVolSheetAlgo::execute(
           edge_stack.push( opp_edge3 );
           used_edge_set.insert( opp_edge3 );
         }
-        
+
         extracted_hex_set.insert( hex_array[j] );
       }
     }
   }
-  
+
   pr->remark("Extracting " +to_string(extracted_hex_set.size()) + " hexes from the mesh.\n");
-  
+
   std::set<VMesh::Node::index_type> affected_node_set;
   std::set<VMesh::Edge::index_type>::iterator es = used_edge_set.begin();
   std::set<VMesh::Edge::index_type>::iterator ese = used_edge_set.end();
@@ -185,18 +185,18 @@ RemoveHexVolSheetAlgo::execute(
     ++es;
   }
 
-  std::set<VMesh::Elem::index_type>::iterator hs = extracted_hex_set.begin();  
+  std::set<VMesh::Elem::index_type>::iterator hs = extracted_hex_set.begin();
   std::set<VMesh::Elem::index_type>::iterator hse = extracted_hex_set.end();
-  
+
   hash_type extracted_nodemap;
   while( hs != hse )
   {
     VMesh::Node::array_type onodes;
     original_mesh->get_nodes( onodes, *hs );
     VMesh::Node::array_type nnodes(onodes.size());
-    
+
     for (size_t k = 0; k < onodes.size(); k++)
-    {    
+    {
       if( extracted_nodemap.find((index_type)onodes[k]) == extracted_nodemap.end())
       {
         Point np;
@@ -205,7 +205,7 @@ RemoveHexVolSheetAlgo::execute(
             extracted_mesh->add_point( np );
         extracted_nodemap[(index_type)onodes[k]] = nodeindex;
         nnodes[k] = nodeindex;
-      } 
+      }
       else
       {
         nnodes[k] = extracted_nodemap[(index_type)onodes[k]];
@@ -228,7 +228,7 @@ RemoveHexVolSheetAlgo::execute(
       VMesh::Node::array_type onodes;
       original_mesh->get_nodes( onodes, hex_id );
       VMesh::Node::array_type nnodes( onodes.size() );
-      
+
       for (size_t k = 0; k < onodes.size(); k++)
       {
         if( kept_nodemap.find( (index_type)onodes[k] ) == kept_nodemap.end() )
@@ -252,11 +252,11 @@ RemoveHexVolSheetAlgo::execute(
             {
               VMesh::Node::index_type stack_node = node_stack.top();
               node_stack.pop();
-              
+
               std::set<VMesh::Edge::index_type> edge_set;
               node_get_edges( original_mesh, edge_set, stack_node );
-              
-              std::set<VMesh::Edge::index_type>::iterator esi = edge_set.begin();  
+
+              std::set<VMesh::Edge::index_type>::iterator esi = edge_set.begin();
               std::set<VMesh::Edge::index_type>::iterator esie = edge_set.end();
               while( esi != esie )
               {
@@ -280,7 +280,7 @@ RemoveHexVolSheetAlgo::execute(
             }
 
               //find the average location of the node_string_set
-            std::set<VMesh::Node::index_type>::iterator nss = node_string_set.begin();  
+            std::set<VMesh::Node::index_type>::iterator nss = node_string_set.begin();
             std::set<VMesh::Node::index_type>::iterator nsse = node_string_set.end();
             Point np;
             original_mesh->get_center( np, *nss );
@@ -293,7 +293,7 @@ RemoveHexVolSheetAlgo::execute(
               ++nss;
             }
             np /= node_string_set.size();
-            
+
               //create a new point at this location
             const VMesh::Node::index_type node_index = kept_mesh->add_point( np );
               //set the kept_nodemap for all nodes in the set to this new point
@@ -303,33 +303,33 @@ RemoveHexVolSheetAlgo::execute(
               kept_nodemap[(index_type)(*nss)] = node_index;
               ++nss;
             }
-            
+
               //add the point to the nnodes array
             nnodes[k] = node_index;
-          } 
+          }
         }
         else
         {
           nnodes[k] = kept_nodemap[(index_type)onodes[k]];
         }
       }
-      
+
       kept_mesh->add_elem( nnodes );
     }
     ++citer;
   }
-  
+
   keptfield->copy_properties( hexfieldh.get_rep() );
   extractedfield->copy_properties( hexfieldh.get_rep() );
 }
 
 void
-RemoveHexVolSheetAlgo::get_opposite_edges( 
-    VMesh::Edge::index_type &opp_edge1, 
-    VMesh::Edge::index_type &opp_edge2, 
+RemoveHexVolSheetAlgo::get_opposite_edges(
+    VMesh::Edge::index_type &opp_edge1,
+    VMesh::Edge::index_type &opp_edge2,
     VMesh::Edge::index_type &opp_edge3,
     VMesh *mesh,
-    VMesh::Elem::index_type hex_id, 
+    VMesh::Elem::index_type hex_id,
     VMesh::Edge::index_type edge_id )
 {
   VMesh::Edge::array_type all_edges;
@@ -342,13 +342,13 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge1 = all_edges[2];
     opp_edge2 = all_edges[4];
     opp_edge3 = all_edges[6];
-  }  
+  }
   else if( edge_id == all_edges[3] )
   {
     opp_edge1 = all_edges[7];
     opp_edge2 = all_edges[1];
     opp_edge3 = all_edges[5];
-  } 
+  }
   else if( edge_id == all_edges[8] )
   {
     opp_edge1 = all_edges[11];
@@ -360,7 +360,7 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge1 = all_edges[0];
     opp_edge2 = all_edges[4];
     opp_edge3 = all_edges[6];
-  } 
+  }
   else if( edge_id == all_edges[11] )
   {
     opp_edge1 = all_edges[8];
@@ -372,7 +372,7 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge1 = all_edges[0];
     opp_edge2 = all_edges[2];
     opp_edge3 = all_edges[6];
-  } 
+  }
   else if( edge_id == all_edges[7] )
   {
     opp_edge1 = all_edges[3];
@@ -384,7 +384,7 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge1 = all_edges[0];
     opp_edge2 = all_edges[2];
     opp_edge3 = all_edges[4];
-  } 
+  }
   else if( edge_id == all_edges[1] )
   {
     opp_edge1 = all_edges[3];
@@ -396,7 +396,7 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge1 = all_edges[8];
     opp_edge2 = all_edges[11];
     opp_edge3 = all_edges[10];
-  } 
+  }
   else if( edge_id == all_edges[10] )
   {
     opp_edge1 = all_edges[8];
@@ -410,7 +410,7 @@ RemoveHexVolSheetAlgo::get_opposite_edges(
     opp_edge3 = all_edges[1];
   }
 }
-    
+
 
 void
 RemoveHexVolSheetAlgo::node_get_edges(VMesh *mesh,
@@ -452,7 +452,7 @@ class RemoveHexVolSheet : public Module
     virtual ~RemoveHexVolSheet() {}
 
     virtual void execute();
-    
+
   private:
 
     GuiString  gui_edge_list_;
@@ -466,7 +466,7 @@ DECLARE_MAKER(RemoveHexVolSheet)
 
 
 RemoveHexVolSheet::RemoveHexVolSheet(GuiContext* ctx)
-        : Module("RemoveHexVolSheet", ctx, Filter, "NewField", "SCIRun"),  
+        : Module("RemoveHexVolSheet", ctx, Filter, "NewField", "SCIRun"),
           gui_edge_list_(ctx->subVar("edge-list"), "No values present."),
           last_field_generation_(0)
 {
@@ -485,12 +485,12 @@ RemoveHexVolSheet::execute()
   std::vector<unsigned int> edgeids(0);
   std::istringstream vlist(gui_edge_list_.get());
   unsigned int val;
-  while(!vlist.eof()) 
+  while(!vlist.eof())
   {
     vlist >> val;
-    if (vlist.fail()) 
+    if (vlist.fail())
     {
-      if (!vlist.eof()) 
+      if (!vlist.eof())
       {
         vlist.clear();
         warning("List of Edge Ids was bad at character " +
@@ -502,9 +502,9 @@ RemoveHexVolSheet::execute()
 
     edgeids.push_back(val);
   }
-  
+
     // See if any of the isovalues have changed.
-  if( edge_ids_.size() != edgeids.size() ) 
+  if( edge_ids_.size() != edgeids.size() )
   {
     edge_ids_.resize( edgeids.size() );
     changed = true;
@@ -512,7 +512,7 @@ RemoveHexVolSheet::execute()
 
   for(size_t i=0; i<edgeids.size(); i++ )
   {
-    if( edge_ids_[i] != edgeids[i] ) 
+    if( edge_ids_[i] != edgeids[i] )
     {
       edge_ids_[i] = edgeids[i];
       changed = true;
@@ -540,11 +540,10 @@ RemoveHexVolSheet::execute()
   RemoveHexVolSheetAlgo algo;
   FieldHandle keptfield, extractedfield;
   algo.execute( this, hexfieldhandle, edgeids, keptfield, extractedfield );
-  
+
   send_output_handle("NewHexField", keptfield);
   send_output_handle("ExtractedHexes", extractedfield);
 }
 
 
 } // End namespace SCIRun
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +52,7 @@ namespace SCIRun {
 
 typedef struct Pair{
   double a;
-  double b; 
+  double b;
 } PAIR;
 
 
@@ -83,10 +82,10 @@ template <class T> class Linear3DPWI: public PiecewiseInterp<T> {
 public:
   Linear3DPWI() {}
   Linear3DPWI(const Array1<double>&, const Array1<T>&);
-  
+
   bool set_data(const Array1<double>&, const Array1<T>&);
   inline bool get_value(double, T&);
-  
+
 private:
   Array1<PAIR> X;
   Array1<PAIR> Y;
@@ -96,7 +95,7 @@ private:
 
 template <class T> Linear3DPWI<T>::Linear3DPWI(const Array1<double>& pts, const Array1<T>& vals)
 {
-  set_data(pts, vals);  
+  set_data(pts, vals);
 }
 
 template <class T> inline bool Linear3DPWI<T>::get_value(double w, T& res)
@@ -105,11 +104,11 @@ template <class T> inline bool Linear3DPWI<T>::get_value(double w, T& res)
   if (this->data_valid && (i = this->get_interval(w)) >= 0) {
     res = T(X[i].a + X[i].b * w, Y[i].a+Y[i].b * w, Z[i].a + Z[i].b * w);
     return true;
-  }  
+  }
   else
     return false;
 }
-	
+
 // takes sorted array of points
 template <class T> bool Linear3DPWI<T>::set_data(const Array1<double>& pts, const Array1<T>& vals)
 {
@@ -119,7 +118,7 @@ template <class T> bool Linear3DPWI<T>::set_data(const Array1<double>& pts, cons
     X.resize(sz);
     Y.resize(sz);
     Z.resize(sz);
-    
+
     double lb, rb, delta;
 
     for (int i=0; i<this->points.size()-1; i++){
@@ -144,8 +143,3 @@ template <class T> bool Linear3DPWI<T>::set_data(const Array1<double>& pts, cons
 } // End namespace SCIRun
 
 #endif //SCI_LINEARPWI_H__
-
-
-
-
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -48,8 +47,8 @@ using namespace SCIRun;
 // Two algorithms:
 // The first one generates how nodes of two opposing boundaries could link together
 // and how elements fit together.
-// The second second does the same but uses the information on the field to see 
-// which element should connect to which. 
+// The second second does the same but uses the information on the field to see
+// which element should connect to which.
 
 class SCISHARE DefinePeriodicBoundariesAlgo : public AlgoBase
 {
@@ -68,13 +67,13 @@ class SCISHARE DefinePeriodicBoundariesAlgo : public AlgoBase
       add_bool("build_periodic_nodelink",true);
       add_bool("build_periodic_delemlink",true);
     }
-    
-    bool run(FieldHandle& input, 
-             MatrixHandle& periodic_nodelink, 
+
+    bool run(FieldHandle& input,
+             MatrixHandle& periodic_nodelink,
              MatrixHandle& periodic_delemlink);
 };
 
 
 } // end namespace SCIRunAlgo
 
-#endif 
+#endif

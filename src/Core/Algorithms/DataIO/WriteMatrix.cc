@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -58,16 +58,16 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 
     // Open up the output stream
     PiostreamPtr stream = auto_ostream(filename, "Binary");
-    
-    if (stream->error()) 
+
+    if (stream->error())
     {
       error("Could not open file for writing: " + filename);
-    } 
-    else 
+    }
+    else
     {
       //BOOO const_cast
       Pio(*stream, const_cast<WriteMatrixAlgorithm::Inputs&>(inputMatrix));
-    } 
+    }
   }
   if (!boost::filesystem::exists(filename))
     THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");

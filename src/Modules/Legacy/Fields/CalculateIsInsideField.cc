@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.h>
@@ -37,15 +37,15 @@
 namespace SCIRun {
 
 /// @class CalculateIsInsideField
-/// @brief Calculate whether an element of one field is inside the domain of another field. 
+/// @brief Calculate whether an element of one field is inside the domain of another field.
 
-class CalculateIsInsideField : public Module 
+class CalculateIsInsideField : public Module
 {
   public:
     CalculateIsInsideField(GuiContext*);
     virtual ~CalculateIsInsideField() {}
-    virtual void execute();   
-  
+    virtual void execute();
+
   private:
     GuiString outputtype_;
     GuiDouble outval_;
@@ -71,27 +71,25 @@ void CalculateIsInsideField::execute()
   FieldHandle input, output;
   FieldHandle object;
 
-  // Get the new input data:  
+  // Get the new input data:
   if (!(get_input_handle("Field",input,true))) return;
   if (!(get_input_handle("ObjectField",object,true))) return;
-  
+
     // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed: 
-  if (inputs_changed_ || outputtype_.changed() || outval_.changed() || 
+  // that executes every module downstream even if no data has changed:
+  if (inputs_changed_ || outputtype_.changed() || outval_.changed() ||
       inval_.changed() || !oport_cached("Field"))
   {
     update_state(Executing);
 
     algo_.set_scalar("outside_value",outval_.get());
     algo_.set_scalar("inside_value",inval_.get());
-    algo_.set_option("output_type",outputtype_.get());    
+    algo_.set_option("output_type",outputtype_.get());
     if(!(algo_.run(input,object,output))) return;
 
-    // send new output if there is any:    
+    // send new output if there is any:
     send_output_handle("Field", output);
   }
 }
 
 } // End namespace SCIRun
-
-

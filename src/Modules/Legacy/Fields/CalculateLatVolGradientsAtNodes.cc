@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Algorithms/Fields/FieldData/CalculateLatVolGradientsAtNodes.h>
@@ -67,7 +67,7 @@ CalculateLatVolGradientsAtNodes::execute()
   if (inputs_changed_ || !oport_cached("Output Gradient"))
   {
     update_state(Executing);
-    
+
     if (!(algo_.run(input,output))) return;
     send_output_handle("Output Gradient", output);
   }

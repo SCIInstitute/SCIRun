@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <es-log/trace-log.h>
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
@@ -148,7 +148,7 @@ namespace
         ospSetData(mesh, "vertex.color", data);
         data = ospNewData(index.size() / 4, OSP_INT4, &index[0]);
         ospCommit(data);
-        
+
         ospSetData(mesh, "index", data);
         data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
         ospCommit(data);
@@ -159,7 +159,7 @@ namespace
     {
       SCIRun::LOG_DEBUG("adding Volume wrong place");
       //OSPVolume vol = ospNewVolume("shared_structured_volume");
-      
+
       /*OSPTransferFunction tfn =
       ospTestingNewTransferFunction(test_data.voxelRange, "jet");
       ospSetObject(test_data.volume, "transferFunction", tfn);
@@ -215,7 +215,7 @@ namespace
       return {};
     }
   }
-  
+
   OSPVolume duplicatedCodeFromAlgorithm_vol(OsprayGeometryObjectHandle obj, ospcommon::range1f& voxelRange, ospcommon::box3f& bounds){
     const auto& fieldData = obj->data;
     const auto& vertex = fieldData.vertex;
@@ -224,32 +224,32 @@ namespace
     const auto& index = fieldData.index;
     const auto& radius = obj->radius;
     const auto& geom_type = obj->GeomType;
-    
+
     const auto& func = obj->tfn;
     OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
     OSPData cData = ospNewData(func.colors.size()/3, OSP_FLOAT3, func.colors.data());
     OSPData oData = ospNewData(func.opacities.size(), OSP_FLOAT, func.opacities.data());
-    
+
     ospSetData(transferFunction, "colors", cData);
     ospSetData(transferFunction, "opacities", oData);
-    
+
     if (boost::iequals(geom_type, "structVol"))
     {
-      
+
       SCIRun::LOG_DEBUG("adding Volume");
       OSPVolume vol = ospNewVolume("shared_structured_volume");
-      
+
       int numVoxels = obj->data.color.size();
       OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
       ospSetObject(vol, "voxelData", voxelData);
       ospRelease(voxelData);
       SCIRun::LOG_DEBUG(std::to_string(numVoxels));
-      
+
       ospSetString(vol, "voxelType", "float");
       ospSet3i(vol, "dimensions", obj->data.dim_x, obj->data.dim_y, obj->data.dim_z);
       ospSet3f(vol, "gridSpacing", fieldData.spacing_x, fieldData.spacing_y, fieldData.spacing_z);
       ospSet3f(vol, "gridOrigin", fieldData.origin_x, fieldData.origin_y, fieldData.origin_z);
-      
+
       std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
         if (!std::isnan(v))
           voxelRange.extend(v);
@@ -259,7 +259,7 @@ namespace
         ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
         bounds.extend(v);
       }
-      
+
       ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
       ospCommit(transferFunction);
       ospSetObject(vol, "transferFunction", transferFunction);
@@ -268,22 +268,22 @@ namespace
     }else if (boost::iequals(geom_type, "unstructVol")){
       SCIRun::LOG_DEBUG("adding unstructured Volume");
       OSPVolume vol = ospNewVolume("unstructured_volume");
-      
+
       //int numVoxels = obj->data.color.size();
       OSPData vertexData = ospNewData(vertex.size()/3, OSP_FLOAT3, vertex.data());
       OSPData fieldsData = ospNewData(color.size(), OSP_FLOAT, color.data());
       OSPData indicesData = ospNewData(index.size()/4, OSP_INT4, index.data());
-      
-      
+
+
       ospSetObject(vol, "vertices", vertexData);
       ospSetData(vol, "field", fieldsData);
       ospSetData(vol, "indices", indicesData);
-      
-      
+
+
       ospRelease(vertexData);
       ospRelease(fieldsData);
       ospRelease(indicesData);
-      
+
       std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
         if (!std::isnan(v))
           voxelRange.extend(v);
@@ -293,17 +293,17 @@ namespace
         ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
         bounds.extend(v);
       }
-      
+
       ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
       ospCommit(transferFunction);
       ospSetObject(vol, "transferFunction", transferFunction);
       ospRelease(transferFunction);
       return vol;
-      
+
     }
-    
+
   }
-  
+
   ospcommon::box3f toOsprayBox(const BBox& box)
   {
     auto min = box.get_min();
@@ -461,13 +461,13 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     };
 
     impl_->geoms_.clear();
-    
-    
+
+
     // volumes
     std::vector<OSPVolume> vol_list;
     std::vector<ospcommon::range1f> voxelRange_list;
     std::vector<ospcommon::box3f> bounds_list;
-    
+
     for (const auto& obj : geom.objects()){
       if((boost::iequals(obj->GeomType, "structVol"))||(boost::iequals(obj->GeomType, "unstructVol")) )   {
         ospcommon::range1f r;
@@ -479,10 +479,10 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
         impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
     }
     viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
-    
-    
+
+
     setupViewer(viewer_);
-    
+
     SCIRun::LOG_DEBUG("num of vol: {}", vol_list.size());
     // load volume here
     for(int i=0;i<vol_list.size();i++){

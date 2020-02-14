@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   David Weinstein
-///   Department of Computer Science
-///   University of Utah
-///@date  June 1999
+
+/// @author
+///    David Weinstein
+///    Department of Computer Science
+///    University of Utah
+/// @date  June 1999
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -49,8 +49,8 @@
 namespace SCIRun {
 
 /// @class EvaluateLinAlgUnary
-/// @brief Performs one of a number of selectable unary matrix operations to the input matrix. 
- 
+/// @brief Performs one of a number of selectable unary matrix operations to the input matrix.
+
 class EvaluateLinAlgUnary : public Module {
   GuiString op_;
   GuiString function_;
@@ -129,10 +129,10 @@ void EvaluateLinAlgUnary::Ceil(double *x, int n) {
   }
 }
 
-void EvaluateLinAlgUnary::execute() 
+void EvaluateLinAlgUnary::execute()
 {
   MatrixHandle mh;
-  
+
   get_input_handle("Input",mh,true);
 
   if (inputs_changed_ || op_.changed() || function_.changed() || !oport_cached("Output"))
@@ -141,82 +141,82 @@ void EvaluateLinAlgUnary::execute()
     std::string op = op_.get();
     MatrixHandle m;
 
-    if (op == "Transpose") 
+    if (op == "Transpose")
     {
       Matrix<double>* mat = mh->make_transpose();
       m = mat;
-    } 
-    else if (op == "Invert") 
+    }
+    else if (op == "Invert")
     {
       m = mh->dense();
       if (m.get_rep() == 0) { error("Could not convert matrix to dense matrix"); return; }
       m.detach();
-      
+
       DenseMatrix *dm = dynamic_cast<DenseMatrix *>(m.get_rep());
       if (! dm->invert()) {
         error("Input Matrix not invertible.");
         return;
       }
     }
-    else if (op == "Sort") 
+    else if (op == "Sort")
     {
       m = mh->dense();
       if (m.get_rep() == 0) { error("Could not convert matrix to dense matrix"); return; }
       m.detach();
       insertion_sort(m->get_data_pointer(), m->get_data_size());
       if (matrix_is::sparse(mh)) { m = m->sparse(); }
-    } 
-    else if (op == "Subtract_Mean") 
+    }
+    else if (op == "Subtract_Mean")
     {
       m = mh->dense();
       if (m.get_rep() == 0) { error("Could not convert matrix to dense matrix"); return; }
       m.detach();
       subtract_mean(m->get_data_pointer(), m->get_data_size());
-    } 
-    else if (op == "Normalize") 
+    }
+    else if (op == "Normalize")
     {
       m = mh->clone();
       normalize(m->get_data_pointer(), m->get_data_size());
-    } 
-    else if (op == "Round") 
+    }
+    else if (op == "Round")
     {
       m = mh->clone();
       round(m->get_data_pointer(), m->get_data_size());
-    } 
-    else if (op == "Floor") 
+    }
+    else if (op == "Floor")
     {
       m = mh->clone();
       Floor(m->get_data_pointer(), m->get_data_size());
-    } 
-    else if (op == "Ceil") 
+    }
+    else if (op == "Ceil")
     {
       m = mh->clone();
       Ceil(m->get_data_pointer(), m->get_data_size());
-    } 
-    else if (op == "Function") 
+    }
+    else if (op == "Function")
     {
       NewArrayMathEngine engine;
       engine.set_progress_reporter(this);
-      
+
       if (!(engine.add_input_fullmatrix("x",mh))) return;
-      
+
       std::string func = function_.get();
       func = "RESULT="+func;
       engine.add_expressions(func);
 
-      MatrixHandle omatrix = mh->clone();   
+      MatrixHandle omatrix = mh->clone();
       if(!(engine.add_output_fullmatrix("RESULT",omatrix))) return;
-      
+
       // Actual engine call, which does the dynamic compilation, the creation of the
-      // code for all the objects, as well as inserting the function and looping 
+      // code for all the objects, as well as inserting the function and looping
       // over every data point
 
       if (!(engine.run())) return;
-      
+
       send_output_handle("Output", omatrix);
-      return;   
-    } 
-    else 
+      return;
+    }
+    else
     {
       warning("Don't know operation "+op);
       return;

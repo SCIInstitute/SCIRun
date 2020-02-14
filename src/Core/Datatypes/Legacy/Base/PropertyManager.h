@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,7 +39,7 @@
 ///
 
 #ifndef CORE_DATATYPES_PROPERTYMANAGER_H
-#define CORE_DATATYPES_PROPERTYMANAGER_H 1 
+#define CORE_DATATYPES_PROPERTYMANAGER_H 1
 
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
@@ -56,11 +55,11 @@
 
 namespace SCIRun {
 
-class SCISHARE PropertyBase : public Persistent 
+class SCISHARE PropertyBase : public Persistent
 {
 public:
   explicit PropertyBase(bool trans) : transient_(trans) {}
-  virtual PropertyBase* clone() const { 
+  virtual PropertyBase* clone() const {
     ASSERTFAIL("PropertyBase clone called");
   }
 
@@ -78,7 +77,7 @@ public:
 
 protected:
   /// Transient properties are deleted when the PropertyManager that this
-  /// Property belongs to is thawed. 
+  /// Property belongs to is thawed.
   bool transient_;
   static Persistent *maker();
 };
@@ -92,11 +91,11 @@ class Property : public PropertyBase {
 public:
   friend class PropertyManager;
 
-  Property(const T &o, bool trans) :  PropertyBase(trans), obj_(o) 
+  Property(const T &o, bool trans) :  PropertyBase(trans), obj_(o)
   {
   }
   virtual ~Property() {}
-  virtual PropertyBase *clone() const 
+  virtual PropertyBase *clone() const
   { return new Property(obj_, transient()); }
 
   static const std::string type_name(int n = -1);
@@ -161,7 +160,7 @@ const std::string Property<T>::type_name(int n)
 }
 
 template <class T>
-PersistentTypeID 
+PersistentTypeID
 Property<T>::type_id(type_name(-1), "PropertyBase", maker);
 
 template <class T>
@@ -202,7 +201,7 @@ public:
 
   bool operator==(const PropertyManager &pm);
   bool operator!=(const PropertyManager &pm);
-  
+
   template<class T> void set_property(const std::string &, const T &,
 				      bool is_transient);
   template<class T> bool get_property( const std::string &, T &);
@@ -213,10 +212,10 @@ public:
 
   /// Transient data may only be stored in a frozen PropertyManager.
   virtual void freeze();
-  
+
   /// thaw will remove all transient properties from the PropertyManager.
   virtual void thaw();
-  
+
   /// query frozen state of a PropertyManager.
   bool is_frozen() const { return frozen_; }
 
@@ -231,13 +230,13 @@ public:
   static  PersistentTypeID type_id;
   virtual std::string dynamic_type_name() const;
 
-  void set_name(const std::string& name) 
-  { 
-    set_property("name", name, false); 
+  void set_name(const std::string& name)
+  {
+    set_property("name", name, false);
   }
   std::string get_name()
-  {  
-    std::string name; 
+  {
+    std::string name;
     return get_property("name", name) ? name : std::string();
   }
 
@@ -257,7 +256,7 @@ protected:
 
 
 template<class T>
-void 
+void
 PropertyManager::set_property(const std::string &name,  const T& obj,
 			      bool is_transient)
 {
@@ -272,7 +271,7 @@ PropertyManager::set_property(const std::string &name,  const T& obj,
 
 
 template<class T>
-bool 
+bool
 PropertyManager::get_property(const std::string &name, T &ref)
 {
   Core::Thread::Guard g(lock.get());
@@ -288,7 +287,7 @@ PropertyManager::get_property(const std::string &name, T &ref)
     }
   }
   return ans;
-} 
+}
 
 
 } // namespace SCIRun

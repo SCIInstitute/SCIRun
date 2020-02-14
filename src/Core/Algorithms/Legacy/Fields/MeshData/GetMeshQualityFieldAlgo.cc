@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -48,15 +48,15 @@ GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
 AlgorithmOutput GetMeshQualityFieldAlgo::run(const AlgorithmInput& input) const
 {
     auto input_field = input.get<Field>(Variables::InputField);
-    
+
     FieldHandle output_field;
-    
+
     if (!run(input_field, output_field))
         THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-    
+
     AlgorithmOutput output;
     output[Variables::OutputField] = output_field;
-    
+
     return output;
 }
 
@@ -64,7 +64,7 @@ bool
 GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
 {
     std::string Metric = getOption(Parameters::Metric);
-  
+
   if (!input)
   {
     error("No input field");
@@ -74,18 +74,18 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
   FieldInformation fi(input);
   fi.make_double();
   fi.make_constantdata();
-  
+
   output = CreateField(fi,input->mesh());
-  
+
   if (!output)
   {
     error("Could not create output field");
     return false;
   }
-  
+
   VField* ofield = output->vfield();
   VMesh*  imesh  = input->vmesh();
-  
+
   if (Metric == "scaled_jacobian")
   {
     VMesh::Elem::size_type num_values = imesh->num_elems();
@@ -100,7 +100,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
       ofield->set_value(imesh->jacobian_metric(j),j);
-    }  
+    }
   }
   else if (Metric == "volume")
   {
@@ -108,7 +108,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
       ofield->set_value(imesh->volume_metric(j),j);
-    }  
+    }
   }
   else if (Metric == "insc_circ_ratio")
   {
@@ -116,9 +116,8 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
       ofield->set_value(imesh->inscribed_circumscribed_radius_metric(j),j);
-    }  
-  }  
+    }
+  }
 
     return true;
 }
-

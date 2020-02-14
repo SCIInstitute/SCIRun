@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -50,37 +50,37 @@ TransformMeshWithTransformAlgo::TransformMeshWithTransformAlgo()
 bool TransformMeshWithTransformAlgo::run(FieldHandle input, DenseMatrixHandle transform_matrix, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "TransformMeshWithTransform");
-  
+
   const bool rotate_data = true;  //  get_bool("rotate_data"); //No gui so this is always constant
-  
+
   if (!input)
   {
     error("No input field");
     return (false);
   }
-  
+
   if (!transform_matrix)
   {
     error("No input transform matrix");
     return (false);
   }
-  
+
   if (!(transform_matrix->ncols() == 4 && transform_matrix->nrows() == 4))
   {
     error("Input matrix needs to be a 4 by 4 dense matrix");
-    return (false);  
+    return (false);
   }
 
   output.reset(input->deep_clone());
-  
+
   VMesh* vmesh = output->vmesh();
   VField* vfield = output->vfield();
-  
+
   Transform transform;
   transform.set(transform_matrix->data());
-  
+
   vmesh->transform(transform);
-  
+
   if (vfield->is_vector() || vfield->is_tensor())
   {
     if (rotate_data)
@@ -106,10 +106,10 @@ bool TransformMeshWithTransformAlgo::run(FieldHandle input, DenseMatrixHandle tr
           v = transform*v*transform;
           vfield->set_value(v,i);
         }
-      }    
+      }
     }
   }
-  
+
   CopyProperties(*input, *output);
 
   return (true);

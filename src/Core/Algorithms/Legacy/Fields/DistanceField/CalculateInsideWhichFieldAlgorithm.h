@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
 #define ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
 
@@ -38,27 +39,27 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
-  
-  
+
+
   //ALGORITHM_PARAMETER_DECL(SamplingScheme);
   ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
 //ALGORITHM_PARAMETER_DECL(OutsideValue);
   ALGORITHM_PARAMETER_DECL(StartValue);
   //ALGORITHM_PARAMETER_DECL(OutputType);
   ALGORITHM_PARAMETER_DECL(DataLocation);
-  
+
   class SCISHARE CalculateInsideWhichFieldAlgorithm : public AlgorithmBase
   {
 
   public:
     CalculateInsideWhichFieldAlgorithm();
     //static const AlgorithmInputName InputField;
-    
+
     FieldHandle run(FieldHandle input,const FieldList& objField)const;
-    
+
     virtual AlgorithmOutput run(const AlgorithmInput &) const override;
-    
-    
+
+
   };
 
 }}}}
