@@ -1184,13 +1184,6 @@ void ViewSceneDialog::setAutoRotateSpeed(double speed)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setAutoRotateOnDrag(bool value)
-{
-  auto spire = mSpire.lock();
-  spire->setAutoRotateOnDrag(value);
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateRight()
 {
   auto spire = mSpire.lock();

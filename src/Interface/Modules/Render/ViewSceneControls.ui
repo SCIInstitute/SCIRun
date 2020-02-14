@@ -1580,8 +1580,18 @@
            <string>Auto Rotate Settings</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="8" column="3">
-            <spacer name="horizontalSpacer_4">
+           <item row="8" column="1" colspan="2">
+            <widget class="QPushButton" name="rotateDownButton_">
+             <property name="toolTip">
+              <string>Rotate Object Down</string>
+             </property>
+             <property name="text">
+              <string>Down</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -1593,31 +1603,25 @@
              </property>
             </spacer>
            </item>
-           <item row="5" column="3">
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="rotateLeftButton_">
+             <property name="toolTip">
+              <string>Rotate Object Left</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>84</width>
-               <height>20</height>
-              </size>
+             <property name="text">
+              <string>Left</string>
              </property>
-            </spacer>
+            </widget>
            </item>
-           <item row="8" column="0">
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="5" column="1" colspan="2">
+            <widget class="QPushButton" name="rotateUpButton_">
+             <property name="toolTip">
+              <string>Rotate Object Up</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>84</width>
-               <height>20</height>
-              </size>
+             <property name="text">
+              <string>Up</string>
              </property>
-            </spacer>
+            </widget>
            </item>
            <item row="2" column="1" colspan="2">
             <widget class="QDoubleSpinBox" name="autoRotateSpeedSpinBox_">
@@ -1638,30 +1642,23 @@
              </property>
             </widget>
            </item>
+           <item row="5" column="3">
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>84</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_30">
              <property name="text">
               <string>Speed:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="rotateLeftButton_">
-             <property name="toolTip">
-              <string>Rotate Object Left</string>
-             </property>
-             <property name="text">
-              <string>Left</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1" colspan="2">
-            <widget class="QPushButton" name="rotateDownButton_">
-             <property name="toolTip">
-              <string>Rotate Object Down</string>
-             </property>
-             <property name="text">
-              <string>Down</string>
              </property>
             </widget>
            </item>
@@ -1674,6 +1671,19 @@
               <string>Right</string>
              </property>
             </widget>
+           </item>
+           <item row="8" column="3">
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>84</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item row="6" column="1">
             <spacer name="horizontalSpacer_5">
@@ -1688,8 +1698,8 @@
              </property>
             </spacer>
            </item>
-           <item row="5" column="0">
-            <spacer name="horizontalSpacer">
+           <item row="8" column="0">
+            <spacer name="horizontalSpacer_3">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -1700,32 +1710,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="5" column="1" colspan="2">
-            <widget class="QPushButton" name="rotateUpButton_">
-             <property name="toolTip">
-              <string>Rotate Object Up</string>
-             </property>
-             <property name="text">
-              <string>Up</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0" colspan="3">
-            <widget class="QCheckBox" name="autoRotateCheckBox_">
-             <property name="font">
-              <font>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>Toggle Auto Rotate</string>
-             </property>
-             <property name="text">
-              <string>Auto Rotate On Mouse Release</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>

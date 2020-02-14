@@ -182,7 +182,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
   connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
   connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
-  connect(autoRotateCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setAutoRotateOnDrag(bool)));
 
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));

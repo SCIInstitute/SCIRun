@@ -146,7 +146,6 @@ namespace SCIRun {
       void setLockRotation(bool lock);
       void setAutoRotateVector(glm::vec2 axis);
       void setAutoRotateSpeed(double speed);
-      void setAutoRotateOnDrag(bool value);
       const glm::mat4& getWorldToProjection() const;
       const glm::mat4& getWorldToView() const;
       const glm::mat4& getViewToWorld() const;

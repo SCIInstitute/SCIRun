@@ -219,7 +219,7 @@ namespace SCIRun {
     {
       widgetSelected_ = false;
       widgetBall_.reset();
-      tryAutoRotate = doAutoRotateOnDrag;
+      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -356,7 +356,6 @@ namespace SCIRun {
     void SRInterface::setCameraRotation(const glm::quat roation) {mCamera->setRotation(roation);}
     glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
-    void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}

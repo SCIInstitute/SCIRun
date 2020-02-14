@@ -116,7 +116,6 @@ namespace SCIRun {
       void setPolygonOffset(int value);
       void setTextOffset(int value);
       void setAutoRotateSpeed(double speed);
-      void setAutoRotateOnDrag(bool value);
       void autoRotateRight();
       void autoRotateLeft();
       void autoRotateUp();
