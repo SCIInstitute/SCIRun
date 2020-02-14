@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,14 +44,14 @@ using namespace SCIRun;
 class SCISHARE TransformPlanarMeshAlgo : public AlgoBase
 {
   public:
-    TransformPlanarMeshAlgo() 
+    TransformPlanarMeshAlgo()
     {
       add_option("axis","x","x|y|z");
       add_bool("invert",false);
       add_scalar("translate_x",0.0);
       add_scalar("translate_y",0.0);
     }
-  
+
     bool run(FieldHandle input, FieldHandle& output);
 };
 

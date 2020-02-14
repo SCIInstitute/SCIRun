@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -40,7 +40,7 @@ namespace SCIRun {
 using namespace SCIRun;
 
 /// @class CreateMatrix
-/// @brief This module lets the user create a small dense matrix manually. 
+/// @brief This module lets the user create a small dense matrix manually.
 
 class CreateMatrix : public Module
 {
@@ -76,32 +76,32 @@ CreateMatrix::execute()
 {
   MatrixHandle handle;
   TCLInterface::execute(get_id() + " update_matrixdata");
-  
+
   size_type nrows = static_cast<size_type>(nrows_.get());
   size_type ncols = static_cast<size_type>(ncols_.get());
   std::string data = data_.get();
-  
+
   MatrixHandle mat = new DenseColMajMatrix(nrows,ncols);
-  
+
   if (mat.get_rep() == 0)
   {
     error("Could allocate output matrix");
     return;
   }
-  
+
   for (size_t p=0;p<data.size();p++)
-  { 
+  {
     if ((data[p] == '}')||(data[p] == '{')) data[p] = ' ';
   }
 
   std::vector<double> nums;
   multiple_from_string(data,nums);
-  
+
   double *ptr = mat->get_data_pointer();
- 
+
   /// @todo: quick bug fix, this module is due for rewrite.
   for (index_type p = 0; p < nums.size(); p++)
-  { 
+  {
     ptr[p] = nums[p];
   }
 
@@ -110,5 +110,3 @@ CreateMatrix::execute()
 }
 
 } // End namespace SCIRun
-
-

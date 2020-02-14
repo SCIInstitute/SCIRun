@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -76,12 +74,12 @@ public:
   /// static string which describes the primitive for debugging
   /// purposes.
   Mailbox(const char* name, int size);
-    
+
   //////////
   /// Destroy the mailbox.  All items in the queue are silently
   /// dropped.
   ~Mailbox();
-    
+
   //////////
   /// Puts <i>msg</i> in the queue.  If the queue is full, the
   /// thread will be blocked until there is room in the queue.
@@ -90,16 +88,16 @@ public:
   /// call <i>send</i> concurrently, and the messages will be
   /// placed in the queue in an arbitrary order.
   void send(const Item& msg);
-    
+
   //////////
   /// Attempt to send <i>msg</i> to the queue.  If the queue is
   /// full, the thread will not be blocked, and <i>trySend</i>
   /// will return false.  Otherwise, <i>trySend</i> will return
   /// true.  This may never complete if the reciever only uses
-  /// <i>tryRecieve</i>.  
+  /// <i>tryRecieve</i>.
   bool trySend(const Item& msg);
-    
-  
+
+
   //////////
   /// Send <i>msg</i> to the queue only if the <i>checker</i> function
   /// fails to compare the <i>msg</i> to what is already the last item
@@ -125,7 +123,7 @@ public:
   /// queue is empty, the thread is blocked and <i>tryRecieve</i>
   /// will return false.  Otherwise, <i>tryRecieve</i> returns true.
   bool tryReceive(Item& item);
-    
+
   //////////
   /// Return the maximum size of the mailbox queue, as given in the
   /// constructor.
@@ -333,5 +331,3 @@ Mailbox<Item>::numItems() const
 
 } // End namespace SCIRun
 #endif
-
-

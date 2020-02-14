@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/MeshData/GetSurfaceNodeNormals.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -35,7 +35,7 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 GetSurfaceNodeNormalsAlgo::
 run(FieldHandle& input, MatrixHandle& output)
 {
@@ -46,18 +46,18 @@ run(FieldHandle& input, MatrixHandle& output)
     error("No input source field");
     algo_end(); return (false);
   }
-  
-  FieldInformation fi(input);  
+
+  FieldInformation fi(input);
   if (!(fi.is_surface()))
   {
     error("This algorithm only works on a surface mesh");
     algo_end(); return (false);
   }
-  
+
   VMesh* vmesh = input->vmesh();
   vmesh->synchronize(Mesh::NORMALS_E);
   VMesh::size_type num_nodes = vmesh->num_nodes();
-  
+
   output = new DenseMatrix(num_nodes,3);
 
   if (output.get_rep() == 0)
@@ -80,7 +80,7 @@ run(FieldHandle& input, MatrixHandle& output)
     k += 3;
     cnt++; if (cnt == 400) {cnt=0; update_progress(i,num_nodes); }
   }
-  
+
   algo_end(); return (true);
 }
 

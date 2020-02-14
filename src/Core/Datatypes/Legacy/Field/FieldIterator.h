@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -56,13 +54,13 @@ struct FieldIteratorBase {
     index_(i) {}
 
   /// Field Iterators need to be able to increment.
-  inline 
+  inline
   T operator ++() { return ++index_; }
   T operator --() { return --index_; }
-  
-  bool operator ==(const FieldIteratorBase &a) const 
+
+  bool operator ==(const FieldIteratorBase &a) const
   { return index_ == a.index_; }
-  bool operator !=(const FieldIteratorBase &a) const 
+  bool operator !=(const FieldIteratorBase &a) const
   { return index_ != a.index_; }
 
   inline T operator*() { return index_; }
@@ -93,7 +91,7 @@ struct NodeIterator : public FieldIteratorBase<T> {
     FieldIteratorBase<T>(iter) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   NodeIndex<T> operator*() { return NodeIndex<T>(this->index_); }
   typedef NodeIndex<T> value_type;
   typedef NodeIndex<T>* pointer;
@@ -109,7 +107,7 @@ struct EdgeIterator : public FieldIteratorBase<T> {
     FieldIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   EdgeIndex<T> operator*() { return EdgeIndex<T>(this->index_); }
   typedef EdgeIndex<T> value_type;
   typedef EdgeIndex<T>* pointer;
@@ -125,7 +123,7 @@ struct FaceIterator : public FieldIteratorBase<T> {
     FieldIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   FaceIndex<T> operator*() { return FaceIndex<T>(this->index_); }
 };
 
@@ -138,7 +136,7 @@ struct CellIterator : public FieldIteratorBase<T> {
     FieldIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   CellIndex<T> operator*() { return CellIndex<T>(this->index_); }
 };
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_DATAIO_READMATRIX_H
 #define ALGORITHMS_DATAIO_READMATRIX_H
 
@@ -43,12 +43,12 @@ namespace DataIO {
       {
       public:
         typedef void Inputs;
-        typedef std::string Parameters; 
+        typedef std::string Parameters;
         typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
         ReadMatrixAlgorithm();
         Outputs run(const Parameters& filename) const;
-      
+
         AlgorithmOutput run(const AlgorithmInput& input) const override;
       };
 

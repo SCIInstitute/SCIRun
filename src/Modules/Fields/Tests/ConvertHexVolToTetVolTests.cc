@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -59,7 +59,7 @@ class ConvertHexVolToTetVolModuleTests : public ModuleTest
     FieldHandle ofh = CreateField(lfi,mesh);
     return ofh;
   }
-  
+
  DenseMatrixHandle CreateDenseMatrix()
  {
   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,3));
@@ -93,5 +93,3 @@ TEST_F(ConvertHexVolToTetVolModuleTests, CorrectInput)
   stubPortNWithThisData(csdf, 0, CreateEmptyLatVol(size, size, size, INT_E));
   EXPECT_NO_THROW(csdf->execute());
 }
-
-

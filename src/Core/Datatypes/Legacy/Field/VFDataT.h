@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT.h
 
 #include <Core/Datatypes/Legacy/Field/VFData.h>
@@ -145,7 +146,7 @@ void VFDataT<FDATA,EFDATA,HFDATA>::gradient(StackVector<type,3> &val, VMesh::Ele
 \
 template<class FDATA, class EFDATA, class HFDATA> \
 void VFDataT<FDATA,EFDATA,HFDATA>::mgradient(std::vector<StackVector<type,3> > &vals, VMesh::MultiElemGradient &interp, type defval) const \
-{ mgradientT<type>(vals,interp,defval); } 
+{ mgradientT<type>(vals,interp,defval); }
 
 #define VFDATA_FUNCTION_SCALAR_DEFINITION(type) \
 VFData* CreateVFData(std::vector<type>& fdata,std::vector<type>& efdata,std::vector<std::vector<type> >& hfdata) \
@@ -191,10 +192,10 @@ private:
   void resize(std::vector<T>& fdata,VMesh::dimension_type dim)
   {
     VMesh::size_type sz = 1;
-    if (dim.size() > 0) sz = dim[0]; 
-    if (dim.size() > 1) sz *= dim[1]; 
-    if (dim.size() > 2) sz *= dim[2]; 
-    fdata.resize(sz);  
+    if (dim.size() > 0) sz = dim[0];
+    if (dim.size() > 1) sz *= dim[1];
+    if (dim.size() > 2) sz *= dim[2];
+    fdata.resize(sz);
   }
 
   template<class T>
@@ -202,9 +203,9 @@ private:
   {
     VMesh::size_type sz1 = 1;
     VMesh::size_type sz2 = 1;
-    if (dim.size() > 0) sz1 = dim[0]; 
-    if (dim.size() > 1) sz2 = dim[1]; 
-    fdata.resize(sz2,sz1);  
+    if (dim.size() > 0) sz1 = dim[0];
+    if (dim.size() > 1) sz2 = dim[1];
+    fdata.resize(sz2,sz1);
   }
 
   template<class T>
@@ -213,18 +214,18 @@ private:
     VMesh::size_type sz1 = 1;
     VMesh::size_type sz2 = 1;
     VMesh::size_type sz3 = 1;
-    if (dim.size() > 0) sz1 = dim[0]; 
-    if (dim.size() > 1) sz2 = dim[1]; 
-    if (dim.size() > 2) sz3 = dim[2]; 
-    fdata.resize(sz3,sz2,sz1);  
+    if (dim.size() > 0) sz1 = dim[0];
+    if (dim.size() > 1) sz2 = dim[1];
+    if (dim.size() > 2) sz3 = dim[2];
+    fdata.resize(sz3,sz2,sz1);
   }
-  
+
 public:
   // constructor
   VFDataT(FDATA& fdata, EFDATA& efdata, HFDATA& hfdata) :
   fdata_(fdata), efdata_(efdata), hfdata_(hfdata)
   { }
-  
+
   // destructor
   virtual ~VFDataT() {}
 
@@ -238,21 +239,21 @@ public:
   {
     resize(efdata_,dim);
   }
-  
+
   virtual VMesh::size_type fdata_size() const
     { return (fdata_.size()); }
   virtual VMesh::size_type efdata_size() const
     { return (efdata_.size()); }
 
   virtual void* fdata_pointer() const
-    { 
+    {
       if (fdata_.size() == 0) return (0);
-      return (&(fdata_[0])); 
+      return (&(fdata_[0]));
     }
   virtual void* efdata_pointer() const
-    { 
+    {
       if (efdata_.size() == 0) return (0);
-      return (&(efdata_[0])); 
+      return (&(efdata_[0]));
     }
 
   VFDATA_ACCESS_DECLARATION(char)
@@ -276,60 +277,60 @@ public:
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Tensor)
 
-  virtual void copy_value(VFData* fdata, 
+  virtual void copy_value(VFData* fdata,
                           VMesh::index_type vidx,
                           VMesh::index_type idx)
   {
     fdata->get_value(fdata_[idx],vidx);
   }
 
-  virtual void copy_values(VFData* fdata, 
+  virtual void copy_values(VFData* fdata,
                            VMesh::index_type vidx,
                            VMesh::index_type idx,
                            VMesh::size_type num)
   {
     fdata->get_values(&(fdata_[idx]),num,vidx);
   }
-  
 
-  virtual void copy_weighted_value(VFData* fdata, 
-                                   const VMesh::index_type* vidx, 
+
+  virtual void copy_weighted_value(VFData* fdata,
+                                   const VMesh::index_type* vidx,
                                    const VMesh::weight_type* vw,
-                                   VMesh::size_type sz, 
+                                   VMesh::size_type sz,
                                    VMesh::index_type idx)
   {
     fdata->get_weighted_value(fdata_[idx],vidx,vw,sz);
   }
 
-  virtual void copy_evalue(VFData* fdata, 
-                           VMesh::index_type vidx, 
+  virtual void copy_evalue(VFData* fdata,
+                           VMesh::index_type vidx,
                            VMesh::index_type idx)
   {
     typename EFDATA::value_type val;
     fdata->get_value(val,vidx);
     efdata_[idx] = val;
   }
-  
-  virtual void copy_evalues(VFData* fdata, 
+
+  virtual void copy_evalues(VFData* fdata,
                             VMesh::index_type vidx,
                             VMesh::index_type idx,
                             VMesh::size_type num)
   {
     fdata->get_evalues(&(fdata_[idx]),num,vidx);
   }
-  
-  
-  virtual void copy_weighted_evalue(VFData* fdata, 
-                                    const VMesh::index_type* vidx, 
+
+
+  virtual void copy_weighted_evalue(VFData* fdata,
+                                    const VMesh::index_type* vidx,
                                     const VMesh::weight_type* vw,
-                                    VMesh::size_type sz, 
+                                    VMesh::size_type sz,
                                     VMesh::index_type idx)
   {
     typename FDATA::value_type val;
     fdata->get_weighted_evalue(val,vidx,vw,sz);
     efdata_[idx] = val;
   }
-      
+
   virtual void copy_values(VFData* fdata)
   {
     VMesh::size_type sz1 = fdata_.size();
@@ -338,7 +339,7 @@ public:
     if (sz2 < sz1) sz1 = sz2;
     fdata->get_values(&(fdata_[0]),sz1,0);
   }
-  
+
   virtual void copy_evalues(VFData* fdata)
   {
     VMesh::size_type sz1 = efdata_.size();
@@ -371,12 +372,12 @@ public:
           for (size_t p=0;p<ei.node_index.size(); p++)
           {
             TESTRANGE(ei.node_index[p],0,fdata_.size())
-            val += CastFData<T>(fdata_[ei.node_index[p]]*ei.weights[p]); 
+            val += CastFData<T>(fdata_[ei.node_index[p]]*ei.weights[p]);
           }
         }
         else
         {
-          val = defval;        
+          val = defval;
         }
         return;
       }
@@ -386,15 +387,15 @@ public:
         {
           index_type k = 0;
           val = static_cast<T>(0.0);
-          for (size_t p=0;p<ei.node_index.size(); p++) 
+          for (size_t p=0;p<ei.node_index.size(); p++)
           {
             TESTRANGE(ei.node_index[p],0,fdata_.size())
-            val += CastFData<T>(fdata_[ei.node_index[p]]*ei.weights[k]); k++; 
+            val += CastFData<T>(fdata_[ei.node_index[p]]*ei.weights[k]); k++;
           }
-          for (size_t p=0;p<ei.edge_index.size(); p++) 
-          { 
+          for (size_t p=0;p<ei.edge_index.size(); p++)
+          {
             TESTRANGE(ei.edge_index[p],0,efdata_.size())
-            val += CastFData<T>(efdata_[ei.edge_index[p]]*ei.weights[k]); k++; 
+            val += CastFData<T>(efdata_[ei.edge_index[p]]*ei.weights[k]); k++;
           }
         }
         else
@@ -413,10 +414,10 @@ public:
           {
             TESTRANGE(ei.node_index[p],0,fdata_.size())
             val += CastFData<T>(fdata_[ei.node_index[p]]*ei.weights[k]); k++;
-            for (index_type q=0;q<ei.num_hderivs;q++) 
-            { 
+            for (index_type q=0;q<ei.num_hderivs;q++)
+            {
               TESTRANGE(ei.node_index[p],0,hfdata_.size())
-              val += CastFData<T>(hfdata_[ei.node_index[p]][q]*ei.weights[k]); k++; 
+              val += CastFData<T>(hfdata_[ei.node_index[p]][q]*ei.weights[k]); k++;
             }
           }
         }
@@ -434,9 +435,9 @@ public:
   inline void minterpolateT(std::vector<T>& vals, VMesh::MultiElemInterpolate& ei, T defval) const
   {
     vals.resize(ei.size());
-   
+
     if (ei.size() == 0) return;
- 
+
     switch(ei[0].basis_order)
     {
       case 0:
@@ -455,12 +456,12 @@ public:
           if (ei[j].elem_index >= 0)
           {
             vals[j] = static_cast<T>(0.0);
-            for (size_t p=0;p<ei[j].node_index.size(); p++) 
-              vals[j] += CastFData<T>(fdata_[ei[j].node_index[p]]*ei[j].weights[p]); 
+            for (size_t p=0;p<ei[j].node_index.size(); p++)
+              vals[j] += CastFData<T>(fdata_[ei[j].node_index[p]]*ei[j].weights[p]);
           }
           else
           {
-            vals[j] = defval;          
+            vals[j] = defval;
           }
         }
         return;
@@ -473,14 +474,14 @@ public:
           {
             vals[j] = static_cast<T>(0.0);
             index_type k = 0;
-            for (size_t p=0;p<ei[j].node_index.size(); p++) 
+            for (size_t p=0;p<ei[j].node_index.size(); p++)
              { vals[j] += CastFData<T>(fdata_[ei[j].node_index[p]]*ei[j].weights[k]); k++; }
-            for (size_t p=0;p<ei[j].edge_index.size(); p++) 
+            for (size_t p=0;p<ei[j].edge_index.size(); p++)
              { vals[j] += CastFData<T>(efdata_[ei[j].edge_index[p]]*ei[j].weights[k]); k++; }
           }
           else
           {
-            vals[j] = defval;          
+            vals[j] = defval;
           }
         }
         return;
@@ -496,13 +497,13 @@ public:
             for (size_t p=0;p<ei[j].node_index.size();p++)
             {
               vals[j] += CastFData<T>(fdata_[ei[j].node_index[p]]*ei[j].weights[k]); k++;
-              for (index_type q=0;q<ei[j].num_hderivs;q++) 
+              for (index_type q=0;q<ei[j].num_hderivs;q++)
                { vals[j] += CastFData<T>(hfdata_[ei[j].node_index[p]][q]*ei[j].weights[k]); k++; }
             }
           }
           else
           {
-            vals[j] = defval;          
+            vals[j] = defval;
           }
         }
         return;
@@ -511,7 +512,7 @@ public:
     ASSERTFAIL("Interpolate encountered an unknown basis_order");
   }
 
-  
+
   template<class T>
   inline void mgradientT(std::vector<StackVector<T,3> >& vals, VMesh::MultiElemGradient& eg, T defval) const
   {
@@ -528,11 +529,11 @@ public:
           vals[j].resize(3);
           if (eg[j].elem_index >= 0)
           {
-            vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0); 
+            vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0);
           }
           else
           {
-            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval; 
+            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval;
           }
 
         }
@@ -540,15 +541,15 @@ public:
       case 1:
       {
         for (size_t j=0; j<eg.size(); j++)
-        {      
+        {
           vals[j].resize(3);
-          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0); 
+          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0);
           if (eg[j].elem_index >= 0)
           {
             for (index_type k=0, q = 0; k<eg[j].num_derivs; k++)
             {
               grad = T(0);
-              for (size_t p=0;p<eg[j].node_index.size();p++) 
+              for (size_t p=0;p<eg[j].node_index.size();p++)
                 { grad += CastFData<T>(fdata_[eg[j].node_index[p]]*eg[j].weights[q]); q++; }
 
               vals[j][0] += CastFData<T>(grad*eg[j].inverse_jacobian[k]);
@@ -558,27 +559,27 @@ public:
           }
           else
           {
-            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval; 
+            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval;
           }
         }
-        return;   
+        return;
       }
       case 2:
       {
         for (size_t j=0; j<eg.size(); j++)
-        {      
+        {
           vals[j].resize(3);
-          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0); 
-          
+          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0);
+
           if (eg[j].elem_index >= 0)
           {
             index_type q = 0;
             for (index_type k=0; k<eg[j].num_derivs; k++)
             {
               grad = T(0);
-              for (size_t p=0;p<eg[j].node_index.size();p++) 
+              for (size_t p=0;p<eg[j].node_index.size();p++)
                { grad += CastFData<T>(fdata_[eg[j].node_index[p]]*eg[j].weights[q]); q++; }
-              for (size_t p=0;p<eg[j].edge_index.size();p++) 
+              for (size_t p=0;p<eg[j].edge_index.size();p++)
                { grad += CastFData<T>(fdata_[eg[j].edge_index[p]]*eg[j].weights[q]); q++; }
 
               vals[j][0] += CastFData<T>(grad*eg[j].inverse_jacobian[k]);
@@ -588,7 +589,7 @@ public:
           }
           else
           {
-            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval; 
+            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval;
           }
 
         }
@@ -597,10 +598,10 @@ public:
       case 3:
       {
         for (size_t j=0; j<eg.size(); j++)
-        {      
+        {
           vals[j].resize(3);
-          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0); 
-          
+          vals[j][0] = T(0); vals[j][1] = T(0); vals[j][2] = T(0);
+
           if (eg[j].elem_index >= 0)
           {
             index_type q = 0;
@@ -611,27 +612,27 @@ public:
               for (size_t p=0;p<eg[j].node_index.size();p++)
               {
                 grad += CastFData<T>(fdata_[eg[j].node_index[p]]*eg[j].weights[q]); q++;
-                for (index_type r=1;r<eg[j].num_hderivs;r++) 
+                for (index_type r=1;r<eg[j].num_hderivs;r++)
                   { grad += CastFData<T>(hfdata_[eg[j].node_index[p]][r]*eg[j].weights[q]); q++; }
               }
-            
+
               vals[j][0] += CastFData<T>(grad*eg[j].inverse_jacobian[k]);
               vals[j][1] += CastFData<T>(grad*eg[j].inverse_jacobian[k+3]);
               vals[j][2] += CastFData<T>(grad*eg[j].inverse_jacobian[k+6]);
-            }  
+            }
           }
           else
           {
-            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval; 
+            vals[j][0] = defval; vals[j][1] = defval; vals[j][2] = defval;
           }
 
         }
-        return;    
+        return;
       }
     }
-    ASSERTFAIL("Gradient encountered an unknown basis_order");      
+    ASSERTFAIL("Gradient encountered an unknown basis_order");
   }
-  
+
   template<class T>
   inline void gradientT(StackVector<T,3>& val, VMesh::ElemGradient& eg, T defval) const
   {
@@ -642,26 +643,26 @@ public:
       case 0:
         val.resize(3);
         if (eg.elem_index >= 0)
-        {        
-          val[0] = T(0); val[1] = T(0); val[2] = T(0); 
+        {
+          val[0] = T(0); val[1] = T(0); val[2] = T(0);
         }
         else
         {
-          val[0] = defval; val[1] = defval; val[2] = defval;         
+          val[0] = defval; val[1] = defval; val[2] = defval;
         }
 
         return;
       case 1:
       {
         val.resize(3);
-        val[0] = T(0); val[1] = T(0); val[2] = T(0); 
+        val[0] = T(0); val[1] = T(0); val[2] = T(0);
 
         if (eg.elem_index >= 0)
         {
           for (index_type k=0, q = 0; k<eg.num_derivs; k++)
           {
             grad = T(0);
-            for (size_t p=0;p<eg.node_index.size();p++) 
+            for (size_t p=0;p<eg.node_index.size();p++)
               { grad += CastFData<T>(fdata_[eg.node_index[p]]*eg.weights[q]); q++; }
 
             val[0] += CastFData<T>(grad*eg.inverse_jacobian[k]);
@@ -671,24 +672,24 @@ public:
         }
         else
         {
-          val[0] = defval; val[1] = defval; val[2] = defval;         
+          val[0] = defval; val[1] = defval; val[2] = defval;
         }
-        return;   
+        return;
       }
       case 2:
       {
         val.resize(3);
-        val[0] = T(0); val[1] = T(0); val[2] = T(0); 
-        
+        val[0] = T(0); val[1] = T(0); val[2] = T(0);
+
         if (eg.elem_index >= 0)
         {
           index_type q = 0;
           for (index_type k=0; k<eg.num_derivs; k++)
           {
             grad = T(0);
-            for (size_t p=0;p<eg.node_index.size();p++) 
+            for (size_t p=0;p<eg.node_index.size();p++)
              { grad += CastFData<T>(fdata_[eg.node_index[p]]*eg.weights[q]); q++; }
-            for (size_t p=0;p<eg.edge_index.size();p++) 
+            for (size_t p=0;p<eg.edge_index.size();p++)
              { grad += CastFData<T>(fdata_[eg.edge_index[p]]*eg.weights[q]); q++; }
 
             val[0] += CastFData<T>(grad*eg.inverse_jacobian[k]);
@@ -698,7 +699,7 @@ public:
         }
         else
         {
-          val[0] = defval; val[1] = defval; val[2] = defval;         
+          val[0] = defval; val[1] = defval; val[2] = defval;
         }
 
         return;
@@ -706,8 +707,8 @@ public:
       case 3:
       {
         val.resize(3);
-        val[0] = T(0); val[1] = T(0); val[2] = T(0); 
-        
+        val[0] = T(0); val[1] = T(0); val[2] = T(0);
+
         if (eg.elem_index >= 0)
         {
           index_type q = 0;
@@ -718,26 +719,26 @@ public:
             for (size_t p=0;p<eg.node_index.size();p++)
             {
               grad += CastFData<T>(fdata_[eg.node_index[p]]*eg.weights[q]); q++;
-              for (index_type r=1;r<eg.num_hderivs;r++) 
+              for (index_type r=1;r<eg.num_hderivs;r++)
                 { grad += CastFData<T>(hfdata_[eg.node_index[p]][r]*eg.weights[q]); q++; }
             }
-          
+
             val[0] += CastFData<T>(grad*eg.inverse_jacobian[k]);
             val[1] += CastFData<T>(grad*eg.inverse_jacobian[k+3]);
             val[2] += CastFData<T>(grad*eg.inverse_jacobian[k+6]);
-          }  
+          }
         }
         else
         {
-          val[0] = defval; val[1] = defval; val[2] = defval;         
+          val[0] = defval; val[1] = defval; val[2] = defval;
         }
-        
-        return;    
+
+        return;
       }
     }
-    ASSERTFAIL("Gradient encountered an unknown basis_order");  
+    ASSERTFAIL("Gradient encountered an unknown basis_order");
   }
-              
+
   virtual VMesh::size_type size() { return (VMesh::size_type(fdata_.size())); }
 
 protected:
@@ -795,22 +796,22 @@ public:
   virtual ~VFDataScalarT() {}
 
   virtual bool min(double& val, VMesh::index_type& idx) const
-  { 
+  {
     typename FDATA::value_type tval(0);
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
-    if (sz > 0) 
-      tval = this->fdata_[0]; 
-    else 
+    if (sz > 0)
+      tval = this->fdata_[0];
+    else
       return (false);
 
     LessThan<typename FDATA::value_type> less;
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       if (less(this->fdata_[p], tval))
-      { 
-        tval = this->fdata_[p]; 
-        idx = VMesh::index_type(p); 
+      {
+        tval = this->fdata_[p];
+        idx = VMesh::index_type(p);
       }
     }
     val = CastFData<double>(tval);
@@ -818,7 +819,7 @@ public:
   }
 
   virtual bool max(double& val, VMesh::index_type& idx) const
-  { 
+  {
     typename FDATA::value_type tval(0);
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
@@ -828,7 +829,7 @@ public:
     {
       if (greater(this->fdata_[p], tval))
       {
-        tval = this->fdata_[p]; 
+        tval = this->fdata_[p];
         idx = VMesh::index_type(p);
       }
     }
@@ -838,7 +839,7 @@ public:
 
   virtual bool minmax(double& min, VMesh::index_type& idxmin,
                       double& max, VMesh::index_type& idxmax) const
-  { 
+  {
     typename FDATA::value_type tval(0);
     typename FDATA::value_type tval2(0);
     idxmin = 0;
@@ -847,7 +848,7 @@ public:
     if (sz > 0) { tval = this->fdata_[0]; tval2 = tval; } else return (false);
     LessThan<typename FDATA::value_type> less;
     GreaterThan<typename FDATA::value_type> greater;
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       if (less(this->fdata_[p], tval)) { tval = this->fdata_[p]; idxmin = VMesh::index_type(p); }
       if (greater(this->fdata_[p], tval2)) { tval2 = this->fdata_[p]; idxmax = VMesh::index_type(p); }
@@ -870,48 +871,48 @@ public:
   virtual ~VFDataVectorT() {}
 
   virtual bool min(double& val, VMesh::index_type& idx) const
-  { 
+  {
     double tval = 0;
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0].length();
-    
-    for (size_type p=1; p<sz; p++) 
+
+    for (size_type p=1; p<sz; p++)
     {
       double len = this->fdata_[p].length();
       if (len < tval) { tval = len; idx = VMesh::index_type(p); }
     }
-    
+
     val = CastFData<double>(tval);
     return (true);
   }
 
   virtual bool max(double& val, VMesh::index_type& idx) const
-  { 
+  {
     double tval = 0;
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0].length();
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       double len = this->fdata_[p].length();
       if (len > tval) { tval = len; idx = VMesh::index_type(p); }
     }
-    
+
     val = CastFData<double>(tval);
     return (true);
   }
 
   virtual bool minmax(double& min, VMesh::index_type& idxmin,
                       double& max, VMesh::index_type& idxmax) const
-  { 
+  {
     double tval = 0;
     double tval2 = 0;
     idxmin = 0;
     idxmax = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) { tval = this->fdata_[0].length(); tval2 = tval; }
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       if (this->fdata_[p].length() < tval) { tval = this->fdata_[p].length(); idxmin = VMesh::index_type(p); }
       if (this->fdata_[p].length() > tval2) { tval2 = this->fdata_[p].length(); idxmax = VMesh::index_type(p); }
@@ -930,52 +931,52 @@ public:
   VFDataTensorT(FDATA& fdata, EFDATA& efdata, HFDATA& hfdata) :
     VFDataT<FDATA,EFDATA,HFDATA>(fdata,efdata,hfdata)
   {}
-  
+
   // destructor
   virtual ~VFDataTensorT() {}
 
   virtual bool min(double& val, VMesh::index_type& idx) const
-  { 
+  {
     double tval = 0;
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0].norm();
-    
-    for (size_type p=1; p<sz; p++) 
+
+    for (size_type p=1; p<sz; p++)
     {
       double len = this->fdata_[p].norm();
       if (len < tval) { tval = len; idx = VMesh::index_type(p); }
     }
-    
+
     val = CastFData<double>(tval);
     return (true);
   }
 
   virtual bool max(double& val, VMesh::index_type& idx) const
-  { 
+  {
     double tval = 0;
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0].norm();
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       double len = this->fdata_[p].norm();
       if (len > tval) { tval = len; idx = VMesh::index_type(p); }
     }
-    
+
     val = CastFData<double>(tval);
     return (true);  }
 
   virtual bool minmax(double& min, VMesh::index_type& idxmin,
                       double& max, VMesh::index_type& idxmax) const
-  { 
+  {
     double tval = 0;
     double tval2 = 0;
     idxmin = 0;
     idxmax = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) { tval = this->fdata_[0].norm(); tval2 = tval; }
-    for (size_type p=1; p<sz; p++) 
+    for (size_type p=1; p<sz; p++)
     {
       if (this->fdata_[p].norm() < tval) { tval = this->fdata_[p].norm(); idxmin = VMesh::index_type(p); }
       if (this->fdata_[p].norm() > tval2) { tval2 = this->fdata_[p].norm(); idxmax = VMesh::index_type(p); }
@@ -1010,6 +1011,3 @@ VFDATAT_ACCESS_DEFINITION2(Core::Geometry::Tensor)
 
 
 }
-
-
-

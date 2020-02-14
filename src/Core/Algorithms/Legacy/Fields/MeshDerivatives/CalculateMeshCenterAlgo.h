@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
 #define ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
 
@@ -35,9 +36,9 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
-  
+
   ALGORITHM_PARAMETER_DECL(Method);
-  
+
   class SCISHARE CalculateMeshCenterAlgo : public AlgorithmBase
   {
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Legacy/Color/ColorMap.cc 
+
+/// @todo Documentation Core/Datatypes/Legacy/Color/ColorMap.cc
 
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Persistent/PersistentSTL.h>
@@ -50,22 +50,22 @@ ColorMap::ColorMap() :
   SLIVR::ColorMap(),
   materials_()
 {
-  DEBUG_CONSTRUCTOR("ColorMap")   
+  DEBUG_CONSTRUCTOR("ColorMap")
 }
 
-ColorMap::ColorMap(const ColorMap& copy) : 
+ColorMap::ColorMap(const ColorMap& copy) :
   SLIVR::ColorMap(copy),
   PropertyManager(copy),
   materials_(copy.materials_)
 {
-  DEBUG_CONSTRUCTOR("ColorMap")   
+  DEBUG_CONSTRUCTOR("ColorMap")
 }
 
-ColorMap::ColorMap(const SLIVR::ColorMap& copy) : 
+ColorMap::ColorMap(const SLIVR::ColorMap& copy) :
   SLIVR::ColorMap(copy),
   materials_()
 {
-  DEBUG_CONSTRUCTOR("ColorMap")   
+  DEBUG_CONSTRUCTOR("ColorMap")
   build_materials_from_rgba();
 }
 
@@ -78,7 +78,7 @@ ColorMap::ColorMap(const std::vector<Color>& rgb,
   SLIVR::ColorMap(rgb, rgbT, ialpha, alphaT, res),
   materials_()
 {
-  DEBUG_CONSTRUCTOR("ColorMap")   
+  DEBUG_CONSTRUCTOR("ColorMap")
   build_materials_from_rgba();
 }
 
@@ -87,14 +87,14 @@ ColorMap::ColorMap(const float *rgba) :
   SLIVR::ColorMap(rgba),
   materials_()
 {
-  DEBUG_CONSTRUCTOR("ColorMap")   
+  DEBUG_CONSTRUCTOR("ColorMap")
   build_materials_from_rgba();
 }
 
 
 ColorMap::~ColorMap()
 {
-  DEBUG_DESTRUCTOR("ColorMap")   
+  DEBUG_DESTRUCTOR("ColorMap")
 }
 
 ColorMap* ColorMap::clone()
@@ -104,7 +104,7 @@ ColorMap* ColorMap::clone()
 
 
 void
-ColorMap::build_materials_from_rgba() 
+ColorMap::build_materials_from_rgba()
 {
   const int size = 256;
   materials_.resize(size);
@@ -152,7 +152,7 @@ ColorMap::io(Piostream& stream)
     Pio(stream,rawRampAlphaT_);
     Pio(stream,rawRampColor_);
     Pio(stream,rawRampColorT_);
-      
+
     if ( stream.reading() )
     {
       build_rgba_from_ramp();
@@ -179,5 +179,3 @@ ColorMap::lookup2(double nvalue) const
 }
 
 } // End namespace SCIRun
-
-

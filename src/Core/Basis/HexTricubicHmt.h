@@ -1,33 +1,33 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///    @file    HexTricubicHmt.h
-///    @author  Martin Cole, Frank B. Sachse
-///    @date    Dec 3 2004
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole, Frank B. Sachse
+   Date:            December 3 2004
+*/
+
 
 #ifndef CORE_BASIS_HEXTRICUBICHMT_H
 #define CORE_BASIS_HEXTRICUBICHMT_H 1
@@ -48,13 +48,13 @@ public:
 };
 
 
-/// Class for handling of element of type hexahedron with 
+/// Class for handling of element of type hexahedron with
 /// tricubic hermitian interpolation
 template <class T>
-class HexTricubicHmt : public BasisAddDerivatives<T>, 
-                       public HexApprox, 
-		       public HexGaussian3<double>, 
-           public HexSamplingSchemes, 
+class HexTricubicHmt : public BasisAddDerivatives<T>,
+                       public HexApprox,
+		       public HexGaussian3<double>,
+           public HexSamplingSchemes,
 		       public HexTricubicHmtUnitElement,
            public HexElementWeights
 {
@@ -63,7 +63,7 @@ public:
 
   HexTricubicHmt() {}
   virtual ~HexTricubicHmt() {}
-  
+
   static int polynomial_order() { return 3; }
 
   template<class VECTOR>
@@ -73,13 +73,13 @@ public:
   template<class VECTOR>
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_cubic_derivate_weights(coords,w); }
-    
-  /// get value at parametric coordinate 
+
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
     double w[64];
-    get_cubic_weights(coords, w); 
+    get_cubic_weights(coords, w);
 
     return (T)(w[0]  * cd.node0() +
 	       w[1]  * this->derivs_[cd.node0_index()][0] +
@@ -94,7 +94,7 @@ public:
 	       w[10] * this->derivs_[cd.node1_index()][1] +
 	       w[11] * this->derivs_[cd.node1_index()][2] +
 	       w[12] * this->derivs_[cd.node1_index()][3] +
-	       w[13] * this->derivs_[cd.node1_index()][4] +  
+	       w[13] * this->derivs_[cd.node1_index()][4] +
 	       w[14] * this->derivs_[cd.node1_index()][5] +
 	       w[15] * this->derivs_[cd.node1_index()][6] +
 	       w[16] * cd.node2()		    +
@@ -146,14 +146,14 @@ public:
 	       w[62] * this->derivs_[cd.node7_index()][5] +
 	       w[63] * this->derivs_[cd.node7_index()][6]);
   }
-  
+
   /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd,
 		VECTOR2 &derivs) const
   {
     double w[192];
-    get_cubic_derivate_weights(coords, w); 
+    get_cubic_derivate_weights(coords, w);
 
     derivs.resize(3);
 
@@ -171,7 +171,7 @@ public:
 	       w[10] * this->derivs_[cd.node1_index()][1] +
 	       w[11] * this->derivs_[cd.node1_index()][2] +
 	       w[12] * this->derivs_[cd.node1_index()][3] +
-	       w[13] * this->derivs_[cd.node1_index()][4] +  
+	       w[13] * this->derivs_[cd.node1_index()][4] +
 	       w[14] * this->derivs_[cd.node1_index()][5] +
 	       w[15] * this->derivs_[cd.node1_index()][6] +
 	       w[16] * cd.node2()		    +
@@ -223,7 +223,7 @@ public:
 	       w[62] * this->derivs_[cd.node7_index()][5] +
 	       w[63] * this->derivs_[cd.node7_index()][6]);
 
-      
+
     derivs[1]=
       static_cast<typename VECTOR2::value_type>(
          w[64] * cd.node0() +
@@ -239,7 +239,7 @@ public:
 	       w[74] * this->derivs_[cd.node1_index()][1] +
 	       w[75] * this->derivs_[cd.node1_index()][2] +
 	       w[76] * this->derivs_[cd.node1_index()][3] +
-	       w[77] * this->derivs_[cd.node1_index()][4] +  
+	       w[77] * this->derivs_[cd.node1_index()][4] +
 	       w[78] * this->derivs_[cd.node1_index()][5] +
 	       w[79] * this->derivs_[cd.node1_index()][6] +
 	       w[80] * cd.node2()		    +
@@ -290,9 +290,9 @@ public:
 	       w[125] * this->derivs_[cd.node7_index()][4] +
 	       w[126] * this->derivs_[cd.node7_index()][5] +
 	       w[127] * this->derivs_[cd.node7_index()][6]);
-         
-               
-                           
+
+
+
     derivs[2]=
       static_cast<typename VECTOR2::value_type>(
          w[128] * cd.node0() +
@@ -308,7 +308,7 @@ public:
 	       w[138] * this->derivs_[cd.node1_index()][1] +
 	       w[139] * this->derivs_[cd.node1_index()][2] +
 	       w[140] * this->derivs_[cd.node1_index()][3] +
-	       w[141] * this->derivs_[cd.node1_index()][4] +  
+	       w[141] * this->derivs_[cd.node1_index()][4] +
 	       w[142] * this->derivs_[cd.node1_index()][5] +
 	       w[143] * this->derivs_[cd.node1_index()][6] +
 	       w[144] * cd.node2()		    +
@@ -358,37 +358,37 @@ public:
 	       w[188] * this->derivs_[cd.node7_index()][3] +
 	       w[189] * this->derivs_[cd.node7_index()][4] +
 	       w[190] * this->derivs_[cd.node7_index()][5] +
-	       w[191] * this->derivs_[cd.node7_index()][6]);     
-  
+	       w[191] * this->derivs_[cd.node7_index()][6]);
+
   }
-  
+
 
   /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
-  bool get_coords(VECTOR &coords, const T& value, 
-		  const ElemData &cd) const  
+  bool get_coords(VECTOR &coords, const T& value,
+		  const ElemData &cd) const
   {
     HexLocate< HexTricubicHmt<T> > CL;
     return CL.get_coords(this, coords, value, cd);
   }
-    
+
   /// get arc length for edge
   template <class ElemData>
-  double get_arc_length(const unsigned edge, const ElemData &cd) const  
+  double get_arc_length(const unsigned edge, const ElemData &cd) const
   {
     return get_arc3d_length<CrvGaussian2<double> >(this, edge, cd);
   }
 
   /// get area
   template <class ElemData>
-    double get_area(const unsigned face, const ElemData &cd) const  
+    double get_area(const unsigned face, const ElemData &cd) const
   {
     return get_area3<QuadGaussian3<double> >(this, face, cd);
   }
-  
+
   /// get volume
   template <class ElemData>
-    double get_volume(const ElemData & cd) const  
+    double get_volume(const ElemData & cd) const
   {
     return get_volume3(this, cd);
   }
@@ -434,9 +434,9 @@ const SCIRun::TypeDescription*
     const SCIRun::TypeDescription *sub = get_type_description((T*)0);
     SCIRun::TypeDescription::td_vec *subs = new SCIRun::TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new SCIRun::TypeDescription("HexTricubicHmt", subs, 
+    td = new SCIRun::TypeDescription("HexTricubicHmt", subs,
       std::string(__FILE__),
-      "SCIRun", 
+      "SCIRun",
       SCIRun::TypeDescription::BASIS_E);
   }
   return td;

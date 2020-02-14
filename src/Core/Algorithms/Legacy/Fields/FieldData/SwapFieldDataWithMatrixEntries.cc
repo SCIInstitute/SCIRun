@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Fields/FieldData/ConvertMappingMatrixToFieldData.h>
 #include <Core/Datatypes/Field.h>
@@ -64,16 +64,16 @@ SwapFieldDataWithMatrixEntries::execute()
 {
   FieldHandle field_input_handle;
   MatrixHandle matrix_input_handle;
-  
+
   if(!(get_input_handle("Input Field",field_input_handle,true))) return;
 
   get_input_handle("Input Matrix",matrix_input_handle,false);
-  
+
   bool need_field  = oport_connected("Output Field");
   bool need_matrix = oport_connected("Output Matrix");
-  
+
   if (inputs_changed_ ||
-      gui_keepscalartype_.changed() || 
+      gui_keepscalartype_.changed() ||
       (need_field && !oport_cached("Output Field")) ||
       (need_matrix && !oport_cached("Output Matrix")))
   {
@@ -84,7 +84,7 @@ SwapFieldDataWithMatrixEntries::execute()
     {
       MatrixHandle matrix_output_handle;
       if(!(get_algo_.run(field_input_handle,matrix_output_handle))) return;
-      send_output_handle("Output Matrix", matrix_output_handle);  
+      send_output_handle("Output Matrix", matrix_output_handle);
     }
 
     // Set the data.
@@ -92,22 +92,22 @@ SwapFieldDataWithMatrixEntries::execute()
     {
       FieldHandle field_output_handle;
 
-      if (matrix_input_handle.get_rep()) 
+      if (matrix_input_handle.get_rep())
       {
-        if (gui_keepscalartype_.get()) 
-          set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());    
-      
-      
+        if (gui_keepscalartype_.get())
+          set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());
+
+
         if(!(set_algo_.run(field_input_handle,matrix_input_handle,
 			       field_output_handle))) return;
 
         field_output_handle->copy_properties(field_input_handle.get_rep());
       }
-      else 
+      else
       {
         warning("No input matrix passing the field through");
         field_output_handle = field_input_handle;
-      }	
+      }
 
       send_output_handle("Output Field", field_output_handle);
     }

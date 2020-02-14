@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 
@@ -53,8 +53,8 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
   return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
 }
 
-ExecutionQueueManager::ExecutionQueueManager() : 
-  contexts_(10), 
+ExecutionQueueManager::ExecutionQueueManager() :
+  contexts_(10),
   executionMutex_("executionQueue"),
   somethingToExecute_("executionQueue"),
   contextCount_(0)
@@ -62,9 +62,9 @@ ExecutionQueueManager::ExecutionQueueManager() :
 }
 
 void ExecutionQueueManager::setExecutionStrategy(ExecutionStrategyHandle exec)
-{ 
+{
   Guard g(executionMutex_.get());
-  currentExecutor_ = exec; 
+  currentExecutor_ = exec;
 }
 
 void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,9 +27,9 @@
 
 
 ///
-///@file FileUtils.h 
-/// 
-///@author 
+///@file FileUtils.h
+///
+///@author
 ///      Chris Moulding
 ///      University of Utah
 ///@date Sept 2000
@@ -51,7 +50,7 @@ namespace SCIRun {
 
 ////////////////////////////////////
 /// InsertStringInFile()
-/// Inserts "insert" in front of all occurrances of 
+/// Inserts "insert" in front of all occurrances of
 /// "match" within the file named "filename"
 
 SCISHARE void InsertStringInFile(char* filename, const char* match, const char* insert);
@@ -77,7 +76,7 @@ SCISHARE std::vector<std::string> GetFilenamesInSequence(const std::string &dir,
 
 SCISHARE std::pair<std::string, std::string> split_filename(std::string fname);
 
-SCISHARE std::string findFileInPath(const std::string &filename, 
+SCISHARE std::string findFileInPath(const std::string &filename,
                                     const std::string &path);
 
 SCISHARE bool validFile( const std::string& filename );
@@ -136,4 +135,3 @@ SCISHARE void rewinddir(DIR *);
 #endif
 
 #endif
-

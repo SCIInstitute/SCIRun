@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @author
 ///   Michael Callahan,
 ///   Department of Computer Science,
@@ -36,7 +36,7 @@
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Containers/Handle.h>
- 
+
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 
@@ -47,13 +47,13 @@
 namespace SCIRun {
 
 /// @class MergeTriSurfsAlgo
-/// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap. 
+/// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap.
 
 class MergeTriSurfsAlgo
 {
 public:
 
-  /// virtual interface. 
+  /// virtual interface.
   void execute(ProgressReporter *reporter,
                FieldHandle tris,
                std::vector<index_type> &new_nodes,
@@ -80,7 +80,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   VMesh::Elem::array_type candidates;
   VMesh::size_type num_elems = tmesh->num_elems();
   std::vector<Point> newpoints;
- 
+
   double epsilon = tmesh->get_epsilon();
   int cnt = 0;
   for(VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
@@ -96,7 +96,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
       tmesh->get_point(apoints[i], anodes[i]);
       tribox.extend(apoints[i]);
     }
-    
+
     tribox.extend(epsilon);
     tmesh->locate(candidates, tribox);
 
@@ -117,11 +117,11 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
                            newpoints);
       }
     }
-  }      
+  }
 
   VMesh::Node::index_type newnode;
   VMesh::Elem::array_type newelems;
-  
+
   cnt = 0;
   for (size_t i = 0; i < newpoints.size(); i++)
   {
@@ -180,15 +180,15 @@ MergeTriSurfs::execute()
 
   /// @todo: Verify that it's a trisurf that we're testing.
   update_state(Executing);
-    
+
   MergeTriSurfsAlgo algo;
   ifieldhandle.detach();
   ifieldhandle->mesh_detach();
-  
+
   std::vector<index_type> new_nodes;
   std::vector<index_type> new_elems;
   algo.execute(this, ifieldhandle, new_nodes, new_elems);
-  
+
   send_output_handle("Output Field", ifieldhandle, true);
 }
 

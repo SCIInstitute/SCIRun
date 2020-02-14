@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_IMAGEMESH_H
 #define CORE_DATATYPES_IMAGEMESH_H 1
@@ -917,9 +917,9 @@ public:
     const double nii = static_cast<double>(ni_-2);
     const double njj = static_cast<double>(nj_-2);
 
-    if (ii < 0.0) ii = 0.0; 
+    if (ii < 0.0) ii = 0.0;
     if (ii > nii) ii = nii;
-    if (jj < 0.0) jj = 0.0; 
+    if (jj < 0.0) jj = 0.0;
     if (jj > njj) jj = njj;
 
     const double fi = floor(ii);

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @file   CreateParameterBundle.cc
 /// @author Jeroen G Stinstra
 /// @date   17 SEP 2005
- 
-#include <Core/Algorithms/Regression/RegressionAlgo.h> 
+
+#include <Core/Algorithms/Regression/RegressionAlgo.h>
 
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/String.h>
@@ -65,7 +65,7 @@ private:
   GuiString data_;
   GuiInt    fieldnamecount_;
   GuiString update_all_data_;
-  
+
   BundleHandle oldbundle_;
 };
 
@@ -86,25 +86,25 @@ void CreateParameterBundle::execute()
   // mouse to another part of the GUI and activate some other element. If not
   // the data is not updated. Here we force TCL to update all the data.
   // It's ugly but it solves some usability problems
-  
+
   update_state(Executing);
-  
+
   TCLInterface::lock();
   TCLInterface::eval(update_all_data_.get());
   TCLInterface::unlock();
   get_ctx()->reset();
-  
+
   std::string data = data_.get();
-  
+
   // Split the data in pieces for each parameter
   std::vector<std::string> datalist = converttcllist(data);
 
   BundleHandle bundle = new Bundle();
 
   std::string parname, partype, pardata;
-   
+
   SCIRunAlgo::RegressionAlgo ralgo(this);
-   
+
   for (size_t p = 0; p < datalist.size(); p++)
   {
     // Cycle to through all parameters and add then to bundle.
@@ -114,21 +114,21 @@ void CreateParameterBundle::execute()
     parname = parameter[1];
     partype = parameter[2];
     pardata = parameter[3];
-    
+
     if (partype == "boolean")
     {
       MatrixHandle matrix = new DenseMatrix(1, 1);
       double *dataptr = matrix->get_data_pointer();
       dataptr[0] = 0.0;
       if (pardata == "true") dataptr[0] = 1.0;
-      
+
       if (oldbundle_.get_rep())
       if (oldbundle_->isMatrix(parname))
       {
         MatrixHandle oldmatrix = oldbundle_->getMatrix(parname);
         if (ralgo.CompareMatrices(matrix,oldmatrix)) matrix = oldmatrix;
-      }      
-      
+      }
+
       bundle->setMatrix(parname,matrix);
     }
 
@@ -144,17 +144,17 @@ void CreateParameterBundle::execute()
       {
         MatrixHandle oldmatrix = oldbundle_->getMatrix(parname);
         if (ralgo.CompareMatrices(matrix,oldmatrix)) matrix = oldmatrix;
-      }      
+      }
 
       bundle->setMatrix(parname,matrix);
     }
-    
+
     if (partype == "vector")
     {
       MatrixHandle matrix = new DenseMatrix(1, 3);
       std::vector<std::string> subdata = converttcllist(pardata);
       double *dataptr = matrix->get_data_pointer();
-      
+
       for (size_t r=0; r<3; r++ )
       {
         std::istringstream iss(subdata[r]);
@@ -166,11 +166,11 @@ void CreateParameterBundle::execute()
       {
         MatrixHandle oldmatrix = oldbundle_->getMatrix(parname);
         if (ralgo.CompareMatrices(matrix,oldmatrix)) matrix = oldmatrix;
-      }      
+      }
 
       bundle->setMatrix(parname,matrix);
     }
-    
+
     if (partype == "tensor")
     {
       MatrixHandle matrix = new DenseMatrix(1, 9);
@@ -199,18 +199,18 @@ void CreateParameterBundle::execute()
       {
         MatrixHandle oldmatrix = oldbundle_->getMatrix(parname);
         if (ralgo.CompareMatrices(matrix,oldmatrix)) matrix = oldmatrix;
-      }      
+      }
 
-      
+
       bundle->setMatrix(parname,matrix);
     }
-    
+
     if (partype == "array")
     {
       std::vector<std::string> subdata = converttcllist(pardata);
       MatrixHandle matrix = new DenseMatrix(1, subdata.size());
       double *dataptr = matrix->get_data_pointer();
-      
+
       for (size_t r=0; r<subdata.size(); r++ )
       {
         std::istringstream iss(subdata[r]);
@@ -222,11 +222,11 @@ void CreateParameterBundle::execute()
       {
         MatrixHandle oldmatrix = oldbundle_->getMatrix(parname);
         if (ralgo.CompareMatrices(matrix,oldmatrix)) matrix = oldmatrix;
-      }      
+      }
 
       bundle->setMatrix(parname,matrix);
     }
-    
+
     if (partype == "string")
     {
       StringHandle str = new String(pardata);
@@ -236,11 +236,11 @@ void CreateParameterBundle::execute()
       {
         StringHandle oldstring = oldbundle_->getString(parname);
         if (ralgo.CompareStrings(str,oldstring)) str = oldstring;
-      }      
+      }
 
       bundle->setString(parname,str);
-    }    
-    
+    }
+
     if (partype == "filename")
     {
       StringHandle str = new String(pardata);
@@ -250,11 +250,11 @@ void CreateParameterBundle::execute()
       {
         StringHandle oldstring = oldbundle_->getString(parname);
         if (ralgo.CompareStrings(str,oldstring)) str = oldstring;
-      }      
+      }
 
       bundle->setString(parname,str);
-    }    
-  } 
+    }
+  }
 
   oldbundle_ = bundle;
   send_output_handle("ParameterList", bundle);
@@ -271,7 +271,7 @@ CreateParameterBundle::converttcllist(std::string str)
   // Yeah, it is TCL dependent:
   // TCL::llength determines the length of the list
   TCLInterface::lock();
-  TCLInterface::eval("llength { "+str + " }",result);	
+  TCLInterface::eval("llength { "+str + " }",result);
   std::istringstream iss(result);
   iss >> lengthlist;
   TCLInterface::unlock();
@@ -293,5 +293,3 @@ CreateParameterBundle::converttcllist(std::string str)
 }
 
 } // End namespace SCIRun
-
-

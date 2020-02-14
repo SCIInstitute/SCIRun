@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:              Allen Sanderson
+   Date:   July 24 2003
 */
 
-//    File   : PrismMC.cc
-//    Author : Allen Sanderson
-//    Date   : Thu July 24 21:33:04 2003
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/PrismMC.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
@@ -76,13 +75,13 @@ void PrismMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpar
   }
   geomHandle_ = triangles_;
  #endif
- 
+
   trisurf_ = 0;
   if (build_field_)
   {
     FieldInformation fi("TriSurfMesh",basis_order_,"double");
     trisurf_handle_ = CreateField(fi);
-    trisurf_ = trisurf_handle_->vmesh(); 
+    trisurf_ = trisurf_handle_->vmesh();
   }
 }
 
@@ -94,16 +93,16 @@ void PrismMC::extract( VMesh::Elem::index_type cell, double v )
     extract_n(cell, v);
 }
 
-void PrismMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face) 
+void PrismMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     edge_map_[np] = face;
@@ -115,12 +114,12 @@ void PrismMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_
     // twice.
   }
 }
-VMesh::Node::index_type PrismMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
+VMesh::Node::index_type PrismMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx)
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
   if (i != -1) surf_node_idx = VMesh::Node::index_type(i);
-  else 
+  else
   {
     Point p;
     mesh_->get_point(p, tet_node_idx);
@@ -155,7 +154,7 @@ void PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
       if (build_geom_)
       {
         triangles_->add(p[0], p[1], p[2]);
-            
+
         if( face_nodes.size() == 4 )
           triangles_->add(p[0], p[2], p[3]);
       }
@@ -167,19 +166,19 @@ void PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
           vertices[j] = find_or_add_nodepoint(face_nodes[j]);
         }
 
-        nodes[0] = vertices[0]; 
-        nodes[1] = vertices[1]; 
-        nodes[2] = vertices[2]; 
+        nodes[0] = vertices[0];
+        nodes[1] = vertices[1];
+        nodes[2] = vertices[2];
 
         VMesh::Elem::index_type tface = trisurf_->add_elem(nodes);
-        
+
         const double d = (selfvalue - iso) / (selfvalue - nbrvalue);
         find_or_add_parent(cell, nbr_cell, d, tface);
 
         if( face_nodes.size() == 4 )
         {
-          nodes[1] = vertices[2]; 
-          nodes[2] = vertices[3]; 
+          nodes[1] = vertices[2];
+          nodes[2] = vertices[3];
           tface = trisurf_->add_elem(nodes);
           const double d = (selfvalue - iso) / (selfvalue - nbrvalue);
 
@@ -223,14 +222,14 @@ void PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
 
   TRIANGLE_CASES *tcase=&triCases[code];
   int *vertex = tcase->edges;
-  
+
   Point q[12];
   VMesh::Node::index_type surf_node[12];
 
   // interpolate and project vertices
   int v = 0;
   std::vector<bool> visited(12, false);
-  while (vertex[v] != -1) 
+  while (vertex[v] != -1)
   {
     index_type i = vertex[v++];
     if (visited[i]) continue;
@@ -244,18 +243,18 @@ void PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
     {
       surf_node[i] = find_or_add_edgepoint(node[lu[v1]], node[lu[v2]], d, q[i]);
     }
-  }    
-  
+  }
+
   v = 0;
-  while(vertex[v] != -1) 
+  while(vertex[v] != -1)
   {
     index_type v0 = vertex[v++];
     index_type v1 = vertex[v++];
     index_type v2 = vertex[v++];
 
     // Degenerate triangle can be built since points were duplicated
-    // above in order to make a hexvol for MC. 
-    if( v0 != v1 && v0 != v2 && v1 != v2 ) 
+    // above in order to make a hexvol for MC.
+    if( v0 != v1 && v0 != v2 && v1 != v2 )
     {
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
@@ -286,21 +285,21 @@ FieldHandle PrismMC::get_field(double value)
   trisurf_handle_->vfield()->resize_values();
   trisurf_handle_->vfield()->set_all_values(value);
 
-  return (trisurf_handle_);  
+  return (trisurf_handle_);
 }
 
-VMesh::Node::index_type PrismMC::find_or_add_edgepoint(index_type u0, 
+VMesh::Node::index_type PrismMC::find_or_add_edgepoint(index_type u0,
                                index_type u1,
-                               double d0, const Point &p) 
+                               double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
@@ -312,4 +311,3 @@ VMesh::Node::index_type PrismMC::find_or_add_edgepoint(index_type u0,
     return ((*loc).second);
   }
 }
-

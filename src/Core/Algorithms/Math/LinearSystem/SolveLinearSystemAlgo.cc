@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -1124,7 +1124,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     temp->setZero();
     x0 = temp;
   }
-  
+
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");
@@ -1212,7 +1212,7 @@ AlgorithmOutput SolveLinearSystemAlgo::run(const AlgorithmInput& input) const
   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
-  
+
   AlgorithmOutput output;
   output[Variables::Solution] = boost::make_shared<DenseMatrix>(solution->col(0));
   return output;

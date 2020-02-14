@@ -1,12 +1,11 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Visualization/MeshConstruction.h
 
 #ifndef MODULES_VISUALIZATION_MESH_CONSTRUCTION_H
@@ -71,7 +72,7 @@ namespace MeshConstruction
       }
       else
       {
-        BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() 
+        BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch()
                               << SCIRun::Core::ErrorMessage("Only Quads and Triangles are supported."));
       }
     }
@@ -105,7 +106,7 @@ namespace MeshConstruction
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass pass =
         GeometryObject::SpireSubPass("facesPass", primaryVBOName,
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
@@ -137,4 +138,3 @@ namespace MeshConstruction
 }}}
 
 #endif
-

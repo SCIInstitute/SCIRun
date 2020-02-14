@@ -1,34 +1,34 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
+/*
+   For more information, please see: http://software.sci.utah.edu
 
-#ifndef CORE_PARSER_PARSER_H 
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifndef CORE_PARSER_PARSER_H
 #define CORE_PARSER_PARSER_H 1
- 
+
 #include <Core/Utils/StringUtil.h>
 #include <Core/Thread/Mutex.h>
 #include <map>
@@ -106,7 +106,7 @@ enum {
 class SCISHARE ParserVariable {
   public:
     // In order to use handles, we need to add reference counting
-    int ref_cnt;  
+    int ref_cnt;
 
   public:
     ParserVariable(std::string name, std::string type) :
@@ -132,10 +132,10 @@ class SCISHARE ParserVariable {
     std::string  get_type()  { return (type_); }
     //Set the type of the variable
     void set_type(std::string type) { type_ = type; }
-    
+
     // Retrieve the flags of the variable
     int get_flags() { return (flags_); }
-    
+
     // Get the name of the variable
     std::string get_name() { return (name_); }
 
@@ -145,65 +145,65 @@ class SCISHARE ParserVariable {
 
     // The type of the variable
     std::string type_;
-    
+
     // Flags that guide the parser
-    int flags_; 
+    int flags_;
 };
 
 typedef boost::shared_ptr<class ParserFunction> ParserFunctionHandle;
 
-class SCISHARE ParserNode 
+class SCISHARE ParserNode
 {
   public:
     ParserNode(int kind, const std::string& value) :
       kind_(kind),
       type_("U"),
       value_(value)
-    {}  
+    {}
 
     ParserNode(int kind, const std::string& value, const std::string& type) :
       kind_(kind),
       type_(type),
       value_(value)
-    {}  
+    {}
 
     // Retrieve the kind of the node (this is function, constant, string, etc)
     int get_kind()    { return (kind_); }
-    
+
     // Retrieve the type of the node (this is the return type of the variable)
     std::string get_type()    { return (type_); }
-        
+
     // Retrieve the value of the value
     std::string get_value()   { return (value_); }
-    
+
     // Set the value of the node
     void set_value(const std::string& value) { value_ = value; }
-    
+
     // Get a pointer to one of the arguments of a function
     ParserNodeHandle get_arg(size_t j)  { return args_[j]; }
-    
+
     // Set the argument to a sub tree
     void set_arg(size_t j, ParserNodeHandle handle)
     {
       if (j >= args_.size()) args_.resize(j+1);
       args_[j] = handle;
     }
-    
+
     // Set the argument to a sub tree (using pointers)
     void set_arg(size_t j, ParserNode* ptr)
     {
       if (j >= args_.size()) args_.resize(j+1);
       args_[j].reset(ptr);
     }
-    
+
     // Set a copy to the function pointer, this is used later by the interpreter
     void set_function(ParserFunctionHandle func) { function_ = func; }
     // Retrieve the function pointer
     ParserFunctionHandle get_function()          { return (function_); }
-    
+
     // Set the type of the node (this is used by the validator)
     void set_type(const std::string& type) { type_ = type; }
-    
+
     // Retrieve the number of arguments a function has
     size_t num_args() { return (args_.size()); }
 
@@ -222,7 +222,7 @@ class SCISHARE ParserNode
     // The name of the variable or the function, the constant scalar value,
     // or the contents of a parsed string
     std::string value_;
-    
+
     // Pieces for functions
     // Argument trees of the function arguments
     std::vector<ParserNodeHandle> args_;
@@ -234,7 +234,7 @@ class SCISHARE ParserNode
 class SCISHARE ParserTree {
   public:
     // In order to use handles, we need to add reference counting
-    int ref_cnt;  
+    int ref_cnt;
 
   public:
     // Constructor
@@ -257,7 +257,7 @@ class SCISHARE ParserTree {
     void set_type(const std::string& type) { type_ = type; }
 
     // Retrieve final output type
-    const std::string& get_type() { return (type_); } 
+    const std::string& get_type() { return (type_); }
 
     // For debugging
     void print() const;
@@ -265,7 +265,7 @@ class SCISHARE ParserTree {
   private:
     // The name of the variable that needs to be assigned
     std::string varname_;
-    
+
     // The tree of functions that need to be called to compute this variable
     ParserNodeHandle expression_;
 
@@ -280,19 +280,19 @@ class SCISHARE ParserProgram {
   public:
     // In order to use handles, we need to add reference counting
     int ref_cnt;
-    
+
   public:
     ParserProgram() : ref_cnt(0) {}
-    
-    // Add an expression to a program: this is a combination of the raw 
+
+    // Add an expression to a program: this is a combination of the raw
     // unparsed program code and the expression tree
-    void add_expression(const std::string& expression_string, 
-                        ParserTreeHandle expression_tree) 
-    { 
+    void add_expression(const std::string& expression_string,
+                        ParserTreeHandle expression_tree)
+    {
       std::pair<std::string,ParserTreeHandle> expression(expression_string,expression_tree);
-      expressions_.push_back(expression); 
+      expressions_.push_back(expression);
     }
-    
+
     // Retrieve an expression from a program
     // This gets one expression in unparsed and parsed form from the program
     void get_expression(int expression_num,
@@ -308,7 +308,7 @@ class SCISHARE ParserProgram {
     {
       expression_handle = expressions_[expression_num].second;
     }
-    
+
     // Retrieve the number of expressions in the program
     size_t num_expressions()  { return (expressions_.size()); }
 
@@ -343,7 +343,7 @@ class SCISHARE ParserProgram {
     void add_const_var(ParserScriptVariableHandle& handle);
     void add_single_var(ParserScriptVariableHandle& handle);
     void add_sequential_var(ParserScriptVariableHandle& handle);
-    
+
     void add_const_function(ParserScriptFunctionHandle& handle);
     void add_single_function(ParserScriptFunctionHandle& handle);
     void add_sequential_function(ParserScriptFunctionHandle& handle);
@@ -353,7 +353,7 @@ class SCISHARE ParserProgram {
     size_t num_const_variables();
     size_t num_single_variables();
     size_t num_sequential_variables();
-    
+
     bool get_const_variable(size_t j,ParserScriptVariableHandle& handle);
     bool get_single_variable(size_t j,ParserScriptVariableHandle& handle);
     bool get_sequential_variable(size_t j,ParserScriptVariableHandle& handle);
@@ -362,7 +362,7 @@ class SCISHARE ParserProgram {
     size_t num_const_functions();
     size_t num_single_functions();
     size_t num_sequential_functions();
-    
+
     bool get_const_function(size_t j,ParserScriptFunctionHandle& handle);
     bool get_single_function(size_t j,ParserScriptFunctionHandle& handle);
     bool get_sequential_function(size_t j,ParserScriptFunctionHandle& handle);
@@ -374,12 +374,12 @@ class SCISHARE ParserProgram {
   private:
     // Short cut to the parser function catalog
     ParserFunctionCatalogHandle catalog_;
-  
+
     // The list of expressions, we store both the raw expression as well as the
     // parsed version in order to effectively report back to user which expression
     // is faulty. As the parsed version is harder to read, the raw version is kept.
     std::vector<std::pair<std::string,ParserTreeHandle> > expressions_;
-    
+
     // List of variables that exist when the program starts. This contains the
     // list of variables the program can use, without them being defined in one
     // of the expressions
@@ -389,11 +389,11 @@ class SCISHARE ParserProgram {
     // by the rest of the program. These variables need to be defined at the
     // end of the program
     ParserVariableList output_variables_;
-    
+
     // The next series of variables represent the next stage of the parser
     // In this stage everything is a variable or a function, and we have two
     // lists of constants one for double constants and one for string constants
-    
+
     std::vector<ParserScriptVariableHandle> const_variables_;
     std::vector<ParserScriptVariableHandle> single_variables_;
     std::vector<ParserScriptVariableHandle> sequential_variables_;
@@ -416,7 +416,7 @@ enum {
 };
 
 
-class SCISHARE ParserFunction 
+class SCISHARE ParserFunction
 {
   public:
     ParserFunction(const std::string& function_id, const std::string& type) :
@@ -434,12 +434,12 @@ class SCISHARE ParserFunction
     // Retrieve the function ID string
     const std::string& get_function_id() const { return (function_id_); }
     // Retrieve the function return type
-    
+
     const std::string& get_return_type() const { return (function_type_); }
     // Retrieve the function flags
     int get_flags() const { return (function_flags_); }
 
-  private:    
+  private:
     // The ID of the function, which is the name plus arguments in one string
     std::string function_id_;
 
@@ -460,7 +460,7 @@ typedef std::map<std::string,ParserFunctionHandle> ParserFunctionList;
 class SCISHARE ParserFunctionCatalog
 {
   public:
-    ParserFunctionCatalog(); 
+    ParserFunctionCatalog();
 
     // Add definitions of functions to the list
     // Various calls with different amounts of arguments
@@ -473,7 +473,7 @@ class SCISHARE ParserFunctionCatalog
     // For debugging
     void print() const;
   private:
-  
+
     // List of functions and their return type
     ParserFunctionList functions_;
     Core::Thread::Mutex lock_;
@@ -489,54 +489,54 @@ enum {
   SCRIPT_CONSTANT_SCALAR_E = 4,
   SCRIPT_CONSTANT_STRING_E = 8,
   SCRIPT_VARIABLE_E = 16
-};  
+};
 
-class ParserScriptFunction 
+class ParserScriptFunction
 {
   public:
     ParserScriptFunction(const std::string& name, ParserFunctionHandle function) :
       name_(name), flags_(0), function_(function) {}
-    
+
     // Get the name of the function
     const std::string& get_name() const { return (name_); }
-    
+
     // Get the number of input variables this function depends on
     size_t num_input_vars() const { return (input_variables_.size()); }
-    
+
     ParserScriptVariableHandle get_input_var(size_t j) const
-    { 
+    {
       if (j < input_variables_.size()) return (input_variables_[j]);
       return (ParserScriptVariableHandle(0));
     }
-    
-    void set_input_var(size_t j, ParserScriptVariableHandle& handle) 
-      { 
+
+    void set_input_var(size_t j, ParserScriptVariableHandle& handle)
+      {
         if (j >= input_variables_.size()) input_variables_.resize(j+1);
         input_variables_[j] = handle;
       }
 
     ParserScriptVariableHandle get_output_var() const { return (output_variable_); }
     void set_output_var(ParserScriptVariableHandle& handle) { output_variable_ = handle; }
-  
+
     ParserFunctionHandle get_function() const { return (function_); }
-  
+
     int get_flags() const             { return (flags_); }
     void set_flags(int flags)   { flags_ |= flags; }
     void clear_flags()          { flags_ = 0; }
-  
+
     // For debugging
     void print() const;
-  
-  private:  
+
+  private:
     // The name of the function
     std::string name_;
-    
+
     // Flags that describe whether this is a single or sequential call
     int flags_;
-    
+
     // Pointer to the function information block
     ParserFunctionHandle function_;
-    
+
     // Input variables in the function depends on
     std::vector<ParserScriptVariableHandle> input_variables_;
 
@@ -568,7 +568,7 @@ class ParserScriptVariable {
       scalar_value_(0.0),
       var_number_(0)
     {}
-    
+
     // Create scalar const variable
     ParserScriptVariable(const std::string& uname,
                          double value) :
@@ -608,64 +608,64 @@ class ParserScriptVariable {
     int get_flags() const { return (flags_); }
     void set_flags(int flags) { flags_ |= flags; }
     void clear_flags() { flags_ = 0; }
-        
+
     void set_const_var() { flags_ |= SCRIPT_CONST_VAR_E; }
     void set_single_var() { flags_ |= SCRIPT_SINGLE_VAR_E; }
     void set_sequential_var() { flags_ |= SCRIPT_SEQUENTIAL_VAR_E; }
-    
+
     bool is_const_var() const { return (flags_ & SCRIPT_CONST_VAR_E) != 0; }
     bool is_single_var() const { return (flags_ & SCRIPT_SINGLE_VAR_E) != 0; }
     bool is_sequential_var() const { return (flags_ & SCRIPT_SEQUENTIAL_VAR_E) != 0; }
-    
+
     // Get the name and the unique name
     const std::string& get_name() const  { return (name_); }
     void set_name(const std::string& name) { name_ = name; }
-    
+
     const std::string& get_uname() const { return (uname_); }
     void set_uname(const std::string& uname) { uname_ = uname; }
-    
-    
+
+
     // Get the constant values
     double      get_scalar_value() const { return (scalar_value_); }
     const std::string& get_string_value() const { return (string_value_); }
-    
-    // Dependence of this variable 
+
+    // Dependence of this variable
     void compute_dependence();
-    
+
     const std::string& get_dependence() const { return (dependence_); }
     void clear_dependence() { dependence_.clear(); }
-    
+
     int get_var_number() const { return (var_number_); }
     void set_var_number(int var_number) { var_number_ = var_number; }
-    
+
     // For debugging
     void print() const;
-    
+
   private:
     // The function that created this variable
     ParserScriptFunctionHandle parent_;
-    
+
     // The kind of variable
     int kind_;
-    
+
     // The type of the variable
     std::string type_;
-    
+
     // The flags for sequential/single/constant
     int flags_;
 
     // Name of the variable for input and output variables
     std::string name_;
-    
+
     // Unique name of the variable
     std::string uname_;
-    
+
     std::string dependence_;
-    
+
     // For const scalar/string variables
     double        scalar_value_;
     std::string   string_value_;
-    
+
     int var_number_;
 };
 
@@ -692,25 +692,25 @@ class SCISHARE Parser {
       std::string operator_;
       std::string funname_;
   };
-    
+
   public:
     Parser();
-  
+
     bool parse(ParserProgramHandle& program,
                std::string& expressions,
                std::string& error);
 
-    bool add_input_variable(ParserProgramHandle& program, 
-                            const std::string& name, 
-                            const std::string& type, 
+    bool add_input_variable(ParserProgramHandle& program,
+                            const std::string& name,
+                            const std::string& type,
                             int flags = 0);
 
-    bool add_output_variable(ParserProgramHandle& program, 
-                             const std::string& name, 
+    bool add_output_variable(ParserProgramHandle& program,
+                             const std::string& name,
                              const std::string& type = "U",
                              int flags = 0);
 
-    bool add_output_variable(ParserProgramHandle program, 
+    bool add_output_variable(ParserProgramHandle program,
                              const std::string& name);
 
     bool get_input_variable_type(ParserProgramHandle program,
@@ -721,18 +721,18 @@ class SCISHARE Parser {
 
 
     bool get_input_variable_type(ParserProgramHandle program,
-                                 const std::string& name, 
+                                 const std::string& name,
                                  std::string& type,
                                  int& flags);
 
     bool get_output_variable_type(ParserProgramHandle program,
-                                 const std::string& name, 
+                                 const std::string& name,
                                  std::string& type,
                                  int& flags);
 
 
     bool validate(ParserProgramHandle program,
-                  ParserFunctionCatalogHandle catalog, 
+                  ParserFunctionCatalogHandle catalog,
                   std::string& error);
 
     bool optimize(ParserProgramHandle program,
@@ -743,24 +743,24 @@ class SCISHARE Parser {
 
     // These functions add or overload the function names of default operators
     // and even add additional operators if a new one is specified.
-    
+
     // These functions are intended for customizing the parser
     // NOTE OPERATOR NAMES CURRENTLY CANNOT BE LONGER THAN TWO CHARACTERS
     // IF LONGER OPERATOR NAMES ARE NEEDED THE CODE SHOULD BE UPGRADED
     void add_binary_operator(const std::string& op, const std::string& funname, int priority);
     void add_unary_pre_operator(const std::string& op, const std::string& funname);
     void add_unary_post_operator(const std::string& op, const std::string& funname);
-  
+
     // Mark special variable names as constants
     void add_numerical_constant(const std::string& name,double val);
-    
+
   private:
     // Get an expression from the program code. Expressions are read sequentially
     // and this function will modify the input and remove the first expression.
-    bool scan_expression(std::string& expressions, 
+    bool scan_expression(std::string& expressions,
                          std::string& expression);
-  
-  
+
+
     // This function breaks down an expression into two components
     // The part to the left of the equal sign
     // The part to the right of the equal sign
@@ -769,12 +769,12 @@ class SCISHARE Parser {
     bool split_expression(std::string& expression,
                           std::string& varname,
                           std::string& vartree);
-  
+
     // Parse the parts on the right hand side of the equal sign of the expression
     bool parse_expression_tree(std::string& expression,
                                ParserNodeHandle& ehandle,
                                std::string& error);
-                               
+
 
     // Scan whether the string starts with a sub expression, i.e. '( ..... )'
     bool scan_sub_expression(std::string& expression, std::string& subexpression);
@@ -805,7 +805,7 @@ class SCISHARE Parser {
     bool scan_constant_string(std::string& expression, std::string& str);
 
     // Scan for a function. A function starts with a variable name, but is
-    // followed by optional spaces and then (...,....,...), which is the 
+    // followed by optional spaces and then (...,....,...), which is the
     // argument list. This function should scan for those argument lists
     bool scan_function(std::string& expression, std::string& function);
 
@@ -830,43 +830,43 @@ class SCISHARE Parser {
     // Check for syntax errors in the code
     bool check_syntax(std::string& expression, std::string& error);
 
-    
+
     // Scan whether the expression starts with a binary operator
-    bool scan_binary_operator(std::string& expression, 
+    bool scan_binary_operator(std::string& expression,
                               std::string& binary_operator);
-                              
+
     // Scan whether the expression starts with an unary operator
-    bool scan_pre_unary_operator(std::string& expression, 
+    bool scan_pre_unary_operator(std::string& expression,
                                  std::string& unary_operator);
-    
+
     // Scan whether the expression starts with an unary operator
-    bool scan_post_unary_operator(std::string& expression, 
+    bool scan_post_unary_operator(std::string& expression,
                                   std::string& unary_operator);
-    
+
     // Get the functionname of the unary operator
     // The name that should be in the FunctionCatalog
-    bool get_unary_function_name(std::string& unary_operator, 
+    bool get_unary_function_name(std::string& unary_operator,
                                  std::string& fun_name);
 
     // Get the functionname of the binary operator
     // The name that should be in the FunctionCatalog
-    bool get_binary_function_name(std::string& binary_operator, 
+    bool get_binary_function_name(std::string& binary_operator,
                                   std::string& fun_name);
 
     // Binary operators need a priority in which they are evaluated
     // This one returns the priority of each operator
     bool get_binary_priority(std::string& binary_operator, int& priority);
-    
+
 
     //------------------------------------------------------------
-    // General functions for parsing text    
+    // General functions for parsing text
     // Remove a parentices pair at the start and end of the string
     bool remove_global_parentices(std::string& expression);
-    
+
     // Remove // and /* comments from the expression
     void remove_comments(std::string& expression);
-    
-    
+
+
     //------------------------------------------------------------
     // Sub functions for validation
     bool recursive_validate(ParserNodeHandle handle,
@@ -874,7 +874,7 @@ class SCISHARE Parser {
                             ParserVariableList& var_list,
                             std::string& error,
                             std::string& expression);
-                            
+
 
     //------------------------------------------------------------
     // Sub functions for optimization
@@ -887,7 +887,7 @@ class SCISHARE Parser {
           ParserScriptVariableHandle& ohandle,
           int& cnt,
           std::string& error);
-        
+
   private:
     // List of supported binary operators e.g. + - * /
     std::map<std::string,BinaryOperator> binary_operators_;

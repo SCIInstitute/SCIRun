@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 #define INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 
@@ -39,4 +39,4 @@ void rendererRegisterAll(spire::Acorn& core);
 } // namespace Render
 } // namespace SCIRun
 
-#endif 
+#endif

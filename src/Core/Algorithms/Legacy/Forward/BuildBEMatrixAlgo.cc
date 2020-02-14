@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -90,7 +89,7 @@ void BuildBEMatrixBase::getOmega(
   Vector Ny( y1.length() , y2.length() , y3.length() );
 
   Vector Nyij( y21.length() , y32.length() , y13.length() );
-  
+
   Vector gamma( 0 , 0 , 0 );
   double NomGamma , DenomGamma;
 
@@ -113,8 +112,8 @@ void BuildBEMatrixBase::getOmega(
   double d = Dot( y1, Cross(y2, y3) );
 
   Vector OmegaVec = (gamma[2]-gamma[0])*y1 + (gamma[0]-gamma[1])*y2 + (gamma[1]-gamma[2])*y3;
-  
-  
+
+
 
   /*
   In order to avoid problems with the arctan used in de Muncks paper
@@ -129,7 +128,7 @@ void BuildBEMatrixBase::getOmega(
 
   double Nn=0 , Omega=0 ;
   Nn = Ny[0]*Ny[1]*Ny[2] + Ny[0]*Dot(y2,y3) + Ny[2]*Dot(y1,y2) + Ny[1]*Dot(y3,y1);
-  
+
   if (Nn > 0)  Omega = 2 * atan( d / Nn );
   if (Nn < 0)  Omega = 2 * atan( d / Nn ) + 2*M_PI ;
   if (Nn == 0)
@@ -149,7 +148,7 @@ void BuildBEMatrixBase::getOmega(
   coef(0,0) = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
   coef(0,1) = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
   coef(0,2) = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
-  
+
 }
 
 void  BuildBEMatrixBase::get_cruse_weights(
@@ -741,8 +740,8 @@ template <class MatrixType>
 void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond)
 {
   auto nnodes = auto_P.rows();
-  
-  
+
+
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
@@ -762,7 +761,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
     Point pp = hsurf->get_point(ppi);
 
     hsurf->begin(fi); hsurf->end(fie);
-    
+
     for (; fi != fie; ++fi) { //! find contributions from every triangle
 
       hsurf->get_nodes(nodes, *fi);
@@ -770,7 +769,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
         Vector v1 = hsurf->get_point(nodes[0]) - pp;
         Vector v2 = hsurf->get_point(nodes[1]) - pp;
         Vector v3 = hsurf->get_point(nodes[2]) - pp;
-        
+
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
@@ -1151,7 +1150,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   // This needs to be checked.  It was taken out because the deflation was producing errors
   // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
-  
+
   // Perform deflation on EE matrix
   //const double deflationconstant = 1.0/EE.matrix().ncols();
   //EE.matrix() = EE.matrix().array() + deflationconstant;

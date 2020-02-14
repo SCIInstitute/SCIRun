@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Math/share.h>
@@ -34,17 +34,17 @@ namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
 			namespace Math {
-			
+
 			class SCISHARE ComputeSVDAlgo : public AlgorithmBase
 			{
 				public:
 					ComputeSVDAlgo() {}
-					
+
 					static AlgorithmOutputName LeftSingularMatrix;
 					static AlgorithmOutputName SingularValues;
 					static AlgorithmOutputName RightSingularMatrix;
 					void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle& LeftSingMat, Datatypes::DenseMatrixHandle& SingVals, Datatypes::DenseMatrixHandle& RightSingMat) const;
 					virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 			};
-		
+
 }}}}

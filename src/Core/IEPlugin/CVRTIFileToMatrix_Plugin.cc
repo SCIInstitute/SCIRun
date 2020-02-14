@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
  *  SimpleTextFileToMatrix_Plugin.cc
  *
@@ -35,7 +35,6 @@
  *   University of Utah
  *
  */
- 
 
 // This is a plugin is meant to read simple text files with pure data
 // in ascii format into a SCIRun matrix.
@@ -64,10 +63,10 @@ MatrixHandle CVTRIMappingFileMatrix_reader(ProgressReporter *pr, const char *fil
 
   int nrows = 0;
   int line_ncols = 0;
-  
+
   std::string line;
-  
-  bool header = true;  
+
+  bool header = true;
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE DIMENSIONS OF THE MATRIX
   // AND CHECK THE FILE'S INTEGRITY.
 
@@ -76,7 +75,7 @@ MatrixHandle CVTRIMappingFileMatrix_reader(ProgressReporter *pr, const char *fil
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
-  
+
     try
     {
       inputfile.open(filename);
@@ -90,11 +89,11 @@ MatrixHandle CVTRIMappingFileMatrix_reader(ProgressReporter *pr, const char *fil
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-      
+
         multiple_from_string(line,values);
         line_ncols = values.size();
         for (size_t j=0;j<values.size();j++) if (Round(values[j]) == 0.0) zero_based = true;
-      
+
         if (line_ncols > 0)
         {
           if (header)
@@ -129,17 +128,17 @@ MatrixHandle CVTRIMappingFileMatrix_reader(ProgressReporter *pr, const char *fil
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
-    
+
     double* dataptr = result->get_data_pointer();
     index_type k = 0;
 
     try
     {
       inputfile.open(filename);
-    
+
       bool header = true;
       std::vector<double> values;
-      
+
       while( getline(inputfile,line,'\n'))
       {
         if (line.size() > 0)
@@ -182,16 +181,16 @@ MatrixHandle CVTRICal8FileMatrix_reader(ProgressReporter *pr, const char *filena
   int ncols = 0;
   int nrows = 0;
   int line_ncols = 0;
-  
+
   std::string line;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE DIMENSIONS OF THE MATRIX
   // AND CHECK THE FILE'S INTEGRITY.
 
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
-  
+
     try
     {
       inputfile.open(filename);
@@ -206,14 +205,14 @@ MatrixHandle CVTRICal8FileMatrix_reader(ProgressReporter *pr, const char *filena
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-      
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,values);      
+        multiple_from_string(line,values);
         line_ncols = 0;
 
         if (line_ncols > 0)
@@ -261,17 +260,17 @@ MatrixHandle CVTRICal8FileMatrix_reader(ProgressReporter *pr, const char *filena
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
-    
+
     double* dataptr = result->get_data_pointer();
     int k = 0;
 
     try
     {
       inputfile.open(filename);
-    
+
       int header_cnt = 0;
       std::vector<double> values;
-      
+
       while( getline(inputfile,line,'\n'))
       {
         if (line.size() > 0)
@@ -279,14 +278,14 @@ MatrixHandle CVTRICal8FileMatrix_reader(ProgressReporter *pr, const char *filena
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-            
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,values);      
+        multiple_from_string(line,values);
 
         if (values.size() > 0)
         {
@@ -318,4 +317,3 @@ static MatrixIEPlugin CVTRIMappingFileMatrix_plugin("CVRTI_MappingFileToMatrix",
 static MatrixIEPlugin CVTRICal8FileMatrix_plugin("CVRTI_CalFileToMatrix","{.cal8} {.cal}", "",CVTRICal8FileMatrix_reader,0);
 
 } // end namespace
-

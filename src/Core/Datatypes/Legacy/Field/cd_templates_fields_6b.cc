@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,7 +37,7 @@
 ///
 /// Find the bloaters with:
 ///   find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
-/// 
+///
 
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
@@ -122,7 +121,7 @@ template class GenericField<SQMesh, CFDintBasis,    FData2d<int,SQMesh> >;
 template class GenericField<SQMesh, CFDlonglongBasis,FData2d<long long,SQMesh> >;
 template class GenericField<SQMesh, CFDshortBasis,  FData2d<short,SQMesh> >;
 template class GenericField<SQMesh, CFDcharBasis,   FData2d<char,SQMesh> >;
-template class GenericField<SQMesh, CFDuintBasis,   FData2d<unsigned int,SQMesh> >; 
+template class GenericField<SQMesh, CFDuintBasis,   FData2d<unsigned int,SQMesh> >;
 template class GenericField<SQMesh, CFDushortBasis, FData2d<unsigned short,SQMesh> >;
 template class GenericField<SQMesh, CFDucharBasis,  FData2d<unsigned char,SQMesh> >;
 template class GenericField<SQMesh, CFDulongBasis,  FData2d<unsigned long,SQMesh> >;
@@ -137,36 +136,36 @@ template class GenericField<SQMesh, FDQintBasis,    FData2d<int,SQMesh> >;
 template class GenericField<SQMesh, FDQlonglongBasis,FData2d<long long,SQMesh> >;
 template class GenericField<SQMesh, FDQshortBasis,  FData2d<short,SQMesh> >;
 template class GenericField<SQMesh, FDQcharBasis,   FData2d<char,SQMesh> >;
-template class GenericField<SQMesh, FDQuintBasis,   FData2d<unsigned int,SQMesh> >; 
+template class GenericField<SQMesh, FDQuintBasis,   FData2d<unsigned int,SQMesh> >;
 template class GenericField<SQMesh, FDQushortBasis, FData2d<unsigned short,SQMesh> >;
 template class GenericField<SQMesh, FDQucharBasis,  FData2d<unsigned char,SQMesh> >;
 template class GenericField<SQMesh, FDQulongBasis,  FData2d<unsigned long,SQMesh> >;
 
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFT("StructQuadSurfField<Tensor>", "Field",
-		       GenericField<SQMesh, FDQTensorBasis, 
+		       GenericField<SQMesh, FDQTensorBasis,
 		       FData2d<Tensor, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDTensorBasis, 
+		       GenericField<SQMesh, CFDTensorBasis,
 		       FData2d<Tensor, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFV("StructQuadSurfField<Vector>", "Field",
-		       GenericField<SQMesh, FDQVectorBasis, 
+		       GenericField<SQMesh, FDQVectorBasis,
 		       FData2d<Vector, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDVectorBasis, 
+		       GenericField<SQMesh, CFDVectorBasis,
 		       FData2d<Vector, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFd("StructQuadSurfField<double>", "Field",
-		       GenericField<SQMesh, FDQdoubleBasis, 
+		       GenericField<SQMesh, FDQdoubleBasis,
 		       FData2d<double, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDdoubleBasis, 
+		       GenericField<SQMesh, CFDdoubleBasis,
 		       FData2d<double, SQMesh> >::maker,
-		       GenericField<SQMesh, NDBasis, 
+		       GenericField<SQMesh, NDBasis,
 		       FData2d<double, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFf("StructQuadSurfField<float>", "Field",
-		       GenericField<SQMesh, FDQfloatBasis, 
+		       GenericField<SQMesh, FDQfloatBasis,
 		       FData2d<float, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDfloatBasis, 
+		       GenericField<SQMesh, CFDfloatBasis,
 		       FData2d<float, SQMesh> >::maker);
 PersistentTypeID
 backwards_compat_SQSFco("StructQuadSurfField<complex>", "Field",
@@ -174,46 +173,46 @@ backwards_compat_SQSFco("StructQuadSurfField<complex>", "Field",
           FData2d<complex, SQMesh> >::maker,
           GenericField<SQMesh, CFDcomplexBasis,
           FData2d<complex, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFi("StructQuadSurfField<int>", "Field",
-		       GenericField<SQMesh, FDQintBasis, 
+		       GenericField<SQMesh, FDQintBasis,
 		       FData2d<int, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDintBasis, 
+		       GenericField<SQMesh, CFDintBasis,
 		       FData2d<int, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFs("StructQuadSurfField<short>", "Field",
-		       GenericField<SQMesh, FDQshortBasis, 
+		       GenericField<SQMesh, FDQshortBasis,
 		       FData2d<short, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDshortBasis, 
+		       GenericField<SQMesh, CFDshortBasis,
 		       FData2d<short, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFc("StructQuadSurfField<char>", "Field",
-		       GenericField<SQMesh, FDQcharBasis, 
+		       GenericField<SQMesh, FDQcharBasis,
 		       FData2d<char, SQMesh> >::maker,
-		       GenericField<SQMesh, CFDcharBasis, 
+		       GenericField<SQMesh, CFDcharBasis,
 		       FData2d<char, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFui("StructQuadSurfField<unsigned_int>", "Field",
-			GenericField<SQMesh, FDQuintBasis, 
+			GenericField<SQMesh, FDQuintBasis,
 			FData2d<unsigned int, SQMesh> >::maker,
-			GenericField<SQMesh, CFDuintBasis, 
+			GenericField<SQMesh, CFDuintBasis,
 			FData2d<unsigned int, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFus("StructQuadSurfField<unsigned_short>", "Field",
-			GenericField<SQMesh, FDQushortBasis, 
+			GenericField<SQMesh, FDQushortBasis,
 			FData2d<unsigned short, SQMesh> >::maker,
-			GenericField<SQMesh, CFDushortBasis, 
+			GenericField<SQMesh, CFDushortBasis,
 			FData2d<unsigned short, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFuc("StructQuadSurfField<unsigned_char>", "Field",
-			GenericField<SQMesh, FDQucharBasis, 
+			GenericField<SQMesh, FDQucharBasis,
 			FData2d<unsigned char, SQMesh> >::maker,
-			GenericField<SQMesh, CFDucharBasis, 
+			GenericField<SQMesh, CFDucharBasis,
 			FData2d<unsigned char, SQMesh> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SQSFul("StructQuadSurfField<unsigned_long>", "Field",
-			GenericField<SQMesh, FDQulongBasis, 
+			GenericField<SQMesh, FDQulongBasis,
 			FData2d<unsigned long, SQMesh> >::maker,
-			GenericField<SQMesh, CFDulongBasis, 
+			GenericField<SQMesh, CFDulongBasis,
 			FData2d<unsigned long, SQMesh> >::maker);
 }

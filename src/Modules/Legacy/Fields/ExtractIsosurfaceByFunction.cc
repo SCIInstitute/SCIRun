@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///    @file    ExtractIsosurfaceByFunction.h
 ///    @author  Michael Callahan &&
@@ -59,10 +59,10 @@ class SCISHARE ExtractIsosurfaceByFunction : public Module {
     virtual void execute();
     virtual void presave();
     virtual void post_read();
-    
+
   private:
     FieldHandle field_transformed_handle_;
-  
+
     /// GUI variables
     GuiString  gui_function_;
 
@@ -89,7 +89,7 @@ class SCISHARE ExtractIsosurfaceByFunction : public Module {
 
     /// status variables
     std::vector< double > slicevals_;
-    
+
     bool old_version_;
     bool mapping_;
 };
@@ -100,7 +100,7 @@ DECLARE_MAKER(ExtractIsosurfaceByFunction)
 
 ExtractIsosurfaceByFunction::ExtractIsosurfaceByFunction(GuiContext *context)
   : Module("ExtractIsosurfaceByFunction", context, Filter, "NewField", "SCIRun"),
-    
+
     field_transformed_handle_(0),
 
     gui_function_(get_ctx()->subVar("function"), "RESULT = sqrt(X*X + Y*Y);"),
@@ -133,7 +133,7 @@ ExtractIsosurfaceByFunction::execute()
   FieldHandle input_field_handle;
   FieldHandle field_output_handle;
   std::vector<MatrixHandle> matrices;
-  
+
   get_input_handle( "Input Field", input_field_handle, true);
 
   /// Current
@@ -157,7 +157,7 @@ ExtractIsosurfaceByFunction::execute()
     inputs_changed_ = true;
 
   /// Check to see if the input field has changed.
-  if( inputs_changed_ || !field_transformed_handle_.get_rep() ) 
+  if( inputs_changed_ || !field_transformed_handle_.get_rep() )
   {
     NewArrayMathEngine engine;
     engine.set_progress_reporter(this);
@@ -173,9 +173,9 @@ ExtractIsosurfaceByFunction::execute()
       if(!(engine.add_input_fielddata("v",input_field_handle))) return;
       ///-----------------------
     }
-    
-    
-    // Create the POS, X,Y,Z, data location objects.  
+
+
+    // Create the POS, X,Y,Z, data location objects.
 
     if(!(engine.add_input_fielddata_location("POS", input_field_handle, 1))) return;
     if(!(engine.add_input_fielddata_coordinates("X","Y","Z", input_field_handle, 1 ))) return;
@@ -202,7 +202,7 @@ ExtractIsosurfaceByFunction::execute()
       has_RESULT = false;
       ///-----------------------
     }
-    
+
     size_t numinputs = matrices.size();
     if (numinputs > 23)
     {
@@ -218,13 +218,13 @@ ExtractIsosurfaceByFunction::execute()
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-    
+
     for (size_t p = 0; p < numinputs; p++)
     {
       if (matrices[p].get_rep() == 0)
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
@@ -235,7 +235,7 @@ ExtractIsosurfaceByFunction::execute()
     if(!(engine.add_expressions(function))) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!(engine.run()))
@@ -250,11 +250,11 @@ ExtractIsosurfaceByFunction::execute()
         error("We are sorry for this inconvenience, but we do not longer support dynamically compiling in SCIRun.");
       }
       ///-----------------------
-      
+
       return;
     }
-    
-    // Get the result from the engine 
+
+    // Get the result from the engine
     if(has_RESULT)
     {
       engine.get_field("RESULT",field_transformed_handle_);
@@ -263,8 +263,8 @@ ExtractIsosurfaceByFunction::execute()
     {
       engine.get_field("result",field_transformed_handle_);
     }
-    
-    if (!(field_transformed_handle_->vfield()->is_scalar())) 
+
+    if (!(field_transformed_handle_->vfield()->is_scalar()))
     {
       error("Transformed field does not contain scalar data.");
       return;
@@ -275,7 +275,7 @@ ExtractIsosurfaceByFunction::execute()
 
     // Check to see if the gui min max are different than the field.
     if( gui_slice_value_min_.get() != minval ||
-        gui_slice_value_max_.get() != maxval ) 
+        gui_slice_value_max_.get() != maxval )
     {
 
       gui_slice_value_min_.set( minval );
@@ -298,11 +298,11 @@ ExtractIsosurfaceByFunction::execute()
   double qmin = gui_slice_value_min_.get();
   double qmax = gui_slice_value_max_.get();
 
-  if (gui_active_slice_value_selection_tab_.get() == "0") 
+  if (gui_active_slice_value_selection_tab_.get() == "0")
   { // slider / typed
     const double val = gui_slice_value_.get();
     const double valTyped = gui_slice_value_typed_.get();
-    if (val != valTyped) 
+    if (val != valTyped)
     {
       warning("Typed slice value "+to_string(valTyped)+" was out of range.  Using slice value "+to_string(val)+" instead.");
       gui_slice_value_typed_.set(val);
@@ -311,17 +311,17 @@ ExtractIsosurfaceByFunction::execute()
     {
       slicevals.push_back(val);
     }
-    else 
+    else
     {
       error("Typed slice value out of range -- skipping slice surfacing.");
       return;
     }
-  } 
-  else if (gui_active_slice_value_selection_tab_.get() == "1") 
+  }
+  else if (gui_active_slice_value_selection_tab_.get() == "1")
   { // quantity
     int num = gui_slice_value_quantity_.get();
 
-    if (num < 1) 
+    if (num < 1)
     {
       error("Slice surface quantity must be at least one -- skipping slice surfacing.");
       return;
@@ -329,13 +329,13 @@ ExtractIsosurfaceByFunction::execute()
 
     std::string range = gui_slice_quantity_range_.get();
 
-    if (range == "manual") 
+    if (range == "manual")
     {
       qmin = gui_slice_quantity_min_.get();
       qmax = gui_slice_quantity_max_.get();
     } // else we're using "field" and qmax and qmin were set above
-    
-    if (qmin >= qmax) 
+
+    if (qmin >= qmax)
     {
       error("Can't use quantity tab if the minimum and maximum are the same.");
       return;
@@ -345,26 +345,26 @@ ExtractIsosurfaceByFunction::execute()
     std::ostringstream str;
     str << get_id() << " set-slice-quant-list \"";
 
-    if (clusive == "exclusive") 
+    if (clusive == "exclusive")
     {
       // if the min - max range is 2 - 4, and the user requests 3 slicevals,
       // the code below generates 2.333, 3.0, and 3.666 -- which is nice
       // since it produces evenly spaced slices in torroidal data.
-	
+
       double di=(qmax - qmin)/(double)num;
-      for (int i=0; i<num; i++) 
+      for (int i=0; i<num; i++)
       {
         slicevals.push_back(qmin + ((double)i+0.5)*di);
         str << " " << slicevals[i];
       }
-    } 
-    else if (clusive == "inclusive") 
+    }
+    else if (clusive == "inclusive")
     {
       // if the min - max range is 2 - 4, and the user requests 3 slicevals,
       // the code below generates 2.0, 3.0, and 4.0.
 
       double di=(qmax - qmin)/(double)(num-1.0);
-      for (int i=0; i<num; i++) 
+      for (int i=0; i<num; i++)
       {
         slicevals.push_back(qmin + ((double)i*di));
         str << " " << slicevals[i];
@@ -375,12 +375,12 @@ ExtractIsosurfaceByFunction::execute()
 
     TCLInterface::execute(str.str().c_str());
 
-  } 
-  else if (gui_active_slice_value_selection_tab_.get() == "2") 
+  }
+  else if (gui_active_slice_value_selection_tab_.get() == "2")
   { // list
      multiple_from_string(gui_slice_value_list_.get(),slicevals);
-  } 
-  else if (gui_active_slice_value_selection_tab_.get() == "3") 
+  }
+  else if (gui_active_slice_value_selection_tab_.get() == "3")
   { // matrix
 
     MatrixHandle matrix_input_handle;
@@ -389,9 +389,9 @@ ExtractIsosurfaceByFunction::execute()
     std::ostringstream str;
     str << get_id() << " set-slice-matrix-list \"";
 
-    for (index_type i=0; i < matrix_input_handle->nrows(); i++) 
+    for (index_type i=0; i < matrix_input_handle->nrows(); i++)
     {
-      for (index_type j=0; j < matrix_input_handle->ncols(); j++) 
+      for (index_type j=0; j < matrix_input_handle->ncols(); j++)
       {
         slicevals.push_back(matrix_input_handle->get(i, j));
         str << " " << slicevals[i];
@@ -400,23 +400,23 @@ ExtractIsosurfaceByFunction::execute()
 
     str << "\"";
     TCLInterface::execute(str.str().c_str());
-  } 
-  else 
+  }
+  else
   {
     error("Bad active_slice_value_selection_tab value");
     return;
   }
 
   // See if any of the slicevals have changed.
-  if( slicevals_.size() != slicevals.size()) 
+  if( slicevals_.size() != slicevals.size())
   {
     slicevals_.resize( slicevals.size() );
     inputs_changed_ = true;
   }
 
-  for( size_t i=0; i<slicevals.size(); i++ ) 
+  for( size_t i=0; i<slicevals.size(); i++ )
   {
-    if( slicevals_[i] != slicevals[i] ) 
+    if( slicevals_[i] != slicevals[i] )
     {
       slicevals_[i] = slicevals[i];
       inputs_changed_ = true;
@@ -424,7 +424,7 @@ ExtractIsosurfaceByFunction::execute()
   }
 
   if( inputs_changed_ || !oport_cached("Output Field") ||
-      (mapping_ != oport_connected("Mapping")) ) 
+      (mapping_ != oport_connected("Mapping")) )
   {
     SCIRunAlgo::MarchingCubesAlgo mc;
     mc.set_progress_reporter(this);
@@ -432,19 +432,19 @@ ExtractIsosurfaceByFunction::execute()
     if (input_field_handle->vfield()->basis_order() == 0)
     {
       mc.set_bool("build_node_interpolant",false);
-      mc.set_bool("build_elem_interpolant",true);    
+      mc.set_bool("build_elem_interpolant",true);
     }
     else
     {
       mc.set_bool("build_node_interpolant",true);
       mc.set_bool("build_elem_interpolant",false);
     }
-    
+
     FieldHandle   field_sliced_handle = 0;
     MatrixHandle matrix_sliced_handle = 0;
-    
+
     if(!(mc.run(field_transformed_handle_,slicevals,
-              field_sliced_handle,matrix_sliced_handle))) 
+              field_sliced_handle,matrix_sliced_handle)))
     {
       error("MarchingCubes algorithm failed");
       return;
@@ -453,8 +453,8 @@ ExtractIsosurfaceByFunction::execute()
     if (field_sliced_handle.get_rep())
     {
       std::string fldname;
-      if (!(field_transformed_handle_->get_property("name", fldname))) 
-      {      
+      if (!(field_transformed_handle_->get_property("name", fldname)))
+      {
         fldname = "Sliced Surface";
       }
       field_sliced_handle->set_property("name", fldname, false);
@@ -465,14 +465,14 @@ ExtractIsosurfaceByFunction::execute()
       warning( "No slices found" );
       return;
     }
-    
+
     // If the basis is not constant make it so.
     if( input_field_handle->vfield()->basis_order() == 0 )
     {
       SCIRunAlgo::ConvertFieldBasisTypeAlgo algo;
       algo.set_progress_reporter(this);
       algo.set_option("basistype", "constant");
-      
+
       FieldHandle tmp_field_handle = field_sliced_handle;
       field_sliced_handle = 0;
       MatrixHandle mapping_matrix_handle;
@@ -486,13 +486,13 @@ ExtractIsosurfaceByFunction::execute()
     {
       error( "Can not find the sliced field for clipping" );
       return;
-    } 
+    }
     else if( !matrix_sliced_handle.get_rep() )
     {
       error( "Can not find the matrix for clipping" );
       return;
-    } 
-    else 
+    }
+    else
     {
       remark( "Sliced field and matrix for clipping is present" );
     }
@@ -502,10 +502,10 @@ ExtractIsosurfaceByFunction::execute()
 
     /// Apply the matrix to the sliced data.
     FieldHandle field_apply_mapping_handle;
-    
+
     SCIRunAlgo::ApplyMappingMatrixAlgo mapping_algo;
     mapping_algo.set_progress_reporter(this);
-    
+
     if(!(mapping_algo.run(input_field_handle,field_sliced_handle,
                      matrix_sliced_handle,field_apply_mapping_handle)))
     {
@@ -519,7 +519,7 @@ ExtractIsosurfaceByFunction::execute()
       MatrixHandle Mapping = matrix_sliced_handle;
       send_output_handle("Mapping",Mapping);
     }
-    
+
     mapping_ = oport_connected("Mapping");
 
   }
@@ -546,7 +546,7 @@ ExtractIsosurfaceByFunction::post_read()
 
   const std::string modName = get_ctx()->getfullname() + "-";
   std::string val;
-  
+
   ///-----------------------
   // Backwards compatibility with intermediate version....
 
@@ -555,7 +555,7 @@ ExtractIsosurfaceByFunction::post_read()
     TCLInterface::set(modName+"method", val, get_ctx());
   }
   ///-----------------------
-  
+
   if (old_version_)
   {
     std::string function;
@@ -571,7 +571,7 @@ ExtractIsosurfaceByFunction::post_read()
       std::string::size_type loc = function.find("return");
       function = function.substr(0,loc)+function.substr(loc+6);
       function = "RESULT = "+ function;
-      
+
       TCLInterface::set(modName+"function", function, get_ctx());
     }
   }

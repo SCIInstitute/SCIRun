@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @todo Documentation Core/GeometryPrimitives/Plane.h
 
@@ -45,7 +45,7 @@ class SCISHARE Plane {
   private:
     Vector n;
     double d;
-    
+
   public:
     Plane(const Plane &copy);
     Plane(const Point &p1, const Point &p2, const Point &p3);
@@ -54,7 +54,7 @@ class SCISHARE Plane {
     Plane();
     Plane(double a, double b, double c, double d);
     ~Plane();
-    
+
     double eval_point(const Point &p) const;
     void flip();
     Point project(const Point& p) const;
@@ -64,11 +64,11 @@ class SCISHARE Plane {
     void get(double (&abcd)[4]) const;
 
     // Not a great ==, doesnt take into account for floating point error.
-    bool operator==(const Plane &rhs) const; 
+    bool operator==(const Plane &rhs) const;
     // changes the plane ( n and d )
-     
+
     void ChangePlane( const Point &p1, const Point &p2, const Point &p3 );
-    void ChangePlane( const Point &p1, const Vector &v); 
+    void ChangePlane( const Point &p1, const Vector &v);
 
     // returns true if the line  v*t+s  for -inf < t < inf intersects
     // the plane.  if so, hit contains the point of intersection.

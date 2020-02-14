@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,9 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   Author            : Moritz Dannhauer
-   Last modification : April 8 2015 (ported from SCIRun4)
+
+   Author:              Moritz Dannhauer
+   Last Modification:   April 8 2015 (ported from SCIRun4)
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -49,19 +50,19 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
 
   VField *ofield = output->vfield();
   VMesh* omesh = ofield->vmesh();
-    
-  VMesh::Node::size_type numnodes; 
-  VMesh::Elem::size_type numelems; 
+
+  VMesh::Node::size_type numnodes;
+  VMesh::Elem::size_type numelems;
   imesh->size(numnodes);
   imesh->size(numelems);
-  
+
   omesh->node_reserve(numnodes);
 
   VMesh::Node::iterator nbi, nei;
   VMesh::Elem::iterator ebi, eei;
   VMesh::Node::array_type a(4);
-    
-  imesh->begin(nbi); 
+
+  imesh->begin(nbi);
   imesh->end(nei);
   while (nbi != nei)
   {
@@ -102,7 +103,7 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
         VMesh::Elem::array_type neighbors;
 
         int newtype = 0;
- 
+
         imesh->get_neighbors(neighbors, buffer[i]);
         for (unsigned int p=0; p<neighbors.size(); p++)
         {
@@ -127,14 +128,14 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
             buffer.push_back(neighbors[p]);
           }
         }
-        
+
         /// For checker board ordering
         if (newtype == 0) newtype = 1;
         if (newtype == 1) newtype = 2; else newtype = 1;
-        
+
         VMesh::Node::array_type hv;
         imesh->get_nodes(hv, buffer[i]);
-                
+
         if (newtype == 1)
         {
           /// Add one type of ordering
@@ -167,7 +168,7 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
           a[0] = hv[3]; a[1] = hv[4]; a[2] = hv[6]; a[3] = hv[7];
           omesh->add_elem(a);
 
-          visited[buffer[i]] = 2;              
+          visited[buffer[i]] = 2;
         }
       }
       buffer.clear();
@@ -192,7 +193,7 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
       ofield->copy_value(ifield,r,idx+4);
     }
   }
-  
+
   if (ifield->basis_order() == 1)
   {
     ofield->copy_values(ifield);
@@ -200,9 +201,9 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, Fiel
 
   // Copy properties of the property manager
   // output->copy_properties(input.get_rep());
-  
+
   // Success:
-  return true;			    
+  return true;
 }
 
 bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, FieldHandle& output) const
@@ -221,9 +222,9 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, Fiel
   // Copy points directly, assuming they will have the same order.
   VMesh::Node::iterator nbi, nei;
   VMesh::Node::iterator dbi, dei;
-  imesh->begin(nbi); 
+  imesh->begin(nbi);
   imesh->end(nei);
-  
+
   while (nbi != nei)
   {
     Point point;
@@ -244,25 +245,25 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, Fiel
   if (dims.size() != 3)
   {
     error("Could not obtain LatVol dimensions");
-    return (false);    
+    return (false);
   }
   const size_type d2 = (dims[0]-1)*(dims[1]-1);
   const size_type d1 = dims[0]-1;
-  
-  imesh->begin(bi); 
+
+  imesh->begin(bi);
   imesh->end(ei);
- 
+
   while (bi != ei)
   {
     VMesh::Node::array_type lv;
     imesh->get_nodes(lv, *bi);
-    
+
     const index_type idx = *bi;
     const index_type k = idx / d2;
     const index_type jk = idx % d2;
     const index_type j = jk / d1;
     const index_type i = jk % d1;
-    
+
     if (!((i^j^k)&1))
     {
       a[0] = lv[0]; a[1] = lv[1]; a[2] = lv[2]; a[3] = lv[5]; omesh->add_elem(a);
@@ -281,7 +282,7 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, Fiel
     }
     ++bi;
   }
-  
+
   ofield->resize_fdata();
 
   if (ifield->basis_order() == 0)
@@ -299,7 +300,7 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, Fiel
       q += 5;
     }
   }
-  
+
   if (ifield->basis_order() == 1)
   {
     ofield->copy_values(ifield);
@@ -307,25 +308,25 @@ bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, Fiel
 
   // Copy properties of the property manager
   // output->copy_properties(input.get_rep());
-  
+
   // Success:
-  return true;			    
+  return true;
 }
 
 bool ConvertMeshToTetVolMeshAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToTetVolMeshAlgo");
-  
+
   if (!input)
   {
     error("No input field");
     return (false);
   }
- 
+
     // Create information fields and fill them out with the data types of the input
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   // Ignore non linear cases for now
   if (fi.is_nonlinear())
   {
@@ -340,30 +341,30 @@ bool ConvertMeshToTetVolMeshAlgo::run(FieldHandle input, FieldHandle& output) co
     remark("Input is already a TetVolMesh; just copying input to output");
     return (true);
   }
-  
+
   fo.make_tetvolmesh();
-  
+
   output = CreateField(fo);
   if (!output)
   {
     error("Could not allocate output field");
      return (false);
   }
-  
+
   if (fi.is_latvolmesh() || fi.is_structhexvolmesh())
   {
     return (ConvertLatVolToTetVolV(input,output));
   }
   else if (fi.is_hexvolmesh())
   {
-    return (ConvertHexVolToTetVolV(input,output));  
+    return (ConvertHexVolToTetVolV(input,output));
   }
   else
   {
     error("No algorithm is available to convert this type of mesh");
     return (false);
   }
-  
+
  return true;
 }
 
@@ -373,13 +374,13 @@ AlgorithmOutputName ConvertMeshToTetVolMeshAlgo::TetVol("TetVol");
 AlgorithmOutput ConvertMeshToTetVolMeshAlgo::run(const AlgorithmInput& input) const
 {
  auto hex_or_latvol = input.get<Field>(HexOrLatVol);
- 
+
  FieldHandle tetvol;
  if (!run(hex_or_latvol, tetvol))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-    
+
  AlgorithmOutput output;
  output[TetVol] = tetvol;
- 
+
  return output;
 }

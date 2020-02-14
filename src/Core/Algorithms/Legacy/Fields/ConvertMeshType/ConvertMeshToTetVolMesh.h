@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOTETVOLMESH_H
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOTETVOLMESH_H 1
 
@@ -36,7 +36,7 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        
+
 class SCISHARE ConvertMeshToTetVolMeshAlgo : public AlgorithmBase
 {
   public:
@@ -46,10 +46,10 @@ class SCISHARE ConvertMeshToTetVolMeshAlgo : public AlgorithmBase
 
     bool run(FieldHandle input, FieldHandle& output) const;
     AlgorithmOutput run(const AlgorithmInput& input) const;
-    
+
     static AlgorithmInputName HexOrLatVol;
     static AlgorithmOutputName TetVol;
-    
+
    private:
     bool ConvertHexVolToTetVolV(FieldHandle input, FieldHandle& output) const;
     bool ConvertLatVolToTetVolV(FieldHandle input, FieldHandle& output) const;

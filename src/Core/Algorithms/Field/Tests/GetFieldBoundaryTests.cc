@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -45,7 +45,7 @@ using namespace SCIRun::TestUtils;
 
 // TODO: test with more field types...
 
-namespace 
+namespace
 {
 void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const std::string& expectedMatrixString = "")
 {
@@ -78,7 +78,7 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
   }
 }
 
-const std::string matrixCells = 
+const std::string matrixCells =
   "1 0 0 0 0 0 \n"
   "1 0 0 0 0 0 \n"
   "1 0 0 0 0 0 \n"
@@ -102,7 +102,7 @@ const std::string matrixCells =
   "0 0 0 0 0 1 \n"
   "0 0 0 0 0 1 \n";
 
-const std::string matrixNodes = 
+const std::string matrixNodes =
   "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
   "0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
   "0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
@@ -134,7 +134,7 @@ TEST(GetFieldBoundaryTest, LatVolBoundary)
   runTest(0, 22, 6, matrixCells);
   runTest(-1, 0, 0);
   runTest(1, 24, 24, matrixNodes);
-  
+
   /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
   EXPECT_EQ(0, info.dataMin);

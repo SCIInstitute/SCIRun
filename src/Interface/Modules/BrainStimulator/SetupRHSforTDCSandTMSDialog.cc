@@ -1,18 +1,21 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
+
    The MIT License
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
    and/or sell copies of the Software, and to permit persons to whom the
    Software is furnished to do so, subject to the following conditions:
+
    The above copyright notice and this permission notice shall be included
    in all copies or substantial portions of the Software.
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -21,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
@@ -110,7 +114,7 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
 {
   int nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
   int rows=-1;
-  
+
   if (nr_elc!=-1)
   {
     electrode_tableWidget->setRowCount(static_cast<int>(nr_elc));
@@ -119,13 +123,13 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
   {
     rows = electrode_tableWidget->rowCount();
   }
-  
+
   if (nr_elc>=SetupTDCSAlgorithm::max_number_of_electrodes )
   {
     nr_elc=SetupTDCSAlgorithm::max_number_of_electrodes;
     rows = nr_elc;
-  }  
-  
+  }
+
   auto surface_areas = (state_->getValue(Parameters::SurfaceAreaValues)).toVector();
   // obtaining initial values, pulling hasn't been set
   std::vector<AlgorithmParameter> elc_vals_in_table; //electrical electrode charges

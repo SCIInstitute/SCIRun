@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertLatVolDataFromNodeToElem.h>
 
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -34,7 +34,7 @@
 namespace SCIRun {
 
 /// @class ConvertLatVolDataFromNodeToElem
-/// @brief Make a new field with data at elements instead of nodes. 
+/// @brief Make a new field with data at elements instead of nodes.
 
 class ConvertLatVolDataFromNodeToElem : public Module
 {
@@ -43,7 +43,7 @@ class ConvertLatVolDataFromNodeToElem : public Module
     virtual ~ConvertLatVolDataFromNodeToElem() {}
 
     virtual void execute();
-    
+
   private:
     SCIRunAlgo::ConvertLatVolDataFromNodeToElemAlgo algo_;
 };
@@ -63,18 +63,17 @@ ConvertLatVolDataFromNodeToElem::execute()
   // Get input field.
   FieldHandle input, output;
   get_input_handle("Node Field", input, true);
-  
+
   if (inputs_changed_ || !oport_cached("Elem Field"))
   {
     update_state(Executing);
-    
+
     /// Run algorithm
     if(!(algo_.run(input,output))) return;
-    
+
     /// Send output
     send_output_handle("Elem Field", output);
   }
 }
 
 } // End namespace SCIRun
-

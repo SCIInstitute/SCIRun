@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,16 +40,15 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool SCISHARE GenerateEdgeProjection(VMesh* vmesh, 
+bool SCISHARE GenerateEdgeProjection(VMesh* vmesh,
                             VMesh::Node::index_type start_node,
                             Vector normal,
                             Vector axis,
-                            double maxdist, 
+                            double maxdist,
                             VMesh::Node::index_type final_node,
                             Point& point,
                             double &cum_dist);
 
 } // end namespace SCIRunAlgo
 
-#endif 
-
+#endif

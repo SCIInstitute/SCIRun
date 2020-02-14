@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Math/RemoveZeroRowsAndColumns.cc
 
 #include <Core/Algorithms/Math/SelectMatrix/SelectSubMatrix.h>
@@ -47,7 +48,7 @@ class RemoveZeroRowsAndColumns : public Module {
     virtual void execute();
 
   private:
-    SCIRunAlgo::SelectSubMatrixAlgo select_submatrix_;  
+    SCIRunAlgo::SelectSubMatrixAlgo select_submatrix_;
     SCIRunAlgo::FindMatrixAlgo find_algo_;
     SCIRunAlgo::ConvertMappingOrderIntoMappingMatrixAlgo convert_algo_;
 };
@@ -67,9 +68,9 @@ void
 RemoveZeroRowsAndColumns::execute()
 {
   MatrixHandle input, output, leftmapping, rightmapping;
-  
+
   get_input_handle("Matrix",input,true);
-  
+
   if (inputs_changed_ || !oport_cached("ReducedMatrix") ||
     !oport_cached("LeftMapping")||!oport_cached("RightMapping"))
   {
@@ -85,7 +86,7 @@ RemoveZeroRowsAndColumns::execute()
     convert_algo_.run(rows,leftmapping,input->nrows());
     convert_algo_.set_bool("transpose",false);
     convert_algo_.run(columns,rightmapping,input->nrows());
-    
+
     send_output_handle("ReducedMatrix",output,true);
     send_output_handle("LeftMapping",leftmapping,true);
     send_output_handle("RightMapping",rightmapping,true);
@@ -93,5 +94,3 @@ RemoveZeroRowsAndColumns::execute()
 }
 
 } // End namespace SCIRun
-
-

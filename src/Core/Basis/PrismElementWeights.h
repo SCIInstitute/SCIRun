@@ -1,29 +1,29 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
 #ifndef CORE_BASIS_PRISMWEIGHTS_H
@@ -39,7 +39,7 @@ public:
   template <class VECTOR>
   void get_linear_weights(const VECTOR& coords, double *w) const
   {
-    const double x = static_cast<double>(coords[0]), y = static_cast<double>(coords[1]), z = static_cast<double>(coords[2]);  
+    const double x = static_cast<double>(coords[0]), y = static_cast<double>(coords[1]), z = static_cast<double>(coords[2]);
     w[0] = (-1 + x + y) * (-1 + z);
     w[1] = - (x * (-1 + z));
     w[2] = - (y * (-1 + z));
@@ -47,12 +47,12 @@ public:
     w[4] = +x * z;
     w[5] = +y * z;
   }
-  
-  /// get derivative weight factors at parametric coordinate 
+
+  /// get derivative weight factors at parametric coordinate
   template <class VECTOR>
   void get_linear_derivate_weights(const VECTOR& coords, double *w) const
   {
-    const double x = static_cast<double>(coords[0]), y = static_cast<double>(coords[1]), z = static_cast<double>(coords[2]);  
+    const double x = static_cast<double>(coords[0]), y = static_cast<double>(coords[1]), z = static_cast<double>(coords[2]);
     w[0]= (-1 + z);
     w[1]= (1 - z);
     w[2]= 0;
@@ -73,7 +73,7 @@ public:
     w[17]= y;
   }
 
-  /// get weight factors at parametric coordinate 
+  /// get weight factors at parametric coordinate
   template< class VECTOR>
   void get_quadratic_weights(const VECTOR& coords, double *w) const
   {
@@ -95,11 +95,11 @@ public:
     w[14] = -4*y*(-1 + x + y)*z;
   }
 
-  /// get weight factors of derivative at parametric coordinate 
+  /// get weight factors of derivative at parametric coordinate
   template< class VECTOR>
   void get_quadratic_derivate_weights(const VECTOR& coords, double *w) const
   {
-    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);  
+    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);
     w[0]=-(-1 + z)*(-3 + 4*x + 4*y + 2*z);
     w[1]=-(-1 + 4*x - 2*z)*(-1 + z);
     w[2]=0;
@@ -146,18 +146,18 @@ public:
     w[43]=+4*x*y;
     w[44]=-4*y*(-1 + x + y);
   }
-  
+
 
   template <class VECTOR>
   void get_cubic_weights(const VECTOR &coords, double *w) const
   {
-    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);  
+    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);
     const double x2=x*x;
     const double y2=y*y;
     const double z2=z*z;
     const double y12=(y-1)*(y-1);
     const double z12=(z-1)*(z-1);
-      
+
     w[0]  = -((-1 + x + y)*(-1 + z)*(-1 + 2*x2 - y + 2*y2 - x*(1 + 2*y) - z + 2*z2));
     w[1]  = -(x*(1 - 2*x + x2 - y2)*(-1 + z));
     w[2]  = +(x2 - y12)*y*(-1 + z);
@@ -184,11 +184,11 @@ public:
     w[23] = +y*(-1 + z)*z2;
   }
 
-  /// get derivative weight factors at parametric coordinate 
+  /// get derivative weight factors at parametric coordinate
   template <class VECTOR>
   void get_cubic_derivate_weights(const VECTOR &coords, double *w) const
   {
-    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);  
+    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]), z=static_cast<double>(coords[2]);
     const double x2=x*x;
     const double y2=y*y;
     const double z2=z*z;
@@ -277,11 +277,10 @@ public:
   inline int num_cubic_derivate_weights() { return 72; }
 
 
-  inline int num_derivs()  { return 3; }  
+  inline int num_derivs()  { return 3; }
   inline int num_hderivs() { return 3; }
 };
 
 }}}
 
 #endif
-

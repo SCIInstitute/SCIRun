@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_CURVEMESH_H
 #define CORE_DATATYPES_CURVEMESH_H 1
@@ -101,8 +101,8 @@ public:
   typedef SCIRun::index_type            under_type;
   typedef SCIRun::index_type            index_type;
   typedef SCIRun::size_type             size_type;
-  typedef SCIRun::mask_type             mask_type; 
-  
+  typedef SCIRun::mask_type             mask_type;
+
   typedef boost::shared_ptr<CurveMesh<Basis> > handle_type;
   typedef Basis                            basis_type;
 
@@ -153,10 +153,10 @@ public:
 
   /// Somehow the information of how to interpolate inside an element
   /// ended up in a separate class, as they need to share information
-  /// this construction was created to transfer data. 
+  /// this construction was created to transfer data.
   /// Hopefully in the future this class will disappear again.
   friend class ElemData;
-  
+
   class ElemData
   {
   public:
@@ -186,7 +186,7 @@ public:
     }
 
     inline
-    index_type edge0_index() const 
+    index_type edge0_index() const
     {
       return index_;
     }
@@ -201,10 +201,10 @@ public:
   //////////////////////////////////////////////////////////////////
 
   CurveMesh();
-  
-  /// Copy a mesh, needed for detaching the mesh from a field 
+
+  /// Copy a mesh, needed for detaching the mesh from a field
   CurveMesh(const CurveMesh &copy);
-  
+
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
   virtual CurveMesh *clone() const { return new CurveMesh(*this); }
@@ -212,9 +212,9 @@ public:
   MeshFacadeHandle getFacade() const
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
-  } 
+  }
 
-  virtual ~CurveMesh(); 
+  virtual ~CurveMesh();
 
   /// Obtain the virtual interface pointer
   virtual VMesh* vmesh() { return (vmesh_.get()); }
@@ -225,30 +225,30 @@ public:
 
   /// Topological dimension
   virtual int dimensionality() const { return 1; }
-  
-  /// What kind of mesh is this 
+
+  /// What kind of mesh is this
   /// structured = no connectivity data
   /// regular    = no node location data
-  virtual int  topology_geometry() const 
+  virtual int  topology_geometry() const
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
 
-  /// Return the transformation that takes a 0-1 space bounding box 
-  /// to the current bounding box of this mesh.  
+  /// Return the transformation that takes a 0-1 space bounding box
+  /// to the current bounding box of this mesh.
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
   virtual void compute_bounding_box();
-  
+
   /// Transform a field
   virtual void transform(const Core::Geometry::Transform &t);
-  
+
   /// Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
 
   /// Has this mesh normals.
-  virtual bool has_normals() const { return (false); }  
+  virtual bool has_normals() const { return (false); }
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
@@ -258,7 +258,7 @@ public:
 
   /// Get the basis class
   Basis& get_basis() { return basis_; }
-  
+
   /// begin/end iterators
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
@@ -269,7 +269,7 @@ public:
   void end(typename Edge::iterator &) const;
   void end(typename Face::iterator &) const;
   void end(typename Cell::iterator &) const;
-  
+
   /// Get the iteration sizes
   void size(typename Node::size_type &) const;
   void size(typename Edge::size_type &) const;
@@ -281,97 +281,97 @@ public:
   /// dimensional indices in some fields, these functions
   /// should deal with different pointer types.
   /// Use the virtual interface to avoid all this non sense.
-  inline void to_index(typename Node::index_type &index, index_type i) const 
+  inline void to_index(typename Node::index_type &index, index_type i) const
     { index = i; }
-  inline void to_index(typename Edge::index_type &index, index_type i) const 
+  inline void to_index(typename Edge::index_type &index, index_type i) const
     { index = i; }
-  inline void to_index(typename Face::index_type&, index_type) const 
+  inline void to_index(typename Face::index_type&, index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  inline void to_index(typename Cell::index_type&, index_type) const 
+  inline void to_index(typename Cell::index_type&, index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-    
-  
+
+
   /// Get the child elements of the given index.
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Node::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Edge::index_type idx) const
   { get_nodes_from_edge(array,idx); }
-  void get_nodes(typename Node::array_type&, 
+  void get_nodes(typename Node::array_type&,
                  typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_nodes(typename Node::array_type&, 
+  void get_nodes(typename Node::array_type&,
                  typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  void get_edges(typename Edge::array_type &array, 
+  void get_edges(typename Edge::array_type &array,
                  typename Node::index_type idx) const
   { get_edges_from_node(array,idx); }
   void get_edges(typename Edge::array_type &array,
                  typename Edge::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_edges(typename Edge::array_type&, 
+  void get_edges(typename Edge::array_type&,
                  typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_edges(typename Edge::array_type&, 
+  void get_edges(typename Edge::array_type&,
                  typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  void get_faces(typename Face::array_type&, 
+  void get_faces(typename Face::array_type&,
                  typename Node::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
   void get_faces(typename Face::array_type&,
                  typename Edge::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_faces(typename Face::array_type&, 
+  void get_faces(typename Face::array_type&,
                  typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_faces(typename Face::array_type&, 
+  void get_faces(typename Face::array_type&,
                  typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
 
-  void get_cells(typename Cell::array_type&, 
+  void get_cells(typename Cell::array_type&,
                  typename Node::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-  void get_cells(typename Cell::array_type&, 
+  void get_cells(typename Cell::array_type&,
                  typename Edge::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-  void get_cells(typename Cell::array_type&, 
+  void get_cells(typename Cell::array_type&,
                  typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-  void get_cells(typename Cell::array_type&, 
+  void get_cells(typename Cell::array_type&,
                  typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  void get_elems(typename Elem::array_type &array, 
+  void get_elems(typename Elem::array_type &array,
                  typename Node::index_type idx) const
   { get_edges_from_node(array,idx); }
-  void get_elems(typename Elem::array_type &array, 
+  void get_elems(typename Elem::array_type &array,
                  typename Edge::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_elems(typename Elem::array_type&, 
+  void get_elems(typename Elem::array_type&,
                  typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
   void get_elems(typename Face::array_type&,
                  typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  void get_delems(typename DElem::array_type &array, 
+  void get_delems(typename DElem::array_type &array,
                   typename Node::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_delems(typename DElem::array_type &array, 
+  void get_delems(typename DElem::array_type &array,
                   typename Edge::index_type idx) const
   { get_nodes_from_edge(array,idx); }
-  void get_delems(typename DElem::array_type&, 
+  void get_delems(typename DElem::array_type&,
                   typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_delems(typename DElem::array_type&, 
+  void get_delems(typename DElem::array_type&,
                   typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-    
-                
-  
+
+
+
   /// Generate the list of points that make up a sufficiently accurate
   /// piecewise linear approximation of an edge.
   template<class VECTOR>
@@ -407,15 +407,15 @@ public:
   const Core::Geometry::Point &point(typename Node::index_type i) const { return points_[i]; }
 
   /// Get the size of an element (length, area, volume)
-  double get_size(typename Node::index_type /*idx*/) const 
+  double get_size(typename Node::index_type /*idx*/) const
     { return 0.0; }
   double get_size(typename Edge::index_type idx) const;
   double get_size(typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
   double get_size(typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
- 
-  /// More specific names for get_size       
+
+  /// More specific names for get_size
   double get_length(typename Edge::index_type idx) const
     { return get_size(idx); }
   double get_area(typename Face::index_type) const
@@ -428,18 +428,18 @@ public:
   /// MANY ELEMENTS
   bool get_neighbor(typename Elem::index_type &neighbor,
                     typename Elem::index_type edge,
-                    typename DElem::index_type node) const  
+                    typename DElem::index_type node) const
   {
     return(get_elem_neighbor(neighbor,edge,node));
   }
 
-  /// These are more general neighbor functions      
+  /// These are more general neighbor functions
   void get_neighbors(std::vector<typename Node::index_type> &array,
                      typename Node::index_type idx) const
   {
     get_node_neighbors(array,idx);
   }
-                     
+
   bool get_neighbors(std::vector<typename Elem::index_type> &array,
                      typename Elem::index_type edge,
                      typename DElem::index_type idx) const
@@ -470,7 +470,7 @@ public:
   int get_weights(const Core::Geometry::Point &p, typename Edge::array_type &l, double *w);
 
   int get_weights(const Core::Geometry::Point &, typename Face::array_type &, double *)
-  { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }  
+  { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
   int get_weights(const Core::Geometry::Point &, typename Cell::array_type &, double *)
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
@@ -484,7 +484,7 @@ public:
   /// Normals for visualizations
   void get_normal(Core::Geometry::Vector&, typename Node::index_type) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have node normals."); }
-  
+
   template<class VECTOR, class INDEX1, class INDEX2>
   void get_normal(Core::Geometry::Vector&, VECTOR&, INDEX1, INDEX2) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have element normals."); }
@@ -495,10 +495,10 @@ public:
     points_.push_back(p);
     return static_cast<under_type>(points_.size() - 1);
   }
-  
+
   typename Node::index_type add_point(const Core::Geometry::Point &point)
     { return add_node(point); }
-    
+
   typename Edge::index_type add_edge(typename Node::index_type i1,
                                      typename Node::index_type i2)
   {
@@ -506,7 +506,7 @@ public:
     edges_.push_back(i2);
     return static_cast<index_type>((edges_.size()>>1)-1);
   }
-  
+
   template <class ARRAY>
   typename Elem::index_type add_elem(ARRAY a)
   {
@@ -515,7 +515,7 @@ public:
     edges_.push_back(static_cast<typename Node::index_type>(a[1]));
     return static_cast<index_type>((edges_.size()>>1)-1);
   }
-  
+
   /// Functions to improve memory management. Often one knows how many
   /// nodes/elements one needs, prereserving memory is often possible.
   void node_reserve(size_type s) { points_.reserve(static_cast<size_t>(s)); }
@@ -563,7 +563,7 @@ public:
   }
 
   /// Get the jacobian of the transformation. In case one wants the non inverted
-  /// version of this matrix. This is currentl here for completeness of the 
+  /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
@@ -584,9 +584,9 @@ public:
     J[8] = Jv2.z();
   }
 
-  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// Get the inverse jacobian of the transformation. This one is needed to
   /// translate local gradients into global gradients. Hence it is crucial for
-  /// calculating gradients of fields, or constructing finite elements.        
+  /// calculating gradients of fields, or constructing finite elements.
   template<class VECTOR, class INDEX>
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
@@ -605,7 +605,7 @@ public:
     J[6] = Jv2.x();
     J[7] = Jv2.y();
     J[8] = Jv2.z();
-    
+
     return (InverseMatrix3x3(J,Ji));
   }
 
@@ -618,25 +618,25 @@ public:
     double temp;
 
     basis_.derivate(basis_.unit_center,ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Core::Geometry::Vector v,w;
     Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     double min_jacobian = ScaledDetMatrix3P(Jv);
-    
+
     size_type num_vertices = static_cast<size_type>(basis_.number_of_vertices());
     for (size_type j=0;j < num_vertices;j++)
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
-      Jv.resize(3); 
+      Jv.resize(3);
       Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
       Jv[1] = v.asPoint();
       Jv[2] = w.asPoint();
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
@@ -650,25 +650,25 @@ public:
     double temp;
 
     basis_.derivate(basis_.unit_center,ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Core::Geometry::Vector v,w;
     Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
-    
+
     size_type num_vertices = static_cast<size_type>(basis_.number_of_vertices());
     for (size_type j=0;j < num_vertices;j++)
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
-      Jv.resize(3); 
+      Jv.resize(3);
       Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
       Jv[1] = v.asPoint();
       Jv[2] = w.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
@@ -677,21 +677,21 @@ public:
   bool locate_node(INDEX &idx, const Core::Geometry::Point &p) const
   {
     typename Node::size_type sz; size(sz);
-  
+
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
 
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
-    
+
     /// Check first guess
-    if (idx >= 0 && idx < sz) 
+    if (idx >= 0 && idx < sz)
     {
       if ((p - points_[idx]).length2() < epsilon2_) return (true);
-    }    
+    }
 
     double mindist = DBL_MAX;
-    
+
     while(ni != nie)
     {
       double dist = (p-points_[*ni]).length2();
@@ -699,7 +699,7 @@ public:
       {
         mindist = dist;
         idx = static_cast<INDEX>(*ni);
-        
+
         /// Exit if we cannot find one that is closer
         if (mindist < epsilon2_ ) return (true);
       }
@@ -714,20 +714,20 @@ public:
   bool locate_elem(INDEX &idx, const Core::Geometry::Point &p) const
   {
     if (basis_.polynomial_order() > 1) return elem_locate(idx, *this, p);
-    
+
     typename Elem::size_type sz; size(sz);
-    
+
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
-    
+
     double alpha;
-    
+
     /// Check whether the estimate given in idx is the point we are looking for
-    if (idx >= 0 && idx < sz) 
+    if (idx >= 0 && idx < sz)
     {
       if (inside2_p(idx,p,alpha)) return (true);
     }
-    
+
     /// Loop over all nodes to find one that is located inside
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
@@ -749,8 +749,8 @@ public:
   bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
     array.clear();
-    
-    /// Loop over all nodes to find one 
+
+    /// Loop over all nodes to find one
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
     typename Node::array_type nodes;
@@ -763,7 +763,7 @@ public:
       {
         size_t p=0;
         for (;p<array.size();p++) if (array[p] == typename ARRAY::value_type(*ei)) break;
-        if (p == array.size()) array.push_back(typename ARRAY::value_type(*ei));            
+        if (p == array.size()) array.push_back(typename ARRAY::value_type(*ei));
       }
       ++ei;
     }
@@ -777,21 +777,21 @@ public:
   bool locate_elem(INDEX &idx, ARRAY& coords, const Core::Geometry::Point &p) const
   {
     if (basis_.polynomial_order() > 1) return elem_locate(idx, *this, p);
-    
+
     typename Elem::size_type sz; size(sz);
-    
+
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
-    
+
     double alpha;
     coords.resize(1);
-    
+
     /// Check whether the estimate given in idx is the point we are looking for
-    if (idx >= 0 && idx < sz) 
+    if (idx >= 0 && idx < sz)
     {
       if (inside2_p(idx,p,coords[0])) return (true);
     }
-    
+
     /// Loop over all nodes to find one that finds
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
@@ -813,7 +813,7 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &idx, const Core::Geometry::Point &point) const
   {
     return(find_closest_node(pdist,result,idx,point,-1.0));
@@ -821,7 +821,7 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &idx, const Core::Geometry::Point &point,
                          double maxdist) const
   {
@@ -836,27 +836,27 @@ public:
 
     if (idx >= 0 && idx < sz)
     {
-      r = points_[idx]; 
+      r = points_[idx];
       dist = (point-r).length2();
-      
+
       if ( dist < epsilon2_ )
       {
         result = point;
         pdist = sqrt(dist);
         return (true);
-      }           
+      }
     }
 
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
-    
+
     double mindist = maxdist;
-    
+
     while(ni != nie)
     {
       r = points_[*ni];
       dist = (point-r).length2();
-      
+
       if ( dist < mindist )
       {
         mindist = dist;
@@ -882,14 +882,14 @@ public:
   {
     nodes.clear();
     double maxdist2 = maxdist*maxdist;
-    
+
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
-    
+
     while(ni != nie)
     {
       double dist = (point-points_[*ni]).length2();
-      
+
       if ( dist < maxdist2 )
       {
         nodes.push_back(static_cast<typename ARRAY::value_type>(*ni));
@@ -903,20 +903,20 @@ public:
 
   template <class ARRAY1, class ARRAY2>
   bool find_closest_nodes(ARRAY1 &distances,
-                          ARRAY2 &nodes, 
+                          ARRAY2 &nodes,
                           const Core::Geometry::Point &point, double maxdist) const
   {
     distances.clear();
     nodes.clear();
     double maxdist2 = maxdist*maxdist;
-    
+
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
-    
+
     while(ni != nie)
     {
       double dist = (point-points_[*ni]).length2();
-      
+
       if ( dist < maxdist2 )
       {
         nodes.push_back(static_cast<typename ARRAY2::value_type>(*ni));
@@ -930,10 +930,10 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double &pdist, 
-                         Core::Geometry::Point &result, 
+  bool find_closest_elem(double &pdist,
+                         Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &idx, 
+                         INDEX &idx,
                          const Core::Geometry::Point &p) const
   {
     return (find_closest_elem(pdist,result,coords,idx,p,-1.0));
@@ -941,15 +941,15 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double &pdist, 
-                         Core::Geometry::Point &result, 
+  bool find_closest_elem(double &pdist,
+                         Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &idx, 
+                         INDEX &idx,
                          const Core::Geometry::Point &p,
                          double maxdist) const
   {
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
-    
+
     typename Elem::size_type sz; size(sz);
 
     /// If there are no nodes we cannot find the closest one
@@ -968,26 +968,26 @@ public:
         coords[0] = alpha;
         pdist = sqrt(dist);
         return (true);
-      }           
+      }
     }
-    
+
     double mindist = maxdist;
     Core::Geometry::Point res;
 
     typename Elem::iterator ni; begin(ni);
     typename Elem::iterator nie; end(nie);
-    
+
     while(ni != nie)
     {
       double alpha;
-      dist = distance2_p(*ni,p,res,alpha);      
+      dist = distance2_p(*ni,p,res,alpha);
       if ( dist < mindist )
       {
         coords[0] = alpha;
         mindist = dist;
         idx = static_cast<INDEX>(*ni);
         result = res;
-        if (mindist < epsilon2_) 
+        if (mindist < epsilon2_)
         {
           pdist = sqrt(mindist);
           return (true);
@@ -1001,24 +1001,24 @@ public:
     pdist = sqrt(mindist);
     return (true);
   }
-  
+
   template <class INDEX>
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point &result, 
-                         INDEX &elem, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point &result,
+                         INDEX &elem,
                          const Core::Geometry::Point &p) const
-  { 
+  {
     StackVector<double,1> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
-  }  
-  
+  }
+
   /// Find the closest elements to a point
   template<class ARRAY>
-  bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_elems(double& pdist, Core::Geometry::Point &result,
                           ARRAY &elems, const Core::Geometry::Point &p) const
-  {  
+  {
     elems.clear();
-    
+
     typename Elem::size_type sz; size(sz);
 
     /// If there are no nodes we cannot find the closest one
@@ -1030,13 +1030,13 @@ public:
     double dist;
     double mindist = DBL_MAX;
     Core::Geometry::Point res;
-    
+
     while(ni != nie)
     {
       double dummy;
-      dist = distance2_p(*ni,p,res,dummy);    
-      
-      if (dist < mindist - epsilon2_) 
+      dist = distance2_p(*ni,p,res,dummy);
+
+      if (dist < mindist - epsilon2_)
       {
         elems.clear();
         result = res;
@@ -1045,7 +1045,7 @@ public:
       }
       else if (dist < mindist)
       {
-        elems.push_back(static_cast<typename ARRAY::value_type>(*ni));      
+        elems.push_back(static_cast<typename ARRAY::value_type>(*ni));
       }
       ++ni;
     }
@@ -1053,21 +1053,21 @@ public:
     pdist = sqrt(mindist);
     return (true);
   }
-  
+
   double get_epsilon() const
   { return (epsilon_); }
-  
+
   /// Export this class using the old Pio system
   virtual void io(Piostream&);
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
-  
+
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.
   static PersistentTypeID curvemesh_typeid;
-  
+
   /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return curvemesh_typeid.type; }
@@ -1142,12 +1142,12 @@ public:
   typename Edge::index_type delete_edges(typename Edge::index_type i1,
 					 typename Edge::index_type i2)
   {
-    CHECKARRAYBOUNDS(static_cast<index_type>(i1), 
-		     static_cast<index_type>(0), 
+    CHECKARRAYBOUNDS(static_cast<index_type>(i1),
+		     static_cast<index_type>(0),
 		     static_cast<index_type>(edges_.size()>>1));
 
-    CHECKARRAYBOUNDS(static_cast<index_type>(i2), 
-		     static_cast<index_type>(0), 
+    CHECKARRAYBOUNDS(static_cast<index_type>(i2),
+		     static_cast<index_type>(0),
 		     static_cast<index_type>((edges_.size()>>1)+1));
 
     typename std::vector<index_type>::iterator niter1;
@@ -1173,24 +1173,24 @@ protected:
   // as well as the STL vector. When an algorithm supports non linear
   // functions an STL vector is a better choice, in the other cases
   // often a StackVector is enough (The latter improves performance).
-   
+
   template<class ARRAY, class INDEX>
   inline void get_nodes_from_edge(ARRAY& array, INDEX idx) const
   {
-    array.resize(2); 
-    array[0] = static_cast<typename ARRAY::value_type>(edges_[2*idx]); 
+    array.resize(2);
+    array[0] = static_cast<typename ARRAY::value_type>(edges_[2*idx]);
     array[1] = static_cast<typename ARRAY::value_type>(edges_[2*idx+1]);
   }
-  
+
   template<class ARRAY, class INDEX>
   inline void get_edges_from_node(ARRAY& array, INDEX idx) const
   {
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
       "CurveMesh: Must call synchronize NODE_NEIGHBORS_E on CurveMesh first");
-    
+
     array.resize(node_neighbors_[idx].size());
     for (typename NodeNeighborMap::size_type i = 0; i < node_neighbors_[idx].size(); ++i)
-      array[i] = 
+      array[i] =
         static_cast<typename ARRAY::value_type>(node_neighbors_[idx][i]);
   }
 
@@ -1215,7 +1215,7 @@ protected:
   }
 
   template <class INDEX1, class INDEX2>
-  bool 
+  bool
   get_elem_neighbor(INDEX1 &neighbor, INDEX1 edge,INDEX2 node) const
   {
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
@@ -1223,12 +1223,12 @@ protected:
 
     if (node_neighbors_[node].size() > 1)
     {
-      if (node_neighbors_[node][0] == edge) 
+      if (node_neighbors_[node][0] == edge)
         neighbor = static_cast<INDEX1>(node_neighbors_[node][1]);
       else neighbor = static_cast<INDEX1>(node_neighbors_[node][0]);
-      return (true);    
+      return (true);
     }
-    return (false);      
+    return (false);
   }
 
 
@@ -1248,14 +1248,14 @@ protected:
     }
   }
 
-  
+
   template <class ARRAY, class INDEX1, class INDEX2>
   bool
   get_elem_neighbors(ARRAY &array, INDEX1 /*edge*/, INDEX2 idx) const
   {
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
                   "Must call synchronize NODE_NEIGHBORS_E on CurveMesh first");
-    
+
     typename NodeNeighborMap::size_type sz = node_neighbors_[idx].size();
     if (sz < 1) return (false);
 
@@ -1263,12 +1263,12 @@ protected:
     array.reserve(sz-1);
     for (typename NodeNeighborMap::size_type i=0; i<sz;i++)
     {
-      if (node_neighbors_[idx][i] != static_cast<typename ARRAY::value_type>(idx)) 
+      if (node_neighbors_[idx][i] != static_cast<typename ARRAY::value_type>(idx))
           array.push_back(typename ARRAY::value_type(node_neighbors_[idx][i]));
     }
     return (true);
   }
-  
+
   template <class ARRAY, class INDEX>
   void
   get_elem_neighbors(ARRAY &array, INDEX idx) const
@@ -1278,33 +1278,33 @@ protected:
                   "Must call synchronize NODE_NEIGHBORS_E on CurveMesh first");
     typename Node::index_type n1 = edges_[2*idx];
     typename Node::index_type n2 = edges_[2*idx+1];
-    
+
     typename NodeNeighborMap::size_type s1 = node_neighbors_[n1].size();
     typename NodeNeighborMap::size_type s2 = node_neighbors_[n2].size();
-    
+
     array.clear();
     array.reserve(s1+s2-2);
     for (typename NodeNeighborMap::size_type i=0; i<s1;i++)
     {
-      if (node_neighbors_[n1][i] != idx) 
+      if (node_neighbors_[n1][i] != idx)
         array.push_back(typename ARRAY::value_type(node_neighbors_[n1][i]));
     }
     for (typename NodeNeighborMap::size_type i=0; i<s2;i++)
     {
-      if (node_neighbors_[n2][i] != idx) 
+      if (node_neighbors_[n2][i] != idx)
         array.push_back(typename ARRAY::value_type(node_neighbors_[n2][i]));
     }
   }
 
   bool inside2_p(index_type idx, const Core::Geometry::Point &p, double& coord) const;
-  double distance2_p(index_type idx, const Core::Geometry::Point &p, 
+  double distance2_p(index_type idx, const Core::Geometry::Point &p,
                      Core::Geometry::Point& projection, double& coord) const;
-  
+
   void compute_node_neighbors();
 
   //////////////////////////////////////////////////////////////
   // Actual data stored in the mesh
-  
+
   /// Vector with the node locations
   std::vector<Core::Geometry::Point>           points_;
   /// Vector with connectivity data
@@ -1322,7 +1322,7 @@ protected:
   /// stored in the edges_ array.
   typedef std::vector<std::vector<typename Edge::index_type> > NodeNeighborMap;
   NodeNeighborMap         node_neighbors_;
-  Core::Geometry::BBox                    bbox_; 
+  Core::Geometry::BBox                    bbox_;
   double                  epsilon_;
   double                  epsilon2_;
   double                  epsilon3_;
@@ -1341,11 +1341,11 @@ CurveMesh<Basis>::CurveMesh() :
   epsilon_(0.0),
   epsilon2_(0.0)
 {
-  DEBUG_CONSTRUCTOR("CurveMesh")   
+  DEBUG_CONSTRUCTOR("CurveMesh")
   /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVCurveMesh(this));
 }
-  
+
 template<class Basis>
 CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
   Mesh(copy),
@@ -1355,7 +1355,7 @@ CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
   synchronized_(copy.synchronized_),
   synchronize_lock_("CurveMesh Lock")
 {
-  DEBUG_CONSTRUCTOR("CurveMesh")   
+  DEBUG_CONSTRUCTOR("CurveMesh")
 
   /// We need to lock before we can copy these as these
   /// structures are generate dynamically when they are
@@ -1363,23 +1363,23 @@ CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
   copy.synchronize_lock_.lock();
   node_neighbors_ = copy.node_neighbors_;
   synchronized_ |= copy.synchronized_ & NODE_NEIGHBORS_E;
-  
+
   // Make sure we got the synchronized version
   epsilon_ = copy.epsilon_;
-  epsilon2_ = copy.epsilon2_;  
+  epsilon2_ = copy.epsilon2_;
 
   copy.synchronize_lock_.unlock();
-  
+
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
   /// virtual interface class
   vmesh_.reset(CreateVCurveMesh(this));
 }
-  
+
 template<class Basis>
-CurveMesh<Basis>::~CurveMesh() 
+CurveMesh<Basis>::~CurveMesh()
 {
-  DEBUG_DESTRUCTOR("CurveMesh")   
+  DEBUG_DESTRUCTOR("CurveMesh")
 }
 
 
@@ -1510,7 +1510,7 @@ CurveMesh<Basis>::get_bounding_box() const
 }
 
 template <class Basis>
-void 
+void
 CurveMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
@@ -1556,7 +1556,7 @@ CurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
     *itr = t.project(*itr);
     ++itr;
   }
-  
+
   /// If we have nodes on the edges they should be transformed in
   /// the same way
   size_type num_enodes = static_cast<size_type>(basis_.size_node_values());
@@ -1567,7 +1567,7 @@ CurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
     p =t.project(p);
     basis_.set_node_value(p,i);
   }
-  
+
   /// Projecting derivates is more difficult
 }
 
@@ -1586,7 +1586,7 @@ CurveMesh<Basis>::get_size(typename Edge::index_type idx) const
   double total = 0.0L;
   std::vector<std::vector<double> >::iterator iter = coords.begin();
   std::vector<std::vector<double> >::iterator last = coords.begin() + 1;
-  while (last != coords.end()) 
+  while (last != coords.end())
   {
     std::vector<double> &c0 = *iter++;
     std::vector<double> &c1 = *last++;
@@ -1668,23 +1668,23 @@ CurveMesh<Basis>::synchronize(mask_type sync)
   /// Test whether we need to synchronize for any of the neighor function
   /// calls. If so compute the node_neighbor_ array, which we can use
   /// for the element neighbors as well.
-  
-  if (sync & (Mesh::NODE_NEIGHBORS_E|Mesh::ELEM_NEIGHBORS_E) 
+
+  if (sync & (Mesh::NODE_NEIGHBORS_E|Mesh::ELEM_NEIGHBORS_E)
       && !(synchronized_ & Mesh::NODE_NEIGHBORS_E))
   {
     compute_node_neighbors();
   }
-  
+
   if (sync & (Mesh::EPSILON_E|Mesh::LOCATE_E) && !(synchronized_ & Mesh::EPSILON_E))
   {
     if( points_.size() )
       epsilon_ = get_bounding_box().diagonal().length()*1e-8;
 
     epsilon2_ = epsilon_ * epsilon_;
-    synchronized_ |= Mesh::EPSILON_E;  
+    synchronized_ |= Mesh::EPSILON_E;
     synchronized_ |= Mesh::LOCATE_E;
   }
-  
+
   synchronize_lock_.unlock();
   return (true);
 }
@@ -1701,11 +1701,11 @@ template <class Basis>
 bool
 CurveMesh<Basis>::clear_synchronization()
 {
-  // Undo marking the synchronization 
+  // Undo marking the synchronization
   synchronize_lock_.lock();
   synchronized_ = Mesh::NODES_E | Mesh::EDGES_E | Mesh::ELEMS_E;
   // Free memory where possible
-  node_neighbors_.clear();  
+  node_neighbors_.clear();
   synchronize_lock_.unlock();
   return (true);
 }
@@ -1724,7 +1724,7 @@ CurveMesh<Basis>::compute_node_neighbors()
     node_neighbors_[edges_[2*i]].push_back(i);
     node_neighbors_[edges_[2*i+1]].push_back(i);
   }
-  synchronized_ |= Mesh::NODE_NEIGHBORS_E;  
+  synchronized_ |= Mesh::NODE_NEIGHBORS_E;
 }
 
 #define CURVE_MESH_VERSION 3
@@ -1756,7 +1756,7 @@ CurveMesh<Basis>::io(Piostream& stream)
   {
     Pio_index(stream, edges_);
   }
-  if (version >= 2) 
+  if (version >= 2)
   {
     basis_.io(stream);
   }
@@ -1895,21 +1895,21 @@ CurveMesh<Basis>::inside2_p(index_type i, const Core::Geometry::Point &p, double
 
   const Core::Geometry::Vector v = p0-p1;
   alpha = Dot(p0-p,v)/v.length2();
-  
+
   Core::Geometry::Point point;
   if (alpha < 0.0) { point = p0; alpha = 0.0; }
   else if (alpha > 1.0) { point = p1; alpha = 1.0; }
   else { point = (alpha*p1 + (1.0-alpha)*p0).asPoint(); }
-  
+
   if ((point - p).length2() < epsilon2_) return (true);
-  
+
   return (false);
 }
 
 
 template <class Basis>
 double
-CurveMesh<Basis>::distance2_p(index_type i, const Core::Geometry::Point& p, 
+CurveMesh<Basis>::distance2_p(index_type i, const Core::Geometry::Point& p,
                               Core::Geometry::Point& result, double& alpha) const
 {
   const index_type j = 2*i;
@@ -1922,7 +1922,7 @@ CurveMesh<Basis>::distance2_p(index_type i, const Core::Geometry::Point& p,
   if (alpha < 0.0) { result = p0; alpha = 0.0;}
   else if (alpha > 1.0) { result = p1; alpha = 1.0; }
   else { result = (alpha*p1 + (1.0-alpha)*p0).asPoint(); }
-  
+
   double dist = (result - p).length2();
   return (dist);
 }

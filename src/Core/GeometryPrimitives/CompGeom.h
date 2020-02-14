@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -56,30 +55,30 @@ namespace SCIRun {
 /// actually computes the distance to the line segment
 /// between the given points and not to the line itself.
 SCISHARE double
-distance_to_line2(const Point &p, const Point &a, const Point &b, 
+distance_to_line2(const Point &p, const Point &a, const Point &b,
                   const double epsilon = 1e-12);
 
 SCISHARE void
 distance_to_line2_aux(Point &result,
-                      const Point &p, const Point &a, const Point &b, 
+                      const Point &p, const Point &a, const Point &b,
                       const double epsilon = 1e-12);
 
 SCISHARE void
 distance_to_line2_aux(Point &result, int& node,
-                      const Point &p, const Point &a, const Point &b, 
+                      const Point &p, const Point &a, const Point &b,
                       const double epsilon = 1e-12);
 
 /// Compute the point on the triangle closest to the given point.
 /// The distance to the triangle will be (P - result).length())
 SCISHARE void
 closest_point_on_tri(Point &result, const Point &P,
-                     const Point &A, const Point &B, const Point &C, 
+                     const Point &A, const Point &B, const Point &C,
                      const double epsilon = 1e-12);
 
 SCISHARE void
 closest_point_on_tri(Point &result, int &edge, int& node,
-                     const Point &P, const Point &A, 
-                     const Point &B, const Point &C, 
+                     const Point &P, const Point &A,
+                     const Point &B, const Point &C,
                      const double epsilon = 1e-12);
 
 
@@ -87,8 +86,8 @@ closest_point_on_tri(Point &result, int &edge, int& node,
 /// for a flat element.
 SCISHARE void
 est_closest_point_on_quad(Point &result, const Point &P,
-                      const Point &A, const Point &B, 
-                      const Point &C, const Point &D, 
+                      const Point &A, const Point &B,
+                      const Point &C, const Point &D,
                       const double epsilon = 1e-12);
 
 

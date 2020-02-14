@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,22 +25,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
   In addition this code was derived from h5dump.c which is part of the
   HDF5 tools distribution. As such this copyright notice also applys:
 
 
-
   Copyright Notice and Statement for NCSA Hierarchical Data Format (HDF)
   Software Library and Utilities
 
-  NCSA HDF5 (Hierarchical Data Format 5) Software Library and Utilities 
-  Copyright 1998, 1999, 2000, 2001, 2002, 2009 by the Board of Trustees 
+  NCSA HDF5 (Hierarchical Data Format 5) Software Library and Utilities
+  Copyright 1998, 1999, 2000, 2001, 2002, 2009 by the Board of Trustees
   of the University of Illinois.  All rights reserved.
 
   Contributors: National Center for Supercomputing Applications (NCSA) at the
-  University of Illinois at Urbana-Champaign (UIUC), Lawrence Livermore 
-  National Laboratory (LLNL), Sandia National Laboratories (SNL), Los Alamos 
+  University of Illinois at Urbana-Champaign (UIUC), Lawrence Livermore
+  National Laboratory (LLNL), Sandia National Laboratories (SNL), Los Alamos
   National Laboratory (LANL), Jean-loup Gailly and Mark Adler (gzip library).
 
   Redistribution and use in source and binary forms, with or without
@@ -60,8 +59,8 @@
   changed and the date of the change.
 
   4.  All publications or advertising materials mentioning features or use of
-  this software are asked, but not required, to acknowledge that it was 
-  developed by the National Center for Supercomputing Applications at the 
+  this software are asked, but not required, to acknowledge that it was
+  developed by the National Center for Supercomputing Applications at the
   University of Illinois at Urbana-Champaign and to credit the contributors.
 
   5.  Neither the name of the University nor the names of the Contributors may
@@ -76,7 +75,7 @@
   advised of the possibility of such damage.
 
   --------------------------------------------------------------------------
-  Portions of HDF5 were developed with support from the University of 
+  Portions of HDF5 were developed with support from the University of
   California, Lawrence Livermore National Laboratory (UC LLNL).
   The following statement applies to those portions of the product
   and must be retained in any redistribution of source code, binaries,
@@ -84,25 +83,25 @@
 
   This work was partially produced at the University of California,
   Lawrence Livermore National Laboratory (UC LLNL) under contract no.
-  W-7405-ENG-48 (Contract 48) between the U.S. Department of Energy 
-  (DOE) and The Regents of the University of California (University) 
+  W-7405-ENG-48 (Contract 48) between the U.S. Department of Energy
+  (DOE) and The Regents of the University of California (University)
   for the operation of UC LLNL.
 
   DISCLAIMER:
-  This work was prepared as an account of work sponsored by an agency 
-  of the United States Government.  Neither the United States 
-  Government nor the University of California nor any of their 
-  employees, makes any warranty, express or implied, or assumes any 
-  liability or responsibility for the accuracy, completeness, or 
-  usefulness of any information, apparatus, product, or process 
+  This work was prepared as an account of work sponsored by an agency
+  of the United States Government.  Neither the United States
+  Government nor the University of California nor any of their
+  employees, makes any warranty, express or implied, or assumes any
+  liability or responsibility for the accuracy, completeness, or
+  usefulness of any information, apparatus, product, or process
   disclosed, or represents that its use would not infringe privately-
-  owned rights.  Reference herein to any specific commercial products, 
-  process, or service by trade name, trademark, manufacturer, or 
-  otherwise, does not necessarily constitute or imply its endorsement, 
-  recommendation, or favoring by the United States Government or the 
-  University of California.  The views and opinions of authors 
-  expressed herein do not necessarily state or reflect those of the 
-  United States Government or the University of California, and shall 
+  owned rights.  Reference herein to any specific commercial products,
+  process, or service by trade name, trademark, manufacturer, or
+  otherwise, does not necessarily constitute or imply its endorsement,
+  recommendation, or favoring by the United States Government or the
+  University of California.  The views and opinions of authors
+  expressed herein do not necessarily state or reflect those of the
+  United States Government or the University of California, and shall
   not be used for advertising or product endorsement purposes.
   --------------------------------------------------------------------------
 */
@@ -191,7 +190,7 @@ WriteHDF5DumpFile::file(const string fname) {
   if( path_.size() == 1 || path.find("/") == 0 )
     path_.push_back( path );
   // Relative path
-  else 
+  else
     path_.push_back( path_[path.size()-1] + string("/") + path );
 
   tab();
@@ -207,7 +206,7 @@ WriteHDF5DumpFile::file(const string fname) {
     error_msg_ = string("Unable to dump root group");
     status = -1;
   }
-  
+
   if (H5Gclose(group_id) < 0) {
     error_msg_ = "Unable to close root group";
     status = -1;
@@ -254,13 +253,13 @@ WriteHDF5DumpFile::group(hid_t group_id, const char *name ) {
     tab();
     *iostr_ << "GROUP \"" << name << "\" {" << endl;
     indent_++;
-    
+
     H5Aiterate(group_id, H5_INDEX_NAME, H5_ITER_INC, 0,
 	       hdf5_attr_iter, this);
 
     H5Giterate(group_id, ".", 0,
 	       hdf5_group_iter, this);
-    
+
     H5Literate(group_id, H5_INDEX_NAME, H5_ITER_INC, 0,
 	       hdf5_link_iter, this);
 
@@ -283,7 +282,7 @@ WriteHDF5DumpFile::all(hid_t obj_id, const char *name) {
   hid_t dataset_id;
 
   H5Gget_objinfo(obj_id, name, 0, &statbuf);
-  
+
   switch (statbuf.type) {
   case H5G_GROUP:
     if ((group_id = H5Gopen(obj_id, name, H5P_DEFAULT)) < 0) {
@@ -327,7 +326,7 @@ WriteHDF5DumpFile::link(hid_t link_id, const char *name) {
   herr_t status = 0;
 
   H5L_info_t linfo;
-      
+
   if( H5Lget_info( link_id, name, &linfo, H5P_DEFAULT ) < 0 ) {
     error_msg_ = string("Unable to get link info \"") + name + "\"";
     status = -1;
@@ -357,7 +356,7 @@ WriteHDF5DumpFile::link(hid_t link_id, const char *name) {
 	  // Absolute path
 	  if( filename[0] == '/')
 	    file(filename);
-	  
+
 	  // Relative path so attach the parent path to it.
 	  else if( filename[0] == '.' && filename[1] == '/')
 	    file(path_[path_.size()-1] + string("/") + string(&(filename[2])));
@@ -423,12 +422,12 @@ WriteHDF5DumpFile::attr(hid_t group_id, const char *name) {
     }
 
     H5Aclose(attr_id);
-  }    
+  }
 
   indent_--;
   tab();
   *iostr_ << "}" << endl;
-  
+
   return status;
 }
 
@@ -449,7 +448,7 @@ WriteHDF5DumpFile::dataset(hid_t dataset_id, const char *name) {
 //     *iostr_ << "HARDLINK \"" << name << "\" {" << endl;
 //     tab();
 //     *iostr_ << "}" << endl;
-    
+
   } else {
     dataset_ids.push_back( statbuf.objno[0] );
 
@@ -472,7 +471,7 @@ WriteHDF5DumpFile::dataset(hid_t dataset_id, const char *name) {
     } else {
       H5Sclose(file_space_id);
 
-      /*    
+      /*
 	    if( data(dataset_id, H5G_DATASET, iostr_) < 0 ) {
 	    error_msg_ = "Unable to dump dataset data \"" + name + "\"";
 	    status = -1;
@@ -542,13 +541,13 @@ WriteHDF5DumpFile::datatype(hid_t obj_id, hid_t type)
   case H5T_COMPOUND:
     *iostr_ << "Compound - Unsupported";
     break;
-      
+
   case H5T_REFERENCE:
     *iostr_ << "Reference";
     if( type == H5G_DATASET )
       *iostr_ << " - Unsupported";
     break;
-      
+
   default:
     *iostr_ << "Unsupported or unknown data type";
     break;
@@ -595,7 +594,7 @@ WriteHDF5DumpFile::dataspace(hid_t file_space_id) {
 
       for( int i = 1; i < ndims; i++ )
 	*iostr_ << ", " << dims[i];
-      
+
       *iostr_ << " ) }" << endl;
 
       delete dims;
@@ -628,10 +627,10 @@ WriteHDF5DumpFile::data(hid_t obj_id, hid_t type) {
   switch (H5Tget_class(type_id)) {
   case H5T_STRING:
     // String
-    if(H5Tis_variable_str(type_id)) {                    
-      mem_type_id = H5Tcopy(H5T_C_S1);                        
-      H5Tset_size(mem_type_id, H5T_VARIABLE);                 
-    } else {                                      
+    if(H5Tis_variable_str(type_id)) {
+      mem_type_id = H5Tcopy(H5T_C_S1);
+      H5Tset_size(mem_type_id, H5T_VARIABLE);
+    } else {
       mem_type_id = H5Tcopy(type_id);
       H5Tset_cset(mem_type_id, H5T_CSET_ASCII);
     }
@@ -671,7 +670,7 @@ WriteHDF5DumpFile::data(hid_t obj_id, hid_t type) {
     return -1;
   }
 
-    
+
   /* Get the rank (number of dims) in the space. */
   int ndims = H5Sget_simple_extent_ndims(file_space_id);
 
@@ -711,7 +710,7 @@ WriteHDF5DumpFile::data(hid_t obj_id, hid_t type) {
 
   if( type == H5G_DATASET )
     status = H5Dread(obj_id, mem_type_id,
-		     H5S_ALL, H5S_ALL, H5P_DEFAULT, 
+		     H5S_ALL, H5S_ALL, H5P_DEFAULT,
 		     data);
   else
     status = H5Aread(obj_id, mem_type_id, data);
@@ -830,4 +829,3 @@ WriteHDF5DumpFile::data(hid_t obj_id, hid_t type) {
 } // End namespace SCIRun
 
 #endif  // HAVE_HDF5
-

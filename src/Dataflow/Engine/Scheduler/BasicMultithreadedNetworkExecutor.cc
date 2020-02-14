@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -42,7 +42,7 @@ namespace
 {
   struct ParallelExecution : public WaitsForStartupInitialization
   {
-    ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock) 
+    ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
       : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
     {}
 

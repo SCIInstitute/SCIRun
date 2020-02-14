@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -2186,11 +2185,11 @@ LatVolMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry:
   const double njj = static_cast<double>(nj_-1);
   const double nkk = static_cast<double>(nk_-1);
 
-  if (rx < 0.0) rx = 0.0; 
+  if (rx < 0.0) rx = 0.0;
   if (rx > nii) rx = nii;
   if (ry < 0.0) ry = 0.0;
   if (ry > njj) ry = njj;
-  if (rz < 0.0) rz = 0.0; 
+  if (rz < 0.0) rz = 0.0;
   if (rz > nkk) rz = nkk;
 
   node.i_ = static_cast<index_type>(rx);
@@ -2222,11 +2221,11 @@ LatVolMesh<Basis>::find_closest_node(double& pdist,
   const double njj = static_cast<double>(nj_-1);
   const double nkk = static_cast<double>(nk_-1);
 
-  if (rx < 0.0) rx = 0.0; 
+  if (rx < 0.0) rx = 0.0;
   if (rx > nii) rx = nii;
-  if (ry < 0.0) ry = 0.0; 
+  if (ry < 0.0) ry = 0.0;
   if (ry > njj) ry = njj;
-  if (rz < 0.0) rz = 0.0; 
+  if (rz < 0.0) rz = 0.0;
   if (rz > nkk) rz = nkk;
 
   result = transform_.project(Core::Geometry::Point(rx,ry,rz));
@@ -2276,11 +2275,11 @@ LatVolMesh<Basis>::find_closest_elems(double& pdist,
   const double njj = static_cast<double>(nj_-2);
   //const double nkk = static_cast<double>(nk_-2);
 
-  if (ii < 0.0) ii = 0.0; 
+  if (ii < 0.0) ii = 0.0;
   if (ii > nii) ii = nii;
-  if (jj < 0.0) jj = 0.0; 
+  if (jj < 0.0) jj = 0.0;
   if (jj > njj) jj = njj;
-  if (jj < 0.0) jj = 0.0; 
+  if (jj < 0.0) jj = 0.0;
   if (jj > njj) jj = njj;
   const double fii = floor(ii);
   const double fjj = floor(jj);

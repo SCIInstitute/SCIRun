@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Mesh/MeshTraits.h
 
 ///////////////////////////
@@ -33,7 +33,7 @@
 ///////////////////////////
 
 #ifndef CORE_DATATYPES_MESHTRAITS_H
-#define CORE_DATATYPES_MESHTRAITS_H 
+#define CORE_DATATYPES_MESHTRAITS_H
 
 #include <vector>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
@@ -48,11 +48,11 @@ namespace Datatypes {
   class MeshFacade;
 
   template <class VirtualMeshType>
-  class MeshTraits 
+  class MeshTraits
   {
-  public: 
-    typedef SCIRun::mask_type                  mask_type;  
-    typedef SCIRun::index_type                 under_type;  
+  public:
+    typedef SCIRun::mask_type                  mask_type;
+    typedef SCIRun::index_type                 under_type;
     typedef SCIRun::index_type                 index_type;
     typedef SCIRun::index_type                 size_type;
     typedef std::vector<index_type>            array_type;
@@ -69,4 +69,3 @@ namespace Datatypes {
 }}}
 
 #endif
-
