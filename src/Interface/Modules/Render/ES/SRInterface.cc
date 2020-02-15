@@ -596,6 +596,7 @@ void SRInterface::runGCOnNextExecution()
 
     glm::mat4 SRInterface::getStaticCameraViewProjection()
     {
+      // TODO: move this matrix to SRCamera?
       auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       return cam->data.viewProjection;
     }
