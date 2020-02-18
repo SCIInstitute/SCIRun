@@ -61,6 +61,8 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
     colorMapNameComboBox_->addItem(QString::fromStdString(colorMapName));
   }
 
+  colorMapNameComboBox_->addItem(QString::fromStdString("Custom"));
+
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
   connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
@@ -69,6 +71,12 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
+
+  connect(customColorButton0_, SIGNAL(clicked()), this, SLOT(selectCustomColor0()));
+  connect(customColorButton1_, SIGNAL(clicked()), this, SLOT(selectCustomColor1()));
+
+  customColors_[0] = colorFromState(Parameters::CustomColor0);
+  customColors_[1] = colorFromState(Parameters::CustomColor1);
 
   auto defaultMap = StandardColorMapFactory::create();
   auto rainbowIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
@@ -91,6 +99,24 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
 }
 
+void CreateStandardColorMapDialog::selectCustomColor0()
+{
+  auto newColor = QColorDialog::getColor(customColors_[0], this, "Choose color");
+  if (newColor.isValid()) customColors_[0] = newColor;
+
+  colorToState(Parameters::CustomColor0, customColors_[0]);
+  updateColorMapPreview();
+}
+
+void CreateStandardColorMapDialog::selectCustomColor1()
+{
+  auto newColor = QColorDialog::getColor(customColors_[1], this, "Choose color");
+  if (newColor.isValid()) customColors_[1] = newColor;
+
+  colorToState(Parameters::CustomColor1, customColors_[1]);
+  updateColorMapPreview();
+}
+
 void CreateStandardColorMapDialog::pullSpecial()
 {
   auto pointsVec = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
@@ -108,12 +134,23 @@ void CreateStandardColorMapDialog::pullSpecial()
   }
 }
 
+static ColorRGB toColorRGB(QColor& in)
+{
+  return ColorRGB(in.red() / 255.0f, in.green() / 255.0f, in.blue() / 255.0f);
+}
+
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 {
-  auto cm = StandardColorMapFactory::create(s.toStdString(), resolutionSlider_->value(),
-    static_cast<double>(shiftSlider_->value()) / 100.,
-    invertCheck_->isChecked());
-  previewColorMap_->setStyleSheet(buildGradientString(*cm));
+  std::vector<ColorRGB> customData = {toColorRGB(customColors_[0]), toColorRGB(customColors_[1])};
+  ColorMapHandle cmap;
+  cmap = (s.toStdString() == "Custom" ) ?
+    StandardColorMapFactory::create(customData, s.toStdString(), resolutionSlider_->value(),
+      static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked()) :
+    StandardColorMapFactory::create(s.toStdString(), resolutionSlider_->value(),
+      static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked());
+
+  StandardColorMapFactory::create();
+  previewColorMap_->setStyleSheet(buildGradientString(*cmap));
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()

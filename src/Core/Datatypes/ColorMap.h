@@ -40,34 +40,34 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class ColorMapStrategy;
-  typedef boost::shared_ptr<ColorMapStrategy> ColorMapStrategyHandle;
-
   class SCISHARE ColorMap : public Datatype
   {
   public:
     // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
     // default input range, we need to transform by default the data into [0,1] range.
-    explicit ColorMap(ColorMapStrategyHandle color,
-      const std::string& name = "Rainbow", const size_t resolution = 256,
-                        const double shift = 0.0, const bool invert = false,
-                        const double rescale_scale = .5, const double rescale_shift = 1.0,
-                        const std::vector<double>& alphaPoints = {});
-                        //TODO cbright: pass in alpha vector
+    explicit ColorMap(const std::vector<ColorRGB>& color,
+      const std::string& name = "Rainbow", const size_t resolution = 256, const double shift = 0.0,
+      const bool invert = false, const double rescale_scale = 0.5, const double rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
+
     virtual ColorMap* clone() const override;
 
-    ColorMapStrategyHandle getColorStrategy() const { return color_; }
-    std::string getColorMapName() const;
-    size_t getColorMapResolution() const;
-    double getColorMapShift() const;
-    bool getColorMapInvert() const;
-    double getColorMapRescaleScale() const;
-    double getColorMapRescaleShift() const;
+    std::vector<ColorRGB> getColorData() const {return colorData_;}
+    std::string getColorMapName() const {return nameInfo_;}
+    size_t getColorMapResolution() const {return resolution_;}
+    double getColorMapShift() const {return shift_;}
+    bool getColorMapInvert() const {return invert_;}
+    double getColorMapRescaleScale() const {return rescale_scale_;}
+    double getColorMapRescaleShift() const {return rescale_shift_;}
     std::vector<double> getAlphaLookup() const {return alphaLookup_;}
 
     ColorRGB valueToColor(double scalar) const;
     ColorRGB valueToColor(Core::Geometry::Tensor &tensor) const;
     ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
+
+    double valueToIndex(double scalar) const;
+    double valueToIndex(Core::Geometry::Tensor &tensor) const;
+    double valueToIndex(const Core::Geometry::Vector &vector) const;
 
     virtual std::string dynamic_type_name() const override { return "ColorMap"; }
 
@@ -78,50 +78,31 @@ namespace Datatypes {
     ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
     double alpha(double transformedValue) const;
 
-    std::vector<ColorRGB> color_;
-    ///<< The colormap's name.
-    std::string nameInfo_;
-    ///<< The resolution of the map [2,256].
-    size_t resolution_;
-    ///<< The gamma shift.
-    double shift_;
-    ///<< Whether to invert the map or not.
-    bool invert_;
-    ///<< Rescaling scale (usually 1. / (data_max - data_min) ).
-    double rescale_scale_;
-    ///<< Rescaling shift (usually -data_min). Shift happens before scale.
-    double rescale_shift_;
-
+    std::vector<ColorRGB> colorData_;
+    std::string nameInfo_; //The colormap's name.
+    size_t resolution_; //The resolution of the map [2,256].
+    double shift_; //The gamma shift.
+    bool invert_; //Whether to invert the map or not.
+    double rescale_scale_; //Rescaling scale (usually 1. / (data_max - data_min) ).
+    double rescale_shift_; //Rescaling shift (usually -data_min). Shift happens before scale.
     std::vector<double> alphaLookup_;
-
-    std::vector<ColorRGB> customColors_ {{0.0, 0.0, 0.5}, {0.5, 0.0, 0.0}};
-  };
-
-  class SCISHARE ColorMapStrategy
-  {
-  public:
-    virtual ~ColorMapStrategy() {}
-    virtual ColorRGB getColorMapVal(double v) const = 0;
-  };
-
-  //TODO: not sure this needs to be abstract
-  class SCISHARE AlphaMapping
-  {
-  public:
-    virtual ~AlphaMapping() {}
-    virtual double alpha(double transformedValue) const = 0;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
   {
   public:
    // See explanation for defaults above in ColorMap Constructor
-    static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
-                                    const double &shift = 0.0, const bool &invert = false,
-                                    const double &rescale_scale = .5, const double &rescale_shift = 1.0,
-                                    const std::vector<double>& alphaPoints = {});
-    typedef std::vector<std::string> NameList;
-    static NameList getList();
+    static ColorMapHandle create(const std::string& name = "Rainbow",
+      const size_t &resolution = 256, const double &shift = 0.0, const bool &invert = false,
+      const double &rescale_scale = 0.5,  const double &rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
+
+    static ColorMapHandle create(const std::vector<ColorRGB>& colorData,
+      const std::string& name = "Custom", const size_t &resolution = 256, const double &shift = 0.0,
+      const bool &invert = false, const double &rescale_scale = 0.5, const double &rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
+
+    static std::vector<std::string> getList();
   private:
     StandardColorMapFactory() = delete;
   };

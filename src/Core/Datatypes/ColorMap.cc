@@ -98,9 +98,67 @@ const static std::vector<ColorRGB> mixedRainbowData = {{0.000000, 0.000000, 0.51
 
 const static std::vector<ColorRGB> mixedGrayScaleData = {{0.000000, 0.000000, 0.000000}, {0.188235, 0.188235, 0.188235}, {0.376471, 0.376471, 0.376471}, {0.564706, 0.564706, 0.564706}, {0.752941, 0.752941, 0.752941}, {0.941176, 0.941176, 0.941176}, {0.003922, 0.003922, 0.003922}, {0.192157, 0.192157, 0.192157}, {0.380392, 0.380392, 0.380392}, {0.568627, 0.568627, 0.568627}, {0.756863, 0.756863, 0.756863}, {0.945098, 0.945098, 0.945098}, {0.007843, 0.007843, 0.007843}, {0.196078, 0.196078, 0.196078}, {0.384314, 0.384314, 0.384314}, {0.572549, 0.572549, 0.572549}, {0.760784, 0.760784, 0.760784}, {0.949020, 0.949020, 0.949020}, {0.011765, 0.011765, 0.011765}, {0.200000, 0.200000, 0.200000}, {0.388235, 0.388235, 0.388235}, {0.576471, 0.576471, 0.576471}, {0.764706, 0.764706, 0.764706}, {0.952941, 0.952941, 0.952941}, {0.015686, 0.015686, 0.015686}, {0.203922, 0.203922, 0.203922}, {0.392157, 0.392157, 0.392157}, {0.580392, 0.580392, 0.580392}, {0.768627, 0.768627, 0.768627}, {0.956863, 0.956863, 0.956863}, {0.019608, 0.019608, 0.019608}, {0.207843, 0.207843, 0.207843}, {0.396078, 0.396078, 0.396078}, {0.584314, 0.584314, 0.584314}, {0.772549, 0.772549, 0.772549}, {0.960784, 0.960784, 0.960784}, {0.023529, 0.023529, 0.023529}, {0.211765, 0.211765, 0.211765}, {0.400000, 0.400000, 0.400000}, {0.588235, 0.588235, 0.588235}, {0.776471, 0.776471, 0.776471}, {0.964706, 0.964706, 0.964706}, {0.027451, 0.027451, 0.027451}, {0.215686, 0.215686, 0.215686}, {0.403922, 0.403922, 0.403922}, {0.592157, 0.592157, 0.592157}, {0.780392, 0.780392, 0.780392}, {0.968627, 0.968627, 0.968627}, {0.031373, 0.031373, 0.031373}, {0.219608, 0.219608, 0.219608}, {0.407843, 0.407843, 0.407843}, {0.596078, 0.596078, 0.596078}, {0.784314, 0.784314, 0.784314}, {0.972549, 0.972549, 0.972549}, {0.035294, 0.035294, 0.035294}, {0.223529, 0.223529, 0.223529}, {0.411765, 0.411765, 0.411765}, {0.600000, 0.600000, 0.600000}, {0.788235, 0.788235, 0.788235}, {0.976471, 0.976471, 0.976471}, {0.039216, 0.039216, 0.039216}, {0.227451, 0.227451, 0.227451}, {0.415686, 0.415686, 0.415686}, {0.603922, 0.603922, 0.603922}, {0.792157, 0.792157, 0.792157}, {0.980392, 0.980392, 0.980392}, {0.043137, 0.043137, 0.043137}, {0.231373, 0.231373, 0.231373}, {0.419608, 0.419608, 0.419608}, {0.607843, 0.607843, 0.607843}, {0.796078, 0.796078, 0.796078}, {0.984314, 0.984314, 0.984314}, {0.047059, 0.047059, 0.047059}, {0.235294, 0.235294, 0.235294}, {0.423529, 0.423529, 0.423529}, {0.611765, 0.611765, 0.611765}, {0.800000, 0.800000, 0.800000}, {0.988235, 0.988235, 0.988235}, {0.050980, 0.050980, 0.050980}, {0.239216, 0.239216, 0.239216}, {0.427451, 0.427451, 0.427451}, {0.615686, 0.615686, 0.615686}, {0.803922, 0.803922, 0.803922}, {0.992157, 0.992157, 0.992157}, {0.054902, 0.054902, 0.054902}, {0.243137, 0.243137, 0.243137}, {0.431373, 0.431373, 0.431373}, {0.619608, 0.619608, 0.619608}, {0.807843, 0.807843, 0.807843}, {0.996078, 0.996078, 0.996078}, {0.058824, 0.058824, 0.058824}, {0.247059, 0.247059, 0.247059}, {0.435294, 0.435294, 0.435294}, {0.623529, 0.623529, 0.623529}, {0.811765, 0.811765, 0.811765}, {1.000000, 1.000000, 1.000000}, {0.062745, 0.062745, 0.062745}, {0.250980, 0.250980, 0.250980}, {0.439216, 0.439216, 0.439216}, {0.627451, 0.627451, 0.627451}, {0.815686, 0.815686, 0.815686}, {0.066667, 0.066667, 0.066667}, {0.254902, 0.254902, 0.254902}, {0.443137, 0.443137, 0.443137}, {0.631373, 0.631373, 0.631373}, {0.819608, 0.819608, 0.819608}, {0.070588, 0.070588, 0.070588}, {0.258824, 0.258824, 0.258824}, {0.447059, 0.447059, 0.447059}, {0.635294, 0.635294, 0.635294}, {0.823529, 0.823529, 0.823529}, {0.074510, 0.074510, 0.074510}, {0.262745, 0.262745, 0.262745}, {0.450980, 0.450980, 0.450980}, {0.639216, 0.639216, 0.639216}, {0.827451, 0.827451, 0.827451}, {0.078431, 0.078431, 0.078431}, {0.266667, 0.266667, 0.266667}, {0.454902, 0.454902, 0.454902}, {0.643137, 0.643137, 0.643137}, {0.831373, 0.831373, 0.831373}, {0.082353, 0.082353, 0.082353}, {0.270588, 0.270588, 0.270588}, {0.458824, 0.458824, 0.458824}, {0.647059, 0.647059, 0.647059}, {0.835294, 0.835294, 0.835294}, {0.086275, 0.086275, 0.086275}, {0.274510, 0.274510, 0.274510}, {0.462745, 0.462745, 0.462745}, {0.650980, 0.650980, 0.650980}, {0.839216, 0.839216, 0.839216}, {0.090196, 0.090196, 0.090196}, {0.278431, 0.278431, 0.278431}, {0.466667, 0.466667, 0.466667}, {0.654902, 0.654902, 0.654902}, {0.843137, 0.843137, 0.843137}, {0.094118, 0.094118, 0.094118}, {0.282353, 0.282353, 0.282353}, {0.470588, 0.470588, 0.470588}, {0.658824, 0.658824, 0.658824}, {0.847059, 0.847059, 0.847059}, {0.098039, 0.098039, 0.098039}, {0.286275, 0.286275, 0.286275}, {0.474510, 0.474510, 0.474510}, {0.662745, 0.662745, 0.662745}, {0.850980, 0.850980, 0.850980}, {0.101961, 0.101961, 0.101961}, {0.290196, 0.290196, 0.290196}, {0.478431, 0.478431, 0.478431}, {0.666667, 0.666667, 0.666667}, {0.854902, 0.854902, 0.854902}, {0.105882, 0.105882, 0.105882}, {0.294118, 0.294118, 0.294118}, {0.482353, 0.482353, 0.482353}, {0.670588, 0.670588, 0.670588}, {0.858824, 0.858824, 0.858824}, {0.109804, 0.109804, 0.109804}, {0.298039, 0.298039, 0.298039}, {0.486275, 0.486275, 0.486275}, {0.674510, 0.674510, 0.674510}, {0.862745, 0.862745, 0.862745}, {0.113725, 0.113725, 0.113725}, {0.301961, 0.301961, 0.301961}, {0.490196, 0.490196, 0.490196}, {0.678431, 0.678431, 0.678431}, {0.866667, 0.866667, 0.866667}, {0.117647, 0.117647, 0.117647}, {0.305882, 0.305882, 0.305882}, {0.494118, 0.494118, 0.494118}, {0.682353, 0.682353, 0.682353}, {0.870588, 0.870588, 0.870588}, {0.121569, 0.121569, 0.121569}, {0.309804, 0.309804, 0.309804}, {0.498039, 0.498039, 0.498039}, {0.686275, 0.686275, 0.686275}, {0.874510, 0.874510, 0.874510}, {0.125490, 0.125490, 0.125490}, {0.313726, 0.313726, 0.313726}, {0.501961, 0.501961, 0.501961}, {0.690196, 0.690196, 0.690196}, {0.878431, 0.878431, 0.878431}, {0.129412, 0.129412, 0.129412}, {0.317647, 0.317647, 0.317647}, {0.505882, 0.505882, 0.505882}, {0.694118, 0.694118, 0.694118}, {0.882353, 0.882353, 0.882353}, {0.133333, 0.133333, 0.133333}, {0.321569, 0.321569, 0.321569}, {0.509804, 0.509804, 0.509804}, {0.698039, 0.698039, 0.698039}, {0.886275, 0.886275, 0.886275}, {0.137255, 0.137255, 0.137255}, {0.325490, 0.325490, 0.325490}, {0.513726, 0.513726, 0.513726}, {0.701961, 0.701961, 0.701961}, {0.890196, 0.890196, 0.890196}, {0.141176, 0.141176, 0.141176}, {0.329412, 0.329412, 0.329412}, {0.517647, 0.517647, 0.517647}, {0.705882, 0.705882, 0.705882}, {0.894118, 0.894118, 0.894118}, {0.145098, 0.145098, 0.145098}, {0.333333, 0.333333, 0.333333}, {0.521569, 0.521569, 0.521569}, {0.709804, 0.709804, 0.709804}, {0.898039, 0.898039, 0.898039}, {0.149020, 0.149020, 0.149020}, {0.337255, 0.337255, 0.337255}, {0.525490, 0.525490, 0.525490}, {0.713726, 0.713726, 0.713726}, {0.901961, 0.901961, 0.901961}, {0.152941, 0.152941, 0.152941}, {0.341176, 0.341176, 0.341176}, {0.529412, 0.529412, 0.529412}, {0.717647, 0.717647, 0.717647}, {0.905882, 0.905882, 0.905882}, {0.156863, 0.156863, 0.156863}, {0.345098, 0.345098, 0.345098}, {0.533333, 0.533333, 0.533333}, {0.721569, 0.721569, 0.721569}, {0.909804, 0.909804, 0.909804}, {0.160784, 0.160784, 0.160784}, {0.349020, 0.349020, 0.349020}, {0.537255, 0.537255, 0.537255}, {0.725490, 0.725490, 0.725490}, {0.913725, 0.913725, 0.913725}, {0.164706, 0.164706, 0.164706}, {0.352941, 0.352941, 0.352941}, {0.541176, 0.541176, 0.541176}, {0.729412, 0.729412, 0.729412}, {0.917647, 0.917647, 0.917647}, {0.168627, 0.168627, 0.168627}, {0.356863, 0.356863, 0.356863}, {0.545098, 0.545098, 0.545098}, {0.733333, 0.733333, 0.733333}, {0.921569, 0.921569, 0.921569}, {0.172549, 0.172549, 0.172549}, {0.360784, 0.360784, 0.360784}, {0.549020, 0.549020, 0.549020}, {0.737255, 0.737255, 0.737255}, {0.925490, 0.925490, 0.925490}, {0.176471, 0.176471, 0.176471}, {0.364706, 0.364706, 0.364706}, {0.552941, 0.552941, 0.552941}, {0.741176, 0.741176, 0.741176}, {0.929412, 0.929412, 0.929412}, {0.180392, 0.180392, 0.180392}, {0.368627, 0.368627, 0.368627}, {0.556863, 0.556863, 0.556863}, {0.745098, 0.745098, 0.745098}, {0.933333, 0.933333, 0.933333}, {0.184314, 0.184314, 0.184314}, {0.372549, 0.372549, 0.372549}, {0.560784, 0.560784, 0.560784}, {0.749020, 0.749020, 0.749020}, {0.937255, 0.937255, 0.937255}};
 
-ColorMap::ColorMap(std::vector<ColorRGB>& color, const std::string& name, const size_t resolution, const double shift,
+const static std::map<std::string, const std::vector<ColorRGB>*> standardColorMaps =
+{
+  { "Rainbow", &rainbowData},
+  { "Old Rainbow", &oldRainbowData},
+  { "Grayscale", &grayscaleData},
+  //{ "Red Tint", &redTintData},
+  //{ "Orange Tint", &orangeTintData},
+  //{ "Yellow Tint", &yellowTintData},
+  //{ "Green Tint", &greenTintData},
+  //{ "Cyan Tint", &cyanTintData},
+  //{ "Blue Tint", &blueTintData},
+  //{ "Purple Tint", &purpleTintData},
+  { "Blackbody", &blackbodyData},
+  { "Darkhue", &darkhueData},
+  { "Lighthue", &lighthueData},
+  { "Orange,Black,Lime", &orangeBlackLimeData},
+  { "Pink,White,Blue", &pinkWhiteBlueData},
+  { "Don", &donData},
+  { "BP Seismic", &bpSeismicData},
+  { "Mixed Rainbow", &mixedRainbowData},
+  { "Mixed GrayScale", &grayscaleData},
+  { "Turbo", &turboData},
+  { "Magma", &magmaData},
+  { "Inferno", &infernoData},
+  { "Plasma", &plasmaData},
+  { "Viridis", &viridisData},
+  { "Cividis", &cividisData},
+};
+
+ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
+  const double &shift, const bool &invert, const double &rescale_scale, const double &rescale_shift,
+  const std::vector<double>& alphaPoints)
+{
+  const std::vector<ColorRGB>* colorData = &rainbowData;
+
+  auto entry = standardColorMaps.find(name);
+  if (entry != standardColorMaps.end()) colorData = entry->second;
+  else logError("Color map name not implemented/recognized. Returning Rainbow.");
+
+  return boost::make_shared<ColorMap>(*colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
+}
+
+ColorMapHandle StandardColorMapFactory::create(const std::vector<ColorRGB>& colorData,
+  const std::string& name, const size_t &resolution, const double &shift, const bool &invert,
+  const double &rescale_scale,  const double &rescale_shift, const std::vector<double>& alphaPoints)
+{
+  return boost::make_shared<ColorMap>(colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
+}
+
+std::vector<std::string> StandardColorMapFactory::getList()
+{
+  std::vector<std::string> names;
+  boost::copy(standardColorMaps | boost::adaptors::map_keys, std::back_inserter(names));
+  return names;
+}
+
+
+
+ColorMap::ColorMap(const std::vector<ColorRGB>& colorData, const std::string& name, const size_t resolution, const double shift,
   const bool invert, const double rescale_scale, const double rescale_shift, const std::vector<double>& alphaPoints)
-  : color_(color), nameInfo_(name), resolution_(resolution), shift_(shift),
+  : colorData_(colorData), nameInfo_(name), resolution_(resolution), shift_(shift),
   invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
   alphaLookup_(alphaPoints)
 {
@@ -112,287 +170,61 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
-
-
-namespace detail
+inline static double clamp(double value, double min, double max)
 {
-
-  class Rainbow : public ColorMapStrategy
-  {
-  public:
-    virtual ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class OldRainbow : public ColorMapStrategy
-  {
-  public:
-    virtual ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Blackbody : public ColorMapStrategy
-  {
-  public:
-    virtual ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Grayscale : public ColorMapStrategy
-  {
-  public:
-    virtual ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class OrangeBlackLime : public ColorMapStrategy
-  {
-  public:
-    virtual ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Darkhue : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Lighthue : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Don : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class RedTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class OrangeTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class YellowTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class GreenTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class CyanTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class BlueTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class PurpleTint : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Turbo : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Magma : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Inferno : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Plasma : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Viridis : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Cividis : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class BPSeismic : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class MixedRainbow : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class MixedGrayScale : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class PinkWhiteBlue : public ColorMapStrategy
-  {
-  public:
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  };
-
-  class Custom : public ColorMapStrategy
-  {
-  public:
-    Custom(const ColorRGB& a = ColorRGB(0.0, 0.0, 0.5), const ColorRGB& b = ColorRGB(0.5, 0.0, 0.0))
-    {
-      customColors_.push_back(a);
-      customColors_.push_back(b);
-    }
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-  private:
-    std::vector<ColorRGB> customColors_;
-  };
-
-  const static std::map<std::string, std::vector<ColorRGB>*> standardColorMaps =
-  {
-    { "Rainbow", &rainbowData},
-    { "Old Rainbow", &oldRainbowData},
-    { "Blackbody", &blackbodyData},
-    { "Grayscale", &grayscaleData},
-    { "Orange,Black,Lime", &orangeBlackLimeData},
-    { "Darkhue", &darkhueData},
-    { "Lighthue", &lighthueData},
-    { "Don", &donData},
-    { "Red Tint", &redTintData},
-    { "Orange Tint", &orangeTintData},
-    { "Yellow Tint", &yellowTintData},
-    { "Green Tint", &greenTintData},
-    { "Cyan Tint", &cyanTintData},
-    { "Blue Tint", &blueTintData},
-    { "Purple Tint", &purpleTintData},
-    { "Turbo", &turboData},
-    { "Magma", &magmaData},
-    { "Inferno", &infernoData},
-    { "Plasma", &plasmaData},
-    { "Viridis", &viridisData},
-    { "Cividis", &cividisData},
-    { "BP Seismic", &bpSeismicData},
-    { "Mixed Rainbow", &mixedRainbowData},
-    { "Mixed GrayScale", &grayscaleData},
-    { "Pink,White,Blue", &pinkWhiteBlueData}
-  };
+  return std::min(std::max(value, min), max);
 }
 
-ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
-  const double &shift, const bool &invert,
-  const double &rescale_scale, const double &rescale_shift, const std::vector<double>& alphaPoints)
-{
-  using namespace detail;
-  std::vector<ColorRGB>* color;
-  auto maker = colorMapFactoryMap.find(name);
-  if (maker != colorMapFactoryMap.end())
-  {
-    color = maker->second();
-  }
-  else
-  {
-    logError("Color map name not implemented/recognized. Returning Rainbow.");
-    color = rainbowData;
-  }
-
-  return boost::make_shared<ColorMap>(*color, name, res, shift, invert, rescale_scale, rescale_shift, alphaPoints);
-}
-
-StandardColorMapFactory::NameList StandardColorMapFactory::getList()
-{
-  std::vector<std::string> names;
-  boost::copy(detail::colorMapFactoryMap | boost::adaptors::map_keys, std::back_inserter(names));
-  return names;
-}
-
-/**
- * @name getTransformedColor
- * @brief This method transforms the raw data into ColorMap space.
- * This includes the resolution, the gamma shift, and data rescaling (using data min/max)
- * @param v The input value from raw data that will be transformed (usually into {0,1} space).
- * @return The scalar double value transformed into ColorMap space from raw data.
- */
 double ColorMap::getTransformedValue(double f) const
 {
-  const double rescaled01 = static_cast<double>((f + rescale_shift_) * rescale_scale_);
-
-  double v = std::min(std::max(0., rescaled01), 1.);
+  double v = clamp(static_cast<double>((f + rescale_shift_) * rescale_scale_), 0.0, 1.0);
   double shift = shift_;
-  if (invert_) {
-    v = 1.f - v;
-    shift *= -1.;
-  }
+
+  if (invert_) v = 1.0 - v, shift *= -1.0;
+
   //apply the resolution
-  v = static_cast<double>((static_cast<int>(v *
-    static_cast<double>(resolution_)))) /
+  v = static_cast<double>((static_cast<int>(v * static_cast<double>(resolution_)))) /
     static_cast<double>(resolution_ - 1);
-  // the shift is a gamma.
-  double denom = std::tan(M_PI_2 * (0.5 - std::min(std::max(shift, -0.99), 0.99) * 0.5));
-  // make sure we don't hit divide by zero
-  if (std::isnan(denom)) denom = 0.f;
-  denom = std::max(denom, 0.001);
-  v = std::pow(v, (1. / denom));
-  return std::min(std::max(0.,v),1.);
-}
-/**
- * @name getColorMapVal
- * @brief This method returns the RGB value for the current colormap parameters.
- * The input comes from raw data values. To scale to data, ColorMap
- *           must be created with those parameters. The input is transformed, then
- *           used to select a color from a set of color maps (currently defined by
- *           strings.
- * @param v The input value from raw data that will be mapped to a color.
- * @return The RGB value mapped from the transformed input into the ColorMap's named map.
- */
-ColorRGB ColorMap::getColorMapVal(double v) const
-{
-  double f = getTransformedValue(v);
-  auto colorWithoutAlpha = color_->getColorMapVal(f);
-  return applyAlpha(f, colorWithoutAlpha);
+
+  // the shift is a gamma. Make sure we don't hit divide by zero
+  double denom = std::tan(M_PI_2 * (0.5 - 0.5 * clamp(shift, -0.99, 0.99)));
+  denom = (std::isnan(denom) || denom < 0.001) ? 0.001 : denom;
+  return clamp(std::pow(v, 1.0 / denom), 0.0, 1.0);
 }
 
-ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
+inline static double mix(double a, double b, double c)
 {
-  double a = alpha(transformed);
-  return ColorRGB(colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a);
+  return a * ( 1.0 - c) + b * c;
+}
+
+const static double cmap_gamma = 2.2;
+inline static ColorRGB gammaCorrect(const ColorRGB& in)
+{
+    return ColorRGB(pow(in.r(), 1.0/cmap_gamma), pow(in.g(), 1.0/cmap_gamma), pow(in.b(), 1.0/cmap_gamma));
+}
+
+inline static ColorRGB reverseGammaCorrect(const ColorRGB& in)
+{
+    return ColorRGB(pow(in.r(), cmap_gamma), pow(in.g(), cmap_gamma), pow(in.b(), cmap_gamma));
+}
+
+inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
+{
+  uint32_t segments = v.size() - 1;
+  double m = f * segments;
+  uint32_t index = static_cast<uint32_t>(m);
+  ColorRGB c0 = v[index];
+  ColorRGB c1 = v[std::min(index + 1, segments)];
+  m = m - index;
+
+  ColorRGB out = ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
+  return out;
 }
 
 double ColorMap::alpha(double transformedValue) const
 {
   if(alphaLookup_.size() == 0) return 0.5;
-  uint i;
+  uint32_t i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;
@@ -419,24 +251,29 @@ double ColorMap::alpha(double transformedValue) const
   return value;
 }
 
+ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
+{
+  double a = alpha(transformed);
+  return ColorRGB(colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a);
+}
 
-/**
- * @name valueToColor
- * @brief Takes a scalar value and directly passes into getColorMap.
- * @param The raw data value as a scalar double.
- * @return The RGB value mapped from the scalar.
- */
+ColorRGB ColorMap::getColorMapVal(double v) const
+{
+  double f = getTransformedValue(v);
+  auto colorWithoutAlpha = readColorFromArray(colorData_, f);
+  return applyAlpha(f, colorWithoutAlpha);
+}
+
 ColorRGB ColorMap::valueToColor(double scalar) const
 {
   return getColorMapVal(scalar);
 }
 
-/**
- * @name valueToColor
- * @brief Takes a tensor value and creates an RGB value based on the magnitude of the eigenvalues.
- * @param The raw data value as a tensor.
- * @return The RGB value mapped from the tensor.
- */
+ColorRGB ColorMap::valueToColor(const Vector &vector) const
+{
+  return getColorMapVal(vector.length());
+}
+
 ColorRGB ColorMap::valueToColor(Tensor &tensor) const
 {
   double eigen1, eigen2, eigen3;
@@ -445,191 +282,24 @@ ColorRGB ColorMap::valueToColor(Tensor &tensor) const
   return getColorMapVal(magnitude);
 }
 
-/**
- * @name valueToColor
- * @brief Takes a vector value and creates an RGB value.
- * @param The raw data value as a vector.
- * @return The RGB value mapped from the vector.
- */
-ColorRGB ColorMap::valueToColor(const Vector &vector) const
+double ColorMap::valueToIndex(double scalar) const
 {
-    //TODO this is probably not implemented correctly.
-   // return ColorRGB(getTransformedColor(fabs(vector.x())),getTransformedColor(fabs(vector.y())), getTransformedColor(fabs(vector.z())));
-  return getColorMapVal(vector.length());
+  return getTransformedValue(scalar);
 }
 
-static double mix(double a, double b, double c)
+double ColorMap::valueToIndex(const Vector &vector) const
 {
-  return a * ( 1.0 - c) + b * c;
+  return getTransformedValue(vector.length());
 }
 
-static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
+double ColorMap::valueToIndex(Tensor &tensor) const
 {
-  int segments = v.size() - 1;
-  double m = f * segments;
-  int index = int(m);
-  ColorRGB c0 = v[index];
-  ColorRGB c1 = v[std::min(index + 1, segments)];
-  m = m - index;
-
-  return ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
+  double eigen1, eigen2, eigen3;
+  tensor.get_eigenvalues(eigen1, eigen2, eigen3);
+  double magnitude = Vector(eigen1, eigen2, eigen3).length();
+  return getTransformedValue(magnitude);
 }
 
-// This Rainbow takes into account scientific visualization recommendations.
-// It tones down the yellow/cyan values so they don't appear to
-// be "brighter" than the other colors. All colors "appear" to be the
-// same brightness.
-// Blue -> Dark Cyan -> Green -> Orange -> Red
-ColorRGB detail::Rainbow::getColorMapVal(double f) const
-{
-  return readColorFromArray(rainbowData, f);
-}
-
-//The Old Rainbow that simply transitions from blue to red 1 color at a time.
-// Blue -> Cyan -> Green -> Yellow -> Red
-ColorRGB detail::OldRainbow::getColorMapVal(double f) const
-{
-  return readColorFromArray(oldRainbowData, f);
-}
-
-// This map is designed to appear like a heat-map, where "cooler" (lower) values
-// are darker and approach black, and "hotter" (higher) values are lighter
-// and approach white. In between, you have the red, orange, and yellow transitions.
-ColorRGB detail::Blackbody::getColorMapVal(double f) const
-{
-  return readColorFromArray(blackbodyData, f);
-}
-
-// A very simple black to white map with grays in between.
-ColorRGB detail::Grayscale::getColorMapVal(double f) const
-{
-  return readColorFromArray(grayscaleData, f);
-}
-
-// This color scheme sets a transition of color that goes
-// Orange -> Black -> Lime
-ColorRGB detail::OrangeBlackLime::getColorMapVal(double f) const
-{
-  return readColorFromArray(orangeBlackLimeData, f);
-}
-
-// This color scheme sets a transition of color that goes
-// Blue -> White -> Red
-ColorRGB detail::BPSeismic::getColorMapVal(double f) const
-{
-  return readColorFromArray(bpSeismicData, f);
-}
-
-ColorRGB detail::Darkhue::getColorMapVal(double f) const
-{
-  return readColorFromArray(darkhueData, f);
-}
-
-ColorRGB detail::PinkWhiteBlue::getColorMapVal(double f) const
-{
-  return readColorFromArray(pinkWhiteBlueData, f);
-}
-
-ColorRGB detail::Lighthue::getColorMapVal(double f) const
-{
-  return readColorFromArray(lighthueData, f);
-}
-
-ColorRGB detail::Don::getColorMapVal(double f) const
-{
-  return readColorFromArray(donData, f);
-}
-
-ColorRGB detail::RedTint::getColorMapVal(double f) const
-{
-  return readColorFromArray(redTintData, f);
-}
-
-ColorRGB detail::OrangeTint::getColorMapVal(double f) const
-{
-  return readColorFromArray(orangeTintData, f);
-}
-
-ColorRGB detail::YellowTint::getColorMapVal(double f) const
-{
-  return readColorFromArray(yellowTintData, f);
-}
-
-ColorRGB detail::GreenTint::getColorMapVal(double f) const
-{
-
-  return readColorFromArray(greenTintData, f);
-}
-
-ColorRGB detail::CyanTint::getColorMapVal(double f) const
-{
-
-  return readColorFromArray(cyanTintData, f);
-}
-
-ColorRGB detail::BlueTint::getColorMapVal(double f) const
-{
-
-  return readColorFromArray(blueTintData, f);
-}
-
-ColorRGB detail::PurpleTint::getColorMapVal(double f) const
-{
-
-  return readColorFromArray(purpleTintData, f);
-}
-
-ColorRGB detail::Turbo::getColorMapVal(double f) const
-{
-  return readColorFromArray(turboData, f);
-}
-
-ColorRGB detail::Magma::getColorMapVal(double f) const
-{
-  return readColorFromArray(magmaData, f);
-}
-
-ColorRGB detail::Inferno::getColorMapVal(double f) const
-{
-  return readColorFromArray(infernoData, f);
-}
-
-ColorRGB detail::Plasma::getColorMapVal(double f) const
-{
-  return readColorFromArray(plasmaData, f);
-}
-
-ColorRGB detail::Viridis::getColorMapVal(double f) const
-{
-  return readColorFromArray(viridisData, f);
-}
-
-ColorRGB detail::Cividis::getColorMapVal(double f) const
-{
-  return readColorFromArray(cividisData, f);
-}
-
-ColorRGB detail::MixedRainbow::getColorMapVal(double f) const
-{
-  return readColorFromArray(mixedRainbowData, f);
-}
-
-ColorRGB detail::MixedGrayScale::getColorMapVal(double f) const
-{
-  return readColorFromArray(mixedGrayScaleData, f);
-}
-
-ColorRGB detail::Custom::getColorMapVal(double f) const
-{
-  readColorFromArray(customColors_, f);
-}
-
-std::string ColorMap::getColorMapName() const { return nameInfo_; }
-size_t ColorMap::getColorMapResolution() const { return resolution_; }
-double ColorMap::getColorMapShift() const { return shift_; }
-bool ColorMap::getColorMapInvert() const { return invert_; }
-double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
-double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
 
 
 //TODO: heavily refactor

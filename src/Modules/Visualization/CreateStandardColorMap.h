@@ -47,6 +47,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ColorMapResolution);
         ALGORITHM_PARAMETER_DECL(AlphaUserPointsVector);
         ALGORITHM_PARAMETER_DECL(AlphaFunctionVector);
+        ALGORITHM_PARAMETER_DECL(CustomColor0);
+        ALGORITHM_PARAMETER_DECL(CustomColor1);
       }
     }
   }

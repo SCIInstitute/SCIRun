@@ -112,6 +112,8 @@ namespace SCIRun {
     protected:
       virtual void pullSpecial() override;
     private Q_SLOTS:
+      void selectCustomColor0();
+      void selectCustomColor1();
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
       QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm) const;
@@ -122,6 +124,7 @@ namespace SCIRun {
     private:
       QGraphicsScene* scene_;
       ColormapPreview* previewColorMap_;
+      QColor customColors_[2] = {{0, 0, 0}, {255, 255, 255}};
     };
   }
 }

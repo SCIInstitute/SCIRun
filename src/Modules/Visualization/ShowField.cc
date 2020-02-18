@@ -479,7 +479,8 @@ namespace
     if(colorMap) realColorMap = colorMap.get();
     else realColorMap = StandardColorMapFactory::create();
 
-    textureMap = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+    textureMap = StandardColorMapFactory::create(
+      realColorMap->getColorData(), realColorMap->getColorMapName(),
       realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
       realColorMap->getColorMapInvert(), 0.5, 1.0, realColorMap->getAlphaLookup());
 
@@ -659,8 +660,8 @@ void GeometryBuilder::renderFacesLinear(
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
-              textureCoords[i].x = coordinateMap->valueToColor(svals[0]).r();
-              textureCoords[i].y = coordinateMap->valueToColor(svals[1]).r();
+              textureCoords[i].x = coordinateMap->valueToIndex(svals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(svals[1]);
             }
           }
           else if (isVector)
@@ -671,8 +672,8 @@ void GeometryBuilder::renderFacesLinear(
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
-              textureCoords[i].x = coordinateMap->valueToColor(vvals[0]).r();
-              textureCoords[i].y = coordinateMap->valueToColor(vvals[1]).r();
+              textureCoords[i].x = coordinateMap->valueToIndex(vvals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(vvals[1]);
             }
           }
           else if (isTensor)
@@ -683,8 +684,8 @@ void GeometryBuilder::renderFacesLinear(
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
-              textureCoords[i].x = coordinateMap->valueToColor(tvals[0]).r();
-              textureCoords[i].y = coordinateMap->valueToColor(tvals[1]).r();
+              textureCoords[i].x = coordinateMap->valueToIndex(tvals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(tvals[1]);
             }
           }
         }
@@ -694,17 +695,17 @@ void GeometryBuilder::renderFacesLinear(
           if (isScalar)
           {
             fld->get_value(svals[0], *fiter);
-            textureCoords[0].x = coordinateMap->valueToColor(svals[0]).r();
+            textureCoords[0].x = coordinateMap->valueToIndex(svals[0]);
           }
           else if (isVector)
           {
             fld->get_value(vvals[0], *fiter);
-            textureCoords[0].x = coordinateMap->valueToColor(vvals[0]).r();
+            textureCoords[0].x = coordinateMap->valueToIndex(vvals[0]);
           }
           else if (isTensor)
           {
             fld->get_value(tvals[0], *fiter);
-            textureCoords[0].x = coordinateMap->valueToColor(tvals[0]).r();
+            textureCoords[0].x = coordinateMap->valueToIndex(tvals[0]);
           }
 
           for (size_t i = 0; i < numNodesPerFace; ++i)
@@ -718,7 +719,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(svals[i], nodes[i]);
-              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(svals[i]).r();
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(svals[i]);
             }
           }
           else if (isVector)
@@ -726,7 +727,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(vvals[i], nodes[i]);
-              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(vvals[i]).r();
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(vvals[i]);
             }
           }
           else if (isTensor)
@@ -734,7 +735,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(tvals[i], nodes[i]);
-              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(tvals[i]).r();
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(tvals[i]);
             }
           }
         }
@@ -890,17 +891,17 @@ void GeometryBuilder::renderNodes(
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        node_color = coordinateMap->valueToColor(sval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(sval));
       }
       else if (fld->is_vector())
       {
         fld->get_value(vval, *eiter);
-        node_color = coordinateMap->valueToColor(vval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(vval));
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tval, *eiter);
-        node_color = coordinateMap->valueToColor(tval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(tval));
       }
     }
     //accumulate VBO or IBO data
@@ -1001,8 +1002,8 @@ void GeometryBuilder::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = coordinateMap->valueToColor(sval0);
-        edge_colors[1] = coordinateMap->valueToColor(sval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(sval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(sval1));
       }
       else if (fld->is_vector())
       {
@@ -1017,8 +1018,8 @@ void GeometryBuilder::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = coordinateMap->valueToColor(vval0);
-        edge_colors[1] = coordinateMap->valueToColor(vval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(vval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(vval1));
       }
       else if (fld->is_tensor())
       {
@@ -1033,8 +1034,8 @@ void GeometryBuilder::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = coordinateMap->valueToColor(tval0);
-        edge_colors[1] = coordinateMap->valueToColor(tval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(tval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(tval1));
       }
     }
     //accumulate VBO or IBO data

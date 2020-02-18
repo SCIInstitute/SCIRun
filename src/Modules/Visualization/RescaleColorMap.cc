@@ -115,11 +115,10 @@ void RescaleColorMap::execute()
     cm_shift =  - fixed_min;
     cm_scale = 1. / (fixed_max - fixed_min);
 
-    sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap->getColorMapName(),
-      colorMap->getColorMapResolution(),
-      colorMap->getColorMapShift(),
-      colorMap->getColorMapInvert(),
-      cm_scale, cm_shift, colorMap->getAlphaLookup()));
+    sendOutput(ColorMapOutput, StandardColorMapFactory::create(
+      colorMap->getColorData(), colorMap->getColorMapName(),
+      colorMap->getColorMapResolution(), colorMap->getColorMapShift(),
+      colorMap->getColorMapInvert(), cm_scale, cm_shift, colorMap->getAlphaLookup()));
   }
 }
 
