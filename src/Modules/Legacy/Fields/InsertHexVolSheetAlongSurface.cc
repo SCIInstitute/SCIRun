@@ -41,7 +41,7 @@
 
 #include <Core/Geometry/Vector.h>
 #include <Core/Geometry/Point.h>
-#include <Core/Geometry/AxisAlignedBBox.h>
+#include <Core/Geometry/BBox.h>
 
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
@@ -68,7 +68,7 @@ class Model
 
     virtual ~Model() {}
 
-    virtual AxisAlignedBBox& bounding_box();
+    virtual BBox& bounding_box();
     virtual Point& centroid();
 
   protected:
@@ -77,7 +77,7 @@ class Model
 
     void invalidate_all();
 
-    AxisAlignedBBox  bounding_box_;
+    BBox  bounding_box_;
     Point centroid_;
     bool  is_bounding_box_valid_;
     bool  is_centroid_valid_;
@@ -85,7 +85,7 @@ class Model
 
 
 
-AxisAlignedBBox&
+BBox&
 Model::bounding_box()
 {
 	if (!is_bounding_box_valid_)
@@ -162,7 +162,7 @@ class HexMesh: public Model
 
 void HexMesh::compute_bounding_box()
 {
-  bounding_box_ = AxisAlignedBBox(points);
+  bounding_box_ = BBox(points);
 }
 
 void HexMesh::compute_centroid()
@@ -293,7 +293,7 @@ TriangleMesh::~TriangleMesh()
 inline void
 TriangleMesh::compute_bounding_box()
 {
-  Model::bounding_box_ = AxisAlignedBBox(verts[0].point, verts[0].point);
+  Model::bounding_box_ = BBox(verts[0].point, verts[0].point);
 	for (vertex_list::const_iterator v=verts.begin(); v!=verts.end(); ++v)
   {
     Model::bounding_box_.extend(v->point);
@@ -550,7 +550,7 @@ public:
 	void GetIntersectedBoxes(const DISTBOXCLASS &boxclass, const BBox &ibox, std::vector<OBJECT> &intersected) const
   {
       // check our bounding box
-		if (ibox.intersect(bbox) == AxisAlignedBBox::OUTSIDE)
+		if (ibox.intersect(bbox) == BBox::OUTSIDE)
     {
 			return;
 		}
@@ -558,9 +558,9 @@ public:
       // check any leaf objects
 		for (size_t i=0; i<objects.size(); i++)
     {
-			AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
+			BBox obox = boxclass.bounding_box(objects[i]);
 
-			if (ibox.intersect(obox) != AxisAlignedBBox::OUTSIDE)
+			if (ibox.intersect(obox) != BBox::OUTSIDE)
       {
 				intersected.push_back(objects[i]);
 			}
@@ -573,7 +573,7 @@ public:
 
 	void Insert(const DISTBOXCLASS &boxclass, const OBJECT &o, int axis=0)
   {
-		AxisAlignedBBox obox = boxclass.bounding_box(o);
+		BBox obox = boxclass.bounding_box(o);
 
       // figure out which side we want to put it in
 		int addside = -1;
@@ -582,11 +582,11 @@ public:
     {
       // see which insertion would result in a smaller bounding box overlap
 
-			AxisAlignedBBox c0e = AxisAlignedBBox(children[0]->bbox, obox);
-			AxisAlignedBBox c1e = AxisAlignedBBox(children[1]->bbox, obox);
+			BBox c0e = BBox(children[0]->bbox, obox);
+			BBox c1e = BBox(children[1]->bbox, obox);
 
-			bool intersect0 = c0e.intersect(children[1]->bbox) != AxisAlignedBBox::OUTSIDE;
-			bool intersect1 = c1e.intersect(children[0]->bbox) != AxisAlignedBBox::OUTSIDE;
+			bool intersect0 = c0e.intersect(children[1]->bbox) != BBox::OUTSIDE;
+			bool intersect1 = c1e.intersect(children[0]->bbox) != BBox::OUTSIDE;
 
 			if (intersect0 && !intersect1)
       {
@@ -602,11 +602,11 @@ public:
 
         Point t1 = Max(c0e.min(),children[1]->bbox.min());
         Point t2 = Min(c0e.max(),children[1]->bbox.max());
-        AxisAlignedBBox ibox0(t1, t2);
+        BBox ibox0(t1, t2);
 
         Point t3 = Max(c1e.min(),children[0]->bbox.min());
         Point t4 = Min(c1e.max(),children[0]->bbox.max());
-        AxisAlignedBBox ibox1(t3, t4);
+        BBox ibox1(t3, t4);
 
 				if (ibox0.x_length()*ibox0.y_length()*ibox0.z_length() < ibox1.x_length()*ibox1.y_length()*ibox1.z_length())
             addside = 0;
@@ -632,7 +632,7 @@ public:
 		}
 
       // expand our own bounding box
-		bbox = (addside==-1 && objects.size()==0) ? obox : AxisAlignedBBox(bbox, obox);
+		bbox = (addside==-1 && objects.size()==0) ? obox : BBox(bbox, obox);
 
 		if (addside == -1)
     {
@@ -647,7 +647,7 @@ public:
 
 	bool Remove(const DISTBOXCLASS &boxclass, const OBJECT &o)
   {
-		if (bbox.intersect(boxclass.bounding_box(o)) == AxisAlignedBBox::OUTSIDE)
+		if (bbox.intersect(boxclass.bounding_box(o)) == BBox::OUTSIDE)
         return false;
 
       // first check in the list of objects at this node
@@ -669,12 +669,12 @@ public:
           bbox = boxclass.bounding_box(objects[0]);
 					for (unsigned i=1; i<objects.size(); i++)
           {
-						bbox = AxisAlignedBBox(bbox, boxclass.bounding_box(objects[i]));
+						bbox = BBox(bbox, boxclass.bounding_box(objects[i]));
 					}
 				}
         else
         {
-          bbox = AxisAlignedBBox(Point(-1.0,-1.0,-1.0),Point(1.0,1.0,1.0));
+          bbox = BBox(Point(-1.0,-1.0,-1.0),Point(1.0,1.0,1.0));
    			}
 
 				return true;
@@ -738,7 +738,7 @@ private:
 				size_t i;
 				for (i=0; i<objects.size(); i++)
         {
-					AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
+					BBox obox = boxclass.bounding_box(objects[i]);
           Point c = obox.center();
 					sorter[i] = std::pair<double,OBJECT>((c[axis]), objects[i]);
 				}
@@ -759,7 +759,7 @@ private:
       {
 				for (size_t i=0; i<objects.size(); i++)
         {
-					AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
+					BBox obox = boxclass.bounding_box(objects[i]);
 
 					if (obox.center()[axis] < bbox.center()[axis])
           {
@@ -805,7 +805,7 @@ private:
   // internal node
 	BoxKDTree* children[2];
 
-	AxisAlignedBBox bbox;
+	BBox bbox;
 };
 
 
@@ -857,11 +857,11 @@ class InsertHexVolSheetAlongSurfaceAlgo
       public:
 
         TriangleMeshFaceTree(const TriangleMesh &m) : mesh(m) { }
-        AxisAlignedBBox bounding_box(int i) const
+        BBox bounding_box(int i) const
         {
-          return AxisAlignedBBox(mesh.verts[mesh.faces[i].verts[0]].point,
-                                 mesh.verts[mesh.faces[i].verts[1]].point,
-                                 mesh.verts[mesh.faces[i].verts[2]].point);
+          return BBox(mesh.verts[mesh.faces[i].verts[0]].point,
+                      mesh.verts[mesh.faces[i].verts[1]].point,
+                      mesh.verts[mesh.faces[i].verts[2]].point);
       }
 
       const TriangleMesh &mesh;
@@ -1085,7 +1085,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections_KDTree(
 
   for (size_t h=0; h<hexmesh.hexes.size(); h++)
   {
-    AxisAlignedBBox hbbox = AxisAlignedBBox();
+    BBox hbbox = BBox();
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[0]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[1]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[2]]);

@@ -36,8 +36,7 @@
 #include <Core/Containers/StackVector.h>
 #include <Core/Persistent/PersistentSTL.h>
 
-#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
-#include <Core/GeometryPrimitives/OrientedBBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -234,11 +233,7 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   /// Get the bounding box of the field
-  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
-  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                                                 const Core::Geometry::Vector &e2,
-                                                                 const Core::Geometry::Vector &e3) const;
-  template <typename T> void extend_bounding_box(T &bbox) const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
 
   /// Return the transformation that takes a 0-1 space bounding box
   /// to the current bounding box of this mesh.
@@ -751,7 +746,7 @@ public:
   }
 
   template <class ARRAY>
-  bool locate_elems(ARRAY &array, const Core::Geometry::AxisAlignedBBox &b) const
+  bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
     array.clear();
 
@@ -763,8 +758,8 @@ public:
     while (ei != eie)
     {
       get_nodes(nodes,*ei);
-      Core::Geometry::AxisAlignedBBox be(points_[nodes[0]],points_[nodes[1]]);
-      if (b.intersect(be) != Core::Geometry::AxisAlignedBBox::OUTSIDE)
+      Core::Geometry::BBox be(points_[nodes[0]],points_[nodes[1]]);
+      if (b.intersect(be) != Core::Geometry::BBox::OUTSIDE)
       {
         size_t p=0;
         for (;p<array.size();p++) if (array[p] == typename ARRAY::value_type(*ei)) break;
@@ -1327,7 +1322,7 @@ protected:
   /// stored in the edges_ array.
   typedef std::vector<std::vector<typename Edge::index_type> > NodeNeighborMap;
   NodeNeighborMap         node_neighbors_;
-  Core::Geometry::AxisAlignedBBox                    bbox_;
+  Core::Geometry::BBox                    bbox_;
   double                  epsilon_;
   double                  epsilon2_;
   double                  epsilon3_;
@@ -1496,38 +1491,22 @@ CurveMesh<Basis>::curvemesh_typeid(type_name(-1), "Mesh", CurveMesh<Basis>::make
 // Functions in the mesh
 
 template <class Basis>
-Core::Geometry::AxisAlignedBBox
+Core::Geometry::BBox
 CurveMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::AxisAlignedBBox result;
-  extend_bounding_box(result);
-  return result;
-}
+  Core::Geometry::BBox result;
 
-template <class Basis>
-Core::Geometry::OrientedBBox
-CurveMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                            const Core::Geometry::Vector &e2,
-                                            const Core::Geometry::Vector &e3) const
-{
-  Core::Geometry::OrientedBBox result(e1, e2, e3);
-  extend_bounding_box(result);
-  return result;
-}
-
-template <class Basis>
-template <typename T>
-void CurveMesh<Basis>::extend_bounding_box(T &bbox) const
-{
   // Compute bounding box
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
   while (ni != nie)
   {
-    bbox.extend(points_[*ni]);
+    result.extend(points_[*ni]);
     ++ni;
   }
+
+  return result;
 }
 
 template <class Basis>
@@ -1535,7 +1514,7 @@ void
 CurveMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  Core::Geometry::AxisAlignedBBox bbox = get_bounding_box();
+  Core::Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }

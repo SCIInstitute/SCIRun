@@ -343,7 +343,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
 
-  const AxisAlignedBBox bbox = vmesh->get_bounding_box();
+  const BBox bbox = vmesh->get_bounding_box();
   Vector size = bbox.diagonal();
   Point center = bbox.center();
   VMesh::dimension_type dim;
@@ -375,6 +375,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
     vertex_new.push_back(static_cast<float>(point.x()));
     vertex_new.push_back(static_cast<float>(point.y()));
     vertex_new.push_back(static_cast<float>(point.z()));
+
   }
   //auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
   if (colorMap)
@@ -571,7 +572,8 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
     }
   }
 
-  FieldInformation info(field);
+    FieldInformation info(field);
+
 
   auto& index = fieldData.index;
   {
@@ -679,6 +681,7 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
     {
       THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
     }
+
   }
 
   AlgorithmOutput output;

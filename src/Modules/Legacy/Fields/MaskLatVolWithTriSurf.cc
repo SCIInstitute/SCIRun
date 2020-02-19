@@ -41,7 +41,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Core/Containers/Array1.h>
-#include <Core/Geometry/AxisAlignedBBox.h>
+#include <Core/Geometry/BBox.h>
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -119,10 +119,10 @@ MaskLatVolWithTriSurf::execute()
   trisurfM->end(fiter_end);
   trisurfM->size(nfaces);
 
-  Array1<AxisAlignedBBox> faceBBox(nfaces);
+  Array1<BBox> faceBBox(nfaces);
   int fidx=0;
   int i;
-  AxisAlignedBBox surfBBox;
+  BBox surfBBox;
   while(fiter != fiter_end)
   {
     trisurfM->get_nodes(fac_nodes, *fiter);

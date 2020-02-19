@@ -32,7 +32,7 @@
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 
@@ -137,7 +137,7 @@ class SearchGridT
       k = static_cast<index_type>(r.z());
     }
 
-    void insert(INDEX val, const Core::Geometry::AxisAlignedBBox &bbox)
+    void insert(INDEX val, const Core::Geometry::BBox &bbox)
     {
       index_type mini=0, minj=0, mink=0, maxi=0, maxj=0, maxk=0;
 
@@ -156,7 +156,7 @@ class SearchGridT
       }
     }
 
-    void remove(INDEX val, const Core::Geometry::AxisAlignedBBox &bbox)
+    void remove(INDEX val, const Core::Geometry::BBox &bbox)
     {
       index_type mini, minj, mink, maxi, maxj, maxk;
 

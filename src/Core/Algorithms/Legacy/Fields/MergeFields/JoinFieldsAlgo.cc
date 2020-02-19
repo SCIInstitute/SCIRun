@@ -168,7 +168,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     }
   }
 
-  AxisAlignedBBox box;
+  BBox box;
   boost::scoped_ptr<SearchGridT<index_type> > node_grid;
   boost::scoped_ptr<SearchGridT<index_type> > elem_grid;
 
@@ -198,7 +198,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   if (merge_nodes)
   {
     if (!box.valid())
-      THROW_ALGORITHM_PROCESSING_ERROR("Merging nodes will fail: AxisAlignedBBox is empty or invalid, diagonal not provided.");
+      THROW_ALGORITHM_PROCESSING_ERROR("Merging nodes will fail: BBox is empty or invalid, diagonal not provided.");
     box.extend(1e-5*box.diagonal().length());
 
     const size_type s =  3*static_cast<size_type>

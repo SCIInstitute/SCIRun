@@ -113,11 +113,7 @@ public:
   }
 
   /// get the mesh statistics
-  virtual Core::Geometry::AxisAlignedBBox get_bounding_box() const;
-  virtual Core::Geometry::OrientedBBox get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                                                 const Core::Geometry::Vector &e2,
-                                                                 const Core::Geometry::Vector &e3) const;
-  template <typename T> void extend_bounding_box(T &bbox) const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
@@ -986,9 +982,9 @@ public:
 
 protected:
 
-  void compute_node_grid(Core::Geometry::AxisAlignedBBox& bb);
-  void compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb);
-  void compute_epsilon(Core::Geometry::AxisAlignedBBox& bb);
+  void compute_node_grid(Core::Geometry::BBox& bb);
+  void compute_elem_grid(Core::Geometry::BBox& bb);
+  void compute_epsilon(Core::Geometry::BBox& bb);
 
   void compute_normals();
 
@@ -1102,30 +1098,11 @@ StructQuadSurfMesh<Basis>::get_dim(std::vector<size_type> &array) const
 
 
 template <class Basis>
-Core::Geometry::AxisAlignedBBox
+Core::Geometry::BBox
 StructQuadSurfMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::AxisAlignedBBox result;
-  extend_bounding_box(result);
-  return result;
-}
+  Core::Geometry::BBox result;
 
-template <class Basis>
-Core::Geometry::OrientedBBox
-StructQuadSurfMesh<Basis>::get_oriented_bounding_box(const Core::Geometry::Vector &e1,
-                                                     const Core::Geometry::Vector &e2,
-                                                     const Core::Geometry::Vector &e3) const
-{
-  Core::Geometry::OrientedBBox result(e1, e2, e3);
-  extend_bounding_box(result);
-  return result;
-}
-
-template <class Basis>
-template <class T>
-void
-StructQuadSurfMesh<Basis>::extend_bounding_box(T &bbox) const
-{
   typename ImageMesh<Basis>::Node::iterator ni, nie;
   this->begin(ni);
   this->end(nie);
@@ -1133,9 +1110,10 @@ StructQuadSurfMesh<Basis>::extend_bounding_box(T &bbox) const
   {
     Core::Geometry::Point p;
     get_center(p, *ni);
-    bbox.extend(p);
+    result.extend(p);
     ++ni;
   }
+  return result;
 }
 
 
@@ -1364,7 +1342,7 @@ StructQuadSurfMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
     /// These computations share the evalution of the bounding box
-    Core::Geometry::AxisAlignedBBox bb = get_bounding_box();
+    Core::Geometry::BBox bb = get_bounding_box();
 
     /// Compute the epsilon for geometrical closeness comparisons
     /// Mainly used by the grid lookup tables
@@ -1424,7 +1402,7 @@ StructQuadSurfMesh<Basis>::insert_elem_into_grid(typename ImageMesh<Basis>::Elem
   /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
-  Core::Geometry::AxisAlignedBBox box;
+  Core::Geometry::BBox box;
   box.extend(points_(idx.j_,idx.i_));
   box.extend(points_(idx.j_+1,idx.i_));
   box.extend(points_(idx.j_,idx.i_+1));
@@ -1438,7 +1416,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::remove_elem_from_grid(typename ImageMesh<Basis>::Elem::index_type idx)
 {
-  Core::Geometry::AxisAlignedBBox box;
+  Core::Geometry::BBox box;
   box.extend(points_(idx.j_,idx.i_));
   box.extend(points_(idx.j_+1,idx.i_));
   box.extend(points_(idx.j_,idx.i_+1));
@@ -1467,7 +1445,7 @@ StructQuadSurfMesh<Basis>::remove_node_from_grid(typename ImageMesh<Basis>::Node
 
 template <class Basis>
 void
-StructQuadSurfMesh<Basis>::compute_node_grid(Core::Geometry::AxisAlignedBBox& bb)
+StructQuadSurfMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
 {
   if (bb.valid())
   {
@@ -1485,7 +1463,7 @@ StructQuadSurfMesh<Basis>::compute_node_grid(Core::Geometry::AxisAlignedBBox& bb
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
 
-    Core::Geometry::AxisAlignedBBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Node::index_type >(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename ImageMesh<Basis>::Node::iterator ni, nie;
@@ -1503,7 +1481,7 @@ StructQuadSurfMesh<Basis>::compute_node_grid(Core::Geometry::AxisAlignedBBox& bb
 
 template <class Basis>
 void
-StructQuadSurfMesh<Basis>::compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb)
+StructQuadSurfMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
 {
   if (bb.valid())
   {
@@ -1521,7 +1499,7 @@ StructQuadSurfMesh<Basis>::compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
 
-    Core::Geometry::AxisAlignedBBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
     elem_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Elem::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename ImageMesh<Basis>::Elem::iterator ci, cie;
@@ -1539,7 +1517,7 @@ StructQuadSurfMesh<Basis>::compute_elem_grid(Core::Geometry::AxisAlignedBBox& bb
 
 template <class Basis>
 void
-StructQuadSurfMesh<Basis>::compute_epsilon(Core::Geometry::AxisAlignedBBox& bb)
+StructQuadSurfMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
 {
   epsilon_ =  bb.diagonal().length();
   epsilon2_ = epsilon_*epsilon_;
