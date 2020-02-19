@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Mesh/MeshFacadeIterators.h
 
 #ifndef CORE_DATATYPES_MESH_FACADE_ITERATORS_H
-#define CORE_DATATYPES_MESH_FACADE_ITERATORS_H 
+#define CORE_DATATYPES_MESH_FACADE_ITERATORS_H
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <Core/Utils/Exception.h>
@@ -39,9 +39,9 @@
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
-  
+
   /*
-    IDEA: Mesh iterators should iterate over entire values, not just indexes, producing values on demand. 
+    IDEA: Mesh iterators should iterate over entire values, not just indexes, producing values on demand.
     A "SmartIndex" for the mesh.
     E.G. for LatVols:
     class SmartNodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point> >
@@ -82,14 +82,14 @@ namespace Datatypes {
 
     bool equal(const SmartMeshIterator<VirtualMeshType, MeshComponent>& other) const
     {
-      return this->vmesh_ == other.vmesh_ 
+      return this->vmesh_ == other.vmesh_
         && this->iter_ == other.iter_;
     }
 
     MeshComponent<VirtualMeshType>& dereference() const
-    { 
+    {
       current_.setIndex(*iter_);
-      return current_; 
+      return current_;
     }
 
     typename MeshComponent<VirtualMeshType>::iterator iter_;
@@ -107,7 +107,7 @@ namespace Datatypes {
     {
       sync_enum = 2
     };
-    explicit EdgeInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) 
+    explicit EdgeInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh)
     {
       /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh::EDGES_E*/ sync_enum);
@@ -123,13 +123,13 @@ namespace Datatypes {
       return nodesFromEdge;
     }
 
-    std::vector<Geometry::Point> nodePoints() const 
+    std::vector<Geometry::Point> nodePoints() const
     {
       auto indices = nodeIndices();
       std::vector<Geometry::Point> ps(2);
       for (size_t i = 0; i < ps.size(); ++i)
         vmesh_->get_point(ps[i], indices[i]);
-      
+
       return ps;
     }
   private:
@@ -144,7 +144,7 @@ namespace Datatypes {
   };
 
   template <class VirtualMeshType>
-  class FaceInfo 
+  class FaceInfo
   {
   public:
     typedef typename VirtualMeshType::Face::iterator iterator;
@@ -152,7 +152,7 @@ namespace Datatypes {
     {
       sync_enum = 4
     };
-    explicit FaceInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) 
+    explicit FaceInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh)
     {
       vmesh_->synchronize(/*Mesh::FACES_E*/ sync_enum);
     }
@@ -165,7 +165,7 @@ namespace Datatypes {
       vmesh_->get_nodes(nodesFromFace, index_);
       return nodesFromFace;
     }
-    std::vector<Geometry::Point> nodePoints() const 
+    std::vector<Geometry::Point> nodePoints() const
     {
       auto indices = nodeIndices();
       std::vector<Geometry::Point> ps(4);
@@ -191,7 +191,7 @@ namespace Datatypes {
   };
 
   template <class VirtualMeshType>
-  class NodeInfo 
+  class NodeInfo
   {
   public:
     typedef typename VirtualMeshType::Node::iterator iterator;
@@ -203,7 +203,7 @@ namespace Datatypes {
     void setIndex(typename VirtualMeshType::Node::index_type i) { index_ = i; }
 
     typename VirtualMeshType::Node::index_type index() const { return index_; }
-    Geometry::Point point() const 
+    Geometry::Point point() const
     {
       Geometry::Point p;
       vmesh_->get_point(p, index_);
@@ -232,7 +232,7 @@ namespace Datatypes {
   {
     typedef SmartMeshIterator<VirtualMeshType, NodeInfo> Type;
   };
-  
+
   template <class VirtualMeshType>
   class CellInfo
   {
@@ -280,4 +280,3 @@ namespace Datatypes {
 }}}
 
 #endif
-

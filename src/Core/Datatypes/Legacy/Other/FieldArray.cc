@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @todo Documentation Core/Datatypes/Legacy/Other/FieldArray.cc
 
@@ -50,7 +50,7 @@ FieldArray::clone() const
 
 const int FIELD_ARRAY_VERSION = 1;
 
-void 
+void
 FieldArray::io(Piostream& stream)
 {
   /*int version =*/ stream.begin_class("FieldArray",FIELD_ARRAY_VERSION);
@@ -62,31 +62,31 @@ FieldArray::io(Piostream& stream)
     stream.io(nfields);
     array_.resize(static_cast<size_t>(nfields));
 
-    stream.begin_cheap_delim();            
-    
+    stream.begin_cheap_delim();
+
     for (size_type j=0; j<nfields;j++)
     {
       Pio(stream,array_[j]);
     }
 
-    stream.end_cheap_delim();            
+    stream.end_cheap_delim();
   }
   else
   {
     long long nfields = static_cast<long long>(array_.size());
-    stream.io(nfields);  
+    stream.io(nfields);
 
-    stream.begin_cheap_delim();            
+    stream.begin_cheap_delim();
 
     for (size_type j=0; j<nfields;j++)
     {
       Pio(stream,array_[j]);
-    }  
+    }
 
-    stream.end_cheap_delim();            
+    stream.end_cheap_delim();
   }
 
-  stream.end_class();  
+  stream.end_class();
 }
 
 static Persistent* make_FieldArray() {

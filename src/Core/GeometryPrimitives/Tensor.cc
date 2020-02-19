@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -119,7 +118,7 @@ Tensor::Tensor(const double *t) : l1_(0), l2_(0), l3_(0)
 Tensor::Tensor(double v) : l1_(0), l2_(0), l3_(0)
 {
   have_eigens_=0;
-  for (int i=0; i<3; i++) 
+  for (int i=0; i<3; i++)
     for (int j=0; j<3; j++)
       if (i==j) mat_[i][j]=v;
       else mat_[i][j]=0;
@@ -143,14 +142,14 @@ Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6)
 Tensor::Tensor(int v) : l1_(0), l2_(0), l3_(0)
 {
   have_eigens_=0;
-  for (int i=0; i<3; i++) 
+  for (int i=0; i<3; i++)
     for (int j=0; j<3; j++)
       if (i==j) mat_[i][j]=v;
       else mat_[i][j]=0;
 }
 
 Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
-  e1_(e1), e2_(e2), e3_(e3), 
+  e1_(e1), e2_(e2), e3_(e3),
   l1_(e1.length()), l2_(e2.length()), l3_(e3.length())
 {
   build_mat_from_eigens();
@@ -384,7 +383,7 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
 void Core::Geometry::Pio(Piostream& stream, Tensor& t)
 {
   stream.begin_cheap_delim();
- 
+
   Pio(stream, t.mat_[0][0]);
   Pio(stream, t.mat_[0][1]);
   Pio(stream, t.mat_[0][2]);
@@ -397,7 +396,7 @@ void Core::Geometry::Pio(Piostream& stream, Tensor& t)
   t.mat_[2][1]=t.mat_[1][2];
 
   Pio(stream, t.have_eigens_);
-  if (t.have_eigens_) 
+  if (t.have_eigens_)
   {
     Pio(stream, t.e1_);
     Pio(stream, t.e2_);
@@ -410,7 +409,7 @@ void Core::Geometry::Pio(Piostream& stream, Tensor& t)
   stream.end_cheap_delim();
 }
 
-const std::string& 
+const std::string&
 Tensor::get_h_file_path() {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
@@ -420,8 +419,8 @@ const TypeDescription* Core::Geometry::get_type_description(Tensor*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    td = new TypeDescription("Tensor", Tensor::get_h_file_path(), 
-				"SCIRun", 
+    td = new TypeDescription("Tensor", Tensor::get_h_file_path(),
+				"SCIRun",
 				TypeDescription::DATA_E);
   }
   return td;
@@ -444,6 +443,6 @@ std::istream& Core::Geometry::operator>>(std::istream& is, Tensor& t)
   is >> t.mat_[0][0] >> t.mat_[0][1] >> t.mat_[0][2]
      >> t.mat_[1][0] >> t.mat_[1][1] >> t.mat_[1][2]
      >> t.mat_[2][0] >> t.mat_[2][1] >> t.mat_[2][2];
-     
+
   return is;
 }

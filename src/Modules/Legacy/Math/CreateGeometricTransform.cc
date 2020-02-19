@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,13 +26,13 @@
 */
 
 
-///@file  CreateGeometricTransform.cc
+/// @file  CreateGeometricTransform.cc
 ///
-///@author
-///   David Weinstein
-///   Department of Computer Science
-///   University of Utah
-///@date  March 1999
+/// @author
+///    David Weinstein
+///    Department of Computer Science
+///    University of Utah
+/// @date  March 1999
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/GeometryPort.h>
@@ -108,26 +107,26 @@ DECLARE_MAKER(CreateGeometricTransform)
   static std::string module_name("CreateGeometricTransform");
 static std::string widget_name("TransformWidget");
 
-CreateGeometricTransform::CreateGeometricTransform(GuiContext* ctx) : 
+CreateGeometricTransform::CreateGeometricTransform(GuiContext* ctx) :
   Module("CreateGeometricTransform", ctx, Filter, "Math", "SCIRun"),
   rotate_x_gui_(get_ctx()->subVar("rotate_x")),
   rotate_y_gui_(get_ctx()->subVar("rotate_y")),
-  rotate_z_gui_(get_ctx()->subVar("rotate_z")), 
+  rotate_z_gui_(get_ctx()->subVar("rotate_z")),
   rotate_theta_gui_(get_ctx()->subVar("rotate_theta")),
   translate_x_gui_(get_ctx()->subVar("translate_x")),
   translate_y_gui_(get_ctx()->subVar("translate_y")),
   translate_z_gui_(get_ctx()->subVar("translate_z")),
   scale_uniform_gui_(get_ctx()->subVar("scale_uniform")),
   scale_x_gui_(get_ctx()->subVar("scale_x")),
-  scale_y_gui_(get_ctx()->subVar("scale_y")), 
-  scale_z_gui_(get_ctx()->subVar("scale_z")), 
+  scale_y_gui_(get_ctx()->subVar("scale_y")),
+  scale_z_gui_(get_ctx()->subVar("scale_z")),
   shear_plane_a_gui_(get_ctx()->subVar("shear_plane_a")),
   shear_plane_b_gui_(get_ctx()->subVar("shear_plane_b")),
   shear_plane_c_gui_(get_ctx()->subVar("shear_plane_c")),
   shear_plane_d_gui_(get_ctx()->subVar("shear_plane_d")),
   widget_resizable_gui_(get_ctx()->subVar("widget_resizable")),
   permute_x_gui_(get_ctx()->subVar("permute_x")),
-  permute_y_gui_(get_ctx()->subVar("permute_y")), 
+  permute_y_gui_(get_ctx()->subVar("permute_y")),
   permute_z_gui_(get_ctx()->subVar("permute_z")),
   pre_transform_gui_(get_ctx()->subVar("pre_transform")),
   which_transform_gui_(get_ctx()->subVar("which_transform")),
@@ -183,14 +182,14 @@ CreateGeometricTransform::execute()
   {
     input_transform = MatrixAlgorithms::matrix_to_transform(*input_matrix_H);
   }
-  
+
   Transform local_transform;
-  
+
   // get the "fixed point"
-  Vector t(translate_x_gui_.get(), 
-	   translate_y_gui_.get(), 
+  Vector t(translate_x_gui_.get(),
+	   translate_y_gui_.get(),
 	   translate_z_gui_.get());
-  
+
   // build the local transform
   if (which_transform == "translate") {
     local_transform.post_translate(t);
@@ -204,7 +203,7 @@ CreateGeometricTransform::execute()
     double new_scalez=scale_z_gui_.get();
     double sz=pow(10.,new_scalez)*s;
     Vector sc(sx, sy, sz);
-    local_transform.post_translate(t);	
+    local_transform.post_translate(t);
     local_transform.post_scale(sc);
     local_transform.post_translate(-t);
   } else if (which_transform == "rotate") {
@@ -215,25 +214,25 @@ CreateGeometricTransform::execute()
     local_transform.post_rotate(rotate_theta_gui_.get()*M_PI/180., axis);
     local_transform.post_translate(-t);
   } else if (which_transform == "shear") {
-    local_transform.post_shear(t, Plane(shear_plane_a_gui_.get(), 
-					shear_plane_b_gui_.get(), 
-					shear_plane_c_gui_.get(), 
+    local_transform.post_shear(t, Plane(shear_plane_a_gui_.get(),
+					shear_plane_b_gui_.get(),
+					shear_plane_c_gui_.get(),
 					shear_plane_d_gui_.get()));
   } else if (which_transform == "permute") {
-    local_transform.post_permute(permute_x_gui_.get(), 
-				 permute_y_gui_.get(), 
+    local_transform.post_permute(permute_x_gui_.get(),
+				 permute_y_gui_.get(),
 				 permute_z_gui_.get());
   } else { // (which_transform == "widget")
     Point R, D, I, C;
     box_widget_->GetPosition(C, R, D, I);
-    
+
     double ratio=widget_scale_gui_.get();
     widget_scale_gui_.set(1);
     R=C+(R-C)*ratio;
     D=C+(D-C)*ratio;
     I=C+(I-C)*ratio;
     box_widget_->SetPosition(C, R, D, I);
-    
+
     // find the difference between widget_pose(_inv) and the current pose
     if (!ignoring_widget_changes_gui_.get()) {
       local_transform.load_basis(C,R-C,D-C,I-C);
@@ -249,7 +248,7 @@ CreateGeometricTransform::execute()
   }
   DenseMatrix *matrix_transform=new DenseMatrix(4,4);
   omatrixH_ = matrix_transform;
-  
+
   // now either pre- or post-multiply the transforms and store in matrix
   if (pre_transform_gui_.get()) {
     local_transform.post_trans(composite_trans_);
@@ -279,21 +278,21 @@ CreateGeometricTransform::widget_moved(bool last, BaseWidget*)
 void
 CreateGeometricTransform::tcl_command(GuiArgs& args, void* userdata)
 {
-  if (args[1] == "hide_widget") 
+  if (args[1] == "hide_widget")
   {
     ((GeomSwitch *)(widget_switch_.get_rep()))->set_state(0);
     GeometryOPortHandle ogeom;
     get_oport_handle("Geometry",ogeom);
     if (ogeom.get_rep()) ogeom->flushViews();
-  } 
-  else if (args[1] == "show_widget") 
+  }
+  else if (args[1] == "show_widget")
   {
     ((GeomSwitch *)(widget_switch_.get_rep()))->set_state(1);
     GeometryOPortHandle ogeom;
     get_oport_handle("Geometry",ogeom);
     if (ogeom.get_rep()) ogeom->flushViews();
-  } 
-  else if (args[1] == "reset_widget" || args[1] == "reset" || args[1] == "composite") 
+  }
+  else if (args[1] == "reset_widget" || args[1] == "reset" || args[1] == "composite")
   {
     if (args[1] == "reset")
       composite_trans_.load_identity();
@@ -301,30 +300,30 @@ CreateGeometricTransform::tcl_command(GuiArgs& args, void* userdata)
       composite_trans_=latest_trans_;
     latest_trans_.load_identity();
     latest_widget_trans_.load_identity();
-    box_widget_->SetPosition(Point(0,0,0), 
+    box_widget_->SetPosition(Point(0,0,0),
 			     Point(1,0,0), Point(0,1,0), Point(0,0,1));
     widget_pose_center_=Point(0,0,0);
     widget_pose_inv_trans_.load_identity();
     want_to_execute();
-  } 
-  else if (args[1] == "change_handles") 
+  }
+  else if (args[1] == "change_handles")
   {
-    if (args[2] == "1") 
+    if (args[2] == "1")
     {	// start showing resize handles
       box_widget_->SetCurrentMode(1);
       GeometryOPortHandle ogeom;
       get_oport_handle("Geometry",ogeom);
       if (ogeom.get_rep()) ogeom->flushViews();
-    } 
-    else 
+    }
+    else
     {		        // stop showing resize handles
       box_widget_->SetCurrentMode(2);
       GeometryOPortHandle ogeom;
       get_oport_handle("Geometry",ogeom);
       if (ogeom.get_rep()) ogeom->flushViews();
     }
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }

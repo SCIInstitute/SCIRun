@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
+
 /// @todo Documentation Core/Datatypes/ColorMap.cc
 
 #include <Core/Math/MiscMath.h>
@@ -320,8 +321,8 @@ ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) co
 
 double ColorMap::alpha(double transformedValue) const
 {
-  if(alphaLookup_.size() == 0) return 0.5;
-  uint i;
+  if (alphaLookup_.empty()) return 0.5;
+  size_t i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;

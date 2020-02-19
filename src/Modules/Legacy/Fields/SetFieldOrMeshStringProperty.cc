@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/SetFieldOrMeshStringProperty.h>
 
@@ -55,7 +55,7 @@ class SetFieldOrMeshStringProperty : public Module {
     SetFieldOrMeshStringProperty(GuiContext* ctx);
     virtual ~SetFieldOrMeshStringProperty() {}
     virtual void execute();
-  private:  
+  private:
     GuiString prop_;
     GuiString val_;
     GuiInt mesh_prop_; // is this property for the mesh or the Field?
@@ -86,10 +86,10 @@ SetFieldOrMeshStringProperty::execute()
     fldH->mesh()->set_property(prop_.get(), val_.get(), false);
   }
   else
-  { 
+  {
     fldH->set_property(prop_.get(), val_.get(), false);
   }
-  
+
   send_output_handle("Output", fldH);
 }
 

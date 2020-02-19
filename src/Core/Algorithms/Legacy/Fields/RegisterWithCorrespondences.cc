@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 
@@ -87,7 +87,7 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input
     transform=runN(input_field, corres1, corres2, return_field);
     break;
   }
-  
+
   printMatrix(*transform,"Transform");
 
   AlgorithmOutput output;
@@ -138,7 +138,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runM(FieldHandle input, Field
   VMesh* icors1 = Cors1_cp->vmesh();
   VMesh* icors2 = Cors2_cp->vmesh();
 
-  //get the number of nodes in input field  
+  //get the number of nodes in input field
   //VMesh::size_type num_nodes = imesh->num_nodes();
 
   VMesh::Node::size_type num_cors1, num_cors2, num_pts;
@@ -294,7 +294,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runM(FieldHandle input, Field
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      BigMat(2 * num_cors1 + 8 + i, 2 * num_cors1 + 8 + j) = Bm(i, j); 
+      BigMat(2 * num_cors1 + 8 + i, 2 * num_cors1 + 8 + j) = Bm(i, j);
     }
   }
 
@@ -341,7 +341,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runM(FieldHandle input, Field
   DenseMatrix CMat(n, 1);
   DenseMatrix YMat(n, 1);
   DenseMatrix CoefMat(n, 1);
-  
+
 
   for (int loop = 0; loop < n; ++loop)
   {
@@ -416,7 +416,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
   VMesh* icors1 = Cors1_cp->vmesh();
   VMesh* icors2 = Cors2_cp->vmesh();
 
-  //get the number of nodes in input field  
+  //get the number of nodes in input field
   //VMesh::size_type num_nodes = imesh->num_nodes();
 
   VMesh::Node::size_type num_cors1, num_cors2, num_pts;
@@ -521,7 +521,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
     BMat(L1, 3) = 1;
   }
 
-    
+
     printMatrix(BMat, "BMat");
 
 
@@ -585,10 +585,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
 
     YMat = CMat.cwiseQuotient(matSingularValues);
     printMatrix(YMat, "YMat");
-      
+
     CoefMat = VMat * YMat;
-    
-    
+
+
 
     printMatrix(CoefMat, "CoefMat");
     for (int p = 0; p < n; p++)
@@ -596,32 +596,32 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
       coefs.push_back(CoefMat(p, 0));
     }
   }
-  
+
   DenseMatrix rotation(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix trans1(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix trans2(Eigen::MatrixXd::Identity(4,4));
   double *r_data = rotation.data();
-  
+
   std::copy(coefs.begin(), coefs.end(), r_data);
-  
+
   // recreate previous translation
   trans1(0,3) = -sumx2;
   trans1(1,3) = -sumy2;
   trans1(2,3) = -sumz2;
-  
+
   trans2(0,3) = sumx;
   trans2(1,3) = sumy;
   trans2(2,3) = sumz;
-  
+
   auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*trans1);
-  
-  
+
+
   //done with solve, make the new field
   make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
-  
-  
-  
-  
+
+
+
+
 
 #if 0
   {
@@ -665,52 +665,52 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         error("No Correspndence2 input field");
         return nullptr;
     }
-    
+
     FieldInformation fi(input);
-    
+
     FieldHandle input_cp, Cors1_cp, Cors2_cp;
-    
+
     output.reset(input->deep_clone());
     input_cp.reset(input->deep_clone());
     Cors1_cp.reset(Cors1->deep_clone());
     Cors2_cp.reset(Cors2->deep_clone());
-    
+
     if (!output)
     {
         error("Could not allocate output field");
         return nullptr;
     }
-    
+
     VMesh* imesh = input_cp->vmesh();
     VMesh* omesh = output->vmesh();
     VMesh* icors1 = Cors1_cp->vmesh();
     VMesh* icors2 = Cors2_cp->vmesh();
-    
+
     //get the number of nodes in input field
     //VMesh::size_type num_nodes = imesh->num_nodes();
-    
+
     VMesh::Node::size_type num_cors1, num_cors2, num_pts;
     icors1->size(num_cors1);
     icors2->size(num_cors2);
     imesh->size(num_pts);
-    
+
     if (num_cors1 != num_cors2)
     {
         error("Number of correspondence points does not match");
         return nullptr;
     }
-    
+
     // Request that it generates the node matrix
     imesh->synchronize(SCIRun::Mesh::NODES_E);
-    
+
     //get centroids of both point clouds
     sumx = 0.0;
     sumy = 0.0;
     sumz = 0.0;
     Point mp;
-    
+
     VMesh::size_type num_nodes = icors1->num_nodes();
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
         icors1->get_center(mp, idx);
@@ -721,14 +721,14 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
     sumx = sumx / (double)num_nodes;
     sumy = sumy / (double)num_nodes;
     sumz = sumz / (double)num_nodes;
-    
+
     sumx2 = 0.0;
     sumy2 = 0.0;
     sumz2 = 0.0;
     Point np;
-    
+
     VMesh::size_type num_nodes2 = icors2->num_nodes();
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes2; idx++)
     {
         icors2->get_center(np, idx);
@@ -739,10 +739,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
     sumx2 = sumx2 / (double)num_nodes;
     sumy2 = sumy2 / (double)num_nodes;
     sumz2 = sumz2 / (double)num_nodes;
-    
+
     //center fields
     Point mypoint;
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
         icors1->get_center(mp, idx);
@@ -751,7 +751,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         mypoint.z(mp.z() - sumz);
         icors1->set_point(mypoint, idx);
     }
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes2; idx++)
     {
         icors2->get_center(mp, idx);
@@ -760,16 +760,16 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         mypoint.z(mp.z() - sumz2);
         icors2->set_point(mypoint, idx);
     }
-    
-    
+
+
     //normalize the point matrices
-    
+
     double norm1;
     double norm2;
     double ssq1x=0,ssq1y=0,ssq1z=0;
     double ssq2x=0,ssq2y=0,ssq2z=0;
     Point sqp1,sqp2,normp1,normp2;
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
         icors1->get_center(sqp1, idx);
@@ -782,10 +782,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         ssq2y = sqp2.y()*sqp2.y() + ssq2y;
         ssq2z = sqp2.z()*sqp2.z() + ssq2z;
     }
-    
+
     norm1=sqrt(ssq1x+ssq1y+ssq1z);
     norm2=sqrt(ssq2x+ssq2y+ssq2z);
-    
+
     for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
         icors1->get_center(sqp1, idx);
@@ -793,14 +793,14 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         normp1.y(sqp1.y()/norm1);
         normp1.z(sqp1.z()/norm1);
         icors1->set_point(normp1, idx);
-    
+
         icors2->get_center(sqp2, idx);
         normp2.x(sqp2.x()/norm2);
         normp2.y(sqp2.y()/norm2);
         normp2.z(sqp2.z()/norm2);
         icors2->set_point(normp2, idx);
     }
-    
+
     VMesh::size_type num_nodes_mesh = imesh->num_nodes();
     for (VMesh::Node::index_type idx = 0; idx < num_nodes_mesh; idx++)
     {
@@ -810,12 +810,12 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         normp2.z((mp.z() - sumz2)/norm2);
         imesh->set_point(normp2, idx);
     }
-    
+
     DenseMatrix Amat(3,3);
     Point p1,p2;
     VMesh::Node::index_type idx;
     DenseMatrix P1(num_cors1,3),P2(num_cors1,3);
-    
+
     //This is to fine the matrix A where A=P1'*P2
     // P1 and P2 are the normalized, centered point sets of size nx3.
     for (int L1 = 0; L1 < num_cors1; L1++)
@@ -823,7 +823,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         idx=L1;
         icors1->get_point(p1, idx);
         icors2->get_point(p2, idx);
-        
+
         P1(L1,0)=p1.x();
         P1(L1,1)=p1.y();
         P1(L1,2)=p1.z();
@@ -833,27 +833,27 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
     }
 
     Amat=P1.transpose()*P2;
-    
+
     /*
     std::cout<<"P1 " << P1 <<std::endl;
     std::cout<<"P2 " << P2 <<std::endl;
     std::cout<<"Amat " << Amat <<std::endl;
     */
     Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(Amat, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    
+
     //create the U and V matrix
     DenseMatrix UMat = svd_mat.matrixU();
     DenseMatrix VMat = svd_mat.matrixV();
     DenseMatrix SVMat(svd_mat.singularValues());
-    
+
     printMatrix(UMat, "UMat");
     printMatrix(VMat, "VMat");
     printMatrix(SVMat, "matS");
-    
+
     //rotation matrix
     DenseMatrix Tmat(3,3);
     Tmat=UMat*VMat.transpose();
-    
+
     // check for negative determinant and fix.
     // this prevents reflection in the registration
     if (Tmat.determinant()<0)
@@ -863,10 +863,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         VMat(2,2)=-1*VMat(2,2);
         Tmat=UMat*VMat.transpose();
     }
-    
+
     double traceA;
     traceA=SVMat(0,0)+SVMat(1,0)+SVMat(2,0);
-    
+
     std::vector<double> coefs = {
       Tmat(0, 0)*traceA*norm1,
       Tmat(0, 1)*traceA*norm1,
@@ -880,48 +880,48 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
       Tmat(2, 1)*traceA*norm1,
       Tmat(2, 2)*traceA*norm1,
       0.0 };
-  
+
   DenseMatrix rotation(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix trans1(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix trans2(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix scale1(Eigen::MatrixXd::Identity(4,4));
   DenseMatrix scale2(Eigen::MatrixXd::Identity(4,4));
   double *r_data = rotation.data();
-  
+
   std::copy(coefs.begin(), coefs.end(), r_data);
-  
+
   // recreate previous moves
   trans1(0,3) = -sumx2;
   trans1(1,3) = -sumy2;
   trans1(2,3) = -sumz2;
-  
+
   trans2(0,3) = sumx;
   trans2(1,3) = sumy;
   trans2(2,3) = sumz;
-  
+
   scale1(0,0) = 1/norm2;
   scale1(1,1) = 1/norm2;
   scale1(2,2) = 1/norm2;
-  
+
   scale2(0,0) = norm1;
   scale2(1,1) = norm1;
   scale2(2,2) = norm1;
-  
-  
+
+
   printMatrix(trans1,"trans1");
   printMatrix(trans2,"trans2");
   printMatrix(scale1,"scale1");
   printMatrix(scale2,"scale2");
-  
-  
+
+
   auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*scale1*trans1);
-  
+
       //done with solve, make the new field
     printMatrix(*trans_out,"transform");
-  
-  
+
+
     make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
-    
+
 #if 0
     {
         const BBox bbox = omesh->get_bounding_box();
@@ -971,7 +971,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runN(FieldHandle input, Field
   VMesh* omesh = output->vmesh();
 
   omesh = imesh;
-  
+
   return boost::make_shared<DenseMatrix>(Eigen::MatrixXd::Identity(4,4));
 
 }
@@ -1052,7 +1052,7 @@ bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors
     P.x(sumx + sumerx + (Pp.x()) * (coefs[sz]) + (Pp.y()) * (coefs[sz + 1]) + (Pp.z()) * (coefs[sz + 2]) + coefs[sz + 3]);
     P.y(sumy + sumery + (Pp.x()) * coefs[2 * sz + 4] + (Pp.y())*coefs[2 * sz + 5] + (Pp.z())*coefs[2 * sz + 6] + coefs[2 * sz + 7]);
     P.z(sumz + sumerz + (Pp.x()) * coefs[3 * sz + 8] + (Pp.y())*coefs[3 * sz + 9] + (Pp.z())*coefs[3 * sz + 10] + coefs[3 * sz + 11]);
-    
+
     omesh.set_point(P, *(itp));
   }
   return true;

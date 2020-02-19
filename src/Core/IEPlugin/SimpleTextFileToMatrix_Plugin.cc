@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
  *  SimpleTextFileToMatrix_Plugin.cc
  *
@@ -35,7 +35,6 @@
  *   University of Utah
  *
  */
- 
 
 // This is a plugin is meant to read simple text files with pure data
 // in ascii format into a SCIRun matrix.
@@ -63,9 +62,9 @@ MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *fi
   SCIRun::size_type ncols = 0;
   SCIRun::size_type nrows = 0;
   SCIRun::size_type line_ncols = 0;
-  
+
   std::string line;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE DIMENSIONS OF THE MATRIX
   // AND CHECK THE FILE'S INTEGRITY.
 
@@ -74,7 +73,7 @@ MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *fi
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
-  
+
     try
     {
       inputfile.open(filename);
@@ -86,16 +85,16 @@ MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *fi
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-      
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
+
         multiple_from_string(line,values);
         line_ncols = values.size();
-        
+
         if (line_ncols > 0)
         {
           nrows++;
@@ -134,14 +133,14 @@ MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *fi
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
-    
+
     double* dataptr = result->data();
     int k = 0;
 
     try
     {
       inputfile.open(filename);
-    
+
       while( getline(inputfile,line,'\n'))
       {
         if (line.size() > 0)
@@ -149,13 +148,13 @@ MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *fi
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-            
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
+
         multiple_from_string(line,values);
         for (size_t j=0; j<values.size();j++) dataptr[k++] = values[j];
       }
@@ -176,7 +175,7 @@ bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, c
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
   DenseMatrixHandle dense = convertMatrix::toDense(matrix);
-  
+
   if (!dense)
   {
     if (pr) pr->error("Empty matrix detected");
@@ -193,11 +192,11 @@ bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, c
   try
   {
     outputfile.open(filename);
-    
+
     size_t k = 0;
-    for (int p=0; p<dense->nrows(); p++)  
+    for (int p=0; p<dense->nrows(); p++)
     {
-      for (int q=0; q<dense->ncols(); q++)  
+      for (int q=0; q<dense->ncols(); q++)
       {
         double val = dataptr[k++];
         if (is_integral_value(val))
@@ -207,12 +206,12 @@ bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, c
         outputfile << " ";
       }
       outputfile << "\n";
-    }  
+    }
   }
   catch (...)
   {
     if (pr) pr->error("Could not open and write to file: "+std::string(filename));
     return (false);
-  }  
+  }
   return (true);
 }

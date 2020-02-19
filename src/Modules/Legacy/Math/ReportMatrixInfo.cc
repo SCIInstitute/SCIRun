@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -37,7 +37,7 @@
 namespace SCIRun {
 
 /// @class ReportMatrixInfo
-/// @brief This module is used to view the attributes of matrices. 
+/// @brief This module is used to view the attributes of matrices.
 
 class ReportMatrixInfo : public Module {
 private:
@@ -130,7 +130,7 @@ ReportMatrixInfo::update_input_attributes(MatrixHandle m)
 
   gui_rows_.set(to_string(m->nrows()));
   gui_cols_.set(to_string(m->ncols()));
-  
+
   gui_min_.set(to_string(m->min()));
   gui_max_.set(to_string(m->max()));
 }
@@ -140,13 +140,13 @@ void ReportMatrixInfo::execute()
 {
   MatrixHandle mh;
   SCIRunAlgo::ConverterAlgo calgo(this);
-  
-  if(!(get_input_handle("Input",mh,true))) 
+
+  if(!(get_input_handle("Input",mh,true)))
   {
     clear_vals();
     return;
   }
-  
+
   if (inputs_changed_ || !oport_cached("NumRows") || !oport_cached("NumCols") || !oport_cached("NumElements"))
   {
     update_input_attributes(mh);
@@ -154,9 +154,9 @@ void ReportMatrixInfo::execute()
     MatrixHandle NumRows, NumCols, NumElements;
     if (!(calgo.IntToMatrix(mh->nrows(),NumRows))) return;
     if (!(calgo.IntToMatrix(mh->ncols(),NumCols))) return;
-    
+
     int numelems;
-    if (matrix_is::sparse(mh)) 
+    if (matrix_is::sparse(mh))
     {
       numelems = static_cast<int>(mh->sparse()->get_nnz());
     }
@@ -174,6 +174,3 @@ void ReportMatrixInfo::execute()
 
 
 } // end SCIRun namespace
-
-
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Cleanup/RemoveUnusedNodes.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -45,17 +45,17 @@ AlgorithmInputName RemoveUnusedNodesAlgo::OutputField("OutputField");
 
 AlgorithmOutput RemoveUnusedNodesAlgo::run(const AlgorithmInput& input) const
 {
- 
+
   auto inputField = input.get<Field>(InputField);
-  
+
   FieldHandle out;
-  
+
   if (!run(inputField, out))
        THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
- 
+
  AlgorithmOutput output;
  output[OutputField] = out;
- 
+
   return output;
 }
 
@@ -68,31 +68,31 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
   // Using a null handle will cause the program to crash. Hence it is a good
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
-  
+
   // Handle: the function returns the pointer contained in the handle
   if (!input)
   {
     error("No input source field");
     return (false);
   }
-  
+
   // Step 1: determine the type of the input fields and determine what type the
   // output field should be.
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
-  // Here we test whether the class is part of any of these newly defined 
+
+  // Here we test whether the class is part of any of these newly defined
   // non-linear classes. If so we return an error.
   if (fi.is_nonlinear())
   {
     error("This algorithm has not yet been defined for non-linear elements yet");
     return (false);
   }
-  
+
   // This one
-  if (!(fi.is_unstructuredmesh())) 
+  if (!(fi.is_unstructuredmesh()))
   {
-    // Notify the user that no action is done  
+    // Notify the user that no action is done
     error("This algorithm only works on a unstructured mesh");
     // Copy input to output (output is a reference to the input)
     return (false);
@@ -101,22 +101,22 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
   VField* ifield = input->vfield();
   VMesh*  imesh  = input->vmesh();
 
-  output = CreateField(fo);  
+  output = CreateField(fo);
   if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
-  
+
    VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
- 
+
   VMesh::size_type num_nodes = imesh->num_nodes();
   VMesh::size_type num_elems = imesh->num_elems();
 
   std::vector<VMesh::Node::index_type> mapping(num_nodes,-1);
   std::vector<bool> used(num_nodes,false);
-  
+
   VMesh::Node::array_type nodes;
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
@@ -127,7 +127,7 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
   for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
   {
     Point p;
-    if (used[idx]) 
+    if (used[idx])
     {
       imesh->get_center(p,idx);
       mapping[idx] = omesh->add_point(p);
@@ -135,7 +135,7 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
   }
 
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
-  {  
+  {
     imesh->get_nodes(nodes,idx);
     for (size_t j=0; j<nodes.size(); j++)
     {
@@ -143,9 +143,9 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
     }
     omesh->add_elem(nodes);
   }
-  
+
   ofield->resize_values();
-  
+
   if (ofield->basis_order() == 0)
   {
     ofield->copy_values(ifield);
@@ -158,6 +158,6 @@ bool RemoveUnusedNodesAlgo::run(FieldHandle input, FieldHandle& output) const
         ofield->copy_value(ifield,idx,mapping[idx]);
     }
   }
-  
+
   return true;
 }

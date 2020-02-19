@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -48,19 +46,19 @@
 namespace SCIRun {
 
 /**************************************
- 
+
 @class
    SimpleReducer
-   
+
 KEYWORDS
    Thread
-   
+
 @details
    Perform reduction operations over a set of threads.  Reduction
    operations include things like global sums, global min/max, etc.
    In these operations, a local sum (operation) is performed on each
    thread, and these sums are added together.
-   
+
 ****************************************/
 	class SCISHARE SimpleReducer : public Barrier {
 	public:
@@ -105,7 +103,7 @@ KEYWORDS
 	    };
 	    struct pdata {
 		int buf_;
-		char filler_[128-sizeof(int)];	
+		char filler_[128-sizeof(int)];
 	    };
 	    joinArray* join_[2];
 	    pdata* p_;
@@ -119,5 +117,3 @@ KEYWORDS
 } // End namespace SCIRun
 
 #endif
-
-

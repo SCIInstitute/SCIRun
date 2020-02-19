@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -44,29 +44,27 @@ TEST(TetVolMeshTest, CheckMeshIteratorTetVolMesh)
 {
   FieldHandle output;
   FieldHandle tetmesh = CubeTetVolLinearBasis(NONE_E);
-  
+
   VMesh* mesh = tetmesh->vmesh();
-  
+
   VMesh::Elem::array_type elems;
   VMesh::Elem::iterator it, eit;
   VMesh::Elem::size_type sz;
- 
+
   VMesh::Node::array_type nodearray;
 
   mesh->begin(it);
   mesh->end(eit);
   mesh->size(sz);
   index_type c = 0;
-  
+
   while (it != eit)
   {
     mesh->get_nodes(nodearray, *it);
     ++it;
     c++;
-  }  
-  
+  }
+
   ASSERT_EQ(c, 6);
-  
+
 }
-
-

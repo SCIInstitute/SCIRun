@@ -1,33 +1,33 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///    @file    NoData.h
-///    @author  Martin Cole, Frank B. Sachse
-///    @date    Mon Aug 23 09:57:14 2004
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole, Frank B. Sachse
+   Date:            August 23 2004
+*/
+
 
 #ifndef CORE_BASIS_NODATA_H
 #define CORE_BASIS_NODATA_H 1
@@ -42,46 +42,46 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-/// Class for describing unit geometry of NoDataBasis 
+/// Class for describing unit geometry of NoDataBasis
 class NoDataUnitElement {
-public: 
+public:
   NoDataUnitElement() {}
   virtual ~NoDataUnitElement() {}
 
-  static double unit_vertices[1][1]; ///< Parametric coordinates of vertices 
-  static int unit_edges[1][1];    ///< References to vertices of unit edge 
+  static double unit_vertices[1][1]; ///< Parametric coordinates of vertices
+  static int unit_edges[1][1];    ///< References to vertices of unit edge
 
-  /// return dimension of domain 
+  /// return dimension of domain
   static int domain_dimension()
-    { return -1; } 
-  
-  /// return size of domain   
-  static double domain_size() 
-    { return 0.0; }
-  
-  /// return number of vertices
-  static int number_of_vertices() 
-    { return 0; }
-  
-  /// return number of vertices in mesh
-  static int number_of_mesh_vertices() 
-    { return 0; }
-  
-  /// return degrees of freedom
-  static int dofs() 
-    { return 0; } 
+    { return -1; }
 
-  /// return number of edges 
-  static int number_of_edges() 
-    { return 0; } 
-  
-  /// return number of vertices per face 
-  static int vertices_of_face() 
-    { return 0; } 
-  
-  /// return number of faces per cell 
-  static int faces_of_cell() 
-    { return 0; } 
+  /// return size of domain
+  static double domain_size()
+    { return 0.0; }
+
+  /// return number of vertices
+  static int number_of_vertices()
+    { return 0; }
+
+  /// return number of vertices in mesh
+  static int number_of_mesh_vertices()
+    { return 0; }
+
+  /// return degrees of freedom
+  static int dofs()
+    { return 0; }
+
+  /// return number of edges
+  static int number_of_edges()
+    { return 0; }
+
+  /// return number of vertices per face
+  static int vertices_of_face()
+    { return 0; }
+
+  /// return number of faces per cell
+  static int faces_of_cell()
+    { return 0; }
 
   static double volume() { return 0.; } ///< return volume
 };
@@ -89,7 +89,7 @@ public:
 
 /// Class for handling of element without storage for field variables
 template <class T> /// for compilation consistency
-  class NoDataBasis : public BasisSimple<T>, 
+  class NoDataBasis : public BasisSimple<T>,
                       public NoDataUnitElement,
                       public NoElementWeights
 {
@@ -99,9 +99,9 @@ public:
 
   NoDataBasis() {}
   virtual ~NoDataBasis() {}
-  
+
   static int polynomial_order() { return -1; }
- 
+
   template <class VECTOR>
   void get_weights(const VECTOR &coords, unsigned int elem,  double *w) const
   {
@@ -114,7 +114,7 @@ public:
 
   static  const std::string type_name(int n = -1);
 
-  virtual void io (Piostream& str); 
+  virtual void io (Piostream& str);
 
 };
 
@@ -134,7 +134,7 @@ NoDataBasis<T>::type_name(int n)
     static const std::string nm("NoDataBasis");
     return nm;
   }
-  else 
+  else
   {
     return find_type_name((T *)0);
   }
@@ -156,14 +156,14 @@ const TypeDescription* get_type_description(Core::Basis::NoDataBasis<T> *)
     const TypeDescription *sub = get_type_description((T*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new TypeDescription("NoDataBasis", subs, 
-      std::string(__FILE__), 
-      "SCIRun", 
+    td = new TypeDescription("NoDataBasis", subs,
+      std::string(__FILE__),
+      "SCIRun",
       TypeDescription::BASIS_E);
   }
   return td;
 }
-  
+
   template <class T>
   void
   Core::Basis::NoDataBasis<T>::io(Piostream &stream)

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,12 +24,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 #ifndef INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 #define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 
 #include <QObject>
 
-static const int MAX_DIALOGS_SHOWN = 5; 
+static const int MAX_DIALOGS_SHOWN = 5;
 
 namespace SCIRun {
 namespace Gui {
@@ -40,14 +41,14 @@ class DialogErrorControl: public QObject
 	Q_OBJECT
 public:
 	explicit DialogErrorControl(QWidget* parent);
-	void increaseCounter(); 
-	bool showDialog(); 
-	
+	void increaseCounter();
+	bool showDialog();
+
 	public Q_SLOTS:
-		void resetCounter(); 
+		void resetCounter();
 
 private:
-		int counter_; 
+		int counter_;
 };
 }
 }

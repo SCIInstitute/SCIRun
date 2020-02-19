@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
@@ -8,34 +36,7 @@
 //
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
-//
-//  Copyright (C) 2011, 2012, Jonathan Bronson
-//  Scientific Computing  &  Imaging Institute
-//  University of Utah
-//
-//  Permission is  hereby  granted, free  of charge, to any person
-//  obtaining a copy of this software and associated documentation
-//  files  ( the "Software" ),  to  deal in  the  Software without
-//  restriction, including  without limitation the rights to  use,
-//  copy, modify,  merge, publish, distribute, sublicense,  and/or
-//  sell copies of the Software, and to permit persons to whom the
-//  Software is  furnished  to do  so,  subject  to  the following
-//  conditions:
-//
-//  The above  copyright notice  and  this permission notice shall
-//  be included  in  all copies  or  substantial  portions  of the
-//  Software.
-//
-//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
-//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
-//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
-//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
-//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-//  USE OR OTHER DEALINGS IN THE SOFTWARE.
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
+
 
 #ifndef BCCLattice3DMesher_H
 #define BCCLattice3DMesher_H
@@ -108,7 +109,7 @@ private:
     void snap_quad_to_cut(Vertex3D *&quad, Vertex3D *cut);
     void snap_quad_to_triple(Vertex3D *&quad, Vertex3D *triple);
 
-    void fill_stencil(Tet3D *tet);    
+    void fill_stencil(Tet3D *tet);
 
     bool isTransition(bool *set1, bool *set2);
     void fixTriangleOrdering(Edge3D *edges[], Vertex3D *verts[]);
@@ -120,7 +121,7 @@ private:
     void strip_bad_tets(Tet3D *tet);
     bool valid_dihedral_angles(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, Vertex3D *v4);
 
-    void split_tet_on_edge(Tet3D *tet, Edge3D *edge, Vertex3D *split);    
+    void split_tet_on_edge(Tet3D *tet, Edge3D *edge, Vertex3D *split);
     void swap_stencil(Tet3D *tet, int stencil[24][4]);
 
     bool triangle_intersect(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, vec3 origin, vec3 ray, vec3 &pt, float &error, float epsilon = 1E-2);

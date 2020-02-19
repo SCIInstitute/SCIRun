@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///@file GenerateROIStatisticsAlgorithm
 ///@brief The algorithm implements a statistical ROI analysis.
 ///
@@ -37,7 +37,7 @@
 /// provided in the lower GUI table the user can specify an own ROI. The algorithm uses this (x,y,z) location to determine the closest mesh element based on the element centers.
 /// A spherical ROI can be wrapped around that point (closest mesh element center) and an statistical analysis of all material in that sphere can be performed.
 /// If additionally, a material (lower GUI table, in Atlas Material #) was specified only the analysis is only performed for the specified material.
-/// In any case, if an material was specified but not found the algorithm outputs NaN. "0" or " "  as Atlas Material # is interpreted as any material label number. 
+/// In any case, if an material was specified but not found the algorithm outputs NaN. "0" or " "  as Atlas Material # is interpreted as any material label number.
 /// If one material was present only as a single element the standard deviation (stddev.)
 
 #ifndef ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
@@ -50,7 +50,7 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-  
+
   ALGORITHM_PARAMETER_DECL(ROITableValues);
   ALGORITHM_PARAMETER_DECL(StatisticsTableValues);
   ALGORITHM_PARAMETER_DECL(PhysicalUnitStr);
@@ -70,7 +70,7 @@ namespace BrainStimulator {
     static const AlgorithmInputName SpecifyROI;
     static const AlgorithmOutputName StatisticalResults;
     boost::tuple<Datatypes::DenseMatrixHandle, VariableHandle> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
- 
+
   private:
     std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;
     std::vector<bool> statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, double x, double y, double z, double radius, int target_material) const;

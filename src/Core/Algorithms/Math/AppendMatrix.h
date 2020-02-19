@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_MATH_APPENDMATRIX_H
 #define ALGORITHMS_MATH_APPENDMATRIX_H
 
@@ -36,20 +36,20 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-  
+
   class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
   {
   public:
     enum Option { ROWS, COLUMNS };
     typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
-    typedef Option Parameters;  
+    typedef Option Parameters;
     typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
     Outputs ConcatenateMatrices(const Datatypes::MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Datatypes::Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const;
     Outputs run(const Inputs& input, const Parameters& params) const;
     bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params) const;
     AppendMatrixAlgorithm();
     AlgorithmOutput run(const AlgorithmInput& input) const;
-    static const AlgorithmInputName InputMatrices;  
+    static const AlgorithmInputName InputMatrices;
   };
 
 }}}}

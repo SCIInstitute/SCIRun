@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_BASE_NAME_H
 #define ALGORITHMS_BASE_NAME_H
 
@@ -43,7 +43,7 @@ namespace Algorithms {
     explicit Name(const std::string& name);
 
     const std::string& name() const { return name_; }
-    
+
     bool operator<(const Name& rhs) const
     {
       return name_ < rhs.name_;
@@ -54,11 +54,11 @@ namespace Algorithms {
 
   SCISHARE bool operator==(const Name& lhs, const Name& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Name& name);
-    
+
   using AlgorithmParameterName = Name;
   using AlgorithmInputName = Name;
   using AlgorithmOutputName = Name;
-  
+
 }}}
 
 #endif

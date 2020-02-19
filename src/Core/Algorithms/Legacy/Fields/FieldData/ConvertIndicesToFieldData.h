@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_INDICESTODATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_INDICESTODATA_H 1
@@ -53,12 +53,11 @@ class SCISHARE ConvertIndicesToFieldDataAlgo : public AlgoBase
       /// The output type
       add_option("datatype","double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
     }
-  
+
     bool run(FieldHandle input, MatrixHandle data, FieldHandle& output);
 };
 
 
 } // end namespace SCIRunAlgo
 
-#endif 
-
+#endif

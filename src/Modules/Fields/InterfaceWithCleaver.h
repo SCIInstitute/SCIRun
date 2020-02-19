@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_FIELDS_InterfaceWithCleaver_H
 #define MODULES_FIELDS_InterfaceWithCleaver_H
 #include <Dataflow/Network/Module.h>
@@ -43,7 +43,7 @@ namespace Fields {
     InterfaceWithCleaver();
     void execute() override;
     void setStateDefaults() override;
-    
+
     DEPRECATED_MODULE_REPLACE_WITH("InterfaceWithCleaver2")
 
     HAS_DYNAMIC_PORTS

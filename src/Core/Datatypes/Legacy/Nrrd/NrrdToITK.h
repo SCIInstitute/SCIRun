@@ -1,31 +1,32 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  License for the specific language governing rights and limitations under
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
+/*
+   For more information, please see: http://software.sci.utah.edu
 
-/*  
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+/*
  *@file    NrrdToITK.h
  *@author  McKay Davis
  *@date    Sun Oct 22 22:46:48 2006
@@ -62,14 +63,14 @@ nrrd_to_itk_image(Nrrd *n)
   ASSERT(n);
   ASSERT(n->type == get_nrrd_type<PixType>());
   ASSERT(n->dim == Dim+1);
-  
+
   typedef itk::ImportImageFilter < PixType , Dim > ImportFilterType;
   typename ImportFilterType::Pointer importFilter = ImportFilterType::New();
   typename ImportFilterType::SizeType size;
 
   double origin[Dim];
   double spacing[Dim];
-  
+
   unsigned int count = 1;
   for(unsigned int i=0; i < n->dim-1; i++) {
     count *= n->axis[i+1].size;
@@ -97,7 +98,7 @@ nrrd_to_itk_image(Nrrd *n)
   importFilter->SetSpacing(spacing);
   importFilter->SetImportPointer((PixType *)n->data, count, false);
   importFilter->Update();
-  
+
   return importFilter->GetOutput();
 }
 
@@ -123,12 +124,12 @@ itk_image_to_nrrd(ITKDatatypeHandle &img_handle)
   size[3] = img->GetRequestedRegion().GetSize()[2];
 
   unsigned int centers[NRRD_DIM_MAX];
-  centers[0] = nrrdCenterNode; 
+  centers[0] = nrrdCenterNode;
   centers[1] = nrrdCenterNode;
-  centers[2] = nrrdCenterNode; 
+  centers[2] = nrrdCenterNode;
   centers[3] = nrrdCenterNode;
 
-  nrrdWrap_nva(nrrd, (void *)img->GetBufferPointer(), 
+  nrrdWrap_nva(nrrd, (void *)img->GetBufferPointer(),
                get_nrrd_type<PixType>(), 4, size);
 
   nrrdAxisInfoSet_nva(nrrd, nrrdAxisInfoCenter, centers);

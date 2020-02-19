@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_4.cc
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -81,16 +82,16 @@ namespace SCIRun
 template class TriSurfMesh<TriLinearLgn<Point> >;
 
 //Linear
-template class GenericField<TSMesh, FDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<TSMesh, FDVectorBasis, std::vector<Vector> >;       
-template class GenericField<TSMesh, FDdoubleBasis, std::vector<double> >;       
-template class GenericField<TSMesh, FDfloatBasis,  std::vector<float> >;        
+template class GenericField<TSMesh, FDTensorBasis, std::vector<Tensor> >;
+template class GenericField<TSMesh, FDVectorBasis, std::vector<Vector> >;
+template class GenericField<TSMesh, FDdoubleBasis, std::vector<double> >;
+template class GenericField<TSMesh, FDfloatBasis,  std::vector<float> >;
 template class GenericField<TSMesh, FDcomplexBasis, std::vector<complex> >;
 template class GenericField<TSMesh, FDintBasis,    std::vector<int> >;
 template class GenericField<TSMesh, FDlonglongBasis,std::vector<long long> >;
-template class GenericField<TSMesh, FDshortBasis,  std::vector<short> >;        
-template class GenericField<TSMesh, FDcharBasis,   std::vector<char> >;         
-template class GenericField<TSMesh, FDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<TSMesh, FDshortBasis,  std::vector<short> >;
+template class GenericField<TSMesh, FDcharBasis,   std::vector<char> >;
+template class GenericField<TSMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<TSMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<TSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TSMesh, FDulongBasis,  std::vector<unsigned long> >;
@@ -189,20 +190,19 @@ typedef CurveMesh<CrvLinearLgn<Point> > CMesh;
 namespace SCIRun {
 
   template class CurveMesh<CrvLinearLgn<Point> >;
-  
+
 //Linear
-template class GenericField<CMesh, CrFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<CMesh, CrFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<CMesh, CrFDdoubleBasis, std::vector<double> >;       
-template class GenericField<CMesh, CrFDfloatBasis,  std::vector<float> >;        
+template class GenericField<CMesh, CrFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<CMesh, CrFDVectorBasis, std::vector<Vector> >;
+template class GenericField<CMesh, CrFDdoubleBasis, std::vector<double> >;
+template class GenericField<CMesh, CrFDfloatBasis,  std::vector<float> >;
 template class GenericField<CMesh, CrFDcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, CrFDintBasis,    std::vector<int> >;
 template class GenericField<CMesh, CrFDlonglongBasis,std::vector<long long> >;
-template class GenericField<CMesh, CrFDshortBasis,  std::vector<short> >;        
-template class GenericField<CMesh, CrFDcharBasis,   std::vector<char> >;         
-template class GenericField<CMesh, CrFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<CMesh, CrFDshortBasis,  std::vector<short> >;
+template class GenericField<CMesh, CrFDcharBasis,   std::vector<char> >;
+template class GenericField<CMesh, CrFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<CMesh, CrFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<CMesh, CrFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<CMesh, CrFDulongBasis,  std::vector<unsigned long> >;
 }
-

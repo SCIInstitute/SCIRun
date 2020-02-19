@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -49,7 +49,7 @@ CalculateInsideWhichField::CalculateInsideWhichField() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputFields);
-  
+
   INITIALIZE_PORT(OutputField);
 }
 
@@ -68,7 +68,7 @@ void CalculateInsideWhichField::execute()
 {
   auto field=getRequiredInput(InputField);
   auto fields = getRequiredDynamicInputs(InputFields);
-  
+
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Method);
@@ -78,7 +78,7 @@ void CalculateInsideWhichField::execute()
     setAlgoDoubleFromState(Parameters::StartValue);
     setAlgoOptionFromState(Parameters::OutputType);
     setAlgoOptionFromState(Parameters::DataLocation);
-    
+
     auto output = algo().run(withInputData((InputField, field)(InputFields, fields)));
 
     sendOutputFromAlgorithm(OutputField,output);

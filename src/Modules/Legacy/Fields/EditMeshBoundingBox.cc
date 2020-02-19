@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -92,7 +91,7 @@ class EditMeshBoundingBox : public Module {
     GuiPoint              box_in_;
 
     GuiInt                resetting_;
-    
+
     GuiInt restrict_translation_;
     GuiInt restrict_x_;
     GuiInt restrict_y_;
@@ -115,12 +114,12 @@ class EditMeshBoundingBox : public Module {
 
     virtual void execute();
     virtual void widget_moved(bool, BaseWidget*);
-    
+
     virtual void tcl_command(GuiArgs&, void*);
-    
+
     GuiDouble widget_scale_;
     GuiInt    widget_mode_;
-    
+
     virtual void presave();
     virtual void post_read();
 };
@@ -274,7 +273,7 @@ EditMeshBoundingBox::tcl_command(GuiArgs& args, void* userdata)
     }
     restrict_y_.reset();
     box_->SetRestrictY(restrict_y_.get());
-  }  
+  }
   else if (args[1] == "restrictz")
   {
     if (args.count() != 2)
@@ -305,7 +304,7 @@ EditMeshBoundingBox::tcl_command(GuiArgs& args, void* userdata)
     }
     restrict_d_.reset();
     box_->SetRestrictD(restrict_d_.get());
-  }  
+  }
   else if (args[1] == "restricti")
   {
     if (args.count() != 2)
@@ -316,7 +315,7 @@ EditMeshBoundingBox::tcl_command(GuiArgs& args, void* userdata)
     restrict_i_.reset();
     box_->SetRestrictI(restrict_i_.get());
   }
-  else 
+  else
   {
     // Relay data to the Module class
     Module::tcl_command(args, userdata);
@@ -332,7 +331,7 @@ EditMeshBoundingBox::~EditMeshBoundingBox()
 
 
 void
-EditMeshBoundingBox::clear_vals() 
+EditMeshBoundingBox::clear_vals()
 {
   inputcenterx_.set("---");
   inputcentery_.set("---");
@@ -344,11 +343,11 @@ EditMeshBoundingBox::clear_vals()
 
 
 void
-EditMeshBoundingBox::update_input_attributes(FieldHandle f) 
+EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
   Point center;
   Vector size;
-  
+
   BBox bbox = f->vmesh()->get_bounding_box();
 
   if (!bbox.valid()) {
@@ -389,21 +388,21 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
 
     // build a widget identical to the BBox
     size = Vector(bbox.max()-bbox.min());
-    if (fabs(size.x())<1.e-4) 
+    if (fabs(size.x())<1.e-4)
     {
-      size.x(2.e-4); 
+      size.x(2.e-4);
       bbox.extend(bbox.min()-Vector(1.0e-4, 0.0, 0.0));
       bbox.extend(bbox.max()+Vector(1.0e-4, 0.0, 0.0));
     }
-    if (fabs(size.y())<1.e-4) 
+    if (fabs(size.y())<1.e-4)
     {
-      size.y(2.e-4); 
+      size.y(2.e-4);
       bbox.extend(bbox.min()-Vector(0.0, 1.0e-4, 0.0));
       bbox.extend(bbox.max()+Vector(0.0, 1.0e-4, 0.0));
     }
-    if (fabs(size.z())<1.e-4) 
+    if (fabs(size.z())<1.e-4)
     {
-      size.z(2.e-4); 
+      size.z(2.e-4);
       bbox.extend(bbox.min()-Vector(0.0, 0.0, 1.0e-4));
       bbox.extend(bbox.max()+Vector(0.0, 0.0, 1.0e-4));
     }
@@ -446,7 +445,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
   }
   else
   {
-  
+
     const double l2norm = (box_right_.get().vector() +
 			   box_down_.get().vector() +
 			   box_in_.get().vector()).length();
@@ -492,14 +491,14 @@ EditMeshBoundingBox::execute()
   if (val== 0) box_->UnRestrictTranslation();
   else if (val== 1) box_->RestrictTranslationXYZ();
   else if (val== 2) box_->RestrictTranslationRDI();
-  
+
   // The output port is required.
   update_state(Executing);
 
   // build the transform widget and set the the initial
   // field transform.
-  
-  if (generation_ != fh.get_rep()->generation || resetting_.get()) 
+
+  if (generation_ != fh.get_rep()->generation || resetting_.get())
   {
     generation_ = fh.get_rep()->generation;
     // get and display the attributes of the input field
@@ -512,19 +511,19 @@ EditMeshBoundingBox::execute()
       bbox.extend(Point(1,1,1));
     }
     Vector size(bbox.max()-bbox.min());
-    if (fabs(size.x())<1.e-4) 
+    if (fabs(size.x())<1.e-4)
     {
-      size.x(2.e-4); 
+      size.x(2.e-4);
       bbox.extend(bbox.min()-Vector(1.e-4,0,0));
     }
-    if (fabs(size.y())<1.e-4) 
+    if (fabs(size.y())<1.e-4)
     {
-      size.y(2.e-4); 
+      size.y(2.e-4);
       bbox.extend(bbox.min()-Vector(0,1.e-4,0));
     }
-    if (fabs(size.z())<1.e-4) 
+    if (fabs(size.z())<1.e-4)
     {
-      size.z(2.e-4); 
+      size.z(2.e-4);
       bbox.extend(bbox.min()-Vector(0,0,1.e-4));
     }
     Point center(bbox.min() + size/2.);
@@ -539,7 +538,7 @@ EditMeshBoundingBox::execute()
     Transform r;
     Point unused;
     field_initial_transform_.load_identity();
-    
+
     double sx = (right-center).length();
     double sy = (down-center).length();
     double sz = (in-center).length();
@@ -547,7 +546,7 @@ EditMeshBoundingBox::execute()
     if (sx < 1e-12) sx = 1.0;
     if (sy < 1e-12) sy = 1.0;
     if (sz < 1e-12) sz = 1.0;
-        
+
     field_initial_transform_.pre_scale(Vector(sx,sy,sz));
     r.load_frame((right-center).safe_normal(),
 		 (down-center).safe_normal(),
@@ -556,36 +555,36 @@ EditMeshBoundingBox::execute()
     field_initial_transform_.pre_trans(r);
     field_initial_transform_.pre_translate(center.asVector());
 
-    resetting_.set(0); 
+    resetting_.set(0);
   }
 
-  if (useoutputsize_.get() || useoutputcenter_.get()) 
+  if (useoutputsize_.get() || useoutputcenter_.get())
   {
     Point center, right, down, in;
     outputcenterx_.reset(); outputcentery_.reset(); outputcenterz_.reset();
     outputsizex_.reset(); outputsizey_.reset(); outputsizez_.reset();
-    if (outputsizex_.get() < 0 || 
-      outputsizey_.get() < 0 || 
-      outputsizez_.get() < 0) 
+    if (outputsizex_.get() < 0 ||
+      outputsizey_.get() < 0 ||
+      outputsizez_.get() < 0)
     {
       error("Degenerate BBox requested.");
-      return;                    // degenerate 
+      return;                    // degenerate
     }
     Vector sizex, sizey, sizez;
     box_->GetPosition(center,right,down,in);
-    if (useoutputsize_.get()) 
+    if (useoutputsize_.get())
     {
       sizex=Vector(outputsizex_.get(),0,0);
       sizey=Vector(0,outputsizey_.get(),0);
       sizez=Vector(0,0,outputsizez_.get());
-    } 
-    else 
+    }
+    else
     {
       sizex=(right-center)*2;
       sizey=(down-center)*2;
       sizez=(in-center)*2;
     }
-    if (useoutputcenter_.get()) 
+    if (useoutputcenter_.get())
     {
       center = Point(outputcenterx_.get(),
 		     outputcentery_.get(),
@@ -600,7 +599,7 @@ EditMeshBoundingBox::execute()
 
   // Transform the mesh if necessary.
   // Translate * Rotate * Scale.
-  
+
   Point center, right, down, in;
   box_->GetPosition(center, right, down, in);
 
@@ -616,30 +615,30 @@ EditMeshBoundingBox::execute()
   t.pre_trans(r);
   t.pre_translate(center.asVector());
 
-  
+
   Transform inv(field_initial_transform_);
   inv.invert();
   t.post_trans(inv);
 
   // Change the input field handle here.
   fh.detach();
-  
+
   fh->mesh_detach();
   fh->vmesh()->transform(t);
 
   send_output_handle("Output Field", fh);
-  
+
   // Convert the transform into a matrix and send it out.
   MatrixHandle mh = new DenseMatrix(t);
   send_output_handle("Transformation Matrix", mh);
 
 }
 
-    
+
 void
 EditMeshBoundingBox::widget_moved(bool last, BaseWidget*)
 {
-  if (last) 
+  if (last)
   {
     Point center, right, down, in;
     outputcenterx_.reset(); outputcentery_.reset(); outputcenterz_.reset();

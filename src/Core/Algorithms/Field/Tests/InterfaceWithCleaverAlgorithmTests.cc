@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -41,10 +41,10 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-  
+
   FieldHandle BoxSignedDistanceField(bool negative)
-  {  
-  
+  {
+
    FieldInformation f("LatVolMesh", 1, "float");
    size_type size = 3;
    Point minb(-1.0, -1.0, -1.0);
@@ -52,7 +52,7 @@ using namespace SCIRun::TestUtils;
    MeshHandle omesh = CreateMesh(f, size, size, size, minb, maxb);
    FieldHandle ofield = CreateField(f,omesh);
    std::vector<double> values(27);
-   
+
    values[0]=-1.73205077648162841796875;
    values[1]=-1.41421353816986083984375;
    values[2]=-1.73205077648162841796875;
@@ -80,7 +80,7 @@ using namespace SCIRun::TestUtils;
    values[24]=-1.73205077648162841796875;
    values[25]=-1.41421353816986083984375;
    values[26]=-1.73205077648162841796875;
-   
+
    if (negative)
    {
     for (int i=0;i<27;i++)
@@ -88,7 +88,7 @@ using namespace SCIRun::TestUtils;
        values[i]=-values[i];
      }
    }
-   
+
    ofield->vfield()->resize_values();
    ofield->vfield()->set_values(values);
    return ofield;
@@ -97,13 +97,13 @@ using namespace SCIRun::TestUtils;
 TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
 {
   InterfaceWithCleaverAlgorithm algo;
- 
+
   std::vector<FieldHandle> inputs;
   inputs.push_back(BoxSignedDistanceField(true));
   inputs.push_back(BoxSignedDistanceField(false));
-  
+
   auto info = algo.run(inputs);
- 
+
   std::cout << "Number of mesh elements: " <<  info->vmesh()->num_elems() << std::endl;
   std::cout << "Number of mesh nodes: " <<  info->vmesh()->num_nodes() << std::endl;
   std::cout << "Number of mesh values: " <<  info->vfield()->num_values() << std::endl;
@@ -111,5 +111,5 @@ TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
   ASSERT_TRUE(info->vmesh()->num_elems() == 4326);
   ASSERT_TRUE(info->vmesh()->num_nodes() == 908);
   ASSERT_TRUE(info->vfield()->num_values() == 4326);
- 
+
 }

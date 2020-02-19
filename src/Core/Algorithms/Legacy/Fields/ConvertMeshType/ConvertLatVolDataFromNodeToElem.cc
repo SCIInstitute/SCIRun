@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertLatVolDataFromNodeToElem.h>
 #include <Core/Datatypes/FieldInformation.h>
 
@@ -33,7 +33,7 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 ConvertLatVolDataFromNodeToElemAlgo::
 run(FieldHandle input, FieldHandle& output)
 {
@@ -50,14 +50,14 @@ run(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   if (fi.is_constantdata())
   {
     warning("The data is already at the elements, just copying ");
     output = input;
-    algo_end(); return (true);  
+    algo_end(); return (true);
   }
-  
+
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
@@ -69,7 +69,7 @@ run(FieldHandle input, FieldHandle& output)
     VField* ifield = input->vfield();
     VMesh*  imesh  = input->vmesh();
     fo.make_constantdata();
-    
+
     const size_type ni = imesh->get_ni();
     const size_type nj = imesh->get_nj();
     const size_type nk = imesh->get_nk();
@@ -79,7 +79,7 @@ run(FieldHandle input, FieldHandle& output)
     const double koff = (1.0 - (nk / (nk-1.0))) * 0.5;
 
     const Point minp(ioff, joff, koff);
-    const Point maxp(1.0-ioff, 1.0-joff, 1.0-koff);  
+    const Point maxp(1.0-ioff, 1.0-joff, 1.0-koff);
 
     MeshHandle mesh = CreateMesh(fo,ni+1,nj+1,nk+1,minp,maxp);
     if (mesh.get_rep() == 0)
@@ -88,11 +88,11 @@ run(FieldHandle input, FieldHandle& output)
       algo_end(); return (false);
     }
     VMesh* omesh = mesh->vmesh();
-    
+
     Transform trans;
     imesh->get_canonical_transform(trans);
     omesh->transform(trans);
-    
+
     output = CreateField(fo,mesh);
     if (output.get_rep() == 0)
     {
@@ -100,7 +100,7 @@ run(FieldHandle input, FieldHandle& output)
       algo_end(); return (false);
     }
     VField* ofield = output->vfield();
-    
+
     ofield->copy_values(ifield);
 
     algo_end(); return (true);
@@ -110,7 +110,7 @@ run(FieldHandle input, FieldHandle& output)
     VField* ifield = input->vfield();
     VMesh*  imesh  = input->vmesh();
     fo.make_constantdata();
-    
+
     const size_type ni = imesh->get_ni();
     const size_type nj = imesh->get_nj();
 
@@ -118,7 +118,7 @@ run(FieldHandle input, FieldHandle& output)
     const double joff = (1.0 - (nj / (nj-1.0))) * 0.5;
 
     const Point minp(ioff, joff, 00);
-    const Point maxp(1.0-ioff, 1.0-joff, 0.0);  
+    const Point maxp(1.0-ioff, 1.0-joff, 0.0);
 
     MeshHandle mesh = CreateMesh(fo,ni+1,nj+1,minp,maxp);
     if (mesh.get_rep() == 0)
@@ -127,11 +127,11 @@ run(FieldHandle input, FieldHandle& output)
       algo_end(); return (false);
     }
     VMesh* omesh = mesh->vmesh();
-    
+
     Transform trans;
     imesh->get_canonical_transform(trans);
     omesh->transform(trans);
-    
+
     output = CreateField(fo,mesh);
     if (output.get_rep() == 0)
     {
@@ -139,7 +139,7 @@ run(FieldHandle input, FieldHandle& output)
       algo_end(); return (false);
     }
     VField* ofield = output->vfield();
-    
+
     ofield->copy_values(ifield);
 
     algo_end(); return (true);

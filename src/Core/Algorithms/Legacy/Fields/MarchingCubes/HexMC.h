@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,10 +44,10 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  #include <Core/Geom/GeomTriangles.h>
 #endif
- 
+
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 namespace SCIRun{
@@ -56,14 +55,14 @@ namespace SCIRun{
 class HexMC : public BaseMC
 {
   public:
- 
+
     HexMC( FieldHandle field ) : field_handle_(field),
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
-                           #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-			    triangles_(0), 
+                           #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+			    triangles_(0),
 			   #endif
-                            trisurf_(0), 
+                            trisurf_(0),
                             trisurf_handle_(0),
                             quadsurf_(0),
                             quadsurf_handle_(0) {}
@@ -78,7 +77,7 @@ class HexMC : public BaseMC
     virtual FieldHandle get_field(double val);
 
   private:
-   
+
     VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type& );
@@ -88,7 +87,7 @@ class HexMC : public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     GeomFastTriangles *triangles_;
    #endif
     VMesh*      trisurf_;

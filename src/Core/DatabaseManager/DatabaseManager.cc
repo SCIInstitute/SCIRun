@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 #include <Core/Utils/StringUtil.h>
 #include <Core/DatabaseManager/DatabaseManager.h>
@@ -41,7 +41,7 @@ namespace SCIRun
     namespace Database
     {
 
-class DatabaseManagerPrivate : public SCIRun::Core::RecursiveLockable 
+class DatabaseManagerPrivate : public SCIRun::Core::RecursiveLockable
 {
 public:
 	sqlite3* database_;
@@ -66,7 +66,7 @@ DatabaseManager::DatabaseManager() :
 }
 
 DatabaseManager::~DatabaseManager()
-{	
+{
 	// We need to close the database to avoid memory leak.
 	if ( this->private_->database_ )
 	{
@@ -90,7 +90,7 @@ static int InternalExecuteSqlStatement( sqlite3_stmt* statement, ResultSet& resu
 			case SQLITE_TEXT:
 			case SQLITE_BLOB:
 				{
-					std::string string_result = std::string( reinterpret_cast< const char* >( 
+					std::string string_result = std::string( reinterpret_cast< const char* >(
 						sqlite3_column_text( statement, j ) ) );
 					temp_any = boost::any( string_result );
 					break;
@@ -128,7 +128,7 @@ bool DatabaseManager::run_sql_statement( const std::string& sql_str, std::string
 	return this->run_sql_statement( sql_str, dummy_results, error );
 }
 
-bool DatabaseManager::run_sql_statement( const std::string& sql_str, ResultSet& results, 
+bool DatabaseManager::run_sql_statement( const std::string& sql_str, ResultSet& results,
 	std::string& error )
 {
 	results.clear();
@@ -142,7 +142,7 @@ bool DatabaseManager::run_sql_statement( const std::string& sql_str, ResultSet& 
 	}
 
 	sqlite3_stmt* statement = NULL;
-	if ( sqlite3_prepare_v2( this->private_->database_, sql_str.c_str(), 
+	if ( sqlite3_prepare_v2( this->private_->database_, sql_str.c_str(),
 		static_cast< int >( sql_str.size() ), &statement, NULL ) != SQLITE_OK )
 	{
 		error =  "The SQL statement '" + sql_str + "' failed to compile with error: "
@@ -155,7 +155,7 @@ bool DatabaseManager::run_sql_statement( const std::string& sql_str, ResultSet& 
 		error =  "The SQL statement '" + sql_str + "' returned error: "
 			+ sqlite3_errmsg( this->private_->database_ );
 		return false;
-	} 
+	}
 
 	return true;
 }
@@ -174,11 +174,11 @@ bool DatabaseManager::run_sql_script( const std::string& sql_str, std::string& e
 	const char* head = sql_str.c_str();
 	const char* tail = NULL;
 	// The input string length including the null terminator
-	int num_bytes = static_cast< int >( sql_str.size() + 1 ); 
+	int num_bytes = static_cast< int >( sql_str.size() + 1 );
 	while ( num_bytes > 1 )
 	{
 		sqlite3_stmt* statement = NULL;
-		if ( sqlite3_prepare_v2( this->private_->database_, head, 
+		if ( sqlite3_prepare_v2( this->private_->database_, head,
 			num_bytes, &statement, &tail ) != SQLITE_OK )
 		{
 			error =  "The SQL statement '" + std::string( head ) + "' failed to compile with error: "
@@ -193,7 +193,7 @@ bool DatabaseManager::run_sql_script( const std::string& sql_str, std::string& e
 			error =  "The SQL statement '" + std::string( head ) + "' returned error: "
 				+ sqlite3_errmsg( this->private_->database_ );
 			return false;
-		} 
+		}
 
 		num_bytes -= static_cast< int >( tail - head );
 		head = tail;
@@ -202,7 +202,7 @@ bool DatabaseManager::run_sql_script( const std::string& sql_str, std::string& e
 	return true;
 }
 
-bool DatabaseManager::load_database( const boost::filesystem::path& database_file, 
+bool DatabaseManager::load_database( const boost::filesystem::path& database_file,
 	std::string& error )
 {
 	DatabaseManagerPrivate::lock_type lock( this->private_->get_mutex() );
@@ -210,79 +210,79 @@ bool DatabaseManager::load_database( const boost::filesystem::path& database_fil
 	int result;
 	sqlite3* temp_open_database;
 	sqlite3_backup* backup_database_object;
-	
+
 	result = sqlite3_open( database_file.string().c_str(), &temp_open_database );
-	
-	if ( result != SQLITE_OK ) 
+
+	if ( result != SQLITE_OK )
 	{
 		sqlite3_close( temp_open_database );
 		error = std::string( "Could not open database file '" ) + database_file.string() + "'.";
 		return false;
 	}
-	
-	backup_database_object = 
+
+	backup_database_object =
 		sqlite3_backup_init( this->private_->database_, "main", temp_open_database, "main" );
-	
+
 	if ( backup_database_object )
 	{
 		sqlite3_backup_step( backup_database_object, -1 );
 		sqlite3_backup_finish( backup_database_object );
 	}
-	
+
 	sqlite3_close( temp_open_database );
 
 	result = sqlite3_errcode( this->private_->database_ );
-	if ( result != SQLITE_OK ) 
+	if ( result != SQLITE_OK )
 	{
 		error = "Internal error in database.";
 		return false;
 	}
-	
+
 	// Enable foreign key
 	this->run_sql_statement( "PRAGMA foreign_keys = ON;", error );
 
 	error = "";
-	return true;	
+	return true;
 }
 
 
-bool DatabaseManager::save_database( const boost::filesystem::path& database_file, 
+bool DatabaseManager::save_database( const boost::filesystem::path& database_file,
 	std::string& error )
 {
 	DatabaseManagerPrivate::lock_type lock( this->private_->get_mutex() );
 	int result;
 	sqlite3* temp_open_database;
 	sqlite3_backup* backup_database_object;
-	
+
 	result = sqlite3_open( database_file.string().c_str(), &temp_open_database );
-	
-	if ( result != SQLITE_OK ) 
+
+	if ( result != SQLITE_OK )
 	{
 		sqlite3_close( temp_open_database );
 		error = std::string( "Could not open database file '" ) + database_file.string() + "'.";
 		return false;
 	}
-	
-	backup_database_object = 
+
+	backup_database_object =
 		sqlite3_backup_init( temp_open_database, "main", this->private_->database_, "main" );
-	
+
 	if ( backup_database_object )
 	{
 		sqlite3_backup_step( backup_database_object, -1 );
 		sqlite3_backup_finish( backup_database_object );
 	}
-	
+
 	result = sqlite3_errcode( temp_open_database );
-	if ( result != SQLITE_OK ) 
+	if ( result != SQLITE_OK )
 	{
 		error = "Internal error in database.";
 		return false;
 	}
-	
+
 	sqlite3_close( temp_open_database );
 
 	error = "";
-	return true;	
+	return true;
 }
 
 long long DatabaseManager::get_last_insert_rowid()
@@ -295,9 +295,9 @@ long long DatabaseManager::get_last_insert_rowid()
 	return 0;
 }
 
-bool DatabaseManager::get_column_metadata( const std::string& table_name, 
-										  const std::string& column_name, char const** data_type /*= NULL*/, 
-										  char const** coll_seq /*= NULL*/, int* not_null /*= NULL*/, 
+bool DatabaseManager::get_column_metadata( const std::string& table_name,
+										  const std::string& column_name, char const** data_type /*= NULL*/,
+										  char const** coll_seq /*= NULL*/, int* not_null /*= NULL*/,
 										  int* primary_key /*= NULL*/, int* auto_inc /*= NULL */ )
 {
 	if ( this->private_->database_ == 0 )

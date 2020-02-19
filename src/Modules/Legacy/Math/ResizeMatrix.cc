@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Core/Algorithms/Math/MathAlgo.h>
@@ -35,7 +35,7 @@
 namespace SCIRun {
 
 /// @class ResizeMatrix
-/// This module resizes a matrix to a different size. 
+/// This module resizes a matrix to a different size.
 
 class ResizeMatrix : public Module {
 public:
@@ -95,5 +95,3 @@ void ResizeMatrix::execute()
 }
 
 } // End namespace SCIRun
-
-

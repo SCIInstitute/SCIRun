@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -80,16 +79,16 @@ void SolveMinNormLeastSqSystem::execute()
   in[3] = getRequiredInput(TargetVector);
 
   int size = in[0]->rows();
-  for (int i = 1; i < numInputs; i++) 
+  for (int i = 1; i < numInputs; i++)
   {
-    if ( in[i]->rows() != size ) 
+    if ( in[i]->rows() != size )
     {
       THROW_ALGORITHM_INPUT_ERROR("ColumnMatrices are different sizes");
     }
   }
 
   double *A[3];
-  for (int i = 0; i < 3; i++) 
+  for (int i = 0; i < 3; i++)
   {
     A[i] = in[i]->data();
   }
@@ -98,7 +97,7 @@ void SolveMinNormLeastSqSystem::execute()
   DenseColumnMatrixHandle x(new DenseColumnMatrix(3));
 
   min_norm_least_sq_3(A, b, x->data(), bprime->data(), size);
-   
+
   sendOutput(WeightVector, x);
   sendOutput(ResultVector, bprime);
-}    
+}

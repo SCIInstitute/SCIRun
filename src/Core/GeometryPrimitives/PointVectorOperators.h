@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -62,7 +62,7 @@ namespace Geometry {
   inline Vector::Vector(const Point& p)
   {
     d_[0] = p[0];
-    d_[1] = p[1]; 
+    d_[1] = p[1];
     d_[2] = p[2];
   }
 
@@ -104,7 +104,7 @@ namespace Geometry {
   inline Point::Point(const Vector& v)
   {
     d_[0] = v.d_[0];
-    d_[1] = v.d_[1]; 
+    d_[1] = v.d_[1];
     d_[2] = v.d_[2];
   }
 
@@ -143,12 +143,12 @@ namespace Geometry {
     return Point(d_[0]/d,d_[1]/d,d_[2]/d);
   }
 
-  inline double& Point::operator()(int idx) 
+  inline double& Point::operator()(int idx)
   {
     return d_[idx];
   }
 
-  inline double Point::operator()(int idx) const 
+  inline double Point::operator()(int idx) const
   {
     return d_[idx];
   }
@@ -162,7 +162,7 @@ namespace Geometry {
       v2[2]*weight+v1[2]*weight1);
   }
 
-  inline void Point::addscaled(const Point& p, const double scale) 
+  inline void Point::addscaled(const Point& p, const double scale)
   {
     // this += p * w;
     d_[0] += p.d_[0] * scale;

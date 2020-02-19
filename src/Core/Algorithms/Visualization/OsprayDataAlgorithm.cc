@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Visualization/OsprayDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
@@ -333,16 +333,16 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   auto obj = makeObject(field);
   obj->isVolume = true;
   obj->GeomType="structVol";
-  
+
   auto& fieldData = obj->data;
-  
+
   std::vector<float> voxels;
   std::vector<float> vertex_new;
-  
+
   auto facade(field->mesh()->getFacade());
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
-  
+
   const BBox bbox = vmesh->get_bounding_box();
   Vector size = bbox.diagonal();
   Point center = bbox.center();
@@ -350,7 +350,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   vmesh->get_dimensions(dim);
   Vector dimensions_ = Vector(1.0,1.0,1.0);
   for (size_t p=0;p<dim.size();p++) dimensions_[p] = static_cast<double>(dim[p]);
-  
+
   fieldData.dim_x = dimensions_[0];
   fieldData.dim_y = dimensions_[1];
   fieldData.dim_z = dimensions_[2];
@@ -360,10 +360,10 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   fieldData.spacing_x = size.x()/dimensions_[0];
   fieldData.spacing_y = size.y()/dimensions_[1];
   fieldData.spacing_z = size.z()/dimensions_[2];
-  
+
   double value;
   //std::cout << "mname:" << field->mesh()->type_name << std::endl;
-  
+
   for (const auto& node : facade->nodes())
   {
     auto point = node.point();
@@ -375,14 +375,14 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
     vertex_new.push_back(static_cast<float>(point.x()));
     vertex_new.push_back(static_cast<float>(point.y()));
     vertex_new.push_back(static_cast<float>(point.z()));
-    
+
   }
   //auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
   if (colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap->getColorMapName());
     obj->tfn.colors = cmp.colorList;
-    
+
     // set default opacity for now
     // alpha pushed twice for both upper and lower values
     auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
@@ -399,18 +399,18 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
   auto obj = makeObject(field);
   obj->isVolume = true;
   obj->GeomType="unstructVol";
-  
+
   auto& fieldData = obj->data;
-  
+
   std::vector<float> voxels;
   std::vector<float> vertex_new;
   std::vector<int32_t> index_new;
-  
+
   auto facade(field->mesh()->getFacade());
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
-  
-  
+
+
   double value;
   //std::cout << "mname:" << field->mesh()->type_name << std::endl;
   for (const auto& node : facade->nodes())
@@ -425,18 +425,18 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
     vertex_new.push_back(static_cast<float>(point.y()));
     vertex_new.push_back(static_cast<float>(point.z()));
   }
-  
+
   VMesh::Cell::iterator meshCellIter;
   VMesh::Cell::iterator meshCellEnd;
   vmesh->end(meshCellEnd);
-  
+
   int numVPerCell = -1;
   FieldInformation info(field);
-  
+
   if(info.is_tetvol()) numVPerCell =4;
   else if(info.is_hexvol()) numVPerCell =8;
   else THROW_ALGORITHM_INPUT_ERROR("hex or tet only for unstructured volume!");
-  
+
   for (vmesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
   {
     // OSPRay require an index array of size 8
@@ -456,7 +456,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
   {
     ColorMap_OSP_helper cmp(colorMap->getColorMapName());
     obj->tfn.colors = cmp.colorList;
-    
+
     // set default opacity for now
     // alpha pushed twice for both upper and lower values
     auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
@@ -475,22 +475,22 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addCylinder(FieldHandle field, C
   obj->isCylinder = true;
   obj->GeomType="Cylinder";
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
-  
-  
+
+
   auto& fieldData = obj->data;
-  
+
   auto& vertex = fieldData.vertex;
   auto& color = fieldData.color;
   auto& index = fieldData.index;
-  
+
   std::vector<float> vertex_new, color_new;
   std::vector<int32_t> index_new;
-  
+
   ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
                      get(Parameters::DefaultColorG).toDouble(),
                      get(Parameters::DefaultColorB).toDouble());
   auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-  
+
   std::vector<float> vertex_orig;
   {
     auto facade(field->mesh()->getFacade());
@@ -498,7 +498,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addCylinder(FieldHandle field, C
     {
       auto nodePoints = edge.nodePoints();
 //      std::cout<<"points ="<<nodePoints[0]<<", "<<nodePoints[1]<<std::endl;
-      
+
       vertex_new.push_back(static_cast<float>(nodePoints[0].x()));
       vertex_new.push_back(static_cast<float>(nodePoints[0].y()));
       vertex_new.push_back(static_cast<float>(nodePoints[0].z()));
@@ -507,7 +507,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addCylinder(FieldHandle field, C
       vertex_new.push_back(static_cast<float>(nodePoints[1].y()));
       vertex_new.push_back(static_cast<float>(nodePoints[1].z()));
       vertex.push_back(1);
-      
+
       // hard coded to default value for now
       color_new.push_back(static_cast<float>(nodeColor.r()));
       color_new.push_back(static_cast<float>(nodeColor.g()));
@@ -515,11 +515,11 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addCylinder(FieldHandle field, C
       color_new.push_back(alpha);
     }
   }
-  
+
   index = index_new;
   vertex = vertex_new;
   color = color_new;
-  
+
   return obj;
 }
 
@@ -573,8 +573,8 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   }
 
     FieldInformation info(field);
-    
-    
+
+
   auto& index = fieldData.index;
   {
     for (const auto& face : facade->faces())
@@ -681,7 +681,7 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
     {
       THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
     }
-    
+
   }
 
   AlgorithmOutput output;

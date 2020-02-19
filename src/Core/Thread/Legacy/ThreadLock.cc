@@ -1,13 +1,11 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +26,6 @@
 */
 
 
- 
 ///
 ///@file  TCLTask.cc:
 ///@brief Mutex that is lockable multiple times within the same thread
@@ -39,18 +36,20 @@
 ///@date  August 1994
 ///
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Thread/Legacy/ThreadLock.h>
 #include <Core/Utils/Legacy/Assert.h>
 
 namespace SCIRun {
-  
+
 ThreadLock::ThreadLock(const char *name) :
   mutex_(name),
   owner_(0),
   count_(0)
 {
 }
-    
+
 void
 ThreadLock::lock()
 {

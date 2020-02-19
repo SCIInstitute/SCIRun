@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/DomainFields/GetDomainStructure.h>
 
 #include <Core/Datatypes/FieldInformation.h>
@@ -34,20 +34,20 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 GetDomainStructureAlgo::
 run( FieldHandle input, FieldHandle& sepsurfaces,
              FieldHandle& sepedges, FieldHandle& seppoints)
 {
   algo_start("GetDomainStructure");
-  
+
   if (input.get_rep() == 0)
   {
     algo_end(); error("No input field");
     return (false);
   }
 
-  FieldInformation fi(input), fo(input); 
+  FieldInformation fi(input), fo(input);
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");
@@ -63,7 +63,7 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
   if (fi.is_prismvolmesh())
   {
     error("Prism meshes are not supported by this function.");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   if (!(fi.is_volume()||fi.is_surface()))
@@ -74,18 +74,18 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
 
   std::string indextype = "int";
   if (sizeof(index_type) == 8) indextype = "long_long";
-  
+
   if (fi.is_volume())
   {
     VField *field = input->vfield();
     VMesh  *mesh  = input->vmesh();
     mesh->synchronize(Mesh::DELEMS_E);
-    
+
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_delems = mesh->num_delems();
     VMesh::size_type num_nodes = mesh->num_nodes();
-    std::vector<index_type> nodemap(num_nodes,-1);  
-  
+    std::vector<index_type> nodemap(num_nodes,-1);
+
     if (fi.is_hex_element())
     {
       FieldInformation f("QuadSurfMesh",1,indextype);
@@ -96,15 +96,15 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
       FieldInformation f("TriSurfMesh",1,indextype);
       sepsurfaces = CreateField(f);
     }
-  
+
     VMesh::Elem::array_type elems;
     VMesh::Node::array_type nodes;
     std::vector<int> values;
     std::vector<index_type> nodeindices;
-  
+
     VMesh* omesh = sepsurfaces->vmesh();
     VField* ofield = sepsurfaces->vfield();
-  
+
     for (VMesh::DElem::index_type idx=0; idx<num_delems; idx++)
     {
       mesh->get_elems(elems,idx);
@@ -125,27 +125,27 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
         omesh->add_elem(nodes);
       }
     }
-    
+
     ofield->resize_values();
     ofield->set_values(nodeindices);
-    
+
     field = sepsurfaces->vfield();
     mesh  = sepsurfaces->vmesh();
     mesh->synchronize(Mesh::DELEMS_E);
-    
+
     num_elems = mesh->num_elems();
     num_delems = mesh->num_delems();
     num_nodes = mesh->num_nodes();
     nodemap.clear();
-    nodemap.resize(num_nodes,-1);  
+    nodemap.resize(num_nodes,-1);
     nodeindices.clear();
-    
+
     FieldInformation f2("CurveMesh",1,indextype);
     sepedges = CreateField(f2);
-  
+
     omesh = sepedges->vmesh();
     ofield = sepedges->vfield();
-  
+
     for (VMesh::DElem::index_type idx=0; idx<num_delems; idx++)
     {
       mesh->get_elems(elems,idx);
@@ -167,27 +167,27 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
         omesh->add_elem(nodes);
       }
     }
-    
+
     ofield->resize_values();
     ofield->set_values(nodeindices);
 
     field = sepedges->vfield();
     mesh  = sepedges->vmesh();
     mesh->synchronize(Mesh::DELEMS_E|Mesh::NODE_NEIGHBORS_E);
-    
+
     num_elems = mesh->num_elems();
     num_delems = mesh->num_delems();
     num_nodes = mesh->num_nodes();
     nodemap.clear();
-    nodemap.resize(num_nodes,-1);  
+    nodemap.resize(num_nodes,-1);
     nodeindices.clear();
-    
+
     FieldInformation f3("PointCloudMesh",1,indextype);
     seppoints = CreateField(f3);
-  
+
     omesh = seppoints->vmesh();
     ofield = seppoints->vfield();
-  
+
     for (VMesh::DElem::index_type idx=0; idx<num_delems; idx++)
     {
       mesh->get_elems(elems,idx);
@@ -211,16 +211,15 @@ run( FieldHandle input, FieldHandle& sepsurfaces,
     }
     ofield->set_values(nodeindices);
   }
-  
+
   if (fi.is_surface())
   {
     error ("Method has not been implemented yet for surfaces");
     algo_end(); return (false);
   }
-  
-  
+
+
   algo_end(); return(true);
 }
 
 } // namespace SCIRunAlgo
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_1_itk.cc
+
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Datatypes/ITKImageField.h>
 
@@ -99,67 +101,67 @@ const TypeDescription* get_type_description(ITKImageField<unsigned long> *);
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<SCIRun::Tensor>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<SCIRun::Tensor>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<SCIRun::Vector>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<SCIRun::Vector>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<double>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<double>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<float>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<float>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<int>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<int>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<short>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<short>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<char>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<char>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<unsigned int>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<unsigned int>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<unsigned short>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<unsigned short>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<unsigned char>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<unsigned char>*)0);
   }
 
   const TypeDescription*
   get_type_description(SCIRun::ITKFData2d<unsigned long>*) {
-    return 
+    return
       SCIRun::get_type_description((SCIRun::ITKFData2d<unsigned long>*)0);
   }
 

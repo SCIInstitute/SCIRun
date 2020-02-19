@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 ///
 ///@file   CrowdMonitor.h
 ///@brief  Multiple reader/single writer locks
@@ -46,13 +44,13 @@
 namespace SCIRun {
   struct CrowdMonitor_private;
 /**************************************
- 
+
 @class
    CrowdMonitor
-   
+
 KEYWORDS
    Thread
-   
+
 @details
    Multiple reader, single writer synchronization primitive.  Some
    applications do not need the strict level of synchronization
@@ -72,7 +70,7 @@ WARNING
    within a <i>readLock/readUnlock</i> section may result in a deadlock.
    Calling <i>readUnlock</i> or <i>writeUnlock</i> when the lock is
    not held is not legal and may result in undefined behavior.
-   
+
 ****************************************/
 
 	class SCISHARE CrowdMonitor {
@@ -82,24 +80,24 @@ WARNING
 	    /// be a static which describes the primitive for debugging
 	    /// purposes.
 	    CrowdMonitor(const char* name);
-    
+
 	    //////////
 	    /// Destroy the CrowdMonitor.
 	    ~CrowdMonitor();
-    
+
 	    //////////
 	    /// Acquire the read-only lock associated with this
 	    /// <b>CrowdMonitor</b>. Multiple threads may hold the
 	    /// read-only lock simultaneously.
 	    void readLock();
-    
+
 	    //////////
 	    /// Release the read-only lock obtained from <i>readLock</i>.
 	    /// Undefined behavior may result when <i>readUnlock</i> is
 	    /// called and a <i>readLock</i> is not held by the calling
 	    /// Thread.
 	    void readUnlock();
-    
+
 	    //////////
 	    /// Acquire the write lock associated with this
 	    /// <b>CrowdMonitor</b>. Only one thread may hold the write
@@ -125,4 +123,3 @@ WARNING
 } // End namespace SCIRun
 
 #endif
-

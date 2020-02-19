@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Utils/Legacy/Debug.cc
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -45,7 +46,7 @@ std::map<std::string,int>* scirun_debug_object_count_ = 0;
 /// Convert this utility to a Debug class which will eliminate the need
 /// for this type of initialization.
 
-void 
+void
 debug_ensure_mutex()
 {
   if (scirun_debug_object_mutex == 0) scirun_debug_object_mutex = new Mutex("Mutex for object counting");
@@ -53,7 +54,7 @@ debug_ensure_mutex()
 }
 
 // Count locking objects
-void 
+void
 debug_incr_object_count(const std::string& type)
 {
   debug_ensure_mutex();
@@ -66,7 +67,7 @@ debug_incr_object_count(const std::string& type)
   scirun_debug_object_mutex->unlock();
 }
 
-void 
+void
 debug_decr_object_count(const std::string& type)
 {
   debug_ensure_mutex();
@@ -78,25 +79,25 @@ debug_decr_object_count(const std::string& type)
   scirun_debug_object_mutex->unlock();
 }
 
-void 
+void
 debug_print_objects()
 {
   debug_ensure_mutex();
   scirun_debug_object_mutex->lock();
   std::map<std::string,int>::iterator it = scirun_debug_object_count_->begin();
   std::map<std::string,int>::iterator it_end = scirun_debug_object_count_->end();
- 
+
   std::cerr << "======================================"<<std::endl;
   while(it != it_end)
   {
-    if ((*it).second) 
+    if ((*it).second)
     {
       std::cerr << "["<< (*it).first << "]="<< (*it).second << std::endl;
     }
     ++it;
   }
   std::cerr << "======================================"<<std::endl;
-  
+
   scirun_debug_object_mutex->unlock();
 }
 
@@ -106,7 +107,7 @@ size_t debug_number_of_objects()
   scirun_debug_object_mutex->lock();
   size_t cnt = scirun_debug_object_count_->size();
   scirun_debug_object_mutex->unlock();
-  
+
   return (cnt);
 }
 

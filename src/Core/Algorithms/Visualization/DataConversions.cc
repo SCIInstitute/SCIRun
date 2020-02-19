@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
@@ -48,7 +48,7 @@ bool valToColor(const Tensor &t, Core::Datatypes::ColorRGB &c)
   //
   // Vector e1, e2, e3;
   // tt.get_eigenvectors(e1, e2, e3);
-  //     
+  //
   // e1.safe_normalize();
   // double rr = fabs(e1.x());
   // double gg = fabs(e1.y());
@@ -147,5 +147,3 @@ bool RenderState::get(ActionFlags flag) const
 }
 
 } // end namespace SCIRun
-
-

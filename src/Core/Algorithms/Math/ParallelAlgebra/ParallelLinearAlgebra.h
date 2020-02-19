@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -47,7 +47,7 @@ namespace Algorithms {
 namespace Math {
 
   class ParallelLinearAlgebra;
-  
+
   struct SCISHARE SolverInputs
   {
     Datatypes::SparseRowMatrixHandle A;
@@ -74,21 +74,21 @@ namespace Math {
     void addVector(Datatypes::DenseColumnMatrixHandle mat) { vectors_.push_back(mat); }
     void setFlag(size_t i, bool b) { success_[i] = b; }
     void setSuccess(size_t i) { success_[i] = true; }
-    void setFail(size_t i) { success_[i] = false; } 
+    void setFail(size_t i) { success_[i] = false; }
     bool isSuccess(size_t i) const { return success_[i]; }
 
     void wait() { barrier_.wait(); }
     int numProcs() const { return numProcs_; }
 
-    bool success() const 
+    bool success() const
     {
       //return std::all_of(success_.begin(), success_.end(), [](bool b) {return b;});
       for (size_t j = 0; j < success_.size(); ++j)
-        if (!success_[j]) 
+        if (!success_[j])
         {
           return false;
         }
-      return true;  
+      return true;
     }
 
     SolverInputs& inputs() { return imatrices_; }
@@ -113,13 +113,13 @@ namespace Math {
 class SCISHARE ParallelLinearAlgebraBase : boost::noncopyable
 {
 public:
-  ParallelLinearAlgebraBase(); 
+  ParallelLinearAlgebraBase();
   virtual ~ParallelLinearAlgebraBase();
-  
+
   bool start_parallel(SolverInputs& matrices, int nproc = -1) const;
 
   virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const = 0;
-  
+
 private:
   void run_parallel(ParallelLinearAlgebraSharedData& data, int proc) const;
   SolverInputs imatrices_;
@@ -135,21 +135,21 @@ public:
       double* data_;
       size_t size_;
   };
-    
+
   class ParallelMatrix {
     public:
       index_type* rows_;
       index_type* columns_;
       double* data_;
-        
+
       size_t   m_;
       size_t   n_;
       size_t   nnz_;
   };
-      
+
   // Constructor
-  ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& base, int proc); 
-    
+  ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& base, int proc);
+
   bool add_vector(Datatypes::DenseColumnMatrixHandle mat, ParallelVector& V);
   bool new_vector(ParallelVector& V);
   bool add_matrix(Datatypes::SparseRowMatrixHandle mat, ParallelMatrix& M);
@@ -166,32 +166,32 @@ public:
   void scale(double s, ParallelVector& a, ParallelVector& r);
   void invert(ParallelVector& a, ParallelVector& r);
   void threshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
-  
+
   double min(const ParallelVector& a);
 
   double absmin(const ParallelVector& a);
   double absmax(const ParallelVector& a);
-  
+
   void mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
 
   void diag(ParallelMatrix& a, ParallelVector& r);
   void zeros(ParallelVector& r);
-  
+
   void absthreshold_invert(const ParallelVector& a, ParallelVector& r, double threshold);
-    
+
   double dot(const ParallelVector& a, const ParallelVector& b);
   double norm(const ParallelVector& a);
   double max(const ParallelVector& a);
 
   void mult(const ParallelMatrix& a, const ParallelVector& b, ParallelVector& r);
-  
+
   void absdiag(const ParallelMatrix& a, ParallelVector& r);
-  
+
   void ones(ParallelVector& r);
-    
+
   int  proc() { return proc_; }
   int  nproc() { return nproc_; }
-    
+
   bool first() { return proc_ == 0; }
   void wait();
 
@@ -199,9 +199,9 @@ private:
   double reduce_sum(double val);
   double reduce_min(double val);
   double reduce_max(double val);
-    
+
   ParallelLinearAlgebraSharedData& data_;
-  
+
   int proc_;  // process number
   int nproc_; // number of processes
 
@@ -210,11 +210,11 @@ private:
   size_t local_size16_;
   size_t start_;
   size_t end_;
-    
+
   double* reduce_[2];
   int     reduce_buffer_;
 
- 
+
 };
 
 

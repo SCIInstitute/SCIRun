@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDDATA_H 1
 
@@ -42,14 +42,14 @@ class SCISHARE GetMeshDataAlgo : public AlgorithmBase
   public:
     GetMeshDataAlgo()
     {}
-    
-    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const; 
+
+    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const;
     bool GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
-    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
-    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
+    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
+    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
 
     static AlgorithmOutputName MatrixFieldData;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };
 
 }}}}

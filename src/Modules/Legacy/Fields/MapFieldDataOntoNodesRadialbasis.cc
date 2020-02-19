@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2018 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodesRadialbasis.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
@@ -235,7 +235,7 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
       sumer += coefs(j, 0) * sigma;
     }
     itp = i;
-    
+
     if (max_dist)
     {
       sumer = guiOV;

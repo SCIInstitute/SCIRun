@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <iostream>
 #include <boost/regex.hpp>
@@ -95,6 +95,6 @@ ConnectionDescription ConnectionId::describe() const
   boost::smatch what;
   regex_match(id_, what, r);
   return ConnectionDescription(
-    OutgoingConnectionDescription(ModuleId(what[1]), PortId(boost::lexical_cast<size_t>(what[3]), (std::string)what[2])), 
+    OutgoingConnectionDescription(ModuleId(what[1]), PortId(boost::lexical_cast<size_t>(what[3]), (std::string)what[2])),
     IncomingConnectionDescription(ModuleId(what[4]), PortId(boost::lexical_cast<size_t>(what[6]), (std::string)what[5])));
 }

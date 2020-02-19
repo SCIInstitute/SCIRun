@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,9 +23,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer
-   last change: 11/02/17
+
+   Author:              Moritz Dannhauer
+   Last Modification:   November 2 2017
 */
 
 #include <gtest/gtest.h>
@@ -67,7 +66,7 @@ TEST_F(BuildFESurfRHSTests, CreateLatVolTest)
   BuildFESurfRHSAlgo algo;
   auto size=3,len=size*size*size;
   FieldHandle latVol = CreateEmptyLatVol(size, size, size);
- 
+
   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(8,3));
   double t=0.22984884706593014525;
   (*m)(0,0) =  t; (*m)(0,1) =  t; (*m)(0,2) =  t;
@@ -80,7 +79,7 @@ TEST_F(BuildFESurfRHSTests, CreateLatVolTest)
   (*m)(7,0) =  t; (*m)(7,1) =  t; (*m)(7,2) =  t;
   SetFieldDataAlgo algo2;
   FieldHandle latVol_with_data = algo2.runImpl(latVol, m);
-  
+
   FieldHandle output_field;
   MatrixHandle RHSMatrix;
   algo.run(latVol_with_data,output_field, RHSMatrix);
@@ -89,12 +88,11 @@ TEST_F(BuildFESurfRHSTests, CreateLatVolTest)
 6.9388939039072283776e-18,0.0,6.9388939039072283776e-18,-0.1149244235329650865,6.9388939039072283776e-18,-0.1149244235329650865,0.057462211766482543251,
 -0.1149244235329650865,-0.057462211766482543251,0.11492442353296507263,6.9388939039072283776e-18,-0.1149244235329650865,-0.057462211766482543251,
 -0.1149244235329650865,-0.17238663529944764363 };
-  
+
   auto rhs = convertMatrix::toColumn(RHSMatrix);
-  
+
   for(int i=0;i<len; i++)
   {
    EXPECT_NEAR((double)(*rhs)(i),(double)expected_res[i],0.000001);
   }
 }
-

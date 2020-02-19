@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
 /// @file  ReadString.cc
-/// 
+///
 /// @author
 ///    jeroen
-///   
+///
 
 #include <fstream>
 #include <string>
@@ -50,7 +50,7 @@ class ReadString : public GenericReader<StringHandle> {
     ReadString(GuiContext*);
     virtual ~ReadString() {}
     virtual void execute();
-    
+
   protected:
     GuiString gui_types_;
 
@@ -78,7 +78,7 @@ ReadString::execute()
 bool
 ReadString::call_importer(const std::string &filename, StringHandle &sHandle)
 {
-  if (gui_types_.changed()) inputs_changed_ = true; 
+  if (gui_types_.changed()) inputs_changed_ = true;
 
   std::string input;
   try
@@ -88,24 +88,22 @@ ReadString::call_importer(const std::string &filename, StringHandle &sHandle)
 
     getline(file,line);
     input += line;
-           
+
     while(!file.eof())
-    { 
+    {
       getline(file,line);
       input += "\n";
-      input += line; 
-    }   
+      input += line;
+    }
   }
   catch(...)
   {
     error("Could not open file: " + filename);
     return(false);
   }
-  
+
   sHandle = (StringHandle) new String(input);
   return true;
 }
 
 } // End namespace SCIRun
-
-
