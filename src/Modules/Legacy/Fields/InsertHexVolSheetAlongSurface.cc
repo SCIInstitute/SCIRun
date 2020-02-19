@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
-///@file  InsertHexVolSheetAlongSurface.cc 
+///@file  InsertHexVolSheetAlongSurface.cc
 ///@brief Insert a layer of hexes.
 ///
 ///@author
@@ -59,24 +59,24 @@
 namespace SCIRun {
 
 
-class Model 
+class Model
 {
   public:
     Model() :
-      is_bounding_box_valid_(false), 
+      is_bounding_box_valid_(false),
       is_centroid_valid_(false) {}
-      
+
     virtual ~Model() {}
-    
+
     virtual AxisAlignedBBox& bounding_box();
     virtual Point& centroid();
-    
-  protected:    
+
+  protected:
     virtual void compute_bounding_box() = 0;
     virtual void compute_centroid() = 0;
-    
+
     void invalidate_all();
-    
+
     AxisAlignedBBox  bounding_box_;
     Point centroid_;
     bool  is_bounding_box_valid_;
@@ -85,21 +85,21 @@ class Model
 
 
 
-AxisAlignedBBox& 
+AxisAlignedBBox&
 Model::bounding_box()
 {
-	if (!is_bounding_box_valid_) 
+	if (!is_bounding_box_valid_)
   {
 		compute_bounding_box();
 		is_bounding_box_valid_ = true;
-	} 
+	}
 	return (bounding_box_);
 }
 
-Point& 
+Point&
 Model::centroid()
 {
-	if (!is_centroid_valid_) 
+	if (!is_centroid_valid_)
   {
 		compute_centroid();
 		is_centroid_valid_ = true;
@@ -107,7 +107,7 @@ Model::centroid()
 	return centroid_;
 }
 
-void 
+void
 Model::invalidate_all()
 {
   is_bounding_box_valid_ = false;
@@ -150,10 +150,10 @@ class HexMesh: public Model
 {
   public:
     HexMesh() {};
-    
+
     std::vector<Point> points;
     std::vector<Hex> hexes;
-    
+
     virtual void compute_bounding_box();
     virtual void compute_centroid();
 };
@@ -174,72 +174,72 @@ void HexMesh::compute_centroid()
 class TriangleMeshVertex {
   public:
     TriangleMeshVertex(Point p) : point(p), someface(-1) {}
-    
+
     Point point;
     Vector normal;
     int someface;
 };
 
 class TriangleMeshFace {
-public:  
-	TriangleMeshFace(const int v[3]) 
+public:
+	TriangleMeshFace(const int v[3])
   {
 		verts[0] = v[0];
 		verts[1] = v[1];
 		verts[2] = v[2];
 		nbrs[0]  = nbrs[1] = nbrs[2] = -1;
 	}
-  
-	int VertIndex(int v) const 
+
+	int VertIndex(int v) const
   {
 		if (verts[0] == v)	return 0;
 		if (verts[1] == v)	return 1;
 		if (verts[2] == v)	return 2;
 		return -1;
 	}
-  
-	int EdgeIndexCCW(int v0, int v1) const 
+
+	int EdgeIndexCCW(int v0, int v1) const
   {
 		int vi = VertIndex(v0);
 		if (vi<0) return -1;
-    
+
 		if (verts[(vi+1)%3] == v1) return vi;
-    
+
 		return -1;
 	}
-  
+
 	int verts[3];	// ccw order
 	int nbrs[3];	// nbrs[0] shares verts 0,1, 1 shares 1,2, 2 shares 2,0
     // -1 - boundary
 };
 
 class TriangleMesh : public Model  {
-  
-  public:  
+
+  public:
     typedef std::vector<TriangleMeshVertex> vertex_list;
     typedef std::vector<TriangleMeshFace> face_list;
-    
+
     TriangleMesh();
     ~TriangleMesh();
-  
+
     void add_point( double x, double y, double z );
     void add_tri( int* node_id_array );
-  
+
     // clear the whole mesh
     void Clear();
-  
+
     // these are dangerous if the mesh has been changed!
-    int FaceIndex(const TriangleMeshFace &f) const 
-    { 
-      return (int)(&f - &faces[0]); 
+    int FaceIndex(const TriangleMeshFace &f) const
+    {
+      return (int)(&f - &faces[0]);
     }
-    
-    int VertexIndex(const TriangleMeshVertex &v) const 
-    { 
-      return (int)(&v - &verts[0]); 
+
+    int VertexIndex(const TriangleMeshVertex &v) const
+    {
+      return (int)(&v - &verts[0]);
     }
-  
-    Vector FaceNormal(const TriangleMeshFace &f) const 
+
+    Vector FaceNormal(const TriangleMeshFace &f) const
     {
       Vector e1 = verts[f.verts[1]].point - verts[f.verts[0]].point;
       Vector e2 = verts[f.verts[2]].point - verts[f.verts[0]].point;
@@ -247,20 +247,20 @@ class TriangleMesh : public Model  {
       norm.normalize();
       return norm;
     }
-  
+
     void SetNormals();
-  
+
     void compute_bounding_box();
     void compute_centroid();
-  
-    
+
+
     class VertexFaceIterator {
       public:
         VertexFaceIterator(TriangleMesh& _mesh, int vi);
         bool done();
         VertexFaceIterator& operator++();
         TriangleMeshFace& operator*();
-        
+
       private:
         bool first;
         int cur_face;
@@ -268,45 +268,45 @@ class TriangleMesh : public Model  {
         int vertex;
         TriangleMesh *mesh;
      };
-  
-    void build_structures(const std::vector<int> &facemap, 
+
+    void build_structures(const std::vector<int> &facemap,
                           const std::vector<int> &vertmap);
     void IdentityMap(std::vector<int> & map, int size);
-  
+
     vertex_list	verts;
     face_list	faces;
 };
 
 //begin inline definitions....
 inline
-TriangleMesh::TriangleMesh() 
+TriangleMesh::TriangleMesh()
 {
 	Model::invalidate_all();
 }
 
-inline 
-TriangleMesh::~TriangleMesh() 
+inline
+TriangleMesh::~TriangleMesh()
 {
 }
 
 // Model stuff
-inline void 
+inline void
 TriangleMesh::compute_bounding_box()
-{  
+{
   Model::bounding_box_ = AxisAlignedBBox(verts[0].point, verts[0].point);
-	for (vertex_list::const_iterator v=verts.begin(); v!=verts.end(); ++v) 
+	for (vertex_list::const_iterator v=verts.begin(); v!=verts.end(); ++v)
   {
     Model::bounding_box_.extend(v->point);
 	}
 	Model::is_bounding_box_valid_ = true;
 }
 
-inline void 
-TriangleMesh::compute_centroid() 
-{  
+inline void
+TriangleMesh::compute_centroid()
+{
 	Model::centroid_ = Point(0.0,0.0,0.0);
-  
-	for (vertex_list::const_iterator v=verts.begin(); v!=verts.end(); ++v) 
+
+	for (vertex_list::const_iterator v=verts.begin(); v!=verts.end(); ++v)
   {
 		Model::centroid_ += v->point;
 	}
@@ -314,76 +314,76 @@ TriangleMesh::compute_centroid()
 	Model::is_centroid_valid_ = true;
 }
 
-inline void 
-TriangleMesh::add_point( double x, double y, double z ) 
+inline void
+TriangleMesh::add_point( double x, double y, double z )
 {
   verts.push_back(TriangleMeshVertex(Point(x, y, z)));
 }
 
-inline void 
-TriangleMesh::add_tri( int* node_id_array ) 
+inline void
+TriangleMesh::add_tri( int* node_id_array )
 {
   faces.push_back(TriangleMeshFace(node_id_array));
 }
 
-inline void 
+inline void
 TriangleMesh::build_structures(const std::vector<int>& /*facemap*/, const std::vector<int> &vertmap)
 {
     // convert all the indices to the array indices
-	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f) 
+	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f)
   {
-		for (int i=0; i<3; i++) 
+		for (int i=0; i<3; i++)
     {
 			f->verts[i] = vertmap[f->verts[i]];
 		}
 	}
-  
+
   // set the somefaces
-	for (vertex_list::iterator v=verts.begin(); v!=verts.end(); ++v) 
+	for (vertex_list::iterator v=verts.begin(); v!=verts.end(); ++v)
   {
 		v->someface = -1;
 	}
-	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f) 
+	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f)
   {
-		for (int i=0; i<3; i++) 
+		for (int i=0; i<3; i++)
     {
 			verts[f->verts[i]].someface = FaceIndex(*f);
 		}
 	}
-  
+
   // build the adjacency info
 
 	std::vector< std::vector<int> > vertfaces(verts.size());
-	for (size_t i=0; i<vertfaces.size(); i++) 
+	for (size_t i=0; i<vertfaces.size(); i++)
   {
 		vertfaces[i].reserve(7);
 	}
-  
-	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f) 
+
+	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f)
   {
-		for (int i=0; i<3; i++) 
+		for (int i=0; i<3; i++)
     {
 			vertfaces[f->verts[i]].push_back(FaceIndex(*f));
 		}
 	}
-  
-	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f) 
+
+	for (face_list::iterator f=faces.begin(); f!=faces.end(); ++f)
   {
-		for (int i=0; i<3; i++) 
+		for (int i=0; i<3; i++)
     {
-      
+
 			int v0 = f->verts[i];
 			int v1 = f->verts[(i+1)%3];
-      
+
         // look for a face with the edge v1,v0
 			bool found=false;
-			for (size_t vfi=0; vfi<vertfaces[v0].size(); vfi++) 
+			for (size_t vfi=0; vfi<vertfaces[v0].size(); vfi++)
       {
 				int vf = vertfaces[v0][vfi];
-				if (faces[vf].EdgeIndexCCW(v1, v0) != -1) 
+				if (faces[vf].EdgeIndexCCW(v1, v0) != -1)
         {
 					f->nbrs[i] = vf;
-					if (found) 
+					if (found)
           {
 						std::cerr<<"more than one matching triangle found: faces["<<vf<<"]"<<std::endl;
 					}
@@ -392,29 +392,29 @@ TriangleMesh::build_structures(const std::vector<int>& /*facemap*/, const std::v
 			}
 		}
 	}
-  
+
 	SetNormals();
-  
+
 	Model::invalidate_all();
 }
 
 // set the normals
-inline void 
-TriangleMesh::SetNormals() 
+inline void
+TriangleMesh::SetNormals()
 {
-	for (vertex_list::iterator v=verts.begin(); v!=verts.end(); ++v) 
+	for (vertex_list::iterator v=verts.begin(); v!=verts.end(); ++v)
   {
 		v->normal = Vector(0.0,0.0,0.0);
-		for (VertexFaceIterator f(*this, VertexIndex(*v)); !f.done(); ++f) 
+		for (VertexFaceIterator f(*this, VertexIndex(*v)); !f.done(); ++f)
     {
 			Vector e1 = verts[(*f).verts[1]].point - verts[(*f).verts[0]].point;
 			Vector e2 = verts[(*f).verts[2]].point - verts[(*f).verts[0]].point;
 			Vector fn = Cross(e1,e2);
-			if (fn.length() == 0) 
+			if (fn.length() == 0)
       {
 				std::cerr<<"skipping normal of degenerate face "<<FaceIndex(*f)<<std::endl;
-			} 
-      else 
+			}
+      else
       {
 				fn.normalize();
 				v->normal += FaceNormal(*f);
@@ -425,70 +425,70 @@ TriangleMesh::SetNormals()
 }
 
 // iterators
-inline 
-TriangleMesh::VertexFaceIterator::VertexFaceIterator(TriangleMesh& _mesh, int vi) 
-{  
+inline
+TriangleMesh::VertexFaceIterator::VertexFaceIterator(TriangleMesh& _mesh, int vi)
+{
 	first=true;
 	mesh = &_mesh;
 	vertex = vi;
-  
+
   // rotate clockwise as far as possible
 	cur_face = mesh->verts[vi].someface;
-	if (cur_face != -1) 
+	if (cur_face != -1)
   {
-		do 
+		do
     {
 			TriangleMeshFace &f = mesh->faces[cur_face];
 			int cindex = f.VertIndex(vi);
 			if (f.nbrs[cindex] == -1) break;
 			cur_face = f.nbrs[cindex];
-		} 
+		}
     while (cur_face != mesh->verts[vi].someface);
 		first_face = cur_face;
 	}
 }
 
-inline bool 
-TriangleMesh::VertexFaceIterator::done() 
+inline bool
+TriangleMesh::VertexFaceIterator::done()
 {
 	if (cur_face == -1) return true;
 	return false;
 }
 
-TriangleMeshFace& 
-TriangleMesh::VertexFaceIterator::operator*() 
+TriangleMeshFace&
+TriangleMesh::VertexFaceIterator::operator*()
 {
 	return mesh->faces[cur_face];
 }
 
-inline TriangleMesh::VertexFaceIterator& 
-TriangleMesh::VertexFaceIterator::operator++() 
+inline TriangleMesh::VertexFaceIterator&
+TriangleMesh::VertexFaceIterator::operator++()
 {
-  
+
 	TriangleMeshFace &f = mesh->faces[cur_face];
 	int nindex = (f.VertIndex(vertex) + 2) % 3;
 	cur_face = f.nbrs[nindex];
-  
+
 	if (cur_face==first_face)
       cur_face = -1;
-  
+
 	first = false;
-  
+
 	return *this;
 }
 
-inline void 
-TriangleMesh::Clear() 
+inline void
+TriangleMesh::Clear()
 {
 	verts.clear();
 	faces.clear();
 }
 
-inline void 
-TriangleMesh::IdentityMap(std::vector<int> &map, int size) 
+inline void
+TriangleMesh::IdentityMap(std::vector<int> &map, int size)
 {
 	map.resize(size);
-	for (int i=0; i<size; i++) 
+	for (int i=0; i<size; i++)
   {
 		map[i] = i;
 	}
@@ -507,113 +507,113 @@ TriangleMesh::IdentityMap(std::vector<int> &map, int size)
 
 template <typename OBJECT, typename DISTBOXCLASS>
 class BoxKDTree {
-  
+
 public:
-   
-  enum { BOXKDTREE_MAXLEAFSIZE = 10 };  
-      
-	BoxKDTree() 
+
+  enum { BOXKDTREE_MAXLEAFSIZE = 10 };
+
+	BoxKDTree()
   {
 		children[0] = children[1] = NULL;
 	}
-	~BoxKDTree() 
+	~BoxKDTree()
   {
 		if (children[0]) delete children[0];
 		if (children[1]) delete children[1];
 	}
-  
+
 	BoxKDTree(const std::vector<OBJECT> &iobjects, const DISTBOXCLASS &boxclass, int axis=0) {
-    
+
 		children[0] = children[1] = NULL;
-    
+
 		ReBuild(iobjects, boxclass, axis);
 	}
-  
+
 	void ReBuild(const std::vector<OBJECT> &iobjects, const DISTBOXCLASS &boxclass, int axis=0) {
-    
+
 		if (children[0]) delete children[0];
 		if (children[1]) delete children[1];
 		children[0] = children[1] = NULL;
-    
+
 		objects = iobjects;
-    
+
       // make the bounding box
     bbox = boxclass.bounding_box(objects[0]);
 		for (unsigned i=1; i<objects.size(); i++) {
 			bbox.extend(boxclass.bounding_box(objects[i]));
 		}
-    
+
 		Split(boxclass, axis);
 	}
-  
+
     // get all the objects who's bounding boxes intersect the given box
-	void GetIntersectedBoxes(const DISTBOXCLASS &boxclass, const AxisAlignedBBox &ibox, std::vector<OBJECT> &intersected) const 
+	void GetIntersectedBoxes(const DISTBOXCLASS &boxclass, const BBox &ibox, std::vector<OBJECT> &intersected) const
   {
       // check our bounding box
-		if (ibox.intersect(bbox) == AxisAlignedBBox::OUTSIDE) 
+		if (ibox.intersect(bbox) == AxisAlignedBBox::OUTSIDE)
     {
 			return;
 		}
-    
+
       // check any leaf objects
-		for (size_t i=0; i<objects.size(); i++) 
+		for (size_t i=0; i<objects.size(); i++)
     {
 			AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
-      
-			if (ibox.intersect(obox) != AxisAlignedBBox::OUTSIDE) 
+
+			if (ibox.intersect(obox) != AxisAlignedBBox::OUTSIDE)
       {
 				intersected.push_back(objects[i]);
 			}
 		}
-    
+
       // try going into the children
 		if (children[0])	children[0]->GetIntersectedBoxes(boxclass, ibox, intersected);
 		if (children[1])	children[1]->GetIntersectedBoxes(boxclass, ibox, intersected);
 	}
-  
-	void Insert(const DISTBOXCLASS &boxclass, const OBJECT &o, int axis=0) 
+
+	void Insert(const DISTBOXCLASS &boxclass, const OBJECT &o, int axis=0)
   {
 		AxisAlignedBBox obox = boxclass.bounding_box(o);
-    
+
       // figure out which side we want to put it in
 		int addside = -1;
-    
-		if (children[0] && children[1]) 
+
+		if (children[0] && children[1])
     {
       // see which insertion would result in a smaller bounding box overlap
-      
+
 			AxisAlignedBBox c0e = AxisAlignedBBox(children[0]->bbox, obox);
 			AxisAlignedBBox c1e = AxisAlignedBBox(children[1]->bbox, obox);
-      
+
 			bool intersect0 = c0e.intersect(children[1]->bbox) != AxisAlignedBBox::OUTSIDE;
 			bool intersect1 = c1e.intersect(children[0]->bbox) != AxisAlignedBBox::OUTSIDE;
-      
-			if (intersect0 && !intersect1) 
+
+			if (intersect0 && !intersect1)
       {
 				addside = 1;
-			} 
-      else if (!intersect0 && intersect1) 
+			}
+      else if (!intersect0 && intersect1)
       {
 				addside = 0;
-			} 
-      else if (intersect0 && intersect1) 
+			}
+      else if (intersect0 && intersect1)
       {
           // figure out which way causes the smallest overlap
-        
+
         Point t1 = Max(c0e.min(),children[1]->bbox.min());
         Point t2 = Min(c0e.max(),children[1]->bbox.max());
         AxisAlignedBBox ibox0(t1, t2);
-        
+
         Point t3 = Max(c1e.min(),children[0]->bbox.min());
         Point t4 = Min(c1e.max(),children[0]->bbox.max());
         AxisAlignedBBox ibox1(t3, t4);
-        
+
 				if (ibox0.x_length()*ibox0.y_length()*ibox0.z_length() < ibox1.x_length()*ibox1.y_length()*ibox1.z_length())
             addside = 0;
 				else
             addside = 1;
-			} 
-      else 
+			}
+      else
       {
           // adding to neither would cause an intersection - add to the one that increases volume the least
 				if (c0e.x_length()*c0e.y_length()*c0e.z_length() < c1e.x_length()*c1e.y_length()*c1e.z_length())
@@ -621,81 +621,81 @@ public:
 				else
             addside = 1;
 			}
-		} 
-    else if (children[0] && !children[1]) 
+		}
+    else if (children[0] && !children[1])
     {
 			addside = 0;
-		} 
-    else if (!children[0] && children[1]) 
+		}
+    else if (!children[0] && children[1])
     {
 			addside = 1;
 		}
-    
+
       // expand our own bounding box
 		bbox = (addside==-1 && objects.size()==0) ? obox : AxisAlignedBBox(bbox, obox);
-    
-		if (addside == -1) 
+
+		if (addside == -1)
     {
 			objects.push_back(o);
 			Split(boxclass, axis);
-		} 
-    else 
+		}
+    else
     {
 			children[addside]->Insert(boxclass, o, (axis+1)%3);
 		}
 	}
-  
-	bool Remove(const DISTBOXCLASS &boxclass, const OBJECT &o) 
+
+	bool Remove(const DISTBOXCLASS &boxclass, const OBJECT &o)
   {
 		if (bbox.intersect(boxclass.bounding_box(o)) == AxisAlignedBBox::OUTSIDE)
         return false;
-    
+
       // first check in the list of objects at this node
-		for (size_t i=0; i<objects.size(); i++) 
+		for (size_t i=0; i<objects.size(); i++)
     {
-			if (o == objects[i]) 
+			if (o == objects[i])
       {
-        
+
           // remove the object from the list
-				if (i != objects.size()-1) 
+				if (i != objects.size()-1)
         {
 					objects[i] = objects.back();
 				}
 				objects.pop_back();
-        
+
           // recompute the bounding box
-				if (objects.size() > 0) 
+				if (objects.size() > 0)
         {
           bbox = boxclass.bounding_box(objects[0]);
-					for (unsigned i=1; i<objects.size(); i++) 
+					for (unsigned i=1; i<objects.size(); i++)
           {
 						bbox = AxisAlignedBBox(bbox, boxclass.bounding_box(objects[i]));
 					}
-				} 
-        else 
+				}
+        else
         {
           bbox = AxisAlignedBBox(Point(-1.0,-1.0,-1.0),Point(1.0,1.0,1.0));
    			}
-        
+
 				return true;
 			}
 		}
-    
+
       // if we got here, we didn't find a match is the object list - check the children
-		for (int c=0; c<2; c++) 
+		for (int c=0; c<2; c++)
     {
-			if (children[c] && children[c]->Remove(boxclass, o)) 
+			if (children[c] && children[c]->Remove(boxclass, o))
       {
 				int dangle = children[c]->dangling();
-				if (dangle != -1) 
+				if (dangle != -1)
         {
           // the child we removed from now has no leaf objects and a single child - prune it from the tree
 					BoxKDTree *child = children[c];
 					children[c] = child->children[dangle];
 					child->children[dangle] = 0;
 					delete child;
-				} 
-        else if (children[c]->empty()) 
+				}
+        else if (children[c]->empty())
         {
             // the child is now completely empty
 					delete children[c];
@@ -704,143 +704,143 @@ public:
 				return true;
 			}
 		}
-    
+
     // didn't find it anywhere!
 		return false;
 	}
-    
+
 private:
-	void Split(const DISTBOXCLASS &boxclass, int axis=-1) 
+	void Split(const DISTBOXCLASS &boxclass, int axis=-1)
   {
       // check if we should stop splitting
-		if (objects.size() >= BOXKDTREE_MAXLEAFSIZE) 
+		if (objects.size() >= BOXKDTREE_MAXLEAFSIZE)
     {
       // if we're not told what axis to use, use the biggest
-			if (axis == -1) 
+			if (axis == -1)
       {
 				double xl, yl, zl;
 				xl = bbox.x_length();
 				yl = bbox.y_length();
 				zl = bbox.z_length();
-        
+
 				if (xl>yl && xl>zl) axis = 0;
 				else if (yl>xl && yl>zl) axis = 1;
 				else axis = 2;
 			}
-      
+
         // split the list by the axis
 			std::vector<OBJECT> cobjects[2];
-      
-			if (objects.size() < 500) 
+
+			if (objects.size() < 500)
       {
 				std::vector< std::pair<double,OBJECT> > sorter(objects.size());
-        
+
 				size_t i;
-				for (i=0; i<objects.size(); i++) 
+				for (i=0; i<objects.size(); i++)
         {
 					AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
           Point c = obox.center();
 					sorter[i] = std::pair<double,OBJECT>((c[axis]), objects[i]);
 				}
-        
+
 				std::sort(sorter.begin(), sorter.end());
-        
-				for (i=0; i<sorter.size()/2; i++) 
+
+				for (i=0; i<sorter.size()/2; i++)
         {
 					cobjects[0].push_back(sorter[i].second);
 				}
-				for ( ; i<sorter.size(); i++) 
+				for ( ; i<sorter.size(); i++)
         {
 					cobjects[1].push_back(sorter[i].second);
 				}
-        
-			} 
-      else 
+
+			}
+      else
       {
-				for (size_t i=0; i<objects.size(); i++) 
+				for (size_t i=0; i<objects.size(); i++)
         {
 					AxisAlignedBBox obox = boxclass.bounding_box(objects[i]);
-          
-					if (obox.center()[axis] < bbox.center()[axis]) 
+
+					if (obox.center()[axis] < bbox.center()[axis])
           {
 						cobjects[0].push_back(objects[i]);
-					} 
-          else 
+					}
+          else
           {
 						cobjects[1].push_back(objects[i]);
 					}
 				}
 			}
-      
-			if ((cobjects[0].size() != 0) && (cobjects[1].size() != 0)) 
+
+			if ((cobjects[0].size() != 0) && (cobjects[1].size() != 0))
       {
         // actually have to split
 				objects.clear();
 				ASSERT(!children[0] && !children[1]);
-        
+
 				children[0] = new BoxKDTree(cobjects[0], boxclass, (axis+1)%3);
 				children[1] = new BoxKDTree(cobjects[1], boxclass, (axis+1)%3);
 			}
 		}
 	}
-  
-	bool empty() 
+
+	bool empty()
   {
 		return (!children[0] && !children[1] && !objects.size());
 	}
-  
-	int dangling() 
+
+	int dangling()
   {
-		if (!objects.size()) 
+		if (!objects.size())
     {
 			if (children[0] && !children[1])	return 0;
 			if (!children[0] && children[1])	return 1;
 		}
 		return -1;
 	}
-  
+
   // leaf node
 	std::vector<OBJECT> objects;
-  
+
   // internal node
 	BoxKDTree* children[2];
-  
+
 	AxisAlignedBBox bbox;
 };
 
 
 
 // edges used to determine face normals
-const int hex_normal_edges[6][2] = { 
+const int hex_normal_edges[6][2] = {
   {0, 5}, {2, 6}, {10, 6}, {9, 7}, {1, 11}, {2, 9}};
 
 ///@class InsertHexVolSheetAlongSurfaceAlgo
-/// @brief This module inserts a layer of hexes corresponding to the input TriSurfMesh. 
+/// @brief This module inserts a layer of hexes corresponding to the input TriSurfMesh.
 
 class InsertHexVolSheetAlongSurfaceAlgo
 {
   public:
-    /// virtual interface. 
+    /// virtual interface.
     bool execute(
-      ProgressReporter *reporter, 
-      FieldHandle hexfieldh, FieldHandle trifieldh, 
+      ProgressReporter *reporter,
+      FieldHandle hexfieldh, FieldHandle trifieldh,
       FieldHandle& side1field, FieldHandle& side2field,
       bool add_to_side1, bool add_layer );
-  
+
     void load_hex_mesh( VMesh* hexfield );
     void load_tri_mesh( VMesh* trifield );
-  
+
     void compute_intersections(
         ProgressReporter* mod,
         VMesh* original_mesh, VMesh *tri_mesh,
-        VMesh* side1_mesh, VMesh* side2_mesh, 
+        VMesh* side1_mesh, VMesh* side2_mesh,
         bool add_to_side1, bool add_layer );
-    
+
     bool interferes(const std::vector<Vector> &p, const Vector &axis, int split);
-    
+
     bool intersects( const HexMesh &hexmesh, int hex_index,
                      const TriangleMesh &trimesh, int face_index);
-                     
+
     void compute_intersections_KDTree( ProgressReporter* pr,
                                        std::vector<int> &crosses,
                                        const TriangleMesh& trimesh,
@@ -852,18 +852,18 @@ class InsertHexVolSheetAlongSurfaceAlgo
       return a.first < b.first;
     }
 
-    class TriangleMeshFaceTree 
+    class TriangleMeshFaceTree
     {
       public:
-      
+
         TriangleMeshFaceTree(const TriangleMesh &m) : mesh(m) { }
-        AxisAlignedBBox bounding_box(int i) const 
+        AxisAlignedBBox bounding_box(int i) const
         {
           return AxisAlignedBBox(mesh.verts[mesh.faces[i].verts[0]].point,
-                      mesh.verts[mesh.faces[i].verts[1]].point,
-                      mesh.verts[mesh.faces[i].verts[2]].point);
+                                 mesh.verts[mesh.faces[i].verts[1]].point,
+                                 mesh.verts[mesh.faces[i].verts[2]].point);
       }
-      
+
       const TriangleMesh &mesh;
     };
 
@@ -877,38 +877,38 @@ class InsertHexVolSheetAlongSurfaceAlgo
 
 bool
 InsertHexVolSheetAlongSurfaceAlgo::execute(
-    ProgressReporter *pr, 
-    FieldHandle hexfieldh, 
+    ProgressReporter *pr,
+    FieldHandle hexfieldh,
     FieldHandle trifieldh,
-    FieldHandle& side1field, 
+    FieldHandle& side1field,
     FieldHandle& side2field,
-    bool add_to_side1, 
+    bool add_to_side1,
     bool add_layer )
 {
   VMesh* mesh = hexfieldh->vmesh();
   VMesh* tri_mesh = trifieldh->vmesh();
-  
+
   load_tri_mesh( tri_mesh );
   pr->update_progress( 0.05 );
 
   load_hex_mesh( mesh );
   pr->update_progress( 0.15 );
-  
-  
+
+
   FieldInformation fi(hexfieldh);
   /// @todo: Since the algorithm does not copy data
   // make the field no data. We should add some interpolation at some point
   fi.make_nodata();
   fi.make_hexvolmesh();
-  
+
   side1field = CreateField(fi);
   side2field = CreateField(fi);
   side1field->copy_properties( hexfieldh.get_rep() );
   side2field->copy_properties( hexfieldh.get_rep() );
-  
+
   VMesh* side1_mesh = side1field->vmesh();
   side1_mesh->copy_properties( mesh );
-  
+
   VMesh* side2_mesh = side2field->vmesh();
   side2_mesh->copy_properties( mesh );
 
@@ -919,10 +919,10 @@ InsertHexVolSheetAlongSurfaceAlgo::execute(
 
 void
 InsertHexVolSheetAlongSurfaceAlgo::load_tri_mesh( VMesh* sci_trimesh )
-{ 
+{
   VMesh::Node::size_type num_nodes = sci_trimesh->num_nodes();
   VMesh::Elem::size_type num_elems = sci_trimesh->num_elems();
-    
+
   for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
   {
     Point p;
@@ -930,7 +930,7 @@ InsertHexVolSheetAlongSurfaceAlgo::load_tri_mesh( VMesh* sci_trimesh )
     trimesh.add_point( p.x(), p.y(), p.z() );
   }
 
-  VMesh::Node::array_type onodes;  
+  VMesh::Node::array_type onodes;
   for (VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
   {
     sci_trimesh->get_nodes(onodes, idx);
@@ -940,7 +940,7 @@ InsertHexVolSheetAlongSurfaceAlgo::load_tri_mesh( VMesh* sci_trimesh )
     vi[2] = static_cast<int>(onodes[2]);
     trimesh.add_tri( vi );
   }
-  
+
   // We've read all the data - build the actual structures now.
   std::vector<int> facemap, vertmap;
   trimesh.IdentityMap(facemap, num_elems);
@@ -953,18 +953,18 @@ InsertHexVolSheetAlongSurfaceAlgo::load_hex_mesh( VMesh* sci_hexmesh )
 {
   VMesh::Node::size_type num_nodes = sci_hexmesh->num_nodes();
   VMesh::Elem::size_type num_elems = sci_hexmesh->num_elems();
-  
+
   hexmesh.hexes.resize( num_elems );
   hexmesh.points.resize( num_nodes );
-  
+
   for(VMesh::Node::index_type idx=0;idx<num_nodes;idx++)
   {
     Point p;
     sci_hexmesh->get_center( p, idx );
     hexmesh.points[idx] = Point( p.x(), p.y(), p.z() );
   }
-  
-  sci_hexmesh->synchronize( Mesh::FACES_E );   
+
+  sci_hexmesh->synchronize( Mesh::FACES_E );
 
   VMesh::Node::array_type onodes;
   for(VMesh::Elem::index_type idx=0;idx<num_elems;idx++)
@@ -995,7 +995,7 @@ InsertHexVolSheetAlongSurfaceAlgo::interferes(const std::vector<Vector> &p,
     // Get the signed distance to points from null space of v
     d[i] = static_cast<float>(Dot(v[i],axis));
   }
-  
+
   const float mnh = *min_element(d.begin(), d.begin()+split);
   const float mxh = *max_element(d.begin(), d.begin()+split);
   const float mnt = *min_element(d.begin()+split, d.end());
@@ -1007,7 +1007,7 @@ InsertHexVolSheetAlongSurfaceAlgo::interferes(const std::vector<Vector> &p,
   const bool mnhmxt = mnh <= mxt;
   const bool mxtmxh = mxt <= mxh;
   const bool mntmnh = mnt <= mnh;
-  
+
   return ((mntmxh && mxhmxt) || (mnhmnt && mntmxh) ||
       (mnhmxt && mxtmxh) || (mntmnh && mnhmxt));
 }
@@ -1026,7 +1026,7 @@ InsertHexVolSheetAlongSurfaceAlgo::intersects(const HexMesh &hexmesh,
       trimesh.verts[face.verts[2]].point-trimesh.verts[face.verts[1]].point,
       trimesh.verts[face.verts[0]].point-trimesh.verts[face.verts[2]].point
   };
-  
+
   Vector hex_edges[12] = {
       hexmesh.points[hex.verts[0]] - hexmesh.points[hex.verts[1]],
       hexmesh.points[hex.verts[2]] - hexmesh.points[hex.verts[3]],
@@ -1049,7 +1049,7 @@ InsertHexVolSheetAlongSurfaceAlgo::intersects(const HexMesh &hexmesh,
       ps[i] = trimesh.verts[face.verts[i-8]].point - Point(0,0,0);
   for (int i=0; i<3; ++i)
       triangle_edges[i].normalize();
-      
+
   for (int i=0; i<12; ++i)
   {
     hex_edges[i].normalize();
@@ -1068,23 +1068,23 @@ InsertHexVolSheetAlongSurfaceAlgo::intersects(const HexMesh &hexmesh,
 
 void
 InsertHexVolSheetAlongSurfaceAlgo::compute_intersections_KDTree(
-    ProgressReporter *pr, std::vector<int> &crosses, 
+    ProgressReporter *pr, std::vector<int> &crosses,
     const TriangleMesh& trimesh, const HexMesh& hexmesh )
 {
   std::vector<int> kdfi;
-  for (size_t i=0; i<trimesh.faces.size(); i++) 
+  for (size_t i=0; i<trimesh.faces.size(); i++)
   {
     kdfi.push_back(i);
   }
-  
+
   TriangleMeshFaceTree kdtreebbox(trimesh);
-  
+
   BoxKDTree<int, TriangleMeshFaceTree> kdtree(kdfi, kdtreebbox);
-  
+
   int total_hexes = (int)hexmesh.hexes.size();
-  
-  for (size_t h=0; h<hexmesh.hexes.size(); h++) 
-  {  
+
+  for (size_t h=0; h<hexmesh.hexes.size(); h++)
+  {
     AxisAlignedBBox hbbox = AxisAlignedBBox();
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[0]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[1]]);
@@ -1094,13 +1094,13 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections_KDTree(
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[5]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[6]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[7]]);
-    
+
     std::vector<int> possible;
     kdtree.GetIntersectedBoxes(kdtreebbox, hbbox, possible);
-    
-		for (int i=0; i<(int)possible.size(); i++) 
-    {  
-			if (intersects(hexmesh, h, trimesh, possible[i])) 
+
+		for (int i=0; i<(int)possible.size(); i++)
+    {
+			if (intersects(hexmesh, h, trimesh, possible[i]))
       {
         crosses[h] = 0;
         break;
@@ -1123,7 +1123,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
     VMesh* tri_mesh,
     VMesh* side1_mesh,
     VMesh* side2_mesh,
-    bool add_to_side1, 
+    bool add_to_side1,
     bool add_layer )
 {
 #ifdef HAVE_HASH_MAP
@@ -1179,54 +1179,54 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
 
   std::vector<int> crosses(hexmesh.hexes.size(), -1);
   std::vector<int> hexes(hexmesh.hexes.size());
-  
+
   for (int i=0; i<(int)hexmesh.hexes.size(); ++i) hexes[i] = i;
   std::vector<int> faces(trimesh.faces.size());
-  
+
   for (int i=0; i<(int)trimesh.faces.size(); ++i) faces[i] = i;
 
   compute_intersections_KDTree( pr, crosses, trimesh, hexmesh);
-  
+
   // Flood the two sides.
   pr->update_progress( 0.65 );
-  
-  for (int side=0; side<2; side++) 
+
+  for (int side=0; side<2; side++)
   {
     int start = -1;
-    for (int i=0; i<(int)crosses.size(); i++) 
+    for (int i=0; i<(int)crosses.size(); i++)
     {
-      if (crosses[i] < 0) 
+      if (crosses[i] < 0)
       {
         start=(int)i;
         break;
       }
     }
-    
-    if (start==-1) 
+
+    if (start==-1)
     {
       std::cerr<<"couldn't find hex to start flood from!"<<std::endl;
       break;
     }
-    
+
     std::vector<int> toprocess;
     toprocess.push_back(start);
     crosses[start] = side+1;
-    
-    while (toprocess.size()) 
+
+    while (toprocess.size())
     {
       VMesh::Elem::index_type h = toprocess.back();
       toprocess.resize(toprocess.size()-1);
 
       VMesh::Elem::array_type neighbors;
       original_mesh->get_neighbors( neighbors, h );
-            
+
       if( neighbors.size() > 6 )
         std::cerr << "ERROR: More than six neighbors reported..." << h << std::endl;
 
       for(size_t i = 0; i < neighbors.size(); i++ )
       {
         VMesh::Elem::index_type hnbr = neighbors[i];
-        if (crosses[hnbr] < 0) 
+        if (crosses[hnbr] < 0)
         {
           crosses[hnbr] = side+1;
           toprocess.push_back((int)hnbr);
@@ -1237,18 +1237,18 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
 
   pr->update_progress( 0.70 );
 
-    //check for non_manifold elements in the input mesh... 
-  unsigned int k; 
-  
-  original_mesh->synchronize( Mesh::NODE_NEIGHBORS_E | Mesh::EDGES_E | 
+    //check for non_manifold elements in the input mesh...
+  unsigned int k;
+
+  original_mesh->synchronize( Mesh::NODE_NEIGHBORS_E | Mesh::EDGES_E |
                               Mesh::ELEM_NEIGHBORS_E | Mesh::FACES_E );
 
   bool nmedges_clear = false;
   size_t num_iters = 0; /* inc each time, bail out if it doesn't converge */
   do
   {
-    hash_type2 nmedgemap1, nmedgemap2, nmedgemap3;  
-    
+    hash_type2 nmedgemap1, nmedgemap2, nmedgemap3;
+
     for( k = 0; k < crosses.size(); ++k )
     {
       if( add_to_side1 )
@@ -1258,23 +1258,23 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
             // Get all the faces in the cell.
           VMesh::DElem::array_type faces;
           original_mesh->get_delems( faces, VMesh::Elem::index_type(k) );
-          
-            // Check each face for neighbors. 
+
+            // Check each face for neighbors.
           VMesh::DElem::array_type::iterator fiter = faces.begin();
-          
+
           while( fiter != faces.end() )
           {
             VMesh::Elem::index_type nci;
             VMesh::DElem::index_type fi = *fiter;
             ++fiter;
-            
+
             if( original_mesh->get_neighbor( nci, k, fi ) )
             {
               if( crosses[nci] != 2 )
               {
                   //This face is on the boundary of the cut mesh...
 //              nmboundary_faces.insert( fi );
-                
+
                 VMesh::Edge::array_type face_edges;
                 original_mesh->get_edges( face_edges, fi );
                 hash_type2::iterator esearch;
@@ -1314,16 +1314,16 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
             // Get all the faces in the cell.
           VMesh::DElem::array_type faces;
           original_mesh->get_delems( faces, VMesh::Elem::index_type(k) );
-          
-            // Check each face for neighbors. 
+
+            // Check each face for neighbors.
           VMesh::DElem::array_type::iterator fiter = faces.begin();
-          
+
           while( fiter != faces.end() )
           {
             VMesh::Elem::index_type nci;
             VMesh::DElem::index_type fi = *fiter;
             ++fiter;
-            
+
             if( original_mesh->get_neighbor( nci, k, fi ) )
             {
               if( crosses[nci] != 1 )
@@ -1362,9 +1362,9 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
         }
       }
     }
-    
+
     if( nmedgemap3.size() != 0 )
-    { 
+    {
       std::cout << "WARNING: New mesh will contain " << nmedgemap3.size() << " non-manifold edges.\n";
       hash_type2::iterator nmsearch = nmedgemap3.begin();
       while( nmsearch != nmedgemap3.end() )
@@ -1372,12 +1372,12 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
         VMesh::Elem::array_type attached_hexes;
         VMesh::Edge::index_type this_edge = (*nmsearch).first;
         original_mesh->get_elems( attached_hexes, this_edge );
-        
+
         VMesh::Elem::index_type hex_to_change = 0;
         for(size_t i = 0; i < attached_hexes.size(); i++ )
         {
           VMesh::Elem::index_type hex_id = attached_hexes[i];
-          if(hex_id >= static_cast<index_type>(crosses.size())) 
+          if(hex_id >= static_cast<index_type>(crosses.size()))
           {
             std::cerr << "Invalid Hex ID '" << hex_id << "'; defaulting "
                       << "to 0.  (This is blatantly wrong)" << std::endl;
@@ -1397,12 +1397,12 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
             {
               hex_to_change = hex_id;
             }
-          } 
+          }
         }
-        
+
         crosses[hex_to_change] = 0;
 //end NOTE TO JS1
-        
+
         ++nmsearch;
       }
     }
@@ -1417,7 +1417,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
     }
   }
   while( nmedges_clear == false );
-      
+
   // Need to add elements from the three sets of elements.
   hash_type side1_nodemap, side2_nodemap, side1_reverse_map, side2_reverse_map;
   for( k = 0; k < crosses.size(); ++k )
@@ -1426,7 +1426,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
     VMesh::Elem::index_type elem_id = k;
     original_mesh->get_nodes( onodes, elem_id );
     VMesh::Node::array_type nnodes(onodes.size());
-  
+
     if( crosses[k] == 0 )
     {
       if( add_to_side1 )
@@ -1521,15 +1521,15 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
 
   pr->update_progress( 0.75 );
   if( add_layer )
-  {  
+  {
     std::cout << "Adding the new layers of hexes...";
     VMesh::Node::size_type s1_node_size;
     VMesh::Node::size_type s2_node_size;
-    hash_type::iterator node_iter; 
-    std::vector<VMesh::Node::index_type> oi_node_list;  
+    hash_type::iterator node_iter;
+    std::vector<VMesh::Node::index_type> oi_node_list;
     hash_type shared_vertex_map;
     unsigned int count = 0;
-    
+
     if( s1_node_size < s2_node_size )
     {
       hash_type::iterator hitr = side1_nodemap.begin();
@@ -1564,38 +1564,38 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
 
     tri_mesh->synchronize( Mesh::FIND_CLOSEST_ELEM_E );
     hash_type new_map1, new_map2;
-    size_t i; 
+    size_t i;
 
     for( i = 0; i < oi_node_list.size(); i++ )
     {
       VMesh::Node::index_type this_node = oi_node_list[i];
       Point n_p;
       original_mesh->get_center( n_p, this_node );
-    
+
       Point new_result;
       VMesh::Elem::index_type face_id;
       double dist;
-      
+
       tri_mesh->find_closest_elem( dist, new_result, face_id, n_p );
       Vector dist_vect = 1.5*( new_result - n_p );
-      
+
         // Finding the closest face can be slow.  Update the progress meter
-        // to let the user know that we are performing calculations and the 
+        // to let the user know that we are performing calculations and the
         // process has not hung.
       if( i%50 == 0 )
       {
         double temp = 0.75 + 0.25*( (double)i/(double)oi_node_list.size() );
         pr->update_progress( temp );
       }
-      
+
         // Add the new node to the clipped mesh.
       Point new_point( new_result );
-      VMesh::Node::index_type this_index1 = side1_mesh->add_point( new_point ); 
+      VMesh::Node::index_type this_index1 = side1_mesh->add_point( new_point );
       VMesh::Node::index_type this_index2 = side2_mesh->add_point( new_point );
-      
+
         // Create a map for the new node to a node on the boundary of
         // the clipped mesh.
-      hash_type::iterator node_iter; 
+      hash_type::iterator node_iter;
       node_iter = new_map1.find( side1_nodemap[this_node] );
       if( node_iter == new_map1.end() )
       {
@@ -1605,7 +1605,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
       {
         std::cout << "ERROR\n";
       }
-      
+
       node_iter = new_map2.find( side2_nodemap[this_node] );
       if( node_iter == new_map2.end() )
       {
@@ -1615,9 +1615,9 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
       {
         std::cout << "ERROR2\n";
       }
-      
+
       if( add_to_side1 )
-      {  
+      {
         Point p;
         side1_mesh->get_point( p, VMesh::Node::index_type(side1_nodemap[this_node]) );
         double x = p.x(), y = p.y(), z = p.z();
@@ -1641,42 +1641,42 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
 
     side1_mesh->synchronize( Mesh::NODE_NEIGHBORS_E | Mesh::EDGES_E | Mesh::ELEM_NEIGHBORS_E | Mesh::FACES_E );
     side2_mesh->synchronize( Mesh::NODE_NEIGHBORS_E | Mesh::EDGES_E | Mesh::ELEM_NEIGHBORS_E | Mesh::FACES_E );
-    
+
     std::set<VMesh::DElem::index_type> boundary_faces;
-    
+
       //Walk all the cells in the smallest clipped mesh to find the boundary faces...
     VMesh::Elem::iterator citer; side1_mesh->begin(citer);
     VMesh::Elem::iterator citere; side1_mesh->end(citere);
     hash_type3 face_list;
     hash_type2 edgemap1, edgemap2, edgemap3;
-    
+
     while( citer != citere )
     {
       VMesh::Elem::index_type ci = *citer;
       ++citer;
-      
+
         // Get all the faces in the cell.
       VMesh::DElem::array_type faces;
       side1_mesh->get_delems( faces, ci );
-      
+
         // Check each face for neighbors.
       VMesh::DElem::array_type::iterator fiter = faces.begin();
       VMesh::Node::array_type rnodes(4);
-      
+
       while( fiter != faces.end() )
       {
         VMesh::Elem::index_type nci;
         VMesh::DElem::index_type fi = *fiter;
         ++fiter;
-        
+
         if( !side1_mesh->get_neighbor( nci, ci, fi ) )
         {
             // Faces with no neighbors are on the boundary...
             //    make sure that this face isn't on the original boundary
-          
+
           VMesh::Node::array_type face_nodes;
           side1_mesh->get_nodes( face_nodes, fi );
-          hash_type::iterator search1, search2, search3, search4, search_end; 
+          hash_type::iterator search1, search2, search3, search4, search_end;
           search_end = shared_vertex_map.end();
           search1 = shared_vertex_map.find( side1_reverse_map[face_nodes[0]] );
           search2 = shared_vertex_map.find( side1_reverse_map[face_nodes[1]] );
@@ -1687,23 +1687,23 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
           {
             bool ok_to_add_face = true;
             VMesh::DElem::index_type old_face;
-            
+
             rnodes[0] = VMesh::Node::index_type(side1_reverse_map[face_nodes[0]]);
             rnodes[1] = VMesh::Node::index_type(side1_reverse_map[face_nodes[1]]);
             rnodes[2] = VMesh::Node::index_type(side1_reverse_map[face_nodes[2]]);
             rnodes[3] = VMesh::Node::index_type(side1_reverse_map[face_nodes[3]]);
-            
+
             if( !original_mesh->get_delem( old_face, rnodes ) )
             {
               std::cout << "ERROR3" << std::endl;
               ok_to_add_face = false;
             }
-            
-//NOTE TO JS: Testing (1 - added)...                
+
+//NOTE TO JS: Testing (1 - added)...
             boundary_faces.insert( fi );
             face_list[fi] = fi;
-            
-              //check for non-manifold edges... 
+
+              //check for non-manifold edges...
             VMesh::Edge::array_type face_edges;
             side1_mesh->get_edges( face_edges, fi );
             hash_type2::iterator esearch;
@@ -1732,9 +1732,9 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
                 }
               }
             }
-            
+
             if( ok_to_add_face )
-            { 
+            {
               hash_type3::iterator test_iter = face_list.find( fi );
               if( test_iter == face_list.end() )
               {
@@ -1747,30 +1747,30 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
         }
       }
     }
-    
+
       //special casing for projecting faces connected to non-manifold edges...
     if( edgemap3.size() != 0 )
-    { 
+    {
       std::cout << "WARNING: Clipped mesh contains " << edgemap3.size() << " non-manifold edges.\n    Ids are:";
       std::cout << "Boundary has " << boundary_faces.size() << " faces.\n";
-      
+
       hash_type2::iterator nm_search = edgemap3.begin();
       hash_type2::iterator nm_search_end = edgemap3.end();
       while( nm_search != nm_search_end )
       {
         VMesh::Edge::index_type this_edge = (*nm_search).first;
-        
+
         bool multiproject_node1 = false;
         bool multiproject_node2 = false;
         VMesh::Node::array_type problem_nodes;
         side1_mesh->get_nodes( problem_nodes, this_edge );
-        VMesh::Node::index_type node1 = problem_nodes[0], 
+        VMesh::Node::index_type node1 = problem_nodes[0],
             node2 = problem_nodes[1];
         VMesh::Elem::array_type edges_hexes, node1_hexes, node2_hexes;
         side1_mesh->get_elems( edges_hexes, this_edge );
         side1_mesh->get_elems( node1_hexes, node1 );
         side1_mesh->get_elems( node2_hexes, node2 );
-        
+
         if( node1_hexes.size() == edges_hexes.size() )
         {
           std::cout << " Don't need to multiproject node1 (" << node1 << ")\n";
@@ -1789,12 +1789,12 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
           std::cout << " Need to multiproject node2 (" << node2 << ")\n";
           multiproject_node2 = true;
         }
-        
+
         ++nm_search;
       }
       std::cout << std::endl;
     }
-    
+
     hash_type3::iterator fiter = face_list.begin();
     hash_type3::iterator fiter_end = face_list.end();
     while( fiter != fiter_end )
@@ -1802,47 +1802,47 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
       VMesh::Node::array_type face_nodes;
       VMesh::DElem::index_type face_id = (*fiter).first;
       side1_mesh->get_nodes( face_nodes, face_id );
-      
+
       VMesh::Node::array_type nnodes1(8);
       VMesh::Node::array_type nnodes2(8);
-      
+
       nnodes1[0] = face_nodes[3];
       nnodes1[1] = face_nodes[2];
       nnodes1[2] = face_nodes[1];
       nnodes1[3] = face_nodes[0];
-      
+
       nnodes2[0] = side2_nodemap[side1_reverse_map[face_nodes[0]]];
       nnodes2[1] = side2_nodemap[side1_reverse_map[face_nodes[1]]];
       nnodes2[2] = side2_nodemap[side1_reverse_map[face_nodes[2]]];
       nnodes2[3] = side2_nodemap[side1_reverse_map[face_nodes[3]]];
-      
+
       nnodes1[4] = new_map1[face_nodes[3]];
       nnodes1[5] = new_map1[face_nodes[2]];
       nnodes1[6] = new_map1[face_nodes[1]];
       nnodes1[7] = new_map1[face_nodes[0]];
-      
+
       nnodes2[4] = new_map2[side2_nodemap[side1_reverse_map[face_nodes[0]]]];
       nnodes2[5] = new_map2[side2_nodemap[side1_reverse_map[face_nodes[1]]]];
       nnodes2[6] = new_map2[side2_nodemap[side1_reverse_map[face_nodes[2]]]];
       nnodes2[7] = new_map2[side2_nodemap[side1_reverse_map[face_nodes[3]]]];
-      
+
       side1_mesh->add_elem( nnodes1 );
       side2_mesh->add_elem( nnodes2 );
-      
+
       ++fiter;
     }
   }
   std::cout << "Finished\n";
-  
+
   // Force all the synch data to be rebuilt on next synch call.
   side1_mesh->clear_synchronization();
   side2_mesh->clear_synchronization();
-  
+
   VMesh::Elem::size_type side1_size;
   VMesh::Elem::size_type side2_size;
   side1_mesh->size( side1_size );
   side2_mesh->size( side2_size );
-  
+
   std::cout << "Side1 has " << side1_size << " hexes." << std::endl;
   std::cout << "Side2 has " << side2_size << " hexes." << std::endl << std::endl;
   pr->update_progress( 0.99 );
@@ -1857,7 +1857,7 @@ class InsertHexVolSheetAlongSurface : public Module
     virtual ~InsertHexVolSheetAlongSurface() {}
 
     virtual void execute();
-  
+
   private:
     GuiString   add_to_side_;
     GuiString   add_layer_;
@@ -1886,8 +1886,8 @@ InsertHexVolSheetAlongSurface::execute()
 
   get_input_handle("HexField", hexfieldhandle, true);
   get_input_handle("TriField", trifieldhandle, true);
-  
-  if (inputs_changed_ || 
+
+  if (inputs_changed_ ||
       add_to_side_.changed() ||
       add_layer_.changed() ||
       !oport_cached("Side1Field") ||
@@ -1899,9 +1899,9 @@ InsertHexVolSheetAlongSurface::execute()
     if (!(hfi.is_hex_element()))
     {
       error( "Only Hexhedral field elements are currently supported in the InsertHexVolSheetAlongSurface module.");
-      return;    
+      return;
     }
-    
+
     if (!(tfi.is_tri_element()))
     {
       error( "Only TriSurfFields can be input to the InsertHexVolSheetAlongSurface module.");
@@ -1911,20 +1911,19 @@ InsertHexVolSheetAlongSurface::execute()
 
     bool add_to_side1 = false;
     if( add_to_side_.get() == "side1" ) add_to_side1 = true;
-    
+
     bool add_layer = false;
     if( add_layer_.get() == "On" ) add_layer = true;
-    
+
     FieldHandle side1field, side2field;
     InsertHexVolSheetAlongSurfaceAlgo algo;
-    
-    if(!(algo.execute( this, hexfieldhandle, trifieldhandle, 
+
+    if(!(algo.execute( this, hexfieldhandle, trifieldhandle,
                    side1field, side2field, add_to_side1, add_layer ))) return;
-    
+
     send_output_handle("Side1Field", side1field);
     send_output_handle("Side2Field", side2field);
   }
 }
 
 } // End namespace SCIRun
-

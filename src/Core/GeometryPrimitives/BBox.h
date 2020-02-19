@@ -6,7 +6,6 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,7 @@
 */
 
 #ifndef CORE_GEOMETRY_BBOX_H
-#define CORE_GEOMETRY_BBOX_H
+#define CORE_GEOMETRY_BBOX_H 1
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
