@@ -1,9 +1,9 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
 #define CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
@@ -46,23 +47,23 @@ namespace SCIRun{
     namespace Core{
         namespace Algorithms{
             namespace Math{
-                
+
                 ALGORITHM_PARAMETER_DECL(MatrixType);
                 ALGORITHM_PARAMETER_DECL(Rows);
                 ALGORITHM_PARAMETER_DECL(Columns);
                 ALGORITHM_PARAMETER_DECL(Size);
                 ALGORITHM_PARAMETER_DECL(StartPointer);
-                
-                
+
+
                 class SCISHARE CreateStandardMatrixAlgo : public AlgorithmBase
                 {
                 public:
                     CreateStandardMatrixAlgo();
-                    
+
                     AlgorithmOutput run(const AlgorithmInput& input) const;
-                    
+
                     Datatypes::DenseMatrixHandle generateMatrix(const std::string& matrixType, int row, int col) const;
-                    
+
                 };
             }
         }

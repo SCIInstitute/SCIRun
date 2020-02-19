@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Legacy/Base/Types.h
 
 #ifndef CORE_DATATYPES_LEGACY_TYPES_H
@@ -44,10 +44,10 @@ typedef long long       size_type;
 
 typedef unsigned int    mask_type;
 
-// Mesh information types, that work with FieldInformation and 
+// Mesh information types, that work with FieldInformation and
 // CreateMesh/CreateField
 
-enum mesh_info_type { 
+enum mesh_info_type {
       POINTCLOUDMESH_E = 1,
       CURVEMESH_E,
       TRISURFMESH_E,
@@ -61,10 +61,10 @@ enum mesh_info_type {
       STRUCTCURVEMESH_E,
       STRUCTQUADSURFMESH_E,
       STRUCTHEXVOLMESH_E };
-       
-// How the data is interpolated over the elements       
-       
-enum databasis_info_type { 
+
+// How the data is interpolated over the elements
+
+enum databasis_info_type {
       NODATA_E =  -1,
       CONSTANTDATA_E = 0,
       LINEARDATA_E = 1,
@@ -73,10 +73,10 @@ enum databasis_info_type {
 
 // The order of the underlying elements
 
-enum meshbasis_info_type { 
+enum meshbasis_info_type {
       LINEARMESH_E = 1,
       QUADRATICMESH_E = 2,
-      CUBICMESH_E = 3 };  
+      CUBICMESH_E = 3 };
 
 // The type of data stored in the field
 

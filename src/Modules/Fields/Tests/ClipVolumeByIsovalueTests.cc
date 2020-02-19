@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -73,13 +73,13 @@ TEST_F(ClipVolumeByIsovalueModuleTests, ClipVolumeByIsovalueTriangleNoThrow_Exam
   auto test = makeModule("ClipVolumeByIsovalue");
   FieldHandle f=LoadTriangles();
   stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute()); 
+  EXPECT_NO_THROW(test->execute());
   f=LoadTetrahedrals();
   stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());  
+  EXPECT_NO_THROW(test->execute());
   f=LoadLatVol();
   stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute()); 
+  EXPECT_NO_THROW(test->execute());
 }
 
 TEST_F(ClipVolumeByIsovalueModuleTests, ClipVolumeByIsovalueTriangleNoThrow_Example2)
@@ -87,7 +87,7 @@ TEST_F(ClipVolumeByIsovalueModuleTests, ClipVolumeByIsovalueTriangleNoThrow_Exam
   auto test = makeModule("ClipVolumeByIsovalue");
   FieldHandle f=LoadTetrahedrals();
   DenseMatrixHandle iso(new DenseMatrix(1,1));
-  *iso << 1.0; 
+  *iso << 1.0;
   stubPortNWithThisData(test, 0, f);
   stubPortNWithThisData(test, 1, iso);
   EXPECT_NO_THROW(test->execute());
@@ -113,4 +113,3 @@ TEST_F(ClipVolumeByIsovalueModuleTests, ThrowForNullPointerExeption)
   stubPortNWithThisData(test, 1, nullfield);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }
-

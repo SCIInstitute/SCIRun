@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,20 +25,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
-///@file  TransformPlanarMesh.cc
+/// @file  TransformPlanarMesh.cc
 ///
-///@brief Rotate and flip field to get it into "standard" view
+/// @brief Rotate and flip field to get it into "standard" view
 ///
-///@author
-///   Allen Sanderson
-///   Scientific Computing and Imaging Institute
-///   University of Utah
-///@date  April 2006
+/// @author
+///    Allen Sanderson
+///    Scientific Computing and Imaging Institute
+///    University of Utah
+/// @date  April 2006
 ///
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/Mesh.h> 
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
 #include <Core/Algorithms/Fields/TransformMesh/TransformPlanarMesh.h>
 
 #include <Dataflow/Network/Module.h>
@@ -50,7 +50,7 @@
 namespace SCIRun {
 
 /// @class TransformPlanarMesh
-/// @brief Non-interactive geometric transform of a field. 
+/// @brief Non-interactive geometric transform of a field.
 
 class TransformPlanarMesh : public Module
 {
@@ -92,12 +92,12 @@ TransformPlanarMesh::execute()
   MatrixHandle matrix_input_handle;
   get_input_handle( "Index Matrix", matrix_input_handle, false );
 
-  if( matrix_input_handle.get_rep() ) 
+  if( matrix_input_handle.get_rep() )
   {
     /// Check to see what index has been selected and if it matches
     /// the gui index.a
     if( gui_trans_x_.get() != matrix_input_handle->get(0, 0) ||
-        gui_trans_y_.get() != matrix_input_handle->get(1, 0) ) 
+        gui_trans_y_.get() != matrix_input_handle->get(1, 0) )
     {
 
       gui_trans_x_.set( (int) matrix_input_handle->get(0, 0) );
@@ -119,11 +119,11 @@ TransformPlanarMesh::execute()
     update_state(Executing);
 
     int axis = gui_axis_.get();
-    
+
     if (axis == 0) algo_.set_option("axis","x");
     else if (axis == 1) algo_.set_option("axis","y");
     else if (axis == 2) algo_.set_option("axis","z");
-  
+
     algo_.set_bool("invert",gui_invert_.get());
     algo_.set_scalar("translate_x",gui_trans_x_.get());
     algo_.set_scalar("translate_y",gui_trans_y_.get());
@@ -136,4 +136,3 @@ TransformPlanarMesh::execute()
 }
 
 } // End namespace SCIRun
-

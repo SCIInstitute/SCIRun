@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +34,7 @@
 ///        Department of Computer Science
 ///        University of Utah
 ///@date   Mar. 2000, Dec 2000
-/// 
+///
 
 #ifndef SCI_project_PersistentSTL_h
 #define SCI_project_PersistentSTL_h 1
@@ -62,11 +61,11 @@ template <class T>
 void Pio(Piostream& stream, std::vector<T>& data);
 
 template<class T,class S>
-void 
+void
 Pio( Piostream &stream, std::pair<T,S>& pair);
 
 
-SCISHARE void 
+SCISHARE void
 Pio_index(Piostream& stream, std::vector<index_type>& data);
 
 //////////
@@ -78,8 +77,8 @@ Pio(Piostream& stream, std::map<Key, Data>& data) {
   stream.begin_class("Map", MAP_VERSION);
 
 				// if reading from stream
-  if (stream.reading()) {	
-				// get map size 
+  if (stream.reading()) {
+				// get map size
     int n;
     Pio(stream, n);
 				// read elements
@@ -90,7 +89,7 @@ Pio(Piostream& stream, std::map<Key, Data>& data) {
       Pio(stream, d);
       data[k] = d;
     }
-    
+
   }
 				// if writing to stream
   else {
@@ -108,11 +107,11 @@ Pio(Piostream& stream, std::map<Key, Data>& data) {
       Pio(stream, ik);
       Pio(stream, dk);
     }
-    
+
   }
 
   stream.end_class();
-  
+
 }
 
 //////////
@@ -122,7 +121,7 @@ Pio(Piostream& stream, std::map<Key, Data>& data) {
 
 
 // Optimize  heavily used in the field classes.
-template <> 
+template <>
 SCISHARE void Pio(Piostream& stream, std::vector<bool>& data);
 template <>
 SCISHARE void Pio(Piostream& stream, std::vector<char>& data);
@@ -145,9 +144,9 @@ SCISHARE void Pio(Piostream& stream, std::vector<float>& data);
 template <>
 SCISHARE void Pio(Piostream& stream, std::vector<double>& data);
 
-template <class T> 
+template <class T>
 void Pio(Piostream& stream, std::vector<T>& data)
-{ 
+{
   if (stream.reading() && stream.peek_class() == "Array1")
   {
     stream.begin_class("Array1", STLVECTOR_VERSION);
@@ -156,10 +155,10 @@ void Pio(Piostream& stream, std::vector<T>& data)
   {
     stream.begin_class("STLVector", STLVECTOR_VERSION);
   }
-  
+
   int size=static_cast<int>(data.size());
   stream.io(size);
-  
+
   if(stream.reading()){
     data.resize(size);
   }
@@ -169,12 +168,12 @@ void Pio(Piostream& stream, std::vector<T>& data)
     Pio(stream, data[i]);
   }
 
-  stream.end_class();  
+  stream.end_class();
 }
 
-template <class T> 
+template <class T>
 void Pio(Piostream& stream, std::vector<T*>& data)
-{ 
+{
   if (stream.reading() && stream.peek_class() == "Array1")
   {
     stream.begin_class("Array1", STLVECTOR_VERSION);
@@ -183,10 +182,10 @@ void Pio(Piostream& stream, std::vector<T*>& data)
   {
     stream.begin_class("STLVector", STLVECTOR_VERSION);
   }
-  
+
   int size=static_cast<int>(data.size());
   stream.io(size);
-  
+
   if(stream.reading()){
     data.resize(size);
   }
@@ -196,7 +195,7 @@ void Pio(Piostream& stream, std::vector<T*>& data)
     Pio(stream, *data[i]);
   }
 
-  stream.end_class();  
+  stream.end_class();
 }
 
 
@@ -205,22 +204,22 @@ void Pio(Piostream& stream, std::vector<T*>& data)
 // PIO for lists
 #define STLLIST_VERSION 1
 
-template <class T> 
+template <class T>
 void Pio(Piostream& stream, std::list<T>& data)
-{ 
+{
   stream.begin_cheap_delim();
-  
+
   int size=data.size();
   stream.io(size);
-  
+
   if(stream.reading()){
     data.resize(size);
   }
-  
+
   for (typename std::list<T>::iterator ii=data.begin(); ii!=data.end(); ii++)
     Pio(stream, *ii);
-     
-  stream.end_cheap_delim();  
+
+  stream.end_cheap_delim();
 }
 
 
@@ -228,18 +227,17 @@ void Pio(Piostream& stream, std::list<T>& data)
 // PIO for pair
 #define STLPAIR_VERSION 1
 
-template <class T,class S> 
+template <class T,class S>
 void Pio(Piostream& stream, std::pair<T,S>& data)
-{ 
+{
   stream.begin_class("STLPair", STLPAIR_VERSION);
-  
+
   Pio(stream, data.first);
   Pio(stream, data.second);
 
-  stream.end_class();  
+  stream.end_class();
 }
 
 } // End namespace SCIRun
 
 #endif // SCI_project_PersistentSTL_h
-

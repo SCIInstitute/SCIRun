@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
@@ -6,34 +34,6 @@
 //
 //  Author: Jonathan Bronson (bronson@sci.utah.edu)
 //
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
-//
-//  Copyright (C) 2011, 2012, 2013, Jonathan Bronson
-//  Scientific Computing  &  Imaging Institute
-//  University of Utah
-//
-//  Permission is  hereby  granted, free  of charge, to any person
-//  obtaining a copy of this software and associated documentation
-//  files  ( the "Software" ),  to  deal in  the  Software without
-//  restriction, including  without limitation the rights to  use,
-//  copy, modify,  merge, publish, distribute, sublicense,  and/or
-//  sell copies of the Software, and to permit persons to whom the
-//  Software is  furnished  to do  so,  subject  to  the following
-//  conditions:
-//
-//  The above  copyright notice  and  this permission notice shall
-//  be included  in  all copies  or  substantial  portions  of the
-//  Software.
-//
-//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
-//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
-//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
-//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
-//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-//  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
@@ -104,8 +104,8 @@ TetMesh* BCCLattice3DMesher::mesh(bool snap, bool verbose)
     }
     for(unsigned int i=0; i < lattice->buffer_cells.size(); i++)
     {
-        Vertex3D *dual = lattice->buffer_cells[i]->vert[C];        
-        delete[] dual->lbls;        
+        Vertex3D *dual = lattice->buffer_cells[i]->vert[C];
+        delete[] dual->lbls;
         dual->lbls = NULL;
     }
 
@@ -285,7 +285,7 @@ void BCCLattice3DMesher::compute_cut(Edge3D *edge)
     double bot = (b2 - a2 + a1 - b1);
     double t = top / bot;
 
-    Vertex3D *cut = new Vertex3D(lattice->materials());    
+    Vertex3D *cut = new Vertex3D(lattice->materials());
     t = max(t, 0.0);
     t = min(t, 1.0);
     cut->pos() = v1->pos()*(1-t) + v2->pos()*t;
@@ -555,7 +555,7 @@ void BCCLattice3DMesher::compute_triple(Face3D *face)
 
     triple->order() = TRIP;
     triple->violating = false;
-    triple->closestGeometry = NULL;    
+    triple->closestGeometry = NULL;
     face->triple = triple;
 
     // check if its violating
@@ -955,7 +955,7 @@ void BCCLattice3DMesher::check_quadruple_violating_lattice(Tet3D *tet)
     Edge3D *edges[6];
     Face3D *faces[4];
 
-    lattice->getAdjacencyLists(tet, verts, edges, faces);    
+    lattice->getAdjacencyLists(tet, verts, edges, faces);
 
     vec3 v1 = verts[0]->pos();
     vec3 v2 = verts[1]->pos();
@@ -1693,7 +1693,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
 
         //------------------------------------------------------
         // delete cuts of the same interface type
-        //------------------------------------------------------        
+        //------------------------------------------------------
         for(unsigned int e=0; e < part_edges.size(); e++){
 
             // check if same as one of the violating interface types
@@ -1719,8 +1719,8 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
                 // If Affected, Snap it
                 //-----------------------
                 if(affected)
-                {                    
-                    snap_cut_to_vertex(part_edges[e]->cut, vertex);                  
+                {
+                    snap_cut_to_vertex(part_edges[e]->cut, vertex);
                 }
             }
         }
@@ -1735,12 +1735,12 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
             {
                 // if now violating this vertex, snap to it
                 if(part_edges[e]->cut->closestGeometry == vertex)
-                {                    
+                {
                     snap_cut_to_vertex(part_edges[e]->cut, vertex);
                 }
                 // else if violating an already warped vertex, snap to it
                 else if(((Vertex3D*)part_edges[e]->cut->closestGeometry)->warped)
-                {                                        
+                {
                     snap_cut_to_vertex(part_edges[e]->cut, (Vertex3D*)part_edges[e]->cut->closestGeometry);
 
                     // Probably should call resolve_degeneracies around vertex(closestGeometry); to be safe
@@ -1759,7 +1759,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
             {
                 // if now violating this vertex, snap to it
                 if(part_faces[f]->triple->closestGeometry == vertex)
-                {                    
+                {
                     snap_triple_to_vertex(part_faces[f]->triple, vertex);
                 }
                 // else if violating an already warped vertex, snap to it
@@ -1778,7 +1778,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
         //------------------------------------------------------------------------
         for (unsigned int q=0; q < part_tets.size(); q++){
             if(part_tets[q]->quad->order() == QUAD && part_tets[q]->quad->violating && part_tets[q]->quad->closestGeometry == vertex)
-            {                
+            {
                 snap_quad_to_vertex(part_tets[q]->quad, vertex);
             }
         }
@@ -1787,7 +1787,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
         // Delete Violating Cuts
         //------------------------
         for(unsigned int c=0; c < viol_edges.size(); c++)
-        {            
+        {
             snap_cut_to_vertex(viol_edges[c]->cut, vertex);
         }
 
@@ -1795,7 +1795,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
         // Delete Violating Trips
         //--------------------------
         for(unsigned int f=0; f < viol_faces.size(); f++)
-        {         
+        {
             snap_triple_to_vertex(viol_faces[f]->triple, vertex);
         }
 
@@ -1803,7 +1803,7 @@ void BCCLattice3DMesher::warp_vertex(Vertex3D *vertex)
         // Snap Violating Quadruples
         //------------------------------
         for(unsigned int q=0; q < viol_tets.size(); q++)
-        {            
+        {
             snap_quad_to_vertex(viol_tets[q]->quad, vertex);
         }
 
@@ -2080,7 +2080,7 @@ void BCCLattice3DMesher::conformQuadruple(Tet3D *tet, Vertex3D *warp_vertex, con
 // this interface edge with the new lattice face plane, generated by warping a lattice vertex.
 //--------------------------------------------------------------------------------------------
 vec3 BCCLattice3DMesher::projectTriple(Face3D *face, Vertex3D *quad, Vertex3D *warp_vertex, const vec3 &warp_pt)
-{   
+{
     Vertex3D *trip = face->triple;
     Vertex3D *verts[3];
     lattice->getVertsAroundFace(face, verts);
@@ -2117,7 +2117,7 @@ vec3 BCCLattice3DMesher::projectTriple(Face3D *face, Vertex3D *quad, Vertex3D *w
     /*
     if(intersection.x != intersection.x)
     {
-        cerr << "project triple returned NaN interesction point" << endl;        
+        cerr << "project triple returned NaN interesction point" << endl;
         exit(-1);
     }
     if(intersection == vec3::zero)
@@ -2216,7 +2216,7 @@ void BCCLattice3DMesher::conformTriple(Face3D *face, Vertex3D *warp_vertex, cons
 
         for(int i=0; i < EDGES_PER_FACE; i++){
             if(edges[i]->containsBoth(verts[1],verts[2])){
-                trip->conformedEdge = edges[i];                
+                trip->conformedEdge = edges[i];
                 break;
             }
         }
@@ -2226,7 +2226,7 @@ void BCCLattice3DMesher::conformTriple(Face3D *face, Vertex3D *warp_vertex, cons
 
         for(int i=0; i < EDGES_PER_FACE; i++){
             if(edges[i]->containsBoth(verts[0],verts[2])){
-                trip->conformedEdge = edges[i];                
+                trip->conformedEdge = edges[i];
                 break;
             }
         }
@@ -2236,7 +2236,7 @@ void BCCLattice3DMesher::conformTriple(Face3D *face, Vertex3D *warp_vertex, cons
 
         for(int i=0; i < EDGES_PER_FACE; i++){
             if(edges[i]->containsBoth(verts[0],verts[1])){
-                trip->conformedEdge = edges[i];                
+                trip->conformedEdge = edges[i];
                 break;
             }
         }
@@ -2347,7 +2347,7 @@ vec3 BCCLattice3DMesher::projectCut(Edge3D *edge, Tet3D *tet, Vertex3D *warp_ver
     }
 
     // if no intersections, don't move it at all
-    if(pt == vec3::zero){        
+    if(pt == vec3::zero){
         pt = edge->cut->pos();
     }
 
@@ -2440,7 +2440,7 @@ bool BCCLattice3DMesher::triangle_intersect(Vertex3D *v1, Vertex3D *v2, Vertex3D
     //----------------------------------------------
     //   Project to Valid Coordinate
     //----------------------------------------------
-    // clamp to borders    
+    // clamp to borders
     lambda.x = std::max(0.0, lambda.x);
     lambda.y = std::max(0.0, lambda.y);
     lambda.z = std::max(0.0, lambda.z);
@@ -3075,7 +3075,7 @@ void BCCLattice3DMesher::warp_violating_quads()
             {
                 if(tets[t]->quad->order() == QUAD && tets[t]->quad->violating && tets[t]->quad->closestGeometry == face)
                 {
-                    // Snap to triple point, wherever it happens to be                    
+                    // Snap to triple point, wherever it happens to be
                     snap_quad_to_triple(tets[t]->quad, face->triple);
 
 
@@ -3085,7 +3085,7 @@ void BCCLattice3DMesher::warp_violating_quads()
                         case VERT:
                         {
                             // If Triple_point is on a Vertex
-                            resolve_degeneracies_around_vertex(tets[t]->quad->root());                                                        
+                            resolve_degeneracies_around_vertex(tets[t]->quad->root());
                             break;
                         }
                         case CUT:
@@ -3146,7 +3146,7 @@ void BCCLattice3DMesher::snap_quad_to_edge(Tet3D *tet, Edge3D *edge)
     {
         // if still a triple, snap it
         if(adjFaces[f]->triple->order() == TRIP)
-        {            
+        {
             snap_triple_to_cut(adjFaces[f]->triple, edge->cut);
 
             Tet3D *opTet = lattice->getOppositeTet(tet, adjFaces[f]);
@@ -3230,7 +3230,7 @@ void BCCLattice3DMesher::resolve_degeneracies_around_vertex(Vertex3D *vertex)
                     Vertex3D *verts[3];
                     lattice->getVertsAroundFace(faces[f], verts);
                     if(verts[0] == vertex || verts[1] == vertex || verts[2] == vertex)
-                    {                     
+                    {
                         snap_triple_to_vertex(faces[f]->triple, vertex);
                         changed = true;
                     }
@@ -3254,7 +3254,7 @@ void BCCLattice3DMesher::resolve_degeneracies_around_vertex(Vertex3D *vertex)
            {
                // cut exists & spans the vertex in question
                if(edges[e]->cut->order() == CUT && (edges[e]->v1 == vertex || edges[e]->v2 == vertex))
-               {                 
+               {
                    snap_cut_to_vertex(edges[e]->cut, vertex);
                    changed = true;
                }
@@ -3280,7 +3280,7 @@ void BCCLattice3DMesher::resolve_degeneracies_around_vertex(Vertex3D *vertex)
 
             // if two cuts have snapped to vertex, triple degenerates
             if(count == 2)
-            {             
+            {
                 snap_triple_to_vertex(faces[f]->triple, vertex);
                 changed = true;
             }
@@ -3304,7 +3304,7 @@ void BCCLattice3DMesher::resolve_degeneracies_around_vertex(Vertex3D *vertex)
 
             // if 3 triples have snapped to vertex, quad degenerates
             if(count == 3)
-            {              
+            {
                 snap_quad_to_vertex(tets[t]->quad, vertex);
                 changed = true;
             }
@@ -3388,7 +3388,7 @@ void BCCLattice3DMesher::snap_triple_to_vertex(Vertex3D *&triple, Vertex3D *vert
 // - snap_triple_to_cut()
 //=====================================================================
 void BCCLattice3DMesher::snap_triple_to_cut(Vertex3D *&triple, Vertex3D *cut)
-{    
+{
     if(triple->original_order() == TRIP)
         triple->parent = cut;
     else

@@ -1,46 +1,41 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 //
 // Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library
 //  - Command Line Program
 //
 // Primary Author: Jonathan Bronson (bronson@sci.utah.edu)
 //
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-//
 //-------------------------------------------------------------------
-//
-//  Copyright (C) 2012, Jonathan Bronson
-//  Scientific Computing & Imaging Institute
-//  University of Utah
-//
-//  Permission is  hereby  granted, free  of charge, to any person
-//  obtaining a copy of this software and associated documentation
-//  files  ( the "Software" ),  to  deal in  the  Software without
-//  restriction, including  without limitation the rights to  use,
-//  copy, modify,  merge, publish, distribute, sublicense,  and/or
-//  sell copies of the Software, and to permit persons to whom the
-//  Software is  furnished  to do  so,  subject  to  the following
-//  conditions:
-//
-//  The above  copyright notice  and  this permission notice shall
-//  be included  in  all copies  or  substantial  portions  of the
-//  Software.
-//
-//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
-//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
-//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
-//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
-//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-//  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //-------------------------------------------------------------------
-//
-/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 #include <iostream>
 #include <string>
@@ -84,7 +79,7 @@ int main(int argc, char *argv[])
     //-------------------------------
     //  Load Data & Create Lattice
     //-------------------------------
-    
+
      //
     //std::vector<Cleaver::ScalarField*> fields;
     //for (each input field F)
@@ -92,9 +87,9 @@ int main(int argc, char *argv[])
     //   Cleaver::FloatField *field = new FloatField(F.rawDataPointer(), F.width, F.height, F.depth);
     //   fields.push_back(field);
    // }
-     
-     
-    
+
+
+
     std::vector<Cleaver::ScalarField*> fields = loadNRRDFiles(inputs, verbose);
     if(fields.empty()){
         std::cerr << "Failed to load image data. Terminating." << std::endl;
@@ -446,4 +441,3 @@ void print_help()
 
     std::cerr << std::endl << std::endl;
 }
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/Mesh.h> 
-#include <Core/Datatypes/FieldInformation.h> 
+
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/FieldInformation.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Util/StringUtil.h>
 
@@ -54,10 +54,10 @@ bool HexVolFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
 FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
 {
   FieldHandle result = 0;
-  
+
   std::string hexes_fn(filename);
   std::string pts_fn(filename);
-  
+
   // Check whether the .hex exists
   std::string::size_type pos = hexes_fn.find_last_of(".");
   if (pos == std::string::npos)
@@ -67,13 +67,13 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(hexes_fn.c_str());           
+      inputfile.open(hexes_fn.c_str());
     }
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + hexes_fn);
       return (result);
-    }   
+    }
   }
   else
   {
@@ -83,9 +83,9 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        hexes_fn = base + ".hex"; 
+        hexes_fn = base + ".hex";
         inputfile.open(hexes_fn.c_str());
       }
       catch (...)
@@ -100,13 +100,13 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(hexes_fn.c_str());       
+        inputfile.open(hexes_fn.c_str());
       }
       catch (...)
       {
         if (pr) pr->error("Could not open file: " + hexes_fn);
         return (result);
-      }       
+      }
     }
   }
 
@@ -118,13 +118,13 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(pts_fn.c_str());           
+      inputfile.open(pts_fn.c_str());
     }
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + pts_fn);
       return (result);
-    }   
+    }
   }
   else
   {
@@ -134,9 +134,9 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        pts_fn = base + ".pts"; 
+        pts_fn = base + ".pts";
         inputfile.open(pts_fn.c_str());
       }
       catch (...)
@@ -145,8 +145,8 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
         {
           std::ifstream inputfile;
           inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-          pts_fn = base + ".pos"; 
-          inputfile.open(pts_fn.c_str());           
+          pts_fn = base + ".pos";
+          inputfile.open(pts_fn.c_str());
         }
         catch (...)
         {
@@ -161,7 +161,7 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(pts_fn.c_str());           
+        inputfile.open(pts_fn.c_str());
       }
       catch (...)
       {
@@ -181,12 +181,12 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
 
   bool has_header_pts = false;
   bool first_line_pts = true;
-  
+
   bool has_header = false;
   bool first_line = true;
-  
+
   bool has_data = false;
-  
+
   std::vector<double> values;
   std::string line;
 
@@ -204,16 +204,16 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); ++p)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
-        multiple_from_string(line,values);      
+
+        multiple_from_string(line,values);
         line_ncols = values.size();
-        
+
         if (first_line_pts)
         {
           if (line_ncols > 0)
@@ -228,7 +228,7 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
               has_header_pts = false;
               first_line_pts = false;
               ++nrows;
-              ncols = line_ncols; 
+              ncols = line_ncols;
             }
           }
         }
@@ -270,13 +270,13 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
                           ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
     }
   }
-  
+
   nrows = 0;
   ncols = 0;
   line_ncols = 0;
-  
+
   bool zero_based = false;
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -291,14 +291,14 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); ++p)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,values);      
+        multiple_from_string(line,values);
         line_ncols = values.size();
 
         for (size_t j=0; j < values.size(); ++j) if (values[j] == 0.0) zero_based = true;
@@ -317,7 +317,7 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
               has_header = false;
               first_line = false;
               ++nrows;
-              ncols = line_ncols; 
+              ncols = line_ncols;
               if (ncols == 9) has_data = true;
             }
             else
@@ -353,7 +353,7 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     {
       if (pr) pr->error("Could not open and read file: " + hexes_fn);
       return (result);
-    }    
+    }
     inputfile.close();
     if (nhexes == 0)
     {
@@ -369,30 +369,30 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
   FieldInformation fi("HexVolMesh",-1,"double");
   if (has_data) fi.make_constantdata();
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
 
   mesh->node_reserve(nnodes);
   mesh->elem_reserve(nhexes);
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
     try
     {
       inputfile.open(pts_fn.c_str());
-    
+
       std::vector<double> vdata(3);
-      
+
       for (int i = 0; i < nnodes && getline(inputfile, line, '\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); ++p)
         {
@@ -412,9 +412,9 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     }
     inputfile.close();
   }
-  
+
   std::vector<double> fvalues;
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -422,27 +422,27 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
     try
     {
       inputfile.open(hexes_fn.c_str());
-    
+
       VMesh::Node::array_type vdata;
       vdata.resize(8);
 
       std::vector<VMesh::index_type> ivalues;
-      
+
       for (int i = 0; i < nhexes && getline(inputfile, line, '\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); ++p)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,ivalues);      
+        multiple_from_string(line,ivalues);
 
         for (size_t j = 0; j < ivalues.size() && j < 8; ++j)
         {
@@ -450,7 +450,7 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
           else vdata[j] = ivalues[j]-1;
         }
         if (ivalues.size() > 8) fvalues.push_back(ivalues[8]);
-        
+
         if (ivalues.size() > 7) mesh->add_elem(vdata);
       }
     }
@@ -460,8 +460,8 @@ FieldHandle TextToHexVolField_reader(ProgressReporter *pr, const char *filename)
       return (result);
     }
     inputfile.close();
-  }   
-  
+  }
+
   if (has_data)
   {
     field->resize_values();
@@ -475,7 +475,7 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -486,16 +486,16 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());            
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -503,7 +503,7 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
       ff |= outputfile.showpoint; // write floating-point values including always the decimal point
       ff |= outputfile.fixed; // write floating point values in fixed-point notation
       outputfile.flags(ff);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -521,7 +521,7 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
         outputfile << p.x() << " " << p.y() << " " << p.z() << std::endl;
         ++nodeIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: " + pts_fn);
@@ -542,30 +542,30 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
 
     if (pos == std::string::npos)
     {
-      hexes_fn += fileExt; 
+      hexes_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      hexes_fn = base + fileExt; 
-    } 
+      hexes_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(hexes_fn.c_str());            
+      outputfile.open(hexes_fn.c_str());
 
       VMesh::Cell::iterator cellIter;
       VMesh::Cell::iterator cellIterEnd;
       VMesh::Cell::size_type cellSize;
       VMesh::Node::array_type cellNodes(8);
-      
+
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-      
+
 #if DEBUG
       std::cerr << "Number of hexes = " << cellSize << std::endl;
 #endif
-      
+
       while (cellIter != cellIterEnd) {
         mesh->get_nodes(cellNodes, *cellIter);
         outputfile << cellNodes[0] << " "
@@ -578,7 +578,7 @@ bool HexVolFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh,
                    << cellNodes[7] << std::endl;
         ++cellIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: " + hexes_fn);
@@ -594,7 +594,7 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -605,16 +605,16 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());            
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -622,7 +622,7 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
       ff |= outputfile.showpoint; // write floating-point values including always the decimal point
       ff |= outputfile.fixed; // write floating point values in fixed-point notation
       outputfile.flags(ff);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -640,7 +640,7 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
         outputfile << p.x() << " " << p.y() << " " << p.z() << std::endl;
         ++nodeIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: "+ pts_fn);
@@ -661,31 +661,31 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
 
     if (pos == std::string::npos)
     {
-      hexes_fn += fileExt; 
+      hexes_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      hexes_fn = base + fileExt; 
-    } 
+      hexes_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(hexes_fn.c_str());            
+      outputfile.open(hexes_fn.c_str());
 
       VMesh::Cell::iterator cellIter;
       VMesh::Cell::iterator cellIterEnd;
       VMesh::Cell::size_type cellSize;
       VMesh::Node::array_type cellNodes(4);
-      
+
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
       int baseIndex = 1;
-      
+
 #if DEBUG
       std::cerr << "Number of hexes = " << cellSize << std::endl;
 #endif
-      
+
       while (cellIter != cellIterEnd) {
         mesh->get_nodes(cellNodes, *cellIter);
         outputfile << cellNodes[0] + baseIndex << " "
@@ -698,7 +698,7 @@ bool HexVolFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, 
                    << cellNodes[7] + baseIndex << std::endl;
         ++cellIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: "+ hexes_fn);
@@ -720,14 +720,14 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
     if (pr) pr->error("Exporter only supports HexVol fields.");
     return false;
   }
-  
+
   // TODO: extend with tensor support
   if (! (field->is_scalar() || field->is_vector()) )
   {
     if (pr) pr->error("Export to VTK file is only supported for fields with scalar and vector data");
     return false;
   }
-  
+
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
   std::string vtk_fn(filename);
@@ -738,16 +738,16 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
 
   if (pos == std::string::npos)
   {
-    vtk_fn += fileExt; 
+    vtk_fn += fileExt;
   }
   else if (ext != fileExt)
   {
-    vtk_fn = base + fileExt; 
-  } 
+    vtk_fn = base + fileExt;
+  }
 
   try
   {
-    outputfile.open(vtk_fn.c_str());            
+    outputfile.open(vtk_fn.c_str());
 
     // these appear to be reasonable formatting flags for output
     std::ios_base::fmtflags ff;
@@ -756,11 +756,11 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
     outputfile.flags(ff);
 
-    outputfile << "# vtk DataFile Version 3.0" << std::endl 
-          << "vtk output" << std::endl 
+    outputfile << "# vtk DataFile Version 3.0" << std::endl
+          << "vtk output" << std::endl
           << "ASCII" << std::endl << std::endl
           << "DATASET UNSTRUCTURED_GRID" << std::endl;
-    
+
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
     VMesh::Node::size_type nodeSize;
@@ -777,16 +777,16 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
       outputfile << std::setprecision(9) << p.x() << " " << p.y() << " " << p.z() << std::endl;
       ++nodeIter;
     }
-    
+
     VMesh::Elem::iterator elemIter;
     VMesh::Elem::iterator elemIterEnd;
     VMesh::Elem::size_type elemSize;
     VMesh::Node::array_type elemNodes(8);
-    
+
     mesh->begin(elemIter);
     mesh->end(elemIterEnd);
     mesh->size(elemSize);
-    
+
 #if DEBUG
     std::cerr << "Number of hexes = " << elemSize << std::endl;
 #endif
@@ -824,14 +824,14 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
         mesh->end(nodeIterEnd);
         double min = DBL_MAX;
         double max = DBL_MIN;
-        
+
         while (nodeIter != nodeIterEnd)
         {
           double val;
           field->get_value(val, *nodeIter);
           if (val < min) min = val;
           if (val > max) max = val;
-          
+
           outputfile << std::setprecision(9) << val << std::endl;
           ++nodeIter;
         }
@@ -866,14 +866,14 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
         mesh->end(elemIterEnd);
         double min = DBL_MAX;
         double max = DBL_MIN;
-        
+
         while (elemIter != elemIterEnd)
         {
           double val;
           field->get_value(val, *elemIter);
           if (val < min) min = val;
           if (val > max) max = val;
-          
+
           outputfile << std::setprecision(9) << val << std::endl;
           ++elemIter;
         }
@@ -907,7 +907,7 @@ bool HexVolFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *f
       }
       return false;
     }
-  }     
+  }
   catch (...)
   {
     if (pr) pr->error("Could not open and write to file: " + vtk_fn);
@@ -921,21 +921,21 @@ bool HexVolFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char
 {
   VMesh *mesh = fh->vmesh();
 
-  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("HexVolField") != 
+  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("HexVolField") !=
       std::string::npos) {
     if (pr) pr->error("input field wasn't a HexVolField (type_name=" + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
     return false;
   }
 
-  VMesh::Node::iterator niter; 
-  VMesh::Node::iterator niter_end; 
-  VMesh::Node::size_type nsize; 
+  VMesh::Node::iterator niter;
+  VMesh::Node::iterator niter_end;
+  VMesh::Node::size_type nsize;
   mesh->begin(niter);
   mesh->end(niter_end);
-  mesh->size(nsize);  
-  VMesh::Cell::size_type csize; 
-  VMesh::Cell::iterator citer; 
-  VMesh::Cell::iterator citer_end; 
+  mesh->size(nsize);
+  VMesh::Cell::size_type csize;
+  VMesh::Cell::iterator citer;
+  VMesh::Cell::iterator citer_end;
   VMesh::Node::array_type cell_nodes(8);
   mesh->size(csize);
   mesh->begin(citer);
@@ -963,7 +963,7 @@ bool HexVolFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char
   fprintf( f_out, "x                                y                                z                               \n" );
   fprintf( f_out, "! Coordinates\n" );
 
-  while(niter != niter_end) 
+  while(niter != niter_end)
   {
     Point p;
     mesh->get_center(p, *niter);
@@ -981,12 +981,12 @@ bool HexVolFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char
   fprintf( f_out, "         1%10d      HEX8      ! ID, elements, name\n", hex_size );
   fprintf( f_out, "         8         0      ! nodes per element, attributes\n" );
   fprintf( f_out, "! Connectivity\n" );
-  
+
   //scerr << "Number of hexes = "<< csize <<"\n";
-  while(citer != citer_end) 
+  while(citer != citer_end)
   {
     mesh->get_nodes(cell_nodes, *citer);
-    fprintf(f_out, "%d %d %d %d %d %d %d %d\n", 
+    fprintf(f_out, "%d %d %d %d %d %d %d %d\n",
             (int)cell_nodes[0],
             (int)cell_nodes[1],
             (int)cell_nodes[2],
@@ -1016,7 +1016,7 @@ bool HexVolFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char
   fprintf( f_out, "         0      ! information records\n" );
   fprintf( f_out, "! Variable names\n" );
   fprintf( f_out, "         0         0         0      ! global, nodal, element variables\n" );
-  
+
   fclose(f_out);
 
   return true;
@@ -1026,21 +1026,21 @@ bool HexVolFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
 {
   VMesh *mesh = fh->vmesh();
 
-  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("HexVolField") != 
+  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("HexVolField") !=
       std::string::npos) {
     if (pr) pr->error("input field wasn't a HexVolField (type_name=" + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
     return false;
   }
 
-  VMesh::Node::iterator niter; 
-  VMesh::Node::iterator niter_end; 
-  VMesh::Node::size_type nsize; 
+  VMesh::Node::iterator niter;
+  VMesh::Node::iterator niter_end;
+  VMesh::Node::size_type nsize;
   mesh->begin(niter);
   mesh->end(niter_end);
-  mesh->size(nsize);  
-  VMesh::Cell::size_type csize; 
-  VMesh::Cell::iterator citer; 
-  VMesh::Cell::iterator citer_end; 
+  mesh->size(nsize);
+  VMesh::Cell::size_type csize;
+  VMesh::Cell::iterator citer;
+  VMesh::Cell::iterator citer_end;
   VMesh::Node::array_type cell_nodes(8);
   mesh->size(csize);
   mesh->begin(citer);
@@ -1068,7 +1068,7 @@ bool HexVolFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
   fprintf( f_out, "x                                y                                z                               \n" );
   fprintf( f_out, "! Coordinates\n" );
 
-  while(niter != niter_end) 
+  while(niter != niter_end)
   {
     Point p;
     mesh->get_center(p, *niter);
@@ -1086,13 +1086,13 @@ bool HexVolFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
   fprintf( f_out, "         1%10d      HEX8      ! ID, elements, name\n", hex_size );
   fprintf( f_out, "         8         0      ! nodes per element, attributes\n" );
   fprintf( f_out, "! Connectivity\n" );
-  
+
   //scerr << "Number of hexes = "<< csize <<"\n";
   int baseIndex = 1;
-  while(citer != citer_end) 
+  while(citer != citer_end)
   {
     mesh->get_nodes(cell_nodes, *citer);
-    fprintf(f_out, "%d %d %d %d %d %d %d %d\n", 
+    fprintf(f_out, "%d %d %d %d %d %d %d %d\n",
             (int)cell_nodes[0]+baseIndex,
             (int)cell_nodes[1]+baseIndex,
             (int)cell_nodes[2]+baseIndex,
@@ -1122,7 +1122,7 @@ bool HexVolFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
   fprintf( f_out, "         0      ! information records\n" );
   fprintf( f_out, "! Variable names\n" );
   fprintf( f_out, "         0         0         0      ! global, nodal, element variables\n" );
-  
+
   fclose(f_out);
 
   return true;

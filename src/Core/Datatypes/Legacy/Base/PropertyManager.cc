@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
 ///@file  PropertyManager.cc
 ///
@@ -33,7 +33,7 @@
 ///       Yarden Livnat
 ///       Department of Computer Science
 ///       University of Utah
-/// 
+///
 ///@date  March 2001
 ///
 ///@brief Manage properties of persistent objects.
@@ -47,7 +47,7 @@ using namespace SCIRun::Core::Thread;
 namespace SCIRun {
 
 /// @todo: should be using Guards here...
-PersistentTypeID 
+PersistentTypeID
 PropertyBase::type_id("PropertyBase", "Persistent", maker);
 
 std::string PropertyBase::dynamic_type_name() const { return type_id.type; }
@@ -63,14 +63,14 @@ Persistent* make_PropertyManager()
   return new PropertyManager;
 }
 
-PersistentTypeID PropertyManager::type_id("PropertyManager", 
-					  "Persistent", 
+PersistentTypeID PropertyManager::type_id("PropertyManager",
+					  "Persistent",
 					  make_PropertyManager);
 
 std::string PropertyManager::dynamic_type_name() const { return type_id.type; }
 
 
-PropertyManager::PropertyManager() : 
+PropertyManager::PropertyManager() :
   frozen_(false), lock("PropertyManager")
 {
 }
@@ -100,7 +100,7 @@ PropertyManager::PropertyManager(const PropertyManager &copy) :
 }
 
 
-PropertyManager & 
+PropertyManager &
 PropertyManager::operator=(const PropertyManager &src)
 {
   copy_properties(&src);
@@ -211,7 +211,7 @@ PropertyManager::freeze()
 }
 
 
-bool 
+bool
 PropertyManager::is_property(const std::string &name)
 {
   Guard g(lock.get());
@@ -222,7 +222,7 @@ PropertyManager::is_property(const std::string &name)
     ans = true;
 
   return ans;
-} 
+}
 
 
 std::string
@@ -236,7 +236,7 @@ PropertyManager::get_property_name(size_t index)
 
     for(size_t i=0; i<index; i++ )
       ++pi;
-    
+
     std::string result = pi->first;
 
     return result;
@@ -244,7 +244,7 @@ PropertyManager::get_property_name(size_t index)
   else
   {
     return std::string();
-  } 
+  }
 }
 
 

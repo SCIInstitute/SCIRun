@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -55,7 +54,7 @@ class SCISHARE FindClosestNodeByValueAlgo : public AlgoBase
       add_scalar("min",0.0);
       add_scalar("max",1.0);
     }
-  
+
     /// run the algorithm
     bool run(FieldHandle input, FieldHandle points, std::vector<index_type>& nodes);
 };
@@ -63,4 +62,3 @@ class SCISHARE FindClosestNodeByValueAlgo : public AlgoBase
 } // end namespace SCIRunAlgo
 
 #endif
-

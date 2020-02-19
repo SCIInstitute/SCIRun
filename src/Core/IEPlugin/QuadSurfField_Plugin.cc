@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/Mesh.h> 
-#include <Core/Datatypes/FieldInformation.h> 
+
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/FieldInformation.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Util/StringUtil.h>
 
@@ -48,11 +48,11 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
 FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filename)
 {
   FieldHandle result = 0;
-  
+
   std::string quad_fn(filename);
   std::string pts_fn(filename);
-  
-  
+
+
   // Check whether the .quad file exists
   std::string::size_type pos = quad_fn.find_last_of(".");
   if (pos == std::string::npos)
@@ -62,14 +62,14 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(quad_fn.c_str());            
+      inputfile.open(quad_fn.c_str());
     }
-    
+
     catch (...)
     {
       if (pr) pr->error("Could not open file: "+quad_fn);
       return (result);
-    }   
+    }
   }
   else
   {
@@ -79,9 +79,9 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        quad_fn = base + ".quad"; 
+        quad_fn = base + ".quad";
         inputfile.open(quad_fn.c_str());
       }
       catch (...)
@@ -96,17 +96,17 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(quad_fn.c_str());            
+        inputfile.open(quad_fn.c_str());
       }
       catch (...)
       {
         if (pr) pr->error("Could not open file: "+quad_fn);
         return (result);
-      }       
+      }
     }
   }
-  
-  
+
+
   pos = pts_fn.find_last_of(".");
   if (pos == std::string::npos)
   {
@@ -115,7 +115,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(pts_fn.c_str());           
+      inputfile.open(pts_fn.c_str());
     }
     catch (...)
     {
@@ -131,9 +131,9 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        pts_fn = base + ".pts"; 
+        pts_fn = base + ".pts";
         inputfile.open(pts_fn.c_str());
       }
       catch (...)
@@ -142,8 +142,8 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
         {
           std::ifstream inputfile;
           inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-          pts_fn = base + ".pos"; 
-          inputfile.open(pts_fn.c_str());           
+          pts_fn = base + ".pos";
+          inputfile.open(pts_fn.c_str());
         }
         catch (...)
         {
@@ -158,7 +158,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(pts_fn.c_str());           
+        inputfile.open(pts_fn.c_str());
       }
       catch (...)
       {
@@ -172,16 +172,16 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
   int nrows = 0;
   int line_ncols = 0;
   int num_nodes = 0, num_elems = 0;
-  
+
   std::string line;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
   bool has_header = false;
   bool first_line = true;
   bool first_line_elems = true;
-  
+
   std::vector<double> values;
 
   {
@@ -198,7 +198,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -206,7 +206,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
         }
         multiple_from_string(line,values);
         line_ncols = values.size();
-        
+
         if (first_line)
         {
           if (line_ncols > 0)
@@ -221,7 +221,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
               has_header = false;
               first_line = false;
               ++nrows;
-              ncols = line_ncols; 
+              ncols = line_ncols;
             }
             else
             {
@@ -272,9 +272,9 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
   nrows = 0;
   ncols = 0;
   line_ncols = 0;
-  
+
   bool zero_based = false;
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -289,14 +289,14 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,values);      
+        multiple_from_string(line,values);
         line_ncols = values.size();
 
         for (size_t j=0; j<values.size(); j++) if (values[j] == 0.0) zero_based = true;
@@ -315,7 +315,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
               has_header = false;
               first_line_elems = false;
               ++nrows;
-              ncols = line_ncols; 
+              ncols = line_ncols;
             }
             else
             {
@@ -362,15 +362,15 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     if (pr) pr->warning("Number of elements listed in header (" + boost::lexical_cast<std::string>(num_elems) +
                         ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
   }
-  
+
   FieldInformation fi("QuadSurfMesh", "QuadBilinearLgn", "double");
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
 
   mesh->node_reserve(num_nodes);
   mesh->elem_reserve(num_elems);
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -379,15 +379,15 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     {
       inputfile.open(pts_fn.c_str());
       std::vector<double> vdata(3);
-      
+
       for (int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -406,7 +406,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     }
     inputfile.close();
   }
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -414,27 +414,27 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
     try
     {
       inputfile.open(quad_fn.c_str());
-    
+
       VMesh::Node::array_type vdata;
       vdata.resize(4);
 
       std::vector<VMesh::index_type> ivalues;
-      
+
       for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,ivalues);      
+        multiple_from_string(line,ivalues);
         for (size_t j=0; j<ivalues.size() && j<4; j++)
         {
           if (zero_based) vdata[j] = ivalues[j];
@@ -449,7 +449,7 @@ FieldHandle TextToQuadSurfField_reader(ProgressReporter *pr, const char *filenam
       return (result);
     }
     inputfile.close();
-  }   
+  }
   return (result);
 }
 
@@ -458,7 +458,7 @@ bool QuadSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle f
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -469,12 +469,12 @@ bool QuadSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle f
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
@@ -504,7 +504,7 @@ bool QuadSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle f
         outputfile << p.x() << " " << p.y() << " " << p.z() << "\n";
         ++nodeIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open file: "+ pts_fn);
@@ -525,26 +525,26 @@ bool QuadSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle f
 
     if (pos == std::string::npos)
     {
-      quads_fn += fileExt; 
+      quads_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      quads_fn = base + fileExt; 
-    } 
+      quads_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(quads_fn.c_str());            
+      outputfile.open(quads_fn.c_str());
 
       VMesh::Face::iterator faceIter;
       VMesh::Face::iterator faceIterEnd;
       VMesh::Face::size_type faceSize;
       VMesh::Node::array_type faceNodes(4);
-      
+
       mesh->begin(faceIter);
       mesh->end(faceIterEnd);
       mesh->size(faceSize);
-      
+
       while (faceIter != faceIterEnd) {
         mesh->get_nodes(faceNodes, *faceIter);
         outputfile << faceNodes[0] << " "
@@ -553,7 +553,7 @@ bool QuadSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle f
                    << faceNodes[3] << "\n";
         ++faceIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + quads_fn);
@@ -570,7 +570,7 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -581,16 +581,16 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());            
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -598,7 +598,7 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
       ff |= outputfile.showpoint; // write floating-point values including always the decimal point
       ff |= outputfile.fixed; // write floating point values in fixed-point notation
       outputfile.flags(ff);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -616,7 +616,7 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
         outputfile << p.x() << " " << p.y() << " " << p.z() << "\n";
         ++nodeIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + pts_fn);
@@ -637,28 +637,28 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
 
     if (pos == std::string::npos)
     {
-      quads_fn += fileExt; 
+      quads_fn += fileExt;
     }
     else
     {
-      quads_fn = base + fileExt; 
-    } 
+      quads_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(quads_fn.c_str());            
+      outputfile.open(quads_fn.c_str());
 
       VMesh::Face::iterator faceIter;
       VMesh::Face::iterator faceIterEnd;
       VMesh::Face::size_type faceSize;
       VMesh::Node::array_type faceNodes(4);
-      
+
       mesh->begin(faceIter);
       mesh->end(faceIterEnd);
       mesh->size(faceSize);
-      
+
       int baseIndex = 1;
-      
+
       while (faceIter != faceIterEnd) {
         mesh->get_nodes(faceNodes, *faceIter);
         outputfile << faceNodes[0] + baseIndex << " "
@@ -667,7 +667,7 @@ bool QuadSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh
                    << faceNodes[3] + baseIndex << "\n";
         ++faceIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + quads_fn);

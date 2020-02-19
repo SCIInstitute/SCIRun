@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Utils/Legacy/CheckSum.h 
+
+
+/// @todo Documentation Core/Utils/Legacy/CheckSum.h
 
 #ifndef CORE_UTIL_CHECKSUM_H
 #define CORE_UTIL_CHECKSUM_H 1
@@ -48,5 +49,3 @@ int compute_checksum(T* data, std::size_t length)
 }
 
 #endif
-
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +26,11 @@
 */
 
 
-///@author
-///   David Weinstein,
-///   Department of Computer Science,
-///   University of Utah
-///@date  June 1999
+/// @author
+///    David Weinstein,
+///    Department of Computer Science,
+///    University of Utah
+/// @date  June 1999
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -54,7 +53,7 @@ namespace SCIRun {
 ///
 /// This module allows users to select a singe row or column from a matrix.
 /// The user can also select a range of rows or columns and send them to the
-/// output port one at a time. 
+/// output port one at a time.
 
 class GetColumnOrRowFromMatrix : public Module {
   GuiString row_or_col_;
@@ -125,9 +124,9 @@ GetColumnOrRowFromMatrix::send_selection(MatrixHandle mh, int which,
 				   int ncopy, bool /*cache*/)
 {
   MatrixHandle matrix(0);
-  if (use_row_) 
+  if (use_row_)
   {
-    if (ncopy == 1) 
+    if (ncopy == 1)
     {
       ColumnMatrix *cm = new ColumnMatrix(mh->ncols());
       double *data = cm->get_data_pointer();
@@ -136,8 +135,8 @@ GetColumnOrRowFromMatrix::send_selection(MatrixHandle mh, int which,
         data[c] = mh->get(which, c);
       }
       matrix = cm;
-    } 
-    else 
+    }
+    else
     {
       DenseMatrix *dm = new DenseMatrix(ncopy, mh->ncols());
       for (int i = 0; i < ncopy; i++)
@@ -146,18 +145,18 @@ GetColumnOrRowFromMatrix::send_selection(MatrixHandle mh, int which,
 
       matrix = dm;
     }
-  } 
-  else 
+  }
+  else
   {
-    if (ncopy == 1) 
+    if (ncopy == 1)
     {
       ColumnMatrix *cm = new ColumnMatrix(mh->nrows());
       double *data = cm->get_data_pointer();
       for (int r = 0; r<mh->nrows(); r++)
         data[r] = mh->get(r, which);
       matrix = cm;
-    } 
-    else 
+    }
+    else
     {
       DenseMatrix *dm = new DenseMatrix(mh->nrows(), ncopy);
       for (int r = 0; r < mh->nrows(); r++)
@@ -166,7 +165,7 @@ GetColumnOrRowFromMatrix::send_selection(MatrixHandle mh, int which,
 
       matrix = dm;
     }
-  }	    
+  }
 
   //ovec->set_cache( cache );
   send_output_handle("Vector", matrix);
@@ -246,12 +245,12 @@ GetColumnOrRowFromMatrix::execute()
       //cerr << "waiting" << std::endl;
       //want_to_execute();
       return;
-    } 
+    }
     last_gen_ = mh->generation;
     data_series_done_.set(0);
   }
 
-  
+
   bool changed_p = false;
 
   bool use_row = (row_or_col_.get() == "row");
@@ -325,7 +324,7 @@ GetColumnOrRowFromMatrix::execute()
 
   if (changed_p)
     TCLInterface::execute(get_id() + " update_range");
-  
+
   reset_vars();
 
   int which;
@@ -337,38 +336,38 @@ GetColumnOrRowFromMatrix::execute()
   {
     // Some how some one removed the sparse matrix version
     // We change back to the system of using a sparse matrix
-    
+
     // Convert matrix to sparse matrix
-    SparseRowMatrixHandle spH = weightsH->sparse(); 
+    SparseRowMatrixHandle spH = weightsH->sparse();
     SparseRowMatrix* w = spH.get_rep();
-    
+
     if (w == 0)  {
       error("Could not obtain weight matrix");
       return;
     }
 
     DenseMatrix *dm;
-    
+
     if (use_row_)
     {
       int nnrows = w->nrows();
       int nncols = mh->ncols();
-      
+
       dm = new DenseMatrix(nnrows,nncols);
       if (dm == 0)
       {
         error("Could not obtain enough memory for output matrix");
-        return;      
+        return;
       }
-      
+
       dm->zero();
-      
+
       if (!w->is_valid())
       {
         error("Encountered an invalid sparse matrix");
         return;
       }
-      
+
       index_type *rr = w->get_rows();
       index_type *cc = w->get_cols();
       double *a =  w->get_vals();
@@ -389,22 +388,22 @@ GetColumnOrRowFromMatrix::execute()
 
       int nncols = w->nrows();
       int nnrows = mh->nrows();
-      
+
       dm = new DenseMatrix(nnrows,nncols);
       if (dm == 0)
       {
         error("Could not obtain enough memory for output matrix");
-        return;      
+        return;
       }
-      
+
       dm->zero();
-      
+
       if (!w->is_valid())
       {
         error("Encountered an invalid sparse matrix");
         return;
       }
-      
+
       index_type *rr = w->get_rows();
       index_type *cc = w->get_cols();
       double *a =  w->get_vals();
@@ -420,7 +419,7 @@ GetColumnOrRowFromMatrix::execute()
         }
       }
     }
-    
+
     MatrixHandle cmtmp(dm);
     send_output_handle("Vector", cmtmp);
     return;
@@ -451,7 +450,7 @@ GetColumnOrRowFromMatrix::execute()
 
 
     // Update the increment.
-    if (changed_p || playmode_.get() == "once" || 
+    if (changed_p || playmode_.get() == "once" ||
 	playmode_.get() == "autoplay" || playmode_.get() == "loop") {
       inc_ = (start>end)?-1:1;
     }
@@ -469,7 +468,7 @@ GetColumnOrRowFromMatrix::execute()
 
     // If updating, we're done for now.
     if (execmode == "update") {
-    
+
     } else if (execmode == "step") {
       which = increment(current_.get(), lower, upper);
       send_selection(mh, which, send_amount, cache);
@@ -498,19 +497,19 @@ GetColumnOrRowFromMatrix::execute()
       execmode_.reset();
       if ( loop_ = (execmode_.get() == "play") ) {
 	const int delay = delay_.get();
-      
+
 	if( delay > 0) {
 #ifndef _WIN32
 	  const unsigned int secs = delay / 1000;
 	  const unsigned int msecs = delay % 1000;
 	  if (secs)  { sleep(secs); }
 	  if (msecs) { usleep(msecs * 1000); }
-#else 
+#else
 	  Sleep(delay);
 #endif
 	}
-    
-	int next = increment(which, lower, upper);    
+
+	int next = increment(which, lower, upper);
 
 	// Incrementing may cause a stop in the execmode so recheck.
 	execmode_.reset();
@@ -525,9 +524,9 @@ GetColumnOrRowFromMatrix::execute()
 
       else if( execmode == "fforward" )
 	which = end;
-    
+
       send_selection(mh, which, send_amount, cache);
-    
+
       if (playmode_.get() == "inc_w_exec") {
 	which = increment(which, lower, upper);
       }

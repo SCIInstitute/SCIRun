@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -48,7 +46,7 @@ namespace SCIRun {
 class Semaphore_private;
 
 /**************************************
- 
+
 @class
  Semaphore
 
@@ -80,7 +78,7 @@ public:
   /// Increment the semaphore count, unblocking up to <i>count</i>
   /// threads that may be blocked in the <i>down</i> method.
   void up(int count=1);
-    
+
   //////////
   /// Decrement the semaphore count by <i>count</i>.  If the
   /// count is zero, this thread will be blocked until another
@@ -107,4 +105,3 @@ private:
 } // End namespace SCIRun
 
 #endif
-

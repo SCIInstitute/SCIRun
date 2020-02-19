@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -68,16 +66,16 @@ namespace SCIRun {
 class SCISHARE PersistentTypeID {
 public:
   PersistentTypeID();
-  PersistentTypeID(const std::string& type, 
+  PersistentTypeID(const std::string& type,
                      const std::string& parent,
-                     PersistentMaker0 maker, 
-                     Persistent* (*bc_maker1)() = 0, 
+                     PersistentMaker0 maker,
+                     Persistent* (*bc_maker1)() = 0,
                      Persistent* (*bc_maker2)() = 0);
   std::string type;
   std::string parent;
   PersistentMaker0 maker;
   Persistent* (*bc_maker1)();
-  Persistent* (*bc_maker2)();    
+  Persistent* (*bc_maker2)();
 };
 
 typedef boost::shared_ptr<PersistentTypeID> PersistentTypeIDPtr;
@@ -91,7 +89,7 @@ SCISHARE PiostreamPtr auto_ostream(const std::string& filename, const std::strin
 
 //----------------------------------------------------------------------
 class SCISHARE Piostream {
-    
+
   public:
     typedef std::map<PersistentHandle, int>          MapPersistentInt;
     typedef std::map<int, PersistentHandle>          MapIntPersistent;
@@ -108,7 +106,7 @@ class SCISHARE Piostream {
 
     static const int PERSISTENT_VERSION;
     void flag_error() { err = 1; }
-    
+
   protected:
     Piostream(Direction, int, const std::string &, Core::Logging::LoggerHandle pr);
 
@@ -116,10 +114,10 @@ class SCISHARE Piostream {
     int version_;
     bool err;
     int file_endian;
-    
+
     boost::shared_ptr<MapPersistentInt> outpointers;
     boost::shared_ptr<MapIntPersistent> inpointers;
-    
+
     int current_pointer_id;
 
     bool have_peekname_;
@@ -177,15 +175,15 @@ class SCISHARE Piostream {
     bool backwards_compat_id() const { return backwards_compat_id_; }
     void set_backwards_compat_id(bool p) { backwards_compat_id_ = p; }
     virtual bool supports_block_io() { return false; } // deprecated, redundant.
-    
+
     // Returns true if block_io was supported (even on error).
     virtual bool block_io(void*, size_t, size_t) { return false; }
-    
+
     void disable_pointer_hashing() { disable_pointer_hashing_ = true; }
 
     SCISHARE friend PiostreamPtr auto_istream(const std::string& filename,
                                    Core::Logging::LoggerHandle pr);
-    SCISHARE friend PiostreamPtr auto_ostream(const std::string& filename, 
+    SCISHARE friend PiostreamPtr auto_ostream(const std::string& filename,
                                    const std::string& type,
                                    Core::Logging::LoggerHandle pr);
 };
@@ -203,33 +201,33 @@ class SCISHARE Persistent {
     // Note all of these functions are static, to allow access from outside
     // the class
 
-    static PersistentTypeIDPtr find_derived( const std::string& classname, 
+    static PersistentTypeIDPtr find_derived( const std::string& classname,
                                         const std::string& basename );
     static bool is_base_of(const std::string& parent, const std::string& type);
-  
-    static void add_class(const std::string& type, 
+
+    static void add_class(const std::string& type,
                           const std::string& parent,
                           Persistent* (*maker)(),
                           Persistent* (*bc_maker1)() = 0,
                           Persistent* (*bc_maker2)() = 0);
 
-    static void add_mesh_class(const std::string& type, 
+    static void add_mesh_class(const std::string& type,
                           Persistent* (*maker)(),
                           Persistent* (*bc_maker1)() = 0,
-                          Persistent* (*bc_maker2)() = 0);                          
+                          Persistent* (*bc_maker2)() = 0);
 
-    static void add_field_class(const std::string& type, 
+    static void add_field_class(const std::string& type,
                           Persistent* (*maker)(),
                           Persistent* (*bc_maker1)() = 0,
-                          Persistent* (*bc_maker2)() = 0);  
+                          Persistent* (*bc_maker2)() = 0);
   private:
-    // Mutex protecting the list, these are in the class so they will be 
+    // Mutex protecting the list, these are in the class so they will be
     // initialized before any of the static functions can be called
 
     typedef std::map<std::string, PersistentTypeIDPtr>	MapStringPersistentID;
-    static MapStringPersistentID* persistent_table_;  
+    static MapStringPersistentID* persistent_table_;
     static Core::Thread::Mutex* persistent_mutex_;
-    
+
     static void initialize();
 };
 

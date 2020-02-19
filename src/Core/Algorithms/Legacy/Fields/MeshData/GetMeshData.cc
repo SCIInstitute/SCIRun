@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshData.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -46,11 +46,11 @@ bool GetMeshDataAlgo::GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::
 {
   //! Obtain virtual interface
   VField* vfield = input->vfield();
-  
+
   //! Obtain the number values in a field
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
-  
+
   //! Create output object
   output = boost::make_shared<DenseMatrix>(size+esize, 1);
   if (!output)
@@ -62,37 +62,37 @@ bool GetMeshDataAlgo::GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::
   double* dataptr = output->data();
   // get all the values as doubles
   vfield->get_values(dataptr,size);
-  
+
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
     vfield->get_evalues(dataptr+size,esize);
   }
-  
+
   return (true);
 }
 
 bool GetMeshDataAlgo::GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const
 {
- 
+
   VField* vfield = input->vfield();
-  
+
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
-  
+
   output = boost::make_shared<DenseMatrix>(size+esize,3);
   if ( !output )
   {
     error("Could not allocate output matrix");
     return (false);
   }
-  
+
   Vector val;
   Point p;
   int cnt = 0;
   double tmp_size=0.0;
   if (vfield->basis_order() == 2) tmp_size=size+esize; else tmp_size=size;
-  
+
   for (VMesh::index_type i=0; i<size; i++)
   {
      vfield->get_value(val,i);
@@ -100,10 +100,10 @@ bool GetMeshDataAlgo::GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::D
     (*output)(i,1) = val.y();
     (*output)(i,2) = val.z();
     cnt++;
-    if (cnt == 400) 
+    if (cnt == 400)
     {
-      cnt = 0; 
-      update_progress_max(i,tmp_size); 
+      cnt = 0;
+      update_progress_max(i,tmp_size);
     }
   }
  cnt = 0;
@@ -118,12 +118,12 @@ bool GetMeshDataAlgo::GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::D
       (*output)(i+size,1) = val.y();
       (*output)(i+size,2) = val.z();
       cnt++;
-      if (cnt == 400) 
+      if (cnt == 400)
       {
-       cnt = 0; 
-       update_progress_max(i+size,tmp_size); 
+       cnt = 0;
+       update_progress_max(i+size,tmp_size);
       }
-    } 
+    }
   }
   return (true);
 }
@@ -131,10 +131,10 @@ bool GetMeshDataAlgo::GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::D
 bool GetMeshDataAlgo::GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const
 {
   VField* vfield = input->vfield();
-  
+
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
-  
+
   output = boost::make_shared<DenseMatrix>(size+esize,6);
   if (!output)
   {
@@ -155,11 +155,11 @@ bool GetMeshDataAlgo::GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::D
     (*output)(i,4) =  static_cast<double>(val.mat_[1][2]);
     (*output)(i,5) =  static_cast<double>(val.mat_[2][2]);
   }
- 
+
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
-    
+
     for (VMesh::index_type i=0; i<esize; i++)
     {
       vfield->get_evalue(val,i);
@@ -169,8 +169,8 @@ bool GetMeshDataAlgo::GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::D
       (*output)(i+size,3) =  static_cast<double>(val.mat_[1][1]);
       (*output)(i+size,4) =  static_cast<double>(val.mat_[1][2]);
       (*output)(i+size,5) =  static_cast<double>(val.mat_[2][2]);
-    }  
-  } 
+    }
+  }
   return (true);
 
 }
@@ -187,7 +187,7 @@ bool GetMeshDataAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     error("No input source field");
      return (false);
   }
-  
+
   //! Construct a class with all the type information of this field
   FieldInformation fi(input);
 
@@ -197,7 +197,7 @@ bool GetMeshDataAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     error("Field does not contain any data");
     return (false);
   }
-  
+
   //! Depending on the data type select a sub algorithm
   if (fi.is_scalar())
     return(GetScalarFieldDataV(input,output));
@@ -210,7 +210,7 @@ bool GetMeshDataAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 
   error("Unknown data type");
   return (false);
-  
+
 }
 
 AlgorithmOutputName GetMeshDataAlgo::MatrixFieldData("MatrixFieldData");
@@ -218,7 +218,7 @@ AlgorithmOutputName GetMeshDataAlgo::MatrixFieldData("MatrixFieldData");
 AlgorithmOutput GetMeshDataAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
- 
+
   //! Data is only computed if the output port is connected:
   //bool need_matrix_data = oport_connected("Matrix Data");
   //bool need_nrrd_data   = oport_connected("Nrrd Data");

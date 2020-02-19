@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,19 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
 ///@file AssertionFailed.h
 ///@brief Exception for a failed assertion.  Note - this
 /// 	 version takes only a char*.  There is a FancyAssertionFailed that
 /// 	 takes std::string.  This is done to prevent include file pollution
 ///	 with std::string
-/// 
+///
 ///@author
 ///       Steven G. Parker
 ///       Department of Computer Science
 ///       University of Utah
 ///@date  July 1999
-/// 
+///
 
 #ifndef Core_Exceptions_AssertionFailed_h
 #define Core_Exceptions_AssertionFailed_h
@@ -72,5 +72,3 @@ class SCISHARE AssertionFailed : public Exception {
 } // End namespace SCIRun
 
 #endif
-
-

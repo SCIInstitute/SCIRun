@@ -1,33 +1,33 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///    @file    TetCubicHmt.h
-///    @author  Frank B. Sachse
-///    @date    Nov 30 2004
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Frank B. Sachse
+   Date:            November 30 2004
+*/
+
 
 #ifndef CORE_BASIS_TETCUBICHMT_H
 #define CORE_BASIS_TETCUBICHMT_H 1
@@ -45,17 +45,17 @@ public:
   virtual ~TetCubicHmtUnitElement() {}
 
   /// return degrees of freedom
-  static int dofs() 
-    { return 16; } 
+  static int dofs()
+    { return 16; }
 };
 
-/// Class for handling of element of type tetrahedron with 
+/// Class for handling of element of type tetrahedron with
 /// cubic hermitian interpolation
 template <class T>
-class TetCubicHmt : public BasisAddDerivatives<T>, 
-                    public TetApprox, 
-		    public TetGaussian3<double>, 
-        public TetSamplingSchemes, 
+class TetCubicHmt : public BasisAddDerivatives<T>,
+                    public TetApprox,
+		    public TetGaussian3<double>,
+        public TetSamplingSchemes,
 		    public TetCubicHmtUnitElement,
         public TetElementWeights
 {
@@ -74,13 +74,13 @@ public:
   template<class VECTOR>
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_cubic_derivate_weights(coords,w); }
-    
-  /// get value at parametric coordinate  
+
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
     double w[16];
-    get_cubic_weights(coords, w); 
+    get_cubic_weights(coords, w);
 
     return (T)(w[0]  * cd.node0()                   +
 	       w[1]  * this->derivs_[cd.node0_index()][0] +
@@ -99,15 +99,15 @@ public:
 	       w[14] * this->derivs_[cd.node3_index()][1] +
 	       w[15] * this->derivs_[cd.node3_index()][2]);
   }
-  
+
   /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
-  void derivate(const VECTOR1 &coords, const ElemData &cd, 
+  void derivate(const VECTOR1 &coords, const ElemData &cd,
 		VECTOR2 &derivs) const
   {
     double w[48];
-    get_cubic_derivate_weights(coords, w); 
-    
+    get_cubic_derivate_weights(coords, w);
+
     derivs.resize(3);
 
     derivs[0]= static_cast<typename VECTOR2::value_type>(
@@ -127,7 +127,7 @@ public:
 	       w[13] * this->derivs_[cd.node3_index()][0] +
 	       w[14] * this->derivs_[cd.node3_index()][1] +
 	       w[15] * this->derivs_[cd.node3_index()][2]);
-      
+
     derivs[1]= static_cast<typename VECTOR2::value_type>(
          w[16]  * cd.node0()                         +
 	       w[17]  * this->derivs_[cd.node0_index()][0] +
@@ -145,7 +145,7 @@ public:
 	       w[29] * this->derivs_[cd.node3_index()][0] +
 	       w[30] * this->derivs_[cd.node3_index()][1] +
 	       w[31] * this->derivs_[cd.node3_index()][2]);
-   
+
      derivs[2]= static_cast<typename VECTOR2::value_type>(
          w[32]  * cd.node0()                         +
 	       w[33]  * this->derivs_[cd.node0_index()][0] +
@@ -162,35 +162,35 @@ public:
 	       w[44] * cd.node3()		    +
 	       w[45] * this->derivs_[cd.node3_index()][0] +
 	       w[46] * this->derivs_[cd.node3_index()][1] +
-	       w[47] * this->derivs_[cd.node3_index()][2]);      
+	       w[47] * this->derivs_[cd.node3_index()][2]);
   }
-  
+
   /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
-  bool get_coords(VECTOR &coords, const T& value, 
-		  const ElemData &cd) const  
+  bool get_coords(VECTOR &coords, const T& value,
+		  const ElemData &cd) const
   {
     TetLocate< TetCubicHmt<T> > CL;
     return CL.get_coords(this, coords, value, cd);
   }
- 
+
   /// get arc length for edge
   template <class ElemData>
-  double get_arc_length(const unsigned edge, const ElemData &cd) const  
+  double get_arc_length(const unsigned edge, const ElemData &cd) const
   {
     return get_arc3d_length<CrvGaussian2<double> >(this, edge, cd);
   }
- 
+
   /// get area
   template <class ElemData>
-    double get_area(const unsigned face, const ElemData &cd) const  
+    double get_area(const unsigned face, const ElemData &cd) const
   {
     return get_area3<TriGaussian3<double> >(this, face, cd);
   }
- 
+
   /// get volume
   template <class ElemData>
-    double get_volume(const ElemData & cd) const  
+    double get_volume(const ElemData & cd) const
   {
     return get_volume3(this, cd);
   }
@@ -236,9 +236,9 @@ const TypeDescription* get_type_description(Core::Basis::TetCubicHmt<T> *)
     const TypeDescription *sub = get_type_description((T*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new TypeDescription("TetCubicHmt", subs, 
+    td = new TypeDescription("TetCubicHmt", subs,
       std::string(__FILE__),
-      "SCIRun", 
+      "SCIRun",
       TypeDescription::BASIS_E);
   }
   return td;

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef MODULES_PYTHON_INTERFACEWITHPYTHON_H
 #define MODULES_PYTHON_INTERFACEWITHPYTHON_H

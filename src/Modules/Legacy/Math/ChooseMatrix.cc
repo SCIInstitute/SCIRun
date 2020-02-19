@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,13 +26,13 @@
 */
 
 
-///@file  ChooseMatrix.cc
+/// @file  ChooseMatrix.cc
 ///
-///@author
-///   David Weinstein
-///   Department of Computer Science
-///   University of Utah
-///@date  November 1994
+/// @author
+///    David Weinstein
+///    Department of Computer Science
+///    University of Utah
+/// @date  November 1994
 
 #include <Dataflow/Network/ChooseModule.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -42,7 +41,7 @@ namespace SCIRun {
 
 /// @class ChooseMatrix
 /// @brief This module takes in an arbitrary number of input matrices, and
-/// passes one of them downstream. 
+/// passes one of them downstream.
 
 class ChooseMatrix : public ChooseModule< MatrixHandle > {
 public:
@@ -57,4 +56,3 @@ ChooseMatrix::ChooseMatrix(GuiContext* ctx)
 }
 
 } // End namespace SCIRun
-

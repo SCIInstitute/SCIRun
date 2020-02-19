@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_DATATYPES_FIELDVINDEX_H
 #define CORE_DATATYPES_FIELDVINDEX_H 1
 
@@ -40,7 +40,7 @@ template <class T>
 class FieldVIndexBase {
 public:
   typedef T value_type;
-  
+
   FieldVIndexBase(T i) :
     index_(i) {}
 
@@ -50,8 +50,8 @@ public:
   inline FieldVIndexBase<T> operator+(const int) const;
   inline FieldVIndexBase<T> operator+(const long long) const;
   inline FieldVIndexBase<T> operator+(const FieldVIndexBase<T>&) const;
-  inline FieldVIndexBase<T> operator-(const int) const;    
-  inline FieldVIndexBase<T> operator-(const long long) const;    
+  inline FieldVIndexBase<T> operator-(const int) const;
+  inline FieldVIndexBase<T> operator-(const long long) const;
   inline FieldVIndexBase<T> operator-(const FieldVIndexBase<T>&) const;
   inline FieldVIndexBase<T>& operator++();
   inline void                operator++(int);
@@ -63,7 +63,7 @@ public:
   inline FieldVIndexBase<T>& operator-=(const int);
   inline FieldVIndexBase<T>& operator-=(const long long);
   inline FieldVIndexBase<T>& operator-=(const FieldVIndexBase<T>&);
-  
+
   T index_;
 };
 
@@ -245,4 +245,3 @@ struct VDElemIndex : public FieldVIndexBase<T> {
 } // end namespace SCIRun
 
 #endif
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,12 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer
-   last change: 04/14/14
-   TODO: improve the pointer arithmetic (from SCIRun4) in template class
+
+   Author:          Moritz Dannhauer
+   Last Modified:   April 14 2014
+   TODO:            improve the pointer arithmetic (from SCIRun4) in template class
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -56,15 +56,15 @@ using namespace SCIRun::Core::Geometry;
 
 /// Internal function to this algorithm: no need for this function to be
 /// public. It is called from the algorithm class only.
-/// This is the basic algorithm behind the mapping algorithm		    
-template <class DATA> 		    
+/// This is the basic algorithm behind the mapping algorithm
+template <class DATA>
 bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
                     SparseRowMatrixHandle mapping);
 
 /// This is the basic algorithm behind the mapping algorithm
-template <class DATA> 
+template <class DATA>
 bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
@@ -84,7 +84,7 @@ ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
   input->get_weighted_value(val,&(columns[rr]),&(vals[rr]),ss);
 
   output->set_value(val,idx);
-  cnt++; if (cnt==400) {algo->update_progress((double)idx/m); cnt=0;}  
+  cnt++; if (cnt==400) {algo->update_progress((double)idx/m); cnt=0;}
  }
 
   return true;
@@ -92,14 +92,14 @@ ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
 
 
 /// Actual Algorithm class
-ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() 
+ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo()
 {
 }
 
 FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping) const
 {
   FieldHandle output;
- 
+
   if (!isrc)
   /// safety check
   {
@@ -111,19 +111,19 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   {
     THROW_ALGORITHM_INPUT_ERROR("No input destination field");
   }
-  
+
   if (!isrc)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input mapping field");
   }
-  
-  auto matrix = castMatrix::toSparse(mapping); 
-  
+
+  auto matrix = castMatrix::toSparse(mapping);
+
   if (!matrix)
   {
     THROW_ALGORITHM_INPUT_ERROR("Mapping matrix needs to be sparse");
   }
-  
+
   VField* ifsrc =  isrc->vfield();
   VField* ifdst =  idst->vfield();
   VMesh*  imdst =  idst->vmesh();
@@ -134,12 +134,12 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
 
   fo.set_data_type(fi.get_data_type());
   size_type m = mapping->nrows();
-  size_type n = mapping->ncols();  
+  size_type n = mapping->ncols();
 
   size_type dst_num_nodes = imdst->num_nodes();
   size_type dst_num_elems = imdst->num_elems();
   size_type dst_num_values = ifdst->num_values();
-  size_type src_num_values = ifsrc->num_values();  
+  size_type src_num_values = ifsrc->num_values();
 
   if (dst_num_values == m)
   {
@@ -157,7 +157,7 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   {
     THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of nodes or elements in the destination field");
   }
-  
+
   if (src_num_values != n)
   {
     std::cerr << "n="<<n<<"\n";
@@ -167,15 +167,15 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
 
   /// Create output field
   output = CreateField(fo,idst->mesh());
-  
+
   VField* ofield = output->vfield();
-  ofield->resize_values();  
-  
+  ofield->resize_values();
+
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
-  } 
-  
+  }
+
   /// Simple table to deal with the various data type formats
   /// Note that not every data type is handled, all char, shorts etc,
   /// are automatically handled by the int, and unsigned int case, by
@@ -183,40 +183,40 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   /// used datatypes and hence have no specific algorithm in place).
   /// Similarly floats are casted to doubles.
 
-  if (isrc->vfield()->is_char()) 
+  if (isrc->vfield()->is_char())
     if (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_unsigned_char()) 
+  if (isrc->vfield()->is_unsigned_char())
     if (ApplyMappingMatrixT<unsigned char>(this,ifsrc,ofield,matrix))
         return output;
-  if (isrc->vfield()->is_short()) 
+  if (isrc->vfield()->is_short())
     if (ApplyMappingMatrixT<short>(this,ifsrc,ofield,matrix))
-        return output;  
-  if (isrc->vfield()->is_unsigned_short()) 
+        return output;
+  if (isrc->vfield()->is_unsigned_short())
     if (ApplyMappingMatrixT<unsigned short>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_int()) 
+  if (isrc->vfield()->is_int())
     if (ApplyMappingMatrixT<int>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_unsigned_int()) 
+  if (isrc->vfield()->is_unsigned_int())
     if (ApplyMappingMatrixT<unsigned int>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_longlong()) 
+  if (isrc->vfield()->is_longlong())
     if (ApplyMappingMatrixT<long long>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_unsigned_longlong()) 
+  if (isrc->vfield()->is_unsigned_longlong())
     if (ApplyMappingMatrixT<unsigned long long>(this,ifsrc,ofield,matrix))
        return output;
-  if (isrc->vfield()->is_float()) 
+  if (isrc->vfield()->is_float())
     if (ApplyMappingMatrixT<float>(this,ifsrc,ofield,matrix))
-       return output; 
-  if (isrc->vfield()->is_double()) 
+       return output;
+  if (isrc->vfield()->is_double())
     if (ApplyMappingMatrixT<double>(this,ifsrc,ofield,matrix))
-       return output;  
-  if (isrc->vfield()->is_vector()) 
+       return output;
+  if (isrc->vfield()->is_vector())
     if (ApplyMappingMatrixT<Vector>(this,ifsrc,ofield,matrix))
-       return output;    
-  if (isrc->vfield()->is_tensor()) 
+       return output;
+  if (isrc->vfield()->is_tensor())
     if (ApplyMappingMatrixT<Tensor>(this,ifsrc,ofield,matrix))
        return output;
 
@@ -232,15 +232,14 @@ AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 AlgorithmOutput ApplyMappingMatrixAlgo::run(const AlgorithmInput & input) const
 {
   AlgorithmOutput output;
- 
+
   auto src = input.get<Field>(Source);
   auto dest = input.get<Field>(Destination);
   auto mapp = input.get<Matrix>(Mapping);
-  
+
   FieldHandle output_field;
-  output_field = run(src,dest,mapp);  
+  output_field = run(src,dest,mapp);
   output[Output] = output_field;
-  
+
  return output;
 }
-

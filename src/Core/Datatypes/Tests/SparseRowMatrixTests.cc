@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -53,7 +53,7 @@ namespace
       (-0.4,-0.5,-0.6,-0.7, 3.0)
       );
   }
-  
+
     SparseRowMatrixHandle posdef_matrix_false0()
   {
       return MAKE_SPARSE_MATRIX_HANDLE(
@@ -64,7 +64,7 @@ namespace
       (-0.4, -0.5,-0.6,-0.7, 3.0)
       );
   }
-  
+
   SparseRowMatrixHandle posdef_matrix_false1()
   {
     return MAKE_SPARSE_MATRIX_HANDLE(
@@ -76,20 +76,20 @@ namespace
       );
 
   }
-  
+
   SparseRowMatrix posdef_matrix_false2()
   {
     SparseRowMatrix m(5,6);
     return m;
   }
-  
+
   SparseRowMatrix posdef_matrix_false3()
   {
     SparseRowMatrix m(5,5);
-    m.insert(1,3) = std::numeric_limits<double>::quiet_NaN(); 
+    m.insert(1,3) = std::numeric_limits<double>::quiet_NaN();
     return m;
   }
-  
+
   SparseRowMatrixHandle posdef_matrix_false4()
   {
      return MAKE_SPARSE_MATRIX_HANDLE(
@@ -100,9 +100,9 @@ namespace
       (-0.1,-0.1,-0.1,-0.1, 2.0)
       );
   }
-  
+
   SparseRowMatrixHandle posdef_matrix_false5()
-  { 
+  {
    return MAKE_SPARSE_MATRIX_HANDLE(
       ( 2.0,-0.5,-0.5,-0.5,-0.5)
       (-0.5, 2.0,-0.1,-0.1,-0.1)
@@ -111,7 +111,7 @@ namespace
       (-0.5,-0.1,-0.1,-0.1, 2.0)
       );
   }
-  
+
    SparseRowMatrixHandle posdef_matrix_false6()
   {
      return MAKE_SPARSE_MATRIX_HANDLE(
@@ -121,8 +121,8 @@ namespace
       (-0.5,-0.1,-0.1, 2.0,-0.1)
       (-0.5,-0.1,-0.1,-0.1, 2.0)
       );
-  } 
-    
+  }
+
   SparseRowMatrix sym_matrix_correct()
   {
     SparseRowMatrix m(4,4);
@@ -131,7 +131,7 @@ namespace
     m.insert(2,3) = 0.5;
     return m;
   }
-  
+
   SparseRowMatrix sym_matrix_false0()
   {
     SparseRowMatrix m(4,4);
@@ -140,7 +140,7 @@ namespace
     m.insert(3,2) = 0.5;
     return m;
   }
-  
+
   SparseRowMatrix sym_matrix_false1()
   {
     SparseRowMatrix m(5,5);
@@ -149,7 +149,7 @@ namespace
     m.insert(4,2) = 0.5;
     return m;
   }
-  
+
   SparseRowMatrix sym_matrix_false2()
   {
     SparseRowMatrix m(5,5);
@@ -158,7 +158,7 @@ namespace
     m.insert(4,2) = 0.5;
     return m;
   }
-  
+
   SparseRowMatrix sym_matrix_false3()
   {
     SparseRowMatrix m(5,5);
@@ -167,7 +167,7 @@ namespace
     m.insert(4,2) = 0.5;
     return m;
   }
-  
+
   SparseRowMatrix matrix1()
   {
     SparseRowMatrix m(4,5);
@@ -263,7 +263,7 @@ TEST(SparseRowMatrixTest, CanCopyConstruct)
 TEST(SparseRowMatrixTest, CanAssign)
 {
   SparseRowMatrix m(matrix1());
-  
+
   SparseRowMatrix m2;
   EXPECT_NE(m, m2);
   m2 = m;
@@ -442,20 +442,20 @@ TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheD
 {
   EXPECT_TRUE(passesTdcsTest(id3()));
   EXPECT_TRUE(passesTdcsTest(matrixTdcsGood()));
-  
+
   EXPECT_FALSE(passesTdcsTest(Zero()));
-  
+
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad1()));
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad2()));
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad3()));
-  
+
 }
 
 
 TEST(SparseRowMatrixTest, IsSymmetricTests)
 {
  auto m = matrix1();
- 
+
  ASSERT_FALSE(isSymmetricMatrix(m));
  ASSERT_TRUE(isSymmetricMatrix(id3()));
  ASSERT_FALSE(isSymmetricMatrix(Zero()));
@@ -476,15 +476,15 @@ TEST(SparseRowMatrixTest, IsSymmetricTests)
  auto m4 = sym_matrix_false2();
  ASSERT_FALSE(isSymmetricMatrix(m4));
  ASSERT_FALSE(m4.isSymmetric());
- 
+
  auto m5 = sym_matrix_false3();
  ASSERT_FALSE(isSymmetricMatrix(m5));
  ASSERT_FALSE(m5.isSymmetric());
- 
+
  ASSERT_FALSE(m.isSymmetric());
  ASSERT_TRUE(id3().isSymmetric());
  ASSERT_FALSE(Zero().isSymmetric());
- ASSERT_TRUE(ZeroSquare().isSymmetric()); 
+ ASSERT_TRUE(ZeroSquare().isSymmetric());
 
 }
 
@@ -492,8 +492,8 @@ TEST(SparseRowMatrixTest, IsPositiveDefiniteTests)
 {
 
  auto n0 = *posdef_matrix_false0();
- ASSERT_FALSE(isPositiveDefiniteMatrix(n0)); 
- 
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n0));
+
  auto n1 = *posdef_matrix_correct();
  ASSERT_TRUE(isPositiveDefiniteMatrix(n1));
 
@@ -502,16 +502,16 @@ TEST(SparseRowMatrixTest, IsPositiveDefiniteTests)
 
  auto n3 = posdef_matrix_false2();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n3));
- 
+
  auto n4 = posdef_matrix_false3();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n4));
 
  auto n5 = *posdef_matrix_false4();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n5));
- 
+
  auto n6 = *posdef_matrix_false5();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n6));
- 
+
  auto n7 = *posdef_matrix_false6();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n7));
 

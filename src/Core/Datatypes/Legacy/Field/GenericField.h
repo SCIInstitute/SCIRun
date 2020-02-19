@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 #ifndef CORE_DATATYPES_GENERICFIELD_H
@@ -53,7 +51,7 @@
 namespace SCIRun {
 
 template <class Mesh, class Basis, class FData>
-class GenericField: public Field 
+class GenericField: public Field
 {
 public:
   /// Typedefs to support the Field concept.
@@ -86,7 +84,7 @@ public:
   virtual MeshHandle mesh() const;
   virtual VMesh*  vmesh() const;
   virtual VField* vfield() const;
-  
+
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   /// Clone the mesh
   virtual void mesh_detach();
@@ -102,33 +100,33 @@ public:
   /// Get the classes on which this function relies:
   /// Get the basis describing interpolation within an element
   Basis& get_basis()  { return basis_; }
-  
+
   /// Get the mesh describing how the elements fit together
   // const mesh_handle_type &get_typed_mesh() const;
 
   /// Persistent I/O.
   virtual void io(Piostream &stream);
-  
+
   /// Tag the constructor of this class and put it in the Pio DataBase
   static  PersistentTypeID type_id;
 
   /// Tag the constructor of this class and put it in the Field DataBase
   static  FieldTypeID field_id;
-  
+
   /// Function to retrieve the name of this field class
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return type_id.type; }
 
   /// A different way of tagging a class. Currently two systems are used next
   /// to each other: type_name and get_type_description. Neither is perfect
-  virtual 
+  virtual
   const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
 
   /// Static functions to instantiate the field from Pio or using CreateField()
   static Persistent *maker();
-  static FieldHandle field_maker();  
+  static FieldHandle field_maker();
   static FieldHandle field_maker_mesh(MeshHandle mesh);
-   
+
 protected:
 
   /// A (generic) mesh.
@@ -136,12 +134,12 @@ protected:
   /// Data container.
   fdata_type                   fdata_;
   Basis                        basis_;
-  
+
   VField*                      vfield_;
 
   int basis_order_;
   int mesh_dimensionality_;
-}; 
+};
 
 
 template<class FIELD>
@@ -149,7 +147,7 @@ class VGenericField : public VField {
   public:
     VGenericField(FIELD* field, VFData* vfdata)
     {
-      DEBUG_CONSTRUCTOR("VGenericField")   
+      DEBUG_CONSTRUCTOR("VGenericField")
 
       field_ = field;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -164,27 +162,27 @@ class VGenericField : public VField {
       element_dim_ = field->get_basis().domain_dimension();
       element_dofs_ = field->get_basis().dofs();
       data_type_ = find_type_name(static_cast<typename FIELD::value_type*>(0));
-      for (size_t j=0; j<data_type_.size(); j++) 
+      for (size_t j=0; j<data_type_.size(); j++)
         if(data_type_[j] == '_') data_type_[j] = ' ';
-        
+
       /// Create a fast way of checking scalar/pair/vector/tensor
       is_scalar_ = false;
       is_vector_ = false;
       is_tensor_ = false;
       is_pair_ = false;
-      
+
       if (data_type_.substr(0,6) == "Vector") is_vector_ = true;
       else if (data_type_.substr(0,6) == "Tensor") is_tensor_ = true;
       else if (data_type_.substr(0,4) == "Pair") is_pair_ = true;
       else if (field->basis_order() > -1) is_scalar_ = true;
     }
-    
+
     virtual ~VGenericField()
     {
-      DEBUG_DESTRUCTOR("VGenericField")       
+      DEBUG_DESTRUCTOR("VGenericField")
       if (vfdata_) delete vfdata_;
     }
-    
+
 };
 
 // PIO
@@ -219,7 +217,7 @@ GenericField<Mesh, Basis, FData>::field_maker_mesh(MeshHandle mesh)
 
 
 template <class Mesh, class Basis, class FData>
-PersistentTypeID 
+PersistentTypeID
 GenericField<Mesh, Basis, FData>::type_id(type_name(-1), "Field", maker);
 
 template <class Mesh, class Basis, class FData>
@@ -230,41 +228,41 @@ template <class Mesh, class Basis, class FData>
 void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
 {
   int version = stream.begin_class(type_name(), GENERICFIELD_VERSION);
-  
-  if (stream.backwards_compat_id()) 
+
+  if (stream.backwards_compat_id())
   {
     version = stream.begin_class(type_name(), GENERICFIELD_VERSION);
   }
   Field::io(stream);
-  
+
   if (stream.error()) return;
 
   if (version < 2)
     mesh_->io(stream);
   else
     Pio(stream, mesh_);
-  
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   mesh_->freeze();
 #endif
-  
-  if (version >= 3) 
-  { 
+
+  if (version >= 3)
+  {
     basis_.io(stream);
   }
-  
+
   Pio(stream, fdata_);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   freeze();
 #endif
 
-  if (stream.backwards_compat_id()) 
+  if (stream.backwards_compat_id())
   {
     stream.end_class();
   }
   stream.end_class();
-  
+
   // A new mesh is associated with it
   if (stream.reading())
   {
@@ -273,7 +271,7 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
 }
 
 template <class Mesh, class Basis, class FData>
-GenericField<Mesh, Basis, FData>::GenericField() : 
+GenericField<Mesh, Basis, FData>::GenericField() :
   Field(),
   mesh_(mesh_handle_type(new mesh_type())),
   fdata_(0),
@@ -281,11 +279,11 @@ GenericField<Mesh, Basis, FData>::GenericField() :
   basis_order_(0),
   mesh_dimensionality_(-1)
 {
-  DEBUG_CONSTRUCTOR("GenericField")   
+  DEBUG_CONSTRUCTOR("GenericField")
 
   basis_order_ = basis_order();
   if (mesh_) mesh_dimensionality_ = mesh_->dimensionality();
-  
+
   VFData* vfdata = CreateVFData(fdata_,get_basis().get_nodes(),get_basis().get_derivs());
   vfield_ = new VGenericField<GenericField<Mesh,Basis,FData> >(this, vfdata);
   vfield_->resize_values();
@@ -293,7 +291,7 @@ GenericField<Mesh, Basis, FData>::GenericField() :
 }
 
 template <class Mesh, class Basis, class FData>
-GenericField<Mesh, Basis, FData>::GenericField(const GenericField& copy) : 
+GenericField<Mesh, Basis, FData>::GenericField(const GenericField& copy) :
   Field(copy),
   mesh_(copy.mesh_),
   fdata_(copy.fdata_),
@@ -302,18 +300,18 @@ GenericField<Mesh, Basis, FData>::GenericField(const GenericField& copy) :
   basis_order_(copy.basis_order_),
   mesh_dimensionality_(copy.mesh_dimensionality_)
 {
-  DEBUG_CONSTRUCTOR("GenericField")   
+  DEBUG_CONSTRUCTOR("GenericField")
 
   VFData* vfdata = CreateVFData(fdata_,get_basis().get_nodes(),get_basis().get_derivs());
   if (vfdata)
-  {  
+  {
     vfield_ = new VGenericField<GenericField<Mesh,Basis,FData> >(this, vfdata);
   }
 }
 
 
 template <class Mesh, class Basis, class FData>
-GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) : 
+GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) :
   Field(),
   mesh_(mesh),
   fdata_(0),
@@ -321,11 +319,11 @@ GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) :
   basis_order_(0),
   mesh_dimensionality_(-1)
 {
-  DEBUG_CONSTRUCTOR("GenericField")   
+  DEBUG_CONSTRUCTOR("GenericField")
 
   basis_order_ = basis_order();
   if (mesh_) mesh_dimensionality_ = mesh_->dimensionality();
- 
+
   VFData* vfdata = CreateVFData(fdata_,get_basis().get_nodes(),get_basis().get_derivs());
   vfield_ = new VGenericField<GenericField<Mesh,Basis,FData> >(this, vfdata);
   vfield_->resize_values();
@@ -335,7 +333,7 @@ GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) :
 template <class Mesh, class Basis, class FData>
 GenericField<Mesh, Basis, FData>::~GenericField()
 {
-  DEBUG_DESTRUCTOR("GenericField")   
+  DEBUG_DESTRUCTOR("GenericField")
   if (vfield_) delete vfield_;
 }
 
@@ -439,16 +437,16 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
 	(*subs)[0] = sub1;
 	(*subs)[1] = sub2;
 	(*subs)[2] = sub3;
-	tdn1 = new TypeDescription(name, subs, path, namesp, 
+	tdn1 = new TypeDescription(name, subs, path, namesp,
 				      TypeDescription::FIELD_E);
-      } 
+      }
       return tdn1;
     }
   case FIELD_NAME_ONLY_E:
     {
       static TypeDescription* tdn0 = 0;
       if (tdn0 == 0) {
-	tdn0 = new TypeDescription(name, 0, path, namesp, 
+	tdn0 = new TypeDescription(name, 0, path, namesp,
 				      TypeDescription::FIELD_E);
       }
       return tdn0;

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/DataIO/G3DToFieldReader.h>
 
@@ -71,14 +71,14 @@ bool G3DToFieldReader::read(const std::string& filename, FieldHandle& field_hand
   field_handle = CreateField(fi);
   VMesh *mesh = field_handle->vmesh();
   //MeshHandle mesh = field_handle->mesh();
-  
+
   while ( getline(inputfile, line, '\n') )
   {
     if (line.size() == 0) continue;
 
     // block out comments
     if ((line[0] == '#') || (line[0] == '%')) continue;
-    
+
     // replace comma's and tabs with white spaces
     for (size_t p = 0; p < line.size(); ++p)
     {
@@ -94,7 +94,7 @@ bool G3DToFieldReader::read(const std::string& filename, FieldHandle& field_hand
     {
       lss >> str >> x >> y >> z;
     }
-    catch (...) 
+    catch (...)
     {
       if (log_) log_->error("Parsing line " + line + " failed.");
       return false;
@@ -102,7 +102,7 @@ bool G3DToFieldReader::read(const std::string& filename, FieldHandle& field_hand
 
     if(str == nodeKey)
     {
-      mesh->add_point(Point(x,y,z));      
+      mesh->add_point(Point(x,y,z));
     }
     else if (str == faceKey)
     {
@@ -110,7 +110,7 @@ bool G3DToFieldReader::read(const std::string& filename, FieldHandle& field_hand
       n[0] = x-1;
       n[1] = y-1;
       n[2] = z-1;
-      mesh->add_elem(n);    
+      mesh->add_elem(n);
     }
   }
 
@@ -174,7 +174,7 @@ bool G3DToFieldReader::write(const std::string& filename, const FieldHandle& fie
   {
     VMesh::Node::size_type iter;
     VMesh::Node::size_type end = mesh->num_nodes();
-    for (iter = 0; iter != end; ++iter) 
+    for (iter = 0; iter != end; ++iter)
     {
       Point p;
       mesh->get_point(p, iter);
@@ -187,7 +187,7 @@ bool G3DToFieldReader::write(const std::string& filename, const FieldHandle& fie
     VMesh::Face::iterator end;
     VMesh::Node::array_type faceNodes(4);
     mesh->end(end);
-    for (mesh->begin(iter); iter != end; ++iter) 
+    for (mesh->begin(iter); iter != end; ++iter)
     {
       mesh->get_nodes(faceNodes, *iter);
       // OBJ face indices are 1-based.  Seriously.
@@ -201,7 +201,7 @@ bool G3DToFieldReader::write(const std::string& filename, const FieldHandle& fie
 
   /*old method inputs
   const Mesh& m,
-  const std::string& strTargetFilename) 
+  const std::string& strTargetFilename)
   */
 
   //if (m.GetVertices().empty()) return false;
@@ -259,4 +259,3 @@ bool G3DToFieldReader::write(const std::string& filename, const FieldHandle& fie
   */
 
 }
-

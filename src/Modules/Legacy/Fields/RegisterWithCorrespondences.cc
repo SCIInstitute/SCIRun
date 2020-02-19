@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 
@@ -71,13 +71,13 @@ void RegisterWithCorrespondences::execute()
     FieldInformation fi1(input1);
     FieldInformation fi2(input2);
     FieldInformation fi3(input3);
-    
+
     if (fi1.is_structuredmesh() || fi2.is_structuredmesh() || fi3.is_structuredmesh())
     {
       error("input fields cannot be a structured mesh.");
       return;
     }
-    
+
     setAlgoIntFromState(Variables::Operator);
     auto output = algo().run(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
     sendOutputFromAlgorithm(OutputField, output);

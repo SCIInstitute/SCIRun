@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -63,7 +63,7 @@ namespace detail
   class BuildMappingMatrixPAlgoBase
   {
   public:
-    BuildMappingMatrixPAlgoBase(const std::string& barrierName, int nproc) : 
+    BuildMappingMatrixPAlgoBase(const std::string& barrierName, int nproc) :
       sfield_(0), dfield_(0), smesh_(0), dmesh_(0), rr_(0), cc_(0), vv_(0),
       maxdist_(0), algo_(0), nproc_(nproc),
       barrier_(barrierName, nproc) {}
@@ -397,7 +397,7 @@ namespace detail
             cc_[idx] = didx;
             vv_[idx] = 1.0;
           }
-          else 
+          else
           {
             cc_[idx] = -1;
             vv_[idx] = 1.0;
@@ -421,7 +421,7 @@ namespace detail
             cc_[idx] = didx;
             vv_[idx] = 1.0;
           }
-          else 
+          else
           {
             cc_[idx] = -1;
             vv_[idx] = 1.0;
@@ -456,7 +456,7 @@ namespace detail
             for (index_type j=0;j<e_;j++)
             {
               cc_[idx*e_+j] = -1;
-              vv_[idx*e_+j] = 0.0;          
+              vv_[idx*e_+j] = 0.0;
             }
           }
         }
@@ -489,7 +489,7 @@ namespace detail
             for (index_type j=0;j<e_;j++)
             {
               cc_[idx*e_+j] = -1;
-              vv_[idx*e_+j] = 0.0;          
+              vv_[idx*e_+j] = 0.0;
             }
           }
         }
@@ -522,7 +522,7 @@ namespace detail
       }
     }
   }
-  
+
 }
 
 bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination, MatrixHandle& output) const
@@ -555,16 +555,16 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
   if (sbasis_order < 0)
   {
     error("Source field basis order needs to constant or linear");
-    return (false);  
+    return (false);
   }
 
   if (dbasis_order < 0)
   {
     error("Destination field basis order needs to constant or linear");
-    return (false);  
+    return (false);
   }
 
-  size_type n = 0,m = 0,nnz = 0,e; 
+  size_type n = 0,m = 0,nnz = 0,e;
 
   if (method == "closestdata")
   {
@@ -574,7 +574,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
 
     if (sbasis_order == 0) smesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
     else smesh->synchronize(Mesh::FIND_CLOSEST_NODE_E);
-  } 
+  }
   else if(method == "singledestination")
   {
     m = dfield->num_values();
@@ -594,11 +594,11 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
       VMesh::coords_type cs; cs[0] =0.0; cs[1] = 0.0; cs[2] = 0.0;
       VMesh::ElemInterpolate ei;
       smesh->get_interpolate_weights(cs,0,ei,sbasis_order);
-      if (sbasis_order == 0) 
+      if (sbasis_order == 0)
       { nnz = m; e = 1; }
-      else if (sbasis_order == 1) 
+      else if (sbasis_order == 1)
       { nnz = m*ei.node_index.size(); e = ei.node_index.size(); }
-      else if (sbasis_order == 2) 
+      else if (sbasis_order == 2)
       { nnz = m*(ei.node_index.size() + ei.edge_index.size());
       e = (ei.node_index.size() + ei.edge_index.size()); }
     }
@@ -652,7 +652,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     Parallel::RunTasks(task_i, np);
   }
   else if (method == "interpolateddata")
-  { 
+  {
     detail::BuildMappingMatrixInterpolatedDataPAlgo algo(np);
     algo.sfield_ = sfield;
     algo.dfield_ = dfield;

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
 
 #include <Modules/String/TestModuleSimpleUI.h>
@@ -44,4 +45,3 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, Modu
   //addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
   //addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
 }
-

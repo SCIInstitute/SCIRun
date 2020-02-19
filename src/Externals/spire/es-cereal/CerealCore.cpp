@@ -1,3 +1,30 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
 
 #include <stdlib.h>         // For C's free
 #include <cstring>
@@ -42,7 +69,7 @@ Tny* CerealCore::serializeAllComponents()
   for (auto it = mComponents.begin(); it != mComponents.end(); ++it)
   {
     // Build a new component array of dictionaries from this heap.
-    ComponentSerializeInterface* heap = 
+    ComponentSerializeInterface* heap =
         dynamic_cast<ComponentSerializeInterface*>(it->second);
 
     if (heap->isSerializable())
@@ -104,8 +131,8 @@ Tny* CerealCore::serializeEntity(uint64_t entityID)
   return root;
 }
 
-// deserializeComponentMerge and deserializeComponentCreate are the same 
-// function with a different ComponentSerialize call. Figure out a way to 
+// deserializeComponentMerge and deserializeComponentCreate are the same
+// function with a different ComponentSerialize call. Figure out a way to
 // fix this.
 void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 {
@@ -126,7 +153,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 
   Tny* cur = root;
 
-  // Iterate through the dictionary, using the dictionary keys of the elements 
+  // Iterate through the dictionary, using the dictionary keys of the elements
   // to lookup the correct component containers. Complain if we don't find
   // the correct component container. But do not throw an exception, as this
   // could be a very common case.
@@ -152,7 +179,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
       ComponentSerializeInterface* heap = dynamic_cast<ComponentSerializeInterface*>(it->second);
       if (std::strcmp(heap->getComponentName(), heapName) == 0)
       {
-        // Found the appropriate container, obtain Tny object and 
+        // Found the appropriate container, obtain Tny object and
         heap->deserializeMerge(*this, cur->value.tny, copyExisting);
         foundHeap = true;
         break;
@@ -167,8 +194,8 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
   }
 }
 
-// deserializeComponentMerge and deserializeComponentCreate are the same 
-// function with a different ComponentSerialize call. Figure out a way to 
+// deserializeComponentMerge and deserializeComponentCreate are the same
+// function with a different ComponentSerialize call. Figure out a way to
 // fix this.
 void CerealCore::deserializeComponentCreate(Tny* root)
 {
@@ -189,7 +216,7 @@ void CerealCore::deserializeComponentCreate(Tny* root)
 
   Tny* cur = root;
 
-  // Iterate through the dictionary, using the dictionary keys of the elements 
+  // Iterate through the dictionary, using the dictionary keys of the elements
   // to lookup the correct component containers. Complain if we don't find
   // the correct component container. But do not throw an exception, as this
   // could be a very common case.
@@ -215,7 +242,7 @@ void CerealCore::deserializeComponentCreate(Tny* root)
       ComponentSerializeInterface* heap = dynamic_cast<ComponentSerializeInterface*>(it->second);
       if (std::strcmp(heap->getComponentName(), heapName) == 0)
       {
-        // Found the appropriate container, obtain Tny object and 
+        // Found the appropriate container, obtain Tny object and
         heap->deserializeCreate(*this, cur->value.tny);
         foundHeap = true;
         break;
@@ -230,5 +257,4 @@ void CerealCore::deserializeComponentCreate(Tny* root)
   }
 }
 
-} 
-
+}

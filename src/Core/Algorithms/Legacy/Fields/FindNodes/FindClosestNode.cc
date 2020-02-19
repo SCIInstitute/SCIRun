@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/FindNodes/FindClosestNode.h>
 
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 FindClosestNodeAlgo::run(FieldHandle input, FieldHandle points, std::vector<index_type>& output)
 {
   algo_start("FindClosestNode");
-  
+
   if (input.get_rep() == 0)
   {
     error("Could not obtain input field");
@@ -53,15 +53,15 @@ FindClosestNodeAlgo::run(FieldHandle input, FieldHandle points, std::vector<inde
   VMesh*  pmesh = points->vmesh();
 
   VMesh::Node::size_type nnodes = pmesh->num_nodes();
-  
+
   if (nnodes == 0)
   {
     error("No nodes locations are given in node mesh");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   output.resize(nnodes);
-  
+
   imesh->synchronize(Mesh::FIND_CLOSEST_NODE_E);
 
   for (VMesh::Node::index_type p=0; p< nnodes; p++)
@@ -71,11 +71,11 @@ FindClosestNodeAlgo::run(FieldHandle input, FieldHandle points, std::vector<inde
     double dist;
     Point result;
     VMesh::Node::index_type idx;
-    imesh->find_closest_node(dist,result,idx,point);       
+    imesh->find_closest_node(dist,result,idx,point);
     output[p] = idx;
-  }     
-       
-  algo_end(); return (true); 
+  }
+
+  algo_end(); return (true);
 }
 
 

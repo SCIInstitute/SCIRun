@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDNODES_H
 #define CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDNODES_H 1
 
@@ -42,11 +42,11 @@ class SCISHARE GetMeshNodesAlgo : public AlgorithmBase
   public:
     GetMeshNodesAlgo()
     {}
-    
-    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const; 
+
+    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const;
 
     static AlgorithmOutputName MatrixNodes;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 }}}}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_BASE_ALGORITHMOPTION_H
 #define ALGORITHMS_BASE_ALGORITHMOPTION_H
 
@@ -37,12 +37,12 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
-  class SCISHARE AlgoOption 
+
+  class SCISHARE AlgoOption
   {
   public:
     AlgoOption() {}
-    AlgoOption(const std::string& option, const std::set<std::string>& options) 
+    AlgoOption(const std::string& option, const std::set<std::string>& options)
       : option_(option), options_(options) {}
 
     std::string option_;
@@ -51,7 +51,7 @@ namespace Algorithms {
 
   SCISHARE bool operator==(const AlgoOption& lhs, const AlgoOption& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const AlgoOption& op);
-  
+
 }}}
 
 #endif

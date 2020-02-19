@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
- License for the specific language governing rights and limitations under
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -292,7 +292,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
   VMesh* tms_coils_vmesh = tms_coils_field->vmesh();
   VField* tms_coils_vfld = tms_coils_field->vfield();
   std::vector<Point> tms_coils_field_values;
-  
+
   for (int i = 0; i < coil_prototyp_map.size(); i++)
   {
     if (coil_prototyp_map[i] <= elc_coil_proto.size() && coil_prototyp_map[i] >= 0)
@@ -476,7 +476,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           THROW_ALGORITHM_PROCESSING_ERROR("Internal error: coil normals or coil prototype or coil angle rotation did not make it to algorithm. ");
         }
 
-        /// 4) join coil to output coil Field 
+        /// 4) join coil to output coil Field
         for (VMesh::index_type j = 0; j < fieldnodes->nrows(); j++)
         {
           Point p((*fieldnodes)(j, 0), (*fieldnodes)(j, 1), (*fieldnodes)(j, 2));
@@ -602,7 +602,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
   Variable var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
   Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
   Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
-  
+
   Variable::List row{ var1, var2, var3, var4, var5, var6, var7, var8, var9, var10 };
 
   return boost::make_tuple(row, out_nx, out_ny, out_nz);
@@ -657,7 +657,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       VMesh::Node::index_type didx;
       Point elc(elc_x[i], elc_y[i], elc_z[i]), r;
       scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
-      scalp_vmesh->find_closest_node(distance, r, didx, elc);  /// project GUI (x,y,z) onto scalp and ...   
+      scalp_vmesh->find_closest_node(distance, r, didx, elc);  /// project GUI (x,y,z) onto scalp and ...
       std::ostringstream ostr3;
       ostr3 << " Distance of electrode " << i + 1 << " to scalp surface is " << distance << " [distance units]." << std::endl;
       remark(ostr3.str());
@@ -794,7 +794,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         {
           BBox proto_bb = prototype->vmesh()->get_bounding_box();
           Vector proto_diameter = proto_bb.diagonal();
-          double maxi = 2 * Max(proto_diameter.x(), proto_diameter.y(), proto_diameter.z()); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes 
+          double maxi = 2 * Max(proto_diameter.x(), proto_diameter.y(), proto_diameter.z()); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes
 
           /// since the protoype has to be centered around coordinate origin
           /// it will envelop the scalp/electrode sponge surface at its final location (it is now!)
@@ -914,7 +914,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
             clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, true);
             clipmeshbyisoval_algo.run(sdf_output_linear, clipmeshbyisoval_output);
-            /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface   
+            /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface
             bool found_correct_surface = false;
             if (clipmeshbyisoval_output)
             {
@@ -974,7 +974,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
                 convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
               }
 
-              final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero  
+              final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero
               SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion_1;
               algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
               algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
@@ -1015,7 +1015,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
               remark(ostr3.str());
-              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
+              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i
             }
 
             tmp_field_bin_values.resize(tmp_sdf_vfld->num_values());
@@ -1055,10 +1055,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
-              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
+              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i
             }
 
-            final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero   
+            final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero
 
             for (VMesh::Elem::index_type l = 0; l < final_electrode_sponge_surf_msh->num_elems(); l++)
             {
@@ -1078,7 +1078,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
-              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
+              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i
             }
 
             /// are there multiple not connected scalp surfaces that are inside the prototype
@@ -1111,7 +1111,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (after domainsplit). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
               found_elc_surf = false;
-              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
+              continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i
             }
 
             SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
@@ -1139,7 +1139,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               Point q;
               Vector norm1;
 
-              /// create scalp/electrode sponge triangle nodes  
+              /// create scalp/electrode sponge triangle nodes
               for (VMesh::Node::index_type k = 0; k < tmp_fld_msh->num_nodes(); k++)
               {
                 tmp_fld_msh->get_center(p, k);
@@ -1390,7 +1390,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 
   /// check GUI inputs:
   /// 1) Is there any valid row in the GUI table, so at least one row where both ComboBoxes are set
-  ///  
+  ///
   std::vector<double> elc_prototyp_map;
   std::vector<double> elc_thickness;
   std::vector<double> elc_angle_rotation;
@@ -1515,9 +1515,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       c6 = 0;
     }
 
-    if (row_valid && c1 > 0 && c2 > 0)   ///both combo boxes are set up, so this could be a valid row but first check if ... 
+    if (row_valid && c1 > 0 && c2 > 0)   ///both combo boxes are set up, so this could be a valid row but first check if ...
       /// its a tDCS electrode and if so if the thickness is provided in the GUI
-      /// or if its a TMS coil check if the prototype has normals - if so lets put the normal in the GUI 
+      /// or if its a TMS coil check if the prototype has normals - if so lets put the normal in the GUI
     {
 
       FieldHandle prototyp = elc_coil_proto[c1 - 1];

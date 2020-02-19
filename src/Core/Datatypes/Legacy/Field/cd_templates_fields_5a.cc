@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_5a.cc
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -84,8 +85,8 @@ typedef HexTricubicHmt<double>             HTCdoubleBasis;
 typedef HexVolMesh<HexTricubicHmt<Point> > HVCubMesh;
 template class HexVolMesh<HexTricubicHmt<Point> >;
 
-template class GenericField<HVCubMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubMesh, HTCdoubleBasis, std::vector<double> >; 
+template class GenericField<HVCubMesh, NDBasis, std::vector<double> >;
+template class GenericField<HVCubMesh, HTCdoubleBasis, std::vector<double> >;
 
 typedef HexTricubicHmtScaleFactors<double>             HTCSFdoubleBasis;
 typedef HexTricubicHmtScaleFactors<Vector>             HTCSFVectorBasis;
@@ -93,13 +94,13 @@ typedef HexTricubicHmtScaleFactors<Vector>             HTCSFVectorBasis;
 typedef HexVolMesh<HexTricubicHmtScaleFactors<Point> > HVCubSFMesh;
 template class HexVolMesh<HexTricubicHmtScaleFactors<Point> >;
 
-template class GenericField<HVCubSFMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFdoubleBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFVectorBasis, std::vector<Vector> >; 
+template class GenericField<HVCubSFMesh, NDBasis, std::vector<double> >;
+template class GenericField<HVCubSFMesh, HTCSFdoubleBasis, std::vector<double> >;
+template class GenericField<HVCubSFMesh, HTCSFVectorBasis, std::vector<Vector> >;
 
 typedef HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> > HVCubSFEMesh;
 template class HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> >;
 
-template class GenericField<HVCubSFEMesh, NDBasis, std::vector<double> >; 
+template class GenericField<HVCubSFEMesh, NDBasis, std::vector<double> >;
 
 }

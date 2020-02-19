@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Tests/MockModule.h>
@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& o, const ConnectionDescription& desc)
 TEST(ConnectionIdTests, CanParseConnectionIdString)
 {
   ConnectionDescription desc(
-    OutgoingConnectionDescription(ModuleId("mod:1"), PortId(0, "name1")), 
+    OutgoingConnectionDescription(ModuleId("mod:1"), PortId(0, "name1")),
     IncomingConnectionDescription(ModuleId("mod:2"), PortId(0, "name2")));
   ConnectionId id = ConnectionId::create(desc);
   std::cout << id.id_ << std::endl;

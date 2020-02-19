@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
@@ -44,7 +44,7 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/format.hpp>
 #include <boost/assign.hpp>
 #include <Core/Logging/Log.h>
-#include <string> 
+#include <string>
 #include <iostream>
 
 using namespace SCIRun::Core::Datatypes;
@@ -99,16 +99,16 @@ namespace
 boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const DenseMatrixHandle specROI) const
 {
   VField* vfield1 = mesh->vfield();
-  VField* vfield2 = AtlasMesh->vfield();  
+  VField* vfield2 = AtlasMesh->vfield();
 
   std::vector<bool> element_selection(vfield2->vmesh()->num_elems(), true);  /// set the default element ROI selection, so all of them are included
 
   double x=0,y=0,z=0,radius=-1,target_material=-1;
   /// CoordinateSpace is provided and coordinates? if not don't go in this if clause
-  if (CoordinateSpace != nullptr && specROI != nullptr) 
+  if (CoordinateSpace != nullptr && specROI != nullptr)
   {
     if ( (*specROI).ncols()==1 && (*specROI).nrows()==5 ) /// GUI input (as DenseMatrix) has the right sizes (rows, cols)?
-    {  
+    {
       x=(*specROI)(0,0);
       y=(*specROI)(1,0);
       z=(*specROI)(2,0);
@@ -117,7 +117,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
 
       if (radius<0) /// if radius < 0, its invalid input provide a remark and do the statistical analysis for all ROIs instead
       {
-        remark("Radius needs to be > 0 and Atlas Material # needs to exist ");  
+        remark("Radius needs to be > 0 and Atlas Material # needs to exist ");
       } else
       {
         if (radius>0)
@@ -129,9 +129,9 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
 
   }
 
-  if(element_selection.size()!=vfield1->vmesh()->num_elems()) /// internal error check if selection vector really matches number of mesh elements 
+  if(element_selection.size()!=vfield1->vmesh()->num_elems()) /// internal error check if selection vector really matches number of mesh elements
   {
-    THROW_ALGORITHM_INPUT_ERROR("Internal Error: Element selection vector does not match number of mesh elements "); 
+    THROW_ALGORITHM_INPUT_ERROR("Internal Error: Element selection vector does not match number of mesh elements ");
   }
 
   size_t number_of_atlas_materials;
@@ -144,7 +144,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     {
       int Label;
       vfield2->get_value(Label, i);
-      labelSet.insert(Label);  
+      labelSet.insert(Label);
     }
   } else
   {
@@ -153,9 +153,9 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
 
   number_of_atlas_materials = labelSet.size();
 
-  std::vector<int> labelVector(labelSet.begin(), labelSet.end()); 
+  std::vector<int> labelVector(labelSet.begin(), labelSet.end());
 
-  std::ostringstream ostr; /// sort element labels ascending 
+  std::ostringstream ostr; /// sort element labels ascending
   std::copy(labelSet.begin(), labelSet.end(), std::ostream_iterator<int>(ostr, ", "));
   LOG_DEBUG("Sorted set of label numbers: {}", ostr.str());
 
@@ -163,7 +163,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
   std::vector<int> value_count(number_of_atlas_materials);
   std::vector<double> value_min(number_of_atlas_materials);
   std::vector<double> value_max(number_of_atlas_materials);
-  std::vector<double> value_std(number_of_atlas_materials); 
+  std::vector<double> value_std(number_of_atlas_materials);
   std::vector<double> Sxsqr(number_of_atlas_materials);
   std::vector<double> stddev(number_of_atlas_materials);
   std::vector<double> var(number_of_atlas_materials);
@@ -175,17 +175,17 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     if(element_selection[i]) ///is an particular element selected?
     {
       double value = 0;
-      vfield1->get_value(value, i); 
+      vfield1->get_value(value, i);
 
       int Label = 0;
-      vfield2->get_value(Label, i);   
+      vfield2->get_value(Label, i);
 
       for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; ++j) /// loop over determined materials
       {
         if (Label==labelVector[j] || (target_material==0 && number_of_atlas_materials==1) ) /// if label is known or if default situation precalculate sum, min, max, sum^2, number of selected elements
         {
-          value_avr[j] += value; 
-          value_count[j]++;   
+          value_avr[j] += value;
+          value_count[j]++;
           if (value>value_max[j]) value_max[j]=value;
           if (value<value_min[j] || value_min[j]==0) value_min[j]=value;
           Sxsqr[j]+=value*value;
@@ -204,7 +204,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
 
     if (value_count[j]!=0)
     {
-      value_avr[j]/=value_count[j]; 
+      value_avr[j]/=value_count[j];
       if (value_count[j]>1)
       {
         var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
@@ -218,8 +218,8 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       (*output)(j,0)=value_avr[j]; /// save statistical measures in output (DenseMatrix)
       (*output)(j,1)=stddev[j];
       (*output)(j,2)=value_min[j];
-      (*output)(j,3)=value_max[j];  
-      (*output)(j,4)=value_count[j];  
+      (*output)(j,3)=value_max[j];
+      (*output)(j,4)=value_count[j];
     } else
     {
       (*output)(j,0)=invalidDouble;  /// if the number of elements is 0, provide NaN as output
@@ -228,7 +228,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       (*output)(j,3)=invalidDouble;
       (*output)(j,4)=invalidDouble;
     }
-  }  
+  }
 
   std::vector<std::string> AtlasMeshLabels_vector;
   if (!AtlasMeshLabels.empty())
@@ -250,11 +250,11 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       if (target_material!=-1 && number_of_atlas_materials==1)
       {
         AtlasMeshLabels_vector.resize(1);
-        AtlasMeshLabels_vector[0]="specROI";  /// if an ROI was specified by the user use specROI label for the upper table 
+        AtlasMeshLabels_vector[0]="specROI";  /// if an ROI was specified by the user use specROI label for the upper table
       }
       else
       {
-        THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
+        THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match");
       }
     }
 
@@ -300,13 +300,13 @@ std::vector<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodin
   {
     std::ostringstream ostr1;
     ostr1 << "Distance from provided point (lower table in GUI: x,y,z) is more then 1 (=" << mindis << ") distance units away from provided coordinate space (coordinates defined as element data)." <<  std::endl;
-    THROW_ALGORITHM_INPUT_ERROR(ostr1.str()); 
+    THROW_ALGORITHM_INPUT_ERROR(ostr1.str());
 
   }
 
   Point p;
   VMesh::Elem::index_type atlas_index = closest_atlas_element;
-  vmesh_coordspace->get_center(p,atlas_index); 
+  vmesh_coordspace->get_center(p,atlas_index);
 
   double x1=p.x(), y1=p.y(), z1=p.z();
 
@@ -326,28 +326,28 @@ std::vector<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodin
         distance = sqrt((x1-p.x())*(x1-p.x())+(y1-p.y())*(y1-p.y())+(z1-p.z())*(z1-p.z()));
         if (distance > radius)
         {
-          element_selection.push_back(false);  
+          element_selection.push_back(false);
         } else
         {
-          element_selection.push_back(true); 
+          element_selection.push_back(true);
         }
       } else
       {
-        element_selection.push_back(false); 
+        element_selection.push_back(false);
       }
     } else
-    {     /// in the else close look for materials in the ROI    
+    {     /// in the else close look for materials in the ROI
       VMesh::Elem::index_type tmp = count_loop;
       vmesh_atlas->get_center(p,tmp);
       distance = sqrt((x1-p.x())*(x1-p.x())+(y1-p.y())*(y1-p.y())+(z1-p.z())*(z1-p.z()));
       if ( distance > radius)
       {
-        element_selection.push_back(false); 
+        element_selection.push_back(false);
       } else
       {
-        element_selection.push_back(true);  
+        element_selection.push_back(true);
       }
-    }  
+    }
     count_loop++;
   }
 
@@ -373,14 +373,14 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run(const AlgorithmInput& input)
   auto atlasMesh_ = input.get<Field>(AtlasMesh);
   auto atlasMeshLabels_ = input.get<Datatypes::String>(AtlasMeshLabels);
   auto coordinateSpace_ = input.get<Field>(CoordinateSpace);
-  auto coordinateLabel_ = input.get<Datatypes::String>(CoordinateSpaceLabel);  
+  auto coordinateLabel_ = input.get<Datatypes::String>(CoordinateSpaceLabel);
   auto roiSpec = input.get<DenseMatrix>(SpecifyROI);
 
   /// In the following check the validity of the inputs
-  if (!mesh_)  
+  if (!mesh_)
     THROW_ALGORITHM_INPUT_ERROR("First input (mesh) is empty.");
 
-  if (!atlasMesh_)  
+  if (!atlasMesh_)
     THROW_ALGORITHM_INPUT_ERROR("Third input (atlas mesh) is empty.");
 
   FieldInformation fi(mesh_);
@@ -395,7 +395,7 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run(const AlgorithmInput& input)
 
   // making sure the field is not in vector format
   if (!vfield1->is_scalar())
-    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data.");      
+    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data.");
 
   FieldInformation fi2(atlasMesh_);
 
@@ -409,13 +409,13 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run(const AlgorithmInput& input)
 
   // making sure the field is not in vector format
   if (!vfield2->is_scalar())
-    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data."); 
+    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data.");
 
   if(vfield1->vmesh()->num_elems()<1 && vfield2->vmesh()->num_elems()<1)
-    THROW_ALGORITHM_INPUT_ERROR("First (mesh) or second (AtlasMesh) input field does not contain elements."); 
+    THROW_ALGORITHM_INPUT_ERROR("First (mesh) or second (AtlasMesh) input field does not contain elements.");
 
   if(vfield2->vmesh()->num_elems() !=  vfield1->vmesh()->num_elems())
-    THROW_ALGORITHM_INPUT_ERROR(" Number of mesh elements of first input and third input does not match.");  
+    THROW_ALGORITHM_INPUT_ERROR(" Number of mesh elements of first input and third input does not match.");
 
   DenseMatrixHandle statistics;
   VariableHandle Statisticstable;
@@ -429,7 +429,7 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run(const AlgorithmInput& input)
   /// no statistics output? something went wrong then
   if (!statistics)
   {
-    THROW_ALGORITHM_INPUT_ERROR(" Statistics output is null pointer! "); 
+    THROW_ALGORITHM_INPUT_ERROR(" Statistics output is null pointer! ");
   }
 
   AlgorithmOutput output;

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Core_Python_Tests_SRCS
   PythonInterpreterTests.cc
   #PyBindTests.cc
@@ -37,7 +37,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
 
 #pybind11_add_module(example PyBindExampleModule.cc)
 
-#TARGET_LINK_LIBRARIES(example 
+#TARGET_LINK_LIBRARIES(example
 #  Core_Python
 #  ${SCI_PYTHON_LIBRARY}
 #  ${SCI_BOOST_LIBRARY}

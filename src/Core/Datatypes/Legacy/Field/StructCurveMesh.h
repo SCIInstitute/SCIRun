@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,18 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///@details
 ///  A structured curve is a dataset with regular topology but with
 ///  irregular geometry.  The line defined may have any shape but can not
 ///  be overlapping or self-intersecting.
 ///
 ///  The topology of structured curve is represented using a 1D vector with
-///  the points being stored in an index based array. The ordering of the curve 
+///  the points being stored in an index based array. The ordering of the curve
 ///  is implicity defined based based upon its indexing.
 ///
 ///  For more information on datatypes see Schroeder, Martin, and Lorensen,
 ///  "The Visualization Toolkit", Prentice Hall, 1998.
-
 
 #ifndef CORE_DATATYPES_STRUCTCURVEMESH_H
 #define CORE_DATATYPES_STRUCTCURVEMESH_H 1
@@ -96,15 +95,15 @@ public:
   typedef SCIRun::index_type            under_type;
   typedef SCIRun::index_type            index_type;
   typedef SCIRun::size_type             size_type;
-  typedef SCIRun::mask_type             mask_type; 
+  typedef SCIRun::mask_type             mask_type;
 
   StructCurveMesh();
-  explicit StructCurveMesh(size_type n);  
+  explicit StructCurveMesh(size_type n);
   StructCurveMesh(const StructCurveMesh &copy);
   virtual StructCurveMesh *clone() const { return new StructCurveMesh(*this); }
-  virtual ~StructCurveMesh() 
+  virtual ~StructCurveMesh()
   {
-    DEBUG_DESTRUCTOR("StructCurveMesh")   
+    DEBUG_DESTRUCTOR("StructCurveMesh")
   }
 
   /// get the mesh statistics
@@ -190,7 +189,7 @@ public:
                   const typename ScanlineMesh<Basis>::Cell::index_type&) const
   {}
 
-  bool locate(typename ScanlineMesh<Basis>::Node::index_type &idx, 
+  bool locate(typename ScanlineMesh<Basis>::Node::index_type &idx,
               const Core::Geometry::Point &point) const
     { return(locate_node(idx,point)); }
   bool locate(typename ScanlineMesh<Basis>::Edge::index_type &idx,
@@ -250,12 +249,12 @@ public:
 
     /// the following designed to coordinate with ::get_nodes
     inline
-    index_type node0_index() const 
+    index_type node0_index() const
     {
       return (index_);
     }
     inline
-    index_type node1_index() const 
+    index_type node1_index() const
     {
       return (index_ + 1);
     }
@@ -263,18 +262,18 @@ public:
 
     /// the following designed to coordinate with ::get_edges
     inline
-    index_type edge0_index() const 
+    index_type edge0_index() const
     {
       return index_;
     }
 
     inline
-    const Core::Geometry::Point &node0() const 
+    const Core::Geometry::Point &node0() const
     {
       return mesh_.points_[index_];
     }
     inline
-    const Core::Geometry::Point &node1() const 
+    const Core::Geometry::Point &node1() const
     {
       return mesh_.points_[index_+1];
     }
@@ -381,7 +380,7 @@ public:
   /// needed to ! translate local gradients into global gradients. Hence
   /// it is crucial for ! calculating gradients of fields, or
   /// constructing finite elements.
-  template<class VECTOR>                
+  template<class VECTOR>
   double inverse_jacobian(const VECTOR& coords,
 			  typename ScanlineMesh<Basis>::Elem::index_type idx,
 			  double* Ji) const
@@ -401,7 +400,7 @@ public:
     J[6] = Jv2.x();
     J[7] = Jv2.y();
     J[8] = Jv2.z();
-    
+
     return (InverseMatrix3x3(J,Ji));
   }
 
@@ -414,25 +413,25 @@ public:
     double temp;
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Core::Geometry::Vector v,w;
     Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     double min_jacobian = ScaledDetMatrix3P(Jv);
-    
+
     size_t num_vertices = this->basis_.number_of_vertices();
     for (size_t j=0;j < num_vertices;j++)
     {
       this->basis_.derivate(this->basis_.unit_vertices[j],ed,Jv);
-      Jv.resize(3); 
+      Jv.resize(3);
       Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
       Jv[1] = v.asPoint();
       Jv[2] = w.asPoint();
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
@@ -446,35 +445,35 @@ public:
     double temp;
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Core::Geometry::Vector v,w;
     Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
-    
+
     size_t num_vertices = this->basis_.number_of_vertices();
     for (size_t j=0;j < num_vertices;j++)
     {
       this->basis_.derivate(this->basis_.unit_vertices[j],ed,Jv);
-      Jv.resize(3); 
+      Jv.resize(3);
       Core::Geometry::Vector(Jv[0]).find_orthogonal(v,w);
       Jv[1] = v.asPoint();
       Jv[2] = w.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
   template <class INDEX>
   bool locate_node(INDEX &idx, const Core::Geometry::Point &p) const
   {
-    /// If there are no nodes, return false, otherwise there will always be 
+    /// If there are no nodes, return false, otherwise there will always be
     /// a node that is closest
     if (points_.size() == 0) return (false);
-    
+
     typename ScanlineMesh<Basis>::Node::iterator ni, nie;
     this->begin(ni);
     this->end(nie);
@@ -488,7 +487,7 @@ public:
       {
         mindist = dist;
         idx = static_cast<INDEX>(*ni);
-        
+
         if (mindist < epsilon2_) return (true);
       }
       ++ni;
@@ -502,21 +501,21 @@ public:
   bool locate_elem(INDEX &idx, const Core::Geometry::Point &p) const
   {
     if (this->basis_.polynomial_order() > 1) return elem_locate(idx, *this, p);
-    
+
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
-    
+
     /// If there are no elements, one cannot find a point inside
     if (sz == 0) return (false);
-    
+
     double alpha;
-    
+
     /// Check whether the estimate given in idx is the point we are looking for
-    if (idx >= 0 && idx < sz) 
+    if (idx >= 0 && idx < sz)
     {
       if (inside2_p(idx,p,alpha)) return (true);
     }
-    
+
     /// Loop over all nodes to find one that finds
     typename ScanlineMesh<Basis>::Elem::iterator ei;
     this->begin(ei);
@@ -540,22 +539,22 @@ public:
   bool locate_elem(INDEX& idx, ARRAY& coords, const Core::Geometry::Point& p) const
   {
     if (this->basis_.polynomial_order() > 1) return elem_locate(idx, *this, p);
-    
+
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
-    
+
     /// If there are no elements, one cannot find a point inside
     if (sz == 0) return (false);
-    
+
     coords.resize(1);
     double alpha;
-    
+
     /// Check whether the estimate given in idx is the point we are looking for
-    if (idx >= 0 && idx < sz) 
+    if (idx >= 0 && idx < sz)
     {
       if (inside2_p(idx,p,coords[0])) return (true);
     }
-    
+
     /// Loop over all nodes to find one that finds
     typename ScanlineMesh<Basis>::Elem::iterator ei;
     this->begin(ei);
@@ -575,22 +574,22 @@ public:
 
     return (false);
   }
-  
+
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &idx, const Core::Geometry::Point &point) const
   {
     return(find_closest_node(pdist,result,idx,point,-1.0));
   }
-  
+
   /// Find the closest element to a point
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &idx, const Core::Geometry::Point &point,
                          double maxdist) const
   {
-    if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;  
+    if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename ScanlineMesh<Basis>::Node::size_type sz;
     this->size(sz);
 
@@ -608,25 +607,25 @@ public:
     /// Check whether first estimate is the one we are looking for
     if (idx >= 0 && idx < sz)
     {
-      p2 = points_[*ni]; 
+      p2 = points_[*ni];
       dist = (point-p2).length2();
-      
+
       if ( dist < epsilon2_ )
       {
         result = point;
-        pdist= sqrt(dist); 
+        pdist= sqrt(dist);
         return (true);
-      }           
+      }
     }
-    
+
     /// Loop through all nodes to find the one that is closest
     double mindist = maxdist;
-    
+
     while(ni != nie)
     {
       p2 = points_[*ni];
       dist = (point-p2).length2();
-      
+
       if ( dist < mindist )
       {
         mindist = dist;
@@ -650,10 +649,10 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist, 
+  bool find_closest_elem(double& pdist,
                          Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &idx, 
+                         INDEX &idx,
                          const Core::Geometry::Point &p) const
   {
     return find_closest_elem(pdist,result,coords,idx,p,-1.0);
@@ -661,14 +660,14 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist, 
+  bool find_closest_elem(double& pdist,
                          Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &idx, 
+                         INDEX &idx,
                          const Core::Geometry::Point &p,
                          double maxdist) const
   {
-    if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;  
+    if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
 
@@ -694,17 +693,17 @@ public:
         coords[0] = alpha;
         pdist = sqrt(dist);
         return (true);
-      }           
+      }
     }
-    
+
     /// Loop through all elements to find closest
     double mindist = maxdist;
     Core::Geometry::Point res;
-    
+
     while(ni != nie)
     {
       double alpha;
-      dist = distance2_p(*ni,p,res,alpha);      
+      dist = distance2_p(*ni,p,res,alpha);
       if ( dist < mindist )
       {
         coords[0] = alpha;
@@ -725,24 +724,24 @@ public:
     pdist = sqrt(mindist);
     return (true);
   }
-  
+
   template <class INDEX>
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point &result, 
-                         INDEX &elem, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point &result,
+                         INDEX &elem,
                          const Core::Geometry::Point &p) const
-  { 
+  {
     StackVector<double,1> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
-  }    
-  
+  }
+
   /// Find the closest elements to a point
   template<class ARRAY>
-  bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_elems(double& pdist, Core::Geometry::Point &result,
                           ARRAY &elems, const Core::Geometry::Point &p) const
-  {  
+  {
     elems.clear();
-    
+
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
 
@@ -759,13 +758,13 @@ public:
     double dist;
     double mindist = DBL_MAX;
     Core::Geometry::Point res;
-    
+
     while(ni != nie)
     {
       double dummy;
-      dist = distance2_p(*ni,p,res,dummy);    
-      
-      if (dist < mindist - epsilon2_) 
+      dist = distance2_p(*ni,p,res,dummy);
+
+      if (dist < mindist - epsilon2_)
       {
         elems.clear();
         result = res;
@@ -774,7 +773,7 @@ public:
       }
       else if (dist < mindist)
       {
-        elems.push_back(static_cast<typename ARRAY::value_type>(*ni));      
+        elems.push_back(static_cast<typename ARRAY::value_type>(*ni));
       }
       ++ni;
     }
@@ -790,11 +789,11 @@ public:
   /// interface ! These are currently different as they serve different
   /// needs.  static PersistentTypeID type_idts;
   static PersistentTypeID scanline_typeid;
-  /// Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  
+
   /// Type description, used for finding names of the mesh class for
-  /// dynamic compilation purposes. Soem of this should be obsolete  
+  /// dynamic compilation purposes. Soem of this should be obsolete
   virtual const TypeDescription *get_type_description() const;
 
   /// This function returns a maker for Pio.
@@ -815,14 +814,14 @@ public:
 private:
 
   bool inside2_p(index_type idx, const Core::Geometry::Point &p, double& alpha) const;
-  double distance2_p(index_type idx, const Core::Geometry::Point &p, 
+  double distance2_p(index_type idx, const Core::Geometry::Point &p,
                      Core::Geometry::Point& projection, double& alpha) const;
 
   void compute_epsilon();
 
   std::vector<Core::Geometry::Point> points_;
   mutable Core::Thread::Mutex synchronize_lock_;
-  mask_type     synchronized_;  
+  mask_type     synchronized_;
   double        epsilon_;
   double        epsilon2_;
 };
@@ -842,7 +841,7 @@ StructCurveMesh<Basis>::StructCurveMesh():
   epsilon_(0.0),
   epsilon2_(0.0)
 {
-  DEBUG_CONSTRUCTOR("StructCurveMesh")   
+  DEBUG_CONSTRUCTOR("StructCurveMesh")
 
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
@@ -860,7 +859,7 @@ StructCurveMesh<Basis>::StructCurveMesh(size_type n)
     epsilon_(0.0),
     epsilon2_(0.0)
 {
-  DEBUG_CONSTRUCTOR("StructCurveMesh")   
+  DEBUG_CONSTRUCTOR("StructCurveMesh")
 
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
@@ -876,7 +875,7 @@ StructCurveMesh<Basis>::StructCurveMesh(const StructCurveMesh &copy)
     synchronize_lock_("StructCurveMesh lock"),
     synchronized_(copy.synchronized_)
 {
-  DEBUG_CONSTRUCTOR("StructCurveMesh")   
+  DEBUG_CONSTRUCTOR("StructCurveMesh")
 
   copy.synchronize_lock_.lock();
 
@@ -891,7 +890,7 @@ StructCurveMesh<Basis>::StructCurveMesh(const StructCurveMesh &copy)
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
   /// virtual interface class
-  this->vmesh_.reset(CreateVStructCurveMesh(this));   
+  this->vmesh_.reset(CreateVStructCurveMesh(this));
 }
 
 
@@ -933,7 +932,7 @@ StructCurveMesh<Basis>::get_bounding_box() const
   this->begin(i);
   this->end(ie);
 
-  while (i != ie) 
+  while (i != ie)
   {
     result.extend(points_[*i]);
     ++i;
@@ -951,7 +950,7 @@ StructCurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
   this->begin(i);
   this->end(ie);
 
-  while (i != ie) 
+  while (i != ie)
   {
     points_[*i] = t.project(points_[*i]);
 
@@ -1020,22 +1019,22 @@ StructCurveMesh<Basis>::inside2_p(index_type i, const Core::Geometry::Point &p, 
 
   const Core::Geometry::Vector v = p1-p0;
   alpha = Dot(p0-p,v)/v.length2();
-  
+
   Core::Geometry::Point point;
   if (alpha < 0.0) { point = p0; alpha = 0.0; }
   else if (alpha > 1.0) { point = p1; alpha = 1.0; }
   else { point = (alpha*p0 + (1.0-alpha)*p1).asPoint(); }
-  
+
   if ((point - p).length2() < epsilon2_) return (true);
-  
+
   return (false);
 }
 
 
 template <class Basis>
 double
-StructCurveMesh<Basis>::distance2_p(index_type i, 
-                                    const Core::Geometry::Point &p, 
+StructCurveMesh<Basis>::distance2_p(index_type i,
+                                    const Core::Geometry::Point &p,
                                     Core::Geometry::Point& result,
                                     double& alpha) const
 {
@@ -1044,11 +1043,11 @@ StructCurveMesh<Basis>::distance2_p(index_type i,
 
   const Core::Geometry::Vector v = p1-p0;
   alpha = Dot(p0-p,v)/v.length2();
-  
+
   if (alpha < 0.0) { result = p0; alpha = 0.0; }
   else if (alpha > 1.0) { result = p1; alpha = 1.0; }
   else { result = (alpha*p0 + (1.0-alpha)*p1).asPoint(); }
-  
+
   double dist = (result - p).length2();
   return (sqrt(dist));
 }
@@ -1111,7 +1110,7 @@ bool
 StructCurveMesh<Basis>::synchronize(mask_type sync)
 {
   synchronize_lock_.lock();
-  if (sync & (Mesh::EPSILON_E|Mesh::LOCATE_E|Mesh::FIND_CLOSEST_E) && 
+  if (sync & (Mesh::EPSILON_E|Mesh::LOCATE_E|Mesh::FIND_CLOSEST_E) &&
       !(synchronized_ & Mesh::EPSILON_E))
   {
     compute_epsilon();
@@ -1136,13 +1135,13 @@ StructCurveMesh<Basis>::clear_synchronization()
 {
   synchronize_lock_.lock();
 
-  // Undo marking the synchronization 
+  // Undo marking the synchronization
   synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E | Mesh::EDGES_E;
 
   // Free memory where possible
 
   synchronize_lock_.unlock();
-  
+
   return (true);
 }
 

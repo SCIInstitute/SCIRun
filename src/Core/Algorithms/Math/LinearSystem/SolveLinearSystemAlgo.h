@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -49,16 +49,16 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
 {
   public:
     SolveLinearSystemAlgo();
-  
+
     bool run(Datatypes::SparseRowMatrixHandle A,
              Datatypes::DenseColumnMatrixHandle b,
-             Datatypes::DenseColumnMatrixHandle x0, 
+             Datatypes::DenseColumnMatrixHandle x0,
              Datatypes::DenseColumnMatrixHandle& x,
              Datatypes::DenseColumnMatrixHandle& convergence) const;
 
     bool run(Datatypes::SparseRowMatrixHandle A,
              Datatypes::DenseColumnMatrixHandle b,
-             Datatypes::DenseColumnMatrixHandle x0, 
+             Datatypes::DenseColumnMatrixHandle x0,
              Datatypes::DenseColumnMatrixHandle& x) const;
 
     AlgorithmOutput run(const AlgorithmInput& input) const;

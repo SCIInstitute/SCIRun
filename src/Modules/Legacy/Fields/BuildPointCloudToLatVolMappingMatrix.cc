@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@author
 ///   McKay Davis,
@@ -48,7 +48,7 @@
 
 namespace SCIRun {
 
-///@file  BuildPointCloudToLatVolMappingMatrix.cc  
+///@file  BuildPointCloudToLatVolMappingMatrix.cc
 ///@class BuildPointCloudToLatVolMappingMatrix
 ///@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
 
@@ -87,7 +87,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
 
   FieldInformation pfi(pcf);
   FieldInformation lfi(lvf);
-  
+
   if (!(pfi.is_pointcloudmesh()))
   {
     error("Field connected to port 1 must be PointCloudField.");
@@ -100,7 +100,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
     error("Field connected to port 2 must be LatVolField.");
     return;
   }
-  
+
   if (inputs_changed_ || epsilon_.changed() || !oport_cached("MappingMatrix"))
   {
     update_state(Executing);
@@ -117,7 +117,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
     // PointClouldMesh Node Count
     VMesh::Node::size_type pcmns;
     pcm->size(pcmns);
-    
+
     // LVMesh Node Iterators
     VMesh::Node::iterator lvmn, lvmne;
     lvm->begin(lvmn);
@@ -140,7 +140,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
     index_type i = 0, row = 0;
 
     // Iterate through each point of the LVMesh
-    while (lvmn != lvmne) 
+    while (lvmn != lvmne)
     {
       // Get the location of this node of the LVMesh
       Point lvp;
@@ -151,7 +151,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
       double total = 0.0;
       // Foreach node of LVMesh, iterate through each node of PCMesh
       pcm->begin(pcmn);
-      while (pcmn != pcmne) 
+      while (pcmn != pcmne)
       {
         // Get the location of this node of the PCMesh
         Point pcp;
@@ -160,29 +160,29 @@ BuildPointCloudToLatVolMappingMatrix::execute()
         double d = 1.0/(pcp-lvp).length() - epsilon;
         // If the function is positive, the PCMesh node contributes
         // to this node of the LVMesh
-        if (d > 0.0) 
+        if (d > 0.0)
         {
           // Insert it and increase the normalization total
           point2dist.insert(std::make_pair((*pcmn).index_, d));
           total += d;
-        } 
+        }
         // Next PCMeshNode please
         ++pcmn;
       }
-      
+
       // Hack to avoid divide by zero
-      if (total == 0.0) 
+      if (total == 0.0)
         total = 1.0;
 
       // Now fill up the current row of the sparse matrix
       rows[row++] = cols.size();
       // Iterate through all point that contributed in PointCloudNode index order
       point2dist_t::iterator pb = point2dist.begin(), pe = point2dist.end();
-      while (pb != pe) 
+      while (pb != pe)
       {
         // Normalize, and dont add if contribution is nil
         double d = pb->second/total;
-        if (d > 0.0000001) 
+        if (d > 0.0000001)
         { /// @todo: Better epsilon checking
           // Add the data to the sparse row matrix
           cols.push_back(pb->first);

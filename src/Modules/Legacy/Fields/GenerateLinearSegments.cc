@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -97,18 +95,18 @@ GenerateLinearSegments::execute()
   {
     update_state(Executing);
 
-    if (!(field_input_handle->vfield()->is_vector())) 
+    if (!(field_input_handle->vfield()->is_vector()))
     {
       error( "This module only works on vector data.");
       return;
     }
 
-    if (!(field_input_handle->vfield()->is_lineardata())) 
+    if (!(field_input_handle->vfield()->is_lineardata()))
     {
       error( "This module only works for data on the nodes of the mesh.");
       return;
     }
-    
+
     VField* ifield = field_input_handle->vfield();
     VMesh*  imesh  = field_input_handle->vmesh();
 
@@ -116,8 +114,8 @@ GenerateLinearSegments::execute()
     FieldInformation fi("CurveMesh",1,"double");
     if (gui_value_.get() == 0) fi.make_vector();
     FieldHandle field_output_handle = CreateField(fi);
-    
-    
+
+
     VField* ofield = field_output_handle->vfield();
     VMesh*  omesh  = field_output_handle->vmesh();
 
@@ -133,7 +131,7 @@ GenerateLinearSegments::execute()
     nodes.reserve(direction==1?2*max_steps:max_steps);
 
     VMesh::size_type num_nodes = imesh->num_nodes();
-    
+
     std::vector<Point>::iterator node_iter;
     VMesh::Node::index_type n1, n2;
 
@@ -180,7 +178,7 @@ GenerateLinearSegments::execute()
         n1 = omesh->add_node(*node_iter);
 
         std::ostringstream str;
-        str << "Segment " << idx << " Node Index";      
+        str << "Segment " << idx << " Node Index";
         ofield->set_property( str.str(), static_cast<index_type>(n1), false );
 
         ofield->resize_values();
@@ -195,7 +193,7 @@ GenerateLinearSegments::execute()
         }
         else if (value == 2)
         {
-          ofield->set_value(fabs((double)cc),n1);        
+          ofield->set_value(fabs((double)cc),n1);
         }
 
         ++node_iter;
@@ -206,7 +204,7 @@ GenerateLinearSegments::execute()
         {
           n2 = omesh->add_node(*node_iter);
           ofield->resize_values();
-        
+
           if (value == 0)
           {
              ofield->copy_value(ifield,idx,n2);
@@ -217,9 +215,9 @@ GenerateLinearSegments::execute()
           }
           else if (value == 2)
           {
-            ofield->set_value(fabs((double)cc),n2);        
+            ofield->set_value(fabs((double)cc),n2);
           }
-          
+
           edge[0] = n1;
           edge[1] = n2;
           omesh->add_elem(edge);
@@ -230,20 +228,10 @@ GenerateLinearSegments::execute()
         }
       }
     }
-    
+
     ofield->set_property( "Segment Count", num_nodes, false );
     send_output_handle( "Output Linear Segments", field_output_handle );
   }
 }
 
 } // End namespace SCIRun
-
-
-
-
-
-
-
-
-
-

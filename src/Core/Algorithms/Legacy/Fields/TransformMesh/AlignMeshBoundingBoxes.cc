@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -51,11 +51,11 @@ AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
   addParameter(RotateData, true);
 }
 
-bool 
+bool
 AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHandle& output, MatrixHandle& transform_matrix) const
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
-  
+
   bool rotate_data = get(RotateData).toBool();
   // Step 0:
   // Safety test:
@@ -63,7 +63,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   // Using a null handle will cause the program to crash. Hence it is a good
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
-  
+
   if (!input)
   {
     error("No input field");
@@ -72,12 +72,12 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 
   // Copy the field
   output.reset(input->deep_clone());
- 
+
   BBox obbox = object->vmesh()->get_bounding_box();
   BBox ibbox = input->vmesh()->get_bounding_box();
-  
+
   Transform transform;
- 
+
   Vector iscale = ibbox.diagonal();
   Vector oscale = obbox.diagonal();
   Vector itrans(-ibbox.get_min());
@@ -85,7 +85,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   transform.pre_translate(itrans);
   transform.pre_scale(Vector(oscale.x()/iscale.x(),oscale.y()/iscale.y(),oscale.z()/iscale.z()));
   transform.pre_translate(otrans);
-  
+
   output->vmesh()->transform(transform);
 
   VField* field = output->vfield();
@@ -114,20 +114,20 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
           v = transform*v*transform;
           field->set_value(v,i);
         }
-      }    
+      }
     }
   }
 
   transform_matrix.reset(new DenseMatrix(transform));
-  
+
   if (!transform_matrix)
   {
     error("Could not allocate transform matrix");
-    return (false);  
+    return (false);
   }
-  
+
   CopyProperties(*input, *output);
-   
+
   // Success:
   return (true);
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -49,7 +49,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 AlgorithmOutput @AlgorithmName@Algo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
-  
+
   FieldHandle outputField(inputField->deep_clone());
   double knob2 = get(Parameters::Knob2).toDouble();
   if (get(Parameters::Knob1).getBool())

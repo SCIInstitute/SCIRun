@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ReportNrrdInfo.cc
-//    Author : Martin Cole
-//    Date   : Tue Feb  4 08:55:34 2003
+
+///  File   : ReportNrrdInfo.cc
+///  Author : Martin Cole
+///  Date   : Tue Feb  4 08:55:34 2003
 
 #include <Modules/Legacy/Teem/Misc/ReportNrrdInfo.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
