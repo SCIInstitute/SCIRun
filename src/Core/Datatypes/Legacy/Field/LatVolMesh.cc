@@ -181,7 +181,7 @@ public:
   virtual bool locate(VMesh::Elem::index_type &i, VMesh::coords_type &coords,
                       const Point &point) const;
 
-  virtual bool locate(VMesh::Elem::array_type &i, const BBox &bbox) const;
+  virtual bool locate(VMesh::Elem::array_type &i, const AxisAlignedBBox &bbox) const;
 
   virtual bool get_coords(VMesh::coords_type &coords,
                           const Point &point,
@@ -972,7 +972,7 @@ protected:
 
 
   template <class ARRAY>
-  bool elems_locate(ARRAY &array,BBox b) const
+  bool elems_locate(ARRAY &array,AxisAlignedBBox b) const
   {
     array.clear();
     const Point r1 = this->mesh_->transform_.unproject(b.get_min());
@@ -1687,8 +1687,8 @@ VLatVolMesh<MESH>::locate(VMesh::Elem::index_type &i, const Point &point) const
 }
 
 template <class MESH>
-bool
-VLatVolMesh<MESH>::locate(VMesh::Elem::array_type &array, const BBox &bbox) const
+bool 
+VLatVolMesh<MESH>::locate(VMesh::Elem::array_type &array, const AxisAlignedBBox &bbox) const
 {
   return(this->elems_locate(array,bbox));
 }
@@ -2967,7 +2967,7 @@ public:
   virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
   virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;
 
-  virtual bool locate(VMesh::Elem::array_type &i, const BBox &bbox) const;
+  virtual bool locate(VMesh::Elem::array_type &i, const AxisAlignedBBox &bbox) const;
 
   virtual bool find_closest_node(double& pdist,
                                  Point& result,
@@ -3358,7 +3358,7 @@ VStructHexVolMesh<MESH>::locate(VMesh::Elem::index_type &vi, const Point &point)
 
 template <class MESH>
 bool
-VStructHexVolMesh<MESH>::locate(VMesh::Elem::array_type &va, const BBox &bbox) const
+VStructHexVolMesh<MESH>::locate(VMesh::Elem::array_type &va, const AxisAlignedBBox &bbox) const
 {
   // NEED TO MAKE THIS MORE EFFICIENT
   typename LatVolMesh<typename MESH::basis_type>::Elem::array_type a;

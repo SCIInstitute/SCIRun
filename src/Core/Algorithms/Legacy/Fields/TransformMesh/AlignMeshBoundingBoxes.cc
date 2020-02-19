@@ -73,8 +73,8 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   // Copy the field
   output.reset(input->deep_clone());
 
-  BBox obbox = object->vmesh()->get_bounding_box();
-  BBox ibbox = input->vmesh()->get_bounding_box();
+  AxisAlignedBBox obbox = object->vmesh()->get_bounding_box();
+  AxisAlignedBBox ibbox = input->vmesh()->get_bounding_box();
 
   Transform transform;
 

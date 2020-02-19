@@ -56,7 +56,7 @@ class ClipLatVolByIndicesOrWidget : public Module
   private:
     BoxWidget *widget_;
     CrowdMonitor widget_lock_;
-    BBox last_bounds_;
+    AxisAlignedBBox last_bounds_;
     bool gui_exec_p_;
     int  last_input_generation_;
     GuiInt use_text_bbox_;
@@ -160,7 +160,7 @@ ClipLatVolByIndicesOrWidget::execute()
   update_state(Executing);
 
   // Update the widget.
-  const BBox bbox = ifieldhandle->vmesh()->get_bounding_box();
+  const AxisAlignedBBox bbox = ifieldhandle->vmesh()->get_bounding_box();
   if (!bbox.is_similar_to(last_bounds_) ||
       use_text_bbox_.get() || !init_)
   {
