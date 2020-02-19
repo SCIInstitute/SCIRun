@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -56,7 +54,7 @@ public:
 
   Array2() {}
 
-  Array2(size_t size1, size_t size2) 
+  Array2(size_t size1, size_t size2)
   {
     resize(size1, size2);
   }
@@ -109,7 +107,7 @@ template<class T> void Pio(Piostream& stream, Array2<T>& data);
 template<class T> void Pio(Piostream& stream, Array2<T>*& data);
 
 #define ARRAY2_VERSION 2
-  
+
 template<class T>
 void Pio(Piostream& stream, Array2<T>& data)
 {
@@ -131,8 +129,8 @@ void Pio(Piostream& stream, Array2<T>& data)
       Pio(stream, d2);
       data.resize(static_cast<size_type>(d1), static_cast<size_type>(d2));
     }
-  } 
-  else 
+  }
+  else
   {
     long long d1 = static_cast<long long>(data.dim1());
     long long d2 = static_cast<long long>(data.dim2());
@@ -157,9 +155,9 @@ void Pio(Piostream& stream, Array2<T>& data)
 }
 
 template<class T>
-void Pio(Piostream& stream, Array2<T>*& data) 
+void Pio(Piostream& stream, Array2<T>*& data)
 {
-  if (stream.reading()) 
+  if (stream.reading())
   {
     data=new Array2<T>;
   }
@@ -169,4 +167,3 @@ void Pio(Piostream& stream, Array2<T>*& data)
 } // End namespace SCIRun
 
 #endif
-

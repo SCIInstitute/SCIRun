@@ -1,30 +1,30 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-  
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/Matlab/matlabfile.h>
@@ -53,13 +53,13 @@ SCIRun::MatlabMatrix_reader(LoggerHandle pr, const char *filename)
   matlabconverter mc(pr);
   // Define a matlab array for in the matlab file
   matlabarray ma;
-  
+
   // The engine will generate an information string which we will ignore
   std::string dummytext;
-  
+
   // Define the output handle
   MatrixHandle mh = 0;
-  
+
   try
   {
     // Open the file
@@ -72,12 +72,12 @@ SCIRun::MatlabMatrix_reader(LoggerHandle pr, const char *filename)
       // Extract only the object's header
       ma = mf.getmatlabarrayinfo(p);
       // Check whether we could convert it into a matrix object
-      if (mc.sciMatrixCompatible(ma,dummytext)) 
-      { 
+      if (mc.sciMatrixCompatible(ma,dummytext))
+      {
         // Read the full object
         ma = mf.getmatlabarray(p);
         // Convert the object into a SCIRun object
-        mc.mlArrayTOsciMatrix(ma,mh); break; 
+        mc.mlArrayTOsciMatrix(ma,mh); break;
       }
     }
     mf.close();
@@ -98,7 +98,7 @@ SCIRun::MatlabMatrix_writer(LoggerHandle pr,
   matlabconverter mc(pr);
   matlabarray ma;
   std::string name;
- 
+
   try
   {
     // Make sure we convert it to a numeric matrix, remove all annotation
@@ -123,7 +123,7 @@ SCIRun::MatlabMatrix_writer(LoggerHandle pr,
   }
   return(true);
 }
-  
+
 
 
 NrrdDataHandle
@@ -134,9 +134,9 @@ SCIRun::MatlabNrrd_reader(LoggerHandle pr, const char *filename)
   matlabarray ma;
   std::string dummytext;
   NrrdDataHandle mh;
-  
+
   mh = 0;
-  
+
   try
   {
     // Open the matlab file
@@ -149,12 +149,12 @@ SCIRun::MatlabNrrd_reader(LoggerHandle pr, const char *filename)
       // Get the header of the object only
       ma = mf.getmatlabarrayinfo(p);
       // If it is compatible with a SCIRun nrrd, get it
-      if (mc.sciNrrdDataCompatible(ma,dummytext)) 
-      { 
+      if (mc.sciNrrdDataCompatible(ma,dummytext))
+      {
         // Read the full object from disk
         ma = mf.getmatlabarray(p);
         // Convert the full object
-        mc.mlArrayTOsciNrrdData(ma,mh); break; 
+        mc.mlArrayTOsciNrrdData(ma,mh); break;
       }
     }
     mf.close();
@@ -176,7 +176,7 @@ SCIRun::MatlabNrrd_writer(LoggerHandle pr,
   matlabconverter mc(pr);
   matlabarray ma;
   std::string name;
- 
+
   try
   {
     // Make sure we make it into a numeric array, no annotation and headers
@@ -202,7 +202,7 @@ SCIRun::MatlabNrrd_writer(LoggerHandle pr,
   return(true);
 }
 
-         
+
 FieldHandle
 SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
 {
@@ -210,7 +210,7 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
   matlabconverter mc(pr);
   std::string dummytext;
   FieldHandle mh;
-  
+
   try
   {
     matlabfile mf;
@@ -225,12 +225,12 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
       // Get the header of the object
       matlabarray ma = mf.getmatlabarrayinfo(p);
       // Is this object compatible?
-      if (mc.sciFieldCompatible(ma,dummytext)) 
+      if (mc.sciFieldCompatible(ma,dummytext))
       {
         // If so get the full object
         ma = mf.getmatlabarray(p);
         // Convert the object to SCIRun
-        mc.mlArrayTOsciField(ma,mh); break; 
+        mc.mlArrayTOsciField(ma,mh); break;
       }
     }
     // Close file
@@ -253,7 +253,7 @@ SCIRun::MatlabField_writer(LoggerHandle pr, FieldHandle field, const char *filen
   matlabconverter mc(pr);
   matlabarray ma;
   std::string name;
- 
+
   try
   {
     // We want all the annotation. A field without annotation is hard to use
@@ -276,4 +276,3 @@ SCIRun::MatlabField_writer(LoggerHandle pr, FieldHandle field, const char *filen
   }
   return(true);
 }
-

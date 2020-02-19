@@ -1,30 +1,30 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
 
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 bool
-NewArrayMathEngine::add_input_fielddata(const std::string& name, 
+NewArrayMathEngine::add_input_fielddata(const std::string& name,
                                         FieldHandle field)
 {
   std::string error_str;
@@ -50,10 +50,10 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VField* vfield = field->vfield();
   VField::size_type num_values = vfield->num_values();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -68,9 +68,9 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   if (vfield->is_scalar())
   {
     pre_expression_ += name+"=get_scalar("+tname+");";
@@ -83,10 +83,10 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
   {
     pre_expression_ += name+"=get_tensor("+tname+");";
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fielddata_source(mprogram_,tname,field,error_str)))
   {
@@ -94,7 +94,7 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"FD",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"FD",flags)))
   {
     pr_->error("Could not add variable to the parser program.");
     return (false);
@@ -104,21 +104,21 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_input_fielddata_location(const std::string& name, 
+NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
                                         FieldHandle field)
 {
   std::string error_str;
-  
+
   if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
     return (false);
   }
-  
+
   VField* vfield = field->vfield();
   VField::size_type num_values = vfield->num_values();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -133,7 +133,7 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
 
   if (vfield->basis_order() == -1)
@@ -154,14 +154,14 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
-  if(!(add_fieldmesh_source(mprogram_,tname,field,error_str))) 
+  if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
     pr_->error(error_str);
     return (false);
@@ -178,7 +178,7 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_input_fielddata_location(const std::string& name, 
+NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
                                         FieldHandle field,
                                         int basis_order)
 {
@@ -189,7 +189,7 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VMesh* vmesh = field->vmesh();
   VMesh::size_type num_values;
   if (basis_order == 0)
@@ -198,9 +198,9 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
   }
   else
   {
-    num_values = vmesh->num_nodes();  
+    num_values = vmesh->num_nodes();
   }
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -215,7 +215,7 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
 
   if (basis_order == -1)
@@ -236,12 +236,12 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
@@ -249,7 +249,7 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"FM",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"FM",flags)))
   {
     pr_->error("Could not add variable to the parser program.");
     return (false);
@@ -271,10 +271,10 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VField* vfield = field->vfield();
   VField::size_type num_values = vfield->num_values();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -289,7 +289,7 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+xname;
 
   if (vfield->basis_order() == -1)
@@ -314,12 +314,12 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
@@ -327,9 +327,9 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"FM",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"FM",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -349,7 +349,7 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VMesh* vmesh = field->vmesh();
   VMesh::size_type num_values;
   if (basis_order == 0)
@@ -358,9 +358,9 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
   }
   else
   {
-    num_values = vmesh->num_nodes();  
+    num_values = vmesh->num_nodes();
   }
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -375,7 +375,7 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+xname;
 
   if (basis_order == -1)
@@ -400,12 +400,12 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
@@ -415,7 +415,7 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
   // Add the variable to the parser
   if(!(add_input_variable(pprogram_,tname,"FM",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -423,21 +423,21 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
 
 
 bool
-NewArrayMathEngine::add_input_fielddata_element(const std::string& name, 
+NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
                                         FieldHandle field)
 {
   std::string error_str;
-  
+
   if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
     return (false);
   }
-  
+
   VField* vfield = field->vfield();
   VField::size_type num_values = vfield->num_values();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -449,7 +449,7 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
       return (false);
     }
   }
-  
+
   std::string type;
 
   if (vfield->basis_order() == -1)
@@ -470,12 +470,12 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fieldmesh_source(mprogram_,name,field,error_str)))
   {
@@ -485,26 +485,26 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
   // Add the variable to the parser
   if(!(add_input_variable(pprogram_,name,type,flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
 }
 
 bool
-NewArrayMathEngine::add_input_fielddata_element(const std::string& name, 
+NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
                                         FieldHandle field,
                                         int basis_order)
 {
   std::string error_str;
-  
+
   if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
     return (false);
   }
-  
+
   VMesh* vmesh = field->vmesh();
   VMesh::size_type num_values;
   if (basis_order == 0)
@@ -513,9 +513,9 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
   }
   else
   {
-    num_values = vmesh->num_nodes();  
+    num_values = vmesh->num_nodes();
   }
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -527,7 +527,7 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
       return (false);
     }
   }
-  
+
   std::string type;
 
   if (basis_order == -1)
@@ -548,22 +548,22 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
   {
     error_str = "Quadratic/Cubic fields are not yet supported.";
     pr_->error(error_str);
-    return (false); 
+    return (false);
   }
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
-  if(!(add_fieldmesh_source(mprogram_,name,field,error_str))) 
+  if(!(add_fieldmesh_source(mprogram_,name,field,error_str)))
   {
     pr_->error(error_str);
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,name,type,flags))) 
+  if(!(add_input_variable(pprogram_,name,type,flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -571,7 +571,7 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_input_fieldnodes(const std::string& name, 
+NewArrayMathEngine::add_input_fieldnodes(const std::string& name,
                                         FieldHandle field)
 {
   std::string error_str;
@@ -581,10 +581,10 @@ NewArrayMathEngine::add_input_fieldnodes(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VMesh* vmesh = field->vmesh();
   VMesh::size_type num_values = vmesh->num_nodes();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -599,13 +599,13 @@ NewArrayMathEngine::add_input_fieldnodes(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
   pre_expression_ += name+"=get_node_location("+tname+");";
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
@@ -613,16 +613,16 @@ NewArrayMathEngine::add_input_fieldnodes(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"FM",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"FM",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
 }
 
 bool
-NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname, 
+NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname,
                                         const std::string& yname,
                                         const std::string& zname,
                                         FieldHandle field)
@@ -634,10 +634,10 @@ NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname,
     pr_->error(error_str);
     return (false);
   }
-  
+
   VMesh* vmesh = field->vmesh();
   VMesh::size_type num_values = vmesh->num_nodes();
-  
+
   // Check whether size is OK
   if (num_values > 1)
   {
@@ -652,25 +652,25 @@ NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+xname;
   pre_expression_ += xname+"=get_node_x("+tname+");";
   pre_expression_ += yname+"=get_node_y("+tname+");";
   pre_expression_ += zname+"=get_node_z("+tname+");";
-  
+
   int flags = 0;
   if (num_values > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
-  if(!(add_fieldmesh_source(mprogram_,tname,field,error_str))) 
+  if(!(add_fieldmesh_source(mprogram_,tname,field,error_str)))
   {
     pr_->error(error_str);
     return (false);
   }
   // Add the variable to the parser
   if(!(add_input_variable(pprogram_,tname,"FM",flags)))
-  { 
-    pr_->error("Could not add variable to the parser program.");  
+  {
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -678,7 +678,7 @@ NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname,
 
 
 bool
-NewArrayMathEngine::add_input_matrix(const std::string& name, 
+NewArrayMathEngine::add_input_matrix(const std::string& name,
                                      MatrixHandle matrix)
 {
   std::string error_str;
@@ -688,10 +688,10 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   size_type m = matrix->nrows();
   size_type n = matrix->ncols();
-    
+
   // Check whether size is OK
   if (m > 1)
   {
@@ -717,9 +717,9 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   if (n == 1)
   {
     pre_expression_ += name+"=get_scalar("+tname+");";
@@ -732,10 +732,10 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
   {
     pre_expression_ += name+"=get_tensor("+tname+");";
   }
-  
+
   int flags = 0;
   if (m > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_matrix_source(mprogram_,tname,matrix,error_str)))
   {
@@ -743,9 +743,9 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"M",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"M",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -753,7 +753,7 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_input_fullmatrix(const std::string& name, 
+NewArrayMathEngine::add_input_fullmatrix(const std::string& name,
                                      MatrixHandle matrix)
 {
   std::string error_str;
@@ -763,9 +763,9 @@ NewArrayMathEngine::add_input_fullmatrix(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   size_type size = matrix->ncols()*matrix->nrows();
-    
+
   // Check whether size is OK
   if (size > 1)
   {
@@ -780,14 +780,14 @@ NewArrayMathEngine::add_input_fullmatrix(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   pre_expression_ += name+"=get_matrix_element("+tname+");";
-  
+
   int flags = 0;
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_matrix_source(mprogram_,tname,matrix,error_str)))
   {
@@ -795,9 +795,9 @@ NewArrayMathEngine::add_input_fullmatrix(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"M",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"M",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -805,7 +805,7 @@ NewArrayMathEngine::add_input_fullmatrix(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_input_bool_array(const std::string& name, 
+NewArrayMathEngine::add_input_bool_array(const std::string& name,
                                      std::vector<bool>* array)
 {
   std::string error_str;
@@ -815,9 +815,9 @@ NewArrayMathEngine::add_input_bool_array(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   SCIRun::size_type size = array->size();
-    
+
   // Check whether size is OK
   if (size > 1)
   {
@@ -832,14 +832,14 @@ NewArrayMathEngine::add_input_bool_array(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   pre_expression_ += name+"=get_scalar("+tname+");";
-  
+
   int flags = 0;
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_bool_array_source(mprogram_,tname,array,error_str)))
   {
@@ -847,16 +847,16 @@ NewArrayMathEngine::add_input_bool_array(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"AB",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"AB",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
 }
 
 bool
-NewArrayMathEngine::add_input_int_array(const std::string& name, 
+NewArrayMathEngine::add_input_int_array(const std::string& name,
                                      std::vector<int>* array)
 {
   std::string error_str;
@@ -866,9 +866,9 @@ NewArrayMathEngine::add_input_int_array(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   SCIRun::size_type size = array->size();
-    
+
   // Check whether size is OK
   if (size > 1)
   {
@@ -883,14 +883,14 @@ NewArrayMathEngine::add_input_int_array(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   pre_expression_ += name+"=get_scalar("+tname+");";
-  
+
   int flags = 0;
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_int_array_source(mprogram_,tname,array,error_str)))
   {
@@ -898,16 +898,16 @@ NewArrayMathEngine::add_input_int_array(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"AI",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"AI",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
 }
 
 bool
-NewArrayMathEngine::add_input_double_array(const std::string& name, 
+NewArrayMathEngine::add_input_double_array(const std::string& name,
                                      std::vector<double>* array)
 {
   std::string error_str;
@@ -917,9 +917,9 @@ NewArrayMathEngine::add_input_double_array(const std::string& name,
     pr_->error(error_str);
     return (false);
   }
-  
+
   SCIRun::size_type size = array->size();
-    
+
   // Check whether size is OK
   if (size > 1)
   {
@@ -934,14 +934,14 @@ NewArrayMathEngine::add_input_double_array(const std::string& name,
 
   // Add __NAME as an additional variable that extracts the field data
   // from the field
-  
+
   std::string tname =  "__"+name;
-  
+
   pre_expression_ += name+"=get_scalar("+tname+");";
-  
+
   int flags = 0;
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   // Add the variable to the interpreter
   if(!(add_double_array_source(mprogram_,tname,array,error_str)))
   {
@@ -949,9 +949,9 @@ NewArrayMathEngine::add_input_double_array(const std::string& name,
     return (false);
   }
   // Add the variable to the parser
-  if(!(add_input_variable(pprogram_,tname,"AD",flags))) 
+  if(!(add_input_variable(pprogram_,tname,"AD",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   return (true);
@@ -976,7 +976,7 @@ NewArrayMathEngine::add_size(const std::string& name)
 
 
 bool
-NewArrayMathEngine::add_output_fielddata(const std::string& name, 
+NewArrayMathEngine::add_output_fielddata(const std::string& name,
                               FieldHandle field,
                               int basis_order,
                               const std::string& output_datatype)
@@ -993,14 +993,14 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
   {
     error_str = "Basis order needs to be 0 or 1.";
     pr_->error(error_str);
-    return (false);  
+    return (false);
   }
 
   if (basis_order > 1)
   {
     error_str = "Basis order needs to be 0 or 1.";
     pr_->error(error_str);
-    return (false);  
+    return (false);
   }
 
   int flags = 0;
@@ -1014,7 +1014,7 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
     {
       error_str = "The output field '"+name+"' does not have the same number of elements as the other objects.";
       pr_->error(error_str);
-      return (false);  
+      return (false);
     }
     size = vmesh->num_elems();
   }
@@ -1024,8 +1024,8 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
     {
       error_str = "The output field '"+name+"' does not have the same number of nodes as the other objects.";
       pr_->error(error_str);
-      return (false);      
-    }    
+      return (false);
+    }
     size = vmesh->num_nodes();
   }
 
@@ -1036,7 +1036,7 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
     OutputFieldData fd;
     fd.array_name_ = name;
     fd.field_name_ = tname;
-    
+
     FieldInformation fi(field);
     if (output_datatype == "Scalar")
       fi.set_data_type("double");
@@ -1046,25 +1046,25 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
     fd.field_ = CreateField(fi);
 
     fielddata_.push_back(fd);
-    return (true);  
+    return (true);
   }
 
-  if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;  
+  if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
 
   post_expression_ += tname+"=to_fielddata("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,tname,"FD",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   if(!(add_output_variable(pprogram_,name,"U",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   // Store information for processing after parsing has succeeded
   OutputFieldData fd;
   fd.array_name_ = name;
@@ -1078,7 +1078,7 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
 }
 
 bool
-NewArrayMathEngine::add_output_fielddata(const std::string& name, 
+NewArrayMathEngine::add_output_fielddata(const std::string& name,
                               FieldHandle field)
 {
   std::string error_str;
@@ -1111,7 +1111,7 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
       {
         error_str = "The output field '"+name+"' does not have the same number of elements as the other objects.";
         pr_->error(error_str);
-        return (false);  
+        return (false);
       }
     }
     else
@@ -1132,17 +1132,17 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
       {
         error_str = "The output field '"+name+"' does not have the same number of nodes as the other objects.";
         pr_->error(error_str);
-        return (false); 
+        return (false);
       }
     }
     else
-    {   
+    {
       size = vmesh->num_nodes();
     }
   }
 
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   std::string tname =  "__"+name;
 
   if (size == 0)
@@ -1150,23 +1150,23 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
     OutputFieldData fd;
     fd.array_name_ = name;
     fd.field_name_ = tname;
-    
+
     FieldInformation fi(field);
     fd.field_ = CreateField(fi);
 
     fielddata_.push_back(fd);
-    return (true);  
+    return (true);
   }
 
   post_expression_ += tname+"=to_fielddata("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,tname,"FD",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   // Store information for processing after parsing has succeeded
   OutputFieldData fd;
   fd.array_name_ = name;
@@ -1181,11 +1181,11 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
 
 
 bool
-NewArrayMathEngine::add_output_fieldnodes(const std::string& name, 
+NewArrayMathEngine::add_output_fieldnodes(const std::string& name,
                                           FieldHandle field)
 {
   std::string error_str;
-  
+
   if (!field)
   {
     error_str = "No input field '"+name+"'.";
@@ -1202,15 +1202,15 @@ NewArrayMathEngine::add_output_fieldnodes(const std::string& name,
   {
     error_str = "The output field '"+name+"' does not have the same number of nodes as the other objects.";
     pr_->error(error_str);
-    return (false);      
+    return (false);
   }
   else
-  {   
+  {
     size = vmesh->num_nodes();
   }
 
   if (size > 1) flags = SCRIPT_SEQUENTIAL_VAR_E;
-  
+
   std::string tname =  "__"+name;
 
   if (size == 0)
@@ -1218,20 +1218,20 @@ NewArrayMathEngine::add_output_fieldnodes(const std::string& name,
     OutputFieldData fd;
     fd.array_name_ = name;
     fd.field_name_ = tname;
-    
+
     FieldInformation fi(field);
     fd.field_ = CreateField(fi);
 
     fielddata_.push_back(fd);
-    return (true);  
+    return (true);
   }
 
   post_expression_ += tname+"=to_fieldnode("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,tname,"FM",flags)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   // Store information for processing after parsing has succeeded
@@ -1251,16 +1251,16 @@ NewArrayMathEngine::add_output_matrix(const std::string& name)
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=to_matrix("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"U",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   if(!(add_output_variable(pprogram_,tname,"M",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
   // Store information for processing after parsing has succeeded
@@ -1282,26 +1282,26 @@ NewArrayMathEngine::add_output_matrix(const std::string& name,
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=to_matrix("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"U",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  if(!(add_output_variable(pprogram_,tname,"M",0))) 
+  if(!(add_output_variable(pprogram_,tname,"M",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   if (size > 1 && array_size_ > 1)
   {
     if (size != array_size_)
     {
       error_str = "The output matrix '"+name+"' does not have the same number of rows as the other objects.";
       pr_->error(error_str);
-      return (false);   
+      return (false);
     }
   }
 
@@ -1325,28 +1325,28 @@ NewArrayMathEngine::add_output_fullmatrix(const std::string& name,
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=set_matrix_element("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"S",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  if(!(add_output_variable(pprogram_,tname,"M",0))) 
+  if(!(add_output_variable(pprogram_,tname,"M",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   size_type size = matrix->ncols()*matrix->nrows();
-  
+
   if (size > 1 && array_size_ > 1)
   {
     if (size != array_size_)
     {
       error_str = "The output matrix '"+name+"' does not have the same number of rows as the other objects.";
       pr_->error(error_str);
-      return (false);   
+      return (false);
     }
   }
 
@@ -1369,19 +1369,19 @@ NewArrayMathEngine::add_output_bool_array(const std::string& name,
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=to_bool_array("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"S",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  if(!(add_output_variable(pprogram_,tname,"AB",0))) 
+  if(!(add_output_variable(pprogram_,tname,"AB",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   array->resize(array_size_);
 
   // Store information for processing after parsing has succeeded
@@ -1389,7 +1389,7 @@ NewArrayMathEngine::add_output_bool_array(const std::string& name,
   m.array_name_ = name;
   m.bool_array_name_ = tname;
   m.bool_array_ = array;
-  
+
   boolarraydata_.push_back(m);
 
   return (true);
@@ -1403,19 +1403,19 @@ NewArrayMathEngine::add_output_int_array(const std::string& name,
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=to_int_array("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"S",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  if(!(add_output_variable(pprogram_,tname,"AB",0))) 
+  if(!(add_output_variable(pprogram_,tname,"AB",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   array->resize(array_size_);
 
   // Store information for processing after parsing has succeeded
@@ -1423,7 +1423,7 @@ NewArrayMathEngine::add_output_int_array(const std::string& name,
   m.array_name_ = name;
   m.int_array_name_ = tname;
   m.int_array_ = array;
-  
+
   intarraydata_.push_back(m);
 
   return (true);
@@ -1437,19 +1437,19 @@ NewArrayMathEngine::add_output_double_array(const std::string& name,
   std::string tname =  "__"+name;
 
   post_expression_ += tname+"=to_double_array("+name+");";
-  
+
   // Add the variable to the parser
   if(!(add_output_variable(pprogram_,name,"S",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  if(!(add_output_variable(pprogram_,tname,"AB",0))) 
+  if(!(add_output_variable(pprogram_,tname,"AB",0)))
   {
-    pr_->error("Could not add variable to the parser program.");  
+    pr_->error("Could not add variable to the parser program.");
     return (false);
   }
-  
+
   array->resize(array_size_);
 
   // Store information for processing after parsing has succeeded
@@ -1457,7 +1457,7 @@ NewArrayMathEngine::add_output_double_array(const std::string& name,
   m.array_name_ = name;
   m.double_array_name_ = tname;
   m.double_array_ = array;
-  
+
   doublearraydata_.push_back(m);
 
   return (true);
@@ -1492,7 +1492,7 @@ NewArrayMathEngine::get_field(const std::string& name, FieldHandle& field)
       return (true);
     }
   }
-  
+
   return (false);
 }
 
@@ -1507,7 +1507,7 @@ NewArrayMathEngine::get_matrix(const std::string& name, MatrixHandle& matrix)
       return (true);
     }
   }
-  
+
   return (false);
 }
 
@@ -1515,39 +1515,39 @@ bool
 NewArrayMathEngine::run()
 {
   std::string error_str;
-  
+
   // Link everything together
   std::string full_expression = pre_expression_+";"+expression_+";"+post_expression_;
 
   // Parse the full expression
   if(!(parse(pprogram_,full_expression,error_str)))
-  {   
+  {
     pr_->error(error_str);
     return (false);
   }
-  
+
   // Get the catalog with all possible functions
   ParserFunctionCatalogHandle catalog = ArrayMathFunctionCatalog::get_catalog();
 
   // Validate the expressions
   if (!(validate(pprogram_,catalog,error_str)))
-  {   
+  {
     pr_->error(error_str);
     return (false);
   }
-  
+
   // Optimize the expressions
   if (!(optimize(pprogram_,error_str)))
-  {   
+  {
     pr_->error(error_str);
     return (false);
   }
-  
+
   // DEBUG CALL
 #ifdef DEBUG
 //  pprogram_->print();
 #endif
-  
+
   // Allocate output objects
   // Create output fields (edit field data)
   for(size_t j=0; j< fielddata_.size(); j++)
@@ -1572,12 +1572,12 @@ NewArrayMathEngine::run()
     {
       fi.make_tensor();
     }
-    
+
     if (fielddata_[j].output_basis_order_ > -1)
     {
       fi.set_basis_type(fielddata_[j].output_basis_order_);
     }
-    
+
     MeshHandle mesh = field->mesh();
     field = CreateField(fi,mesh);
     if (!field)
@@ -1594,13 +1594,13 @@ NewArrayMathEngine::run()
       pr_->error(error_str);
       return (false);
     }
-    fielddata_[j].field_ = field;    
+    fielddata_[j].field_ = field;
   }
-  
+
   // Create output meshes (edit nodes)
   for(size_t j=0; j< fieldmesh_.size(); j++)
   {
-    FieldHandle field = fieldmesh_[j].field_;  
+    FieldHandle field = fieldmesh_[j].field_;
     FieldInformation fi(field);
     MeshHandle mesh;
     if (fi.is_regularmesh())
@@ -1623,12 +1623,12 @@ NewArrayMathEngine::run()
         fi.make_structcurvemesh();
         mesh = CreateMesh(fi,dims[0]);
       }
-      
+
       if (!mesh)
       {
         error_str = "Could not allocate output mesh.";
         pr_->error(error_str);
-        return (false);      
+        return (false);
       }
 
       // Copy the node locations
@@ -1648,10 +1648,10 @@ NewArrayMathEngine::run()
       {
         error_str = "Could not allocate output mesh.";
         pr_->error(error_str);
-        return (false);      
+        return (false);
       }
     }
-  
+
     field = CreateField(fi,mesh);
     if (!field)
     {
@@ -1659,10 +1659,10 @@ NewArrayMathEngine::run()
       pr_->error(error_str);
       return (false);
     }
-    
+
     // Insert a copy of all values
     field->vfield()->copy_values(fieldmesh_[j].field_->vfield());
-  
+
     std::string fieldname = fieldmesh_[j].field_name_;
     // Add the variable to the interpreter
     if(!(add_fieldmesh_sink(mprogram_,fieldname,field,error_str)))
@@ -1670,7 +1670,7 @@ NewArrayMathEngine::run()
       pr_->error(error_str);
       return (false);
     }
-    fieldmesh_[j].field_ = field;  
+    fieldmesh_[j].field_ = field;
   }
 
   // Create output fields (edit field data)
@@ -1679,11 +1679,11 @@ NewArrayMathEngine::run()
     if (matrixdata_[j].matrix_)
     {
       std::string matrixname = matrixdata_[j].matrix_name_;
-      if(!(add_matrix_sink(mprogram_,matrixname,matrixdata_[j].matrix_,error_str))) 
+      if(!(add_matrix_sink(mprogram_,matrixname,matrixdata_[j].matrix_,error_str)))
       {
         pr_->error(error_str);
         return (false);
-      }    
+      }
     }
     else
     {
@@ -1691,7 +1691,7 @@ NewArrayMathEngine::run()
       int flags = 0;
       get_output_variable_type(pprogram_,matrixdata_[j].array_name_,type,flags);
       size_type n = 0, m = 0;
-      
+
       size_type size = matrixdata_[j].size_;
       if (size > 0)
       {
@@ -1713,7 +1713,7 @@ NewArrayMathEngine::run()
             pr_->error(error_str);
             return (false);
           }
-          m = 1;      
+          m = 1;
         }
       }
       else
@@ -1750,12 +1750,12 @@ NewArrayMathEngine::run()
 
       std::string matrixname = matrixdata_[j].matrix_name_;
       // Add the variable to the interpreter
-      if(!(add_matrix_sink(mprogram_,matrixname,matrix,error_str))) 
+      if(!(add_matrix_sink(mprogram_,matrixname,matrix,error_str)))
       {
         pr_->error(error_str);
         return (false);
       }
-      matrixdata_[j].matrix_ = matrix;    
+      matrixdata_[j].matrix_ = matrix;
     }
   }
 
@@ -1764,11 +1764,11 @@ NewArrayMathEngine::run()
     if (boolarraydata_[j].bool_array_)
     {
       std::string arrayname = boolarraydata_[j].bool_array_name_;
-      if(!(add_bool_array_sink(mprogram_,arrayname,boolarraydata_[j].bool_array_,error_str))) 
+      if(!(add_bool_array_sink(mprogram_,arrayname,boolarraydata_[j].bool_array_,error_str)))
       {
         pr_->error(error_str);
         return (false);
-      }    
+      }
     }
   }
 
@@ -1777,11 +1777,11 @@ NewArrayMathEngine::run()
     if (intarraydata_[j].int_array_)
     {
       std::string arrayname = intarraydata_[j].int_array_name_;
-      if(!(add_int_array_sink(mprogram_,arrayname,intarraydata_[j].int_array_,error_str))) 
+      if(!(add_int_array_sink(mprogram_,arrayname,intarraydata_[j].int_array_,error_str)))
       {
         pr_->error(error_str);
         return (false);
-      }    
+      }
     }
   }
 
@@ -1790,11 +1790,11 @@ NewArrayMathEngine::run()
     if (doublearraydata_[j].double_array_)
     {
       std::string arrayname = doublearraydata_[j].double_array_name_;
-      if(!(add_double_array_sink(mprogram_,arrayname,doublearraydata_[j].double_array_,error_str))) 
+      if(!(add_double_array_sink(mprogram_,arrayname,doublearraydata_[j].double_array_,error_str)))
       {
         pr_->error(error_str);
         return (false);
-      }    
+      }
     }
   }
   // Translate the code
@@ -1831,7 +1831,7 @@ NewArrayMathEngine::clear()
   expression_.clear();
   post_expression_.clear();
   array_size_ = 1;
-  
+
   fielddata_.clear();
   fieldmesh_.clear();
   matrixdata_.clear();

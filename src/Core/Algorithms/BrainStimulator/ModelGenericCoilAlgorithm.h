@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_BRAINSTIMULATOR_MODELGENERICCOIL_H
 #define CORE_ALGORITHMS_BRAINSTIMULATOR_MODELGENERICCOIL_H 1
@@ -54,7 +54,7 @@ ALGORITHM_PARAMETER_DECL(OuterRadius);
 ALGORITHM_PARAMETER_DECL(Distance);
 ALGORITHM_PARAMETER_DECL(Layers);
 ALGORITHM_PARAMETER_DECL(LayerStepSize);
-ALGORITHM_PARAMETER_DECL(LevelOfDetail); 
+ALGORITHM_PARAMETER_DECL(LevelOfDetail);
 
 
   class SCISHARE ModelTMSCoilAlgorithm : public AlgorithmBase
@@ -74,7 +74,7 @@ ALGORITHM_PARAMETER_DECL(LevelOfDetail);
 	 addParameter(Parameters::LayerStepSize,1);
 	 addParameter(Parameters::LevelOfDetail,6);
 	}
-	
+
         struct Args
         {
         	double current;
@@ -87,12 +87,12 @@ ALGORITHM_PARAMETER_DECL(LevelOfDetail);
             double coilLayersStep;
             size_t rings;
         	int type;
-        	
+
         	inline bool operator==(const Args& rhs)
-        	{ 
-    			return current == rhs.current && 
-    			coilRadiusInner == rhs.coilRadiusInner && 
-    			coilRadiusOuter == rhs.coilRadiusOuter && 
+        	{
+    			return current == rhs.current &&
+    			coilRadiusInner == rhs.coilRadiusInner &&
+    			coilRadiusOuter == rhs.coilRadiusOuter &&
     			coilLevelDetails == rhs.coilLevelDetails &&
                 coilDistance == rhs.coilDistance &&
                 coilLayers == rhs.coilLayers &&
@@ -102,12 +102,12 @@ ALGORITHM_PARAMETER_DECL(LevelOfDetail);
         	}
     		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
         };
-        
+
         //! Generate the coil geometry
-        AlgorithmOutput run(const AlgorithmInput& input) const override;       
-        
+        AlgorithmOutput run(const AlgorithmInput& input) const override;
+
     };
-    
+
 
 }}}}
 

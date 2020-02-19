@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -39,18 +38,18 @@ DEALINGS IN THE SOFTWARE.
 /*
 * This header file contains templates for casting and converting matfile
 * datatypes into C++ data types. As there are many different possible data
-* type conversion possible, these functions are organized as templates. 
-* 
+* type conversion possible, these functions are organized as templates.
+*
 * For convenience there is function writing data in a buffer (C-style)
-* For smaller datasets the vector container can be used (inefficient for 
+* For smaller datasets the vector container can be used (inefficient for
 * pieces of data). And for scalar data there is direct access.
 */
 
 // template functions
 
-namespace SCIRun 
+namespace SCIRun
 {
-  namespace MatlabIO 
+  namespace MatlabIO
   {
 
     template<class T> void matfiledata::getandcast(T *dataptr,int dsize)
@@ -63,50 +62,50 @@ namespace SCIRun
       if (dataptr  == 0) return;
       if (dsize == 0) return;
       if (size() == 0) return;
-      if (dsize > size()) dsize = size();	// limit casting and copying to amount of data we have		
+      if (dsize > size()) dsize = size();	// limit casting and copying to amount of data we have
 
       switch (type())
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miINT32: 
+        break;
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miUINT32: 
+        break;
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;		
-      case miINT64: 
+        break;
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miUINT64: 
+        break;
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;	
-      case miSINGLE: 
+        break;
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;   	
-      case miDOUBLE: 
+        break;
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
-        break;	
+        break;
       default:
         throw unknown_type();
       }
@@ -128,48 +127,48 @@ namespace SCIRun
 
       switch (type())
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miINT32: 
+        break;
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miUINT32: 
+        break;
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;		
-      case miINT64: 
+        break;
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;   
-      case miUINT64: 
+        break;
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t*>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;	
-      case miSINGLE: 
+        break;
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
-        break;   	
-      case miDOUBLE: 
+        break;
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;
       default:
-        throw unknown_type();           	   
+        throw unknown_type();
       }
     }
 
@@ -184,38 +183,38 @@ namespace SCIRun
 
       switch (type())
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miINT32: 
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miUINT32: 
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miINT64: 
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miUINT64: 
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t*>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miSINGLE: 
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
-      case miDOUBLE: 
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
       default:
-        throw unknown_type();           
+        throw unknown_type();
       }
       return(val);
     }
@@ -231,55 +230,55 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      clear(); 
+      clear();
       if (dataptr  == 0) return;
 
       newdatabuffer(dsize*elsize(dtype),dtype);
 
       switch (dtype)
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<signed char>(dataptr[p]); }}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<unsigned char>(dataptr[p]); }}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<signed short>(dataptr[p]); }}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<unsigned short>(dataptr[p]); }}
-        break;   
-      case miINT32: 
+        break;
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<signed int>(dataptr[p]); }}
-        break;   
-      case miUINT32: 
+        break;
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<unsigned int>(dataptr[p]); }}
         break;
-      case miINT64: 
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<int64_t>(dataptr[p]); }}
-        break;   
-      case miUINT64: 
+        break;
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<uint64_t>(dataptr[p]); }}
-        break;	
-      case miSINGLE: 
+        break;
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<float>(dataptr[p]); }}
-        break;   	
-      case miDOUBLE: 
+        break;
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<double>(dataptr[p]); }}
-        break;	
+        break;
       default:
-        throw unknown_type();              
+        throw unknown_type();
       }
     }
 
@@ -295,48 +294,48 @@ namespace SCIRun
 
       switch (type)
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<signed char>(vec[p]); }}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<unsigned char>(vec[p]); }}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<signed short>(vec[p]); }}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<unsigned short>(vec[p]); }}
-        break;   
-      case miINT32: 
+        break;
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<signed int>(vec[p]); }}
-        break;   
-      case miUINT32: 
+        break;
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<unsigned int>(vec[p]); }}
-        break;	
-      case miINT64: 
+        break;
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<int64_t>(vec[p]); }}
-        break;   
-      case miUINT64: 
+        break;
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<uint64_t>(vec[p]); }}
-        break;	
-      case miSINGLE: 
+        break;
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<float>(vec[p]); }}
-        break;   	
-      case miDOUBLE: 
+        break;
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<double>(vec[p]); }}
-        break;	
+        break;
       default:
-        throw unknown_type();              
+        throw unknown_type();
       }
     }
 
@@ -347,38 +346,38 @@ namespace SCIRun
 
       switch (type())
       {
-      case miINT8: 
+      case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer()); ptr[index] = static_cast<signed char>(val);}
         break;
-      case miUINT8: 
+      case miUINT8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer()); ptr[index] = static_cast<unsigned char>(val);}
         break;
-      case miINT16: 
+      case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer()); ptr[index] = static_cast<signed short>(val);}
         break;
-      case miUINT16: 
+      case miUINT16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer()); ptr[index] = static_cast<unsigned short>(val);}
         break;
-      case miINT32: 
+      case miINT32:
         { signed int *ptr = static_cast<signed int *>(databuffer()); ptr[index] = static_cast<signed int>(val);}
         break;
-      case miUINT32: 
+      case miUINT32:
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer()); ptr[index] = static_cast<unsigned int>(val);}
         break;
-      case miINT64: 
+      case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer()); ptr[index] = static_cast<int64_t>(val);}
         break;
-      case miUINT64: 
+      case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer()); ptr[index] = static_cast<uint64_t>(val);}
         break;
-      case miSINGLE: 
+      case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer()); ptr[index] = static_cast<float>(val);}
         break;
-      case miDOUBLE: 
+      case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer()); ptr[index] = static_cast<double>(val);}
         break;
       default:
-        throw unknown_type();           
+        throw unknown_type();
       }
     }
 

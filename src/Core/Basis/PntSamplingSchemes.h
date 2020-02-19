@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Basis/PntSamplingSchemes.h
 #ifndef CORE_BASIS_PNTSAMPLINGSCHEMES_H
 #define CORE_BASIS_PNTSAMPLINGSCHEMES_H 1
@@ -42,28 +42,28 @@ namespace Basis {
 class SCISHARE PntSamplingSchemes
 {
   public:
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_gaussian_scheme(ARRAY1& coords, ARRAY2& weights, int /*order*/)
   {
     typedef typename ARRAY1::value_type coords_type;
 
-    weights.resize(1); 
+    weights.resize(1);
     weights[0] = static_cast<typename ARRAY2::value_type>(1.0);
-    coords.resize(1); 
-    coords[0].resize(1); 
+    coords.resize(1);
+    coords[0].resize(1);
     coords[0][0] = static_cast<typename coords_type::value_type>(0.0);
   }
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_regular_scheme(ARRAY1& coords, ARRAY2& weights, int /*order*/)
   {
     typedef typename ARRAY1::value_type coords_type;
 
-    weights.resize(1); 
+    weights.resize(1);
     weights[0] = static_cast<typename ARRAY2::value_type>(1.0);
-    coords.resize(1); 
-    coords[0].resize(1); 
+    coords.resize(1);
+    coords[0].resize(1);
     coords[0][0] = static_cast<typename coords_type::value_type>(0.0);
   }
 };

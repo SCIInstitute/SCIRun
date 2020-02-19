@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -54,21 +53,21 @@
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 
-namespace SCIRun { 
+namespace SCIRun {
 class TetMC : public BaseMC
 {
   public:
-    TetMC( FieldHandle field ) : field_handle_(field), 
+    TetMC( FieldHandle field ) : field_handle_(field),
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
 			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-                            triangles_(0), 
+                            triangles_(0),
 			   #endif
                             trisurf_handle_(0),
                             trisurf_(0) {}
 
     virtual ~TetMC() {}
-    
+
     void extract( VMesh::Elem::index_type, double );
     virtual void reset( int, bool build_field, bool build_geom, bool transparency );
     virtual FieldHandle get_field(double val);
@@ -77,7 +76,7 @@ class TetMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_c( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, 
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0,
                                                   index_type n1,
                                                   double d0,
                                                   const Core::Geometry::Point &p);
@@ -89,11 +88,11 @@ class TetMC : public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-    
+
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
      GeomFastTriangles *triangles_;
     #endif
-    
+
     FieldHandle trisurf_handle_;
     VMesh*      trisurf_;
   };

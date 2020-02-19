@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Math/AppendMatrix/AppendMatrix.h>
 #include <Dataflow/Network/Module.h>
@@ -34,13 +34,13 @@
 namespace SCIRun {
 
 /// @class AppendMatrix
-/// @brief Append the rows or columns of a matrix to a base matrix. 
+/// @brief Append the rows or columns of a matrix to a base matrix.
 
 class AppendMatrix : public Module {
   public:
     AppendMatrix(GuiContext*);
     virtual void execute();
-    
+
   private:
     GuiString guiroc_;
     SCIRunAlgo::AppendMatrixAlgo algo_;
@@ -61,21 +61,21 @@ AppendMatrix::execute()
 {
   MatrixHandle base;
   std::vector<MatrixHandle> matrices;
-  
+
   get_input_handle("BaseMatrix",base,true);
   get_dynamic_input_handles("AppendMatrix",matrices,false);
-  
+
   if (inputs_changed_ || guiroc_.changed() || !oport_cached("Matrix"))
   {
     std::string roc = guiroc_.get();
     MatrixHandle matrix;
-    
+
     if (roc == "column")
     {
       algo_.set_option("method","append_columns");
       matrix = base;
       for (size_t p=0; p<matrices.size();p++)
-      { 
+      {
         if (!(algo_.run(matrix,matrix,matrices[p]))) return;
       }
     }
@@ -84,15 +84,13 @@ AppendMatrix::execute()
       algo_.set_option("method","append_rows");
       matrix = base;
       for (size_t p=0; p<matrices.size();p++)
-      { 
+      {
         if (!(algo_.run(matrix,matrix,matrices[p]))) return;
       }
     }
-  
+
     send_output_handle("Matrix", matrix);
   }
 }
 
 } // End namespace SCIRun
-
-

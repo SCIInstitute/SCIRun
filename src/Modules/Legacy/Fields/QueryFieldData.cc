@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///@author
@@ -49,7 +49,7 @@
 namespace SCIRun {
 
 ///@class QueryFieldData
-///@brief Query field data using a function.  
+///@brief Query field data using a function.
 
 class QueryFieldData : public Module
 {
@@ -71,7 +71,7 @@ class QueryFieldData : public Module
 
     FieldHandle  cache_;
     MatrixHandle count_;
-    
+
     bool old_version_;
 };
 
@@ -96,7 +96,7 @@ QueryFieldData::execute()
 
   StringHandle string_handle;
 
-  if (get_input_handle( "Function", string_handle, false )) 
+  if (get_input_handle( "Function", string_handle, false ))
   {
     gui_function_.set( string_handle->get() );
     gui_function_.reset();
@@ -111,7 +111,7 @@ QueryFieldData::execute()
 
   if (get_input_handle( "Number of Datasets", matrix_handle, false ))
   {
-    if( (matrix_handle->nrows() == 1 && matrix_handle->ncols() == 1) ) 
+    if( (matrix_handle->nrows() == 1 && matrix_handle->ncols() == 1) )
     {
       gui_number_of_datasets_.set( static_cast<int>( matrix_handle->get(0,0) ));
       gui_number_of_datasets_.reset();
@@ -144,10 +144,10 @@ QueryFieldData::execute()
 
     // Get the input field(s).
     std::vector<FieldHandle> field_input_handles;
-    
+
     if (!get_dynamic_input_handles("Input Field", field_input_handles, true ) )
       return;
-    
+
     // Check to see if the input field(s) has changed.
     if( inputs_changed_ )
     {
@@ -171,7 +171,7 @@ QueryFieldData::execute()
 	else if (gui_output_data_type_.get() == "unsigned long") fid.make_unsigned_long();
 	else if (gui_output_data_type_.get() == "long long")  fid.make_long_long();
 	else if (gui_output_data_type_.get() == "unsigned long long") fid.make_unsigned_long_long();
-	else if (gui_output_data_type_.get() == "float")  fid.make_float();    
+	else if (gui_output_data_type_.get() == "float")  fid.make_float();
 	else if (gui_output_data_type_.get() == "double")  fid.make_double();
 	else {
 	  // Use the input field ...
@@ -181,24 +181,24 @@ QueryFieldData::execute()
         cache_->vmesh()->add_point(Point(0,0,0));
         cache_->vfield()->resize_values();
       }
-      
+
       count_->put(0,0,static_cast<double>(gui_count_.get()));
-      
+
 
       std::string format = gui_output_data_type_.get();
-      
+
       if (format == "") format = "double";
       if (format == "port 0 input") format = "same as input";
       std::string function = gui_function_.get();
-    
+
       NewArrayMathEngine engine;
-      engine.set_progress_reporter(this);      
+      engine.set_progress_reporter(this);
 
       if(!(engine.add_input_fielddata("DATA",field_input_handles[0]))) return;
       if(!(engine.add_input_fielddata("v",field_input_handles[0]))) return;
-      if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field_input_handles[0]))) return;        
-      if(!(engine.add_input_fielddata_coordinates("x","y","z",field_input_handles[0]))) return;        
-      
+      if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field_input_handles[0]))) return;
+      if(!(engine.add_input_fielddata_coordinates("x","y","z",field_input_handles[0]))) return;
+
       for(size_t j=0; j<field_input_handles.size(); j++)
       {
         std::string name1 = "DATA"+to_string(j+1);
@@ -210,7 +210,7 @@ QueryFieldData::execute()
         if(!(engine.add_input_fielddata_coordinates(namex,namey,namez,field_input_handles[j]))) return;
 
         ///-----------------------
-        // Backwards compatibility with intermediate version between 3.0.2 and 4.0      
+        // Backwards compatibility with intermediate version between 3.0.2 and 4.0
         std::string name2 = "v"+to_string(j);
         if(!(engine.add_input_fielddata(name2,field_input_handles[j]))) return;
 
@@ -220,14 +220,14 @@ QueryFieldData::execute()
         if(!(engine.add_input_fielddata_coordinates(namex2,namey2,namez2,field_input_handles[j]))) return;
         ///-----------------------
       }
-      
+
       // Caching method
       if(!(engine.add_input_matrix("COUNT",count_))) return;
       if(!(engine.add_input_fielddata("RESULT",cache_))) return;
       ///-----------------------
       // Backwards compatibility with intermediate version between 3.0.2 and 4.0
       if(!(engine.add_input_matrix("count",count_))) return;
-      if(!(engine.add_input_fielddata("result",cache_))) return;    
+      if(!(engine.add_input_fielddata("result",cache_))) return;
       ///-----------------------
 
       int basis_order = field_input_handles[0]->vfield()->basis_order();
@@ -245,7 +245,7 @@ QueryFieldData::execute()
         has_RESULT = false;
         ///-----------------------
       }
-      
+
       // Add an object for getting the index and size of the array.
 
       if(!(engine.add_index("INDEX"))) return;
@@ -255,7 +255,7 @@ QueryFieldData::execute()
 
 
       // Actual engine call, which does the dynamic compilation, the creation of the
-      // code for all the objects, as well as inserting the function and looping 
+      // code for all the objects, as well as inserting the function and looping
       // over every data point
 
       if (!(engine.run()))
@@ -270,12 +270,12 @@ QueryFieldData::execute()
           error("We are sorry for this inconvenience, but we do not longer support dynamically compiling code in SCIRun.");
         }
         ///-----------------------
-        
+
         return;
-      } 
+      }
 
       // Get the result from the engine
-      FieldHandle ofield;    
+      FieldHandle ofield;
       if(has_RESULT)
       {
         engine.get_field("RESULT",ofield);
@@ -288,7 +288,7 @@ QueryFieldData::execute()
         ///-----------------------
       }
 
-      // send new output if there is any: 
+      // send new output if there is any:
       send_output_handle("Query Result", ofield, true);
 
 
@@ -308,14 +308,14 @@ void QueryFieldData::tcl_command(GuiArgs& args, void* userdata)
     return;
   }
 
-  if (args[1] == "clear") 
+  if (args[1] == "clear")
   {
     gui_count_.set(0);
     gui_count_.reset();
 
     cache_ = 0;
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }

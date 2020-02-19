@@ -1,9 +1,9 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Core/Algorithms/Legacy/Fields/Cleanup/ReorderNormalCoherentlyAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -63,33 +64,33 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   }
 
   FieldInformation fi(inputField);
-  
+
   if(fi.is_nonlinear())
     error("The algorithm has not yet been defined for non-linear elements yet");
-  
+
   if(!fi.is_trisurfmesh())
     error("This algorithm only works on a TriSurfMesh");
-  
+
   VField* inputVField=inputField->vfield();
   VMesh* inputVMesh=inputField->vmesh();
-  
+
   fi.make_trisurfmesh();
   outputField=CreateField(fi);
-  
+
   if(!outputField)
     error("Could not allocate output field");
-  
+
   VMesh *outputVMesh=outputField->vmesh();
   const VMesh::size_type n=inputVMesh->num_nodes();
   const VMesh::size_type m=inputVMesh->num_elems();
   outputVMesh->node_reserve(n);
   outputVMesh->elem_reserve(m);
-  
+
   outputVMesh->copy_nodes(inputVMesh);
-  
+
   size_type i,j,k;
   std::vector<int> invertedElements;
-  
+
   std::vector<std::set<int>> elemsOfVert;
   std::vector<std::set<int>> elemNeighbors;
   std::set<int> dummy;
@@ -98,39 +99,39 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   const int noOfV=3;
 
   //intialize vector of vectors
-  
+
   VMesh::Face::iterator meshFaceIter;
   VMesh::Face::iterator meshFaceEnd;
-  
+
   VMesh::Node::array_type nodesFromFace(noOfV);
-  
+
   inputVMesh->synchronize(Mesh::ALL_ELEMENTS_E);
-  
+
   inputVMesh->end(meshFaceEnd);
-  
+
   for(inputVMesh->begin(meshFaceIter); meshFaceIter!=meshFaceEnd; ++meshFaceIter)
   {
     // get nodes from mesh element
     VMesh::Face::index_type elemID=*meshFaceIter;
     inputVMesh->get_nodes(nodesFromFace, elemID);
-    
+
     for(i=0;i<noOfV;i++)
       elem[elemID][i]=nodesFromFace[i];
   }
-  
+
   for(i=0;i<m;i++)
     elemNeighbors.push_back(dummy);
-  
+
   for(i=0;i<n;i++)
     elemsOfVert.push_back(dummy);
-  
+
   //get elements
   for(i=0;i<m;i++)
   {
     for(j=0;j<noOfV;j++)
       elemsOfVert[elem[i][j]].insert(i);
   }
-  
+
   //get edges
   //create graph
   for(i=0;i<m;i++)
@@ -152,25 +153,25 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
       }
     }
   }
-    
+
     //traverse graph
     std::vector<bool> elemTraversed(m, false);
-  
+
     std::queue<int> bfs;
     bfs.push(0);
     elemTraversed[0]=true;
     std::set<std::pair<int,int>> edges;
-    
+
   while(!bfs.empty())
   {
     //insert elems not traversed
     std::set<int>::iterator it;
     i=bfs.front();
-    
+
     //invert in the output field
     VMesh::Face::index_type elemID=i;
     inputVMesh->get_nodes(nodesFromFace, elemID);
-    
+
     for(it=elemNeighbors[i].begin();it!=elemNeighbors[i].end();it++)
     {
       if(!elemTraversed[*it])
@@ -202,14 +203,14 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
       edges.insert(std::make_pair(elem[i][j], elem[i][k]));
     }
     outputVMesh->add_elem(nodesFromFace);
-    
+
     bfs.pop();
   }
-  
+
   VField* outputVField=outputField->vfield();
   outputVField->resize_values();
   std::vector<VMesh::index_type> order;
-  
+
     // Copy field data (non-linear not supoorted, check made upstream)
   int basis_order=inputVField->basis_order();
   if (basis_order == 0)
@@ -222,26 +223,26 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   {
     outputVField->copy_values(inputVField);
   }
-  
+
   CopyProperties(*inputField,*outputField);
 
-  
+
   if (invertedElements.size() > 0)
   {
     std::ostringstream oss;
     oss << invertedElements.size() << "elements were found to be incorrectly oriented in input TriSurf mesh.";
     remark(oss.str());
-    
+
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
       invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix>(invertedElements.size());
-      
+
       for(int i=0;i<invertedElements.size();i++)
       {
-        
+
         (*invertedElementsListMatrix)(i)=invertedElements[i];
       }
-      
+
     }
   }
   else
@@ -253,15 +254,15 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
 AlgorithmOutput ReorderNormalCoherentlyAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
-  
+
   FieldHandle outputField;
   DenseColumnMatrixHandle outputMatrix;
-  
+
   runImpl(inputField, outputField, outputMatrix);
-  
+
   AlgorithmOutput output;
   output[Variables::OutputField] = outputField;
   output[Variables::OutputMatrix] = outputMatrix;
-  
+
   return output;
 }

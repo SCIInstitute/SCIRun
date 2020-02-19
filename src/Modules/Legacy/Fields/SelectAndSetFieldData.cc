@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -75,9 +75,9 @@ SelectAndSetFieldData::SelectAndSetFieldData(GuiContext* ctx)
   guiselection3_(get_ctx()->subVar("selection3")),
   guifunction3_(get_ctx()->subVar("function3")),
   guiselection4_(get_ctx()->subVar("selection4")),
-  guifunction4_(get_ctx()->subVar("function4")),  
+  guifunction4_(get_ctx()->subVar("function4")),
   guifunctiondef_(get_ctx()->subVar("functiondef")),
-  guiformat_(get_ctx()->subVar("format"))  
+  guiformat_(get_ctx()->subVar("format"))
 {
 }
 
@@ -87,7 +87,7 @@ SelectAndSetFieldData::execute()
 {
   FieldHandle field;
   std::vector<MatrixHandle> matrices;
-  
+
   get_input_handle("Field",field,true);
   get_dynamic_input_handles("Array",matrices,false);
 
@@ -103,57 +103,57 @@ SelectAndSetFieldData::execute()
     update_state(Executing);
 
     // Get number of matrix ports with data (the last one is always empty)
-    size_t numinputs = matrices.size(); 
+    size_t numinputs = matrices.size();
 
     if (numinputs > 23)
     {
       error("This module cannot handle more than 23 input matrices");
       return;
     }
-    
+
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);    
+    engine.set_progress_reporter(this);
 
     // Create the DATA object for the function
     // DATA is the data on the field
     if(!(engine.add_input_fielddata("DATA",field))) return;
 
-    // Create the POS, X,Y,Z, data location objects.  
+    // Create the POS, X,Y,Z, data location objects.
 
     if(!(engine.add_input_fielddata_location("POS",field))) return;
     if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field))) return;
 
     // Create the ELEMENT object describing element properties
     if(!(engine.add_input_fielddata_element("ELEMENT",field))) return;
-    
+
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-    
+
     for (size_t p = 0; p < numinputs; p++)
     {
       if (matrices[p].get_rep() == 0)
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
-    
+
 
     int basis_order = field->vfield()->basis_order();
     std::string format = guiformat_.get();
     if (format == "") format = "double";
-    
+
     if(!(engine.add_output_fielddata("RESULT",field,basis_order,format))) return;
 
     // Add an object for getting the index and size of the array.
 
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
-            
+
     std::string function1 = guifunction1_.get();
     std::string selection1 = guiselection1_.get();
     std::string function2 = guifunction2_.get();
@@ -174,7 +174,7 @@ SelectAndSetFieldData::execute()
     if (function3.size() > 0) while ((function3[function3.size()-1] == '\n')||(function3[function3.size()-1] == ' ')||(function3[function3.size()-1] == '\r')) { function3 = function3.substr(0,function3.size()-1); if (function3.size() == 0) break; }
     if (function4.size() > 0) while ((function4[function4.size()-1] == '\n')||(function4[function4.size()-1] == ' ')||(function4[function4.size()-1] == '\r')) { function4 = function4.substr(0,function4.size()-1); if (function4.size() == 0) break; }
     if (functiondef.size() > 0) while ((functiondef[functiondef.size()-1] == '\n')||(functiondef[functiondef.size()-1] == ' ')||(functiondef[functiondef.size()-1] == '\r')) { functiondef = functiondef.substr(0,functiondef.size()-1); if (functiondef.size() == 0) break; }
-    
+
     std::string f = "RESULT = ";
     std::string fend = "";
     if ((selection1.size()) && (function1.size())) { f += "select("+selection1+"," + function1 + ","; fend += ")"; }
@@ -184,20 +184,20 @@ SelectAndSetFieldData::execute()
 
     if (functiondef.size()) f += functiondef + fend + ";;";
     else f += "0.0" + fend + ";;";
-    
+
     if(!(engine.add_expressions(f))) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!(engine.run())) return;
 
     // Get the result from the engine
-    FieldHandle ofield;    
+    FieldHandle ofield;
     engine.get_field("RESULT",ofield);
 
-    // send new output if there is any: 
+    // send new output if there is any:
     send_output_handle("Field", ofield);
   }
 }

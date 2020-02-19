@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -52,10 +52,10 @@ bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) co
 AlgorithmOutput ConvertMatrixToStringAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
-	
+
 	StringHandle output_string;
 	run(input_matrix, output_string);
-	
+
 	AlgorithmOutput output;
 	output[ResultString] = output_string;
 	return output;

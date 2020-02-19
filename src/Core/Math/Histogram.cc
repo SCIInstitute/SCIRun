@@ -1,30 +1,31 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2016 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 #include <vector>
 #include <limits>
 #include <boost/algorithm/minmax_element.hpp>
@@ -41,7 +42,7 @@ namespace
   }
 }
 
-Histogram::Histogram() 
+Histogram::Histogram()
 {
   this->min_ = Nan();
   this->max_ = Nan();
@@ -65,7 +66,7 @@ bool Histogram::compute( const double* data, size_t size )
   this->bin_start_ = Nan();
   this->bin_size_ = Nan();
   this->histogram_.resize( 0 );
-  if ( size == 0 ) 
+  if ( size == 0 )
     return false;
 
   try
@@ -80,7 +81,7 @@ bool Histogram::compute( const double* data, size_t size )
       if ( val < this->min_ ) this->min_ = val;
       if ( val > this->max_ ) this->max_ = val;
     }
-    
+
     if ( this->min_ > this->max_ )
     {
       // Most likely all the data is NaN
@@ -89,9 +90,9 @@ bool Histogram::compute( const double* data, size_t size )
       this->bin_start_ = Nan();
       this->bin_size_ = Nan();
       this->histogram_.resize( 0 );
-      return false;   
+      return false;
     }
-      
+
     if ( this->min_ == this->max_ )
     {
       this->bin_size_  = 1.0;
@@ -103,7 +104,7 @@ bool Histogram::compute( const double* data, size_t size )
       size_t hist_size = 0x100;
       this->histogram_.resize( hist_size, 0 );
       this->bin_size_ = ( this->max_ - this->min_ ) / static_cast<double>( hist_size - 1 );
-      this->bin_start_ = this->min_ - ( this->bin_size_ * 0.5 );  
+      this->bin_start_ = this->min_ - ( this->bin_size_ * 0.5 );
     }
 
     double inv_bin_size = 1.0 / bin_size_;
@@ -115,9 +116,9 @@ bool Histogram::compute( const double* data, size_t size )
       {
         size_t idx = static_cast<size_t>( ( val - this->min_ ) * inv_bin_size );
         this->histogram_[ idx ]++;
-      }   
+      }
     }
-    
+
     auto min_max = boost::minmax_element( this->histogram_.begin(), this->histogram_.end() );
     this->min_bin_ = (*min_max.first);
     this->max_bin_ = (*min_max.second);
@@ -131,18 +132,18 @@ bool Histogram::compute( const double* data, size_t size )
     this->histogram_.resize( 0 );
     return false;
   }
-  
-  return true;  
+
+  return true;
 }
 
 double Histogram::get_min() const
-{ 
+{
   return this->min_;
 }
 
 double Histogram::get_max() const
-{ 
-  return this->max_; 
+{
+  return this->max_;
 }
 
 double Histogram::get_cum_value( double fraction ) const
@@ -168,18 +169,18 @@ double Histogram::get_cum_value( double fraction ) const
       break;
     }
   }
-  
+
   return this->bin_start_ + ( jj * this->bin_size_ );
 }
 
 size_t Histogram::get_max_bin() const
-{ 
+{
   return this->max_bin_;
 }
 
 size_t Histogram::get_min_bin() const
-{ 
-  return this->min_bin_; 
+{
+  return this->min_bin_;
 }
 
 double Histogram::get_bin_size() const

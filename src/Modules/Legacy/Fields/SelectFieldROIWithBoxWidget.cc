@@ -1,12 +1,11 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @file    SelectFieldROIWithBoxWidget.h
 /// @author  Michael Callahan
@@ -50,19 +50,19 @@
 namespace SCIRun {
 
 /// @class SelectFieldROIWithBoxWidget
-/// @brief Select data from a field. 
+/// @brief Select data from a field.
 
 class SelectFieldROIWithBoxWidget : public Module
 {
   public:
     SelectFieldROIWithBoxWidget(GuiContext* ctx);
     virtual ~SelectFieldROIWithBoxWidget();
-    
+
     virtual void execute();
-    
+
     virtual void presave();
-    virtual void post_read();        
-    
+    virtual void post_read();
+
   private:
     FieldHandle output_field_;
     CrowdMonitor widget_lock_;
@@ -157,7 +157,7 @@ SelectFieldROIWithBoxWidget::execute()
 
     // Copy the properties.
     output_field_->copy_properties(ifieldhandle.get_rep());
-    
+
     last_generation_ = ifieldhandle->generation;
 
     BBox obox = output_field_->vmesh()->get_bounding_box();
@@ -196,16 +196,16 @@ SelectFieldROIWithBoxWidget::execute()
 
   if (mode_.get() == 1 || mode_.get() == 2)
   {
-  
+
     ClipperHandle clipper = box_->get_clipper();
     double value = value_.get();
-    
+
     bool replace_p = false;
     if (mode_.get() == 2) { replace_p = true; }
-        
+
     output_field_.detach();
     VField* ofield = output_field_->vfield();
-    
+
     VField::size_type num_values = ofield->num_values();
     for (VField::index_type idx=0; idx<num_values;idx++)
     {

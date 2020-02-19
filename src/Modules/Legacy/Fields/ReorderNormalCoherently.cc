@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/ReorderNormalCoherently.h>
 #include <Core/Datatypes/Matrix.h>
@@ -53,15 +53,15 @@ ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_, false)
 void ReorderNormalCoherently::execute()
 {
   auto input = getRequiredInput(InputField);
-  
+
   bool needMatrixData=oport_connected(OutputMatrix);
-  
+
   if (needToExecute())
   {
     algo().set(Parameters::invertedElementsCheckBox, needMatrixData);
-    
+
     auto output=algo().run(withInputData((InputField, input)));
-    
+
     sendOutputFromAlgorithm(OutputField,output);
     sendOutputFromAlgorithm(OutputMatrix, output);
   }

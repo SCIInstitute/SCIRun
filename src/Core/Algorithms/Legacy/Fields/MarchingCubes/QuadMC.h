@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,14 +45,14 @@ namespace SCIRun {
 class QuadMC : public BaseMC
 {
   public:
-    QuadMC( FieldHandle field ) : field_handle_(field), 
+    QuadMC( FieldHandle field ) : field_handle_(field),
                              field_(field->vfield()),
                              mesh_(field->vmesh()),
                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-			     lines_(0), 
+			     lines_(0),
 			    #endif
                              curve_handle_(0),
-                             curve_(0) {} 
+                             curve_(0) {}
     virtual ~QuadMC() {}
 
     void extract( VMesh::Elem::index_type, double );
@@ -72,14 +71,14 @@ class QuadMC : public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-    
+
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
      GeomLines *lines_;
     #endif
-    
+
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };
 
-} // End namespace SCIRun  
+} // End namespace SCIRun
 #endif

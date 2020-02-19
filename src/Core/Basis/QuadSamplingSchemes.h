@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Basis/QuadSamplingSchemes.h
 #ifndef CORE_BASIS_QUADSAMPLINGSCHEMES_H
 #define CORE_BASIS_QUADSAMPLINGSCHEMES_H 1
@@ -42,7 +42,7 @@ namespace Basis {
 class SCISHARE QuadSamplingSchemes
 {
   public:
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_gaussian_scheme(ARRAY1& coords, ARRAY2& weights, int order)
   {
@@ -54,7 +54,7 @@ class SCISHARE QuadSamplingSchemes
       const double gaussian_coords[1][2] = {{.5,.5}};
       const unsigned int num_coords = 2;
       const unsigned int num_points = 1;
-      
+
       coords.resize(num_points);
       weights.resize(num_points);
       for (unsigned int i=0; i<num_points; i++)
@@ -66,7 +66,7 @@ class SCISHARE QuadSamplingSchemes
       }
     }
     else if (order == 2)
-    { 
+    {
       const double gaussian_weights[4] = {.25, .25, .25, .25};
       const double gaussian_coords[4][2] = {
         {0.211324865405, 0.211324865405},
@@ -75,7 +75,7 @@ class SCISHARE QuadSamplingSchemes
         {0.211324865405, 0.788675134595}};
       const unsigned int num_coords = 2;
       const unsigned int num_points = 4;
-      
+
       coords.resize(num_points);
       weights.resize(num_points);
       for (unsigned int i=0; i<num_points; i++)
@@ -93,14 +93,14 @@ class SCISHARE QuadSamplingSchemes
         0.12345679007654,   0.19753086415802,   0.12345679007654,
         0.07716049378395,   0.12345679007654,   0.07716049378395 };
       const double gaussian_coords[9][2] = {
-        {0.11270166537950, 0.11270166537950}, {0.5, 0.11270166537950}, 
+        {0.11270166537950, 0.11270166537950}, {0.5, 0.11270166537950},
         {0.88729833462050, 0.11270166537950},
         {0.11270166537950, 0.5}, {0.5, 0.5}, {0.88729833462050, 0.5},
-        {0.11270166537950, 0.88729833462050}, {0.5, 0.88729833462050}, 
+        {0.11270166537950, 0.88729833462050}, {0.5, 0.88729833462050},
         {0.88729833462050, 0.88729833462050}};
       const unsigned int num_coords = 2;
       const unsigned int num_points = 9;
-      
+
       coords.resize(num_points);
       weights.resize(num_points);
       for (unsigned int i=0; i<num_coords; i++)
@@ -116,7 +116,7 @@ class SCISHARE QuadSamplingSchemes
       REPORT_NOT_IMPLEMENTED("Only Gaussian scheme 1, 2, and 3 are implemented");
     }
   }
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_regular_scheme(ARRAY1& coords, ARRAY2& weights, int order)
   {
@@ -133,7 +133,7 @@ class SCISHARE QuadSamplingSchemes
         coords[i+order*j][1] = static_cast<typename coords_type::value_type>(static_cast<double>(j+1)/static_cast<double>(order+1));
         weights[i+order*j] = static_cast<typename ARRAY2::value_type>(1.0/static_cast<double>(order*order));
       }
-    }  
+    }
   }
 };
 

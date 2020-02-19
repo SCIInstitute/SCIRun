@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/CreateMesh/CreateMeshFromNrrd.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
@@ -41,163 +41,163 @@ bool
 StructuredCreateMeshFromNrrdAlgo(AlgoBase* algo,
 				 FieldHandle& fHandle,
 				 NrrdDataHandle pointsH,
-				 size_type idim, 
-				 size_type jdim, 
+				 size_type idim,
+				 size_type jdim,
 				 size_type kdim)
 {
   VMesh* imesh = fHandle->vmesh();
-  
+
   size_t rank = pointsH->nrrd_->axis[0].size;
   double xVal = 0.0, yVal = 0.0, zVal = 0.0;
-  
+
   switch(pointsH->nrrd_->type)
   {
-    case nrrdTypeChar:    
-    {     
+    case nrrdTypeChar:
+    {
       char* data = reinterpret_cast<char*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeUChar:    
-    {     
+    case nrrdTypeUChar:
+    {
       unsigned char* data = reinterpret_cast<unsigned char*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeShort:    
-    {     
+    case nrrdTypeShort:
+    {
       short* data = reinterpret_cast<short*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeUShort:    
-    {     
+    case nrrdTypeUShort:
+    {
       unsigned short* data = reinterpret_cast<unsigned short*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeInt:    
-    {     
+    case nrrdTypeInt:
+    {
       int* data = reinterpret_cast<int*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeUInt:    
-    {     
+    case nrrdTypeUInt:
+    {
       unsigned int* data = reinterpret_cast<unsigned int*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
-    break;        
-    case nrrdTypeLLong:    
-    {     
+    break;
+    case nrrdTypeLLong:
+    {
       long long* data = reinterpret_cast<long long*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeULLong:    
-    {     
+    case nrrdTypeULLong:
+    {
       unsigned long long* data = reinterpret_cast<unsigned long long*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeFloat:    
-    {     
+    case nrrdTypeFloat:
+    {
       float* data = reinterpret_cast<float*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
     break;
-    case nrrdTypeDouble:    
-    {     
+    case nrrdTypeDouble:
+    {
       double* data = reinterpret_cast<double*>(pointsH->nrrd_->data);
       size_type size = idim*jdim*kdim;
-      for(index_type idx=0; idx<size; idx++ ) 
+      for(index_type idx=0; idx<size; idx++ )
       {
         // Mesh
         if( rank >= 1 ) xVal = static_cast<double>(data[idx*rank+0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[idx*rank+1]);
         if( rank >= 3 ) zVal = static_cast<double>(data[idx*rank+2]);
-        
+
         imesh->set_point(Point(xVal, yVal, zVal), VMesh::Node::index_type(idx));
       }
     }
@@ -215,12 +215,12 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
 				    FieldHandle& fHandle,
 				    NrrdDataHandle pointsH,
 				    NrrdDataHandle connectH,
-				    size_type nconnections, 
+				    size_type nconnections,
 				    int which)
 {
   VField* ifield = fHandle->vfield();
   VMesh*  imesh  = fHandle->vmesh();
-  
+
   size_type npts = pointsH->nrrd_->axis[1].size;
   for( size_t i=2; i<pointsH->nrrd_->dim; ++i)
         npts *= pointsH->nrrd_->axis[i].size;
@@ -229,10 +229,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
 
   switch(pointsH->nrrd_->type)
   {
-    case nrrdTypeChar:    
-    {    
+    case nrrdTypeChar:
+    {
       char *data = reinterpret_cast<char*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -241,10 +241,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeUChar:        
+    case nrrdTypeUChar:
     {
       unsigned char *data = reinterpret_cast<unsigned char*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -253,10 +253,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeShort:        
+    case nrrdTypeShort:
     {
       short *data = reinterpret_cast<short*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -265,10 +265,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeUShort:        
+    case nrrdTypeUShort:
     {
       unsigned short *data = reinterpret_cast<unsigned short*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -277,10 +277,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeInt:        
+    case nrrdTypeInt:
     {
       int *data = reinterpret_cast<int*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -289,10 +289,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeUInt:        
+    case nrrdTypeUInt:
     {
       unsigned int *data = reinterpret_cast<unsigned int*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -301,10 +301,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeLLong:        
+    case nrrdTypeLLong:
     {
       long long *data = reinterpret_cast<long long*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -313,10 +313,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeULLong:        
+    case nrrdTypeULLong:
     {
       unsigned long long *data = reinterpret_cast<unsigned long long*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -325,10 +325,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeFloat:        
+    case nrrdTypeFloat:
     {
       float *data = reinterpret_cast<float*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -337,10 +337,10 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
       }
     }
     break;
-    case nrrdTypeDouble:        
+    case nrrdTypeDouble:
     {
       double *data = reinterpret_cast<double*>(pointsH->nrrd_->data);
-      for(size_type index=0; index<npts; index++ ) 
+      for(size_type index=0; index<npts; index++ )
       {
         if( rank >= 1 ) xVal = static_cast<double>(data[index*rank + 0]);
         if( rank >= 2 ) yVal = static_cast<double>(data[index*rank + 1]);
@@ -357,16 +357,16 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
   bool single_element = false;
   if (connectH.get_rep() && connectH->nrrd_->dim == 1) single_element = true;
 
-  if( nconnections > 0 ) 
+  if( nconnections > 0 )
   {
     size_type nelements = 0;
     if (single_element) nelements = 1;
-    else if (which == 0) 
+    else if (which == 0)
     {
       // p x n
       nelements = connectH->nrrd_->axis[1].size;
-    } 
-    else 
+    }
+    else
     {
       // n x p
       nelements = connectH->nrrd_->axis[0].size;
@@ -377,26 +377,26 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
     switch(connectH->nrrd_->type)
     {
       case nrrdTypeChar:
-      {  
+      {
         char* data = reinterpret_cast<char*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
-        } 
-        else 
+        }
+        else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -405,27 +405,27 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
         }
       }
       break;
-      case nrrdTypeUChar:  
+      case nrrdTypeUChar:
       {
         unsigned char* data = reinterpret_cast<unsigned char*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
-        } 
-        else 
+        }
+        else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -433,28 +433,28 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
           }
         }
       }
-      break;          
-      case nrrdTypeShort:  
+      break;
+      case nrrdTypeShort:
       {
         short* data = reinterpret_cast<short*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
-        } 
+        }
         else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -463,143 +463,27 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
         }
       }
       break;
-      case nrrdTypeUShort:  
+      case nrrdTypeUShort:
       {
         unsigned short* data = reinterpret_cast<unsigned short*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[i*nconnections+j]);
-            }
-            imesh->add_elem( array );
-          }
-        } 
-        else 
-        {
-          // n x p
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[j*nelements+i]);
-            }
-            imesh->add_elem( array );
-          }
-        }
-      }
-      break;
-      case nrrdTypeInt:  
-      {
-        int* data = reinterpret_cast<int*>(connectH->nrrd_->data);
-        if (which == 0) 
-        {
-          // p x n
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[i*nconnections+j]);
-            }
-            imesh->add_elem( array );
-          }
-        } 
-        else 
-        {
-          // n x p
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[j*nelements+i]);
-            }
-            imesh->add_elem( array );
-          }
-        }
-      }
-      break;
-      case nrrdTypeUInt:  
-      {
-        unsigned int* data = reinterpret_cast<unsigned int*>(connectH->nrrd_->data);
-        if (which == 0) 
-        {
-          // p x n
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[i*nconnections+j]);
-            }
-            imesh->add_elem( array );
-          }
-        } 
-        else 
-        {
-          // n x p
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[j*nelements+i]);
-            }
-            imesh->add_elem( array );
-          }
-        }
-      }
-      break;
-      case nrrdTypeLLong:  
-      {
-        long long* data = reinterpret_cast<long long*>(connectH->nrrd_->data);
-        if (which == 0) 
-        {
-          // p x n
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
         }
-        else 
-        {
-          // n x p
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[j*nelements+i]);
-            }
-            imesh->add_elem( array );
-          }
-        }
-      }
-      break;
-      case nrrdTypeULLong:  
-      {
-        unsigned long long* data = reinterpret_cast<unsigned long long*>(connectH->nrrd_->data);
-        if (which == 0) 
-        {
-          // p x n
-          for( size_type i=0; i<nelements; i++ ) 
-          {
-            for( size_type j=0; j<nconnections; j++ ) 
-            {
-              array[j] = static_cast<index_type>(data[i*nconnections+j]);
-            }
-            imesh->add_elem( array );
-          }
-        } 
         else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -608,27 +492,143 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
         }
       }
       break;
-      case nrrdTypeFloat:  
+      case nrrdTypeInt:
+      {
+        int* data = reinterpret_cast<int*>(connectH->nrrd_->data);
+        if (which == 0)
+        {
+          // p x n
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[i*nconnections+j]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+        else
+        {
+          // n x p
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[j*nelements+i]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+      }
+      break;
+      case nrrdTypeUInt:
+      {
+        unsigned int* data = reinterpret_cast<unsigned int*>(connectH->nrrd_->data);
+        if (which == 0)
+        {
+          // p x n
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[i*nconnections+j]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+        else
+        {
+          // n x p
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[j*nelements+i]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+      }
+      break;
+      case nrrdTypeLLong:
+      {
+        long long* data = reinterpret_cast<long long*>(connectH->nrrd_->data);
+        if (which == 0)
+        {
+          // p x n
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[i*nconnections+j]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+        else
+        {
+          // n x p
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[j*nelements+i]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+      }
+      break;
+      case nrrdTypeULLong:
+      {
+        unsigned long long* data = reinterpret_cast<unsigned long long*>(connectH->nrrd_->data);
+        if (which == 0)
+        {
+          // p x n
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[i*nconnections+j]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+        else
+        {
+          // n x p
+          for( size_type i=0; i<nelements; i++ )
+          {
+            for( size_type j=0; j<nconnections; j++ )
+            {
+              array[j] = static_cast<index_type>(data[j*nelements+i]);
+            }
+            imesh->add_elem( array );
+          }
+        }
+      }
+      break;
+      case nrrdTypeFloat:
       {
         float* data = reinterpret_cast<float*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
-        } 
-        else 
+        }
+        else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -637,27 +637,27 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
         }
       }
       break;
-      case nrrdTypeDouble:  
+      case nrrdTypeDouble:
       {
         double* data = reinterpret_cast<double*>(connectH->nrrd_->data);
-        if (which == 0) 
+        if (which == 0)
         {
           // p x n
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[i*nconnections+j]);
             }
             imesh->add_elem( array );
           }
-        } 
-        else 
+        }
+        else
         {
           // n x p
-          for( size_type i=0; i<nelements; i++ ) 
+          for( size_type i=0; i<nelements; i++ )
           {
-            for( size_type j=0; j<nconnections; j++ ) 
+            for( size_type j=0; j<nconnections; j++ )
             {
               array[j] = static_cast<index_type>(data[j*nelements+i]);
             }
@@ -678,13 +678,13 @@ UnstructuredCreateMeshFromNrrdAlgo( AlgoBase* algo,
 
 
 
-bool 
+bool
 CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
                             NrrdDataHandle cHandle,
                             FieldHandle& fHandle)
 {
   algo_start("CreateMeshFromNrrd");
-  
+
   std::string quad_or_tet = get_option("quad_or_tet");
   std::string struct_or_unstruct = get_option("struct_or_unstruct");
 
@@ -694,7 +694,7 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
   std::string property;
 
   // Make sure the points coming in make sense.
-  if( pHandle->nrrd_->axis[0].size != 3 ) 
+  if( pHandle->nrrd_->axis[0].size != 3 )
   {
     error("Points Nrrd must contain 3D points.");
     error("If the points are 2D use UnuPad to turn in to 3D points.");
@@ -704,15 +704,15 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
   //////////////// DETERMINE MESH BASED ON INPUTS AND GUI INFO ////////////////
 
   // Have points and connections.
-  if ( cHandle.get_rep() ) 
+  if ( cHandle.get_rep() )
   {
     if (cHandle->nrrd_ == 0)
     {
       error("Connections Nrrd is empty.");
-      algo_end(); return (false);    
+      algo_end(); return (false);
     }
-  
-    if (cHandle->nrrd_->dim != 1 && cHandle->nrrd_->dim != 2) 
+
+    if (cHandle->nrrd_->dim != 1 && cHandle->nrrd_->dim != 2)
     {
       error("Connections Nrrd must be two dimensional (number of points in each connection by the number of elements).");
       algo_end(); return (false);
@@ -720,104 +720,104 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
 
     unsigned int which = 0; // which index contains p
     size_t nconnections = cHandle->nrrd_->axis[which].size;
-      
+
     if (nconnections != 2 && nconnections != 3 &&
-        nconnections != 4 && nconnections != 6 && nconnections != 8) 
+        nconnections != 4 && nconnections != 6 && nconnections != 8)
     {
-      if( cHandle->nrrd_->dim == 1 ) 
+      if( cHandle->nrrd_->dim == 1 )
       {
         error("Connections nrrd must have one axis with size 2, 3, 4, 6, or 8.");
         algo_end(); return (false);
       }
-      else 
+      else
       {
         which = 1;
         nconnections = cHandle->nrrd_->axis[which].size;
-            
+
         if (nconnections != 2 && nconnections != 3 &&
-            nconnections != 4 && nconnections != 6 && nconnections != 8) 
+            nconnections != 4 && nconnections != 6 && nconnections != 8)
         {
           error("Connections nrrd must have one axis with size 2, 3, 4, 6, or 8.");
           algo_end(); return (false);
         }
-        
+
         warning("Assuming connection nrrd is transposed.");
       }
     }
 
 
-    // If there is an elem type property make sure it matches what is 
+    // If there is an elem type property make sure it matches what is
     // found automatically.
     std::string elem_type = "Auto";
 
     std::string property;
     unsigned int nconnections_prop = 0;
 
-    if ( cHandle->get_property( "Elem Type",property )) 
+    if ( cHandle->get_property( "Elem Type",property ))
     {
-      if( property.find( "Curve" ) != std::string::npos ) 
+      if( property.find( "Curve" ) != std::string::npos )
       {
         elem_type = "Curve";
         nconnections_prop = 2;
-      } 
-      else if( property.find( "Tri" ) != std::string::npos ) 
+      }
+      else if( property.find( "Tri" ) != std::string::npos )
       {
         elem_type = "Tri";
         nconnections_prop = 3;
-      } 
-      else if( property.find( "Tet" ) != std::string::npos ) 
+      }
+      else if( property.find( "Tet" ) != std::string::npos )
       {
         elem_type = "Tet";
         nconnections_prop = 4;
-      } 
-      else if( property.find( "Quad" ) != std::string::npos ) 
+      }
+      else if( property.find( "Quad" ) != std::string::npos )
       {
         elem_type = "Quad";
         nconnections_prop = 4;
-      } 
-      else if( property.find( "Prism" ) != std::string::npos ) 
+      }
+      else if( property.find( "Prism" ) != std::string::npos )
       {
         elem_type = "Prism";
         nconnections = 6;
-      } 
-      else if( property.find( "Hex" ) != std::string::npos ) 
+      }
+      else if( property.find( "Hex" ) != std::string::npos )
       {
         elem_type = "Hex";
         nconnections_prop = 8;
       }
     }
 
-    if( nconnections_prop == 0 ) 
+    if( nconnections_prop == 0 )
     {
-      if (pHandle->get_property( "Elem Type",property )) 
+      if (pHandle->get_property( "Elem Type",property ))
       {
         warning("Elem Type defined in Points nrrd instead of Connectivity nrrd.");
-        if( property.find( "Curve" ) != std::string::npos ) 
+        if( property.find( "Curve" ) != std::string::npos )
         {
           elem_type = "Curve";
           nconnections = 2;
-        } 
-        else if( property.find( "Tri" ) != std::string::npos ) 
+        }
+        else if( property.find( "Tri" ) != std::string::npos )
         {
           elem_type = "Tri";
           nconnections_prop = 3;
-        } 
-        else if( property.find( "Tet" ) != std::string::npos ) 
+        }
+        else if( property.find( "Tet" ) != std::string::npos )
         {
           elem_type = "Tet";
           nconnections_prop = 4;
-        } 
-        else if( property.find( "Quad" ) != std::string::npos ) 
+        }
+        else if( property.find( "Quad" ) != std::string::npos )
         {
           elem_type = "Quad";
           nconnections = 4;
-        } 
-        else if( property.find( "Prism" ) != std::string::npos ) 
+        }
+        else if( property.find( "Prism" ) != std::string::npos )
         {
           elem_type = "Prism";
           nconnections_prop = 6;
-        } 
-        else if( property.find( "Hex" ) != std::string::npos ) 
+        }
+        else if( property.find( "Hex" ) != std::string::npos )
         {
           elem_type = "Hex";
           nconnections_prop = 8;
@@ -825,18 +825,18 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
       }
     }
 
-    if( nconnections_prop && nconnections_prop != nconnections ) 
+    if( nconnections_prop && nconnections_prop != nconnections )
     {
       warning("The elem type properties and the number of connections found do not match.");
       warning("Using the number of connections found in the nrrd data.");
     }
 
-    switch (nconnections) 
+    switch (nconnections)
     {
       case 2:
       {
         // 2 -> curve
-        FieldInformation fi(CURVEMESH_E,LINEARDATA_E,DOUBLE_E); 
+        FieldInformation fi(CURVEMESH_E,LINEARDATA_E,DOUBLE_E);
         fHandle = CreateField(fi);
       }
       break;
@@ -850,50 +850,50 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
       case 4:
       {
         // 4 -> quad/tet (ask which if this case)
-        if (check_option("quad_or_tet","quad")) 
-        {
-          FieldInformation fi(QUADSURFMESH_E,LINEARDATA_E,DOUBLE_E); 
-          fHandle = CreateField(fi);
-        } 
-        else  if (check_option("quad_or_tet","tet")) 
-        {
-          FieldInformation fi(TETVOLMESH_E,LINEARDATA_E,DOUBLE_E);
-          fHandle = CreateField(fi);
-        } 
-        else if (elem_type == "Tet") 
-        {
-          FieldInformation fi(TETVOLMESH_E,LINEARDATA_E,DOUBLE_E);
-          fHandle = CreateField(fi);
-        } 
-        else if (elem_type == "Quad") 
+        if (check_option("quad_or_tet","quad"))
         {
           FieldInformation fi(QUADSURFMESH_E,LINEARDATA_E,DOUBLE_E);
           fHandle = CreateField(fi);
-        } 
-        else 
+        }
+        else  if (check_option("quad_or_tet","tet"))
+        {
+          FieldInformation fi(TETVOLMESH_E,LINEARDATA_E,DOUBLE_E);
+          fHandle = CreateField(fi);
+        }
+        else if (elem_type == "Tet")
+        {
+          FieldInformation fi(TETVOLMESH_E,LINEARDATA_E,DOUBLE_E);
+          fHandle = CreateField(fi);
+        }
+        else if (elem_type == "Quad")
+        {
+          FieldInformation fi(QUADSURFMESH_E,LINEARDATA_E,DOUBLE_E);
+          fHandle = CreateField(fi);
+        }
+        else
         {
           error("Auto detection of Elem Type using properties failed.");
           error("Connections Nrrd indicates 4 points per connection. Please indicate whether a Tet or Quad in UI.");
           algo_end(); return (false);
         }
-      }  
+      }
       break;
       case 6:
       {
         // 6 -> prism
-        FieldInformation fi(PRISMVOLMESH_E,LINEARDATA_E,DOUBLE_E); 
+        FieldInformation fi(PRISMVOLMESH_E,LINEARDATA_E,DOUBLE_E);
         fHandle = CreateField(fi);
       }
       break;
       case 8:
       {
         // 8 -> hex
-        FieldInformation fi(HEXVOLMESH_E,LINEARDATA_E,DOUBLE_E); 
+        FieldInformation fi(HEXVOLMESH_E,LINEARDATA_E,DOUBLE_E);
         fHandle = CreateField(fi);
       }
       break;
     }
-      
+
     if (fHandle.get_rep() == 0)
     {
       error("Could not generate output mesh.");
@@ -902,12 +902,12 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
 
     return (UnstructuredCreateMeshFromNrrdAlgo(this,fHandle,pHandle,cHandle,
                                                 nconnections, which));
-  } 
-  else 
+  }
+  else
   {
     int topology_ = UNKNOWN;
 
-    switch (pHandle->nrrd_->dim) 
+    switch (pHandle->nrrd_->dim)
     {
       case 1:
       {
@@ -915,19 +915,19 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
         // data 1D -> single point in a PointCloud
         FieldInformation fi(POINTCLOUDMESH_E,CONSTANTDATA_E,DOUBLE_E);
         fHandle = CreateField(fi);
-      } 
+      }
       break;
       case 2:
       {
         // data 1D ask if point cloud or structcurvemesh
-        if (struct_or_unstruct == "pointcloud") 
+        if (struct_or_unstruct == "pointcloud")
         {
           topology_ = UNSTRUCTURED;
           // data 2D -> PointCloud
           FieldInformation fi(POINTCLOUDMESH_E,CONSTANTDATA_E,DOUBLE_E);
           fHandle = CreateField(fi);
-        } 
-        else if (struct_or_unstruct == "structcurve") 
+        }
+        else if (struct_or_unstruct == "structcurve")
         {
           topology_ = STRUCTURED;
           // data 2D -> StructCurve
@@ -935,20 +935,20 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
           MeshHandle mesh = CreateMesh(fi,pHandle->nrrd_->axis[1].size);
           fHandle = CreateField(fi,mesh);
           idim = pHandle->nrrd_->axis[1].size;
-        } 
-        else 
+        }
+        else
         {
           // Try to figure out based on properties of the points
-          if (pHandle->get_property( "Topology" , property)) 
+          if (pHandle->get_property( "Topology" , property))
           {
-            if( property.find( "Unstructured" ) != std::string::npos ) 
+            if( property.find( "Unstructured" ) != std::string::npos )
             {
               topology_ = UNSTRUCTURED;
               // data 2D -> PointCloud
               FieldInformation fi(POINTCLOUDMESH_E,CONSTANTDATA_E,DOUBLE_E);
               fHandle = CreateField(fi);
-            } 
-            else if( property.find( "Structured" ) != std::string::npos ) 
+            }
+            else if( property.find( "Structured" ) != std::string::npos )
             {
               topology_ = STRUCTURED;
               // data 2D -> StructCurve
@@ -958,19 +958,19 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
               idim = pHandle->nrrd_->axis[1].size;
             }
           }
-    
-          if( topology_ == UNKNOWN ) 
+
+          if( topology_ == UNKNOWN )
           {
-            if (pHandle->get_property( "Elem Type", property)) 
-            { 
-              if ( property.find( "Point") != std::string::npos ) 
+            if (pHandle->get_property( "Elem Type", property))
+            {
+              if ( property.find( "Point") != std::string::npos )
               {
                 topology_ = UNSTRUCTURED;
                 // data 2D -> PointCloud
                 FieldInformation fi(POINTCLOUDMESH_E,CONSTANTDATA_E,DOUBLE_E);
                 fHandle = CreateField(fi);
-              } 
-              else if ( property.find( "Curve") != std::string::npos ) 
+              }
+              else if ( property.find( "Curve") != std::string::npos )
               {
                 topology_ = STRUCTURED;
                 // data 2D -> StructCurve
@@ -1003,7 +1003,7 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
         idim = pHandle->nrrd_->axis[1].size;
         jdim = pHandle->nrrd_->axis[2].size;
         //kdim = 1
-      }  
+      }
       break;
       case 4:
       {
@@ -1025,11 +1025,11 @@ CreateMeshFromNrrdAlgo::run(NrrdDataHandle pHandle,
       }
 
     // Create the mesh
-    if (topology_ == UNSTRUCTURED) 
+    if (topology_ == UNSTRUCTURED)
     {
       return (UnstructuredCreateMeshFromNrrdAlgo(this,fHandle,pHandle,cHandle,0, 0));
-    } 
-    else 
+    }
+    else
     {
       return (StructuredCreateMeshFromNrrdAlgo(this,fHandle,pHandle,idim,jdim,kdim));
     }

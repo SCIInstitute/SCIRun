@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
@@ -59,20 +59,20 @@ void ConvertMatrixToField::execute()
   // Define local handles of data objects:
   MatrixHandle imatrix;
   FieldHandle ofield;
-  
-  // Get the new input data:  
+
+  // Get the new input data:
   get_input_handle("Matrix",imatrix,true);
-    
+
   // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:    
+  // that executes every module downstream even if no data has changed:
   if (inputs_changed_ || guidatalocation_.changed() || !oport_cached("Field"))
   {
     update_state(Executing);
     std::string datalocation = guidatalocation_.get();
     SCIRunAlgo::ConverterAlgo algo(this);
     if (!(algo.MatrixToField(imatrix,ofield,datalocation))) return;
-  
-    // send new output if there is any:  
+
+    // send new output if there is any:
     send_output_handle("Field",ofield);
   }
 }

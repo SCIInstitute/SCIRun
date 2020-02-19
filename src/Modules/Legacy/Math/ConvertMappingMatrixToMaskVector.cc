@@ -1,13 +1,11 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   McKay Davis
-///   School of Computing
-///   University of Utah
-///@date  August, 2005
+
+/// @author
+///    McKay Davis
+///    School of Computing
+///    University of Utah
+/// @date  August, 2005
 
 #include <Dataflow/Network/Module.h>
 
@@ -46,7 +45,7 @@ namespace SCIRun {
 using namespace SCIRun;
 
 /// @class ConvertMappingMatrixToMaskVector
-/// @brief This module converts a Mapping Matrix to a Mask Vector. 
+/// @brief This module converts a Mapping Matrix to a Mask Vector.
 
 class ConvertMappingMatrixToMaskVector : public Module {
 public:
@@ -70,7 +69,7 @@ void
 ConvertMappingMatrixToMaskVector::execute()
 {
   update_state(Module::NeedData);
-  
+
   MatrixHandle matrixH;
   if (!get_input_handle("MappingMatrix", matrixH)) return;
 
@@ -103,5 +102,3 @@ ConvertMappingMatrixToMaskVector::execute()
 }
 
 } // End namespace SCIRun
-
-

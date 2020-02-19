@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_3a.cc
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -82,39 +83,39 @@ typedef PrismVolMesh<PrismLinearLgn<Point> > PVMesh;
 PersistentTypeID backwards_compat_PVM("PrismVolMesh", "Mesh", PVMesh::maker, PVMesh::maker);
 
 namespace SCIRun {
- 
+
 template class PrismVolMesh<PrismLinearLgn<Point> >;
 
 
 //NoData
-template class GenericField<PVMesh, NDBasis, std::vector<double> >;  
+template class GenericField<PVMesh, NDBasis, std::vector<double> >;
 
 //Constant
-template class GenericField<PVMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<PVMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<PVMesh, CFDdoubleBasis, std::vector<double> >;       
-template class GenericField<PVMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<PVMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<PVMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<PVMesh, CFDdoubleBasis, std::vector<double> >;
+template class GenericField<PVMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<PVMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<PVMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<PVMesh, CFDlonglongBasis,std::vector<long long> >;
-template class GenericField<PVMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<PVMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<PVMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<PVMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<PVMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<PVMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<PVMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<PVMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<PVMesh, CFDulongBasis,  std::vector<unsigned long> >;
 
 //Linear
-template class GenericField<PVMesh, PFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<PVMesh, PFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<PVMesh, PFDdoubleBasis, std::vector<double> >;       
-template class GenericField<PVMesh, PFDfloatBasis,  std::vector<float> >;        
+template class GenericField<PVMesh, PFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<PVMesh, PFDVectorBasis, std::vector<Vector> >;
+template class GenericField<PVMesh, PFDdoubleBasis, std::vector<double> >;
+template class GenericField<PVMesh, PFDfloatBasis,  std::vector<float> >;
 template class GenericField<PVMesh, PFDcomplexBasis, std::vector<complex> >;
 template class GenericField<PVMesh, PFDintBasis,    std::vector<int> >;
 template class GenericField<PVMesh, PFDlonglongBasis,std::vector<long long> >;
-template class GenericField<PVMesh, PFDshortBasis,  std::vector<short> >;        
-template class GenericField<PVMesh, PFDcharBasis,   std::vector<char> >;         
-template class GenericField<PVMesh, PFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<PVMesh, PFDshortBasis,  std::vector<short> >;
+template class GenericField<PVMesh, PFDcharBasis,   std::vector<char> >;
+template class GenericField<PVMesh, PFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<PVMesh, PFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<PVMesh, PFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<PVMesh, PFDulongBasis,  std::vector<unsigned long> >;
@@ -123,29 +124,29 @@ template class GenericField<PVMesh, PFDulongBasis,  std::vector<unsigned long> >
 
 PersistentTypeID
 backwards_compat_PVFT("PrismVolField<Tensor>", "Field",
-		      GenericField<PVMesh, PFDTensorBasis, 
-		      std::vector<Tensor> >::maker, 
-		      GenericField<PVMesh, CFDTensorBasis, 
+		      GenericField<PVMesh, PFDTensorBasis,
+		      std::vector<Tensor> >::maker,
+		      GenericField<PVMesh, CFDTensorBasis,
 		      std::vector<Tensor> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFV("PrismVolField<Vector>", "Field",
-		      GenericField<PVMesh, PFDVectorBasis, 
+		      GenericField<PVMesh, PFDVectorBasis,
 		      std::vector<Vector> >::maker,
-		      GenericField<PVMesh, CFDVectorBasis, 
+		      GenericField<PVMesh, CFDVectorBasis,
 		      std::vector<Vector> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFd("PrismVolField<double>", "Field",
-		      GenericField<PVMesh, PFDdoubleBasis, 
+		      GenericField<PVMesh, PFDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<PVMesh, CFDdoubleBasis, 
+		      GenericField<PVMesh, CFDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<PVMesh, NDBasis, 
+		      GenericField<PVMesh, NDBasis,
 		      std::vector<double> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFf("PrismVolField<float>", "Field",
-		      GenericField<PVMesh, PFDfloatBasis, 
+		      GenericField<PVMesh, PFDfloatBasis,
 		      std::vector<float> >::maker,
-		      GenericField<PVMesh, CFDfloatBasis, 
+		      GenericField<PVMesh, CFDfloatBasis,
 		      std::vector<float> >::maker);
 PersistentTypeID
 backwards_compat_PVFco("PrismVolField<complex>", "Field",
@@ -153,45 +154,45 @@ backwards_compat_PVFco("PrismVolField<complex>", "Field",
           std::vector<complex> >::maker,
           GenericField<PVMesh, CFDcomplexBasis,
           std::vector<complex> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFi("PrismVolField<int>", "Field",
-		      GenericField<PVMesh, PFDintBasis, 
+		      GenericField<PVMesh, PFDintBasis,
 		      std::vector<int> >::maker,
-		      GenericField<PVMesh, CFDintBasis, 
+		      GenericField<PVMesh, CFDintBasis,
 		      std::vector<int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFs("PrismVolField<short>", "Field",
-		      GenericField<PVMesh, PFDshortBasis, 
+		      GenericField<PVMesh, PFDshortBasis,
 		      std::vector<short> >::maker,
-		      GenericField<PVMesh, CFDshortBasis, 
+		      GenericField<PVMesh, CFDshortBasis,
 		      std::vector<short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFc("PrismVolField<char>", "Field",
-		      GenericField<PVMesh, PFDcharBasis, 
+		      GenericField<PVMesh, PFDcharBasis,
 		      std::vector<char> >::maker,
-		      GenericField<PVMesh, CFDcharBasis, 
+		      GenericField<PVMesh, CFDcharBasis,
 		      std::vector<char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFui("PrismVolField<unsigned_int>", "Field",
-		       GenericField<PVMesh, PFDuintBasis, 
+		       GenericField<PVMesh, PFDuintBasis,
 		       std::vector<unsigned int> >::maker,
-		       GenericField<PVMesh, CFDuintBasis, 
+		       GenericField<PVMesh, CFDuintBasis,
 		       std::vector<unsigned int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFus("PrismVolField<unsigned_short>", "Field",
-		       GenericField<PVMesh, PFDushortBasis, 
+		       GenericField<PVMesh, PFDushortBasis,
 		       std::vector<unsigned short> >::maker,
-		       GenericField<PVMesh, CFDushortBasis, 
+		       GenericField<PVMesh, CFDushortBasis,
 		       std::vector<unsigned short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFuc("PrismVolField<unsigned_char>", "Field",
-		       GenericField<PVMesh, PFDucharBasis, 
+		       GenericField<PVMesh, PFDucharBasis,
 		       std::vector<unsigned char> >::maker,
-		       GenericField<PVMesh, CFDucharBasis, 
+		       GenericField<PVMesh, CFDucharBasis,
 		       std::vector<unsigned char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_PVFul("PrismVolField<unsigned_long>", "Field",
-		       GenericField<PVMesh, PFDulongBasis, 
+		       GenericField<PVMesh, PFDulongBasis,
 		       std::vector<unsigned long> >::maker,
-		       GenericField<PVMesh, CFDulongBasis, 
+		       GenericField<PVMesh, CFDulongBasis,
 		       std::vector<unsigned long> >::maker);

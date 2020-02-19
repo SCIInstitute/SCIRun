@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 #include <stdio.h>
@@ -146,7 +144,7 @@ void fft1d_stride_float(float* data, int n, int stride,
 		    /* Compute W*(r2,i2) */
 		    float rp=wr*r2-wi*i2;
 		    float ip=wr*i2+wi*r2;
-		    
+
 		    float r1=d1[0];
 		    float i1=d1[1];
 		    /* Compute s1+W*s2 */
@@ -188,7 +186,7 @@ void fft1d_stride_float(float* data, int n, int stride,
 		    float ip_2=wr*i2_2+wi*r2_2;
 		    float rp_3=wr*r2_3-wi*i2_3;
 		    float ip_3=wr*i2_3+wi*r2_3;
-		    
+
 		    float r1_0=d1_0[0];
 		    float i1_0=d1_0[1];
 		    float r1_1=d1_1[0];
@@ -320,7 +318,7 @@ void fft1d_float(float* data, int n, float sign, unsigned long* flops,
 		    /* Compute W*(r2,i2) */
 		    float rp=wr*r2-wi*i2;
 		    float ip=wr*i2+wi*r2;
-		    
+
 		    float r1=d1[0];
 		    float i1=d1[1];
 		    /*printf("w=%g %g\n", wr, wi);*/
@@ -363,7 +361,7 @@ void fft1d_float(float* data, int n, float sign, unsigned long* flops,
 		    float ip_2=wr*i2_2+wi*r2_2;
 		    float rp_3=wr*r2_3-wi*i2_3;
 		    float ip_3=wr*i2_3+wi*r2_3;
-		    
+
 		    float r1_0=d1_0[0];
 		    float i1_0=d1_0[1];
 		    float r1_1=d1_1[0];

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Network/Module.h>
 
 #include <Core/Datatypes/Bundle.h>
@@ -36,7 +36,7 @@
 using namespace SCIRun;
 
 /// @class InsertColorMapsIntoBundle
-/// @brief This module inserts a colormap object into a bundle. 
+/// @brief This module inserts a colormap object into a bundle.
 
 class InsertColorMapsIntoBundle : public Module {
 public:
@@ -57,7 +57,7 @@ private:
   GuiInt        guireplace4_;
   GuiInt        guireplace5_;
   GuiInt        guireplace6_;
-  
+
   GuiString     guibundlename_;
 };
 
@@ -95,10 +95,10 @@ void InsertColorMapsIntoBundle::execute()
   get_input_handle("colormap4",colormap4,false);
   get_input_handle("colormap5",colormap5,false);
   get_input_handle("colormap6",colormap6,false);
-  
-  if (inputs_changed_ || guicolormap1name_.changed() || 
-      guicolormap2name_.changed() || guicolormap3name_.changed() || 
-      guicolormap4name_.changed() || guicolormap5name_.changed() || 
+
+  if (inputs_changed_ || guicolormap1name_.changed() ||
+      guicolormap2name_.changed() || guicolormap3name_.changed() ||
+      guicolormap4name_.changed() || guicolormap5name_.changed() ||
       guicolormap6name_.changed() ||
       guireplace1_.changed() || guireplace2_.changed() ||
       guireplace3_.changed() || guireplace4_.changed() ||
@@ -106,14 +106,14 @@ void InsertColorMapsIntoBundle::execute()
       guibundlename_.changed() || !oport_cached("bundle"))
   {
     update_state(Executing);
-  
+
     std::string colormap1Name = guicolormap1name_.get();
     std::string colormap2Name = guicolormap2name_.get();
     std::string colormap3Name = guicolormap3name_.get();
     std::string colormap4Name = guicolormap4name_.get();
     std::string colormap5Name = guicolormap5name_.get();
     std::string colormap6Name = guicolormap6name_.get();
-    
+
     std::string bundlename = guibundlename_.get();
 
     if (handle.get_rep())
@@ -131,27 +131,27 @@ void InsertColorMapsIntoBundle::execute()
     }
 
     if (colormap1.get_rep()
-        &&(guireplace1_.get()||!(handle->isColorMap(colormap1Name)))) 
+        &&(guireplace1_.get()||!(handle->isColorMap(colormap1Name))))
       handle->setColorMap(colormap1Name,colormap1);
 
     if (colormap2.get_rep()
-        &&(guireplace2_.get()||!(handle->isColorMap(colormap2Name)))) 
+        &&(guireplace2_.get()||!(handle->isColorMap(colormap2Name))))
       handle->setColorMap(colormap2Name,colormap2);
 
     if (colormap3.get_rep()
-        &&(guireplace3_.get()||!(handle->isColorMap(colormap3Name)))) 
+        &&(guireplace3_.get()||!(handle->isColorMap(colormap3Name))))
       handle->setColorMap(colormap3Name,colormap3);
 
     if (colormap4.get_rep()
-        &&(guireplace4_.get()||!(handle->isColorMap(colormap4Name)))) 
+        &&(guireplace4_.get()||!(handle->isColorMap(colormap4Name))))
       handle->setColorMap(colormap4Name,colormap4);
 
     if (colormap5.get_rep()
-        &&(guireplace5_.get()||!(handle->isColorMap(colormap5Name)))) 
+        &&(guireplace5_.get()||!(handle->isColorMap(colormap5Name))))
       handle->setColorMap(colormap5Name,colormap5);
 
     if (colormap6.get_rep()
-        &&(guireplace6_.get()||!(handle->isColorMap(colormap6Name)))) 
+        &&(guireplace6_.get()||!(handle->isColorMap(colormap6Name))))
       handle->setColorMap(colormap6Name,colormap6);
 
     if (bundlename != "")

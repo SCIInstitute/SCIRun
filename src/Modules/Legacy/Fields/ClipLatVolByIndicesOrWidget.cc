@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///@file  ClipLatVolByIndicesOrWidget.cc
@@ -76,12 +76,12 @@ class ClipLatVolByIndicesOrWidget : public Module
     virtual void execute();
     virtual void tcl_command(GuiArgs&, void*);
     virtual void widget_moved(bool last, BaseWidget*);
-    
+
     GuiDouble widget_scale_;
     GuiInt    widget_mode_;
-    
+
     virtual void presave();
-    virtual void post_read();      
+    virtual void post_read();
 };
 
 
@@ -102,7 +102,7 @@ ClipLatVolByIndicesOrWidget::ClipLatVolByIndicesOrWidget(GuiContext* ctx)
     init_(false),
     widgetid_(0),
     widget_scale_(get_ctx()->subVar("widget-scale"),0.1),
-    widget_mode_(get_ctx()->subVar("widget-mode"),0)    
+    widget_mode_(get_ctx()->subVar("widget-mode"),0)
 {
   widget_ = new BoxWidget(this, &widget_lock_, 1.0, true, false);
   GeometryOPortHandle ogport;
@@ -150,7 +150,7 @@ ClipLatVolByIndicesOrWidget::execute()
   FieldHandle ifieldhandle;
   if (!get_input_handle("Input Field", ifieldhandle)) return;
 
-	FieldInformation fi(ifieldhandle);	
+	FieldInformation fi(ifieldhandle);
 	if (!fi.is_latvol())
   {
     error("Input Field is not a LatVolMesh");
@@ -161,20 +161,20 @@ ClipLatVolByIndicesOrWidget::execute()
 
   // Update the widget.
   const BBox bbox = ifieldhandle->vmesh()->get_bounding_box();
-  if (!bbox.is_similar_to(last_bounds_) || 
+  if (!bbox.is_similar_to(last_bounds_) ||
       use_text_bbox_.get() || !init_)
   {
     Point center, right, down, in, bmin, bmax;
     bmin = Point(text_min_x_.get(), text_min_y_.get(), text_min_z_.get());
     bmax = Point(text_max_x_.get(), text_max_y_.get(), text_max_z_.get());
-    if (use_text_bbox_.get() || (!init_ && bmin!=bmax)) 
+    if (use_text_bbox_.get() || (!init_ && bmin!=bmax))
     {
       center = bmin + Vector(bmax-bmin) * 0.5;
       right = center + Vector(bmax.x()-bmin.x()/2.0, 0, 0);
       down = center + Vector(0, bmax.x()-bmin.x()/2.0, 0);
       in = center + Vector(0, 0, bmax.x()-bmin.x()/2.0);
-    } 
-    else 
+    }
+    else
     {
       bmin = bbox.min();
       bmax = bbox.max();
@@ -231,7 +231,7 @@ ClipLatVolByIndicesOrWidget::execute()
 
     // Get widget bounds.
     Point center, r, d, i, top, bottom;
-    if (use_text_bbox_.get() || !init_) 
+    if (use_text_bbox_.get() || !init_)
     {
       init_=true;
       top = Point(text_max_x_.get(), text_max_y_.get(), text_max_z_.get());
@@ -242,8 +242,8 @@ ClipLatVolByIndicesOrWidget::execute()
       d.y(bottom.y());
       i.z(bottom.z());
       widget_->SetPosition(center, r, d, i);
-    } 
-    else 
+    }
+    else
     {
       widget_->GetPosition(center, r, d, i);
       const Vector dx = r - center;
@@ -254,14 +254,14 @@ ClipLatVolByIndicesOrWidget::execute()
       text_min_z_.set(i.z());
       text_max_x_.set(2.*center.x()-r.x());
       text_max_y_.set(2.*center.y()-d.y());
-      text_max_z_.set(2.*center.z()-i.z());      
+      text_max_z_.set(2.*center.z()-i.z());
       top = center + dx + dy + dz;
       bottom = center - dx - dy - dz;
     }
 
     // Execute the clip.
     NrrdDataHandle nrrdh = new NrrdData();
-    
+
     VField* ifield = ifieldhandle->vfield();
     VMesh*  imesh = ifieldhandle->vmesh();
 
@@ -279,19 +279,19 @@ ClipLatVolByIndicesOrWidget::execute()
     imesh->from_index(si,sj,sk,ns);
     imesh->from_index(ei,ej,ek,ne);
 
-    if (si < 0) { si = 0; } 
-    if (sj < 0) { sj = 0; } 
-    if (sk < 0) { sk = 0; } 
-    if (ei < 0) { ei = 0; } 
-    if (ej < 0) { ej = 0; } 
-    if (ek < 0) { ek = 0; } 
+    if (si < 0) { si = 0; }
+    if (sj < 0) { sj = 0; }
+    if (sk < 0) { sk = 0; }
+    if (ei < 0) { ei = 0; }
+    if (ej < 0) { ej = 0; }
+    if (ek < 0) { ek = 0; }
 
-    if (si >= onx) { si = onx - 1; } 
-    if (sj >= ony) { sj = ony - 1; } 
-    if (sk >= onz) { sk = onz - 1; } 
-    if (ei >= onx) { ei = onx - 1; } 
-    if (ej >= ony) { ej = ony - 1; } 
-    if (ek >= onz) { ek = onz - 1; } 
+    if (si >= onx) { si = onx - 1; }
+    if (sj >= ony) { sj = ony - 1; }
+    if (sk >= onz) { sk = onz - 1; }
+    if (ei >= onx) { ei = onx - 1; }
+    if (ej >= ony) { ej = ony - 1; }
+    if (ek >= onz) { ek = onz - 1; }
 
     index_type tmp;
     if (si > ei) { tmp = ei; ei = si; si = tmp; }
@@ -307,7 +307,7 @@ ClipLatVolByIndicesOrWidget::execute()
     Point bmin(0.0, 0.0, 0.0);
     Point bmax(1.0, 1.0, 1.0);
     FieldInformation fi(ifieldhandle);
-    
+
     MeshHandle mesh = CreateMesh(fi,nx,ny,nz,bmin,bmax);
     FieldHandle output_field = CreateField(fi,mesh);
     VMesh*  omesh = output_field->vmesh();
@@ -322,7 +322,7 @@ ClipLatVolByIndicesOrWidget::execute()
     if (ifield->basis_order() == 1)
     {
       VMesh::Node::iterator bi, ei;
-      omesh->begin(bi); 
+      omesh->begin(bi);
       omesh->end(ei);
       VMesh::Node::size_type ns;
       imesh->size(ns);
@@ -338,7 +338,7 @@ ClipLatVolByIndicesOrWidget::execute()
         omesh->from_index(ii,jj,kk,*bi);
         imesh->to_index(idx,ii+si,jj+sj,kk+sk);
         mask[(unsigned int)idx] = 1;
-        ofield->copy_value(ifield, idx, *bi);      
+        ofield->copy_value(ifield, idx, *bi);
         ++bi;
       }
     }
@@ -363,8 +363,8 @@ ClipLatVolByIndicesOrWidget::execute()
         ofield->copy_value(ifield,idx,*bi);
         ++bi;
       }
-    }      
-    
+    }
+
     send_output_handle("Output Field", output_field);
     send_output_handle("MaskVector", nrrdh);
   }
@@ -399,4 +399,3 @@ ClipLatVolByIndicesOrWidget::tcl_command(GuiArgs& args, void* userdata) {
 
 
 } // End namespace SCIRun
-

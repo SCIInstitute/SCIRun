@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   December 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
-///         auxiliary file to the ViewScene render module.
+
+/// author James Hughes
+/// date   December 2012
+/// brief  Not sure this file should go in Modules/Render. But it is an
+///        auxiliary file to the ViewScene render module.
 
 #include <Interface/Modules/Render/GLContext.h>
 
@@ -55,4 +55,3 @@ void GLContext::swapBuffers()
 {
   mGLWidget->swapBuffers();
 }
-

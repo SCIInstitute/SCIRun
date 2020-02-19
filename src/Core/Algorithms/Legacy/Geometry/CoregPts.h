@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +52,7 @@
 
 namespace SCIRun {
 
-class SCISHARE CoregPts 
+class SCISHARE CoregPts
 {
 protected:
   int allowScale_;
@@ -85,7 +84,7 @@ public:
   virtual ~CoregPtsAnalytic();
   virtual int computeTrans();
 };
-  
+
 class SCISHARE CoregPtsProcrustes : public CoregPts
 {
 public:
@@ -93,7 +92,7 @@ public:
   virtual ~CoregPtsProcrustes();
   virtual int computeTrans();
 };
-  
+
 class SCISHARE CoregPtsSimplexSearch : public CoregPts
 {
 private:
@@ -112,7 +111,7 @@ private:
   double simplex_step(std::vector<double>&sum, double factor, int worst);
 public:
   CoregPtsSimplexSearch(int maxIters, double misfitTol, int &abort,
-			VField* dField, 
+			VField* dField,
 			MusilRNG &mr,
 			int allowScale=1, int allowRotate=1,
 			int allowTranslate=1);
@@ -120,7 +119,7 @@ public:
   virtual int computeTrans();
   virtual int getMisfit(double &misfit);
 };
-  
+
 } // End namespace SCIRun
 
 #endif // CoregAnalytic_H

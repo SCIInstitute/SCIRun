@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/SortMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/shared_ptr.hpp>
@@ -43,4 +44,3 @@ SortMatrixDialog::SortMatrixDialog(const std::string& name, ModuleStateHandle st
 
     addRadioButtonGroupManager({ascendButton_, descendButton_},Variables::Method);
   }
-

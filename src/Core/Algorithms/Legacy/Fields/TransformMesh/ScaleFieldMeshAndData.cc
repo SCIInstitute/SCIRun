@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -63,11 +63,11 @@ namespace
   }
 }
 
-bool 
+bool
 ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ScaleFieldMeshAndData");
-  
+
   if (!input)
   {
     error("No input field");
@@ -85,12 +85,12 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     Transform tf;
     BBox box = input->vmesh()->get_bounding_box();
     Vector center = 0.5*(box.get_min()+box.get_max());
-    
+
     tf.load_identity();
     if (scale_from_center) tf.pre_translate(-center);
     tf.pre_scale(Vector(meshscale,meshscale,meshscale));
     if (scale_from_center) tf.pre_translate(center);
-    
+
     output->vmesh()->transform(tf);
   }
   else
@@ -101,8 +101,8 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (!output)
   {
     error("Could not allocate output field");
-    return (false);  
-  }   
+    return (false);
+  }
 
   if (datascale != 1.0)
   {

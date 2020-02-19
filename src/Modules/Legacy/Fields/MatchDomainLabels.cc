@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/MatchDomainLabels.cc
 
 #include <Core/Algorithms/Fields/DomainFields/MatchDomainLabels.h>
@@ -43,7 +44,7 @@ class MatchDomainLabels : public Module {
     virtual ~MatchDomainLabels() {}
 
     virtual void execute();
-    
+
   private:
     SCIRunAlgo::MatchDomainLabelsAlgo algo_;
 };
@@ -61,14 +62,14 @@ void
 MatchDomainLabels::execute()
 {
   FieldHandle input, domain, output;
-  
+
   get_input_handle("Field",input,true);
   get_input_handle("Domain",domain,true);
-  
+
   if (inputs_changed_ || !oport_cached("Field"))
   {
     update_state(Executing);
-    
+
     if(!(algo_.run(input,domain,output))) return;
     send_output_handle("Field",output);
   }
@@ -76,5 +77,3 @@ MatchDomainLabels::execute()
 
 
 } // End namespace SCIRun
-
-

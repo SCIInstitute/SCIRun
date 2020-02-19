@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,17 +26,16 @@
 */
 
 
-
 ///
 ///@file  ArrayIndexOutOfBounds.h
 ///@brief Exception to indicate a failed bounds check
-/// 
+///
 ///@author
 ///       Steven G. Parker
 ///       Department of Computer Science
 ///       University of Utah
 ///@date  March 2000
-/// 
+///
 
 #include <Core/Exceptions/ArrayIndexOutOfBounds.h>
 #include <stdio.h>
@@ -65,11 +63,11 @@ ArrayIndexOutOfBounds(index_type value, index_type lower, index_type upper,
 }
 
 ArrayIndexOutOfBounds::ArrayIndexOutOfBounds(const ArrayIndexOutOfBounds& copy)
-  : Exception(copy), value(copy.value), lower(copy.lower), upper(copy.upper), 
+  : Exception(copy), value(copy.value), lower(copy.lower), upper(copy.upper),
     msg(strdup(copy.msg))
 {
 }
-    
+
 ArrayIndexOutOfBounds::~ArrayIndexOutOfBounds() NOEXCEPT
 {
 }

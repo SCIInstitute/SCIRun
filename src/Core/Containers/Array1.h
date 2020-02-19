@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -47,7 +45,7 @@
 
 namespace SCIRun {
 
-template<class T> 
+template<class T>
 class Array1 : public std::vector<T>
 {
 public:
@@ -78,7 +76,7 @@ void Pio(Piostream& stream, Array1<T>& array)
     Pio(stream,sz);
     size = static_cast<size_type>(sz);
   }
-  
+
   if(stream.reading())
   {
     array.clear();
@@ -98,7 +96,7 @@ void Pio(Piostream& stream, Array1<T>& array)
 }
 
 template<class T>
-void Pio(Piostream& stream, Array1<T>*& array) 
+void Pio(Piostream& stream, Array1<T>*& array)
 {
   if (stream.reading())
     array=new Array1<T>;
@@ -109,4 +107,3 @@ void Pio(Piostream& stream, Array1<T>*& array)
 
 
 #endif
-

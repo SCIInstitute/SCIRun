@@ -1,32 +1,32 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
+/*
+   For more information, please see: http://software.sci.utah.edu
 
-#ifndef CORE_PARSER_ARRAYMATHPROGRAM_H 
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifndef CORE_PARSER_ARRAYMATHPROGRAM_H
 #define CORE_PARSER_ARRAYMATHPROGRAM_H 1
 
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -81,13 +81,13 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
       ArrayMathFunctionPtr function,
       const std::string& function_id,
       const std::string& function_type,
-      int function_flags  
+      int function_flags
     );
 
     virtual ~ArrayMathFunction() {}
-    
-    ArrayMathFunctionPtr get_function() const 
-      { return (function_); } 
+
+    ArrayMathFunctionPtr get_function() const
+      { return (function_); }
 
   private:
     // The function to call that needs to be called on the data
@@ -105,14 +105,14 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
 
   class SCISHARE ArrayMathProgramCode : boost::noncopyable {
   public:
-  
+
     // Constructor
     ArrayMathProgramCode(ArrayMathFunctionPtr function) :
-      function_(function), index_(0), size_(1) {} 
-    
+      function_(function), index_(0), size_(1) {}
+
     ArrayMathProgramCode() :
       function_(0), index_(0), size_(1) {}
-    
+
     inline void set_function(ArrayMathFunctionPtr function)
     {
       function_ = function;
@@ -128,7 +128,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     inline void set_variable(size_t j, double* variable)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = variable; 
+      variables_[j] = variable;
     }
 
     // In case of a mesh, a pointer to the mesh can be stored in the
@@ -136,7 +136,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     inline void set_vmesh(size_t j, VMesh* vmesh)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = vmesh; 
+      variables_[j] = vmesh;
     }
 
     // In case of a field, a pointer to the field can be stored in the
@@ -144,7 +144,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     inline void set_vfield(size_t j, VField* vfield)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = vfield; 
+      variables_[j] = vfield;
     }
 
     // In case of a field, a pointer to a dense/column matrix can be stored in the
@@ -152,42 +152,42 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     inline void set_matrix(size_t j, Core::Datatypes::MatrixHandle matrix)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = matrix; 
+      variables_[j] = matrix;
     }
- 
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // In general case, set a pointer
     inline void set_pointer(size_t j, void* pointer)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = pointer;     
+      variables_[j] = pointer;
     }
 #endif
 
     inline void set_bool_array(size_t j, std::vector<bool>* array)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = array;     
+      variables_[j] = array;
     }
 
    inline void set_int_array(size_t j, std::vector<int>* array)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = array;     
+      variables_[j] = array;
     }
 
    inline void set_double_array(size_t j, std::vector<double>* array)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = array;     
+      variables_[j] = array;
     }
-    
+
     // Set the index, we keep this in the list so the program knows which
     // element we need to process.
     inline void set_index(index_type index) { index_ = index; }
 
     // Set the size of the array that needs to be processed
-    inline void set_size(size_type size) { size_ = size; } 
+    inline void set_size(size_type size) { size_ = size; }
     inline size_type get_size() const { return(size_); }
 
     // These functions are called by the actual code segments
@@ -221,21 +221,21 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     // which function failed
     inline bool run()
       { return (function_(*this)); }
-      
+
     void print() const;
 
   private:
     // This is the minimal information needed to run the parsed program
     // In order improve performance, all the buffers and instructions are
     // grouped together so they fit in a few pages of the memory manager
-  
+
     // Function call to evaluate this piece of the code
     ArrayMathFunctionPtr function_;
-  
+
     // Location of where the data is stored
     typedef boost::variant<
-      double*, 
-      Core::Datatypes::MatrixHandle, 
+      double*,
+      Core::Datatypes::MatrixHandle,
       VField*,
       VMesh*,
       std::vector<bool>*,
@@ -245,23 +245,23 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     StackBasedVector<variable_type,3> variables_;
 
     // Index in where we are in the selection
-    index_type    index_;  
-    
+    index_type    index_;
+
     // Sequence size
     size_type     size_;
 };
-  
+
   typedef boost::shared_ptr<ArrayMathProgramCode> ArrayMathProgramCodePtr;
 
 
 
-class SCISHARE ArrayMathProgramVariable 
+class SCISHARE ArrayMathProgramVariable
 {
   public:
     ArrayMathProgramVariable(const std::string& name, double* data) :
       name_(name), data_(data) {}
     double* get_data() const  { return (data_); }
-    
+
   private:
     std::string name_;
     double*     data_;
@@ -273,7 +273,7 @@ class SCISHARE ArrayMathProgramSource {
   public:
     ArrayMathProgramSource() :
       vmesh_(0), vfield_(0), matrix_(0), bool_array_(0), int_array_(0), double_array_(0) {}
-      
+
       void    set_vmesh(VMesh* vmesh)    { vmesh_ = vmesh; }
       VMesh*  get_vmesh()   const             { return (vmesh_); }
       bool    is_vmesh() const                { return (vmesh_ != 0); }
@@ -296,13 +296,13 @@ class SCISHARE ArrayMathProgramSource {
 
       void    set_double_array(std::vector<double>* array)  { double_array_ = array; }
       std::vector<double>* get_double_array() const { return (double_array_); }
-      bool    is_double_array()   const            { return (double_array_ != 0); }      
-      
+      bool    is_double_array()   const            { return (double_array_ != 0); }
+
   private:
     VMesh*    vmesh_;
     VField*   vfield_;
     Core::Datatypes::MatrixHandle   matrix_;
-    
+
     std::vector<bool>*    bool_array_;
     std::vector<int>*     int_array_;
     std::vector<double>*  double_array_;
@@ -310,7 +310,7 @@ class SCISHARE ArrayMathProgramSource {
 
 
   class SCISHARE ArrayMathProgram : boost::noncopyable {
-  
+
   public:
     ArrayMathProgram() : num_proc_(Core::Thread::Parallel::NumCores()), barrier_("ArrayMathProgram", num_proc_)
     {
@@ -319,10 +319,10 @@ class SCISHARE ArrayMathProgramSource {
       buffer_size_ = 128;
       array_size_ = 1;
     }
-    
+
     // Constructor that allows overloading the default optimization parameters
-    ArrayMathProgram(size_type array_size, 
-      size_type buffer_size,int num_proc = -1) : 
+    ArrayMathProgram(size_type array_size,
+      size_type buffer_size,int num_proc = -1) :
       num_proc_(num_proc < 1 ? Core::Thread::Parallel::NumCores() : num_proc),
       barrier_("ArrayMathProgram", num_proc_)
     {
@@ -331,7 +331,7 @@ class SCISHARE ArrayMathProgramSource {
       buffer_size_ = buffer_size;
       array_size_ = array_size;
     }
-  
+
     // Get the optimization parameters, these can only be set when creating the
     // object as it depends on allocated buffer sizes and those are hard to change
     // when allocated
@@ -343,7 +343,7 @@ class SCISHARE ArrayMathProgramSource {
     // Set the size of the array to process
     size_type get_array_size() const { return (array_size_); }
     void set_array_size(size_type array_size) { array_size_ = array_size; }
-    
+
     bool add_source(const std::string& name, VField* vfield);
     bool add_source(const std::string& name, VMesh*  vmesh);
     bool add_source(const std::string& name, Core::Datatypes::MatrixHandle matrix);
@@ -353,7 +353,7 @@ class SCISHARE ArrayMathProgramSource {
 
     bool add_sink(const std::string& name, VField* vfield);
     bool add_sink(const std::string& name, VMesh*  vmesh);
-    bool add_sink(const std::string& name, Core::Datatypes::MatrixHandle matrix);    
+    bool add_sink(const std::string& name, Core::Datatypes::MatrixHandle matrix);
     bool add_sink(const std::string& name, std::vector<bool>* array);
     bool add_sink(const std::string& name, std::vector<int>* array);
     bool add_sink(const std::string& name, std::vector<double>* array);
@@ -365,8 +365,8 @@ class SCISHARE ArrayMathProgramSource {
     void resize_sequential_variables(size_t sz)
       {
         sequential_variables_.resize(num_proc_);
-        for (int np=0; np < num_proc_; np++) 
-          sequential_variables_[np].resize(sz); 
+        for (int np=0; np < num_proc_; np++)
+          sequential_variables_[np].resize(sz);
       }
 
     void resize_const_functions(size_t sz)
@@ -376,13 +376,13 @@ class SCISHARE ArrayMathProgramSource {
     void resize_sequential_functions(size_t sz)
       {
         sequential_functions_.resize(num_proc_);
-        for (int np=0; np < num_proc_; np++) 
-          sequential_functions_[np].resize(sz); 
+        for (int np=0; np < num_proc_; np++)
+          sequential_functions_[np].resize(sz);
       }
 
     // Central buffer for all parameters
     double* create_buffer(size_t size)
-    { buffer_.resize(size); return buffer_.empty() ? 0 : (&(buffer_[0])); } 
+    { buffer_.resize(size); return buffer_.empty() ? 0 : (&(buffer_[0])); }
 
     // Set variables which we use as temporal information structures
     /// @todo: need to remove them at some point
@@ -392,7 +392,7 @@ class SCISHARE ArrayMathProgramSource {
       { single_variables_[j] = handle; }
     void set_sequential_variable(size_t j, size_t np, ArrayMathProgramVariableHandle handle)
       { sequential_variables_[np][j] = handle; }
-  
+
     ArrayMathProgramVariableHandle get_const_variable(size_t j) const
       { return (const_variables_[j]); }
     ArrayMathProgramVariableHandle get_single_variable(size_t j) const
@@ -407,47 +407,47 @@ class SCISHARE ArrayMathProgramSource {
       { single_functions_[j] = pc; }
     void set_sequential_program_code(size_t j, size_t np, ArrayMathProgramCodePtr pc)
       { sequential_functions_[np][j] = pc; }
-    
-    // Code to find the pointers that are given for sources and sinks  
+
+    // Code to find the pointers that are given for sources and sinks
     bool find_source(const std::string& name,  ArrayMathProgramSource& ps);
     bool find_sink(const std::string& name,  ArrayMathProgramSource& ps);
-    
+
     bool run_const(size_t& error_line);
-    bool run_single(size_t& error_line);  
+    bool run_single(size_t& error_line);
     bool run_sequential(size_t& error_line);
-    
-    void set_parser_program(ParserProgramHandle handle) { pprogram_ = handle; }      
+
+    void set_parser_program(ParserProgramHandle handle) { pprogram_ = handle; }
     ParserProgramHandle get_parser_program() { return (pprogram_); }
-                            
-  private:    
-  
+
+  private:
+
     // General parameters that determine how many values are computed at
     // the same time and how many processors to use
     size_type buffer_size_;
     int num_proc_;
-    
+
     // The size of the array we are using
     size_type array_size_;
 
     // Memory buffer
     std::vector<double> buffer_;
-    
+
     // Source and Sink information
     std::map<std::string,ArrayMathProgramSource> input_sources_;
     std::map<std::string,ArrayMathProgramSource> output_sinks_;
-    
+
     // Variable lists
     std::vector<ArrayMathProgramVariableHandle> const_variables_;
     std::vector<ArrayMathProgramVariableHandle> single_variables_;
     std::vector<std::vector<ArrayMathProgramVariableHandle> > sequential_variables_;
-    
+
     // Program code
     std::vector<ArrayMathProgramCodePtr> const_functions_;
     std::vector<ArrayMathProgramCodePtr> single_functions_;
     std::vector<std::vector<ArrayMathProgramCodePtr> > sequential_functions_;
-    
+
     ParserProgramHandle pprogram_;
-    
+
     // For parallel code
   private:
     void run_parallel(int proc);
@@ -465,15 +465,15 @@ class SCISHARE ArrayMathInterpreter {
     // The interpreter Creates executable code from the parsed code
     // The first step is setting the data sources and sinks
 
-  
+
     //------------------------------------------------------------------------
     // Step 0 : create program variable
     bool create_program(ArrayMathProgramHandle& mprogram,std::string& error);
 
-  
+
     //------------------------------------------------------------------------
     // Step 1: add sources and sinks
-    
+
     // Field data/node/element sources
     bool add_fielddata_source(ArrayMathProgramHandle& pprogram,
                               const std::string& name,
@@ -483,30 +483,30 @@ class SCISHARE ArrayMathInterpreter {
                               const std::string& name,
                               FieldHandle field,
                               std::string& error);
-    
+
     // Matrix sources
     bool add_matrix_source(ArrayMathProgramHandle& pprogram,
-                           const std::string& name, 
+                           const std::string& name,
                            Core::Datatypes::MatrixHandle matrix,
                            std::string& error);
 
     bool add_bool_array_source(ArrayMathProgramHandle& pprogram,
-                           const std::string& name, 
+                           const std::string& name,
                            std::vector<bool>* array,
                            std::string& error);
 
     bool add_int_array_source(ArrayMathProgramHandle& pprogram,
-                           const std::string& name, 
+                           const std::string& name,
                            std::vector<int>* array,
                            std::string& error);
 
     bool add_double_array_source(ArrayMathProgramHandle& pprogram,
-                           const std::string& name, 
+                           const std::string& name,
                            std::vector<double>* array,
                            std::string& error);
 
 
-    // Field data/node/element sinks  
+    // Field data/node/element sinks
     bool add_fielddata_sink(ArrayMathProgramHandle& pprogram,
                             const std::string& name,
                             FieldHandle field,
@@ -518,22 +518,22 @@ class SCISHARE ArrayMathInterpreter {
 
     // Matrix sinks
     bool add_matrix_sink(ArrayMathProgramHandle& pprogram,
-                         const std::string& name, 
+                         const std::string& name,
                          Core::Datatypes::MatrixHandle matrix,
                          std::string& error);
 
     bool add_bool_array_sink(ArrayMathProgramHandle& pprogram,
-                         const std::string& name, 
+                         const std::string& name,
                          std::vector<bool>* array,
                          std::string& error);
 
     bool add_int_array_sink(ArrayMathProgramHandle& pprogram,
-                         const std::string& name, 
+                         const std::string& name,
                          std::vector<int>* array,
                          std::string& error);
 
     bool add_double_array_sink(ArrayMathProgramHandle& pprogram,
-                         const std::string& name, 
+                         const std::string& name,
                          std::vector<double>* array,
                          std::string& error);
 
@@ -546,18 +546,18 @@ class SCISHARE ArrayMathInterpreter {
     bool translate(ParserProgramHandle& pprogram,
                    ArrayMathProgramHandle& mprogram,
                    std::string& error);
-  
-  
+
+
     //------------------------------------------------------------------------
     // Step 3: Set the array size
 
     bool set_array_size(ArrayMathProgramHandle& mprogram,size_type array_size);
-  
+
     //------------------------------------------------------------------------
     // Step 4: Run the code
-  
+
     bool run(ArrayMathProgramHandle& mprogram,std::string& error);
-    
+
 };
 
 }

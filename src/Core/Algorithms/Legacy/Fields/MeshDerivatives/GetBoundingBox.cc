@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/MeshDerivatives/GetBoundingBox.h>
 #include <Core/Datatypes/FieldInformation.h>
 
@@ -33,7 +33,7 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 GetBoundingBoxAlgo::
 run(FieldHandle input, FieldHandle& output)
 {
@@ -46,18 +46,18 @@ run(FieldHandle input, FieldHandle& output)
   }
 
   BBox bbox = input->vmesh()->get_bounding_box();
-  
+
   FieldInformation fi("LatVolMesh","Linear","NoData","double");
   MeshHandle mesh = CreateMesh(fi,2,2,2,bbox.min(),bbox.max());
-  
+
   output = CreateField(fi,mesh);
   if (output.get_rep() == 0)
   {
     error("Could not allocate output mesh");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   algo_end(); return (true);
-}   
+}
 
 } // namespace SCIRunAlgo

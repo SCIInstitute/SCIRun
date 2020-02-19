@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
@@ -61,9 +62,9 @@ namespace
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/BrainStim/mickey_tms_coil.fld");
   }
-    
+
   DenseMatrixHandle TMSCoilLocation()
-  { 
+  {
    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,3));
    (*m)(0,0) = 33.6654;
    (*m)(0,1) = 34.625;
@@ -88,7 +89,7 @@ TEST_F(ElectrodeCoilSetupTests, ThrowsForWrongType)
   auto tms = makeModule("ElectrodeCoilSetup");
   stubPortNWithThisData(tms, 0, TMSCoilLocation());
   stubPortNWithThisData(tms, 1, LoadMickeyScalpSurfMesh());
-  stubPortNWithThisData(tms, 2, TMSCoilLocation());  
+  stubPortNWithThisData(tms, 2, TMSCoilLocation());
   EXPECT_THROW(tms->execute(), WrongDatatypeOnPortException);
 }
 
@@ -101,4 +102,3 @@ TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
   stubPortNWithThisData(tms, 2, nullField);
   EXPECT_THROW(tms->execute(), NullHandleOnPortException);
 }
-

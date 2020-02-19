@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -84,7 +84,7 @@ TEST_F(RemoveUnusedNodesModuleTests, WrongInput)
 
 TEST_F(RemoveUnusedNodesModuleTests, ShouldWork)
 {
-  auto cg = makeModule("RemoveUnusedNodes");  
+  auto cg = makeModule("RemoveUnusedNodes");
   MeshHandle basicTriangleMesh_;
   FieldInformation fi("TriSurfMesh", CONSTANTDATA_E, "double");
   basicTriangleMesh_ = CreateMesh(fi);
@@ -93,7 +93,7 @@ TEST_F(RemoveUnusedNodesModuleTests, ShouldWork)
   triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
   triangleVMesh->add_point(Point(1.0, 0.0, 0.0));
   triangleVMesh->add_point(Point(0.5, 1.0, 0.0));
-  triangleVMesh->add_point(Point(2.0, 2.0, 2.0)); // add extra point which need to be removed 
+  triangleVMesh->add_point(Point(2.0, 2.0, 2.0)); // add extra point which need to be removed
   VMesh::Node::array_type vdata(3);
   vdata[0]=0;
   vdata[1]=1;
@@ -105,4 +105,3 @@ TEST_F(RemoveUnusedNodesModuleTests, ShouldWork)
   stubPortNWithThisData(cg, 0, basicTriangleField_);
   EXPECT_NO_THROW(cg->execute());
 }
-

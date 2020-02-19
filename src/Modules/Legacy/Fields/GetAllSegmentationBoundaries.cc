@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/GetAllSegmentationBoundaries.cc
 
 #include <Core/Datatypes/Field.h>
@@ -41,7 +42,7 @@ class GetAllSegmentationBoundaries : public Module {
   public:
     GetAllSegmentationBoundaries(GuiContext*);
     virtual ~GetAllSegmentationBoundaries() {}
-  
+
     virtual void execute();
 };
 
@@ -58,10 +59,10 @@ GetAllSegmentationBoundaries::execute()
 {
   // Declare dataflow object
   NrrdDataHandle nrrdh;
-  
+
   // Get data from ports
   get_input_handle("Segmentations", nrrdh, true);
-  
+
   // If parameters changed, do algorithm
   if (inputs_changed_ || !oport_cached("Boundaries") && nrrdh->nrrd_)
   {

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///@file  DimensionMismatch.h
@@ -53,7 +53,7 @@ DimensionMismatch::DimensionMismatch(size_type value, size_type expected, const 
   s << "A DimensionMismatch exception was thrown: got " << value << ", expected " << expected << " in "
     << (file ? file : "<unknown>") << ":" << line << "\n";
   message_ = s.str();
-    
+
 #ifdef EXCEPTIONS_CRASH
     std::cout << message_ << "\n";
 #endif
@@ -63,7 +63,7 @@ DimensionMismatch::DimensionMismatch(const DimensionMismatch& copy)
     : Exception(copy), message_(copy.message_)
 {
 }
-    
+
 DimensionMismatch::~DimensionMismatch() NOEXCEPT
 {
 }

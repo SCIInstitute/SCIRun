@@ -1,33 +1,33 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///    @file    CrvLinearLgn.h
-///    @author  Martin Cole, Frank B. Sachse
-///    @date    Dec 03 2004
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole, Frank B. Sachse
+   Date:            December 3 2004
+*/
+
 
 #ifndef CORE_BASIS_CRVLINEARLGN_H
 #define CORE_BASIS_CRVLINEARLGN_H 1
@@ -46,47 +46,47 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-/// Class for describing unit geometry of CrvLinearLgn 
+/// Class for describing unit geometry of CrvLinearLgn
 class CrvLinearLgnUnitElement {
-public: 
-  static SCISHARE double unit_vertices[2][1]; ///< Parametric coordinates of vertices 
-  static SCISHARE int unit_edges[1][2];    ///< References to vertices of unit edge 
+public:
+  static SCISHARE double unit_vertices[2][1]; ///< Parametric coordinates of vertices
+  static SCISHARE int unit_edges[1][2];    ///< References to vertices of unit edge
   static SCISHARE double unit_center[1];
 
   CrvLinearLgnUnitElement() {}
   virtual ~CrvLinearLgnUnitElement() {}
 
-  /// return dimension of domain 
-  static int domain_dimension() 
-    { return 1; } 
- 
+  /// return dimension of domain
+  static int domain_dimension()
+    { return 1; }
+
    /// return size of the domain
-  static double domain_size() 
+  static double domain_size()
   { return 1.0; }
-  
+
   /// return number of vertices
-  static int number_of_vertices() 
-    { return 2; }
-    
-  /// return number of vertices in mesh
-  static int number_of_mesh_vertices() 
-    { return 2; }
-  
-  /// return degrees of freedom
-  static int dofs() 
+  static int number_of_vertices()
     { return 2; }
 
-  /// return number of edges 
-  static int number_of_edges() 
-    { return 1; } 
-  
-  /// return number of vertices per face 
-  static int vertices_of_face() 
-    { return 0; } 
-  
-  /// return number of faces per cell 
-  static int faces_of_cell() 
-    { return 0; } 
+  /// return number of vertices in mesh
+  static int number_of_mesh_vertices()
+    { return 2; }
+
+  /// return degrees of freedom
+  static int dofs()
+    { return 2; }
+
+  /// return number of edges
+  static int number_of_edges()
+    { return 1; }
+
+  /// return number of vertices per face
+  static int vertices_of_face()
+    { return 0; }
+
+  /// return number of faces per cell
+  static int faces_of_cell()
+    { return 0; }
 
   static double length(int /* edge */) { return 1.; } ///< return length
   static double area(int /* face */) { return 0.; } ///< return area
@@ -97,43 +97,43 @@ public:
 
 /// Class for creating geometrical approximations of Crv meshes
 class CrvApprox {
-public:  
+public:
   CrvApprox() {}
   virtual ~CrvApprox() {}
-  
+
   /// Approximate edge for element by piecewise linear segments
   /// return: coords gives parametric coordinates of the approximation.
   /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
-  void approx_edge(const unsigned /*edge*/, 
-                   const unsigned div_per_unit, 
+  void approx_edge(const unsigned /*edge*/,
+                   const unsigned div_per_unit,
                    VECTOR& coords) const
   {
     typedef typename VECTOR::value_type VECTOR2;
     coords.resize(div_per_unit + 1);
-    for(unsigned i = 0; i <= div_per_unit; i++) 
+    for(unsigned i = 0; i <= div_per_unit; i++)
     {
       coords[i].resize(1);
       coords[i][0] = static_cast<typename VECTOR2::value_type>(
-                                          (double)i / (double)div_per_unit); 
+                                          (double)i / (double)div_per_unit);
     }
   }
-  
+
   /// Approximate faces for element by piecewise linear elements
   /// return: coords gives parametric coordinates at the approximation point.
   /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
-  void approx_face(const unsigned /*face*/, 
-                   const unsigned /*div_per_unit*/, 
+  void approx_face(const unsigned /*face*/,
+                   const unsigned /*div_per_unit*/,
                    VECTOR& coords) const
   {
     coords.resize(0);
   }
-  
+
 };
 
 
-/// Class for searching of parametric coordinates related to a 
+/// Class for searching of parametric coordinates related to a
 /// value in Crv meshes and fields
 template <class ElemBasis>
 class CrvLocate : public Dim1Locate<ElemBasis> {
@@ -142,22 +142,22 @@ public:
 
   CrvLocate() {}
   virtual ~CrvLocate() {}
- 
-  /// find coordinate in interpolation for given value         
+
+  /// find coordinate in interpolation for given value
   template <class ElemData, class VECTOR>
-  bool get_coords(const ElemBasis *pEB, VECTOR &coords, 
-		  const T& value, const ElemData &cd) const  
-  {          
+  bool get_coords(const ElemBasis *pEB, VECTOR &coords,
+		  const T& value, const ElemData &cd) const
+  {
     initial_guess(pEB, value, cd, coords);
     if (this->get_iterative(pEB, coords, value, cd))
       return check_coords(coords);
-    return false; 
+    return false;
   }
 
   template<class VECTOR>
-  inline bool check_coords(const VECTOR &x) const  
-  {  
-    if (x[0]>=-Dim3Locate<ElemBasis>::thresholdDist && 
+  inline bool check_coords(const VECTOR &x) const
+  {
+    if (x[0]>=-Dim3Locate<ElemBasis>::thresholdDist &&
       x[0]<=Dim3Locate<ElemBasis>::thresholdDist1)
       return true;
 
@@ -166,25 +166,25 @@ public:
 
 protected:
   /// find a reasonable initial guess for starting Newton iteration.
-  /// Reasonable means near and with a derivative!=0 
+  /// Reasonable means near and with a derivative!=0
   template <class ElemData, class VECTOR>
-  void initial_guess(const ElemBasis *pElem, const T &val, 
+  void initial_guess(const ElemBasis *pElem, const T &val,
 		     const ElemData &cd, VECTOR &guess) const
   {
     double dist = DBL_MAX;
-	
+
     VECTOR coord(1);
     StackVector<T,1> derivs;
     guess.resize(1);
-    
+
     const int end = 3;
     for (int x = 1; x < end; x++) {
       coord[0] = x / (double) end;
       double cur_d;
-      if (compare_distance(pElem->interpolate(coord, cd), val, cur_d, dist)) 
+      if (compare_distance(pElem->interpolate(coord, cd), val, cur_d, dist))
       {
         pElem->derivate(coord, cd, derivs);
-        if (!check_zero(derivs)) 
+        if (!check_zero(derivs))
         {
           dist = cur_d;
           guess = coord;
@@ -196,7 +196,7 @@ protected:
 
 /// Class with weights and coordinates for 1st order Gaussian integration
 template <class T>
-class CrvGaussian1 
+class CrvGaussian1
 {
 public:
   static int GaussianNum;
@@ -215,7 +215,7 @@ T CrvGaussian1<T>::GaussianWeights[1] = {1.};
 
 /// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
-class CrvGaussian2 
+class CrvGaussian2
 {
 public:
   static int GaussianNum;
@@ -234,7 +234,7 @@ T CrvGaussian2<T>::GaussianWeights[2] = {.5, .5};
 
 /// Class with weights and coordinates for 3rd order Gaussian integration
 template <class T>
-class CrvGaussian3 
+class CrvGaussian3
 {
 public:
   static int GaussianNum;
@@ -246,23 +246,23 @@ template <class T>
 int CrvGaussian3<T>::GaussianNum = 3;
 
 template <class T>
-T CrvGaussian3<T>::GaussianPoints[3][1] = 
+T CrvGaussian3<T>::GaussianPoints[3][1] =
   {{0.11270166537950}, {0.5}, {0.88729833462050}};
 
 template <class T>
-T CrvGaussian3<T>::GaussianWeights[3] = 
+T CrvGaussian3<T>::GaussianWeights[3] =
   {.2777777777, .4444444444, .2777777777};
 
 
 
-/// Class for handling of element of type curve with 
+/// Class for handling of element of type curve with
 /// linear lagrangian interpolation
 template <class T>
-class CrvLinearLgn : 
-          public BasisSimple<T>, 
-          public CrvApprox, 
-          public CrvGaussian1<double>, 
-          public CrvSamplingSchemes, 
+class CrvLinearLgn :
+          public BasisSimple<T>,
+          public CrvApprox,
+          public CrvGaussian1<double>,
+          public CrvSamplingSchemes,
           public CrvLinearLgnUnitElement,
           public CrvElementWeights
 {
@@ -289,13 +289,13 @@ public:
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
     double w[2];
-    get_linear_weights(coords, w); 
+    get_linear_weights(coords, w);
     return (T)(w[0] * cd.node0() + w[1] * cd.node1());
   }
 
   /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
-  void derivate(const VECTOR1& /*coords*/, const ElemData &cd, 
+  void derivate(const VECTOR1& /*coords*/, const ElemData &cd,
 		VECTOR2 &derivs) const
   {
     derivs.resize(1);
@@ -304,36 +304,36 @@ public:
 
   /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
-  bool get_coords(VECTOR &coords, const T& value, 
-		  const ElemData &cd) const  
+  bool get_coords(VECTOR &coords, const T& value,
+		  const ElemData &cd) const
   {
     CrvLocate< CrvLinearLgn<T> > CL;
     return CL.get_coords(this, coords, value, cd);
   }
- 
+
   /// get arc length for edge
   template <class ElemData>
-  double get_arc_length(const unsigned edge, const ElemData &cd) const  
+  double get_arc_length(const unsigned edge, const ElemData &cd) const
   {
     return get_arc1d_length<CrvGaussian1<double> >(this, edge, cd);
   }
 
   /// get area
   template <class ElemData>
-    double get_area(const unsigned /* face */, const ElemData & /* cd */) const  
+    double get_area(const unsigned /* face */, const ElemData & /* cd */) const
   {
     return 0.;
   }
- 
+
   /// get volume
   template <class ElemData>
-    double get_volume(const ElemData & /* cd */) const  
+    double get_volume(const ElemData & /* cd */) const
   {
     return 0.;
   }
-  
+
   template <class VECTOR>
-  void approx_edge(const unsigned /*edge*/, 
+  void approx_edge(const unsigned /*edge*/,
 			   const unsigned /*div_per_unit*/,
 			   std::vector<VECTOR> &coords) const
   {
@@ -344,7 +344,7 @@ public:
     VECTOR &tmp1 = coords[1];
     tmp1.resize(1);
     tmp[0] = 1.0;
-  }  
+  }
 
   static const std::string type_name(int n = -1);
 
@@ -387,9 +387,9 @@ const TypeDescription* get_type_description(Core::Basis::CrvLinearLgn<T> *)
     const TypeDescription *sub = get_type_description((T*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new TypeDescription("CrvLinearLgn", subs, 
+    td = new TypeDescription("CrvLinearLgn", subs,
       std::string(__FILE__),
-      "SCIRun", 
+      "SCIRun",
       TypeDescription::BASIS_E);
   }
   return td;

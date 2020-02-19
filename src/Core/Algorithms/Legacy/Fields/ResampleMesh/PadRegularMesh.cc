@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,9 +35,9 @@
 namespace SCIRunAlgo {
 
 ///////////////////////////////////////////////////////
-// Refine elements for a TetVol 
+// Refine elements for a TetVol
 
-bool  
+bool
 PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
 {
   algo_start("PadRegularMesh");
@@ -50,7 +49,7 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   FieldInformation fi(input);
-  
+
   if ((!(fi.is_latvolmesh()))&&(!(fi.is_imagemesh()))&&(!(fi.is_scanlinemesh())))
   {
     error("This algorithm only operates on regular grids");
@@ -60,14 +59,14 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   VMesh::dimension_type dims, newdims;
 
   VMesh*  vmesh  = input->vmesh();
-    
+
   Transform trans;
   vmesh->get_canonical_transform(trans);
-  vmesh->get_dimensions(dims); 
-  vmesh->get_dimensions(newdims); 
-  
+  vmesh->get_dimensions(dims);
+  vmesh->get_dimensions(newdims);
+
   int padsize = get_int("pad-size");
-  
+
   if (padsize < 0)
   {
     error("Negative pads are currently not supported");
@@ -75,10 +74,10 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   MeshHandle mesh;
-  
+
   for(size_t k=0;k<newdims.size();k++) newdims[k] = dims[k] + 2*(padsize);
 
-  if(dims.size() == 1) 
+  if(dims.size() == 1)
   {
     trans.post_translate(-0.5*Vector(static_cast<double>(newdims[0]-dims[0])/static_cast<double>(dims[0]-1),0.0,0.0));
     trans.post_scale(Vector(static_cast<double>(newdims[0]-1)/static_cast<double>(dims[0]-1),0.0,0.0));
@@ -90,7 +89,7 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
     }
     mesh->vmesh()->transform(trans);
   }
-  else if(dims.size() == 2) 
+  else if(dims.size() == 2)
   {
     trans.post_translate(-0.5*Vector(static_cast<double>(newdims[0]-dims[0])/static_cast<double>(dims[0]-1),static_cast<double>(newdims[1]-dims[1])/static_cast<double>(dims[1]-1),0.0));
     trans.post_scale(Vector(static_cast<double>(newdims[0]-1)/static_cast<double>(dims[0]-1),static_cast<double>(newdims[1]-1)/static_cast<double>(dims[1]-1),0.0));
@@ -121,25 +120,25 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   output = CreateField(fi,mesh);
-  
+
   if (!(output.get_rep()))
   {
     error("Could not allocate output field");
     algo_end(); return (false);
   }
-  
+
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
   VMesh*  omesh  = output->vmesh();
   VMesh*  imesh  = input->vmesh();
-  
+
   if (ifield->basis_order() == 0)
   {
     VMesh::Elem::index_type src;
     VMesh::Elem::index_type dst;
-    
+
     ofield->set_all_values(get_scalar("pad-value"));
-    
+
     if (dims.size() == 3)
     {
       for (VField::index_type k=0;k<(dims[2]-1);k++)
@@ -166,22 +165,22 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
           ofield->copy_value(ifield,src,dst);
         }
       }
-    }    
+    }
     else if (dims.size() == 1)
     {
       for (VField::index_type i=0;i<(dims[0]-1);i++)
       {
         ofield->copy_value(ifield,i,i+padsize);
       }
-    }    
+    }
   }
   else if (ifield->basis_order() > 0)
   {
     VMesh::Node::index_type src;
     VMesh::Node::index_type dst;
-    
+
     ofield->set_all_values(get_scalar("pad-value"));
-    
+
     if (dims.size() == 3)
     {
       for (VField::index_type k=0;k<dims[2];k++)
@@ -189,7 +188,7 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
         for (VField::index_type j=0;j<dims[1];j++)
         {
           for (VField::index_type i=0;i<dims[0];i++)
-          {   
+          {
             imesh->to_index(src,i,j,k);
             omesh->to_index(dst,i+padsize,j+padsize,k+padsize);
             ofield->copy_value(ifield,src,dst);
@@ -208,20 +207,20 @@ PadRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
           ofield->copy_value(ifield,src,dst);
         }
       }
-    }    
+    }
     else if (dims.size() == 1)
     {
       for (VField::index_type i=0;i<dims[0];i++)
       {
         ofield->copy_value(ifield,i,i+padsize);
       }
-    }  
+    }
   }
 
 std::cerr << "2\n";
 
 
   algo_end(); return (true);
-}                           
-     
-} // namespace    
+}
+
+} // namespace

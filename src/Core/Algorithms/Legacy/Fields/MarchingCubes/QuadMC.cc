@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,14 +23,14 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:          Michael Callahan
+   Date:            September 2002
 */
 
-//    File   : QuadMC.cc
-//    Author : Michael Callahan
-//    Date   : Sept 2002
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/QuadMC.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h> 
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  #include <sci_hash_map.h>
@@ -64,7 +63,7 @@ void QuadMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
       node_map_ = std::vector<index_type>(nsize, -1);
     }
   }
- 
+
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   lines_ = 0;
   if (build_geom_)
@@ -76,7 +75,7 @@ void QuadMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   }
   geomHandle_ = lines_;
  #endif
- 
+
   curve_ = 0;
   if (build_field_)
   {
@@ -86,16 +85,16 @@ void QuadMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   }
 }
 
-void QuadMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge) 
+void QuadMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     edge_map_[np] = edge;
@@ -111,7 +110,7 @@ VMesh::Node::index_type QuadMC::find_or_add_nodepoint(VMesh::Node::index_type &t
   VMesh::Node::index_type curve_node_idx;
   index_type i = node_map_[tri_node_idx];
   if (i != -1) curve_node_idx = VMesh::Node::index_type(i);
-  else 
+  else
   {
     Point p;
     mesh_->get_point(p, tri_node_idx);
@@ -140,7 +139,7 @@ void QuadMC::extract_f( VMesh::Elem::index_type cell, double iso )
   Point p[2];
   VMesh::Node::array_type nodes;
   VMesh::Node::array_type vertices(2);
- 
+
   for (size_t i=0; i<edges.size(); i++)
   {
     if (mesh_->get_neighbor(nbr_cell, cell, edges[i]) &&
@@ -149,14 +148,14 @@ void QuadMC::extract_f( VMesh::Elem::index_type cell, double iso )
     {
       mesh_->get_nodes(nodes, edges[i]);
       mesh_->get_centers(p,nodes);
-     
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         lines_->add(p[0], p[1]);
       }
      #endif
-      
+
       if (build_field_)
       {
         for (int j=0; j<2; j ++)
@@ -174,16 +173,16 @@ void QuadMC::extract_f( VMesh::Elem::index_type cell, double iso )
   }
 }
 
-VMesh::Node::index_type QuadMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+VMesh::Node::index_type QuadMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     const VMesh::Node::index_type nodeindex = curve_->add_point(p);
@@ -232,10 +231,10 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
     };
 
   int code = 0;
-  
+
   mesh_->get_centers(p,node);
   field_->get_values(value,node);
-  for (int i=0; i<4; i++) 
+  for (int i=0; i<4; i++)
   {
     code |= (value[i] > v ) << i;
   }
@@ -250,20 +249,20 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
     const double d1 = (v-value[c])/double(value[d]-value[c]);
     const Point p0(Interpolate(p[a], p[b], d0));
     const Point p1(Interpolate(p[c], p[d], d1));
-    
+
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (lines_)
     {
       lines_->add( p0, p1 );
     }
    #endif
-    
+
     if (build_field_)
     {
       VMesh::Node::array_type cnode(2);
       cnode[0] = find_or_add_edgepoint(node[a], node[b], d0, p0);
       cnode[1] = find_or_add_edgepoint(node[c], node[d], d1, p1);
-      if (cnode[0] != cnode[1]) 
+      if (cnode[0] != cnode[1])
       {
         curve_->add_elem(cnode);
         cell_map_.push_back( cell );
@@ -281,20 +280,20 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
       const double d1 = (v-value[c])/double(value[d]-value[c]);
       const Point p0(Interpolate(p[a], p[b], d0));
       const Point p1(Interpolate(p[c], p[d], d1));
-      
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (lines_)
       {
         lines_->add( p0, p1 );
       }
      #endif
-     
+
       if (build_field_)
       {
         VMesh::Node::array_type cnode(2);
         cnode[0] = find_or_add_edgepoint(node[a], node[b], d0, p0);
         cnode[1] = find_or_add_edgepoint(node[c], node[d], d0, p1);
-        if (cnode[0] != cnode[1]) 
+        if (cnode[0] != cnode[1])
         {
           curve_->add_elem(cnode);
           cell_map_.push_back( cell );
@@ -310,20 +309,20 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
       const double d1 = (v-value[c])/double(value[d]-value[c]);
       const Point p0(Interpolate(p[a], p[b], d0));
       const Point p1(Interpolate(p[c], p[d], d1));
-      
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (lines_)
       {
         lines_->add( p0, p1 );
       }
      #endif
-      
+
       if (build_field_)
       {
         VMesh::Node::array_type cnode(2);
         cnode[0] = find_or_add_edgepoint(node[a], node[b], d0, p0);
         cnode[1] = find_or_add_edgepoint(node[c], node[d], d1, p1);
-        if (cnode[0] != cnode[1]) 
+        if (cnode[0] != cnode[1])
         {
           curve_->add_elem(cnode);
           cell_map_.push_back( cell );
@@ -342,20 +341,20 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
       const double d1 = (v-value[c])/double(value[d]-value[c]);
       const Point p0(Interpolate(p[a], p[b], d0));
       const Point p1(Interpolate(p[c], p[d], d1));
-     
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (lines_)
       {
         lines_->add( p0, p1 );
       }
      #endif
-      
+
       if (build_field_)
       {
         VMesh::Node::array_type cnode(2);
         cnode[0] = find_or_add_edgepoint(node[a], node[b], d0, p0);
         cnode[1] = find_or_add_edgepoint(node[c], node[d], d1, p1);
-        if (cnode[0] != cnode[1]) 
+        if (cnode[0] != cnode[1])
         {
           curve_->add_elem(cnode);
           cell_map_.push_back( cell );
@@ -371,20 +370,20 @@ void QuadMC::extract_n( VMesh::Elem::index_type cell, double v )
       const double d1 = (v-value[c])/double(value[d]-value[c]);
       Point p0(Interpolate(p[a], p[b], d0));
       Point p1(Interpolate(p[c], p[d], d1));
-     
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (lines_)
       {
         lines_->add( p0, p1 );
       }
      #endif
-     
+
       if (build_field_)
       {
         VMesh::Node::array_type cnode(2);
         cnode[0] = find_or_add_edgepoint(node[a], node[b], d0, p0);
         cnode[1] = find_or_add_edgepoint(node[c], node[d], d1, p1);
-        if (cnode[0] != cnode[1]) 
+        if (cnode[0] != cnode[1])
         {
           curve_->add_elem(cnode);
           cell_map_.push_back( cell );
@@ -399,6 +398,5 @@ FieldHandle QuadMC::get_field(double value)
   curve_handle_->vfield()->resize_values();
   curve_handle_->vfield()->set_all_values(value);
 
-  return (curve_handle_);  
+  return (curve_handle_);
 }
-

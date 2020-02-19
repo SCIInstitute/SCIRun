@@ -1,33 +1,32 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//  
-///   @file    TriCubicHmtScaleFactors.h
-///   @author  Martin Cole, Frank B. Sachse
-///   @date    Mar 01 2005
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole, Frank B. Sachse
+   Date:            March 1 2005
+*/
 
 
 // NOTE: THIS FILE NEEDS TO BE CHANGED: SCALEFACTORS NEED TO BE COMPUTED
@@ -54,11 +53,11 @@ public:
 };
 
 
-/// Class for handling of element of type triangle with 
+/// Class for handling of element of type triangle with
 /// cubic hermitian interpolation with scale factors
 template <class T>
-class TriCubicHmtScaleFactors : public BasisAddDerivativesScaleFactors<T>, 
-                                public TriApprox, 
+class TriCubicHmtScaleFactors : public BasisAddDerivativesScaleFactors<T>,
+                                public TriApprox,
                                 public TriGaussian3<double>,
                                 public TriSamplingSchemes,
                                 public TriCubicScaleFactorsHmtUnitElement,
@@ -71,7 +70,7 @@ public:
   virtual ~TriCubicHmtScaleFactors() {}
 
   static int polynomial_order() { return 3; }
-  
+
   /// Note: these are correct for Point interpolation but not for value
   /// interpolation (Scale factors are missing)
   template<class VECTOR>
@@ -80,16 +79,16 @@ public:
 
   template<class VECTOR>
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
-    { get_cubic_derivate_weights(coords,w); }  
+    { get_cubic_derivate_weights(coords,w); }
 
 
-  /// get value at parametric coordinate 
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
     double w[12];
     unsigned int elem=cd.elem_index();
-    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]);  
+    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]);
     const double x2=x*x, x3=x2*x, y2=y*y, y3=y2*y;
 
     const double sdx0=this->scalefactors_[elem][0];
@@ -131,17 +130,17 @@ public:
 	       +w[10] * this->derivs_[cd.node2_index()][1]
 	       +w[11] * this->derivs_[cd.node2_index()][2]);
   }
-  
+
 
 
   /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
-  void derivate(const VECTOR1 &coords, const ElemData &cd, 
+  void derivate(const VECTOR1 &coords, const ElemData &cd,
 		VECTOR2 &derivs) const
   {
     double w[24];
     unsigned elem=cd.elem_index();
-    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]);  
+    const double x=static_cast<double>(coords[0]), y=static_cast<double>(coords[1]);
     const double x2=x*x, x3=x2*x, y2=y*y;
     const double y12=(y-1)*(y-1);
 
@@ -169,7 +168,7 @@ public:
     w[9] = (3 - 2*y)*y2*sdx2;
     w[10] = 0;
     w[11] = (-1 + y)*y2*sdxy2;
-    
+
     w[12] = 6*(-1 + y)*y;
     w[13] = 6*x*(-1 + y)*y*sdx0;
     w[14] = (1 - 3*x2 + 2*x3 - 4*y + 3*y2)*sdy0;
@@ -210,11 +209,11 @@ public:
 	       +w[22] * this->derivs_[cd.node2_index()][1]
 	       +w[23] * this->derivs_[cd.node2_index()][2]);
   }
-  
+
   /// get the parametric coordinate for value within the element.
   template <class ElemData, class VECTOR>
-  bool get_coords(VECTOR &coords, const T& value, 
-		  const ElemData &cd) const  
+  bool get_coords(VECTOR &coords, const T& value,
+		  const ElemData &cd) const
   {
     TriLocate< TriCubicHmtScaleFactors<T> > CL;
     return CL.get_coords(this, coords, value, cd);
@@ -222,21 +221,21 @@ public:
 
   /// get arc length for edge
   template <class ElemData>
-  double get_arc_length(const unsigned edge, const ElemData &cd) const  
+  double get_arc_length(const unsigned edge, const ElemData &cd) const
   {
     return get_arc2d_length<CrvGaussian2<double> >(this, edge, cd);
   }
- 
+
   /// get area
   template <class ElemData>
-    double get_area(const unsigned face, const ElemData &cd) const  
+    double get_area(const unsigned face, const ElemData &cd) const
   {
     return get_area2<TriGaussian3<double> >(this, face, cd);
   }
- 
+
   /// get volume
   template <class ElemData>
-    double get_volume(const ElemData & /* cd */) const  
+    double get_volume(const ElemData & /* cd */) const
   {
     return 0.;
   }
@@ -245,7 +244,7 @@ public:
   static const std::string type_name(int n = -1);
 
 
-  virtual void io (Piostream& str); 
+  virtual void io (Piostream& str);
 
 };
 
@@ -286,9 +285,9 @@ const TypeDescription* get_type_description(Core::Basis::TriCubicHmtScaleFactors
     const TypeDescription *sub = get_type_description((T*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
-    td = new TypeDescription("TriCubicHmtScaleFactors", subs, 
+    td = new TypeDescription("TriCubicHmtScaleFactors", subs,
       std::string(__FILE__),
-      "SCIRun", 
+      "SCIRun",
       TypeDescription::BASIS_E);
   }
   return td;
@@ -307,4 +306,4 @@ void
 }
 }
 
-#endif 
+#endif

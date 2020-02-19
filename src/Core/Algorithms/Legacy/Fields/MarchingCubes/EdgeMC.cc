@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:              Michael Callahan
+   Date:                Sept 2002
 */
 
-//    File   : EdgeMC.cc
-//    Author : Michael Callahan
-//    Date   : Sept 2002
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/EdgeMC.h>
 
@@ -65,7 +64,7 @@ void EdgeMC::reset( int /*n*/, bool build_field,bool build_geom,bool transparenc
       node_map_ = std::vector<index_type>(nsize, -1);
     }
   }
- 
+
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   points_ = 0;
   if (build_geom_)
@@ -83,7 +82,7 @@ void EdgeMC::reset( int /*n*/, bool build_field,bool build_geom,bool transparenc
   {
     FieldInformation fi("PointCloudMesh",0,"double");
     pointcloud_handle_ = CreateField(fi);
-    pointcloud_ = pointcloud_handle_->vmesh();  
+    pointcloud_ = pointcloud_handle_->vmesh();
   }
 }
 
@@ -105,14 +104,14 @@ void EdgeMC::extract_e( VMesh::Elem::index_type edge, double iso )
         selfvalue <= iso && iso < nbrvalue)
     {
       mesh_->get_center(p0, nodes[i]);
-     
-     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         points_->add(p0);
-      } 
+      }
      #endif
-     
+
       if (build_field_)
       {
         vertices[0] = find_or_add_nodepoint(nodes[i]);
@@ -140,8 +139,8 @@ void EdgeMC::extract_n( VMesh::Elem::index_type edge, double v )
   int code = 0;
   mesh_->get_centers(p,node);
   field_->get_values(value,node);
-  
-  for (int i=0; i<2; i++) 
+
+  for (int i=0; i<2; i++)
   {
     code |= (value[i] > v ) << i;
   }
@@ -151,7 +150,7 @@ void EdgeMC::extract_n( VMesh::Elem::index_type edge, double v )
   {
     const double d0 = (v-value[0])/double(value[1]-value[0]);
     const Point p0(Interpolate(p[0], p[1], d0));
-  
+
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (build_geom_)
       points_->add( p0 );
@@ -173,20 +172,20 @@ FieldHandle EdgeMC::get_field(double value)
   pointcloud_handle_->vfield()->resize_values();
   pointcloud_handle_->vfield()->set_all_values(value);
 
-  return (pointcloud_handle_);  
+  return (pointcloud_handle_);
 }
 
-VMesh::Node::index_type EdgeMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+VMesh::Node::index_type EdgeMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  
+
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     const VMesh::Node::index_type nodeindex = pointcloud_->add_point(p);
@@ -204,7 +203,7 @@ VMesh::Node::index_type EdgeMC::find_or_add_nodepoint(VMesh::Node::index_type &c
   VMesh::Node::index_type point_node_idx;
   index_type i = node_map_[curve_node_idx];
   if (i != -1) point_node_idx = (VMesh::Node::index_type) i;
-  else 
+  else
   {
     Point p;
     mesh_->get_center(p, curve_node_idx);
@@ -214,16 +213,16 @@ VMesh::Node::index_type EdgeMC::find_or_add_nodepoint(VMesh::Node::index_type &c
   return (curve_node_idx);
 }
 
-void EdgeMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type point) 
+void EdgeMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type point)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     edge_map_[np] = point;
@@ -241,4 +240,3 @@ void EdgeMC::extract( VMesh::Elem::index_type edge, double v )
   else
     extract_n(edge, v);
 }
-
