@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,7 +44,7 @@ namespace Core {
 namespace Geometry {
 
 double
-distance_to_line2(const Point &p, const Point &a, const Point &b, 
+distance_to_line2(const Point &p, const Point &a, const Point &b,
                   const double epsilon)
 {
   Vector m = b - a;
@@ -64,7 +63,7 @@ distance_to_line2(const Point &p, const Point &a, const Point &b,
 
 void
 distance_to_line2_aux(Point &result,
-                      const Point &p, const Point &a, const Point &b, 
+                      const Point &p, const Point &a, const Point &b,
                       const double epsilon)
 {
   Vector m = b - a;
@@ -75,7 +74,7 @@ distance_to_line2_aux(Point &result,
   else
   {
     const double t0 = Dot(m, n) / Dot(m, m);
-    if (t0 <= 0) 
+    if (t0 <= 0)
     {
       result = a;
     }
@@ -94,13 +93,13 @@ distance_to_line2_aux(Point &result,
 
 void
 distance_to_line2_aux(Point &result, int& node,
-                      const Point &p, const Point &a, const Point &b, 
+                      const Point &p, const Point &a, const Point &b,
                       const double epsilon)
 {
   node = -1;
   Vector m = b - a;
   Vector n = p - a;
-  if (m.length2() < epsilon) 
+  if (m.length2() < epsilon)
   {
     node = 0;
     result = a;
@@ -108,7 +107,7 @@ distance_to_line2_aux(Point &result, int& node,
   else
   {
     const double t0 = Dot(m, n) / Dot(m, m);
-    if (t0 <= 0) 
+    if (t0 <= 0)
     {
       node = 0;
       result = a;
@@ -129,18 +128,18 @@ distance_to_line2_aux(Point &result, int& node,
 
 void
 closest_point_on_tri(Point &result, const Point &orig,
-                     const Point &p0, const Point &p1, const Point &p2, 
+                     const Point &p0, const Point &p1, const Point &p2,
                      const double epsilon)
 {
   const Vector edge1 = p1 - p0;
   const Vector edge2 = p2 - p0;
-  
-  
+
+
 
   const Vector dir = Cross(edge1, edge2);
 
   const Vector pvec = Cross(dir, edge2);
-  
+
   const double inv_det = 1.0 / Dot(edge1, pvec);
 
   const Vector tvec = orig - p0;
@@ -148,7 +147,7 @@ closest_point_on_tri(Point &result, const Point &orig,
 
   const Vector qvec = Cross(tvec, edge1);
   double v = Dot(dir, qvec) * inv_det;
-  
+
   int bound=0;
   Point tmp_r;
 
@@ -160,7 +159,7 @@ closest_point_on_tri(Point &result, const Point &orig,
   if (v < 0.0)
   {
     distance_to_line2_aux(tmp_r, orig, p0, p1,epsilon);
-    
+
     if (bound>0)
     {
       double tmp_dist1 = Vector(orig-result).length2();
@@ -176,7 +175,7 @@ closest_point_on_tri(Point &result, const Point &orig,
   if (u + v > 1.0)
   {
     distance_to_line2_aux(tmp_r, orig, p1, p2,epsilon);
-    
+
     if (bound>0)
     {
       double tmp_dist1 = Vector(orig-result).length2();
@@ -189,7 +188,7 @@ closest_point_on_tri(Point &result, const Point &orig,
     }
     bound++;
   }
-  
+
   if (bound==0)
   {
     result = p0 + u * edge1 + v * edge2;
@@ -198,13 +197,13 @@ closest_point_on_tri(Point &result, const Point &orig,
 
 
 void
-closest_point_on_tri(Point &result, 
+closest_point_on_tri(Point &result,
                      int& edge,
                      int& node,
                      const Point &orig,
-                     const Point &p0, 
-                     const Point &p1, 
-                     const Point &p2, 
+                     const Point &p0,
+                     const Point &p1,
+                     const Point &p2,
                      const double epsilon)
 {
   const Vector edge1 = p1 - p0;
@@ -213,7 +212,7 @@ closest_point_on_tri(Point &result,
   const Vector dir = Cross(edge1, edge2);
 
   const Vector pvec = Cross(dir, edge2);
-  
+
   const double inv_det = 1.0 / Dot(edge1, pvec);
 
   const Vector tvec = orig - p0;
@@ -221,7 +220,7 @@ closest_point_on_tri(Point &result,
 
   const Vector qvec = Cross(tvec, edge1);
   double v = Dot(dir, qvec) * inv_det;
-  
+
   int bound=0;
   int tmp_node;
   Point tmp_r;
@@ -258,7 +257,7 @@ closest_point_on_tri(Point &result,
   if (u + v > 1.0)
   {
     distance_to_line2_aux(tmp_r, tmp_node, orig, p1, p2,epsilon);
-    
+
     if (bound>0)
     {
       double tmp_dist1 = Vector(orig-result).length2();
@@ -291,7 +290,7 @@ closest_point_on_tri(Point &result,
 
 void
 est_closest_point_on_quad(Point &result, const Point &orig,
-                      const Point &p0, const Point &p1, 
+                      const Point &p0, const Point &p1,
                       const Point &p2,const Point &p3,
                       const double epsilon)
 {
@@ -303,10 +302,10 @@ est_closest_point_on_quad(Point &result, const Point &orig,
   Point r3,r4;
   closest_point_on_tri(r3,orig,p0,p2,p3,epsilon);
   closest_point_on_tri(r4,orig,p0,p1,p2,epsilon);
-  
+
   if ((r2-orig).length2() < (r1-orig).length2()) r1 = r2;
   if ((r4-orig).length2() < (r3-orig).length2()) r3 = r4;
-  
+
   r1 += r3;
   result = 0.5*r1;
 }
@@ -326,7 +325,7 @@ RayPlaneIntersection(const Point &p,  const Vector &dir,
   const double D = - Dot(pn, p0);
 
   const double V0 = - (Dot(pn, p) + D);
-    
+
   return V0 / Vd;
 }
 
@@ -341,16 +340,16 @@ RayTriangleIntersection(double &t, double &u, double &v, bool backface_cull,
   const Vector edge1 = p1 - p0;
   const Vector edge2 = p2 - p0;
   const double vepsilon = epsilon*epsilon*epsilon;
-  
+
   const Vector pvec = Cross(dir, edge2);
-  
+
   const double det = Dot(edge1, pvec);
 
   if (det < vepsilon && (backface_cull || det > -vepsilon))
     return false;
 
   const double inv_det = 1.0 / det;
-    
+
   const Vector tvec = orig - p0;
 
   u = Dot(tvec, pvec) * inv_det;
@@ -410,7 +409,7 @@ uniform_sample_triangle(Point &p, const Point &p0,
   double u = rng();
   double v = rng();
   if (u + v > 1.0) { u = 1.0 - u; v = 1.0 - v; }
-  
+
   // Compute the position of the random point.
   p = p0+((p1-p0)*u)+((p2-p0)*v);
 }
@@ -499,4 +498,3 @@ TriTriIntersection(const Point &A0, const Point &A1, const Point &A2,
 }
 
 }}}
-

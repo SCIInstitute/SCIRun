@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 //@file BuildFESurfRHS.h
-///@brief This module computes 
+///@brief This module computes
 ///
 ///@author
 /// ported by Moritz Dannhauer (10/29/2017) from SCIRun4
 ///
 ///@details
-/// 
-/// 
-/// 
-/// Input:  Output: 
+///
+///
+///
+/// Input:  Output:
 
 
 
@@ -68,4 +68,4 @@ class SCISHARE BuildFESurfRHSAlgo : public AlgorithmBase
 
 }}}}
 
-#endif 
+#endif

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,10 +24,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/MatrixComparison.h
 
 #ifndef CORE_DATATYPES_MATRIX_COMPARISON_H
-#define CORE_DATATYPES_MATRIX_COMPARISON_H 
+#define CORE_DATATYPES_MATRIX_COMPARISON_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -55,7 +56,7 @@ namespace Datatypes {
   template <typename T>
   bool operator==(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
   {
-    bool returnValue = 
+    bool returnValue =
       (lhs.rows() == rhs.rows()) &&
       (lhs.cols() == rhs.cols());
 

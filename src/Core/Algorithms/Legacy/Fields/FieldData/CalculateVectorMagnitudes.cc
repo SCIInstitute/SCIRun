@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -43,19 +42,19 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output)
     error("No input field");
     algo_end(); return (false);
   }
-  
+
   FieldInformation fi(input);
 
   if (fi.is_nodata())
   {
     error("Input field does not have data associated with it");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
 
   if (!(fi.is_vector()))
   {
     error("The data needs to be of vector type");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
 
   fi.make_scalar();
@@ -64,16 +63,16 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output)
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);      
+    algo_end(); return (false);
   }
 
   VField* ifield = input->vfield();
-  VField* ofield = output->vfield();  
+  VField* ofield = output->vfield();
   ofield->resize_values();
-  
+
   Vector* vec = reinterpret_cast<Vector*>(ifield->get_values_pointer());
   double* mag = reinterpret_cast<double*>(ofield->get_values_pointer());
-  
+
   VField::size_type num_values = ifield->num_values();
 
   for (VField::index_type idx = 0; idx < num_values; idx++)

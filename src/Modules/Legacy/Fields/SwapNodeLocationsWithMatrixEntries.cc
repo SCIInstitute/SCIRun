@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,11 +27,11 @@
 
 
 ///
-///@author
-///   Michael Callahan
-///   Department of Computer Science
-///   University of Utah
-///@date   February 2001
+/// @author
+///    Michael Callahan
+///    Department of Computer Science
+///    University of Utah
+/// @date   February 2001
 ///
 
 #include <Core/Datatypes/Field.h>
@@ -56,7 +55,7 @@ class SwapNodeLocationsWithMatrixEntries : public Module
     SwapNodeLocationsWithMatrixEntries(GuiContext* ctx);
     virtual ~SwapNodeLocationsWithMatrixEntries() {}
     virtual void execute();
-    
+
   private:
     SCIRunAlgo::GetMeshNodesAlgo get_algo_;
     SCIRunAlgo::SetMeshNodesAlgo set_algo_;
@@ -77,14 +76,14 @@ SwapNodeLocationsWithMatrixEntries::execute()
 {
   FieldHandle field_input_handle;
   MatrixHandle matrix_input_handle;
-  
+
   get_input_handle("Input Field",field_input_handle,true);
 
   get_input_handle("Input Matrix",matrix_input_handle,false);
-  
+
   bool need_field  = oport_connected("Output Field");
   bool need_matrix = oport_connected("Output Matrix");
-  
+
   if (inputs_changed_ ||
       (need_field && !oport_cached("Output Field")) ||
       (need_matrix && !oport_cached("Output Matrix")))
@@ -99,7 +98,7 @@ SwapNodeLocationsWithMatrixEntries::execute()
       if(!(get_algo_.run(field_input_handle,
             matrix_output_handle ))) return;
 
-      send_output_handle("Output Matrix", matrix_output_handle);  
+      send_output_handle("Output Matrix", matrix_output_handle);
     }
 
     // Set the data.
@@ -107,18 +106,18 @@ SwapNodeLocationsWithMatrixEntries::execute()
     {
       FieldHandle field_output_handle;
 
-      if (matrix_input_handle.get_rep()) 
+      if (matrix_input_handle.get_rep())
       {
         if(!(set_algo_.run(field_input_handle,matrix_input_handle,
               field_output_handle))) return;
 
         field_output_handle->copy_properties(field_input_handle.get_rep());
       }
-      else 
+      else
       {
         warning("No input matrix passing the field through");
         field_output_handle = field_input_handle;
-      }	
+      }
 
       send_output_handle("Output Field", field_output_handle);
     }
@@ -126,4 +125,3 @@ SwapNodeLocationsWithMatrixEntries::execute()
 }
 
 } // End namespace SCIRun
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -118,15 +118,15 @@ TEST_F(BasicParserTests, CreateFieldDataDuplicate)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   const std::string resultStr = "RESULT = ";
   std::string function = resultStr + "X + Y + Z;";
   ASSERT_TRUE(engine.add_expressions(function));
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -145,24 +145,24 @@ TEST_F(BasicParserTests, CreateField_Parenthesis_Unbalanced)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
-  
+
   std::string format = "double";
   std::string basis = "Linear";
   int basis_order = 1;
-  
+
   ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
   ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
   ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
   ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
+
   ASSERT_TRUE(engine.add_index("INDEX"));
   ASSERT_TRUE(engine.add_size("SIZE"));
   std::string function = "RESULT = ());";
   ASSERT_TRUE(engine.add_expressions(function));
   ASSERT_FALSE(engine.run());
-    
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -177,14 +177,14 @@ TEST_F(BasicParserTests, CreateField_Brackets_Unbalanced)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
 
   std::string function = "RESULT = [;";
   ASSERT_TRUE(engine.add_expressions(function));
   ASSERT_FALSE(engine.run());
-    
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -199,15 +199,15 @@ TEST_F(BasicParserTests, CreateFieldData_Arithmetic)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = 1/Y + 2*X - Z;";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -227,15 +227,15 @@ TEST_F(BasicParserTests, CreateFieldData_add)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = add(X,100);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -255,15 +255,15 @@ TEST_F(BasicParserTests, CreateFieldData_sub)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =sub(X,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -283,15 +283,15 @@ TEST_F(BasicParserTests, CreateFieldData_mult)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =mult(X,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -311,15 +311,15 @@ TEST_F(BasicParserTests, CreateFieldData_div)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =div(X,100);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -339,15 +339,15 @@ TEST_F(BasicParserTests, CreateFieldData_exp)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =exp(3);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -367,15 +367,15 @@ TEST_F(BasicParserTests, CreateFieldData_log)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =log(10);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -395,15 +395,15 @@ TEST_F(BasicParserTests, CreateFieldData_ln)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =ln(100);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -423,15 +423,15 @@ TEST_F(BasicParserTests, CreateFieldData_log2)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =log2(16);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -451,15 +451,15 @@ TEST_F(BasicParserTests, CreateFieldData_log10)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = log10(50*2);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -468,7 +468,7 @@ TEST_F(BasicParserTests, CreateFieldData_log10)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(2, min, 1e-13);
-  EXPECT_NEAR(2, max, 1e-13); 
+  EXPECT_NEAR(2, max, 1e-13);
 
   //EXPECT_EQ(2.0, min);
   //EXPECT_EQ(2.0, max);
@@ -482,15 +482,15 @@ TEST_F(BasicParserTests, CreateFieldData_sin)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =sin(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -510,15 +510,15 @@ TEST_F(BasicParserTests, CreateFieldData_asin)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =asin(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -539,22 +539,22 @@ TEST_F(BasicParserTests, CreateFieldData_sinh)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = sinh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
   ASSERT_THAT(ofield, NotNull());
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
-    
+
   EXPECT_NEAR(267.745, min, 1e-3);
   EXPECT_NEAR(267.745, max, 1e-3);
 }
@@ -567,15 +567,15 @@ TEST_F(BasicParserTests, CreateFieldData_asinh)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = asinh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -595,15 +595,15 @@ TEST_F(BasicParserTests, CreateFieldData_cos)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =cos(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -612,7 +612,7 @@ TEST_F(BasicParserTests, CreateFieldData_cos)
   ovfield->minmax(min,max);
 
   EXPECT_EQ(1, min);
-  EXPECT_EQ(1, max); 
+  EXPECT_EQ(1, max);
 
   //EXPECT_NEAR(0, min, 1e-8);
   //EXPECT_NEAR(0, max, 1e-8);
@@ -626,15 +626,15 @@ TEST_F(BasicParserTests, CreateFieldData_acos)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = acos(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -654,15 +654,15 @@ TEST_F(BasicParserTests, CreateFieldData_acosh)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = acosh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -671,7 +671,7 @@ TEST_F(BasicParserTests, CreateFieldData_acosh)
   ovfield->minmax(min,max);
 
   //EXPECT_EQ(2.52463, min);
-  //EXPECT_EQ(2.52463, max); 
+  //EXPECT_EQ(2.52463, max);
 
   EXPECT_NEAR(2.52463, min, 1e-5);
   EXPECT_NEAR(2.52463, max, 1e-5);
@@ -685,15 +685,15 @@ TEST_F(BasicParserTests, CreateFieldData_tan)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =tan(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -702,8 +702,8 @@ TEST_F(BasicParserTests, CreateFieldData_tan)
   ovfield->minmax(min,max);
 
   //EXPECT_EQ(0, min);
-  //EXPECT_EQ(0, max); 
-  
+  //EXPECT_EQ(0, max);
+
   EXPECT_NEAR(0, min, 1e-8);
   EXPECT_NEAR(0, max, 1e-8);
 }
@@ -716,15 +716,15 @@ TEST_F(BasicParserTests, CreateFieldData_atan)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =atan(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -744,15 +744,15 @@ TEST_F(BasicParserTests, CreateFieldData_pow)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = pow(2,2.5);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -772,15 +772,15 @@ TEST_F(BasicParserTests, CreateFieldData_ceil)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = ceil(2.3) + ceil(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -800,15 +800,15 @@ TEST_F(BasicParserTests, CreateFieldData_floor)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = floor(2.3) + floor(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -828,15 +828,15 @@ TEST_F(BasicParserTests, CreateFieldData_round)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = round(2.3) + round(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -856,15 +856,15 @@ TEST_F(BasicParserTests, CreateFieldData_boolean)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =boolean(0) + boolean(1);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -884,15 +884,15 @@ TEST_F(BasicParserTests, CreateFieldData_norm)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = norm(2.9*X);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -912,15 +912,15 @@ TEST_F(BasicParserTests, CreateFieldData_isnan)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = isnan(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -940,15 +940,15 @@ TEST_F(BasicParserTests, CreateFieldData_isfinite)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = isfinite(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -968,15 +968,15 @@ TEST_F(BasicParserTests, CreateFieldData_isinfinite)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = isinfinite(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -996,15 +996,15 @@ TEST_F(BasicParserTests, CreateFieldData_select)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = select(X>2,1,10);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1024,15 +1024,15 @@ TEST_F(BasicParserTests, CreateFieldData_sign)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = sign(X);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1052,15 +1052,15 @@ TEST_F(BasicParserTests, CreateFieldData_sqrt)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = sqrt(2.9-X);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1080,15 +1080,15 @@ TEST_F(BasicParserTests, CreateFieldData_not)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = not(1);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1107,15 +1107,15 @@ TEST_F(BasicParserTests, CreateFieldData_inv)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = inv(1/10);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1135,15 +1135,15 @@ TEST_F(BasicParserTests, CreateFieldData_abs)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = abs(-9*X+1);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1163,15 +1163,15 @@ TEST_F(BasicParserTests, CreateFieldData_and)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT =  and(1,0);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1190,15 +1190,15 @@ TEST_F(BasicParserTests, CreateFieldData_or)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = or(1,0);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1217,15 +1217,15 @@ TEST_F(BasicParserTests, CreateFieldData_eq)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = eq(1, X);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1244,15 +1244,15 @@ TEST_F(BasicParserTests, CreateFieldData_neq)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = neq(5,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1261,7 +1261,7 @@ TEST_F(BasicParserTests, CreateFieldData_neq)
   ovfield->minmax(min,max);
 
   EXPECT_EQ(1, min);
-  EXPECT_EQ(1, max); 
+  EXPECT_EQ(1, max);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_dot)
@@ -1272,15 +1272,15 @@ TEST_F(BasicParserTests, CreateFieldData_dot)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = dot(vector(1,1,1),vector(2,2,2));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1289,7 +1289,7 @@ TEST_F(BasicParserTests, CreateFieldData_dot)
   ovfield->minmax(min,max);
 
   EXPECT_EQ(6, min);
-  EXPECT_EQ(6, max); 
+  EXPECT_EQ(6, max);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_cross)
@@ -1300,15 +1300,15 @@ TEST_F(BasicParserTests, CreateFieldData_cross)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = cross(vector(1,2,3),vector(4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1317,7 +1317,7 @@ TEST_F(BasicParserTests, CreateFieldData_cross)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(7.34847, min,1e-3);
-  EXPECT_NEAR(7.34847, max,1e-3); 
+  EXPECT_NEAR(7.34847, max,1e-3);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_normalize)
@@ -1328,24 +1328,24 @@ TEST_F(BasicParserTests, CreateFieldData_normalize)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = normalize(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
   ASSERT_THAT(ofield, NotNull());
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
-  
+
   EXPECT_NEAR(1, min,1e-3);
-  EXPECT_NEAR(1, max,1e-3); 
+  EXPECT_NEAR(1, max,1e-3);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_find_normal1)
@@ -1356,24 +1356,24 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal1)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = find_normal1(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
   ASSERT_THAT(ofield, NotNull());
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
-  
+
   EXPECT_EQ(1, min);
-  EXPECT_EQ(1, max); 
+  EXPECT_EQ(1, max);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_find_normal2)
@@ -1384,15 +1384,15 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal2)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = find_normal2(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1401,11 +1401,11 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal2)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(19.4422, min,1e-4);
-  EXPECT_NEAR(19.4422, max,1e-4); 
+  EXPECT_NEAR(19.4422, max,1e-4);
 }
 
 
-//Run these tests when the functions below are implemented 
+//Run these tests when the functions below are implemented
 /*
 TEST_F(BasicParserTests, CreateFieldData_quality)
 {
@@ -1415,15 +1415,15 @@ TEST_F(BasicParserTests, CreateFieldData_quality)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "A = tensor(1,2,3,4,5,6); RESULT = quality(A);";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1432,7 +1432,7 @@ TEST_F(BasicParserTests, CreateFieldData_quality)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(14.7778, min,1e-4);
-  EXPECT_NEAR(14.7778, max,1e-4); 
+  EXPECT_NEAR(14.7778, max,1e-4);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_trace)
@@ -1443,15 +1443,15 @@ TEST_F(BasicParserTests, CreateFieldData_trace)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = trace(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1460,7 +1460,7 @@ TEST_F(BasicParserTests, CreateFieldData_trace)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(11, min,1e-4);
-  EXPECT_NEAR(11, max,1e-4); 
+  EXPECT_NEAR(11, max,1e-4);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_det)
@@ -1471,15 +1471,15 @@ TEST_F(BasicParserTests, CreateFieldData_det)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = det(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1488,7 +1488,7 @@ TEST_F(BasicParserTests, CreateFieldData_det)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(-1, min,1e-4);
-  EXPECT_NEAR(-1, max,1e-4); 
+  EXPECT_NEAR(-1, max,1e-4);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_frobenius)
@@ -1499,15 +1499,15 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = frobenius(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1516,7 +1516,7 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(11.3578, min,1e-4);
-  EXPECT_NEAR(11.3578, max,1e-4); 
+  EXPECT_NEAR(11.3578, max,1e-4);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_frobenius2)
@@ -1527,15 +1527,15 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius2)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = frobenius2(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1544,7 +1544,7 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius2)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(129, min,1e-4);
-  EXPECT_NEAR(129, max,1e-4); 
+  EXPECT_NEAR(129, max,1e-4);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
@@ -1555,15 +1555,15 @@ TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
   ivfield->minmax(min,max);
   EXPECT_EQ(0, min);
   EXPECT_EQ(0, max);
-  
+
   NewArrayMathEngine engine;
   setupEngine(engine, field);
-  
+
   std::string function = "RESULT = fracanisotropy(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
-  
+
   ASSERT_TRUE(engine.run());
- 
+
   FieldHandle ofield;
   engine.get_field("RESULT",ofield);
 
@@ -1572,7 +1572,7 @@ TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
   ovfield->minmax(min,max);
 
   EXPECT_NEAR(1.0154, min,1e-4);
-  EXPECT_NEAR(1.0154, max,1e-4); 
+  EXPECT_NEAR(1.0154, max,1e-4);
 }
 
 */
@@ -1596,7 +1596,7 @@ TEST(FieldHashTests, TestShiftingZero)
 
   auto badGcc = ~((int)0);
   std::cout << "badGcc: " << badGcc << std::endl;
-  
+
   auto redo_up_mask = -(1 << 10 << 10);
   std::cout << "redo_up_mask: " << redo_up_mask << std::endl;
 

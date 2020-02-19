@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 /*
  *@file  CleanupManager.cc
  *@brief Manage exitAll callbacks.
@@ -43,17 +41,17 @@
 /*
  *@details
  *  How to use this class:
- *  
+ *
  *  #include <Core/Thread/Legacy/Legacy/CleanupManager.h>
- *  
+ *
  *  Make a callback function that takes zero arguements and returns
  *  void.  Be very careful about introducing crashes into this
  *  callback function as it then becomes difficult to exit from
  *  scirun.  It's recommended that you avoid calling new from
  *  within your callback.
- *  
+ *
  *  Register with CleanupManager::add_callback(YOUR_CALLBACK_HERE, MISC_DATA);
- *  
+ *
  *  Your callback will only ever be called once, no matter how many
  *  times you register it.  In addition you can unregister it or
  *
@@ -65,21 +63,21 @@
 //    Myclass() {
 //      CleanupManager::add_callback(this->cleanup_wrap, this);
 //    }
-//  
+//
 //    ~Myclass() {
 //      // Need to remove and call callback at same time or else you get
 //      // a race condition and the callback could be called twice.
 //      CleanupManger::invoke_remove_callback(this->cleanup_wrap, this);
 //    }
-//  
-//  private: 
+//
+//  private:
 //    static void cleanup_wrap(void *ptr) {
 //      ((Myclass *)ptr)->cleanup();
 //    }
-//  
+//
 //    void cleanup();
 //  }
-//  
+//
 
 #ifndef SCI_project_CleanupManager_h
 #define SCI_project_CleanupManager_h 1
@@ -96,7 +94,7 @@ namespace SCIRun {
 
 class SCISHARE CleanupManager {
 public:
-  
+
   // Initializes the mutex lock for the cleanup manager.  Initialize
   // is called from the Thread::initialize and is only called once.
   static void initialize();

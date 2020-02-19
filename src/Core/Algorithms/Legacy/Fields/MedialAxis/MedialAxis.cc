@@ -1,29 +1,29 @@
-//  
-//  For more information, please see: http://software.sci.utah.edu
-//  
-//  The MIT License
-//  
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//  
-//  License for the specific language governing rights and limitations under
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//  
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
 #include <Core/Algorithms/Fields/MedialAxis/MedialAxis.h>
@@ -45,7 +45,7 @@ typedef LockingHandle<SearchGridT<SCIRun::index_type> > SearchGridHandle;
 bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
 			      double& rdist, Point &rloc,
 			      VMesh::coords_type &rcoords,
-			      VMesh::Elem::index_type &relem, 
+			      VMesh::Elem::index_type &relem,
 			      const Point &p,
 			      VMesh::Elem::index_type &qelem,
 			      const Point &qloc,
@@ -53,7 +53,7 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
 			      double pqdist,
 			      double diffdist) {
   VMesh::Elem::size_type sz = tsm->num_elems();
-  
+
   /// If there are no elements we cannot find the closest one
   if (sz < 1) return (false);
 
@@ -61,7 +61,7 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
   const size_type ni = elem_grid->get_ni()-1;
   const size_type nj = elem_grid->get_nj()-1;
   const size_type nk = elem_grid->get_nk()-1;
-  
+
     // Convert to grid coordinates.
   VMesh::index_type bi, ei, bj, ej, bk, ek;
   elem_grid->unsafe_locate(bi, bj, bk, p);
@@ -70,7 +70,7 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
   if (bi > ni) bi = ni; if (bi < 0) bi = 0;
   if (bj > nj) bj = nj; if (bj < 0) bj = 0;
   if (bk > nk) bk = nk; if (bk < 0) bk = 0;
-  
+
   ei = bi; ej = bj; ek = bk;
   Point *points = tsm->get_points_pointer();
   VMesh::index_type *faces = tsm->get_elems_pointer();
@@ -78,9 +78,9 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
   double mindist2=(diffdist+pqdist)*(diffdist+pqdist);
   bool found = true;
   bool found_one = false;
-  do 
+  do
     {
-      found = true; 
+      found = true;
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
       for (SCIRun::size_type i = bi; i <= ei; i++)
@@ -129,7 +129,7 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    } 
+    }
     while (!found) ;
 
   if (!found_one) return (false);
@@ -153,7 +153,7 @@ MedialAxisAlgo::search_cell_for_medial_pts(VMesh *tsm, SearchGridHandle elem_gri
   if (tsm->find_closest_elem(qdist, qloc, qcoords, qelem, p)) {
     tsm->get_normal(qnormal, qcoords, qelem);
     pqdir=(p-qloc);
-    if (level >= search_depth && 
+    if (level >= search_depth &&
 	Dot(qnormal, pqdir)>0) return; // ignore outside points
     double pqdist=pqdir.length();
     if (level >= search_depth &&
@@ -193,7 +193,7 @@ MedialAxisAlgo::run(FieldHandle surfH, FieldHandle maskLatVolH, FieldHandle& med
   if (!surfFI.is_surface())
   {
     error("This algorithm only works on a surface mesh");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
   VMesh *tsm=surfH->vmesh();
   if (!tsm->is_surface()) {
@@ -220,12 +220,12 @@ MedialAxisAlgo::run(FieldHandle surfH, FieldHandle maskLatVolH, FieldHandle& med
   if (!maskLatVolFI.is_latvolmesh())
   {
     error("This algorithm only works on a lat vol");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
   if (!maskLatVolFI.is_scalar())
   {
     error("This algorithm needs scalar values on the lat vol");
-    algo_end(); return (false); 
+    algo_end(); return (false);
   }
   FieldInformation fi("PointCloudMesh", "NoData", "double");
   fi.make_nodata();
@@ -235,7 +235,7 @@ MedialAxisAlgo::run(FieldHandle surfH, FieldHandle maskLatVolH, FieldHandle& med
   VMesh *medialPtsMesh = medialPtsMeshH->vmesh();
 
   int refinement_levels = get_int("refinement_levels");
-						 
+
   VMesh *latVolMesh = maskLatVolH->vmesh();
   VField *latVolField = maskLatVolH->vfield();
   Transform t(latVolMesh->get_transform());
@@ -304,7 +304,7 @@ MedialAxisAlgo::run(FieldHandle surfH, FieldHandle maskLatVolH, FieldHandle& med
     ++it;
   }
   medialPtsH = CreateField(fi, medialPtsMeshH);
-  algo_end(); 
+  algo_end();
   return (true);
 }
 

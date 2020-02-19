@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
 #define CORE_ALGORITHMS_MATH_SortMatrixALGO_H
@@ -49,13 +50,13 @@ namespace SCIRun{
                 {
                 public:
                     SortMatrixAlgo();
-                    
+
                     AlgorithmOutput run(const AlgorithmInput& input) const;
-                    
+
                     bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
-                    
+
                     bool Quicksort(double* input, index_type lo, index_type hi) const;
-                    
+
                     index_type Partition(double* input, index_type lo, index_type hi) const;
                 };
             }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Port.h>
 #include <Dataflow/Network/Connection.h>
@@ -71,10 +71,10 @@ TEST_F(OutputPortTest, SendSomeData)
   //EXPECT_CALL(*outputModule, getOutputPort(1)).WillRepeatedly(Return(outputPort));
 
   Connection c(outputPort, inputPort, "test");
-  
+
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
-  
+
   EXPECT_CALL(*mockSource, cacheData(dataToPush));
   EXPECT_CALL(*mockSource, send(_));
   outputPort->sendData(dataToPush);
@@ -83,7 +83,7 @@ TEST_F(OutputPortTest, SendSomeData)
 TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 {
   MockModulePtr outputModule(new NiceMock<MockModule>);
-  
+
   Port::ConstructionParams pcp(PortId(0, "ScalarValue"), "Double", false);
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,19 +24,26 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   Author            : Moritz Dannhauer
-   Last modification : February 26 2016
-   TODO              : implement in parallel execution (Dan White), transient GUI variables
-   Related Literature: Ruprecht and Mueller, 'A Scheme for Edge-based Adaptive Tetrahedron Subdivision', 1994
-   The implementation contains a modified version published in Thomson and Pebay 'Embarrassingly parallel mesh refinement by edge subdivision', 2006
-   and differs in the fact that here its not a communication-free approach (tet neighbors are determined during refinement and that costs more
-   computation time and memory) but it does generate significantly less new element nodes/elements then their approach which is a major
-   factor if dealing with large meshes such as from Cleaver1. This implementation is simplified in way that edge splitting ambiguities (several sub cases for each main
-   case) are not treated as such rather than based on their proposed edge length criteria for general tetrahedra. Here, we are using the longest edge approach as a simple criteria
-   to slow down element quality decay during multiple refinement steps.
-   e.g., if there are 3 edges that are equally long in a particular tetrahedra it will get split up at those 3 edges.
-   Requirements      : if dealing with refined Cleaver1 meshes this implementation requires lots of RAM memory (>= 16 GB).
-   */
+   Author:              Moritz Dannhauer
+   Last Modification:   February 26 2016
+   TODO:                implement in parallel execution (Dan White), transient GUI variables
+   Related Literature:  Ruprecht and Mueller, 'A Scheme for Edge-based Adaptive Tetrahedron Subdivision', 1994
+                        The implementation contains a modified version published in Thomson and Pebay
+                        'Embarrassingly parallel mesh refinement by edge subdivision', 2006
+                        and differs in the fact that here its not a communication-free approach (tet neighbors
+                        are determined during refinement and that costs more
+                        computation time and memory) but it does generate significantly less new element
+                        nodes/elements then their approach which is a major factor if dealing with large meshes
+                        such as from Cleaver1. This implementation is simplified in way that edge splitting ambiguities
+                        (several sub cases for each main case) are not treated as such rather than based on their
+                        proposed edge length criteria for general tetrahedra. Here, we are using the longest edge
+                        approach as a simple criteria to slow down element quality decay during multiple refinement steps.
+                        e.g., if there are 3 edges that are equally long in a particular tetrahedra it will get
+                        split up at those 3 edges.
+   Requirements:        if dealing with refined Cleaver1 meshes this implementation requires lots of RAM memory (>= 16 GB).
+*/
+
+
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
@@ -136,7 +142,7 @@ const int RefineTetMeshLocallyAlgorithm::Case1Lookup[2][4] =
   { 4, 1, 2, 3 }
 };
 
-/// for this case 2a - 2a^ubeta was chosen from Thompson et al.  
+/// for this case 2a - 2a^ubeta was chosen from Thompson et al.
 const int RefineTetMeshLocallyAlgorithm::Case2aLookup[3][4] =
 {
   { 0, 4, 5, 3 },
@@ -235,7 +241,7 @@ const int RefineTetMeshLocallyAlgorithm::Case5Lookup[7][4] =
 
 /// this case has been adjusted as it was published to avoid one "split iteration", since the splitting in Thompson
 /// creates one tet edge that has original tet edge length
-//const int RefineTetMeshLocallyAlgorithm::Case6Lookup[8][4] = 
+//const int RefineTetMeshLocallyAlgorithm::Case6Lookup[8][4] =
 const int RefineTetMeshLocallyAlgorithm::Case6Lookup[max_number_new_tets][4] =
 {
   /*{7, 8, 9, 3},
@@ -263,68 +269,68 @@ const int RefineTetMeshLocallyAlgorithm::Case6Lookup[max_number_new_tets][4] =
 int RefineTetMeshLocallyAlgorithm::CaseLookup[number_cases - 1][6] =
 {
   { 1, 2, 3, 0, 1, 1 }, /// case  1: edge 2-3 is cut
-  { 2, 1, 3, 2, 0, 1 }, /// case  1: edge 1-3 is cut  
+  { 2, 1, 3, 2, 0, 1 }, /// case  1: edge 1-3 is cut
   { 3, 1, 3, 2, 0, 2 }, /// case 2a: edge 1-3, 2-3 is cut
-  { 4, 3, 0, 2, 1, 1 }, /// case  1: edge 0-3 is cut 
+  { 4, 3, 0, 2, 1, 1 }, /// case  1: edge 0-3 is cut
   { 5, 2, 3, 0, 1, 2 }, /// case 2a: edge 0-3, 2-3 is cut
   { 6, 0, 3, 1, 2, 2 }, /// case 2a: edge 0-3, 1-3 is cut
-  { 7, 3, 0, 2, 1, 4 }, /// case 3a: edge 0-2, 0-3, 2-3 is cut 
-  { 8, 0, 2, 3, 1, 1 }, /// case  1: edge 0-2 is cut 
-  { 9, 0, 2, 3, 1, 2 }, /// case 2a: edge 0-2, 2-3 is cut 
-  { 10, 1, 3, 2, 0, 3 }, /// case 2b: edge 0-2, 1-3 is cut  
-  { 11, 3, 2, 0, 1, 11 }, /// case 3c: edge 0-2, 1-3, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c) 
-  { 12, 3, 0, 2, 1, 2 }, /// case 2a: edge 0-2, 0-3 is cut 
-  { 13, 3, 2, 1, 0, 5 }, /// case 3b: edge 0-2, 0-3, 2-3 is cut   
-  { 14, 3, 0, 2, 1, 6 }, /// case 3c: edge 0-2, 0-3, 1-3 is cut  
-  { 15, 0, 1, 2, 3, 7 }, /// case 4a: edge 0-2, 0-3, 1-3, 2-3 is cut, no recoding needed for this case  
-  { 16, 1, 2, 0, 3, 1 }, /// case  1: edge 1-2 is cut  
-  { 17, 3, 2, 1, 0, 2 }, /// case 2a: edge 1-2, 2-3 is cut  
-  { 18, 2, 1, 3, 0, 2 }, /// case 2a: edge 1-2, 1-3 is cut     
-  { 19, 1, 2, 0, 3, 5 }, /// case 3b: edge 1-2, 1-3, 2-3 is cut  
-  { 20, 3, 0, 2, 1, 3 }, /// case 2b: edge 0-3, 1-2 is cut  
-  { 21, 3, 2, 1, 0, 6 }, /// case 3c: edge 0-3, 1-2, 2-3 is cut 
-  { 22, 3, 1, 2, 0, 11 }, /// case 3c: edge 0-3, 1-2, 1-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)    
-  { 23, 2, 0, 1, 3, 7 }, /// case 4a: edge 0-3, 1-2, 1-3, 2-3 is cut  
-  { 24, 1, 2, 0, 3, 2 }, /// case 2a: edge 0-2, 1-2 is cut  
-  { 25, 2, 1, 3, 0, 4 }, /// case 3a: edge 0-2, 1-2, 2-3 is cut  
-  { 26, 1, 2, 0, 3, 6 }, /// case 3c: edge 0-2, 1-2, 1-3 is cut  
+  { 7, 3, 0, 2, 1, 4 }, /// case 3a: edge 0-2, 0-3, 2-3 is cut
+  { 8, 0, 2, 3, 1, 1 }, /// case  1: edge 0-2 is cut
+  { 9, 0, 2, 3, 1, 2 }, /// case 2a: edge 0-2, 2-3 is cut
+  { 10, 1, 3, 2, 0, 3 }, /// case 2b: edge 0-2, 1-3 is cut
+  { 11, 3, 2, 0, 1, 11 }, /// case 3c: edge 0-2, 1-3, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
+  { 12, 3, 0, 2, 1, 2 }, /// case 2a: edge 0-2, 0-3 is cut
+  { 13, 3, 2, 1, 0, 5 }, /// case 3b: edge 0-2, 0-3, 2-3 is cut
+  { 14, 3, 0, 2, 1, 6 }, /// case 3c: edge 0-2, 0-3, 1-3 is cut
+  { 15, 0, 1, 2, 3, 7 }, /// case 4a: edge 0-2, 0-3, 1-3, 2-3 is cut, no recoding needed for this case
+  { 16, 1, 2, 0, 3, 1 }, /// case  1: edge 1-2 is cut
+  { 17, 3, 2, 1, 0, 2 }, /// case 2a: edge 1-2, 2-3 is cut
+  { 18, 2, 1, 3, 0, 2 }, /// case 2a: edge 1-2, 1-3 is cut
+  { 19, 1, 2, 0, 3, 5 }, /// case 3b: edge 1-2, 1-3, 2-3 is cut
+  { 20, 3, 0, 2, 1, 3 }, /// case 2b: edge 0-3, 1-2 is cut
+  { 21, 3, 2, 1, 0, 6 }, /// case 3c: edge 0-3, 1-2, 2-3 is cut
+  { 22, 3, 1, 2, 0, 11 }, /// case 3c: edge 0-3, 1-2, 1-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
+  { 23, 2, 0, 1, 3, 7 }, /// case 4a: edge 0-3, 1-2, 1-3, 2-3 is cut
+  { 24, 1, 2, 0, 3, 2 }, /// case 2a: edge 0-2, 1-2 is cut
+  { 25, 2, 1, 3, 0, 4 }, /// case 3a: edge 0-2, 1-2, 2-3 is cut
+  { 26, 1, 2, 0, 3, 6 }, /// case 3c: edge 0-2, 1-2, 1-3 is cut
   { 27, 1, 0, 3, 2, 7 }, /// case 4a: edge 0-3, 1-2, 1-3, 2-3 is cut
-  { 28, 2, 0, 3, 1, 11 }, /// case 3c: edge 0-2, 0-3, 1-2, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)  
-  { 29, 3, 1, 0, 2, 7 }, /// case 4a: edge 0-2, 0-3, 1-2, 2-3 is cut   
-  { 30, 0, 1, 2, 3, 8 }, /// case 4b: edge 0-2, 0-3, 1-2, 1-3 is cut 
+  { 28, 2, 0, 3, 1, 11 }, /// case 3c: edge 0-2, 0-3, 1-2, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
+  { 29, 3, 1, 0, 2, 7 }, /// case 4a: edge 0-2, 0-3, 1-2, 2-3 is cut
+  { 30, 0, 1, 2, 3, 8 }, /// case 4b: edge 0-2, 0-3, 1-2, 1-3 is cut
   { 31, 0, 1, 2, 3, 9 }, /// case  5: edge 0-2, 0-3, 1-2, 1-3, 2-3 is cut
-  { 32, 0, 1, 2, 3, 1 }, /// case  1: edge 0-1 is cut, no recoding needed for this case  
-  { 33, 0, 1, 2, 3, 3 }, /// case 2b: edge 0-1, 2-3 is cut  
-  { 34, 3, 1, 0, 2, 2 }, /// case 2a: edge 0-1, 1-3 is cut  
-  { 35, 1, 3, 2, 0, 6 }, /// case 3c: edge 0-1, 1-3, 2-3 is cut  
-  { 36, 1, 0, 3, 2, 2 }, /// case 2a: edge 0-1, 0-3 is cut  
+  { 32, 0, 1, 2, 3, 1 }, /// case  1: edge 0-1 is cut, no recoding needed for this case
+  { 33, 0, 1, 2, 3, 3 }, /// case 2b: edge 0-1, 2-3 is cut
+  { 34, 3, 1, 0, 2, 2 }, /// case 2a: edge 0-1, 1-3 is cut
+  { 35, 1, 3, 2, 0, 6 }, /// case 3c: edge 0-1, 1-3, 2-3 is cut
+  { 36, 1, 0, 3, 2, 2 }, /// case 2a: edge 0-1, 0-3 is cut
   { 37, 0, 3, 2, 1, 11 }, /// case 3c: edge 0-1, 0-3, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
-  { 38, 0, 1, 2, 3, 5 }, /// case 3b: edge 0-1, 0-3, 1-3 is cut, no recoding needed for this case  
-  { 39, 1, 2, 0, 3, 7 }, /// case 4a: edge 0-1, 0-3, 1-3, 2-3 is cut  
-  { 40, 2, 0, 1, 3, 2 }, /// case 2a: edge 0-1, 0-2 is cut 
-  { 41, 0, 2, 3, 1, 6 }, /// case 3c: edge 0-1, 0-2, 2-3 is cut 
-  { 42, 1, 0, 2, 3, 11 }, /// case 3c: edge 0-1, 0-2, 1-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)  
-  { 43, 3, 0, 2, 1, 8 }, /// case 4b: edge 0-1, 0-2, 1-3, 2-3 is cut  
-  { 44, 0, 1, 2, 3, 4 }, /// case 3a, edge 0-1, 0-2, 0-3 is cut, no recoding needed for this case    
-  { 45, 3, 1, 2, 0, 12 }, /// case 4a: edge 0-1, 0-2, 0-3, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 4a)    
-  { 46, 3, 2, 1, 0, 7 }, /// case 4a: edge 0-1, 0-2, 0-3, 1-3 is cut  
+  { 38, 0, 1, 2, 3, 5 }, /// case 3b: edge 0-1, 0-3, 1-3 is cut, no recoding needed for this case
+  { 39, 1, 2, 0, 3, 7 }, /// case 4a: edge 0-1, 0-3, 1-3, 2-3 is cut
+  { 40, 2, 0, 1, 3, 2 }, /// case 2a: edge 0-1, 0-2 is cut
+  { 41, 0, 2, 3, 1, 6 }, /// case 3c: edge 0-1, 0-2, 2-3 is cut
+  { 42, 1, 0, 2, 3, 11 }, /// case 3c: edge 0-1, 0-2, 1-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
+  { 43, 3, 0, 2, 1, 8 }, /// case 4b: edge 0-1, 0-2, 1-3, 2-3 is cut
+  { 44, 0, 1, 2, 3, 4 }, /// case 3a, edge 0-1, 0-2, 0-3 is cut, no recoding needed for this case
+  { 45, 3, 1, 2, 0, 12 }, /// case 4a: edge 0-1, 0-2, 0-3, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 4a)
+  { 46, 3, 2, 1, 0, 7 }, /// case 4a: edge 0-1, 0-2, 0-3, 1-3 is cut
   { 47, 1, 2, 0, 3, 9 }, /// case  5: edge 0-1, 0-2, 0-3, 1-3, 2-3 is cut
-  { 48, 0, 1, 2, 3, 2 }, /// case 2a: edge 0-1, 1-2 is cut, no recoding needed for this case    
-  { 49, 2, 1, 0, 3, 11 }, /// case 3c: edge 0-1, 1-2, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)  
+  { 48, 0, 1, 2, 3, 2 }, /// case 2a: edge 0-1, 1-2 is cut, no recoding needed for this case
+  { 49, 2, 1, 0, 3, 11 }, /// case 3c: edge 0-1, 1-2, 2-3 is cut, this just an additional subcase to avoid negative volumes (otherwise identical with case 3c)
   { 50, 1, 3, 2, 0, 4 }, /// case 3a: edge 0-1, 1-2, 1-3 is cut, HERE
-  { 51, 3, 0, 2, 1, 7 }, /// case 4a: edge 0-1, 1-2, 1-3, 2-3 is cut 
-  { 52, 0, 1, 2, 3, 6 }, /// case 3c: edge 0-1, 0-3, 1-2 is cut, no recoding needed for this case    
-  { 53, 1, 3, 2, 0, 8 }, /// case 4b: edge 0-1, 0-3, 1-2, 2-3 is cut  
-  { 54, 0, 2, 3, 1, 7 }, /// case 4a: edge 0-1, 0-3, 1-2, 1-3 is cut  
-  { 55, 0, 2, 3, 1, 9 }, /// case  5: edge 0-1, 0-3, 1-2, 1-3, 2-3 is cut  
-  { 56, 0, 2, 3, 1, 5 }, /// case 3b: edge 0-1, 0-2, 1-2 is cut  
+  { 51, 3, 0, 2, 1, 7 }, /// case 4a: edge 0-1, 1-2, 1-3, 2-3 is cut
+  { 52, 0, 1, 2, 3, 6 }, /// case 3c: edge 0-1, 0-3, 1-2 is cut, no recoding needed for this case
+  { 53, 1, 3, 2, 0, 8 }, /// case 4b: edge 0-1, 0-3, 1-2, 2-3 is cut
+  { 54, 0, 2, 3, 1, 7 }, /// case 4a: edge 0-1, 0-3, 1-2, 1-3 is cut
+  { 55, 0, 2, 3, 1, 9 }, /// case  5: edge 0-1, 0-3, 1-2, 1-3, 2-3 is cut
+  { 56, 0, 2, 3, 1, 5 }, /// case 3b: edge 0-1, 0-2, 1-2 is cut
   { 57, 0, 3, 1, 2, 7 }, /// case 4a: edge 0-1, 0-2, 1-2, 2-3 is cut
-  { 58, 2, 3, 0, 1, 7 }, /// case 4a: edge 0-1, 0-2, 1-2, 1-3 is cut  
-  { 59, 3, 0, 2, 1, 9 }, /// case  5: edge 0-1, 0-2, 1-2, 1-3, 2-3 is cut  
+  { 58, 2, 3, 0, 1, 7 }, /// case 4a: edge 0-1, 0-2, 1-2, 1-3 is cut
+  { 59, 3, 0, 2, 1, 9 }, /// case  5: edge 0-1, 0-2, 1-2, 1-3, 2-3 is cut
   { 60, 1, 3, 2, 0, 7 }, /// case 4a: edge 0-1, 0-2, 0-3, 1-2 is cut
-  { 61, 1, 3, 2, 0, 9 }, /// case  5: edge 0-1, 0-2, 0-3, 1-2, 2-3 is cut 
-  { 62, 3, 2, 1, 0, 9 }, /// case  5: edge 0-1, 0-2, 0-3, 1-2, 1-3 is cut  
-  { 63, 0, 1, 2, 3, 10 } /// case  6: edge 0-1, 0-2, 0-3, 1-2, 1-3, 2-3, no recoded needed for this case 
+  { 61, 1, 3, 2, 0, 9 }, /// case  5: edge 0-1, 0-2, 0-3, 1-2, 2-3 is cut
+  { 62, 3, 2, 1, 0, 9 }, /// case  5: edge 0-1, 0-2, 0-3, 1-2, 1-3 is cut
+  { 63, 0, 1, 2, 3, 10 } /// case  6: edge 0-1, 0-2, 0-3, 1-2, 1-3, 2-3, no recoded needed for this case
 };
 
 RefineTetMeshLocallyAlgorithm::RefineTetMeshLocallyAlgorithm()
@@ -377,7 +383,7 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::SelectMeshElements(FieldHandle i
 
     if (ModuleInput && value != code_to_split && choose_refinement_option == 0)
     {
-      /// if some tets are preselected in module input (have field data value "1") but 'Iso Value' is chosen NOT "1" (with active radiobutton on "Iso Value"), this module will not 
+      /// if some tets are preselected in module input (have field data value "1") but 'Iso Value' is chosen NOT "1" (with active radiobutton on "Iso Value"), this module will not
       /// preselection works as a logical AND in order to be able to be more specific what to refine
     }
     else
@@ -473,7 +479,7 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::SelectMeshElements(FieldHandle i
       if (tet_volume <= 0)
       {
         remark(" The volume of at least one mesh element is zero or even negative. If its negative you can use 'counterclockwise tet ordering'. If its zero the tet might be flat ");
-        //return result; 
+        //return result;
       }
 
       bool condition = tet_volume > volume_bound;
@@ -802,7 +808,7 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input, SparseR
   VMesh* result_vmesh = result->vmesh();
   VField* result_vfld = result->vfield();
 
-  ///count how many tets and nodes are needed now 
+  ///count how many tets and nodes are needed now
   long tet_count = 0;
 
   Point p1, p2, p3, p4;
@@ -892,7 +898,7 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input, SparseR
           else
             if (node == 10)
               /// this is an addition to the splitting algorithm proposed in Thompson, all edges of the new tets should have smaller edges (in case every edge of the
-              /// original tet needs to be split)  
+              /// original tet needs to be split)
             {
               input_vmesh->get_center(p1, static_cast<VMesh::Node::index_type>(onodes[0]));
               input_vmesh->get_center(p2, static_cast<VMesh::Node::index_type>(onodes[1]));
@@ -1042,5 +1048,3 @@ bool RefineTetMeshLocallyAlgorithm::runImpl(FieldHandle input, FieldHandle& outp
 
   return (true);
 }
-
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
 
@@ -47,10 +47,10 @@ using namespace SCIRun::Core::Algorithms;
 AlgorithmOutput FlipSurfaceNormalsAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_field = input.get<Field>(Variables::InputField);
-	
+
 	FieldHandle output_field(input_field->deep_clone());
 	run(input_field,output_field);
-	
+
 	AlgorithmOutput output;
 	output[Variables::OutputField] = output_field;
 	return output;
@@ -63,34 +63,34 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 		error("No input on source field");
 		return false;
 	}
-	
+
 	FieldInformation fi(input);
-	
+
 	if(!fi.is_surface()) {
 		error("This algorithm only works on surface mesh");
 		return false;
 	}
-		
-	
+
+
 	VMesh* mesh = output->vmesh();
-	
+
 	VMesh::Node::array_type inodes;
 	VMesh::Node::array_type onodes;
 	VMesh::Face::size_type isize, numnodes = 0;
 	VMesh::Face::index_type faceindex;
-	
+
 	unsigned int cnt = 0;
 	mesh->size(isize);
-	
+
 	for(VMesh::Face::size_type i = 0; i < isize; ++i)
 	{
 		faceindex = i;
 		mesh->get_nodes(inodes, faceindex);
 		numnodes = inodes.size();
-		
+
 		// Without the resize there is an error when accessing cells in onodes because they don't exist yet.
 		onodes.resize(numnodes);
-		for (VMesh::Face::size_type p = 0; p < numnodes; p++) 
+		for (VMesh::Face::size_type p = 0; p < numnodes; p++)
 		{
 			onodes[p] = inodes[numnodes-1-p];
 		}
@@ -106,6 +106,6 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 			cnt = 0;
 		}
 	}
-  
+
 	return true;
 }

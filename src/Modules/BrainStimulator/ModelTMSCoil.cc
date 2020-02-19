@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 #include <Modules/BrainStimulator/ModelTMSCoil.h>
 #include <iostream>
 #include <Core/Datatypes/String.h>
@@ -51,7 +52,7 @@ ModelTMSCoil::ModelTMSCoil() : Module(ModuleLookupInfo("ModelTMSCoil", "BrainSti
 
 void ModelTMSCoil::setStateDefaults()
 {
-  auto state = get_state(); 
+  auto state = get_state();
   setStateStringFromAlgo(Parameters::Type);
   setStateIntFromAlgo(Parameters::FigureOf8CoilShape);
   setStateDoubleFromAlgo(Parameters::Current);
@@ -68,9 +69,9 @@ void ModelTMSCoil::setStateDefaults()
 void ModelTMSCoil::execute()
 {
   AlgorithmOutput output;
-   
+
  if (needToExecute())  //newStatePresent
- {   
+ {
    auto state = get_state();
    setAlgoStringFromState(Parameters::Type);
    setAlgoIntFromState(Parameters::FigureOf8CoilShape);
@@ -83,9 +84,9 @@ void ModelTMSCoil::execute()
    setAlgoIntFromState(Parameters::Layers);
    setAlgoDoubleFromState(Parameters::LayerStepSize);
    setAlgoIntFromState(Parameters::LevelOfDetail);
-   
-   output = algo().run(AlgorithmInput()); 
-   
+
+   output = algo().run(AlgorithmInput());
+
    sendOutputFromAlgorithm(Mesh, output);
  }
 

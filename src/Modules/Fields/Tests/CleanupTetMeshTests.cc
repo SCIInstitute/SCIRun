@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -84,7 +84,7 @@ TEST_F(CleanupTetMeshModuleTests, WrongInput)
 
 TEST_F(CleanupTetMeshModuleTests, ShouldWork)
 {
-  auto cg = makeModule("CleanupTetMesh");  
+  auto cg = makeModule("CleanupTetMesh");
   FieldInformation fi("TetVolMesh", CONSTANTDATA_E, "double");
   FieldHandle field = CreateField(fi);
   auto vmesh = field->vmesh();
@@ -95,15 +95,14 @@ TEST_F(CleanupTetMeshModuleTests, ShouldWork)
   vmesh->add_point( Point(98.2337, 179.3770, 72.7303));
   vmesh->add_point( Point(98.2337, 179.3770, 72.7303));
   vmesh->add_point( Point(97.0604, 179.6824, 72.3515));
-  vmesh->add_point( Point(97.9706, 180.4140, 71.7113)); 
+  vmesh->add_point( Point(97.9706, 180.4140, 71.7113));
   vdata[0] = 0;
   vdata[1] = 0;
   vdata[2] = 2;
   vdata[3] = 3;
-  vmesh->add_elem(vdata);  
+  vmesh->add_elem(vdata);
   field->vfield()->resize_values();
   field->vfield()->set_all_values(0.0);
   stubPortNWithThisData(cg, 0, field);
-  EXPECT_NO_THROW(cg->execute());  
+  EXPECT_NO_THROW(cg->execute());
 }
-

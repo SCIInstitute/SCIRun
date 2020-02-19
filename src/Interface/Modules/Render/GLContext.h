@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   December 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
-///         auxiliary file to the ViewScene render module.
+
+/// author James Hughes
+/// date   December 2012
+/// brief  Not sure this file should go in Modules/Render. But it is an
+///        auxiliary file to the ViewScene render module.
 
 #ifndef INTERFACE_MODULES_RENDER_GLCONTEXT_H
 #define INTERFACE_MODULES_RENDER_GLCONTEXT_H
@@ -52,7 +52,7 @@ public:
 
   /// Mandatory override from Context.
   virtual void makeCurrent();
-  
+
   /// Mandatory override from Context.
   virtual void swapBuffers();
 
@@ -64,4 +64,4 @@ private:
 } // end of namespace SCIRun
 } // end of namespace Gui
 
-#endif 
+#endif

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Math/SortMatrix.cc
 
 #include <Dataflow/Network/Module.h>
@@ -59,9 +60,9 @@ void
 SortMatrix::execute()
 {
   MatrixHandle input, output;
-  
+
   get_input_handle("Matrix",input,true);
-  
+
   if (inputs_changed_ || !oport_cached("Matrix") || row_or_column_.changed())
   {
     algo_.set_option("method","sort_columns");
@@ -76,5 +77,3 @@ SortMatrix::execute()
 
 
 } // End namespace SCIRun
-
-

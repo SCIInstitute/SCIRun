@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 // THIS FILE CONTAINS MOST OF THE FUNCTIONALITY TO MAP A SCIRUN::FIELD OBJECT
 // INTO A MATLAB ARRAY
@@ -34,15 +34,15 @@ DEALINGS IN THE SOFTWARE.
 // NAMED DIFFERENT OVER THE VARIOUS FIELDS.
 //
 // HENCE THIS CONVERTER IS HUGE AND HAS SPECIFIC CODE SNIPPITS FOR EVERY WEIRD
-// SCIRUN DEFINITION. 
+// SCIRUN DEFINITION.
 //
 // THE CONVERTER IS COMPLETELY TEMPLATED AND USES TEMPLATE OVER LOADING TO DIRECT
-// THE COMPILER TO INCLUDE TO PROPER PIECES OF CODE AT EACH POSITION. UNLIKE 
+// THE COMPILER TO INCLUDE TO PROPER PIECES OF CODE AT EACH POSITION. UNLIKE
 // MOST SCIRUN CODE, IT ONLY DOES ONE DYNAMIC COMPILATION AND THAN RELIES ON
 // OVERLOADING TEMPALTED FUNCTIONS TO DEFINE A SPECIFIC CONVERTER.
 // THE ADVANTAGE OF THIS METHODOLOGY IS THAT PIECES OF CODE CAN BE REUSED AND NOT
 // EVERY MESH TYPE NEEDS SPECIALLY DESIGNED CODE.
-// 
+//
 // THE CURRENT SYSTEM NEEDS A SPECIFIC OVERLOADED FUNCTION FOR EACH MESH TYPE WHICH
 // TELLS WHICH PIECES TOGETHER FORM A NEW CONVERTER. IF THE COMPILER IS SMART ENOUGH
 // IT ONLY COMPILES THE PIECES IT NEEDS. SINCE IT IS ALL TEMPLATED, THE COMPILER
@@ -64,9 +64,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Matlab/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-  namespace MatlabIO 
+  namespace MatlabIO
   {
 
     class SCISHARE FieldToMatlabAlgo : public matfilebase
@@ -92,7 +92,7 @@ namespace SCIRun
       bool mladdmeshheader(const SCIRun::FieldInformation& fi, matlabarray& mlarray);
       bool mladdnodes(SCIRun::VMesh* mesh,matlabarray& mlarray);
       bool mladdedges(SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdfaces(SCIRun::VMesh* mesh, matlabarray& mlarray);    
+      bool mladdfaces(SCIRun::VMesh* mesh, matlabarray& mlarray);
       bool mladdcells(SCIRun::VMesh* mesh, matlabarray& mlarray);
       bool mladdmeshderivatives(SCIRun::VMesh* mesh, matlabarray& mlarray);
 
@@ -105,7 +105,7 @@ namespace SCIRun
       bool mladddimension2d(SCIRun::VMesh* mesh, matlabarray& mlarray);
       bool mladddimension3d(SCIRun::VMesh* mesh, matlabarray& mlarray);
 
-      bool mladdfieldheader(const SCIRun::FieldInformation& fi,  matlabarray& mlarray);                          
+      bool mladdfieldheader(const SCIRun::FieldInformation& fi,  matlabarray& mlarray);
 
       bool mladdfielddata(SCIRun::VField* field,SCIRun::VMesh* mesh, matlabarray& mlarray);
 
@@ -136,7 +136,7 @@ namespace SCIRun
 
     };
 
-    
+
 
   }}
 

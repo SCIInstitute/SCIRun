@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,17 +26,16 @@
 */
 
 
-
 ///
 ///@file  ArrayIndexOutOfBounds.h
 ///@brief Exception to indicate a failed bounds check
-/// 
+///
 ///@author
 ///    Steven G. Parker
 ///    Department of Computer Science
 ///    University of Utah
 ///@date  July 1999
-/// 
+///
 
 #ifndef Core_Exceptions_ArrayIndexOutOfBounds_h
 #define Core_Exceptions_ArrayIndexOutOfBounds_h
@@ -49,7 +47,7 @@
 namespace SCIRun {
 	class SCISHARE ArrayIndexOutOfBounds : public Exception {
 	public:
-	    ArrayIndexOutOfBounds(index_type value, index_type lower, index_type upper, 
+	    ArrayIndexOutOfBounds(index_type value, index_type lower, index_type upper,
                                   const char* file, int line);
 	    ArrayIndexOutOfBounds(const ArrayIndexOutOfBounds&);
 	    virtual ~ArrayIndexOutOfBounds() NOEXCEPT;
@@ -65,5 +63,3 @@ namespace SCIRun {
 } // End namespace SCIRun
 
 #endif
-
-

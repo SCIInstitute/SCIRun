@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -53,14 +53,14 @@ SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
   addParameter(Value, 0.0);
 }
 
-bool 
+bool
 SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
   if (!input)
   {
     error("No input field was provided");
-    return (false);  
+    return (false);
   }
 
   FieldInformation fi(input);
@@ -82,7 +82,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   }
 
   output = CreateField(fi, input->mesh());
-  
+
   if (!output)
   {
     error("Could not allocate output field");

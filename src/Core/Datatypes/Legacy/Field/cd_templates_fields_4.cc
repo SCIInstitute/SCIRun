@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_4.cc
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -84,19 +85,19 @@ namespace SCIRun
 template class TriSurfMesh<TriLinearLgn<Point> >;
 
 //noData
-template class GenericField<TSMesh, NDBasis, std::vector<double> >;   
+template class GenericField<TSMesh, NDBasis, std::vector<double> >;
 
 //Constant
-template class GenericField<TSMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<TSMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<TSMesh, CFDdoubleBasis, std::vector<double> >;       
-template class GenericField<TSMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<TSMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<TSMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<TSMesh, CFDdoubleBasis, std::vector<double> >;
+template class GenericField<TSMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<TSMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<TSMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<TSMesh, CFDlonglongBasis,std::vector<long long> >;
-template class GenericField<TSMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<TSMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<TSMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<TSMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<TSMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<TSMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<TSMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<TSMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TSMesh, CFDulongBasis,  std::vector<unsigned long> >;
@@ -114,19 +115,19 @@ namespace SCIRun {
   template class CurveMesh<CrvLinearLgn<Point> >;
 
 //NoData
-template class GenericField<CMesh, NDBasis,  std::vector<double> >;  
+template class GenericField<CMesh, NDBasis,  std::vector<double> >;
 
 //Constant
-template class GenericField<CMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<CMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<CMesh, CFDdoubleBasis, std::vector<double> >;       
-template class GenericField<CMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<CMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<CMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<CMesh, CFDdoubleBasis, std::vector<double> >;
+template class GenericField<CMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<CMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<CMesh, CFDlonglongBasis,std::vector<long long> >;
-template class GenericField<CMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<CMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<CMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<CMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<CMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<CMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<CMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<CMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<CMesh, CFDulongBasis,  std::vector<unsigned long> >;

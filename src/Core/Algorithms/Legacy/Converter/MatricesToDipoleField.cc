@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Datatypes/Field.h>
 
@@ -37,13 +37,13 @@ using namespace SCIRun;
 
 bool MatricesToDipoleFieldAlgo::MatricesToDipoleField(ProgressReporter* pr, MatrixHandle locations,MatrixHandle strengths,FieldHandle& Dipoles)
 {
-  if (locations.get_rep() == 0) 
+  if (locations.get_rep() == 0)
   {
     pr->error("MatricesToDipoleField: No Locations Matrix");
     return (false);
   }
 
-  if (strengths.get_rep() == 0) 
+  if (strengths.get_rep() == 0)
   {
     pr->error("MatricesToDipoleField: No strengths Matrix");
     return (false);
@@ -55,51 +55,51 @@ bool MatricesToDipoleFieldAlgo::MatricesToDipoleField(ProgressReporter* pr, Matr
     pr->error("MatricesToDipoleField: Strength and Location Matrices should have same dimensions");
     return (false);
   }
-  
+
   if ((locations->nrows()==3)&&(locations->ncols()!=3))
   {
     locations = locations->make_transpose();
     strengths = strengths->make_transpose();
   }
-  
+
   DenseMatrix *loc = locations->dense();
   DenseMatrix *str = locations->dense();
-  
+
   if ((loc==0)||(str==0))
   {
     pr->error("MatricesToDipoleField: Could not convert matrices in dense matrices");
-    return (false);    
+    return (false);
   }
-  
+
   double *locdata = loc->get_data_pointer();
   double *strdata = str->get_data_pointer();
   size_type m = loc->ncols();
-  
+
   FieldInformation fi("PointCloudMesh",0,"Vector");
-  
+
   Dipoles = CreateField(fi);
   VMesh* omesh = Dipoles->vmesh();
   VField* ofield = Dipoles->vfield();
-  
+
   if (omesh == 0)
   {
     pr->error("MatricesToDipoleField: Could not allocate mesh");
-    return (false);      
+    return (false);
   }
-  
+
   index_type k = 0;
   for (index_type p = 0 ; p < m; p++)
   {
     omesh->add_point(Point(locdata[k],locdata[k+1],locdata[k+2]));
     k+=3;
   }
-    
+
   if (Dipoles.get_rep() == 0)
   {
     pr->error("MatricesToDipoleField: Could not allocate field");
-    return (false);      
+    return (false);
   }
-  
+
   k = 0;
   VMesh::Node::iterator it, it_end;
   omesh->begin(it);
@@ -110,10 +110,8 @@ bool MatricesToDipoleFieldAlgo::MatricesToDipoleField(ProgressReporter* pr, Matr
     k+=3;
     ++it;
   }
-  
+
   return (true);
 }
 
 } // end namespace SCIRunAlgo
-
-

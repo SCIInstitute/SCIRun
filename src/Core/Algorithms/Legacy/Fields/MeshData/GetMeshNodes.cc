@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -50,10 +50,10 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     error("No input source field");
     return (false);
   }
-  
+
   VMesh* vmesh = input->vmesh();
   VMesh::size_type size = vmesh->num_nodes();
-  
+
   output.reset(new DenseMatrix(size,3));
 
   if (!output)
@@ -75,11 +75,11 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
       (*output)(i, 0) = p.x();
       (*output)(i, 1) = p.y();
       (*output)(i, 2) = p.z();
-      cnt++; 
-      if (cnt == 400) 
+      cnt++;
+      if (cnt == 400)
       {
-        cnt = 0; 
-        update_progress_max(i,size); 
+        cnt = 0;
+        update_progress_max(i,size);
       }
     }
 
@@ -96,15 +96,15 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
       (*output)(i, 0) = p.x();
       (*output)(i, 1) = p.y();
       (*output)(i, 2) = p.z();
-      cnt++; 
-      if (cnt == 400) 
+      cnt++;
+      if (cnt == 400)
       {
-        cnt = 0; 
-        update_progress_max(i,size); 
+        cnt = 0;
+        update_progress_max(i,size);
       }
     }
   }
-  
+
   return (true);
 }
 

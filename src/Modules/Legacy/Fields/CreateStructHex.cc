@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@author
 ///   Michael Callahan
@@ -115,8 +115,8 @@ CreateStructHex::execute()
   unsigned int sizex = Max(2, size_x_.get());
   unsigned int sizey = Max(2, size_y_.get());
   unsigned int sizez = Max(2, size_z_.get());
-  
-  
+
+
   int basis_order;
   if (data_at_.get() == "Nodes") basis_order = 1;
   else if (data_at_.get() == "Cells") basis_order = 0;
@@ -125,14 +125,14 @@ CreateStructHex::execute()
     error("Unsupported data_at location " + data_at_.get() + ".");
     return;
   }
-  
+
   FieldInformation sfi("StructHexVolMesh",basis_order,"double");
   if (datatype == VECTOR) sfi.make_vector();
   if (datatype == TENSOR) sfi.make_tensor();
-  
+
   MeshHandle mesh = CreateMesh(sfi,sizex, sizey, sizez);
   VMesh* vmesh = mesh->vmesh();
-  
+
   Transform trans;
   trans.pre_scale(Vector(1.0 / (sizex-1.0),
 			 1.0 / (sizey-1.0),
@@ -143,7 +143,7 @@ CreateStructHex::execute()
   VMesh::Node::iterator mitr, mitr_end;
   vmesh->begin(mitr);
   vmesh->end(mitr_end);
-  
+
   VMesh::index_type i,j,k;
   while (mitr != mitr_end)
   {
@@ -159,10 +159,9 @@ CreateStructHex::execute()
   // Create Image Field.
   FieldHandle ofh = CreateField(sfi,mesh);
   ofh->vfield()->clear_all_values();
-  
+
   send_output_handle("Output Sample Field", ofh);
 }
 
 
 } // End namespace SCIRun
-

@@ -1,14 +1,11 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#ifndef WIN32
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,9 +26,8 @@
 */
 
 
-
 ///
-///@class Guard 
+///@class Guard
 ///@brief Automatically lock/unlock a mutex or crowdmonitor.
 ///
 ///@author
@@ -40,6 +36,9 @@
 ///       University of Utah
 ///@date  June 1997
 ///
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#ifndef WIN32
 
 #include <Core/Thread/Legacy/Guard.h>
 #include <Core/Thread/Legacy/CrowdMonitor.h>
@@ -61,7 +60,7 @@ Guard::Guard(RecursiveMutex* rmutex)
   rmutex_->lock();
 }
 
-Guard::Guard(CrowdMonitor* crowd_monitor, Which action) 
+Guard::Guard(CrowdMonitor* crowd_monitor, Which action)
     : mutex_(0), monitor_(crowd_monitor), action_(action)
 {
     if (action_ == Read) {

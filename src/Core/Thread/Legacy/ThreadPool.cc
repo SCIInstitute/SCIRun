@@ -1,13 +1,11 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +26,6 @@
 */
 
 
-
 ///
 ///@file  ThreadPool.cc
 ///@brief A pool of threads
@@ -39,6 +36,8 @@
 ///       University of Utah
 ///@date  January 2000
 ///
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Thread/Legacy/ThreadPool.h>
 #include <Core/Thread/Legacy/Barrier.h>
@@ -55,13 +54,13 @@ class ThreadPoolHelper : public Runnable {
   int proc;
   friend class ThreadPool;
   ThreadPool* pool;
-  //Semaphore start_sema;	
+  //Semaphore start_sema;
   //Semaphore done_sema;
 public:
   ThreadPoolHelper(int proc, ThreadPool* pool)
     : helper(0), proc(proc), pool(pool)
     //start_sema("ThreadPool helper startup semaphore", 0),
-    //done_sema("ThreadPool helper completion semaphore", 0) 
+    //done_sema("ThreadPool helper completion semaphore", 0)
   {
   }
   virtual ~ThreadPoolHelper() {}
@@ -75,7 +74,7 @@ public:
       pool->wait();
     }
   }
-};	
+};
 
 ThreadPool::ThreadPool(const char* name)
   : name_(name), lock_("ThreadPool lock"), barrier("ThreadPool barrier")

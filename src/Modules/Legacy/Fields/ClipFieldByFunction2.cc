@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -42,7 +42,7 @@
 namespace SCIRun {
 
 /// @class ClipFieldByFunction2
-/// @brief This module selects a subset of one or two fields using a function. 
+/// @brief This module selects a subset of one or two fields using a function.
 
 class ClipFieldByFunction2 : public Module {
   public:
@@ -52,9 +52,9 @@ class ClipFieldByFunction2 : public Module {
     virtual void tcl_command(GuiArgs&, void*);
 
     virtual void presave();
-    
+
   private:
-    GuiString guifunction_;  
+    GuiString guifunction_;
     GuiString guimethod_;
     SCIRunAlgo::ClipMeshBySelectionAlgo clipping_algo_;
 };
@@ -77,7 +77,7 @@ void ClipFieldByFunction2::execute()
   StringHandle func;
   std::vector<MatrixHandle> matrices;
 
-  // Get the new input data:  
+  // Get the new input data:
   get_input_handle("Field1",field,true);
   get_input_handle("Field2",field2,false);
 
@@ -86,9 +86,9 @@ void ClipFieldByFunction2::execute()
     if (func.get_rep())
     {
       guifunction_.set(func->get());
-      get_ctx()->reset();  
+      get_ctx()->reset();
     }
-  }  
+  }
   get_dynamic_input_handles("Array",matrices,false);
 
   TCLInterface::eval(get_id()+" update_text");
@@ -146,8 +146,8 @@ void ClipFieldByFunction2::execute()
       oss << ") does not match basis order supported by method '" << method << "'. Using DATA variables will not be supported.";
       warning(oss.str());
     }
-    
-    // Create the POS, X,Y,Z, data location objects.  
+
+    // Create the POS, X,Y,Z, data location objects.
 
     if(!(engine.add_input_fielddata_location("POS",field,basis_order))) return;
     if(!(engine.add_input_fielddata_location("POS1",field,basis_order))) return;
@@ -165,34 +165,34 @@ void ClipFieldByFunction2::execute()
       {
         if(!(engine.add_input_fielddata("DATA2",field2))) return;
       }
-      
-      // Create the POS, X,Y,Z, data location objects.  
+
+      // Create the POS, X,Y,Z, data location objects.
 
       if(!(engine.add_input_fielddata_location("POS2",field2,basis_order))) return;
       if(!(engine.add_input_fielddata_coordinates("X2","Y2","Z2",field2,basis_order))) return;
 
       // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT2",field2,basis_order))) return;    
+      if(!(engine.add_input_fielddata_element("ELEMENT2",field2,basis_order))) return;
     }
 
 
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-    
+
     for (size_t p = 0; p < numinputs; p++)
     {
       if (matrices[p].get_rep() == 0)
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
-    
-    
+
+
     if(!(engine.add_output_fielddata("RESULT",field,basis_order,"char"))) return;
 
     // Add an object for getting the index and size of the array.
@@ -209,16 +209,16 @@ void ClipFieldByFunction2::execute()
     if(!(engine.add_expressions(function))) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!(engine.run())) return;
 
     // Get the result from the engine
-    FieldHandle  sfield, ofield;    
+    FieldHandle  sfield, ofield;
     MatrixHandle mapping;
-    engine.get_field("RESULT",sfield);    
-    
+    engine.get_field("RESULT",sfield);
+
     clipping_algo_.set_option("method",guimethod_.get());
     if(!(clipping_algo_.run(field,sfield,ofield,mapping))) return;
 
@@ -228,5 +228,3 @@ void ClipFieldByFunction2::execute()
 }
 
 } // End namespace ModelCreation
-
-

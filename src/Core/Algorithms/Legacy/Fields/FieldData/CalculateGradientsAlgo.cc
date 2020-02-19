@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,10 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer, ported from SCIRun4
-   last changes: 11/26/13
+
+   Author:              Moritz Dannhauer, ported from SCIRun4
+   Last Modification:   November 26 2013
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -44,10 +45,10 @@ bool
 CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
-  
+
   if (!input)
     THROW_ALGORITHM_INPUT_ERROR("No input field");
-  
+
   FieldInformation fi(input);
 
   if (fi.is_pointcloudmesh())
@@ -60,30 +61,30 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
     THROW_ALGORITHM_INPUT_ERROR("The data needs to be of scalar type to calculate gradients");
 
   fi.make_vector();
-  
+
   fi.make_constantdata();
-  
+
   output = CreateField(fi,input->mesh());
-  
+
   if (!output)
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output field");
-  
+
   VField* ifield = input->vfield();
-  
+
   VField* ofield = output->vfield();
-  
+
   VMesh*  imesh  = input->vmesh();
-  
+
   ofield->resize_values();
-  
+
   VMesh::coords_type coords;
-  
+
   imesh->get_element_center(coords);
-  
+
   VField::size_type num_elems = imesh->num_elems();
-  
+
   VField::size_type num_nodes = imesh->num_nodes();
-  
+
   VField::size_type num_fielddata = ifield->num_values();
 
   if ((num_fielddata != num_nodes) && (num_fielddata != num_elems))

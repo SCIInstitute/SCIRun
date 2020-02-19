@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 ///
 ///@file   FutureValue.h
 ///@brief  Delayed return values
@@ -46,13 +44,13 @@
 
 namespace SCIRun {
 /**************************************
- 
+
 @class
   FutureValue
-   
+
   KEYWORDS
   Thread
-   
+
 @details
   Creates a single slot for some return value.  The <i>wait</i> method
   waits for a value to be sent from another thread via the <i>reply</i>
@@ -61,12 +59,12 @@ namespace SCIRun {
   stack, and some request is sent (usually via a <b>Mailbox</b>) to a server
   thread.  Then the thread will block in <i>wait</i> until the server thread
   receives the message and responds using <i>reply</i>.
-  
+
   <p><b>FutureValue</b> is a one-shot wait/reply pair - a new
   <b>FutureValue</b> object must be created for each reply, and these are
   typically created on the stack.  Only a single thread should
   call <i>wait</i> and a single thread shuold call <i>reply</i>.
-  
+
 ****************************************/
 template<class Item> class FutureValue {
 public:
@@ -130,4 +128,3 @@ FutureValue<Item>::send(const Item& reply)
 } // End namespace SCIRun
 
 #endif
-

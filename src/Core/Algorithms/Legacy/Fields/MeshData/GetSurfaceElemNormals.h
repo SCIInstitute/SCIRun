@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
 #define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
 
@@ -33,7 +33,7 @@
 //#include <Core/Datatypes/Mesh.h>
 //#include <Core/Datatypes/Field.h>
 //#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DatatypeFwd.h>
 
 // Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
@@ -50,9 +50,9 @@ class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
   public:
     GetSurfaceElemNormalsAlgo()
     {}
-    
+
     /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
+    bool run(FieldHandle& input, MatrixHandle& output);
 };
 
 } // end namespace SCIRunAlgo

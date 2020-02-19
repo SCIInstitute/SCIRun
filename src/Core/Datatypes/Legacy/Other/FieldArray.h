@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Other/FieldArray.h
 
 #ifndef CORE_DATATYPES_FIELDARRAY_H
@@ -36,26 +37,26 @@
 #include <vector>
 
 namespace SCIRun {
- 
+
 class SCISHARE FieldArray: public PropertyManager
 {
   public:
     /// Constructor / Destructor
     FieldArray();
     virtual ~FieldArray();
-    
+
     /// Clone field will generate a pointer to a new copy
     FieldArray *clone() const;
-    
+
     /// Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream& stream);
-    
+
     std::vector<FieldHandle>& array() { return(array_); }
     const std::vector<FieldHandle>& array() const { return(array_); }
 
     virtual std::string dynamic_type_name() const { return type_id.type; }
-    
+
   private:
     std::vector<FieldHandle>  array_;
 };
@@ -65,4 +66,3 @@ typedef LockingHandle<FieldArray>  FieldArrayHandle;
 }
 
 #endif
-

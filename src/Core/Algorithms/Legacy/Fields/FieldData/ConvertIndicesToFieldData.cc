@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -36,12 +36,12 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 ConvertIndicesToFieldDataAlgo::
 run( FieldHandle input, MatrixHandle data, FieldHandle& output)
 {
   algo_start("ConvertIndicesToFieldData");
-  
+
   if (input.get_rep() == 0)
   {
     error("No input field");
@@ -58,7 +58,7 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
 
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
@@ -70,7 +70,7 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
     error("This function has not yet been defined for fields with no data");
     algo_end(); return (false);
   }
-  
+
   if (fi.is_vector()||fi.is_tensor())
   {
     error("This function has not yet been defined for fields with vectors or tensors as indices");
@@ -81,7 +81,7 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
   size_type ncols = data->ncols();
 
   std::string algotype;
-  
+
   if (ncols == 1)
   {
     algotype = "Scalar";
@@ -111,11 +111,11 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
     else
     {
       error("Data does not have dimension of 1, 3, 6, or 9");
-      algo_end(); return (false);      
+      algo_end(); return (false);
     }
   }
-  
-  if (algotype == "Scalar") 
+
+  if (algotype == "Scalar")
 	{
     std::string datatype;
 		get_option("datatype",datatype);
@@ -130,25 +130,25 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
   output = CreateField(fo,input->mesh());
   VField* vinput = input->vfield();
   VField* voutput = output->vfield();
-  voutput->resize_fdata();  
-  
+  voutput->resize_fdata();
+
   DenseMatrix* dm = data->dense();
   MatrixHandle dmh = dm;
-  
+
   if(algotype == "Scalar")
-  {    
+  {
     int max_index = data->nrows() * data->ncols();
-    double *dataptr = dm->get_data_pointer();    
+    double *dataptr = dm->get_data_pointer();
 
     VMesh::size_type sz = vinput->num_values();
-    for(VMesh::index_type r=0; r<sz; r++)  
+    for(VMesh::index_type r=0; r<sz; r++)
     {
       int idx;
       vinput->get_value(idx,r);
       if ((idx < 0)|| (idx >= max_index))
       {
         error("Index exceeds matrix dimensions");
-        algo_end(); return (false);  
+        algo_end(); return (false);
       }
       voutput->set_value(dataptr[idx],r);
     }
@@ -164,20 +164,20 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
     }
 
     double *dataptr = dmh->get_data_pointer();
-    int max_index = dmh->nrows();        
+    int max_index = dmh->nrows();
 
     VMesh::size_type sz = vinput->num_values();
-    for(VMesh::index_type r=0; r<sz; r++)  
+    for(VMesh::index_type r=0; r<sz; r++)
     {
       int idx;
       vinput->get_value(idx,r);
       if ((idx < 0)|| (idx >= max_index))
       {
         error("Index exceeds matrix dimensions");
-        algo_end(); return (false);  
+        algo_end(); return (false);
       }
-      voutput->set_value(Vector(dataptr[3*idx],dataptr[3*idx+1],dataptr[3*idx+2]),r);        
-    }  
+      voutput->set_value(Vector(dataptr[3*idx],dataptr[3*idx+1],dataptr[3*idx+2]),r);
+    }
     algo_end(); return (true);
   }
   else if (algotype == "Tensor")
@@ -188,20 +188,20 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
       dmh = dm->make_transpose();
       dm = dmh->dense();
     }
-    
+
     int max_index = dmh->nrows();
-    double *dataptr = dm->get_data_pointer();    
+    double *dataptr = dm->get_data_pointer();
     int ncols = dmh->ncols();
 
     VMesh::size_type sz = vinput->num_values();
-    for(VMesh::index_type r=0; r<sz; r++)  
+    for(VMesh::index_type r=0; r<sz; r++)
     {
       int idx;
       vinput->get_value(idx,r);
       if ((idx < 0)|| (idx >= max_index))
       {
         error("Index exceeds matrix dimensions");
-        algo_end(); return (false);  
+        algo_end(); return (false);
       }
       if (ncols == 6)
       {
@@ -209,10 +209,10 @@ run( FieldHandle input, MatrixHandle data, FieldHandle& output)
       }
       else
       {
-        voutput->set_value(Tensor(dataptr[3*idx],dataptr[3*idx+1],dataptr[3*idx+2],dataptr[3*idx+4],dataptr[3*idx+5],dataptr[3*idx+8]),r);      
+        voutput->set_value(Tensor(dataptr[3*idx],dataptr[3*idx+1],dataptr[3*idx+2],dataptr[3*idx+4],dataptr[3*idx+5],dataptr[3*idx+8]),r);
       }
     }
-    algo_end(); return (true);  
+    algo_end(); return (true);
   }
 
   // keep the compiler happy:

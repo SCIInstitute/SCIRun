@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 // THIS FILE CONTAINS MOST OF THE FUNCTIONALITY TO MAP A SCIRUN::FIELD OBJECT
 // INTO A MATLAB ARRAY
 //
@@ -34,15 +34,15 @@
 // NAMED DIFFERENT OVER THE VARIOUS FIELDS.
 //
 // HENCE THIS CONVERTER IS HUGE AND HAS SPECIFIC CODE SNIPPITS FOR EVERY WEIRD
-// SCIRUN DEFINITION. 
+// SCIRUN DEFINITION.
 //
 // THE CONVERTER IS COMPLETELY TEMPLATED AND USES TEMPLATE OVER LOADING TO DIRECT
-// THE COMPILER TO INCLUDE TO PROPER PIECES OF CODE AT EACH POSITION. UNLIKE 
+// THE COMPILER TO INCLUDE TO PROPER PIECES OF CODE AT EACH POSITION. UNLIKE
 // MOST SCIRUN CODE, IT ONLY DOES ONE DYNAMIC COMPILATION AND THAN RELIES ON
 // OVERLOADING TEMPALTED FUNCTIONS TO DEFINE A SPECIFIC CONVERTER.
 // THE ADVANTAGE OF THIS METHODOLOGY IS THAT PIECES OF CODE CAN BE REUSED AND NOT
 // EVERY MESH TYPE NEEDS SPECIALLY DESIGNED CODE.
-// 
+//
 // THE CURRENT SYSTEM NEEDS A SPECIFIC OVERLOADED FUNCTION FOR EACH MESH TYPE WHICH
 // TELLS WHICH PIECES TOGETHER FORM A NEW CONVERTER. IF THE COMPILER IS SMART ENOUGH
 // IT ONLY COMPILES THE PIECES IT NEEDS. SINCE IT IS ALL TEMPLATED, THE COMPILER
@@ -62,7 +62,7 @@
  * AUTH: Jeroen G Stinstra
  * DATE: 18 MAR 2004
  */
- 
+
 #ifndef CORE_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H
 #define CORE_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H 1
 
@@ -82,19 +82,19 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     int analyze_fieldtype(const matlabarray& mlarray, std::string& fielddesc);
 
     void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
-    
+
   protected:
 
     int mlanalyze(matlabarray mlarray, bool postremark);
     matlabarray findfield(const matlabarray& mlarray,const std::string& fieldnames);
-  
-    matlabarray mlnode; 
+
+    matlabarray mlnode;
     matlabarray mledge;
     matlabarray mlface;
     matlabarray mlcell;
 
-    matlabarray mlmeshderivatives; 
-    matlabarray mlmeshscalefactors; 
+    matlabarray mlmeshderivatives;
+    matlabarray mlmeshscalefactors;
 
     matlabarray mlx;
     matlabarray mly;
@@ -111,8 +111,8 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     matlabarray mlfield;
     //matlabarray mlfieldedge;
 
-    matlabarray mlfieldderivatives; 
-    matlabarray mlfieldscalefactors; 
+    matlabarray mlfieldderivatives;
+    matlabarray mlfieldscalefactors;
 
     matlabarray mlfieldbasis;
     matlabarray mlfieldbasisorder;
@@ -125,41 +125,41 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     std::string meshtype;
     std::string fieldbasis;
     std::string meshbasis;
-    
+
     std::string meshbasistype;
     std::string fieldbasistype;
 
     std::vector<int> numnodesvec;
     std::vector<int> numelementsvec;
-    
+
     int numnodes;
     int numelements;
     int numfield;
     int datasize;
-    
+
   protected:
     // Sub functions for building mesh
     bool addtransform(SCIRun::VMesh *vmesh);
     bool addderivatives(SCIRun::VMesh *vmesh);
-    bool addscalefactors(SCIRun::VMesh *vmesh);    
+    bool addscalefactors(SCIRun::VMesh *vmesh);
     bool addnodes(SCIRun::VMesh *vmesh);
     bool addedges(SCIRun::VMesh *vmesh);
     bool addfaces(SCIRun::VMesh *vmesh);
     bool addcells(SCIRun::VMesh *vmesh);
 
     bool addfield(SCIRun::VField* field);
-    
+
     void uncompressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);
-    void compressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);	
-    
+    void compressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);
+
     void error(const std::string& error) const;
     void warning(const std::string& warning) const;
     void remark(const std::string& remark) const;
-    
+
   private:
     SCIRun::Core::Logging::LoggerHandle pr_;
     void remarkAndThrow(const std::string& msg, bool postremark) const;
-    
+
 };
 
 

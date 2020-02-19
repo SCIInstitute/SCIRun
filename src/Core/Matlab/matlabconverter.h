@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +31,7 @@
  * AUTH: Jeroen G Stinstra
  * DATE: 18 MAR 2004
  */
- 
+
 #ifndef CORE_MATLABIO_MATLABCONVERTER_H
 #define CORE_MATLABIO_MATLABCONVERTER_H 1
 
@@ -48,7 +47,7 @@
  *  algorithms are far from perfect and will need constant updating. A different
  *  way of managing data within SCIRun would greatly enhance the usability of
  *  SCIRun and make the conversions less cumbersome
- * 
+ *
  */
 
 #include <Core/Matlab/matfilebase.h>
@@ -61,7 +60,7 @@
  * CLASS DESCRIPTION
  * Class for dealing with the conversion of "Matlab" objects into
  * SCIRun objects.
- * 
+ *
  * MEMORY MODEL
  * Functions use the matlabarray / matfiledata classes to allocate data.
  * All memory allocate is associated with the objects and is deallocated
@@ -70,20 +69,20 @@
  * ERROR HANDLING
  * All errors are reported as exceptions:
  * the matlabconverter_error class.
- * 
+ *
  * COPYING/ASSIGNMENT
- * Only the converter options are stored in the object and thence the 
+ * Only the converter options are stored in the object and thence the
  * object can be copied without any problems.
  *
  * RESOURCE ALLOCATION
  * no external resources are used
  *
- */ 
+ */
 
 namespace SCIRun {
 namespace MatlabIO {
-  
-class SCISHARE matlabconverter : public matfilebase 
+
+class SCISHARE matlabconverter : public matfilebase
 {
 
   public:
@@ -96,24 +95,24 @@ class SCISHARE matlabconverter : public matfilebase
       explicit error_type(const std::string& msg = "") : matfileerror(msg) {}
     };
 
-    // Functions for converting back and forward of 
+    // Functions for converting back and forward of
     // Compatible function:
     // indicates whether a matrix can be converted, for this purpose only
     // the header of the Matlab matrix is read into memory. The function also
     // returns a information string describing the object for use in the GUI
     // This function returns a value 0 if the object cannot be converted and
     // a positive number if it is compatible. The higher the number the more
-    // likely it is the users wants to read this Matlab array. 
+    // likely it is the users wants to read this Matlab array.
     // The latter classification is based on some simple rules, like matrices
     // are probably of the double format etc.
     //
     // mlArrayTO.... function:
-    // Convert a Matlab array into a SCIRun object. If the object is compatible 
+    // Convert a Matlab array into a SCIRun object. If the object is compatible
     // this function should deal with the conversion. Depending on the information
     // in the object, fields like the property manager will be filled out.
     //
     // ....TOmlMatrix function:
-    // Convert a SCIRun object into a matlabarray. This version will produce a 
+    // Convert a SCIRun object into a matlabarray. This version will produce a
     // pure numeric array, with only the numeric values, every other field will
     // be stripped and does not reappear in Matlab.
     //
@@ -186,7 +185,7 @@ class SCISHARE matlabconverter : public matfilebase
     void sciNrrdDataTOmlArray(SCIRun::NrrdDataHandle scinrrd, matlabarray& mlmat);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    // SCIRun BUNDLES 
+    // SCIRun BUNDLES
     int sciBundleCompatible(matlabarray &mlarray, std::string &infostring, bool postremarks = true);
     void mlArrayTOsciBundle(matlabarray &mlmat, SCIRun::BundleHandle &scibundle);
     void sciBundleTOmlArray(SCIRun::BundleHandle &scibundle, matlabarray &mlmat);
@@ -203,13 +202,13 @@ class SCISHARE matlabconverter : public matfilebase
     // SUPPORT FUNCTIONS
     // Test whether the proposed name of a Matlab matrix is valid.
     bool isvalidmatrixname(const std::string& name);
-    
+
   private:
 
     // FUNCTIONS FOR COMMUNICATING WITH THE USER
 
     SCIRun::Core::Logging::LoggerHandle pr_;
-    
+
     void error(const std::string& error);
     void warning(const std::string& warning);
     void remark(const std::string& remark);
@@ -227,7 +226,7 @@ class SCISHARE matlabconverter : public matfilebase
 
     unsigned int convertmitype(matlabarray::mitype type);
     matlabarray::mitype convertnrrdtype(int type);
-    
+
     // Matrix should be translated as a numeric matrix directly
     bool numericarray_;
     // Specify the indexbase for the output

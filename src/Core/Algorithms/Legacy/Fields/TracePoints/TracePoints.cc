@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/TracePoints/TracePoints.h>
 #include <Core/Datatypes/FieldInformation.h>
 
@@ -33,12 +33,12 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool TracePointsAlgo::run(FieldHandle pointcloud, 
-                          FieldHandle old_curvefield, 
+bool TracePointsAlgo::run(FieldHandle pointcloud,
+                          FieldHandle old_curvefield,
                           FieldHandle& curvefield)
 {
   algo_start("TracePoints");
-  
+
   double val = get_scalar("value");
   double tol = get_scalar("tolerance");
 
@@ -47,32 +47,32 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
     error("No input field.");
     algo_end(); return (false);
   }
-  
+
   VField* pfield = pointcloud->vfield();
   VMesh*  pmesh  = pointcloud->vmesh();
-  
+
   // no precompiled version available, so compile one
 
   FieldInformation fi(pointcloud);
   FieldInformation fo(pointcloud);
-  
+
   if (!(fi.is_pointcloud()))
   {
     error("This function works only for PointCloud meshes as input.");
     algo_end(); return (false);
   }
-  
+
   fo.make_curvemesh();
-  
+
   VMesh  *cmesh;
   VField *cfield;
-  
+
   if (old_curvefield.get_rep())
   {
     old_curvefield.detach();
     curvefield = old_curvefield;
 
-    cfield = curvefield->vfield();  
+    cfield = curvefield->vfield();
     cmesh = curvefield->vmesh();
   }
   else
@@ -84,7 +84,7 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
       algo_end(); return (false);
     }
 
-    cfield = curvefield->vfield();  
+    cfield = curvefield->vfield();
     cmesh = curvefield->vmesh();
   }
 
@@ -97,17 +97,17 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
     cfield->get_property("end_points",pointcloud_old);
     cfield->set_property("end_points",pointcloud,false);
     cfield->get_property("value",val_old);
-    cfield->set_property("value",val,false);    
+    cfield->set_property("value",val,false);
   }
   else
   {
     cfield->set_property("end_points",pointcloud,false);
-    cfield->set_property("value",val,false);    
+    cfield->set_property("value",val,false);
     algo_end(); return (true);
   }
 
   if (pointcloud_old.get_rep() == 0)
-  { 
+  {
     error("TracePoints: Could not obtain end_points field");
     algo_end(); return (false);
   }
@@ -122,13 +122,13 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
   Point p, p2,p3;
   double dist = DBL_MAX;
   double tol2 = tol*tol;
-  
+
   pmesh->begin(it);
   pmesh->end(it_end);
-  
+
   std::vector<double> vals;
   VMesh::size_type k = cfield->num_values();
-  
+
   while (it != it_end)
   {
     pmesh->get_center(p,*it);
@@ -143,7 +143,7 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
       if (pval2 == pval) if (v.length2() < dist) p3 = p2;
     }
 
-    if (dist < tol2) 
+    if (dist < tol2)
     {
       na[0] = cmesh->add_point(p);
       vals.push_back(val);
@@ -157,10 +157,10 @@ bool TracePointsAlgo::run(FieldHandle pointcloud,
   VMesh::size_type sz = cfield->num_values();
   for (VMesh::index_type i=0 ;k<sz;k++,i++)
     cfield->set_value(vals[i],k);
-  
+
   // Success:
   algo_end();
-  return (true);  
+  return (true);
 }
 
 

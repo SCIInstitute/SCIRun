@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <fstream>
 #include <string>
 
@@ -44,14 +44,14 @@ class WriteString : public GenericWriter<StringHandle> {
     WriteString(GuiContext*);
     virtual ~WriteString() {}
     virtual void execute();
-    
+
   protected:
     GuiString gui_types_;
     GuiString gui_exporttype_;
     GuiInt gui_increment_;
     GuiInt gui_current_;
 
-    virtual bool call_exporter(const std::string &filename);  
+    virtual bool call_exporter(const std::string &filename);
 };
 
 
@@ -80,7 +80,7 @@ WriteString::call_exporter(const std::string &filename)
     error("Could not write file: " + filename);
     return(false);
   }
-  
+
   return(true);
 }
 
@@ -92,22 +92,22 @@ WriteString::execute()
 
   //get the current file name
   const std::string oldfilename=filename_.get();
-  
+
   //determine if we should increment an index in the file name
-  if (gui_increment_.get()) 
+  if (gui_increment_.get())
   {
-    //warn the user if they try to use 'Increment' incorrectly	
+    //warn the user if they try to use 'Increment' incorrectly
     const std::string::size_type loc2 = oldfilename.find("%d");
-    if(loc2 == std::string::npos) 
+    if(loc2 == std::string::npos)
     {
       remark("To use the increment function, there must be a '%d' in the file name.");
     }
-    
+
     // ugly code, potential buffer overflow problem
     char buf[1024];
     int current=gui_current_.get();
     sprintf(buf, filename_.get().c_str(), current);
-      
+
     filename_.set(buf);
     gui_current_.set(current+1);
   }
@@ -119,4 +119,3 @@ WriteString::execute()
 }
 
 } // End namespace SCIRun
-

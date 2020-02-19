@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/CollectFields/CollectPointClouds.h>
 
 #include <Dataflow/Network/Module.h>
@@ -35,7 +35,7 @@ namespace SCIRun {
 
 /// @class CollectPointClouds
 /// @brief This module collects and joins PointClouds fields while iterating
-/// over a dataflow loop. 
+/// over a dataflow loop.
 
 class CollectPointClouds : public Module
 {
@@ -74,7 +74,7 @@ CollectPointClouds::execute()
 
   // Get the input field.
   get_input_handle("Point Cloud", field_input_handle, true );
-  
+
   // Check to see if the input field or GUI has changed.
   if( inputs_changed_ ||
       gui_num_fields_.changed( true ) ||
@@ -82,13 +82,13 @@ CollectPointClouds::execute()
   {
     update_state(Executing);
     unsigned int count = gui_count_.get();
-    
+
     algo_.set_int("max_num_fields", gui_num_fields_.get());
     algo_.set_int("count", count);
-    
+
     // Clean accumulation field
     if (count == 0) field_output_handle_ = 0;
-    
+
     if (!(algo_.run(field_input_handle,
 		    field_output_handle_,
 		    field_output_handle_))) return;
@@ -112,14 +112,14 @@ void CollectPointClouds::tcl_command(GuiArgs& args, void* userdata)
     return;
   }
 
-  if (args[1] == "clear") 
+  if (args[1] == "clear")
   {
     gui_count_.set(0);
     gui_count_.reset();
 
     field_output_handle_ = 0;
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }

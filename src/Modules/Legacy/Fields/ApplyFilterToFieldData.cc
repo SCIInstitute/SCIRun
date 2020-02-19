@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
 #include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
 
@@ -38,7 +38,7 @@ using namespace SCIRun;
 using namespace SCIRunAlgo;
 
 /// @class ApplyFilterToFieldData
-/// @brief Applies a dilate or erode filter to a regular mesh. 
+/// @brief Applies a dilate or erode filter to a regular mesh.
 
 class ApplyFilterToFieldData : public Module {
   public:
@@ -50,7 +50,7 @@ class ApplyFilterToFieldData : public Module {
     GuiString method_;
     GuiString edmethod_;
     GuiInt edniter_;
-    
+
     SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
     SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
 };
@@ -73,15 +73,15 @@ void
 ApplyFilterToFieldData::execute()
 {
   FieldHandle input, output;
-  
+
   get_input_handle("Field",input,true);
-  
+
   if (inputs_changed_ || !oport_cached("Field") || method_.changed() ||
       edmethod_.changed() || edniter_.changed())
   {
     // Inform module that execution started
     update_state(Executing);
-  
+
     if (method_.get() == "erodedilate")
     {
       if (edmethod_.get() == "erode")
@@ -102,7 +102,7 @@ ApplyFilterToFieldData::execute()
         if(!(dilate_algo_.run(output,output))) return;
       }
     }
-  
+
     // Send output to output ports
     send_output_handle("Field",output,true);
   }
@@ -110,5 +110,3 @@ ApplyFilterToFieldData::execute()
 
 
 } // End namespace SCIRun
-
-

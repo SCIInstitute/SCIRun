@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
@@ -45,7 +45,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
 {
   auto vfield = f->vfield();
   auto vmesh  = f->vmesh();
-  
+
   Outputs output;
 
   if (vfield && vmesh)
@@ -58,7 +58,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
     }
     else
       output.type = "Null";
-    
+
     // Basis
     static const char *at_table[4] = { "Nodes", "Edges", "Faces", "Cells" };
     switch(f->basis_order())
@@ -80,10 +80,10 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
         output.dataLocation = "None (nodata basis)";
         break;
     }
-    
+
     Point center;
     Vector size;
-    
+
     const auto bbox = vmesh->get_bounding_box();
     if (bbox.valid())
     {
@@ -95,34 +95,34 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
     else
     {
       warning("Input Field is empty.");
-      
+
       const auto nan = std::numeric_limits<double>::quiet_NaN();
       output.center = Point(nan,nan,nan);
       output.size = Vector(nan, nan, nan);
 
     }
-    
+
     double min, max;
     vfield->minmax(min,max);
     output.dataMin = min;
     output.dataMax = max;
-    
+
     output.numdata_ = vfield->num_values();
     output.numnodes_ = vmesh->num_nodes();
     output.numelements_ = vmesh->num_elems();
-    
+
     VMesh::dimension_type dim;
     vmesh->get_dimensions(dim);
     output.dims = Vector(1.0,1.0,1.0);
-    for (size_t p=0; p < dim.size(); p++) 
+    for (size_t p=0; p < dim.size(); p++)
       output.dims[p] = static_cast<double>(dim[p]);
-        
+
     output.geometricSize = 0.0;
     for (VMesh::Elem::index_type idx=0; idx< output.numelements_; ++idx)
     {
       output.geometricSize += vmesh->get_size(idx);
     }
- 
+
   }
   return output;
 }

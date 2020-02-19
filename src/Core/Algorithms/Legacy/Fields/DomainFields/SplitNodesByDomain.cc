@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/DomainFields/SplitNodesByDomain.h>
 
 #include <Core/Datatypes/FieldInformation.h>
@@ -34,19 +34,19 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 SplitNodesByDomainAlgo::
 run( FieldHandle input, FieldHandle& output)
 {
   algo_start("SplitNodesByDomain");
-  
+
   if (input.get_rep() == 0)
   {
     algo_end(); error("No input field");
     return (false);
   }
 
-  FieldInformation fi(input), fo(input); 
+  FieldInformation fi(input), fo(input);
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");
@@ -64,7 +64,7 @@ run( FieldHandle input, FieldHandle& output)
 
   VField *field = input->vfield();
   VMesh  *mesh  = input->vmesh();
-  
+
   if (field == 0 || mesh == 0)
   {
     algo_end(); error("No input field");
@@ -73,7 +73,7 @@ run( FieldHandle input, FieldHandle& output)
 
   VMesh::Elem::iterator bei, eei;
   VMesh::Node::iterator bni, eni;
-  
+
   VMesh::size_type num_elems = mesh->num_elems();
   VMesh::size_type num_nodes = mesh->num_nodes();
 
@@ -82,45 +82,45 @@ run( FieldHandle input, FieldHandle& output)
   std::vector<bool> newidxarray(num_nodes);
   VMesh::Node::array_type nodes;
   VMesh::Node::array_type newnodes;
-    
+
   int val, minval;
   int eval;
   index_type idx;
 
 
   output = CreateField(fo);
-  
+
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
-    algo_end(); return(false); 
+    algo_end(); return(false);
   }
- 
+
   VField* ofield = output->vfield();
   VMesh *omesh = output->vmesh();
 
   if (ofield == 0 || omesh == 0)
   {
     error("Could not create output field");
-    algo_end(); return(false); 
+    algo_end(); return(false);
   }
 
   std::vector<int> newdata(num_elems);
-  
+
   omesh->elem_reserve(num_elems); // exact number
   omesh->node_reserve(num_nodes); // minimum number of nodes
-    
+
   double d_minval;
   field->min(d_minval);
-  minval = static_cast<int>(d_minval);  
+  minval = static_cast<int>(d_minval);
 
   index_type k = 0;
-  
+
   int cnt = 0;
   while(1)
   {
     val = minval;
-  
+
     for (size_type p =0; p<num_nodes; p++) newidxarray[p] = true;
 
     mesh->begin(bei); mesh->end(eei);
@@ -145,7 +145,7 @@ run( FieldHandle input, FieldHandle& output)
           newnodes[p] = idxarray[idx];
         }
         omesh->add_elem(newnodes);
-        cnt++; if (cnt == 400) { cnt = 0; update_progress(k,num_elems); }   
+        cnt++; if (cnt == 400) { cnt = 0; update_progress(k,num_elems); }
         newdata[k] = eval; k++;
       }
       ++bei;
@@ -153,7 +153,7 @@ run( FieldHandle input, FieldHandle& output)
 
     eval = val;
     bool foundminval = false;
-    
+
     mesh->begin(bei);
     mesh->end(eei);
     while (bei != eei)
@@ -183,12 +183,11 @@ run( FieldHandle input, FieldHandle& output)
       break;
     }
   }
-  
+
   ofield->resize_values();
   ofield->set_values(newdata);
-  
+
   algo_end(); return(true);
 }
 
 } // namespace SCIRunAlgo
-

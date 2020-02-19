@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
@@ -49,9 +49,9 @@ class ConvertMeshToIrregularMesh : public Module
     ConvertMeshToIrregularMesh(GuiContext* ctx);
     virtual ~ConvertMeshToIrregularMesh() {}
     virtual void execute();
-    
+
   private:
-    SCIRunAlgo::ConvertMeshToIrregularMeshAlgo algo_; 
+    SCIRunAlgo::ConvertMeshToIrregularMeshAlgo algo_;
 };
 
 DECLARE_MAKER(ConvertMeshToIrregularMesh)
@@ -67,7 +67,7 @@ ConvertMeshToIrregularMesh::execute()
 {
   // Define fieldhandles
   FieldHandle ifield, ofield;
-  
+
   // Get data from input port
   get_input_handle("Input Field",ifield,true);
 
@@ -75,7 +75,7 @@ ConvertMeshToIrregularMesh::execute()
   if (inputs_changed_ || !oport_cached("Output Field"))
   {
     update_state(Executing);
-    
+
     // Run the algorithm
     if (!(algo_.run(ifield,ofield))) return;
     // Send to output to the output port

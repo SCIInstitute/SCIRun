@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///@details
 ///  A structured grid is a dataset with regular topology but with irregular
 ///  geometry.
@@ -43,7 +43,6 @@
 ///  For more information on datatypes see Schroeder, Martin, and Lorensen,
 ///  "The Visualization Toolkit", Prentice Hall, 1998.
 ///
-
 
 #ifndef CORE_DATATYPES_STRUCTHEXVOLMESH_H
 #define CORE_DATATYPES_STRUCTHEXVOLMESH_H 1

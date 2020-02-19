@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -34,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 ///        Department of Computer Science
 ///        University of Utah
 ///@date   March 2001
-/// 
+///
 
 #include <iostream>
 #include <Core/Persistent/Persistent.h>
@@ -49,7 +48,7 @@ namespace SCIRun {
     size_type size;
 
     if (version  < 3)
-    {  
+    {
       int sz = static_cast<int>(data.size());
       Pio(stream,sz);
       size = static_cast<size_type>(sz);
@@ -70,7 +69,7 @@ namespace SCIRun {
       data[i] = b;
     }
 
-    stream.end_class();  
+    stream.end_class();
   }
 
 
@@ -91,7 +90,7 @@ namespace SCIRun {
     size_type size;
 
     if (version  < 3)
-    {  
+    {
       int sz = static_cast<int>(data.size());
       Pio(stream,sz);
       size = static_cast<size_type>(sz);
@@ -113,7 +112,7 @@ namespace SCIRun {
       }
     }
 
-    stream.end_class();  
+    stream.end_class();
   }
 
 
@@ -189,7 +188,7 @@ namespace SCIRun {
         Pio(stream,old_indices);
         data.resize(old_indices.size());
         for (size_t i=0;i<old_indices.size();i++)
-          data[i] = static_cast<index_type>(old_indices[i]);   
+          data[i] = static_cast<index_type>(old_indices[i]);
         return;
       }
       else if (stream.peek_class() == "STLIndexVector")
@@ -275,8 +274,8 @@ namespace SCIRun {
               }
             }
           }
-        }      
-        stream.end_class();      
+        }
+        stream.end_class();
         return;
       }
       else
@@ -300,8 +299,8 @@ namespace SCIRun {
         for (index_type i=0; i< size; i++)
           stream.io(data[i]);
 
-      stream.end_class();      
-      return;  
+      stream.end_class();
+      return;
     }
   }
 

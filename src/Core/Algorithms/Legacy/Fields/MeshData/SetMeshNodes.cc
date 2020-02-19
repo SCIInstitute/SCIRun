@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-bool 
+bool
 SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SetMeshNodes");
@@ -52,7 +52,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
     error("No input source field");
     return (false);
   }
-  
+
   if (!matrix)
   {
     error("No input source matrix");
@@ -60,7 +60,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
   }
 
   VMesh::size_type numnodes = input->vmesh()->num_nodes();
-  
+
   // try to see whether the matrix dimensions fit the mesh size
   if (!(matrix->nrows() == numnodes) ||
       !(matrix->ncols() == 3))
@@ -87,7 +87,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
 
   VMesh* mesh = output->vmesh();
   VMesh::size_type size = mesh->num_nodes();
-  
+
   Point p;
   int cnt =0;
   for (VMesh::Node::index_type i=0; i<size; ++i)

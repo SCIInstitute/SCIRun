@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +27,7 @@
 
 
 // NOTE: This MatlabIO file is used in different projects as well. Please, do not
-// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// make it depend on other scirun code. This way it is easier to maintain matlabIO
 // code among different projects. Thank you.
 
 /*
@@ -54,37 +53,37 @@ using namespace SCIRun::MatlabIO;
 // creates on the place holder for the matlabarray
 matlabarray::matlabarray()
   : m_(0)
-{ 
-}   
-
-// destructor
-matlabarray::~matlabarray()	
 {
-  if (m_ != 0) 
-  {	// delete the attached structure if necessary 
-    m_->ref_--;
-    if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;	
-  }	
 }
 
-// copy constructor    
+// destructor
+matlabarray::~matlabarray()
+{
+  if (m_ != 0)
+  {	// delete the attached structure if necessary
+    m_->ref_--;
+    if (m_->ref_ == 0) { delete m_; }
+    m_ = 0;
+  }
+}
+
+// copy constructor
 matlabarray::matlabarray(const matlabarray &m)
-{    
+{
   m_ = 0;
 
   // reference the same structure as the matlabarray we are copying
-  if (m.m_ != 0) 
+  if (m.m_ != 0)
   {
-    m_ = m.m_; 
+    m_ = m.m_;
     m_->ref_++;
-  } 
+  }
 }
 
 
 
-// assignment	
-matlabarray& matlabarray::operator= (const matlabarray &m) 
+// assignment
+matlabarray& matlabarray::operator= (const matlabarray &m)
 { // the same construction as the previous function is used
   // to create a copy
 
@@ -92,45 +91,45 @@ matlabarray& matlabarray::operator= (const matlabarray &m)
   if (this != &m)
   {
     if (m_ != 0)
-    {	// delete the attached structure if necessary 
+    {	// delete the attached structure if necessary
       m_->ref_--;
       if (m_->ref_ == 0) { delete m_; }
-      m_ = 0;	
+      m_ = 0;
     }
 
-    if (m.m_ != 0) 
+    if (m.m_ != 0)
     {
       m_ = m.m_;
       m_->ref_++;
-    }  
+    }
   }
 
-  return *this;	
+  return *this;
 }
 
 // clear and empty
 
 // Clear: this function is for clearing the contents of the matrix and dereferencing
-// the handle properly. In the matrix nothing needs to be destroyed as all elements 
+// the handle properly. In the matrix nothing needs to be destroyed as all elements
 // have their own destructors, hence deleting the object will invoke all routines
 // for cleaning up memory
 
 void matlabarray::clear()
 {
 
-  if (m_ != 0) 
-  {	// delete the attached structure if necessary 
+  if (m_ != 0)
+  {	// delete the attached structure if necessary
 
     m_->ref_--;
     if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;	
-  }	
+    m_ = 0;
+  }
 }
 
 // This function can be used to test whether the matrix contains any data
 // If not do not try to access the matrix components. This will result in
 // an internal_error exception
-	      
+
 bool matlabarray::isempty() const
 {
   if (m_ == 0) return(true);
@@ -142,7 +141,7 @@ matlabarray matlabarray::clone() const
 {
 	matlabarray ma;
 	if (isempty()) return(ma);
-	
+
   ma.m_ = new mxarray;
   ma.m_->ref_ = 1;
 	ma.m_->class_ = m_->class_;
@@ -153,24 +152,24 @@ matlabarray matlabarray::clone() const
 	ma.m_->classname_ = m_->classname_;
 	ma.m_->string_ = m_->string_;
 	ma.m_->fieldnames_ = m_->fieldnames_;
-	
+
 	ma.m_->subarray_.resize(m_->subarray_.size());
 	for (int p=0;p<static_cast<int>(m_->subarray_.size());p++)
 	{
 		ma.m_->subarray_[p] = m_->subarray_[p].clone();
 	}
-	
+
 	ma.m_->preal_ = m_->preal_.clone();
 	ma.m_->pimag_ = m_->pimag_.clone();
 	ma.m_->prows_ = m_->prows_.clone();
 	ma.m_->pcols_ = m_->pcols_.clone();
-	
+
 	return(ma);
 }
 
-    
+
 // functions to maintain the matlabarray
-// General functions to maintain matrix names class names and 
+// General functions to maintain matrix names class names and
 // matrix types/ dimensions. These functions can only be
 // called if there is a matrix associated with the matlabarray
 // handle.
@@ -180,21 +179,21 @@ matlabarray matlabarray::clone() const
 
 matlabarray::mlclass matlabarray::getclass() const
 {
-  if (m_ == 0) return(mlUNKNOWN); 
+  if (m_ == 0) return(mlUNKNOWN);
   return(m_->class_);
 }
-          
+
 matlabarray::mitype matlabarray::gettype() const
 {
   if (m_ == 0)
   {
     std::cerr << "internal error in gettype()\n";
-    throw internal_error(); 
+    throw internal_error();
   }
   return(m_->type_);
 }
-          
-          
+
+
 std::string matlabarray::getclassname() const
 {
   if (m_ == 0)
@@ -207,38 +206,38 @@ std::string matlabarray::getclassname() const
 
 void matlabarray::setclassname(const std::string& classname)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in setclassname()\n";
     throw internal_error();
   }
   m_->classname_ = classname;
 }
-   
+
 std::string matlabarray::getname() const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getname()\n";
     throw internal_error();
   }
   return(m_->name_);
 }
-      
+
 
 void matlabarray::setname(const std::string& name)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in setname()\n";
     throw internal_error();
   }
   m_->name_ = name;
-}	  
-	  
+}
+
 void matlabarray::setdims(const std::vector<int> &dims)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in setdims()\n";
     throw internal_error();
@@ -257,25 +256,25 @@ void matlabarray::setdims(const std::vector<int> &dims)
 		m_->dims_ = ndims;
 		return;
 	}
-  m_->dims_ = dims;   	
+  m_->dims_ = dims;
 }
 
 void matlabarray::settype(matlabarray::mitype type)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in settype()\n";
     throw internal_error();
 	}
   m_->type_ = type;
 }
-           
+
 std::vector<int> matlabarray::getdims() const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getdims()\n";
-    throw internal_error(); 
+    throw internal_error();
   }
   return(m_->dims_);
 }
@@ -285,7 +284,7 @@ int matlabarray::getnumdims() const
   if (m_ == 0)
   {
     std::cerr << "internal error in getnumdims()\n";
-    throw internal_error(); 
+    throw internal_error();
   }
   return(static_cast<int>(m_->dims_.size()));
 }
@@ -296,7 +295,7 @@ int matlabarray::getnumelements() const
 {
   if (m_ == 0) return(0);
 	if ((m_->class_ == mlSTRUCT)||(m_->class_ == mlOBJECT))
-	{ 
+	{
     if(m_->fieldnames_.size() == 0) return(0);
   }
   if (m_->class_ != mlSPARSE)
@@ -304,7 +303,7 @@ int matlabarray::getnumelements() const
     int numel = 1;
     int ndims = static_cast<int>(m_->dims_.size());
     for (int p=0; p<ndims;p++) { numel *= m_->dims_[p]; }
-    return (numel);	
+    return (numel);
   }
   else
   {
@@ -326,7 +325,7 @@ int matlabarray::getn() const
 
 // Functions to calculate the index into an array
 // Matlab uses the fortran way of numbering the dimensions
-// No attempt is made in this to transpose matrices at 
+// No attempt is made in this to transpose matrices at
 // this point.
 
 int matlabarray::sub2index(const std::vector<int> &vec) const
@@ -336,14 +335,14 @@ int matlabarray::sub2index(const std::vector<int> &vec) const
     std::cerr << "internal error in sub2index()\n";
     throw internal_error();
   }
-  
+
   int index = 0;
   int ndims = static_cast<int>(m_->dims_.size());
-     
+
   std::vector<int> proddims(ndims);
   proddims[0] = 1;
   for (int p=1;p<ndims;p++) { proddims[p] = m_->dims_[p-1]*proddims[p-1]; }
-    
+
   for (int p=0;p<ndims;p++) { index += proddims[p]*vec[p];}
   return(index);
 }
@@ -355,20 +354,20 @@ std::vector<int> matlabarray::index2sub(int index) const
     std::cerr << "internal error in index2sub()\n";
     throw internal_error();
   }
-  
+
   int ndims = static_cast<int>(m_->dims_.size());
   std::vector<int> vec(ndims);
-  
+
 	std::vector<int> proddims(ndims);
 	proddims[0] = 1;
 	for (int p=1;p<ndims;p++) { proddims[p] = m_->dims_[p-1]*proddims[p-1]; }
-        
+
   ldiv_t q;
-  for (int p=(ndims-1);p>=0;p--) 
-  {   
-    q = ldiv(index,proddims[p]); 
-    index = static_cast<int>(q.rem); 
-    vec[p]= static_cast<int>(q.quot); 
+  for (int p=(ndims-1);p>=0;p--)
+  {
+    q = ldiv(index,proddims[p]);
+    index = static_cast<int>(q.rem);
+    vec[p]= static_cast<int>(q.quot);
   }
   return(vec);
 }
@@ -381,31 +380,31 @@ matlabarray matlabarray::getcell(int index) const
   if (m_ == 0)
   {
     std::cerr << "internal error in getcell()\n";
-    throw internal_error();	
+    throw internal_error();
 	}
-  
+
   // No more out of range, but an empty array
   if ((index >= static_cast<int>(m_->subarray_.size()))||(index < 0)) {matlabarray ma; return(ma);}
-  return(m_->subarray_[index]);	
+  return(m_->subarray_[index]);
 }
-   
+
 matlabarray matlabarray::getcell(const std::vector<int> &indexvec) const
 {
   return(getcell(sub2index(indexvec)));
-} 
+}
 
 void matlabarray::setcell(int index, const matlabarray& m)
 {
   if (m_ == 0)
   {
-    std::cerr << "internal error in setcell()\n";  
-    throw internal_error();	
+    std::cerr << "internal error in setcell()\n";
+    throw internal_error();
   }
-  
+
   if ((index >= static_cast<int>(m_->subarray_.size()))||(index < 0)) throw out_of_range();
-  m_->subarray_[index] = m;	
-}    
-    
+  m_->subarray_[index] = m;
+}
+
 void matlabarray::setcell(const std::vector<int> &indexvec, const matlabarray& m)
 {
   setcell(sub2index(indexvec),m);
@@ -422,24 +421,24 @@ std::vector<std::string> matlabarray::getfieldnames() const
     std::cerr << "internal error in getfieldnames()\n";
     throw internal_error();
 	}
-  
+
   if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();
 	return(m_->fieldnames_);
 }
 
 int matlabarray::getnumfields() const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getnumfields()\n";
     throw internal_error();
   }
   return(static_cast<int>(m_->fieldnames_.size()));
 }
-    
+
 std::string matlabarray::getfieldname(int index) const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getfieldname()\n";
     throw internal_error();
@@ -456,7 +455,7 @@ int matlabarray::getfieldnameindex(const std::string& fieldname) const
     std::cerr << "internal error in getfieldnameindex()\n";
     throw internal_error();
   }
-  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();	
+  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();
   int index = -1;
   for (int p = 0;p<static_cast<int>(m_->fieldnames_.size());p++) { if (m_->fieldnames_[p] == fieldname) { index = p; break;} }
   return(index);
@@ -464,12 +463,12 @@ int matlabarray::getfieldnameindex(const std::string& fieldname) const
 
 int matlabarray::getfieldnameindexCI(const std::string& fieldname) const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getfieldnameindexCI()\n";
     throw internal_error();
   }
-  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();	
+  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();
   int index = -1;
   for (int p = 0;p< static_cast<int>(m_->fieldnames_.size());p++) { if ( boost::iequals(m_->fieldnames_[p],fieldname)) { index = p; break;} }
   return(index);
@@ -483,18 +482,18 @@ void matlabarray::setfieldname(int index,const std::string& fieldname)
     throw internal_error();
   }
   if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();
-  if ((index >= static_cast<int>(m_->fieldnames_.size()))||(index < 0)) throw out_of_range(); 
+  if ((index >= static_cast<int>(m_->fieldnames_.size()))||(index < 0)) throw out_of_range();
   m_->fieldnames_[index] = fieldname;
 }
 
 matlabarray matlabarray::getfield(int index,int fieldnameindex) const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getfield()\n";
     throw internal_error();
   }
-  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) 
+  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT))
   {
     std::cerr << "internal error in getfield()\n";
     throw internal_error();
@@ -533,12 +532,12 @@ matlabarray matlabarray::getfield(const std::vector<int> &indexvec,int fieldname
 
 void matlabarray::setfield(int index,int fieldnameindex,const matlabarray& m)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in setfield()\n";
     throw internal_error();
   }
-  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) 
+  if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT))
   {
     std::cerr << "internal error in setfield()\n";
     throw internal_error();
@@ -577,60 +576,60 @@ void matlabarray::setfield(const std::vector<int> &indexvec,int fieldnameindex,c
 
 int matlabarray::addfieldname(const std::string& fieldname)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
-    std::cerr << "internal error in addfieldname()\n";  
+    std::cerr << "internal error in addfieldname()\n";
     throw internal_error();
   }
   if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT))
   {
-    std::cerr << "internal error in addfieldname()\n";  
+    std::cerr << "internal error in addfieldname()\n";
     throw internal_error();
   }
 
   // Reorder the fieldname array
   int newfieldnum = static_cast<int>(m_->fieldnames_.size());
-	
+
 	m_->fieldnames_.resize(newfieldnum+1);
 	m_->fieldnames_[newfieldnum] = fieldname;
-    
+
   // Reorder the subarray
   int newsize = (newfieldnum+1)*getnumelements();
   std::vector<matlabarray> subarray(newsize);
-  for (int p=0,q=0,r=0;p<newsize;p++,q++) 
-  { 
-    if (q == newfieldnum) 
+  for (int p=0,q=0,r=0;p<newsize;p++,q++)
+  {
+    if (q == newfieldnum)
         { q =0; }
     else
         { subarray[p] = m_->subarray_[r]; r++; }
-  }   
+  }
   m_->subarray_ = subarray;
-  
-  return(newfieldnum);    	
+
+  return(newfieldnum);
 }
 
 
 void matlabarray::removefieldname(int fieldnameindex)
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
-    std::cerr << "internal error in removefieldname()\n";  
+    std::cerr << "internal error in removefieldname()\n";
     throw internal_error();
 	}
   if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT))
   {
-    std::cerr << "internal error in removefieldname()\n";  
+    std::cerr << "internal error in removefieldname()\n";
     throw internal_error();
   }
-  
+
   // Reorder the fieldname vector
   int numfields = static_cast<int>(m_->fieldnames_.size());
-  
+
   std::vector<std::string> fieldnames(numfields-1);
-  for (int p=0,r=0;p<numfields;p++) 
-    { if (r != fieldnameindex) { fieldnames[r] = m_->fieldnames_[p]; r++; }}    	
+  for (int p=0,r=0;p<numfields;p++)
+    { if (r != fieldnameindex) { fieldnames[r] = m_->fieldnames_[p]; r++; }}
   m_->fieldnames_ = fieldnames;
-  
+
   // Reorder the subarray vector
   numfields = (static_cast<int>(m_->fieldnames_.size())*getnumelements());
   std::vector<matlabarray> subarray;
@@ -641,14 +640,14 @@ void matlabarray::removefieldname(int fieldnameindex)
     {
       subarray[r] = m_->subarray_[p];
       r++;
-    }	
+    }
   }
-  m_->subarray_ = subarray;	
+  m_->subarray_ = subarray;
 }
 
 void matlabarray::removefieldname(const std::string& fieldname)
 {
-	removefieldname(getfieldnameindex(fieldname));	
+	removefieldname(getfieldnameindex(fieldname));
 }
 
 // String specific functions
@@ -657,19 +656,19 @@ void matlabarray::removefieldname(const std::string& fieldname)
 
 std::string matlabarray::getstring() const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
-    std::cerr << "internal error in getstring()\n";  
+    std::cerr << "internal error in getstring()\n";
     throw internal_error();
   }
   return(m_->string_);
 }
-    
+
 void matlabarray::setstring(const std::string& str)
 {
   if (m_ == 0)
-  { 
-    std::cerr << "internal error setstring()\n";  
+  {
+    std::cerr << "internal error setstring()\n";
     throw internal_error();
   }
   m_->string_ = str;
@@ -758,44 +757,44 @@ void matlabarray::createintmatrix(int m,int n, const int *values)
 void matlabarray::createdensearray(const std::vector<int> &dims,mitype type)
 {
   // function only works for numeric types
-  
+
   clear(); // make sure there is no data
-  
+
   m_ = new mxarray;
   m_->ref_ = 1;
 
   m_->class_ = mlDENSE;
-  m_->type_ = type; 
+  m_->type_ = type;
   m_->flags_ = 0;
 
   setdims(dims);
-  
+
   // the numeric data can be inserted later
 }
-   
+
 void matlabarray::createdensearray(int m,int n,mitype type)
 {
 	std::vector<int> dims(2); dims[0] = m; dims[1] = n;
   // function only works for numeric types
-  
+
   clear(); // make sure there is no data
-  
+
   m_ = new mxarray;
   m_->ref_ = 1;
 
   m_->class_ = mlDENSE;
-  m_->type_ = type; 
+  m_->type_ = type;
   m_->flags_ = 0;
 
   setdims(dims);
-  
+
   // the numeric data can be inserted later
-}   
-   
+}
+
 void matlabarray::createsparsearray(const std::vector<int> &dims,mitype type)
 {
   clear(); // make sure there is no data
-  
+
   m_ = new mxarray;
   m_->ref_ = 1;
   m_->class_ = mlSPARSE;
@@ -803,16 +802,16 @@ void matlabarray::createsparsearray(const std::vector<int> &dims,mitype type)
   m_->flags_ = 0;
 
   setdims(dims);
-  
+
   // actual data can be added lateron
 }
 
 void matlabarray::createsparsearray(int m,int n,mitype type)
 {
 	std::vector<int> dims(2); dims[0] = m; dims[1] = n;
-	
+
   clear(); // make sure there is no data
-  
+
   m_ = new mxarray;
   m_->ref_ = 1;
   m_->class_ = mlSPARSE;
@@ -820,10 +819,10 @@ void matlabarray::createsparsearray(int m,int n,mitype type)
   m_->flags_ = 0;
 
   setdims(dims);
-  
+
   // actual data can be added lateron
 }
-	
+
 
 void matlabarray::createcellarray(const std::vector<int> &dims)
 {
@@ -847,7 +846,7 @@ void matlabarray::createstructarray(const std::vector<std::string> &fieldnames)
 	std::vector<int> dims(2);
 	dims[0] = 1;
 	dims[1] = 1;
-	createstructarray(dims,fieldnames);  
+	createstructarray(dims,fieldnames);
 }
 
 void matlabarray::createstructarray(const std::vector<int> &dims, const std::vector<std::string> &fieldnames)
@@ -880,12 +879,12 @@ void matlabarray::createstructarray()
 	dims[0] = 1;
 	dims[1] = 1;
   setdims(dims);
-    
+
 	m_->fieldnames_.resize(0);
 	m_->subarray_.clear();
   m_->subarray_.resize(0);
 }
-    
+
 void matlabarray::createclassarray(const std::vector<std::string> &fieldnames,const std::string& classname)
 {
   std::vector<int> dims(2);
@@ -894,7 +893,7 @@ void matlabarray::createclassarray(const std::vector<std::string> &fieldnames,co
   createclassarray(dims,fieldnames,classname);
 }
 
-	
+
 void matlabarray::createclassarray(const std::vector<int> &dims,const std::vector<std::string> &fieldnames,const std::string& classname)
 {
   clear(); // make sure there is no data
@@ -907,35 +906,35 @@ void matlabarray::createclassarray(const std::vector<int> &dims,const std::vecto
   setdims(dims);
   m_->classname_ = classname;
   m_->fieldnames_ = fieldnames;
-  m_->subarray_.clear();	
+  m_->subarray_.clear();
   m_->subarray_.resize(getnumelements()*getnumfields());
-}    
+}
 
 void matlabarray::createstringarray()
 {
 	std::string str("");
   createstringarray(str);
 }
-    
+
 void matlabarray::createstringarray(const std::string& str)
 {
   clear(); // make sure there is no data
-  
+
   m_ = new mxarray;
   m_->ref_ = 1;
-  m_->class_ = mlSTRING; 
+  m_->class_ = mlSTRING;
   m_->type_ = miUINT8;
   m_->flags_ = 0;
 
 	setstring(str);
-} 
-        
-            
+}
+
+
 // sparse functions
 
 int matlabarray::getnnz() const
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getnnz()\n";
     throw internal_error();
@@ -947,11 +946,11 @@ int matlabarray::getnnz() const
 }
 
 
-// Raw access to data    
-    
-matfiledata matlabarray::getpreal() 
+// Raw access to data
+
+matfiledata matlabarray::getpreal()
 {
-  if (m_ == 0) 
+  if (m_ == 0)
   {
     std::cerr << "internal error in getpreal()\n";
     throw internal_error();
@@ -959,7 +958,7 @@ matfiledata matlabarray::getpreal()
   return( m_->preal_);
 }
 
-matfiledata matlabarray::getpimag() 
+matfiledata matlabarray::getpimag()
 {
   if (m_ == 0)
   {
@@ -969,7 +968,7 @@ matfiledata matlabarray::getpimag()
   return( m_->pimag_);
 }
 
-matfiledata matlabarray::getprows() 
+matfiledata matlabarray::getprows()
 {
   if (m_ == 0)
   {
@@ -979,11 +978,11 @@ matfiledata matlabarray::getprows()
   return( m_->prows_);
 }
 
-matfiledata matlabarray::getpcols() 
+matfiledata matlabarray::getpcols()
 {
   if (m_ == 0)
   {
-    std::cerr << "internal error in getpcols()\n";  
+    std::cerr << "internal error in getpcols()\n";
     throw internal_error();
   }
   return( m_->pcols_);
@@ -998,7 +997,7 @@ std::string matlabarray::getinfotext(const std::string& name) const
 {
   if (m_ == 0) return(std::string("[EMPTY MATRIX]"));
 
-	std::ostringstream oss;	
+	std::ostringstream oss;
 	if (name.size() == 0)
 	{
 		oss << m_->name_ << "  ";
@@ -1009,10 +1008,10 @@ std::string matlabarray::getinfotext(const std::string& name) const
 		oss << name << "  ";
 		if (name.length() < 40) oss << std::string(40-(name.length()),' ');
 	}
-	
+
 	oss << "[ ";
-	for (int p=0;p<static_cast<int>(m_->dims_.size());p++)  { oss << m_->dims_[p]; if (p<(static_cast<int>(m_->dims_.size())-1)) oss << "x "; } 
-			
+	for (int p=0;p<static_cast<int>(m_->dims_.size());p++)  { oss << m_->dims_[p]; if (p<(static_cast<int>(m_->dims_.size())-1)) oss << "x "; }
+
 	switch (m_->class_)
 	{
 		case mlDENSE:
@@ -1030,7 +1029,7 @@ std::string matlabarray::getinfotext(const std::string& name) const
 				case miDOUBLE: oss << " DOUBLE"; break;
 				case miUTF8: oss << " UTF8"; break;
 				case miUTF16: oss << " UTF16"; break;
-				case miUTF32: oss << " UTF32"; break;				
+				case miUTF32: oss << " UTF32"; break;
 				default: oss << " UNKNOWN"; break;
 			}
 			oss << " ]";
@@ -1082,7 +1081,7 @@ void matlabarray::setlogical(bool val)
 
 void matlabarray::setglobal(bool val)
 {
-	if (m_ == 0) 
+	if (m_ == 0)
   {
     std::cerr << "internal error in setglobal()\n";
     throw internal_error();
@@ -1096,7 +1095,7 @@ bool matlabarray::iscomplex() const
 	if (m_ == 0) return(false);
   return(m_->flags_ & 0x01) != 0;
 }
-	
+
 bool matlabarray::islogical() const
 {
 	if (m_ == 0) return(false);
@@ -1149,7 +1148,7 @@ bool matlabarray::issparse() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlSPARSE));
-}	
+}
 
 bool matlabarray::isfield(const std::string& fieldname) const
 {
@@ -1168,19 +1167,19 @@ bool matlabarray::isfieldCI(const std::string& fieldname) const
 //{
 //	std::string::const_iterator p1 = s1.begin();
 //	std::string::const_iterator p2 = s2.begin();
-//	
+//
 //	while (p1!=s1.end() && p2 != s2.end())
 //	{
 //		if (toupper(*p1) != toupper(*p2)) return (toupper(*p1) < toupper(*p2)) ? -1 : 1;
 //		p1++; p2++;
 //	}
-//	
+//
 //	return((s2.size()==s1.size()) ? 0 : (s1.size() < s2.size()) ? -1 :  1);
 //}
 
 void matlabarray::permute(const std::vector<int>& permorder)
 {
-	if (m_ == 0) 
+	if (m_ == 0)
   {
     std::cerr << "internal error in permute()\n";
     throw internal_error();
@@ -1190,20 +1189,20 @@ void matlabarray::permute(const std::vector<int>& permorder)
     std::cerr << "internal error in permute()\n";
     throw internal_error(); // Other types are not yet implemented
 	}
-  
+
   // In case we are in information mode, there may be no data stored in
   // the matrix. Hence if there is no data only swap the header
   if (m_->preal_.size() > 0)
   {
     std::vector<int> neworder;
     reorder_permute(neworder,permorder);
-	
+
     // this construction creates a new reordered matfiledata object
     // and destroys the old one.
     m_->preal_ = m_->preal_.reorder(neworder);
     if (iscomplex()) m_->pimag_ = m_->pimag_.reorder(neworder);
 	}
-  
+
 	int dsize = static_cast<int>(m_->dims_.size());
 	std::vector<int> dims(dsize);
 	for (int p = 0;  p< dsize;p++) dims[p] = m_->dims_[permorder[p]];
@@ -1227,22 +1226,22 @@ void matlabarray::transpose()
     std::cerr << "internal error in transpose()\n";
     throw internal_error(); // Other types are not yet implemented
 	}
-  
+
 	std::vector<int> permorder(2);
 	permorder[0] = 1;
 	permorder[1] = 0;
 
   if (m_->preal_.size() > 0)
   {
-    std::vector<int> neworder;	
-    reorder_permute(neworder,permorder);	
-    
+    std::vector<int> neworder;
+    reorder_permute(neworder,permorder);
+
     // this construction creates a new reordered matfiledata object
     // and destroys the old one.
     m_->preal_ = m_->preal_.reorder(neworder);
     if (iscomplex()) m_->pimag_ =m_->pimag_.reorder(neworder);
 	}
-	
+
 	int dsize = static_cast<int>(m_->dims_.size());
 	std::vector<int> dims(dsize);
 	for (int p = 0 ; p < dsize ; p++) dims[p] = m_->dims_[permorder[p]];
@@ -1263,20 +1262,20 @@ void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vecto
     throw internal_error();
 	}
   newindices.resize(getnumelements());
-	
+
 	int size = static_cast<int>(m_->dims_.size());
-	
+
 	for (int p = 0; p < size; p++)
-	{   
-    if ((permorder[p] < 0)||(permorder[p] >= size)) throw out_of_range(); 
+	{
+    if ((permorder[p] < 0)||(permorder[p] >= size)) throw out_of_range();
   }
-	
+
 	std::vector<int> dims(size);
 	std::vector<int> ndims(size);
 	std::vector<int> index(size);
 	std::vector<int> cdims(size);
 	std::vector<int> ncdims(size);
-	
+
 	int m = 1;
 	for (int p = 0; p < size; p++)
 	{
@@ -1284,19 +1283,19 @@ void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vecto
 		dims[p] = m_->dims_[p];
 		m *= dims[p];
 	}
-	
+
 	for (int p = 0; p < size; p++)
 	{
 		ncdims[p] = cdims[permorder[p]];
 		ndims[p] = dims[permorder[p]];
 	}
-	
+
 	size_t numel = newindices.size();
 	for (size_t p = 0; p < numel; p++)
 	{
 		newindices[p] = 0;
 		for (int q = 0;q < size; q++) {newindices[p] += index[q]*ncdims[q];}
-		
+
 		index[0]++;
 		if (index[0] == ndims[0])
 		{
@@ -1310,7 +1309,7 @@ void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vecto
 			}
 		}
 	}
-	
+
 }
 
 bool matlabarray::compare(const std::string& str) const

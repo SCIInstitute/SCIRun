@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 // File:   ConvertBundleToField.cc
 // Author: Fangxiang Jiao
@@ -47,9 +47,9 @@ class ConvertBundleToField : public Module {
 
 public:
   ConvertBundleToField(GuiContext*);
-  virtual ~ConvertBundleToField() {}	
+  virtual ~ConvertBundleToField() {}
   virtual void execute();
-  
+
 private:
     GuiInt    guiclear_;
     GuiDouble guitolerance_;
@@ -57,15 +57,15 @@ private:
     GuiInt    guiforcepointcloud_;
     GuiInt    guimatchval_;
     GuiInt    guimeshonly_;
-    
+
     SCIRunAlgo::ConvertBundleToFieldAlgo algo_;
-    SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;   
+    SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;
 };
 
 DECLARE_MAKER(ConvertBundleToField)
 ConvertBundleToField::ConvertBundleToField(GuiContext* ctx)
   : Module("ConvertBundleToField", ctx, Source, "Converters", "SCIRun"),
-  guiclear_(get_ctx()->subVar("clear", false), 0),  
+  guiclear_(get_ctx()->subVar("clear", false), 0),
   guitolerance_(get_ctx()->subVar("tolerance"), 0.0001),
   guimergenodes_(get_ctx()->subVar("force-nodemerge"), 1),
   guiforcepointcloud_(get_ctx()->subVar("force-pointcloud"), 0),
@@ -80,7 +80,7 @@ void ConvertBundleToField::execute()
 {
   // Define input handle:
   BundleHandle handle;
-  
+
   // Get data from input port:
   if (!(get_input_handle("bundle", handle, true)))
   {
@@ -123,8 +123,6 @@ void ConvertBundleToField::execute()
     }
 
     // send new output if there is any:
-    send_output_handle("Output", output);     
+    send_output_handle("Output", output);
   }
 }
-
-

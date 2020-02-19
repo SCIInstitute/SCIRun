@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,15 +36,15 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        
+
         ALGORITHM_PARAMETER_DECL(ClipMethod);
         ALGORITHM_PARAMETER_DECL(BuildMapping);
-        
+
 class SCISHARE ClipMeshBySelectionAlgo : public AlgorithmBase
 {
 public:
   ClipMeshBySelectionAlgo();
-  
+
     bool runImpl(FieldHandle input,
              FieldHandle selection,
              FieldHandle& output) const;
@@ -56,11 +55,10 @@ public:
 
   static const AlgorithmInputName SelectionField;
   static const AlgorithmOutputName Mapping;
-  
+
   virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
       }}}}
 
 #endif
-

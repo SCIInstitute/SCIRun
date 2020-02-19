@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,12 +24,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   File   : network.dtd 
+   File   : network.dtd
    Author : Martin Cole
    Date   : Tue Jan 31 09:31:59 2006
-   Description   : The dtd that describes the valid grammar for 
+   Description   : The dtd that describes the valid grammar for
                    SCIRun network files.
 -->
+
 
 <!-- Top level -->
 <!ELEMENT network (environment?, note?, modules, connections?)>
@@ -43,11 +43,11 @@
         creationTime CDATA #IMPLIED
         geometry CDATA #IMPLIED>
 
-<!-- define local variables that get substituted from 
+<!-- define local variables that get substituted from
      the specified environment variable -->
 <!ELEMENT environment (var+)>
 
-<!-- in the first version of the srn file it was not saved 
+<!-- in the first version of the srn file it was not saved
      whether a variable was did contain a substitution,
 		 conversion was applied on every variable. Hence the default
 		 is yes, whereas it actually should be no. jeroen -->
@@ -58,14 +58,14 @@
 					filename (yes | no) "no"
 					substitute (yes | no) "yes" >
 
-<!-- note to describe the network and its usage, typically entered 
+<!-- note to describe the network and its usage, typically entered
      from the SCIRun GUI (optional)-->
 <!ELEMENT note (#PCDATA)>
 <!ATTLIST note
           position CDATA #IMPLIED
           color CDATA #IMPLIED>
 
-<!-- modules an id for use later in connections, 
+<!-- modules an id for use later in connections,
      the module instantiation info, and the position in the network editor -->
 <!ELEMENT modules (subnet*, module*)>
 
@@ -115,4 +115,3 @@
           disabled (yes | no) "no">
 
 <!ELEMENT route (#PCDATA)>
-

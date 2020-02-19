@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -51,18 +50,18 @@ template <class T>
 class FieldIndexBase {
 public:
   typedef T value_type;
-  
+
   FieldIndexBase(T i) :
     index_(i) {}
 
   /// Required interface for an Index.
   operator T const &() const { return index_; }
-  
+
   std::ostream& str_render(std::ostream& os) const {
     os << index_;
     return os;
   }
-  
+
   T index_;
 };
 
@@ -104,7 +103,7 @@ struct CellIndex : public FieldIndexBase<T> {
 };
 
 // the following operators only exist to get the generic interpolate to compile
-// 
+//
 template <class T>
 std::vector<CellIndex<T> >
 operator*(const std::vector<CellIndex<T> >& r, double &) {

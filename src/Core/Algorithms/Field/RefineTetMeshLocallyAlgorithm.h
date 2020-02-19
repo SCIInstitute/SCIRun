@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELD_RefineTetMeshLocally_H
 #define CORE_ALGORITHMS_FIELD_RefineTetMeshLocally_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DatatypeFwd.h>
 
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -60,20 +60,20 @@ ALGORITHM_PARAMETER_DECL(RefineTetMeshLocallyMaxNumberRefinementIterations);
 
 class SCISHARE RefineTetMeshLocallyAlgorithm : public AlgorithmBase
 {
-  public:  
+  public:
     RefineTetMeshLocallyAlgorithm();
-    FieldHandle RefineMesh(FieldHandle input, Datatypes::SparseRowMatrixHandle cut_edges) const; 
+    FieldHandle RefineMesh(FieldHandle input, Datatypes::SparseRowMatrixHandle cut_edges) const;
     bool runImpl(FieldHandle input, FieldHandle& output) const;
-  private:   
+  private:
     static const int max_number_new_tets;
     static const int number_edges;
-    static const int number_nodes; 
+    static const int number_nodes;
     static const int number_cases;
     static const int number_faces;
     static const int code_to_split;
     static const int code_not_to_split;
     static const int EdgeLookup[6][3];
-    static int CaseLookup[63][6]; 
+    static int CaseLookup[63][6];
     static const int Case1Lookup[2][4];
     static const int Case2aLookup[3][4];
     static const int Case2bLookup[4][4];
@@ -89,7 +89,7 @@ class SCISHARE RefineTetMeshLocallyAlgorithm : public AlgorithmBase
     static const int NumberTets[12];
     Datatypes::SparseRowMatrixHandle ChoseEdgesToCut(FieldHandle input, const std::vector<long>& elems_to_split, VMesh* field_boundary) const;
     std::vector<int> SelectMeshElements(FieldHandle input, int choose_refinement_option, int& count) const;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override; 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
     std::vector<int> maxi(const std::vector<double>& input_vec) const;
     std::vector<int> getEdgeCoding(int pos) const;
     std::vector<double> getEdgeLengths(Geometry::Point p1, Geometry::Point p2, Geometry::Point p3, Geometry::Point p4) const;

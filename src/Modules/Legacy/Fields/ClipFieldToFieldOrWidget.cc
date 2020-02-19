@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///@file  ClipFieldToFieldOrWidget.cc
@@ -56,7 +56,7 @@ namespace SCIRun {
 using std::stack;
 
 /// @class ClipFieldToFieldOrWidget
-/// @brief This module selects a subset of a field using a field or a widget. 
+/// @brief This module selects a subset of a field using a field or a widget.
 
 class ClipFieldToFieldOrWidget : public Module
 {
@@ -99,12 +99,12 @@ class ClipFieldToFieldOrWidget : public Module
 
     virtual void execute();
     virtual void widget_moved(bool, BaseWidget*);
-    
+
     GuiDouble widget_scale_;
     GuiInt    widget_mode_;
-    
+
     virtual void presave();
-    virtual void post_read();    
+    virtual void post_read();
 };
 
 
@@ -197,7 +197,7 @@ ClipFieldToFieldOrWidget::execute()
   // Get input field.
   FieldHandle ifieldhandle;
   get_input_handle("Input Field", ifieldhandle,true);
-  
+
   if (!ifieldhandle->vmesh()->is_editable())
   {
     error("Not an editable mesh type (try passing Field through an ConvertMeshToUnstructuredMesh module first).");
@@ -254,7 +254,7 @@ ClipFieldToFieldOrWidget::execute()
       bmin.x(bmin.x() - size_estimate);
       bmax.x(bmax.x() + size_estimate);
     }
-    if (fabs(bmax.y() - bmin.y()) < 1.0e-6) 
+    if (fabs(bmax.y() - bmin.y()) < 1.0e-6)
     {
       bmin.y(bmin.y() - size_estimate);
       bmax.y(bmax.y() + size_estimate);
@@ -374,13 +374,13 @@ ClipFieldToFieldOrWidget::execute()
     #endif
 
     hash_type nodemap;
-    std::vector<VMesh::Elem::index_type> elemmap;     
-    VMesh::Elem::size_type num_elems = mesh->num_elems(); 
-             
+    std::vector<VMesh::Elem::index_type> elemmap;
+    VMesh::Elem::size_type num_elems = mesh->num_elems();
+
     if ((clip_location_.get() == "nodeone")||(clip_location_.get() == "nodeall"))
     {
       bool any_inside_p = (clip_location_.get() == "nodeone");
-      
+
       int cnt = 0;
       for(VMesh::Elem::index_type idx=0; idx< num_elems; idx++)
       {
@@ -437,7 +437,7 @@ ClipFieldToFieldOrWidget::execute()
           elemmap.push_back(idx); // Assumes elements always added to end.
         }
       }
-      
+
       ofield->resize_values();
 
       if (ifield->basis_order() == 1)
@@ -527,7 +527,7 @@ ClipFieldToFieldOrWidget::widget_moved(bool last, BaseWidget*)
 {
   if (last)
   {
-    if (!first_pass_) 
+    if (!first_pass_)
     {
       Point center, right, down, in;
       box_->GetPosition(center, right, down, in);
@@ -551,8 +551,7 @@ ClipFieldToFieldOrWidget::widget_moved(bool last, BaseWidget*)
       exec_mode_.set("execute");
       want_to_execute();
     }
-  } 
+  }
 }
 
 } // End namespace SCIRun
-

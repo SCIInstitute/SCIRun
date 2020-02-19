@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
 #include <Core/Datatypes/FieldInformation.h>
 
@@ -33,14 +33,14 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-template<class DATA> 
-bool ErodeFieldDataNodeV(AlgoBase* algo, 
-                           FieldHandle input, 
+template<class DATA>
+bool ErodeFieldDataNodeV(AlgoBase* algo,
+                           FieldHandle input,
                            FieldHandle& output);
 
-template<class DATA> 
-bool ErodeFieldDataElemV(AlgoBase* algo, 
-                          FieldHandle input, 
+template<class DATA>
+bool ErodeFieldDataElemV(AlgoBase* algo,
+                          FieldHandle input,
                           FieldHandle& output);
 
 
@@ -57,26 +57,26 @@ bool ErodeFieldDataAlgo::run(FieldHandle input, FieldHandle& output)
 
   // Figure out what the input type and output type have to be
   FieldInformation fi(input);
-  
+
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     algo_end(); return (false);
   }
-  
+
   if (fi.is_nodata())
   {
     error("There is no data defined in the input field");
     algo_end(); return (false);
   }
-  
+
   if (!fi.is_scalar())
   {
     error("The field data is not scalar data");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
-  
-  
+
+
   if (fi.is_constantdata())
   {
     if (fi.is_char()) return(ErodeFieldDataElemV<char>(this,input,output));
@@ -116,7 +116,7 @@ bool ErodeFieldDataNodeV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
   /// Create output field
   output = input;
   output.detach();
-  
+
   if (output.get_rep() == 0)
   {
     algo->error("Could not allocate output field");
@@ -130,27 +130,27 @@ bool ErodeFieldDataNodeV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
     algo->error("Could not allocate buffer field");
     algo->algo_end(); return (false);
   }
-  
+
   VMesh* vmesh = output->vmesh();
   vmesh->synchronize(Mesh::NODE_NEIGHBORS_E);
 
-  VMesh::Node::size_type sz;  
+  VMesh::Node::size_type sz;
   vmesh->size(sz);
 
-  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer()); 
-  DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer()); 
+  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer());
+  DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer());
 
   for (int p=0; p <num_iter; p++)
   {
-    
+
     VMesh::Node::array_type nodes;
     DATA val, nval;
-    
+
     for(VMesh::Node::index_type idx=0; idx<sz; ++idx)
     {
       vmesh->get_neighbors(nodes,idx);
       val = idata[idx];
-      
+
       for (size_t j=0; j<nodes.size(); j++)
       {
         nval = idata[nodes[j]];
@@ -161,7 +161,7 @@ bool ErodeFieldDataNodeV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
 
     input->vfield()->copy_values(output->vfield());
   }
-  
+
   return (true);
 }
 
@@ -175,7 +175,7 @@ bool ErodeFieldDataElemV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
   /// Create output field
   output = input;
   output.detach();
-  
+
   if (output.get_rep() == 0)
   {
     algo->error("Could not allocate output field");
@@ -189,26 +189,26 @@ bool ErodeFieldDataElemV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
     algo->error("Could not allocate buffer field");
     algo->algo_end(); return (false);
   }
-  
+
   VMesh* vmesh = output->vmesh();
   vmesh->synchronize(Mesh::ELEM_NEIGHBORS_E);
 
-  VMesh::Elem::size_type sz;  
+  VMesh::Elem::size_type sz;
   vmesh->size(sz);
 
-  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer()); 
-  DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer()); 
-  
+  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer());
+  DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer());
+
   for (int p=0; p <num_iter; p++)
   {
     VMesh::Elem::array_type elems;
     DATA val, nval;
-    
+
     for(VMesh::Elem::index_type idx=0; idx<sz; ++idx)
     {
       vmesh->get_neighbors(elems,idx);
       val = idata[idx];
-      
+
       for (size_t j=0; j<elems.size(); j++)
       {
         nval = idata[elems[j]];
@@ -219,10 +219,9 @@ bool ErodeFieldDataElemV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
 
     input->vfield()->copy_values(output->vfield());
   }
-  
+
   return (true);
 }
 
 
 } // End namespace SCIRunAlgo
-

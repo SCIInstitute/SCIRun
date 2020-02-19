@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_1a.cc
+
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -87,61 +89,61 @@ template class GenericField<QSMesh, NoDataBasis<double>, std::vector<double> >;
 template class GenericField<QSMesh, NoDataBasis<int>, std::vector<int> >;
 
 //Constant
-template class GenericField<QSMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<QSMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<QSMesh, CFDdoubleBasis, std::vector<double> >;       
+template class GenericField<QSMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<QSMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<QSMesh, CFDdoubleBasis, std::vector<double> >;
 template class GenericField<QSMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<QSMesh, CFDcomplexBasis, std::vector<complex> >;
-template class GenericField<QSMesh, CFDintBasis,    std::vector<int> >;          
-template class GenericField<QSMesh, CFDlonglongBasis, std::vector<long long> >;          
-template class GenericField<QSMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<QSMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<QSMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<QSMesh, CFDintBasis,    std::vector<int> >;
+template class GenericField<QSMesh, CFDlonglongBasis, std::vector<long long> >;
+template class GenericField<QSMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<QSMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<QSMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<QSMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<QSMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<QSMesh, CFDulongBasis,  std::vector<unsigned long> >;
 
 //Linear
-template class GenericField<QSMesh, FDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<QSMesh, FDVectorBasis, std::vector<Vector> >;       
-template class GenericField<QSMesh, FDdoubleBasis, std::vector<double> >;       
-template class GenericField<QSMesh, FDfloatBasis,  std::vector<float> >;      
+template class GenericField<QSMesh, FDTensorBasis, std::vector<Tensor> >;
+template class GenericField<QSMesh, FDVectorBasis, std::vector<Vector> >;
+template class GenericField<QSMesh, FDdoubleBasis, std::vector<double> >;
+template class GenericField<QSMesh, FDfloatBasis,  std::vector<float> >;
 template class GenericField<QSMesh, FDcomplexBasis, std::vector<complex> >;
-template class GenericField<QSMesh, FDintBasis,    std::vector<int> >;      
-template class GenericField<QSMesh, FDlonglongBasis,std::vector<long long> >;      
-template class GenericField<QSMesh, FDshortBasis,  std::vector<short> >;        
-template class GenericField<QSMesh, FDcharBasis,   std::vector<char> >;         
-template class GenericField<QSMesh, FDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<QSMesh, FDintBasis,    std::vector<int> >;
+template class GenericField<QSMesh, FDlonglongBasis,std::vector<long long> >;
+template class GenericField<QSMesh, FDshortBasis,  std::vector<short> >;
+template class GenericField<QSMesh, FDcharBasis,   std::vector<char> >;
+template class GenericField<QSMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<QSMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<QSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<QSMesh, FDulongBasis,  std::vector<unsigned long> >;
 }
 
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFT("QuadSurfField<Tensor>", "Field",
-		      GenericField<QSMesh, FDTensorBasis, 
-		      std::vector<Tensor> >::maker, 
-		      GenericField<QSMesh, CFDTensorBasis, 
+		      GenericField<QSMesh, FDTensorBasis,
+		      std::vector<Tensor> >::maker,
+		      GenericField<QSMesh, CFDTensorBasis,
 		      std::vector<Tensor> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFV("QuadSurfField<Vector>", "Field",
-		      GenericField<QSMesh, FDVectorBasis, 
-		      std::vector<Vector> >::maker, 
-		      GenericField<QSMesh, CFDVectorBasis, 
+		      GenericField<QSMesh, FDVectorBasis,
+		      std::vector<Vector> >::maker,
+		      GenericField<QSMesh, CFDVectorBasis,
 		      std::vector<Vector> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFd("QuadSurfField<double>", "Field",
-		      GenericField<QSMesh, FDdoubleBasis, 
-		      std::vector<double> >::maker, 
-		      GenericField<QSMesh, CFDdoubleBasis, 
+		      GenericField<QSMesh, FDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<QSMesh, NDBasis, 
+		      GenericField<QSMesh, CFDdoubleBasis,
+		      std::vector<double> >::maker,
+		      GenericField<QSMesh, NDBasis,
 		      std::vector<double> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFf("QuadSurfField<float>", "Field",
-		      GenericField<QSMesh, FDfloatBasis, 
-		      std::vector<float> >::maker, 
-		      GenericField<QSMesh, CFDfloatBasis, 
+		      GenericField<QSMesh, FDfloatBasis,
+		      std::vector<float> >::maker,
+		      GenericField<QSMesh, CFDfloatBasis,
 		      std::vector<float> >::maker);
 PersistentTypeID
 backwards_compat_QSFco("QuadSurfField<complex>", "Field",
@@ -149,46 +151,45 @@ backwards_compat_QSFco("QuadSurfField<complex>", "Field",
           std::vector<complex> >::maker,
           GenericField<QSMesh, CFDcomplexBasis,
           std::vector<complex> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFi("QuadSurfField<int>", "Field",
-		      GenericField<QSMesh, FDintBasis, 
-		      std::vector<int> >::maker, 
-		      GenericField<QSMesh, CFDintBasis, 
+		      GenericField<QSMesh, FDintBasis,
+		      std::vector<int> >::maker,
+		      GenericField<QSMesh, CFDintBasis,
 		      std::vector<int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFs("QuadSurfField<short>", "Field",
-		      GenericField<QSMesh, FDshortBasis, 
-		      std::vector<short> >::maker, 
-		      GenericField<QSMesh, CFDshortBasis, 
+		      GenericField<QSMesh, FDshortBasis,
+		      std::vector<short> >::maker,
+		      GenericField<QSMesh, CFDshortBasis,
 		      std::vector<short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFc("QuadSurfField<char>", "Field",
-		      GenericField<QSMesh, FDcharBasis, 
-		      std::vector<char> >::maker, 
-		      GenericField<QSMesh, CFDcharBasis, 
+		      GenericField<QSMesh, FDcharBasis,
+		      std::vector<char> >::maker,
+		      GenericField<QSMesh, CFDcharBasis,
 		      std::vector<char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFui("QuadSurfField<unsigned_int>", "Field",
-		       GenericField<QSMesh, FDuintBasis, 
-		       std::vector<unsigned int> >::maker, 
-		       GenericField<QSMesh, CFDuintBasis, 
+		       GenericField<QSMesh, FDuintBasis,
+		       std::vector<unsigned int> >::maker,
+		       GenericField<QSMesh, CFDuintBasis,
 		       std::vector<unsigned int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFus("QuadSurfField<unsigned_short>", "Field",
-		       GenericField<QSMesh, FDushortBasis, 
-		       std::vector<unsigned short> >::maker, 
-		       GenericField<QSMesh, CFDushortBasis, 
+		       GenericField<QSMesh, FDushortBasis,
+		       std::vector<unsigned short> >::maker,
+		       GenericField<QSMesh, CFDushortBasis,
 		       std::vector<unsigned short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFuc("QuadSurfField<unsigned_char>", "Field",
-		       GenericField<QSMesh, FDucharBasis, 
-		       std::vector<unsigned char> >::maker, 
-		       GenericField<QSMesh, CFDucharBasis, 
+		       GenericField<QSMesh, FDucharBasis,
+		       std::vector<unsigned char> >::maker,
+		       GenericField<QSMesh, CFDucharBasis,
 		       std::vector<unsigned char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_QSFul("QuadSurfField<unsigned_long>", "Field",
-		       GenericField<QSMesh, FDulongBasis, 
-		       std::vector<unsigned long> >::maker, 
-		       GenericField<QSMesh, CFDulongBasis, 
+		       GenericField<QSMesh, FDulongBasis,
+		       std::vector<unsigned long> >::maker,
+		       GenericField<QSMesh, CFDulongBasis,
 		       std::vector<unsigned long> >::maker);
-
