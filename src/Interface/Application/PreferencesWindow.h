@@ -63,6 +63,8 @@ public Q_SLOTS:
   void updateAutoNotesState(int state);
   void updateHighDPIAdjust(int state);
   void updateForceGridBackground(int state);
+  void updateWidgetSelectionCorrection(int state);
+  void updateAutoRotateViewer(int state);
 
 protected:
   void hideEvent(QHideEvent * event) override;

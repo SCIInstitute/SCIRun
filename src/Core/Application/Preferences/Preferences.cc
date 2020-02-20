@@ -54,6 +54,8 @@ Preferences::Preferences() :
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   highDPIAdjustment("highDPIAdjustment", false),
+  widgetSelectionCorrection("widgetSelectionCorrection", false),
+  autoRotateViewerOnMouseRelease("autoRotateViewerOnMouseRelease", false),
   forceGridBackground("forceGridBackground", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),

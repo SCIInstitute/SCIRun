@@ -146,7 +146,6 @@ namespace SCIRun {
       void setLockRotation(bool lock);
       void setAutoRotateVector(glm::vec2 axis);
       void setAutoRotateSpeed(double speed);
-      void setAutoRotateOnDrag(bool value);
       const glm::mat4& getWorldToProjection() const;
       const glm::mat4& getWorldToView() const;
       const glm::mat4& getViewToWorld() const;
@@ -154,7 +153,6 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      void toggleSelectionHack(bool b) {mSelectionHack = b;}
       typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
       void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
@@ -339,7 +337,6 @@ namespace SCIRun {
       MouseMode                           mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
 
       std::string                         mSelected           {};       // Current selection
-      bool                                mSelectionHack      {false};
       glm::vec3                           mOriginWorld        {};
       glm::vec3                           mFlipAxisWorld      {};
       glm::vec3                           mOriginToSpos       {};
