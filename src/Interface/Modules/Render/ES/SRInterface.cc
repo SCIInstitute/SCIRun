@@ -40,6 +40,7 @@
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -70,6 +71,7 @@
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -217,7 +219,7 @@ namespace SCIRun {
     {
       widgetSelected_ = false;
       widgetBall_.reset();
-      tryAutoRotate = doAutoRotateOnDrag;
+      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -354,7 +356,6 @@ namespace SCIRun {
     void SRInterface::setCameraRotation(const glm::quat roation) {mCamera->setRotation(roation);}
     glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
-    void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
@@ -555,7 +556,7 @@ namespace SCIRun {
             mCore.addComponent(entityID, commonUniforms);
 
             applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
-            applyUniform(entityID, SpireSubPass::Uniform("hack", mSelectionHack));
+            applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
 
             // Add components associated with entity. We just need a base class which
             // we can pass in an entity ID, then a derived class which bundles
