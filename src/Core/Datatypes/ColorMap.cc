@@ -292,7 +292,7 @@ double ColorMap::valueToIndex(const Vector &vector) const
 {
   return getTransformedValue(vector.length());
 }
->>>>>>> upstream/master
+
 double ColorMap::valueToIndex(Tensor &tensor) const
 {
   double eigen1, eigen2, eigen3;
