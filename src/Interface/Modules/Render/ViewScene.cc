@@ -1184,13 +1184,6 @@ void ViewSceneDialog::setAutoRotateSpeed(double speed)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setAutoRotateOnDrag(bool value)
-{
-  auto spire = mSpire.lock();
-  spire->setAutoRotateOnDrag(value);
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateRight()
 {
   auto spire = mSpire.lock();
@@ -1228,12 +1221,6 @@ void ViewSceneDialog::autoRotateDown()
 //---------------- Widgets -------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::toggleSelectionHack(bool b)
-{
-  auto spire = mSpire.lock();
-  if (spire) spire->toggleSelectionHack(b);
-}
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
