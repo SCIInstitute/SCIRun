@@ -196,7 +196,7 @@ namespace SCIRun
     using TransformCalcMaker = std::function<ObjectTransformCalculatorPtr(const glm::vec2&, float)>;
     using TransformCalcMakerMapping = std::map<Graphics::Datatypes::WidgetMovement, TransformCalcMaker>;
 
-    class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider
+    class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider, boost::noncopyable
     {
     public:
       WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen);
@@ -234,7 +234,7 @@ namespace SCIRun
       glm::mat4 widgetTransform_ {};
     };
 
-    class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator
+    class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable
     {
     public:
       explicit ObjectTransformCalculatorBase(const BasicRendererObjectProvider* s) :
@@ -277,6 +277,8 @@ namespace SCIRun
       float initialW_;
       std::shared_ptr<spire::ArcBall>	widgetBall_;
     };
+
+    SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
   }
 }
 

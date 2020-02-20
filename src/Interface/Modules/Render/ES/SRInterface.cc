@@ -1984,3 +1984,12 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
         break;
       }
     }
+
+std::ostream& SCIRun::Render::operator<<(std::ostream& o, const glm::mat4& m)
+{
+  o << "{" << m[0].x << ",\t" << m[0].y << ",\t" << m[0].z << ",\t" << m[0].w << "}\n"
+    << "{" << m[1].x << ",\t" << m[1].y << ",\t" << m[1].z << ",\t" << m[1].w << "}\n"
+    << "{" << m[2].x << ",\t" << m[2].y << ",\t" << m[2].z << ",\t" << m[2].w << "}\n"
+    << "{" << m[3].x << ",\t" << m[3].y << ",\t" << m[3].z << ",\t" << m[3].w << "}\n";
+  return o;
+}
