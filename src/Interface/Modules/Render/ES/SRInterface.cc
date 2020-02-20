@@ -353,6 +353,15 @@ void SRInterface::runGCOnNextExecution()
       objectTransformCalculator_.reset();
     }
 
+    class ScopedLambdaExecutor
+    {
+    public:
+      explicit ScopedLambdaExecutor(std::function<void()> f) : func_(f) {}
+      ~ScopedLambdaExecutor() { func_(); }
+    private:
+      std::function<void()> func_;
+    };
+
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
       if (!mContext || !mContext->isValid())
@@ -559,37 +568,39 @@ void SRInterface::runGCOnNextExecution()
 
       mCore.execute(0, 50);
 
-      GLuint value;
-      GLfloat depth;
-      if (fboMan->readFBO(mCore, fboName, x, y, 1, 1,
-                          (GLvoid*)&value, (GLvoid*)&depth))
-      {
-        auto it = selMap.find(value);
-        if (it != selMap.end())
-        {
-          auto widgetId = it->second;
 
-          for (auto& widget : widgets)
+      GLfloat depth;
+
+      {
+        ScopedLambdaExecutor removeEntities([this, &entityList]() { for (auto& it : entityList) mCore.removeEntity(it); });
+        {
+          ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
+          GLuint value;
+          if (fboMan->readFBO(mCore, fboName, x, y, 1, 1,
+                              (GLvoid*)&value, (GLvoid*)&depth))
           {
-            if (widget->uniqueID() == widgetId)
+            auto it = selMap.find(value);
+            if (it != selMap.end())
             {
-              widgetUpdater_.setCurrentWidget(widget);
-              break;
+              auto widgetId = it->second;
+
+              for (auto& widget : widgets)
+              {
+                if (widget->uniqueID() == widgetId)
+                {
+                  widgetUpdater_.setCurrentWidget(widget);
+                  break;
+                }
+              }
             }
           }
         }
+
+        if (widgetUpdater_.currentWidget())
+        {
+          widgetUpdater_.doInitialUpdate(x, y, depth);
+        }
       }
-
-      //release and restore fbo
-      fboMan->unbindFBO();
-
-      if (widgetUpdater_.currentWidget())
-      {
-        widgetUpdater_.doInitialUpdate(x, y, depth);
-      }
-
-      for (auto& it : entityList)
-        mCore.removeEntity(it);
 
       return widgetUpdater_.currentWidget();
     }
