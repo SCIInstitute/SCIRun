@@ -46,6 +46,18 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
   connect(highDPIAdjustCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateHighDPIAdjust(int)));
   connect(forceGridBackgroundCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateForceGridBackground(int)));
+  connect(viewerWidgetSelectionCorrectionCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateWidgetSelectionCorrection(int)));
+  connect(autoRotateViewerOnMouseReleaseCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoRotateViewer(int)));
+}
+
+void PreferencesWindow::updateWidgetSelectionCorrection(int state)
+{
+  SCIRun::Core::Preferences::Instance().widgetSelectionCorrection.setValue(state != 0);
+}
+
+void PreferencesWindow::updateAutoRotateViewer(int state)
+{
+  SCIRun::Core::Preferences::Instance().autoRotateViewerOnMouseRelease.setValue(state != 0);
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)

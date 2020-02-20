@@ -86,6 +86,8 @@ namespace SCIRun
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;
       BooleanVariable highDPIAdjustment;
+      BooleanVariable widgetSelectionCorrection;
+      BooleanVariable autoRotateViewerOnMouseRelease;
       TrackedVariable<BooleanVariable> forceGridBackground;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
