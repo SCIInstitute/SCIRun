@@ -635,19 +635,19 @@ void SRInterface::runGCOnNextExecution()
     template <>
     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const TranslateParameters& p)
     {
-      return boost::make_shared<ObjectTranslationImpl>(brop_, p);
+      return boost::make_shared<ObjectTranslationCalculator>(brop_, p);
     }
 
     template <>
     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ScaleParameters& p)
     {
-      return boost::make_shared<ObjectScaleImpl>(brop_, p);
+      return boost::make_shared<ObjectScaleCalculator>(brop_, p);
     }
 
     template <>
     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const RotateParameters& p)
     {
-      return boost::make_shared<ObjectRotateImpl>(brop_, p);
+      return boost::make_shared<ObjectRotationCalculator>(brop_, p);
     }
 
     void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
@@ -764,14 +764,14 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       widgetTransform_ = event->transform.transform;
     }
 
-    ObjectTranslationImpl::ObjectTranslationImpl(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
+    ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
       ObjectTransformCalculatorBase(s),
       initialPosition_(t.initialPosition_),
       w_(t.w_),
       invViewProj_(glm::inverse(t.viewProj))
     {}
 
-    gen::Transform ObjectTranslationImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
     {
       auto screenPos = service_->screen().positionFromClick(x, y);
       glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
@@ -780,7 +780,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       return trans;
     }
 
-    ObjectScaleImpl::ObjectScaleImpl(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
+    ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
       flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
     {
       originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
@@ -791,7 +791,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       originToSpos_ = sposView - originView_;
     }
 
-    gen::Transform ObjectScaleImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
     {
       auto spos = service_->screen().positionFromClick(x, y);
 
@@ -826,7 +826,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       return trans;
     }
 
-    ObjectRotateImpl::ObjectRotateImpl(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
+    ObjectRotationCalculator::ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
       originWorld_(p.originWorld_), initialW_(p.w_)
     {
       auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
@@ -839,7 +839,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       widgetBall_->beginDrag(glm::vec2(sposView));
     }
 
-    gen::Transform ObjectRotateImpl::computeTransform(int x, int y) const
+    gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
     {
       if (!widgetBall_)
         return {};

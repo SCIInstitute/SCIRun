@@ -243,10 +243,10 @@ namespace SCIRun
       const BasicRendererObjectProvider* service_;
     };
 
-    class SCISHARE ObjectTranslationImpl : public ObjectTransformCalculatorBase
+    class SCISHARE ObjectTranslationCalculator : public ObjectTransformCalculatorBase
     {
     public:
-      ObjectTranslationImpl(const BasicRendererObjectProvider* s, const TranslateParameters& t);
+      ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec2 initialPosition_;
@@ -254,10 +254,10 @@ namespace SCIRun
       glm::mat4 invViewProj_;
     };
 
-    class SCISHARE ObjectScaleImpl : public ObjectTransformCalculatorBase
+    class SCISHARE ObjectScaleCalculator : public ObjectTransformCalculatorBase
     {
     public:
-      explicit ObjectScaleImpl(const BasicRendererObjectProvider* s, const ScaleParameters& p);
+      explicit ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec3 originView_;
@@ -267,10 +267,10 @@ namespace SCIRun
       glm::vec3 originWorld_;
     };
 
-    class SCISHARE ObjectRotateImpl : public ObjectTransformCalculatorBase
+    class SCISHARE ObjectRotationCalculator : public ObjectTransformCalculatorBase
     {
     public:
-      explicit ObjectRotateImpl(const BasicRendererObjectProvider* s, const RotateParameters& p);
+      explicit ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p);
       gen::Transform computeTransform(int x, int y) const override;
     private:
       glm::vec3 originWorld_;

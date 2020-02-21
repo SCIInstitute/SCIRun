@@ -27,38 +27,15 @@
 */
 
 #include <gtest/gtest.h>
-#include <Interface/Modules/Render/ES/RendererCollaborators.h>
-#include <Interface/Modules/Render/ES/RendererInterface.h>
-#include <Interface/Modules/Render/ES/SRCamera.h>
+#include <Interface/Modules/Render/Tests/ObjectTransformationHelper.h>
 
 using namespace SCIRun;
 using namespace Render;
 
-static const ScreenParams screen_;
-
-class ScreenParametersImpl : public ScreenParameters
+class RotationTest : public ::testing::Test
 {
 public:
-  size_t getScreenWidthPixels() const override { return screen_.width; }
-  size_t getScreenHeightPixels() const override { return screen_.height; }
-  MouseMode getMouseMode() const override { throw "not needed"; }
-};
-
-static const ScreenParametersImpl spi;
-
-static SRCamera camera_(&spi);
-
-class BasicRendererObjectProviderStub : public BasicRendererObjectProvider
-{
-public:
-  SRCamera& camera() const override { return camera_; }
-  const ScreenParams& screen() const override { return screen_; }
-};
-
-class TranslationTest : public ::testing::Test
-{
-public:
-  TranslationTest()
+  RotationTest()
   {
     // taken from a real viewscene value
     viewProj_[0] = glm::vec4{-2.51635,	-0.486686,	-0.332241,	-0.195739};
@@ -71,12 +48,12 @@ protected:
   glm::mat4 viewProj_;
 };
 
-TEST_F(TranslationTest, CanConstruct)
+TEST_F(RotationTest, CanConstruct)
 {
-  TranslateParameters p {};
-  ObjectTranslationImpl translator(&brop, p);
+  RotateParameters p {};
+  ObjectRotationCalculator rotator(&brop, p);
 }
-
+/*
 bool operator==(const glm::mat4& lhs, const glm::mat4& rhs)
 {
   return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2] && lhs[3] == rhs[3];
@@ -169,3 +146,4 @@ TEST_F(TranslationTest, CanTranslateArbitraryFromArbitrary)
 
   EXPECT_TRUE(t.transform == expected);
 }
+*/
