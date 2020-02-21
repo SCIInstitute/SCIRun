@@ -31,15 +31,16 @@
 
 using namespace SCIRun;
 using namespace Render;
+using namespace RenderTesting;
 
 static const ScreenParams screen_;
 
-size_t ScreenParametersImpl::getScreenWidthPixels() const { return screen_.width; }
-size_t ScreenParametersImpl::getScreenHeightPixels() const { return screen_.height; }
-MouseMode ScreenParametersImpl::getMouseMode() const { throw "not needed"; }
+size_t ScreenParametersTest::getScreenWidthPixels() const { return screen_.width; }
+size_t ScreenParametersTest::getScreenHeightPixels() const { return screen_.height; }
+MouseMode ScreenParametersTest::getMouseMode() const { throw "not needed"; }
 
-static const ScreenParametersImpl spi;
-static SRCamera camera_(&spi);
+static const ScreenParametersTest spt;
+static SRCamera camera_(&spt);
 
 SRCamera& BasicRendererObjectProviderStub::camera() const { return camera_; }
 const ScreenParams& BasicRendererObjectProviderStub::screen() const { return screen_; }
@@ -66,7 +67,7 @@ TEST_F(TranslationTest, CanConstruct)
   ObjectTranslationCalculator translator(&brop, p);
 }
 
-bool operator==(const glm::mat4& lhs, const glm::mat4& rhs)
+bool SCIRun::RenderTesting::operator==(const glm::mat4& lhs, const glm::mat4& rhs)
 {
   return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2] && lhs[3] == rhs[3];
 }

@@ -33,19 +33,27 @@
 #include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
-class ScreenParametersImpl : public SCIRun::Render::ScreenParameters
+namespace SCIRun
 {
-public:
-  size_t getScreenWidthPixels() const override;
-  size_t getScreenHeightPixels() const override;
-  SCIRun::Render::MouseMode getMouseMode() const override;
-};
+  namespace RenderTesting
+  {
+    class ScreenParametersTest : public SCIRun::Render::ScreenParameters
+    {
+    public:
+      size_t getScreenWidthPixels() const override;
+      size_t getScreenHeightPixels() const override;
+      SCIRun::Render::MouseMode getMouseMode() const override;
+    };
 
-class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
-{
-public:
-  SCIRun::Render::SRCamera& camera() const override;
-  const SCIRun::Render::ScreenParams& screen() const override;
-};
+    class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
+    {
+    public:
+      SCIRun::Render::SRCamera& camera() const override;
+      const SCIRun::Render::ScreenParams& screen() const override;
+    };
+
+  bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);
+  }
+}
 
 #endif

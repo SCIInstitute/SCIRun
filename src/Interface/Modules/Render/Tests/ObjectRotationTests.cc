@@ -31,6 +31,7 @@
 
 using namespace SCIRun;
 using namespace Render;
+using namespace RenderTesting;
 
 class RotationTest : public ::testing::Test
 {
@@ -53,97 +54,91 @@ TEST_F(RotationTest, CanConstruct)
   RotateParameters p {};
   ObjectRotationCalculator rotator(&brop, p);
 }
-/*
-bool operator==(const glm::mat4& lhs, const glm::mat4& rhs)
-{
-  return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2] && lhs[3] == rhs[3];
-}
 
-TEST_F(TranslationTest, CanTranslateHorizontalFromOrigin)
+TEST_F(RotationTest, CanRotateHorizontalFromOrigin)
 {
-  TranslateParameters p;
-  p.initialPosition_ = glm::vec2{0,0};
+  RotateParameters p;
+  p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
-  p.viewProj = viewProj_;
+  p.originWorld_ = glm::vec3{0,0,0};
 
-  ObjectTranslationImpl translator(&brop, p);
+  ObjectRotationCalculator rotator(&brop, p);
 
-  auto t = translator.computeTransform(10, 0);
+  auto t = rotator.computeTransform(0, 0);
 
   //std::cout << std::setprecision(16) << t.transform << std::endl;
 
   glm::mat4 expected;
-  expected[0] = glm::vec4{1,	      0,	      0,	        0};
-  expected[1] = glm::vec4{0,	      1,	      0,	        0};
-  expected[2] = glm::vec4{0,	      0,	      1,	        0};
-  expected[3] = glm::vec4{0.3227177858352661,	0.3292640745639801,	-0.09647537022829056,	1};
+  expected[0] = glm::vec4{0.9294896125793457,	0.05288278311491013,	0.3650376796722412,	0};
+  expected[1] = glm::vec4{7.450580596923828e-09,	0.9896687269210815,	-0.1433727443218231,	0};
+  expected[2] = glm::vec4{-0.3688483238220215,	0.1332634687423706,	0.9198868274688721,	0};
+  expected[3] = glm::vec4{0,	0,	0,	1};
 
   EXPECT_TRUE(t.transform == expected);
 }
 
-TEST_F(TranslationTest, CanTranslateVerticalFromOrigin)
+TEST_F(RotationTest, CanRotateVerticalFromOrigin)
 {
-  TranslateParameters p;
-  p.initialPosition_ = glm::vec2{0,0};
+  RotateParameters p;
+  p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
-  p.viewProj = viewProj_;
+  p.originWorld_ = glm::vec3{0,0,0};
 
-  ObjectTranslationImpl translator(&brop, p);
+  ObjectRotationCalculator rotator(&brop, p);
 
-  auto t = translator.computeTransform(0, 10);
+  auto t = rotator.computeTransform(0, 0);
 
   //std::cout << std::setprecision(16) << t.transform << std::endl;
 
   glm::mat4 expected;
-  expected[0] = glm::vec4{1,	      0,	      0,	        0};
-  expected[1] = glm::vec4{0,	      1,	      0,	        0};
-  expected[2] = glm::vec4{0,	      0,	      1,	        0};
-  expected[3] = glm::vec4{0.336086243391037,	0.3214852511882782,	-0.08948712050914764,	1};
+  expected[0] = glm::vec4{0.981933057308197,	0.02710044384002686,	0.1872780174016953,	0};
+  expected[1] = glm::vec4{-0.02661072835326195,	0.999632716178894,	-0.005128937773406506,	0};
+  expected[2] = glm::vec4{-0.1873482316732407,	5.266955122351646e-05,	0.9822935461997986,	0};
+  expected[3] = glm::vec4{0,	0,	0,	1};
 
   EXPECT_TRUE(t.transform == expected);
 }
 
-TEST_F(TranslationTest, CanTranslateArbitraryFromOrigin)
+TEST_F(RotationTest, CanRotateArbitraryFromOrigin)
 {
-  TranslateParameters p;
-  p.initialPosition_ = glm::vec2{0,0};
+  RotateParameters p;
+  p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
-  p.viewProj = viewProj_;
+  p.originWorld_ = glm::vec3{0,0,0};
 
-  ObjectTranslationImpl translator(&brop, p);
+  ObjectRotationCalculator rotator(&brop, p);
 
-  auto t = translator.computeTransform(15, 10);
+  auto t = rotator.computeTransform(25, -42);
 
   //std::cout << std::setprecision(16) << t.transform << std::endl;
 
   glm::mat4 expected;
-  expected[0] = glm::vec4{1,	      0,	      0,	        0};
-  expected[1] = glm::vec4{0,	      1,	      0,	        0};
-  expected[2] = glm::vec4{0,	      0,	      1,	        0};
-  expected[3] = glm::vec4{0.3185345828533173,	0.3175969123840332,	-0.09143009781837463,	1};
+  expected[0] = glm::vec4{0.9846640229225159,	0.02713697031140327,	0.1723381131887436,	0};
+  expected[1] = glm::vec4{-0.02237801253795624,	0.9993143677711487,	-0.02949748001992702,	0};
+  expected[2] = glm::vec4{-0.1730204075574875,	0.02518852241337299,	0.9845961332321167,	0};
+  expected[3] = glm::vec4{0,	0,	0,	1};
 
   EXPECT_TRUE(t.transform == expected);
 }
 
-TEST_F(TranslationTest, CanTranslateArbitraryFromArbitrary)
+TEST_F(RotationTest, CanRotateArbitraryFromArbitrary)
 {
-  TranslateParameters p;
-  p.initialPosition_ = glm::vec2{15,30};
+  RotateParameters p;
+  p.initialPosition_ = glm::vec2{-1,1};
   p.w_ = 1.0;
-  p.viewProj = viewProj_;
+  p.originWorld_ = glm::vec3{1,2,3};
 
-  ObjectTranslationImpl translator(&brop, p);
+  ObjectRotationCalculator rotator(&brop, p);
 
-  auto t = translator.computeTransform(42, -72);
+  auto t = rotator.computeTransform(25, -42);
 
   //std::cout << std::setprecision(16) << t.transform << std::endl;
 
   glm::mat4 expected;
-  expected[0] = glm::vec4{1,	      0,	      0,	        0};
-  expected[1] = glm::vec4{0,	      1,	      0,	        0};
-  expected[2] = glm::vec4{0,	      0,	      1,	        0};
-  expected[3] = glm::vec4{7.090302467346191,	-5.827230453491211,	4.57905387878418,	1};
+  expected[0] = glm::vec4{0.9994457364082336,	-0.003830079222097993,	0.03306873887777328,	0};
+  expected[1] = glm::vec4{0.002393543953076005,	0.9990561604499817,	0.04337168484926224,	0};
+  expected[2] = glm::vec4{-0.03320364654064178,	-0.04326849430799484,	0.9985115528106689,	0};
+  expected[3] = glm::vec4{0.09537804126739502,	0.1355232000350952,	-0.1153466701507568,	1};
 
   EXPECT_TRUE(t.transform == expected);
 }
-*/
