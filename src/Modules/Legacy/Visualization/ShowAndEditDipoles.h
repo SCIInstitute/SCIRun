@@ -79,6 +79,7 @@ namespace SCIRun {
 
       private:
         SharedPointer<ShowAndEditDipolesImpl> impl_;
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
       };
     }
   }
