@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/DiskWidget.h>
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -80,4 +81,10 @@ WidgetHandle WidgetFactory::createDisk(const WidgetBaseParameters& gen,
                                        DiskParameters params)
 {
   return boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
+}
+
+WidgetHandle SphereWidgetBuilder::build() const
+{
+  return WidgetFactory::createSphere({ idGenerator_, tag_, mapping_ },
+    { { scale_, defaultColor_, origin_, bbox_, resolution_ }, point_ });
 }

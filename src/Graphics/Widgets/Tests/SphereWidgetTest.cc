@@ -30,6 +30,7 @@
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -46,6 +47,24 @@ TEST(SphereWidgetTest, CanCreateSingleSphereReal)
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
   EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere.name());
+}
+
+TEST(SphereWidgetTest, CanCreateSingleSphereWithBuilder)
+{
+  StubGeometryIDGenerator idGen;
+
+  auto sphere = SphereWidgetBuilder(idGen)
+    .tag("testSphere1")
+    .scale(10.0)
+    .defaultColor("red")
+    .origin({1,2,3})
+    .boundingBox({{0,0,0}, {1,1,1}})
+    .resolution(10)
+    .centerPoint({-1,1,0})
+    .build();
+
+  EXPECT_EQ(Point(-1,1,0), sphere->position());
+  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere->name());
 }
 
 TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)

@@ -48,6 +48,7 @@ SET(Graphics_Widgets_HEADERS
   ArrowWidget.h
   GlyphFactory.h
   WidgetParameters.h
+  WidgetBuilders.h
   share.h
 )
 
