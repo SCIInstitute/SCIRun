@@ -310,15 +310,15 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::applyAutoRotation()
     {
-      if(glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
-      if(tryAutoRotate) mCamera->tryAutoRotate();
+      if (glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
+      if (tryAutoRotate) mCamera->tryAutoRotate();
     }
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::setAutoRotateVector(const glm::vec2& axis)
     {
       tryAutoRotate = false;
-      if(autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
+      if (autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
       {
         autoRotateVector = glm::vec2(0.0, 0.0);
       }

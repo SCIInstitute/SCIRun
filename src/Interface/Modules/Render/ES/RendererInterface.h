@@ -106,7 +106,6 @@ namespace SCIRun
       virtual void setZoomSpeed(int zoomSpeed) = 0;
       virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
       virtual void setAutoRotateSpeed(double speed) = 0;
-      virtual void setAutoRotateOnDrag(bool value) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
       virtual Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
@@ -130,7 +129,6 @@ namespace SCIRun
       virtual StaticClippingPlanes* getClippingPlanes() = 0;
       virtual void setClippingPlaneVisible(bool value) = 0;
       virtual Core::Geometry::BBox getSceneBox() = 0;
-      virtual void toggleSelectionHack(bool b) = 0;
       virtual const glm::mat4& getWorldToView() const = 0;
     };
 
