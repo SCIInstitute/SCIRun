@@ -38,15 +38,9 @@ class RotationTest : public ::testing::Test
 public:
   RotationTest()
   {
-    // taken from a real viewscene value
-    viewProj_[0] = glm::vec4{-2.51635,	-0.486686,	-0.332241,	-0.195739};
-    viewProj_[1] = glm::vec4{-0.557466,	3.0272,	0.759605,	0.447519};
-    viewProj_[2] = glm::vec4{-0.278562,	-1.66171,	1.48111,	0.872592};
-    viewProj_[3] = glm::vec4{0.161495,	-0.0474197,	4.01229,	8.50435};
   }
 protected:
   BasicRendererObjectProviderStub brop;
-  glm::mat4 viewProj_;
 };
 
 TEST_F(RotationTest, CanConstruct)
