@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
- *@file ITKDatatype.cc 
+ *@file ITKDatatype.cc
  *
  *@author
  *   Darby J Brown
@@ -53,9 +53,9 @@ PersistentTypeID ITKDatatype::type_id("ITKDatatype", "Datatype", make_ITKDatatyp
 
 ITKDatatype::ITKDatatype() {
 }
-  
+
 ITKDatatype::ITKDatatype(const ITKDatatype &copy) :
-  fname(copy.fname) 
+  fname(copy.fname)
 {
   cerr << "*** ITKDatatype Copy Constructor needs to be FINISHED!\n";
 }
@@ -87,7 +87,7 @@ void ITKDatatype::io(Piostream& stream) {
     }
     Pio(stream, fname);
     //if (nrrdSave(strdup(fname.c_str()), nrrd, 0)) {
-    //char *err = biffGet(NRRD);      
+    //char *err = biffGet(NRRD);
     //cerr << "Error writing nrrd "<<fname<<": "<<err<<"\n";
     //free(err);
     //biffDone(NRRD);

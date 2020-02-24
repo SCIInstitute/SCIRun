@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   March 2013
+
+/// author James Hughes
+/// date   March 2013
 
 #ifndef INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
 #define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
@@ -37,7 +37,7 @@
 namespace SCIRun {
 namespace Gui {
 
-/// 
+///
 class QtGLContext : public QGLContext
 {
 public:
@@ -50,4 +50,4 @@ private:
 } // namespace Gui
 } // SCIRun
 
-#endif 
+#endif

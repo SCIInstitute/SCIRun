@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 #ifndef CORE_DATATYPES_FIELDVITERATOR_H
 #define CORE_DATATYPES_FIELDVITERATOR_H 1
 
@@ -38,20 +36,20 @@ namespace SCIRun {
 
 /// Base type for FieldVIterator types.
 template <class T>
-class FieldVIteratorBase 
+class FieldVIteratorBase
 {
   public:
   FieldVIteratorBase(T i) :
     index_(i) {}
 
   /// Field Iterators need to be able to increment.
-  inline 
+  inline
   T operator ++() { return ++index_; }
   T operator --() { return --index_; }
-  
-  bool operator ==(const FieldVIteratorBase &a) const 
+
+  bool operator ==(const FieldVIteratorBase &a) const
   { return this->index_ == a.index_; }
-  bool operator !=(const FieldVIteratorBase &a) const 
+  bool operator !=(const FieldVIteratorBase &a) const
   { return this->index_ != a.index_; }
 
   inline T operator*() const { return this->index_; }
@@ -77,13 +75,13 @@ struct VNodeIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(iter) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VNodeIndex<T> operator*() const { return VNodeIndex<T>(this->index_); }
 
   typedef VNodeIndex<T> value_type;
   typedef VNodeIndex<T>* pointer;
   typedef VNodeIndex<T>& reference;
-  
+
   template <class U> friend U operator+(const VNodeIndex<U> &a, const VNodeIndex<U> &b);
 };
 
@@ -96,7 +94,7 @@ struct VENodeIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(iter) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VENodeIndex<T> operator*() const { return VENodeIndex<T>(this->index_); }
 };
 
@@ -109,7 +107,7 @@ struct VEdgeIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VEdgeIndex<T> operator*() const { return VEdgeIndex<T>(this->index_); }
 
   typedef VEdgeIndex<T> value_type;
@@ -126,9 +124,9 @@ struct VFaceIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VFaceIndex<T> operator*() const { return VFaceIndex<T>(this->index_); }
-  
+
   template <class U> friend U operator+(const VFaceIndex<U> &a, const VFaceIndex<U> &b);
 };
 
@@ -141,7 +139,7 @@ struct VCellIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VCellIndex<T> operator*() const { return VCellIndex<T>(this->index_); }
 };
 
@@ -154,7 +152,7 @@ struct VElemIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VElemIndex<T> operator*() const { return VElemIndex<T>(this->index_); }
 };
 
@@ -167,7 +165,7 @@ struct VDElemIterator : public FieldVIteratorBase<T> {
     FieldVIteratorBase<T>(index) {}
 
   /// Required interface for an FieldIterator.
-  inline 
+  inline
   VDElemIndex<T> operator*() const { return VDElemIndex<T>(this->index_); }
 };
 

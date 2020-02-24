@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Math/CreateGeometricTransform.h>
 #include <Core/Datatypes/Matrix.h>
@@ -200,7 +200,7 @@ void CreateGeometricTransform::execute()
       Vector scale_point(state->getValue(Parameters::ScalePointX).toDouble(),
                state->getValue(Parameters::ScalePointY).toDouble(),
                state->getValue(Parameters::ScalePointZ).toDouble());
-      
+
       double new_scale = state->getValue(Parameters::UniformScale).toDouble();
       double s = pow(10., new_scale);
       double new_scalex = state->getValue(Parameters::ScalePointX).toDouble();
@@ -221,7 +221,7 @@ void CreateGeometricTransform::execute()
                          state->getValue(Parameters::RotatePointZ).toDouble());
       //std::cout<<"orig transform = "<<local_transform<<std::endl;
       //std::cout<<"orig transform = "<<std::endl;
-      
+
       Vector axis(state->getValue(Parameters::RotateAxisX).toDouble(),
         state->getValue(Parameters::RotateAxisY).toDouble(),
         state->getValue(Parameters::RotateAxisZ).toDouble());

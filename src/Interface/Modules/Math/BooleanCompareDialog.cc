@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Math/BooleanCompareDialog.h>
 #include <Core/Algorithms/Math/BooleanCompareAlgo.h>
@@ -46,7 +46,7 @@ namespace SCIRun {
                 value_.insert(StringPair("Elements", "value"));
                 value_.insert(StringPair("Size", "size"));
                 value_.insert(StringPair("Norm", "norm"));
-                
+
                 condition_.insert(StringPair("A is non-zero","boolop"));
                 condition_.insert(StringPair("A and B are non-zero (and)","andop"));
                 condition_.insert(StringPair("Either A or B is non-zero (or)","orop"));
@@ -55,7 +55,7 @@ namespace SCIRun {
                 condition_.insert(StringPair("A is equal to B (==)","eqop"));
                 condition_.insert(StringPair("A is greater than B (>)","greatop"));
                 condition_.insert(StringPair("A is greater or equal to B (>=)","greateqop"));
-              
+
                 result_.insert(StringPair("Return: null","null"));
                 result_.insert(StringPair("Return: first input","first"));
                 result_.insert(StringPair("Return: second input","second"));
@@ -69,8 +69,8 @@ namespace SCIRun {
         };
     }}
 
-    
-            
+
+
 
 BooleanCompareDialog::BooleanCompareDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -80,9 +80,9 @@ BooleanCompareDialog::BooleanCompareDialog(const std::string& name, ModuleStateH
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
-    
-    
-    
+
+
+
 
     addComboBoxManager(valueBox_1_, Parameters::Value_Option_1,impl_->value_);
     addComboBoxManager(valueBox_2_, Parameters::Value_Option_2,impl_->value_);

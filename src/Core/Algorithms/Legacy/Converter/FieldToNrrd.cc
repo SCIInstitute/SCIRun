@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -43,9 +42,9 @@ using namespace Core::Logging;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
 
-namespace detail 
+namespace detail
 {
-class FieldToNrrdAlgoT 
+class FieldToNrrdAlgoT
 {
 public:
   // Converters for node centered data

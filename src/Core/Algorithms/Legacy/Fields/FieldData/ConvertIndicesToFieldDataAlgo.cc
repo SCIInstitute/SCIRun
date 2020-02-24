@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
@@ -40,13 +40,13 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Geometry; 
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDataType); 
+ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDataType);
 
 ConvertIndicesToFieldDataAlgo::ConvertIndicesToFieldDataAlgo()
 {
@@ -66,7 +66,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 
   FieldInformation fi(input_field);
   output_field = CreateField(fi);
-	FieldInformation fo(output_field); 
+	FieldInformation fo(output_field);
 
 	if (fi.is_nonlinear())
 	{
@@ -163,7 +163,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	{
 		if (input_matrix->ncols() != 3)
 		{
-			input_matrix.reset(new DenseMatrix(input_matrix->transpose())); 
+			input_matrix.reset(new DenseMatrix(input_matrix->transpose()));
 		}
 
 		const double *dataptr = input_matrix->data();
@@ -187,12 +187,12 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	{
 		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
 		{
-			input_matrix.reset(new DenseMatrix(input_matrix->transpose())); 
+			input_matrix.reset(new DenseMatrix(input_matrix->transpose()));
 		}
-		
-		int max_index = input_matrix->nrows(); 
-		const double *dataptr = input_matrix->data(); 
-		int ncols = input_matrix->ncols(); 
+
+		int max_index = input_matrix->nrows();
+		const double *dataptr = input_matrix->data();
+		int ncols = input_matrix->ncols();
 
 		VMesh::size_type sz = vinput->num_values();
 		for (VMesh::index_type r = 0; r<sz; r++)

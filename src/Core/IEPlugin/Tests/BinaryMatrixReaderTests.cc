@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <fstream>
 
@@ -34,7 +34,7 @@ using namespace SCIRun::TestUtils;
 TEST(BinaryMatrixReaderTests, CanReadECGSimBinaryFile)
 {
   boost::filesystem::path file(TestResources::rootDir() / "Matrices" / "ecgsim_matrix" / "ventricles2Thorax.mat");
- 
+
   {
     auto fp_ = fopen(file.string().c_str(), "rb");
 
@@ -73,7 +73,7 @@ TEST(BinaryMatrixReaderTests, CanReadECGSimBinaryFileStreamClass)
     std::ifstream fp(file.string(), std::ifstream::binary);
     if (!fp)
       FAIL() << "file load failed";
-    
+
     const int sizeCount = 2;
     unsigned int hdr[sizeCount];
     fp.read(reinterpret_cast<char*>(hdr), sizeCount * sizeof(unsigned int));

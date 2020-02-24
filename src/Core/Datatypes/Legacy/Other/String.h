@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,17 +26,16 @@
 */
 
 
-
 ///
 ///@file  String.h
 ///@brief String Object
-/// 
+///
 ///@author
 ///       Jeroen Stinstra
 ///       Department of Computer Science
 ///       University of Utah
 ///@date  October 2005
-/// 
+///
 
 #ifndef CORE_DATATYPES_STRING_H
 #define CORE_DATATYPES_STRING_H 1
@@ -70,7 +68,7 @@ public:
 
   /// Destructor
   virtual ~String();
-  
+
   /// Public member functions
   String* clone();
   inline void        set(const std::string& str);
@@ -79,7 +77,7 @@ public:
   /// Persistent representation...
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
-  virtual std::string dynamic_type_name() const { return type_id.type; }  
+  virtual std::string dynamic_type_name() const { return type_id.type; }
 };
 
 inline void String::set(const std::string& str)
@@ -91,7 +89,7 @@ inline std::string String::get()
 {
   return str_;
 }
-    
+
 } // End namespace SCIRun
 
 #endif

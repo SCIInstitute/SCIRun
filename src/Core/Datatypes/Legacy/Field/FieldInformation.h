@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/FieldInformation.h
 
 #ifndef CORE_DATATYPES_FIELDINFORMATION
@@ -40,7 +41,7 @@
 
 namespace SCIRun {
 
-class SCISHARE FieldTypeInformation 
+class SCISHARE FieldTypeInformation
 {
 
   public:
@@ -48,7 +49,7 @@ class SCISHARE FieldTypeInformation
     bool        is_isomorphic() const;
     bool        is_nonlinear() const;
     bool        is_linear() const;
-    
+
     bool        is_nodata() const;
     bool        is_constantdata() const;
     bool        is_lineardata() const;
@@ -56,14 +57,14 @@ class SCISHARE FieldTypeInformation
     bool        is_quadraticdata() const;
     bool        is_cubicdata() const;
     int         field_basis_order() const;
-    
+
     bool        is_constantmesh() const;
     bool        is_linearmesh() const;
     bool        is_nonlinearmesh() const;
     bool        is_quadraticmesh() const;
     bool        is_cubicmesh() const;
     int         mesh_basis_order() const;
-  
+
     bool        is_tensor() const;
     bool        is_vector() const;
     bool        is_scalar() const;
@@ -82,12 +83,12 @@ class SCISHARE FieldTypeInformation
     bool        is_unsigned_char() const;
     bool        is_dvt() const; // double vector tensor
     bool        is_svt() const; // scalar vector tensor
-    
+
     bool        is_regularmesh() const;
     bool        is_irregularmesh() const;
     bool        is_structuredmesh() const;
     bool        is_unstructuredmesh() const;
-    
+
     // These should go...
     inline bool is_pointcloud() const { return(is_pointcloudmesh()); }
     inline bool is_scanline() const { return(is_scanlinemesh()); }
@@ -99,8 +100,8 @@ class SCISHARE FieldTypeInformation
     inline bool is_tetvol() const { return(is_tetvolmesh()); }
     inline bool is_prismvol() const { return(is_prismvolmesh()); }
     inline bool is_hexvol() const { return(is_hexvolmesh()); }
-    inline bool is_structcurve() const { return(is_structcurvemesh()); }    
-    inline bool is_structquadsurf() const { return(is_structquadsurfmesh()); }    
+    inline bool is_structcurve() const { return(is_structcurvemesh()); }
+    inline bool is_structquadsurf() const { return(is_structquadsurfmesh()); }
     inline bool is_structhexvol() const { return(is_structhexvolmesh()); }
 
     // Naming that is more systematic
@@ -114,16 +115,16 @@ class SCISHARE FieldTypeInformation
     bool        is_tetvolmesh() const;
     bool        is_prismvolmesh() const;
     bool        is_hexvolmesh() const;
-    bool        is_structcurvemesh() const;    
-    bool        is_structquadsurfmesh() const;    
+    bool        is_structcurvemesh() const;
+    bool        is_structquadsurfmesh() const;
     bool        is_structhexvolmesh() const;
 
-    
+
     bool        is_point() const;
     bool        is_line() const;
     bool        is_surface() const;
     bool        is_volume() const;
-    
+
     bool        is_pnt_element() const;
     bool        is_crv_element() const;
     bool        is_tri_element() const;
@@ -134,7 +135,7 @@ class SCISHARE FieldTypeInformation
 
     void insert_field_type_information(Field* field);
   protected:
-  
+
     // type names
     std::string field_type;
     std::string mesh_type;
@@ -143,30 +144,30 @@ class SCISHARE FieldTypeInformation
     std::string basis_type;
     std::string data_type;
     std::string container_type;
-    
+
 };
 
 
 class SCISHARE FieldInformation : public FieldTypeInformation {
-  
+
   public:
-             
+
     FieldInformation(const std::string& meshtype,const std::string& meshbasis,
                                   const std::string& databasis, const std::string& datatype);
     FieldInformation(const std::string& meshtype,const std::string& basis, const std::string& datatype);
 
     FieldInformation(const std::string& meshtype,int,int, const std::string& datatype);
     FieldInformation(const std::string& meshtype,int, const std::string& datatype);
-    
+
     FieldInformation(mesh_info_type mesh, meshbasis_info_type databasis,
                      databasis_info_type, data_info_type data);
-    FieldInformation(mesh_info_type mesh,databasis_info_type databasis, 
+    FieldInformation(mesh_info_type mesh,databasis_info_type databasis,
                      data_info_type data);
- 
+
     explicit FieldInformation(FieldHandle handle);
     explicit FieldInformation(Field* field);
-    
-  
+
+
     std::string get_field_type() const;
     void        set_field_type(const std::string&);
 
@@ -174,7 +175,7 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     std::string get_mesh_type_id() const;
     void        set_mesh_type(const std::string&);
     void        set_mesh_type(mesh_info_type);
-    
+
     std::string get_mesh_basis_type() const;
     void        set_mesh_basis_type(const std::string&);
     void        set_mesh_basis_type(int);
@@ -200,17 +201,17 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     void        set_container_type(const std::string&);
 
     std::string get_field_type_id() const;
-      
+
     bool        make_nodata();
     bool        make_constantdata();
     bool        make_lineardata();
     bool        make_quadraticdata();
-    bool        make_cubicdata();    
+    bool        make_cubicdata();
 
     bool        make_constantmesh(); // for pointcloud only
     bool        make_linearmesh();
     bool        make_quadraticmesh();
-    bool        make_cubicmesh();    
+    bool        make_cubicmesh();
 
     bool        make_char();
     bool        make_unsigned_char();
@@ -222,12 +223,12 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     bool        make_unsigned_long();
     bool        make_long_long();
     bool        make_unsigned_long_long();
-    bool        make_float();    
+    bool        make_float();
     bool        make_scalar();
     bool        make_double();
     bool        make_vector();
     bool        make_tensor();
-    
+
     bool        make_pointcloudmesh();
     bool        make_scanlinemesh();
     bool        make_imagemesh();
@@ -244,10 +245,10 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
 
     bool        make_unstructuredmesh();
     bool        make_irregularmesh();
-    
+
     bool        operator==(const FieldInformation&) const;
     bool        operator!=(const FieldInformation&) const;
-    
+
     // testing for the data type
 
     inline bool is_data_typeT(char* ) const               { return (is_char()); }
@@ -286,7 +287,7 @@ struct SCISHARE MeshException : virtual SCIRun::Core::ExceptionBase {};
 
 struct SCISHARE UnknownMeshType : virtual MeshException {};
 
-inline bool UseIntegerInterface(FieldInformation &info) 
+inline bool UseIntegerInterface(FieldInformation &info)
 { return(info.is_integer()); }
 
 inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2)
@@ -303,7 +304,7 @@ inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,F
                         FieldInformation &info4, FieldInformation &info5)
 { return(info.is_integer()&info2.is_integer()&info3.is_integer()&info4.is_integer()&info5.is_integer()); }
 
-inline bool UseScalarInterface(FieldInformation &info) 
+inline bool UseScalarInterface(FieldInformation &info)
 { return(info.is_scalar()); }
 
 inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2)
@@ -321,7 +322,7 @@ inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2,Fi
 { return(info.is_scalar()&info2.is_scalar()&info3.is_scalar()&info4.is_scalar()&info5.is_scalar()); }
 
 
-inline bool UseVectorInterface(FieldInformation &info) 
+inline bool UseVectorInterface(FieldInformation &info)
 { return(info.is_vector()); }
 
 inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2)
@@ -339,7 +340,7 @@ inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2,Fi
 { return(info.is_vector()&info2.is_vector()&info3.is_vector()&info4.is_vector()&info5.is_vector()); }
 
 
-inline bool UseTensorInterface(FieldInformation &info) 
+inline bool UseTensorInterface(FieldInformation &info)
 { return(info.is_tensor()); }
 
 inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2)
@@ -359,4 +360,3 @@ inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2,Fi
 } // end namespace
 
 #endif
-

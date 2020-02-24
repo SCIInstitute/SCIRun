@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
@@ -104,12 +104,12 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   planeButtonGroup_->setId(plane5RadioButton_, 4);
   planeButtonGroup_->setId(plane6RadioButton_, 5);
 
-  plane1RadioButton_->setStyleSheet("QRadioButton { color: rgb(179, 51, 25) }");
-  plane2RadioButton_->setStyleSheet("QRadioButton { color: rgb(191, 108, 59) }");
-  plane3RadioButton_->setStyleSheet("QRadioButton { color: rgb(193, 197, 109) }");
-  plane4RadioButton_->setStyleSheet("QRadioButton { color: rgb(86, 167, 58) }");
-  plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(40, 83, 109) }");
-  plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(108, 55, 109) }");
+  plane1RadioButton_->setStyleSheet("QRadioButton { color: rgb(219, 56, 22) }");
+  plane2RadioButton_->setStyleSheet("QRadioButton { color: rgb(242, 102, 19) }");
+  plane3RadioButton_->setStyleSheet("QRadioButton { color: rgb(205, 212, 74) }");
+  plane4RadioButton_->setStyleSheet("QRadioButton { color: rgb(87, 184, 53) }");
+  plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
+  plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
@@ -182,7 +182,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
   connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
   connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
-  connect(autoRotateCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setAutoRotateOnDrag(bool)));
 
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -192,7 +191,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
-  connect(selectionHackCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleSelectionHack(bool)));
 
   setSampleColor(Qt::black);
 

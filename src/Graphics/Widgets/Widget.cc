@@ -25,6 +25,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Graphics/Widgets/Widget.h>
 
 using namespace SCIRun;
@@ -76,7 +77,6 @@ void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
   for (auto& w : widgets_)
     w->propagateEvent(e);
 }
-
 
 InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
   : interactionMap_(pairs)

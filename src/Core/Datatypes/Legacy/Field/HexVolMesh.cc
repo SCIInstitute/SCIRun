@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/HexVolMesh.h>
 #include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
@@ -50,24 +50,24 @@ class VHexVolMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_hexvolmesh()         { return (true); }
 
-  VHexVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
+  VHexVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh)
   {
-    DEBUG_CONSTRUCTOR("VHexVolMesh")    
+    DEBUG_CONSTRUCTOR("VHexVolMesh")
   }
-  virtual ~VHexVolMesh() 
+  virtual ~VHexVolMesh()
   {
-    DEBUG_DESTRUCTOR("VHexVolMesh")    
+    DEBUG_DESTRUCTOR("VHexVolMesh")
   }
-    
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
+
+  virtual void get_nodes(VMesh::Node::array_type& nodes,
                          VMesh::Edge::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
+  virtual void get_nodes(VMesh::Node::array_type& nodes,
                          VMesh::Face::index_type i) const;
   virtual void get_nodes(VMesh::Node::array_type& nodes,
                          VMesh::Cell::index_type i) const;
   virtual void get_nodes(VMesh::Node::array_type& nodes,
                          VMesh::Elem::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
+  virtual void get_nodes(VMesh::Node::array_type& nodes,
                          VMesh::DElem::index_type i) const;
 
   virtual void get_enodes(VMesh::ENode::array_type& edges,
@@ -76,15 +76,15 @@ public:
                           VMesh::Edge::index_type i) const;
   virtual void get_enodes(VMesh::ENode::array_type& edges,
                           VMesh::Face::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
+  virtual void get_enodes(VMesh::ENode::array_type& edges,
                           VMesh::Cell::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
+  virtual void get_enodes(VMesh::ENode::array_type& edges,
                           VMesh::Elem::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
+  virtual void get_enodes(VMesh::ENode::array_type& edges,
                           VMesh::DElem::index_type i) const;
 
   virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Node::index_type i) const;                                            
+                         VMesh::Node::index_type i) const;
   virtual void get_edges(VMesh::Edge::array_type& edges,
                          VMesh::Face::index_type i) const;
   virtual void get_edges(VMesh::Edge::array_type& edges,
@@ -105,57 +105,57 @@ public:
   virtual void get_faces(VMesh::Face::array_type& faces,
                          VMesh::DElem::index_type i) const;
 
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::Node::index_type i) const;  
   virtual void get_cells(VMesh::Cell::array_type& cells,
-                         VMesh::Edge::index_type i) const;  
+                         VMesh::Node::index_type i) const;
   virtual void get_cells(VMesh::Cell::array_type& cells,
-                         VMesh::Face::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::Elem::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::DElem::index_type i) const;  
-  
+                         VMesh::Edge::index_type i) const;
+  virtual void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Face::index_type i) const;
+  virtual void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Elem::index_type i) const;
+  virtual void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::DElem::index_type i) const;
+
   virtual void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::Node::index_type i) const;
   virtual void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::Edge::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
+  virtual void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::Face::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
+  virtual void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::Cell::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
+  virtual void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::DElem::index_type i) const;
 
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
+  virtual void get_delems(VMesh::DElem::array_type& delems,
                           VMesh::Node::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
+  virtual void get_delems(VMesh::DElem::array_type& delems,
                           VMesh::Edge::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
+  virtual void get_delems(VMesh::DElem::array_type& delems,
                           VMesh::Face::index_type i) const;
   virtual void get_delems(VMesh::DElem::array_type& delems,
                           VMesh::Cell::index_type i) const;
   virtual void get_delems(VMesh::DElem::array_type& delems,
                           VMesh::Elem::index_type i) const;
 
-  virtual bool get_elem(VMesh::Elem::index_type& elem, 
+  virtual bool get_elem(VMesh::Elem::index_type& elem,
                         VMesh::Node::array_type& nodes) const;
-  virtual bool get_delem(VMesh::DElem::index_type& delem, 
+  virtual bool get_delem(VMesh::DElem::index_type& delem,
                          VMesh::Node::array_type& nodes) const;
-  virtual bool get_cell(VMesh::Cell::index_type& cell, 
+  virtual bool get_cell(VMesh::Cell::index_type& cell,
                         VMesh::Node::array_type& nodes) const;
-  virtual bool get_face(VMesh::Face::index_type& face, 
+  virtual bool get_face(VMesh::Face::index_type& face,
                         VMesh::Node::array_type& nodes) const;
-  virtual bool get_edge(VMesh::Edge::index_type& edge, 
+  virtual bool get_edge(VMesh::Edge::index_type& edge,
                         VMesh::Node::array_type& nodes) const;
 
   virtual void set_nodes(VMesh::Node::array_type&,
                          VMesh::Elem::index_type);
-  
+
   virtual void set_nodes(VMesh::Node::array_type&,
                          VMesh::Cell::index_type);
 
-  virtual VMesh::index_type* get_elems_pointer() const;                          
+  virtual VMesh::index_type* get_elems_pointer() const;
 };
 
 /// Functions for creating the virtual interface for specific mesh types
@@ -166,9 +166,9 @@ public:
 /// 2) quadratic interpolation
 /// 3) cubic interpolation
 
-/// Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVHexVolMesh(HexVolMesh<HexTrilinearLgn<Point> >* mesh)
 {
   return new VHexVolMesh<HexVolMesh<HexTrilinearLgn<Point> > >(mesh);
@@ -177,12 +177,12 @@ VMesh* CreateVHexVolMesh(HexVolMesh<HexTrilinearLgn<Point> >* mesh)
 /// Register class maker, so we can instantiate it
 static MeshTypeID HexVolMesh_MeshID1(HexVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
                   HexVolMesh<HexTrilinearLgn<Point> >::mesh_maker);
-                  
-                  
-/// Add the QUADRATIC virtual interface and the meshid for creating it                  
+
+
+/// Add the QUADRATIC virtual interface and the meshid for creating it
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVHexVolMesh(HexVolMesh<HexTriquadraticLgn<Point> >* mesh)
 {
   return new VHexVolMesh<HexVolMesh<HexTriquadraticLgn<Point> > >(mesh);
@@ -194,10 +194,10 @@ static MeshTypeID HexVolMesh_MeshID2(HexVolMesh<HexTriquadraticLgn<Point> >::typ
 #endif
 
 
-/// Add the CUBIC virtual interface and the meshid for creating it                  
+/// Add the CUBIC virtual interface and the meshid for creating it
 #if (SCIRUN_CUBIC_SUPPORT > 0)
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVHexVolMesh(HexVolMesh<HexTricubicHmt<Point> >* mesh)
 {
   return new VHexVolMesh<HexVolMesh<HexTricubicHmt<Point> > >(mesh);
@@ -503,16 +503,16 @@ VHexVolMesh<MESH>::get_delems(VMesh::DElem::array_type &delems,
 }
 
 template <class MESH>
-void 
-VHexVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes, 
+void
+VHexVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
                               VMesh::Elem::index_type i)
 {
   this->mesh_->set_nodes_by_elem(nodes,i);
 }
 
 template <class MESH>
-void 
-VHexVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes, 
+void
+VHexVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
                               VMesh::Cell::index_type i)
 {
   this->mesh_->set_nodes_by_elem(nodes,i);
@@ -530,7 +530,7 @@ get_elems_pointer() const
 
 template <class MESH>
 bool
-VHexVolMesh<MESH>::get_elem(VMesh::Elem::index_type& elem, 
+VHexVolMesh<MESH>::get_elem(VMesh::Elem::index_type& elem,
                         VMesh::Node::array_type& nodes) const
 {
   return(this->mesh_->get_cell_from_nodes(elem,nodes));
@@ -538,7 +538,7 @@ VHexVolMesh<MESH>::get_elem(VMesh::Elem::index_type& elem,
 
 template <class MESH>
 bool
-VHexVolMesh<MESH>::get_delem(VMesh::DElem::index_type& delem, 
+VHexVolMesh<MESH>::get_delem(VMesh::DElem::index_type& delem,
                          VMesh::Node::array_type& nodes) const
 {
   return(this->mesh_->get_face_from_nodes(delem,nodes));
@@ -547,7 +547,7 @@ VHexVolMesh<MESH>::get_delem(VMesh::DElem::index_type& delem,
 
 template <class MESH>
 bool
-VHexVolMesh<MESH>::get_cell(VMesh::Cell::index_type& cell, 
+VHexVolMesh<MESH>::get_cell(VMesh::Cell::index_type& cell,
                         VMesh::Node::array_type& nodes) const
 {
   return(this->mesh_->get_cell_from_nodes(cell,nodes));
@@ -555,7 +555,7 @@ VHexVolMesh<MESH>::get_cell(VMesh::Cell::index_type& cell,
 
 template <class MESH>
 bool
-VHexVolMesh<MESH>::get_face(VMesh::Face::index_type& face, 
+VHexVolMesh<MESH>::get_face(VMesh::Face::index_type& face,
                         VMesh::Node::array_type& nodes) const
 {
   return(this->mesh_->get_face_from_nodes(face,nodes));
@@ -563,7 +563,7 @@ VHexVolMesh<MESH>::get_face(VMesh::Face::index_type& face,
 
 template <class MESH>
 bool
-VHexVolMesh<MESH>::get_edge(VMesh::Edge::index_type& edge, 
+VHexVolMesh<MESH>::get_edge(VMesh::Edge::index_type& edge,
                         VMesh::Node::array_type& nodes) const
 {
   return(this->mesh_->get_edge_from_nodes(edge,nodes));

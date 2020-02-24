@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2014 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   February 2014
+
+/// author James Hughes
+/// date   February 2014
 
 #ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP

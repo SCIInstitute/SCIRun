@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, DenseMatrixHandle& SingVals, DenseMatrixHandle& RightSingMat) const
 {
   if (input->nrows() == 0 || input->ncols() == 0){
-        
+
     THROW_ALGORITHM_INPUT_ERROR("Input has a zero dimension.");
 }
   if (matrixIs::dense(input))
@@ -68,19 +68,19 @@ void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, Den
 AlgorithmOutput ComputeSVDAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
-		
+
 	DenseMatrixHandle LeftSingMat;
 	DenseMatrixHandle RightSingMat;
 	DenseMatrixHandle SingVals;
-	
+
 	run(input_matrix, LeftSingMat, SingVals, RightSingMat);
-	
+
 	AlgorithmOutput output;
-	
+
 	output[LeftSingularMatrix] = LeftSingMat;
 	output[SingularValues] = SingVals;
 	output[RightSingularMatrix] = RightSingMat;
-	
+
 	return output;
 }
 

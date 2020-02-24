@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   Michael Callahan,
-///   Department of Computer Science,
-///   University of Utah
-///@date  January 2002
+
+/// @author
+///    Michael Callahan,
+///    Department of Computer Science,
+///    University of Utah
+/// @date  January 2002
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>
@@ -41,7 +41,7 @@
 namespace SCIRun {
 
 ///@class GetSubmatrix
-///@brief This module selects a subset of a matrix.  
+///@brief This module selects a subset of a matrix.
 
 class GetSubmatrix : public Module
 {
@@ -89,7 +89,7 @@ GetSubmatrix::execute()
   nrow_.set(to_string(imatrix->nrows()));
   ncol_.set(to_string(imatrix->ncols()));
   get_ctx()->reset();
-  
+
   MatrixHandle cmatrix;
   size_type mincol, maxcol, minrow, maxrow;
   if (get_input_handle("Optional Range Bounds", cmatrix, false))
@@ -136,7 +136,7 @@ GetSubmatrix::execute()
   maxrow_.set(to_string(maxrow));
   mincol_.set(to_string(mincol));
   maxcol_.set(to_string(maxcol));
-    
+
   if (mincol > maxcol || minrow > maxrow)
   {
     warning("Max range must be greater than or equal to min range, disregarding.");

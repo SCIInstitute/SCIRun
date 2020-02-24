@@ -1,30 +1,31 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 /// @todo Documentation Core/Utils/Exception.h
 
 #ifndef CORE_UTILS_EXCEPTION_H
@@ -38,7 +39,7 @@
 
 #define NOEXCEPT noexcept(true)
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace Core
 {
@@ -77,12 +78,12 @@ namespace Core
   using DimensionMismatchInfo = boost::error_info<struct tag_dimension_mismatch, std::string>;
   using InvalidArgumentValueInfo = boost::error_info<struct tag_invalid_argument_value, std::string>;
   using NotImplementedInfo = boost::error_info<struct tag_not_implemented, std::string>;
-  
+
   /// @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
     const char* what() const NOEXCEPT override;
-  }; 
+  };
 
 #define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
   BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
@@ -101,7 +102,7 @@ namespace Core
   SCIRUN_THROW(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
     SCIRun::Core::NotImplementedInfo::value_type( \
       std::string(message) )))
-  
+
   struct SCISHARE AssertionFailed : virtual ExceptionBase {};
 
 #define ASSERTMSG(condition,message) \

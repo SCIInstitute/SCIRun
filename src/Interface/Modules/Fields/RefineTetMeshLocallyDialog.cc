@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
@@ -43,7 +43,7 @@ RefineTetMeshLocallyDialog::RefineTetMeshLocallyDialog(const std::string& name, 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addDoubleSpinBoxManager(IsoValue_, Parameters::RefineTetMeshLocallyIsoValue);
   addDoubleSpinBoxManager(EdgeLength_, Parameters::RefineTetMeshLocallyEdgeLength);
   addDoubleSpinBoxManager(Volume_, Parameters::RefineTetMeshLocallyVolume);
@@ -51,7 +51,7 @@ RefineTetMeshLocallyDialog::RefineTetMeshLocallyDialog(const std::string& name, 
   addDoubleSpinBoxManager(DihedralAngleBigger_, Parameters::RefineTetMeshLocallyDihedralAngleBigger);
   addCheckBoxManager(DoNoSplitSurfaceTets_, Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets);
   addCheckBoxManager(CounterClockWiseTetOrdering_, Parameters::RefineTetMeshLocallyCounterClockWiseOrdering);
-  addCheckBoxManager(UseModuleInputField_, Parameters::RefineTetMeshLocallyUseModuleInputField);  
+  addCheckBoxManager(UseModuleInputField_, Parameters::RefineTetMeshLocallyUseModuleInputField);
   addSpinBoxManager(MaxNumberRefinementIterations_, Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
   addRadioButtonGroupManager({ IsoValueRadioButton_, EdgeLengthRadioButton_, VolumeRadioButton_, DihedralAngleRadioButton_}, Parameters::RefineTetMeshLocallyRadioButtons);
 /*

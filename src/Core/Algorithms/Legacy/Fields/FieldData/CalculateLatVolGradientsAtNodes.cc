@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -43,31 +42,31 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     error("No input field");
     algo_end(); return (false);
   }
-  
+
   FieldInformation fi(input);
 
   if ((!(fi.is_latvolmesh()))&&(!(fi.is_imagemesh())))
   {
     error("This algorithm is only formulated for latvol meshes");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
 
   if (fi.is_nodata())
   {
     error("Input field does not have data associated with it");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
 
   if (!(fi.is_lineardata()))
   {
     error("The data at the input field is not located at the nodes");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
-  
+
   if (!(fi.is_scalar()))
   {
     error("The data needs to be of scalar type to calculate gradients");
-    algo_end(); return (false);    
+    algo_end(); return (false);
   }
 
   if (fi.is_latvolmesh())
@@ -78,14 +77,14 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     if (output.get_rep() == 0)
     {
       error("Could not allocate output field");
-      algo_end(); return (false);      
+      algo_end(); return (false);
     }
 
     VField* ifield = input->vfield();
     VField* ofield = output->vfield();
     VMesh*  imesh  = input->vmesh();
     VMesh*  omesh  = output->vmesh();
-    
+
     ofield->resize_values();
 
     const VMesh::size_type ni = imesh->get_ni();
@@ -95,9 +94,9 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::index_type x0, x1, y0, y1, z0, z1;
     VMesh::Node::array_type nodes(6);
     VMesh::Node::index_type idx;
-    
+
     double values[6];
-    
+
     const Transform &transform = imesh->get_transform();
 
     for (VMesh::index_type k=0; k<nk; k++)
@@ -109,7 +108,7 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
           double xscale = 0.5;
           double yscale = 0.5;
           double zscale = 0.5;
-          
+
           if (i > 0) { x0 = i-1; } else { x0 = i; xscale=1.0; }
           if (i < (ni-1)) { x1 = i+1; } else { x1 = i; xscale=1.0; }
 
@@ -125,12 +124,12 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
           imesh->to_index(nodes[3],i,y1,k);
           imesh->to_index(nodes[4],i,j,z0);
           imesh->to_index(nodes[5],i,j,z1);
-          
+
           ifield->get_values(values,nodes);
-          
-          const Vector g((values[1] - values[0])*xscale, 
+
+          const Vector g((values[1] - values[0])*xscale,
           (values[3] - values[2])*yscale, (values[5] - values[4])*zscale);
-          
+
           const Vector gradient = transform.project_normal(g);
 
           omesh->to_index(idx,i,j,k);
@@ -147,14 +146,14 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     if (output.get_rep() == 0)
     {
       error("Could not allocate output field");
-      algo_end(); return (false);      
+      algo_end(); return (false);
     }
 
     VField* ifield = input->vfield();
     VField* ofield = output->vfield();
     VMesh*  imesh  = input->vmesh();
     VMesh*  omesh  = output->vmesh();
-    
+
     ofield->resize_values();
 
     const VMesh::size_type ni = imesh->get_ni();
@@ -163,9 +162,9 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::index_type x0, x1, y0, y1;
     VMesh::Node::array_type nodes(4);
     VMesh::Node::index_type idx;
-    
+
     double values[4];
-    
+
     const Transform &transform = imesh->get_transform();
 
     for (VMesh::index_type j=0; j<nj; j++)
@@ -174,7 +173,7 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
       {
         double xscale = 0.5;
         double yscale = 0.5;
-        
+
         if (i > 0) { x0 = i-1; } else { x0 = i; xscale=1.0; }
         if (i < (ni-1)) { x1 = i+1; } else { x1 = i; xscale=1.0; }
 
@@ -186,9 +185,9 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
         imesh->to_index(nodes[1],x1,j);
         imesh->to_index(nodes[2],i,y0);
         imesh->to_index(nodes[3],i,y1);
-        
+
         ifield->get_values(values,nodes);
-        
+
         const Vector g((values[1] - values[0])*xscale, (values[3] - values[2])*yscale, 0.0);
         const Vector gradient = transform.project_normal(g);
 
@@ -202,7 +201,7 @@ CalculateLatVolGradientsAtNodesAlgo::run(FieldHandle input, FieldHandle& output)
     error("Unknown field type encountered");
     algo_end(); return (false);
   }
-  
+
   algo_end(); return (true);
 }
 

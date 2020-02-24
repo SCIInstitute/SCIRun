@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,8 +36,6 @@
 ///       University of Utah
 ///@date  January 2001
 ///
- 
-
 
 #ifndef CORE_DATATYPES_SCANLINEMESH_H
 #define CORE_DATATYPES_SCANLINEMESH_H 1
@@ -107,8 +104,8 @@ public:
   typedef SCIRun::index_type            under_type;
   typedef SCIRun::index_type            index_type;
   typedef SCIRun::size_type             size_type;
-  typedef SCIRun::mask_type             mask_type; 
-   
+  typedef SCIRun::mask_type             mask_type;
+
   typedef boost::shared_ptr<ScanlineMesh<Basis> > handle_type;
   typedef Basis           basis_type;
 
@@ -159,12 +156,12 @@ public:
 
     // the following designed to coordinate with ::get_nodes
     inline
-    index_type node0_index() const 
+    index_type node0_index() const
     {
       return (index_);
     }
     inline
-    index_type node1_index() const 
+    index_type node1_index() const
     {
       return (index_ + 1);
     }
@@ -172,19 +169,19 @@ public:
 
     // the following designed to coordinate with ::get_edges
     inline
-    index_type edge0_index() const 
+    index_type edge0_index() const
     {
       return index_;
     }
 
     inline
-    const Core::Geometry::Point node0() const 
+    const Core::Geometry::Point node0() const
     {
       Core::Geometry::Point p(index_, 0.0, 0.0);
       return mesh_.transform_.project(p);
     }
     inline
-    const Core::Geometry::Point node1() const 
+    const Core::Geometry::Point node1() const
     {
       Core::Geometry::Point p(index_ + 1, 0.0, 0.0);
       return mesh_.transform_.project(p);
@@ -195,45 +192,45 @@ public:
     const index_type                   index_;
   };
 
-  ScanlineMesh() : min_i_(0), ni_(0) 
+  ScanlineMesh() : min_i_(0), ni_(0)
   {
-    DEBUG_CONSTRUCTOR("ScanlineMesh")   
+    DEBUG_CONSTRUCTOR("ScanlineMesh")
 
     vmesh_.reset(CreateVScanlineMesh(this));
-    compute_jacobian();   
+    compute_jacobian();
   }
-  
+
   ScanlineMesh(index_type nx, const Core::Geometry::Point &min, const Core::Geometry::Point &max);
   ScanlineMesh(ScanlineMesh* mh, index_type offset, index_type nx)
-    : min_i_(offset), ni_(nx), transform_(mh->transform_) 
-  { 
-    DEBUG_CONSTRUCTOR("ScanlineMesh")   
-  
+    : min_i_(offset), ni_(nx), transform_(mh->transform_)
+  {
+    DEBUG_CONSTRUCTOR("ScanlineMesh")
+
     /// Create a new virtual interface for this copy
     /// all pointers have changed hence create a new
     /// virtual interface class
     vmesh_.reset(CreateVScanlineMesh(this));
-  
-    compute_jacobian(); 
+
+    compute_jacobian();
   }
   ScanlineMesh(const ScanlineMesh &copy)
     : Mesh(copy),
       min_i_(copy.get_min_i()), ni_(copy.get_ni()),
-      transform_(copy.transform_) 
-  { 
-    DEBUG_CONSTRUCTOR("ScanlineMesh")   
+      transform_(copy.transform_)
+  {
+    DEBUG_CONSTRUCTOR("ScanlineMesh")
 
     /// Create a new virtual interface for this copy
     /// all pointers have changed hence create a new
     /// virtual interface class
-    vmesh_.reset(CreateVScanlineMesh(this));   
+    vmesh_.reset(CreateVScanlineMesh(this));
 
-    compute_jacobian(); 
+    compute_jacobian();
   }
   virtual ScanlineMesh *clone() const { return new ScanlineMesh(*this); }
-  virtual ~ScanlineMesh() 
-  {  
-    DEBUG_DESTRUCTOR("ScanlineMesh")     
+  virtual ~ScanlineMesh()
+  {
+    DEBUG_DESTRUCTOR("ScanlineMesh")
   }
 
   /// Access point to virtual interface
@@ -243,13 +240,13 @@ public:
   {
      return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
-  
+
   virtual int basis_order() { return basis_.polynomial_order(); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
   virtual bool is_editable() const { return false; }
-  
+
   /// get the mesh statistics
   index_type get_min_i() const { return min_i_; }
   bool get_min(std::vector<index_type>&) const;
@@ -375,7 +372,7 @@ public:
   bool locate(typename Cell::index_type &, const Core::Geometry::Point &) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  bool locate(typename Elem::index_type&, std::vector<double>& coords, 
+  bool locate(typename Elem::index_type&, std::vector<double>& coords,
               const Core::Geometry::Point &) const;
 
   int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
@@ -442,20 +439,20 @@ public:
   {
     // If polynomial order is larger, use the complicated HO basis implementation
     // Since this is a latvol and most probably linear, this function is to expensive
-    if (basis_.polynomial_order() > 1) 
+    if (basis_.polynomial_order() > 1)
     {
       ElemData ed(*this, idx);
       return (basis_.get_coords(coords, p, ed));
     }
-    
+
     // Cheap implementation that assumes it is a regular grid
     // This implementation should be faster then the interpolate of the linear
     // basis which needs to work as well for the unstructured hexvol :(
     const Core::Geometry::Point r = transform_.unproject(p);
-    
+
     coords.resize(1);
     coords[0] = static_cast<typename VECTOR::value_type>(r.x()-static_cast<double>(idx));
-    
+
     if (static_cast<double>(coords[0]) < 0.0)
     {
       if (static_cast<double>(coords[0]) > -(1e-8))
@@ -480,13 +477,13 @@ public:
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
     // only makes sense for higher order
-    if (basis_.polynomial_order() > 1) 
+    if (basis_.polynomial_order() > 1)
     {
       ElemData ed(*this, idx);
       pt = basis_.interpolate(coords, ed);
       return;
     }
-    
+
     Core::Geometry::Point p(static_cast<double>(idx)+static_cast<double>(coords[0]),0.0,0.0);
     pt = transform_.project(p);
   }
@@ -498,16 +495,16 @@ public:
   void derivate(const VECTOR1 &coords, typename Elem::index_type idx, VECTOR2 &J) const
   {
     // only makes sense for higher order
-    if (basis_.polynomial_order() > 1) 
+    if (basis_.polynomial_order() > 1)
     {
       ElemData ed(*this, idx);
       basis_.derivate(coords, ed, J);
       return;
     }
- 
+
     // Cheaper implementation
     J.resize(1);
-    J[0] = transform_.project(Core::Geometry::Point(1.0,0.0,0.0)); 
+    J[0] = transform_.project(Core::Geometry::Point(1.0,0.0,0.0));
   }
 
   /// Get the determinant of the jacobian, which is the local volume of an element
@@ -516,24 +513,24 @@ public:
   double det_jacobian(const VECTOR& coords,
                 typename Elem::index_type idx) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       double J[9];
       jacobian(coords,idx,J);
       return (DetMatrix3x3(J));
     }
-    
+
     return (det_jacobian_);
   }
 
   /// Get the jacobian of the transformation. In case one wants the non inverted
-  /// version of this matrix. This is currentl here for completeness of the 
+  /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
@@ -550,8 +547,8 @@ public:
       J[8] = Jv2.z();
 
       return;
-    }    
-  
+    }
+
     J[0] = jacobian_[0];
     J[1] = jacobian_[1];
     J[2] = jacobian_[2];
@@ -563,14 +560,14 @@ public:
     J[8] = jacobian_[8];
   }
 
-  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// Get the inverse jacobian of the transformation. This one is needed to
   /// translate local gradients into global gradients. Hence it is crucial for
-  /// calculating gradients of fields, or constructing finite elements.             
+  /// calculating gradients of fields, or constructing finite elements.
   template<class VECTOR>
   double inverse_jacobian(const VECTOR& coords, typename Elem::index_type idx, double* Ji) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       StackVector<Core::Geometry::Point,2> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
@@ -586,10 +583,10 @@ public:
       J[6] = Jv2.x();
       J[7] = Jv2.y();
       J[8] = Jv2.z();
-      
+
       return (InverseMatrix3x3(J,Ji));
-    }    
-  
+    }
+
     Ji[0] = inverse_jacobian_[0];
     Ji[1] = inverse_jacobian_[1];
     Ji[2] = inverse_jacobian_[2];
@@ -618,12 +615,12 @@ public:
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.
   static PersistentTypeID scanline_typeid;
-  /// Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return scanline_typeid.type; }
-  
+
   /// Type description, used for finding names of the mesh class for
-  /// dynamic compilation purposes. Some of this should be obsolete  
+  /// dynamic compilation purposes. Some of this should be obsolete
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -637,16 +634,16 @@ public:
   /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<ScanlineMesh>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
-  { 
-    return boost::make_shared<ScanlineMesh>(x,min,max); 
+  static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
+  {
+    return boost::make_shared<ScanlineMesh>(x,min,max);
   }
 
   /// This function will find the closest element and the location on that
   /// element that is the closest
   template <class INDEX>
   bool
-  find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  find_closest_node(double& pdist, Core::Geometry::Point &result,
                     INDEX &node, const Core::Geometry::Point &p, double maxdist) const
   {
     bool ret = find_closest_node(pdist,result,node,p);
@@ -658,13 +655,13 @@ public:
   /// This function will find the closest element and the location on that
   /// element that is the closest
   template <class INDEX>
-  bool 
-  find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool
+  find_closest_node(double& pdist, Core::Geometry::Point &result,
                     INDEX &node, const Core::Geometry::Point &p) const
   {
     /// If there are no elements, we cannot find the closest
     if (ni_ == 0)  return (false);
-    
+
     const Core::Geometry::Point r = transform_.unproject(p);
 
     double rx = floor(r.x() + 0.5);
@@ -672,31 +669,31 @@ public:
 
     if (rx < 0.0) rx = 0.0; if (rx > nii) rx = nii;
 
-    result = transform_.project(Core::Geometry::Point(rx,0.0,0.0)); 
+    result = transform_.project(Core::Geometry::Point(rx,0.0,0.0));
     index_type irx =static_cast<index_type>(rx);
     node = INDEX(irx);
     pdist = (p-result).length();
-    
+
     return (true);
   }
 
 
   template <class INDEX, class ARRAY>
-  bool 
-  find_closest_elem(double& pdist, 
+  bool
+  find_closest_elem(double& pdist,
                     Core::Geometry::Point& result,
-                    ARRAY &coords, 
-                    INDEX &elem, 
+                    ARRAY &coords,
+                    INDEX &elem,
                     const Core::Geometry::Point &p) const
   {
     /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
-    
+
     const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
-     
+
     if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
 
     const double fi = floor(ii);
@@ -707,14 +704,14 @@ public:
 
     coords.resize(1);
     coords[0] = ii-fi;
-    
+
     return (true);
   }
 
   template <class INDEX, class ARRAY>
-  bool 
+  bool
   find_closest_elem(double& pdist, Core::Geometry::Point& result,
-                    ARRAY& coords, INDEX &elem, 
+                    ARRAY& coords, INDEX &elem,
                     const Core::Geometry::Point &p, double maxdist) const
   {
     bool ret = find_closest_elem(pdist,result,coords,elem,p);
@@ -726,20 +723,20 @@ public:
   /// This function will find the closest element and the location on that
   /// element that is the closest
   template <class INDEX>
-  bool 
-  find_closest_elem(double& pdist, 
-                    Core::Geometry::Point &result, 
-                    INDEX &elem, 
+  bool
+  find_closest_elem(double& pdist,
+                    Core::Geometry::Point &result,
+                    INDEX &elem,
                     const Core::Geometry::Point &p) const
   {
     /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
-    
+
     const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
-     
+
     if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
 
     elem = INDEX(static_cast<index_type>(floor(ii)));
@@ -751,8 +748,8 @@ public:
 
 
   /// This function will return multiple elements if the closest point is
-  /// located on a node or edge. All bordering elements are returned in that 
-  /// case. 
+  /// located on a node or edge. All bordering elements are returned in that
+  /// case.
   template <class ARRAY>
   bool
   find_closest_elems(double& pdist, Core::Geometry::Point &result,
@@ -760,14 +757,14 @@ public:
   {
     /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
-    
+
     const double epsilon_ = 1e-8;
 
     const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
-     
+
     if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
 
     const double fii = floor(ii);
@@ -776,22 +773,22 @@ public:
 
     if ((fabs(fii-ii) < epsilon_) && ((i-1)>0))
     {
-      elems.push_back(static_cast<typename ARRAY::value_type>(i-1));  
+      elems.push_back(static_cast<typename ARRAY::value_type>(i-1));
     }
-    
+
     if ((fabs(fii-(ii+1.0)) < epsilon_) && (i<(ni_-1)))
     {
-      elems.push_back(static_cast<typename ARRAY::value_type>(i+1));  
+      elems.push_back(static_cast<typename ARRAY::value_type>(i+1));
     }
 
     result = transform_.project(Core::Geometry::Point(ii,0,0));
     pdist = (p-result).length();
-    
+
     return (true);
   }
 
 
-                           
+
 
 
 
@@ -823,7 +820,7 @@ protected:
   double det_jacobian_;
   double scaled_jacobian_;
   double det_inverse_jacobian_;
-  
+
 };
 
 
@@ -838,21 +835,21 @@ ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
                                   const Core::Geometry::Point &min, const Core::Geometry::Point &max)
   : min_i_(0), ni_(ni)
 {
-  DEBUG_CONSTRUCTOR("ScanlineMesh")   
-  
+  DEBUG_CONSTRUCTOR("ScanlineMesh")
+
   Core::Geometry::Vector v0 = max - min;
   Core::Geometry::Vector v1, v2;
   v0.find_orthogonal(v1,v2);
-  
+
   // The two points define a line, this sets up the transfrom so it projects
   // to the x-axis
-  
+
   transform_.load_basis(min,v0,v1,v2);
   transform_.post_scale(Core::Geometry::Vector(1.0 / (ni_ - 1.0), 1.0, 1.0));
-  
+
   transform_.compute_imat();
   compute_jacobian();
-  
+
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
   /// virtual interface class
@@ -943,7 +940,7 @@ ScanlineMesh<Basis>::set_dim(std::vector<size_type> dim)
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
   /// virtual interface class
-  vmesh_.reset(CreateVScanlineMesh(this)); 
+  vmesh_.reset(CreateVScanlineMesh(this));
 }
 
 
@@ -1059,7 +1056,7 @@ ScanlineMesh<Basis>::io(Piostream& stream)
 
   // IO data members, in order
   Pio(stream, ni_);
-  
+
   if (version < 4)
   {
     unsigned int ni = static_cast<unsigned int>(ni_);
@@ -1069,8 +1066,8 @@ ScanlineMesh<Basis>::io(Piostream& stream)
   else
   {
     Pio_size(stream, ni_);
-  }  
-  
+  }
+
   if (version < 2 && stream.reading() )
   {
     Pio_old(stream, transform_);
@@ -1322,17 +1319,17 @@ ScanlineMesh<Basis>::cell_type_description()
 
 
 template <class Basis>
-void 
+void
 ScanlineMesh<Basis>::compute_jacobian()
 {
   if (basis_.polynomial_order() < 2)
-  { 
-    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0)); 
+  {
+    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0));
     Core::Geometry::Vector J2, J3;
     J1.find_orthogonal(J2,J3);
     J2.normalize();
     J3.normalize();
-    
+
     jacobian_[0] = J1.x();
     jacobian_[1] = J1.y();
     jacobian_[2] = J1.z();
@@ -1342,7 +1339,7 @@ ScanlineMesh<Basis>::compute_jacobian()
     jacobian_[6] = J3.x();
     jacobian_[7] = J3.y();
     jacobian_[8] = J3.z();
-    
+
     det_jacobian_ = DetMatrix3x3(jacobian_);
     scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
     det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);
@@ -1353,17 +1350,17 @@ template <class Basis>
 bool
 ScanlineMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
 {
-  /// If there are no nodes, return false, otherwise there will always be 
+  /// If there are no nodes, return false, otherwise there will always be
   /// a node that is closest
   if (ni_ == 0) return (false);
-  
+
   const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
   const double nii = static_cast<double>(ni_-1);
 
   if (rx < 0.0) rx = 0.0; if (rx > nii) rx = nii;
-  
+
   node = static_cast<index_type>(rx);
 
   return (true);
@@ -1384,11 +1381,11 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometr
 
   double ii = r.x();
   const double nii = static_cast<double>(ni_-1);
-   
+
   if (ii>=nii && (ii-epsilon_)<nii) ii=nii-epsilon_;
 
   if (ii<0 && ii>(-epsilon_)) ii=0.0;
-	
+
   const index_type i = static_cast<index_type>(floor(ii));
 
   if (i < (ni_-1) && i >= 0 && ii >= 0.0)
@@ -1403,7 +1400,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometr
 
 template <class Basis>
 bool
-ScanlineMesh<Basis>::locate(typename Elem::index_type &elem, 
+ScanlineMesh<Basis>::locate(typename Elem::index_type &elem,
                             std::vector<double>& coords,
                             const Core::Geometry::Point &p) const
 {
@@ -1419,11 +1416,11 @@ ScanlineMesh<Basis>::locate(typename Elem::index_type &elem,
 
   double ii = r.x();
   const double nii = static_cast<double>(ni_-1);
-   
+
   if (ii>nii && (ii-epsilon_)<nii) ii=nii-epsilon_;
 
   if (ii<0 && ii>(-epsilon_)) ii=0.0;
-	
+
   const double fi = floor(ii);
   const index_type i = static_cast<index_type>(fi);
 

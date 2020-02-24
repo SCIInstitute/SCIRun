@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <QtGui>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -256,6 +256,22 @@ void SCIRunMainWindow::readSettings()
     prefs.invertMouseZoom.setValue(mode);
   }
 
+  const QString widgetSelectionCorrection = "widgetSelectionCorrection";
+  if (settings.contains(widgetSelectionCorrection))
+  {
+    bool mode = settings.value(widgetSelectionCorrection).toBool();
+    guiLogDebug("Setting read: widgetSelectionCorrection = {}", mode);
+    prefs.widgetSelectionCorrection.setValue(mode);
+  }
+
+  const QString autoRotateViewerOnMouseRelease = "autoRotateViewerOnMouseRelease";
+  if (settings.contains(autoRotateViewerOnMouseRelease))
+  {
+    bool mode = settings.value(autoRotateViewerOnMouseRelease).toBool();
+    guiLogDebug("Setting read: autoRotateViewerOnMouseRelease = {}", mode);
+    prefs.autoRotateViewerOnMouseRelease.setValue(mode);
+  }
+
   const QString forceGridBackground = "forceGridBackground";
   if (settings.contains(forceGridBackground))
   {
@@ -391,6 +407,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue(qname(prefs.showModuleErrorInlineMessages), prefs.showModuleErrorInlineMessages.val());
   settings.setValue(qname(prefs.highDPIAdjustment), prefs.highDPIAdjustment.val());
+  settings.setValue(qname(prefs.widgetSelectionCorrection), prefs.widgetSelectionCorrection.val());
+  settings.setValue(qname(prefs.autoRotateViewerOnMouseRelease), prefs.autoRotateViewerOnMouseRelease.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());

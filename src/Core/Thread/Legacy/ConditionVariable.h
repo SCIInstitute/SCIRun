@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 ///
@@ -56,7 +54,7 @@ class ConditionVariable_private;
 struct CrowdMonitor_private;
 
 /**************************************
- 
+
  @class
   ConditionVariable
 
@@ -74,7 +72,7 @@ struct CrowdMonitor_private;
   The thread waits for that condition, until it is unblocked by another
   thread that caused the condition to exist (<i>i.e.</i> freed the
   resource).
-   
+
 ****************************************/
 
 class SCISHARE ConditionVariable {
@@ -83,11 +81,11 @@ public:
   /// Create a condition variable. <i>name</i> should be a static
   /// string which describes the primitive for debugging purposes.
   ConditionVariable(const char* name);
-    
+
   //////////
   /// Destroy the condition variable
   ~ConditionVariable();
-    
+
   //////////
   /// Wait for a condition.  This method atomically unlocks
   /// <b>mutex</b>, and blocks.  The <b>mutex</b> is typically
@@ -105,7 +103,7 @@ public:
   /// false.  Otherewise it will return true.
   bool timedWait(Mutex& m, const struct ::timespec* abstime);
   bool timedWait(RecursiveMutex& m, const struct ::timespec* abstime);
-    
+
   //////////
   /// Signal a condition.  This will unblock one of the waiting
   /// threads. No guarantee is made as to which thread will be
@@ -131,4 +129,3 @@ private:
 } // End namespace SCIRun
 
 #endif
-

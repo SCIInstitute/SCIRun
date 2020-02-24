@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
+
 #include <gtest/gtest.h>
 
 #include <fstream>
@@ -50,7 +50,7 @@ namespace
         (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
-  SparseRowMatrixHandle matrix1Sparse() 
+  SparseRowMatrixHandle matrix1Sparse()
   {
     auto m(boost::make_shared<SparseRowMatrix>(5,5));
     m->insert(0,0) = 1;
@@ -64,7 +64,7 @@ namespace
   {
     auto m(boost::make_shared<DenseColumnMatrix>(4));
     m -> setZero();
-    *m << 1,2,3,4; 
+    *m << 1,2,3,4;
     return m;
   }
 }
@@ -79,7 +79,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   m = matrix1Sparse();
   result = algo.runImpl(m);
   EXPECT_EQ("SparseRowMatrix", result.get<0>());
-  m = matrix1DenseColumn(); 
+  m = matrix1DenseColumn();
   result = algo.runImpl(m);
   EXPECT_EQ("DenseColumnMatrix", result.get<0>());
 }
@@ -100,7 +100,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
 
   MatrixHandle m(matrix1Dense());
   auto result = algo.runImpl(m);
-  
+
   EXPECT_EQ(12, result.get<3>());
 }
 

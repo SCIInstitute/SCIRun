@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Matrix/MatrixAlgorithms.h
+
 #ifndef CORE_DATATYPES_MATRIX_ALGORITHMS_H
 #define CORE_DATATYPES_MATRIX_ALGORITHMS_H
 
@@ -46,7 +48,7 @@ namespace SCIRun {
     int cg_solve(const Matrix<double>& matrix, const ColumnMatrix& rhs, ColumnMatrix& lhs);
     int cg_solve(const Matrix<double>& matrix, const DenseMatrix& rhs, DenseMatrix& lhs,
       double &err, int &niter,
-      double max_error=1.e-6, int toomany=0, 
+      double max_error=1.e-6, int toomany=0,
       int useLhsAsGuess=0);
     int cg_solve(const Matrix<double>& matrix, const DenseMatrix& rhs, DenseMatrix& lhs);
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -40,16 +40,16 @@ using namespace SCIRun;
 bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
 {
   algo_start("SimilarMeshes");
-  
+
   if (field_input_handles.size() == 0)
   {
     // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error. 
+    // the program to deal with this error.
     error("No input fields");
     algo_end(); return (false);
   }
 
-  for( size_t i=0; i<field_input_handles.size(); i++ ) 
+  for( size_t i=0; i<field_input_handles.size(); i++ )
   {
     FieldHandle fHandle = field_input_handles[i];
 
@@ -64,7 +64,7 @@ bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
 
 
   // Make sure each field has some data to transform.
-  for( size_t i=0; i<field_input_handles.size(); i++ ) 
+  for( size_t i=0; i<field_input_handles.size(); i++ )
   {
     FieldHandle fHandle = field_input_handles[i];
 
@@ -80,17 +80,17 @@ bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
   bool same_rep = true;
 
   // Make sure each field has the same basis and mesh.
-  for( size_t i=1; i<field_input_handles.size(); i++ ) 
+  for( size_t i=1; i<field_input_handles.size(); i++ )
   {
     FieldHandle fHandle = field_input_handles[i];
-    
+
     // Are the basis orders the same?
-    if (fHandle0->basis_order() != fHandle->basis_order()) 
+    if (fHandle0->basis_order() != fHandle->basis_order())
     {
       error("The Input Fields must share the same data location.");
       algo_end(); return (false);
     }
-    
+
     // Are the meshes the same?
     if (fHandle0->mesh().get_rep() != fHandle->mesh().get_rep() )
       same_rep = false;
@@ -98,14 +98,14 @@ bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
 
   // If the meshes are not the same make sure they are the same type
   // and have the same number of nodes and elements.
-  if( !same_rep ) 
+  if( !same_rep )
   {
     // Same mesh types?
-    for( size_t i=1; i<field_input_handles.size(); i++ ) 
+    for( size_t i=1; i<field_input_handles.size(); i++ )
     {
       FieldHandle fHandle = field_input_handles[i];
       if( fHandle0->get_type_description(Field::MESH_TD_E)->get_name() !=
-          fHandle->get_type_description(Field::MESH_TD_E)->get_name() ) 
+          fHandle->get_type_description(Field::MESH_TD_E)->get_name() )
       {
         error("The input fields must have the same mesh type.");
         algo_end(); return (false);
@@ -116,20 +116,20 @@ bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
     VMesh::size_type num_elems0 = fHandle0->vmesh()->num_elems();
 
     // Same number of nodes and elements?
-    for( size_t i=1; i<field_input_handles.size(); i++ ) 
+    for( size_t i=1; i<field_input_handles.size(); i++ )
     {
       FieldHandle fHandle = field_input_handles[i];
 
       VMesh::size_type num_nodes = fHandle->vmesh()->num_nodes();
       VMesh::size_type num_elems = fHandle->vmesh()->num_elems();
 
-      if( num_nodes0 != num_nodes ) 
+      if( num_nodes0 != num_nodes )
       {
         error("The input meshes do not have the same number of nodes.");
         algo_end(); return (false);
       }
 
-      if( num_elems0 != num_elems ) 
+      if( num_elems0 != num_elems )
       {
         error("The input meshes do not have the same number of elements.");
         algo_end(); return (false);
@@ -145,4 +145,3 @@ bool SimilarMeshesAlgo::run(std::vector<FieldHandle> field_input_handles)
 
 
 } // End namespace SCIRunAlgo
-

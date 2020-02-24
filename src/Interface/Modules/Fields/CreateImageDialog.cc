@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/CreateImageDialog.h>
 #include <Modules/Legacy/Fields/CreateImage.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -44,22 +45,22 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addSpinBoxManager(width_, CreateImageModule::Width);
   addSpinBoxManager(height_, CreateImageModule::Height);
   addDoubleSpinBoxManager(padPercentageSpinBox_, CreateImageModule::PadPercent);
-  
+
   addComboBoxManager(mode_, CreateImageModule::Mode);
-  
+
   addComboBoxManager(axis_, CreateImageModule::Axis);
-  
+
   addDoubleSpinBoxManager(centerX_, CreateImageModule::CenterX);
   addDoubleSpinBoxManager(centerY_, CreateImageModule::CenterY);
   addDoubleSpinBoxManager(centerZ_, CreateImageModule::CenterZ);
-  
+
   addDoubleSpinBoxManager(normalX_, CreateImageModule::NormalX);
   addDoubleSpinBoxManager(normalY_, CreateImageModule::NormalY);
   addDoubleSpinBoxManager(normalZ_, CreateImageModule::NormalZ);
-  
+
   addDoubleSpinBoxManager(position_, CreateImageModule::Position);
   connect(mode_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
-  
+
   addComboBoxManager(dataLocation_, CreateImageModule::DataLocation);
 }
 

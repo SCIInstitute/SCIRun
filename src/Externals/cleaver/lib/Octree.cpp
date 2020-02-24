@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
@@ -7,39 +35,11 @@
 //  Author: Jonathan Bronson (bronson@sci.utah.edu)
 //
 //-------------------------------------------------------------------
-//-------------------------------------------------------------------
 //
-//  Copyright (C) 2011, 2012, Jonathan Bronson
-//  Scientific Computing & Imaging Institute
-//  University of Utah
-//
-//  Permission is  hereby  granted, free  of charge, to any person
-//  obtaining a copy of this software and associated documentation
-//  files  ( the "Software" ),  to  deal in  the  Software without
-//  restriction, including  without limitation the rights to  use,
-//  copy, modify,  merge, publish, distribute, sublicense,  and/or
-//  sell copies of the Software, and to permit persons to whom the
-//  Software is  furnished  to do  so,  subject  to  the following
-//  conditions:
-//
-//  The above  copyright notice  and  this permission notice shall
-//  be included  in  all copies  or  substantial  portions  of the
-//  Software.
-//
-//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
-//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
-//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
-//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
-//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-//  USE OR OTHER DEALINGS IN THE SOFTWARE.
-//-------------------------------------------------------------------
-
-//-------------------------------------------------------------------
 //  Portions of this code derived from MERL Octree source:
 //
 //-------------------------------------------------------------------
+//
 //  Copyright 2002 Mitsubishi Electric Research Laboratories.
 //  All Rights Reserved.
 //
@@ -65,8 +65,8 @@
 //  HEREUNDER IS  ON AN "AS IS"  BASIS, AND MERL HAS NO OBLIGATIONS
 //  TO  PROVIDE  MAINTENANCE,  SUPPORT,  UPDATES,  ENHANCEMENTS, OR
 //  MODIFICATIONS.
+//
 //-------------------------------------------------------------------
-
 //-------------------------------------------------------------------
 
 #include "Octree.h"
@@ -185,7 +185,7 @@ Octree::Octree(int w, int h, int d, std::vector<Vertex3D*> &verts, std::vector<T
 
 // Octree Deconstructor
 Octree::~Octree()
-{   
+{
     // verts / edges / faces / tets should be deleted by now
     if(root)
         delete root;
@@ -1016,7 +1016,7 @@ void Octree::create_background_grid(const std::vector<OTCell *> &buffer_cells) {
                             int off_y2 = EDGE_FACE_NEIGHBOR_OFFSETS[f][e][1];
                             int off_z2 = EDGE_FACE_NEIGHBOR_OFFSETS[f][e][2];
 
-                            vec3 v_m;                            
+                            vec3 v_m;
                             v_m.x = v_d.x + off_x2*half_cell_width;
                             v_m.y = v_d.y + off_y2*half_cell_width;
                             v_m.z = v_d.z + off_z2*half_cell_width;
@@ -1456,7 +1456,7 @@ void Octree::create_background_grid(const std::vector<OTCell *> &buffer_cells) {
         n_iter++;
     }
 
-    vertex_tracker.clear();   
+    vertex_tracker.clear();
 }
 
 
@@ -1562,12 +1562,12 @@ Vertex3D* Octree::vertexForPosition(const vec3 &position)
     if (res == vertex_tracker.end())
     {
         vertex = new Vertex3D();
-        vertex->pos() = position;        
+        vertex->pos() = position;
         vertex_tracker[position] = vertex;
     }
     // or return existing one
     else
-    {        
+    {
         vertex = res->second;
     }
 

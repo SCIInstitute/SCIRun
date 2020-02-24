@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/DomainFields/MatchDomainLabels.h>
 
 #include <Core/Datatypes/FieldInformation.h>
@@ -34,19 +34,19 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 MatchDomainLabelsAlgo::
 run( FieldHandle input, FieldHandle domain, FieldHandle& output)
 {
   algo_start("MatchDomainLabels");
-  
+
   if (input.get_rep() == 0)
   {
     algo_end(); error("No input field");
     return (false);
   }
 
-  FieldInformation fi(input), fo(input); 
+  FieldInformation fi(input), fo(input);
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");
@@ -67,7 +67,7 @@ run( FieldHandle input, FieldHandle domain, FieldHandle& output)
   VField *dfield = domain->vfield();
   VMesh  *dmesh  = domain->vmesh();
 
-  
+
   if (ifield == 0 || imesh == 0)
   {
     algo_end(); error("No input field");
@@ -79,43 +79,43 @@ run( FieldHandle input, FieldHandle domain, FieldHandle& output)
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
-    algo_end(); return(false); 
+    algo_end(); return(false);
   }
- 
+
   VField* ofield = output->vfield();
   VMesh *omesh = output->vmesh();
 
   if (ofield == 0 || omesh == 0)
   {
     error("Could not create output field");
-    algo_end(); return(false); 
+    algo_end(); return(false);
   }
 
   ofield->resize_values();
   int* olabels = reinterpret_cast<int*>(ofield->get_values_pointer());
-  
+
   std::vector<int> labels;
   ifield->get_values(labels);
   VMesh::size_type num_elems = imesh->num_elems();
-  
+
   int flabel = 0;
   if (labels.size() > 0) flabel = labels[0];
   // Find minimum
   for (size_t j=0; j<labels.size();j++) if (flabel > labels[j]) flabel = labels[j];
-  
+
   int dlabel;
   std::vector<std::pair<int,double> > histogram;
   Point p;
-  
+
   dmesh->synchronize(Mesh::ELEM_LOCATE_E);
 
   std::vector<double> sizes(num_elems);
   for (VMesh::Elem::index_type idx = 0; idx< num_elems; idx++)
     sizes[idx] = imesh->get_size(idx);
-  
+
   while(1)
   {
-  
+
     for (VMesh::Elem::index_type idx = 0; idx< num_elems; idx++)
     {
       if (labels[idx] == flabel)
@@ -134,23 +134,23 @@ run( FieldHandle input, FieldHandle domain, FieldHandle& output)
           }
           if (k == histogram.size()) histogram.push_back(std::pair<int,double>(dlabel,sizes[idx]));
         }
-      }    
+      }
     }
 
 
     int newlabel = 0;
     double count = 0;
-    if (histogram.size() > 0) 
-    { 
-      newlabel = histogram[0].first; 
-      count = histogram[0].second; 
+    if (histogram.size() > 0)
+    {
+      newlabel = histogram[0].first;
+      count = histogram[0].second;
     }
-    
+
     for (size_t j=0; j<histogram.size(); j++)
     {
       if (histogram[j].second > count) newlabel = histogram[j].first;
     }
-    
+
     for (VMesh::index_type idx = 0; idx< num_elems; idx++)
     {
       if (labels[idx] == flabel)
@@ -160,10 +160,10 @@ run( FieldHandle input, FieldHandle domain, FieldHandle& output)
     }
 
     histogram.clear();
-    
+
     int elabel = 0;
     bool found = false;
-    
+
     for (VMesh::index_type lidx=0; lidx < num_elems; lidx++)
     {
       if (labels[lidx] > flabel)
@@ -173,17 +173,16 @@ run( FieldHandle input, FieldHandle domain, FieldHandle& output)
           elabel = labels[lidx];
           found = true;
         }
-        if (labels[lidx] < elabel) elabel = labels[lidx]; 
+        if (labels[lidx] < elabel) elabel = labels[lidx];
       }
     }
     // check whether we are done
     if (!found) break;
     flabel = elabel;
   }
-  
+
   algo_end();
   return(true);
 }
 
 } // namespace SCIRunAlgo
-

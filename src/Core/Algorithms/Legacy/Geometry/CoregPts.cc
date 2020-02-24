@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
 
-//    File   : CoregPts.cc
-//    Author : David Weinstein
-//    Date   : Wed Dec  5 16:05:07 MST 2001
+   Author:            David Weinstein
+   Date:              December 5 2001
+*/
 
 #include <Core/Algorithms/Geometry/CoregPts.h>
 #include <Core/Geometry/BBox.h>
@@ -341,7 +339,7 @@ CoregPtsSimplexSearch::getMisfit(double &misfit)
   misfit=0;
   double m;
   int npts = origPtsP_.size();
-  for (int i=0; i<npts; i++) 
+  for (int i=0; i<npts; i++)
   {
     dField_->interpolate(m, origPtsP_[i]);
     misfit += m;

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -63,18 +63,18 @@ namespace
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/setuptdcs/elc_tet.fld");
   }
-  
+
   DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
-  { 
+  {
    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,4));
    (*m)(0,0) = 59.5343;
    (*m)(0,1) = 15.5240;
    (*m)(0,2) = 84.5013;
-   (*m)(0,3) = 4.0;   
+   (*m)(0,3) = 4.0;
    (*m)(1,0) = 122.798;
    (*m)(1,1) = 32.2019;
    (*m)(1,2) = 128.798;
-   (*m)(1,3) = 4.0;   
+   (*m)(1,3) = 4.0;
 
    return m;
   }
@@ -98,7 +98,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForWrongType)
   stubPortNWithThisData(tdcs, 1, ElectrodeSpongeLocationAndThickness());
   stubPortNWithThisData(tdcs, 2, ElectrodeSpongeLocationAndThickness());
   stubPortNWithThisData(tdcs, 3, LoadColin27ElecSurfMesh());
-  
+
   EXPECT_THROW(tdcs->execute(), WrongDatatypeOnPortException);
 }
 
@@ -112,4 +112,3 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
   stubPortNWithThisData(tdcs, 3, nullField);
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
-

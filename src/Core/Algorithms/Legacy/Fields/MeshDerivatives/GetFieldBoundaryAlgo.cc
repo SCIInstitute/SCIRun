@@ -1,12 +1,11 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -48,18 +48,18 @@ using namespace SCIRun::Core::Geometry;
 AlgorithmOutputName GetFieldBoundaryAlgo::BoundaryField("BoundaryField");
 AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("Mapping");
 
-GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
+GetFieldBoundaryAlgo::GetFieldBoundaryAlgo()
 {
   addOption(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
 }
 
-struct IndexHash 
+struct IndexHash
 {
   size_t operator()(const index_type &idx) const
     { return (static_cast<size_t>(idx)); }
 };
 
-bool 
+bool
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
@@ -69,7 +69,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
   hash_map_type node_map;
   hash_map_type elem_map;
-  
+
   /// Check whether we have an input field
   if (!input)
   {
@@ -80,14 +80,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return (false);
   }
-  
+
   /// Figure out which type of field the output is:
   auto found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
@@ -101,7 +101,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     output = input;
     return (true);
   }
-  
+
   /// Check whether we could make a conversion
   if (!found_method)
   {
@@ -116,7 +116,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     error("Could not create output field");
     return (false);
   }
-  
+
   /// Get the virtual interfaces:
   auto imesh = input->vmesh();
   auto omesh = output->vmesh();
@@ -128,19 +128,19 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
-  VMesh::DElem::array_type delems; 
-  VMesh::Node::array_type inodes; 
-  VMesh::Node::array_type onodes; 
+  VMesh::DElem::array_type delems;
+  VMesh::Node::array_type inodes;
+  VMesh::Node::array_type onodes;
   VMesh::Node::index_type a;
 
   inodes.clear();
-  onodes.clear();  
+  onodes.clear();
   Point point;
 
   /// This algorithm was copy from the original dynamic compiled version
   /// and was slightly adapted to work here:
-  
-  imesh->begin(be); 
+
+  imesh->begin(be);
   imesh->end(ee);
 
   while (be != ee)
@@ -223,7 +223,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     mapping = mat;
   }
   else if (
-    ((ifield->basis_order() == 1) 
+    ((ifield->basis_order() == 1)
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     && checkOption("mapping","auto"))
     ||
@@ -258,7 +258,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     mat->setFromTriplets(tripletList.begin(), tripletList.end());
     mapping = mat;
   }
-  
+
   if (ifield->basis_order() == 0)
   {
     hash_map_type::iterator it, it_end;
@@ -266,11 +266,11 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     it_end = elem_map.end();
 
     while (it != it_end)
-    {      
+    {
       checkForInterruption();
       VMesh::Elem::index_type idx1((*it).second);
-      VMesh::Elem::index_type idx2((*it).first);  
-      
+      VMesh::Elem::index_type idx2((*it).first);
+
       /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
       ++it;
@@ -281,7 +281,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     hash_map_type::iterator it, it_end;
     it = node_map.begin();
     it_end = node_map.end();
-    
+
     while (it != it_end)
     {
       checkForInterruption();
@@ -291,28 +291,28 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
       ++it;
     }
   }
-  
+
   CopyProperties(*input, *output);
-  
+
   return (true);
 }
 
 
-/// A copy of the algorithm without creating the mapping matrix. 
+/// A copy of the algorithm without creating the mapping matrix.
 /// Need this for the various algorithms that only use the boundary to
 /// project nodes on.
 
-bool 
+bool
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
   /// Define types we need for mapping
   using hash_map_type = boost::unordered_map<index_type,index_type,IndexHash>;
-  
+
   hash_map_type node_map;
   hash_map_type elem_map;
-  
+
   /// Check whether we have an input field
   if (!input)
   {
@@ -323,14 +323,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
   /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return (false);
   }
-  
+
   /// Figure out which type of field the output is:
   auto found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
@@ -344,7 +344,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
     output = input;
     return (true);
   }
-  
+
   /// Check whether we could make a conversion
   if (!found_method)
   {
@@ -359,31 +359,31 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
     error("Could not create output field");
     return (false);
   }
-  
+
   /// Get the virtual interfaces:
   auto imesh = input->vmesh();
   auto omesh = output->vmesh();
   auto ifield = input->vfield();
   auto ofield = output->vfield();
-  
+
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
-  
+
   /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
-  VMesh::DElem::array_type delems; 
-  VMesh::Node::array_type inodes; 
-  VMesh::Node::array_type onodes; 
+  VMesh::DElem::array_type delems;
+  VMesh::Node::array_type inodes;
+  VMesh::Node::array_type onodes;
   VMesh::Node::index_type a;
 
   inodes.clear();
-  onodes.clear();  
+  onodes.clear();
   Point point;
 
   /// This algorithm was copy from the original dynamic compiled version
   /// and was slightly adapted to work here:
-  
-  imesh->begin(be); 
+
+  imesh->begin(be);
   imesh->end(ee);
 
   while (be != ee)
@@ -421,20 +421,20 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
     }
     ++be;
   }
-  
+
   ofield->resize_fdata();
-  
+
   if (ifield->basis_order() == 0)
   {
     hash_map_type::iterator it, it_end;
     it = elem_map.begin();
     it_end = elem_map.end();
-    
+
     while (it != it_end)
-    {      
+    {
       VMesh::Elem::index_type idx1((*it).second);
-      VMesh::Elem::index_type idx2((*it).first);  
-      
+      VMesh::Elem::index_type idx2((*it).first);
+
       /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
       ++it;
@@ -445,7 +445,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
     hash_map_type::iterator it, it_end;
     it = node_map.begin();
     it_end = node_map.end();
-    
+
     while (it != it_end)
     {
       VMesh::Node::index_type idx1((*it).first);
@@ -454,9 +454,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
       ++it;
     }
   }
-  
+
   CopyProperties(*input, *output);
-  
+
   return (true);
 }
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/FiniteElements/DefinePeriodicBoundaries.cc
 
 #include <Core/Algorithms/FiniteElements/Periodic/DefinePeriodicBoundaries.h>
@@ -40,14 +41,14 @@ class DefinePeriodicBoundaries : public Module {
 public:
   DefinePeriodicBoundaries(GuiContext*);
   virtual void execute();
-  
+
 private:
   GuiInt gui_linkx_;
   GuiInt gui_linky_;
   GuiInt gui_linkz_;
   GuiDouble gui_tolerance_;
 
-  SCIRunAlgo::DefinePeriodicBoundariesAlgo algo_;  
+  SCIRunAlgo::DefinePeriodicBoundariesAlgo algo_;
 };
 
 
@@ -68,15 +69,15 @@ DefinePeriodicBoundaries::execute()
 {
   FieldHandle input;
   MatrixHandle periodic_nodelink, periodic_delemlink;
-  
+
   if(!(get_input_handle("Field",input,true))) return;
 
   bool need_nodelink = oport_connected("PeriodicNodeLink");
   bool need_delemlink = oport_connected("PeriodicDElemLink");
 
   if (inputs_changed_ ||  gui_linkx_.changed() || gui_linky_.changed() ||
-      gui_linkz_.changed() || gui_tolerance_.changed() || 
-      (!oport_cached("PeriodicNodeLink") && need_nodelink ) || 
+      gui_linkz_.changed() || gui_tolerance_.changed() ||
+      (!oport_cached("PeriodicNodeLink") && need_nodelink ) ||
       (!oport_cached("PeriodicDElemLink") && need_delemlink))
   {
 
@@ -86,14 +87,12 @@ DefinePeriodicBoundaries::execute()
     algo_.set_scalar("tolerance",gui_tolerance_.get());
     algo_.set_bool("build_periodic_nodelink",need_nodelink);
     algo_.set_bool("build_periodic_delemlink",need_delemlink);
-    
+
     if(!(algo_.run(input,periodic_nodelink,periodic_delemlink))) return;
-    
+
     send_output_handle("PeriodicNodeLink", periodic_nodelink);
     send_output_handle("PeriodicDElemLink", periodic_delemlink);
   }
 }
 
 } // End namespace SCIRun
-
-

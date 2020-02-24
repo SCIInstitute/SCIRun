@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,18 +23,18 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:              Martin Cole
+   Date:                June 15 2001
 */
 
-//    File   : HexMC.cc
-//    Author : Martin Cole
-//    Date   : Fri Jun 15 21:33:04 2001
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/HexMC.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  #include <sci_hash_map.h>
 
  #include <teem/air.h>
@@ -82,7 +81,7 @@ void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   }
   geomHandle_ = triangles_;
  #endif
- 
+
   trisurf_ = 0;
   quadsurf_ = 0;
   if (build_field_)
@@ -91,13 +90,13 @@ void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
     {
       FieldInformation fi("QuadSurfMesh",basis_order_,"double");
       quadsurf_handle_ = CreateField(fi);
-      quadsurf_ = quadsurf_handle_->vmesh();  
+      quadsurf_ = quadsurf_handle_->vmesh();
     }
     else
     {
       FieldInformation fi("TriSurfMesh",basis_order_,"double");
       trisurf_handle_ = CreateField(fi);
-      trisurf_ = trisurf_handle_->vmesh();  
+      trisurf_ = trisurf_handle_->vmesh();
     }
   }
 }
@@ -106,29 +105,29 @@ VMesh::Node::index_type HexMC::find_or_add_nodepoint(VMesh::Node::index_type& te
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
-  
+
   if (i != -1) surf_node_idx = VMesh::Node::index_type(i);
-  else 
+  else
   {
     Point p;
     mesh_->get_point(p, tet_node_idx);
     surf_node_idx = quadsurf_->add_point(p);
     node_map_[tet_node_idx] = surf_node_idx;
   }
-  
+
   return (surf_node_idx);
 }
 
-void HexMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face) 
+void HexMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     edge_map_[np] = face;
@@ -151,12 +150,12 @@ void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->value( selfvalue, cell );
- 
- #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
+
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (!(airExists(selfvalue))) return;
- #endif  
+ #endif
   if (IsNan(selfvalue)) return;
-  
+
   VMesh::DElem::array_type faces;
   mesh_->get_delems(faces, cell);
 
@@ -164,7 +163,7 @@ void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
   Point p[4];
   VMesh::Node::array_type face_nodes;
   VMesh::Node::array_type vertices(4);
-  
+
   for (size_t i=0; i<faces.size(); i++)
   {
     if (mesh_->get_neighbor(nbr_cell, cell, faces[i]) &&
@@ -191,7 +190,7 @@ void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
         {
           vertices[j] = find_or_add_nodepoint(face_nodes[j]);
         }
-        
+
         VMesh::Elem::index_type qface = quadsurf_->add_elem(vertices);
         const double d = (selfvalue - iso) / (selfvalue - nbrvalue);
         find_or_add_parent(cell, nbr_cell, d, qface);
@@ -210,7 +209,7 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   mesh_->get_nodes( node, cell );
   mesh_->get_centers(p,node);
   field_->get_values(value,node);
-  
+
   for (int i=7; i>=0; i--)
   {
     // skip anything with a NaN
@@ -226,7 +225,7 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
 
   TRIANGLE_CASES *tcase= &triCases[code];
   int *vertex = tcase->edges;
-  
+
   Point q[12];
   VMesh::Node::index_type surf_node[12];
 
@@ -234,8 +233,8 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   index_type v = 0;
   bool visited[12];
   for (int i=0;i<12;i++) visited[i] = false;
-    
-  while (vertex[v] != -1) 
+
+  while (vertex[v] != -1)
   {
     index_type i = vertex[v++];
     if (visited[i]) continue;
@@ -249,21 +248,21 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
       surf_node[i] = find_or_add_edgepoint(node[v1], node[v2], d, q[i]);
     }
   }
-  
+
   v = 0;
-  while(vertex[v] != -1) 
+  while(vertex[v] != -1)
   {
     index_type v0 = vertex[v++];
     index_type v1 = vertex[v++];
     index_type v2 = vertex[v++];
-    
+
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (build_geom_)
     {
       triangles_->add(q[v0], q[v1], q[v2]);
     }
-   #endif 
-   
+   #endif
+
     if (build_field_)
     {
       if (surf_node[v0] != surf_node[v1] &&
@@ -287,26 +286,26 @@ FieldHandle HexMC::get_field(double value)
   {
     quadsurf_handle_->vfield()->resize_values();
     quadsurf_handle_->vfield()->set_all_values(value);
-    return (quadsurf_handle_);  
+    return (quadsurf_handle_);
   }
   else
   {
     trisurf_handle_->vfield()->resize_values();
     trisurf_handle_->vfield()->set_all_values(value);
-    return (trisurf_handle_);  
+    return (trisurf_handle_);
   }
 }
 
-VMesh::Node::index_type HexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+VMesh::Node::index_type HexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);

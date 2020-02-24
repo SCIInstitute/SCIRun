@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole
+   Date:            Jun 15 2001
 */
 
-//    File   : TetMC.cc
-//    Author : Martin Cole
-//    Date   : Fri Jun 15 21:33:04 2001
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/TetMC.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -40,10 +39,10 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
-void 
+void
 TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
- 
+
   build_field_ = build_field;
   build_geom_  = build_geom;
   basis_order_ = field_->basis_order();
@@ -65,7 +64,7 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
       node_map_ = std::vector<SCIRun::index_type>(nnodes_, -1);
     }
   }
- 
+
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   triangles_ = 0;
   if (build_geom_)
@@ -77,7 +76,7 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
   }
   geomHandle_ = triangles_;
  #endif
- 
+
   trisurf_ = 0;
   if (build_field_)
   {
@@ -89,9 +88,9 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 
 
 VMesh::Node::index_type
-TetMC::find_or_add_edgepoint(index_type u0, 
+TetMC::find_or_add_edgepoint(index_type u0,
                              index_type u1,
-                             double d0, const Point &p) 
+                             double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
@@ -113,25 +112,25 @@ TetMC::find_or_add_edgepoint(index_type u0,
 
 
 VMesh::Node::index_type
-TetMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
+TetMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx)
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
   if (i != -1) surf_node_idx = (VMesh::Node::index_type) i;
-  else 
+  else
   {
     Point p;
     mesh_->get_point(p, tet_node_idx);
     surf_node_idx = trisurf_->add_point(p);
     node_map_[tet_node_idx] = surf_node_idx;
   }
-  return (surf_node_idx); 
+  return (surf_node_idx);
 }
 
 
 void
 TetMC::find_or_add_parent(index_type u0, index_type u1,
-                          double d0, index_type face) 
+                          double d0, index_type face)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
@@ -150,7 +149,7 @@ TetMC::find_or_add_parent(index_type u0, index_type u1,
 }
 
 
-void 
+void
 TetMC::extract( VMesh::Elem::index_type cell, double v )
 {
   if (basis_order_ == 0)
@@ -160,7 +159,7 @@ TetMC::extract( VMesh::Elem::index_type cell, double v )
 }
 
 
-void 
+void
 TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
@@ -181,7 +180,7 @@ TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
     {
       mesh_->get_nodes(nodes, faces[i]);
       mesh_->get_centers(p,nodes);
-      
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
@@ -195,9 +194,9 @@ TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
         {
           vertices[j] = find_or_add_nodepoint(nodes[j]);
         }
-        
+
         VMesh::Elem::index_type tface = trisurf_->add_elem(vertices);
-	  
+
         const double d = (selfvalue - iso) / (selfvalue - nbrvalue);
 
         find_or_add_parent(cell, nbr_cell, d, tface);
@@ -227,8 +226,8 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
     {3, 2, 1, 0},   /* 0, 1, 2 - reverse of 3 */
     {0, 0, 0, 0}    /* all - ignore */
   };
-    
-  VMesh::Node::array_type nodes(3);    
+
+  VMesh::Node::array_type nodes(3);
   VMesh::Node::array_type node;
   Point p[4];
   double value[4];
@@ -236,16 +235,16 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
   mesh_->get_nodes( node, cell );
   mesh_->get_centers(p,node);
   field_->get_values(value,node);
-  
+
   int code = 0;
-  for (int i=0; i<4; i++) 
+  for (int i=0; i<4; i++)
   {
     code = code*2+(value[i] > v );
   }
-  
-  switch ( num[code] ) 
+
+  switch ( num[code] )
   {
-  case 1: 
+  case 1:
     {
       // make a single triangle
       int o = order[code][0];
@@ -259,21 +258,21 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
       const Point p1(Interpolate( p[o],p[i], v1));
       const Point p2(Interpolate( p[o],p[j], v2));
       const Point p3(Interpolate( p[o],p[k], v3));
-     
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add( p1, p2, p3 );
       }
      #endif
-      
+
       if (build_field_)
       {
         VMesh::Node::index_type i1, i2, i3;
         nodes[0] = find_or_add_edgepoint(node[o], node[i], v1, p1);
         nodes[1] = find_or_add_edgepoint(node[o], node[j], v2, p2);
         nodes[2] = find_or_add_edgepoint(node[o], node[k], v3, p3);
-        if (nodes[0] != nodes[1] && nodes[1] != nodes[2] && nodes[2] != nodes[0]) 
+        if (nodes[0] != nodes[1] && nodes[1] != nodes[2] && nodes[2] != nodes[0])
         {
           trisurf_->add_elem(nodes);
           cell_map_.push_back( cell );
@@ -281,7 +280,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
       }
     }
     break;
-  case 2: 
+  case 2:
     {
       // make order triangles
       const int o = order[code][0];
@@ -296,7 +295,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
       const Point p2(Interpolate( p[o],p[j], v2));
       const Point p3(Interpolate( p[k],p[j], v3));
       const Point p4(Interpolate( p[k],p[i], v4));
-     
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
@@ -304,7 +303,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
         triangles_->add( p1, p3, p4 );
       }
      #endif
-      
+
       if (build_field_)
       {
         VMesh::Node::index_type i1, i2, i3, i4;
@@ -312,13 +311,13 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
         i2 = find_or_add_edgepoint(node[o], node[j], v2, p2);
         i3 = find_or_add_edgepoint(node[k], node[j], v3, p3);
         i4 = find_or_add_edgepoint(node[k], node[i], v4, p4);
-        if (i1 != i2 && i2 != i3 && i3 != i1) 
+        if (i1 != i2 && i2 != i3 && i3 != i1)
         {
           nodes[0] = i1; nodes[1] = i2; nodes[2] = i3;
           trisurf_->add_elem(nodes);
           cell_map_.push_back( cell );
         }
-        if (i1 != i3 && i3 != i4 && i4 != i1) 
+        if (i1 != i3 && i3 != i4 && i4 != i1)
         {
           nodes[0] = i1; nodes[1] = i3; nodes[2] = i4;
           trisurf_->add_elem(nodes);
@@ -328,7 +327,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
     }
     break;
   default:
-    // do nothing. 
+    // do nothing.
     // MarchingCubes calls extract on each and every cell. i.e., this is
     // not an error
     break;
@@ -341,6 +340,5 @@ TetMC::get_field(double value)
   trisurf_handle_->vfield()->resize_values();
   trisurf_handle_->vfield()->set_all_values(value);
 
-  return (trisurf_handle_);  
+  return (trisurf_handle_);
 }
-

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+	 Author:	Martin Cole
+	 Date:		January 7 2003
 */
 
-//    File   : ConvertToNrrd.h
-//    Author : Martin Cole
-//    Date   : Tue Jan  7 09:55:15 2003
 
 #ifndef CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H
 #define CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H 1

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/GenerateMedialAxisPoints.cc
 
 #include <Dataflow/Network/Module.h>
@@ -35,7 +36,7 @@
 
 namespace SCIRun {
 
-class GenerateMedialAxisPoints : public Module 
+class GenerateMedialAxisPoints : public Module
 {
   public:
     GenerateMedialAxisPoints(GuiContext*);
@@ -50,7 +51,7 @@ class GenerateMedialAxisPoints : public Module
 	GuiDouble	   gui_forward_multiplier_;
 	GuiDouble	   gui_back_multiplier_;
 
-  
+
     SCIRunAlgo::MedialAxis2Algo algo_;
 };
 
@@ -74,10 +75,10 @@ GenerateMedialAxisPoints::execute()
 {
   // define data handles:
   FieldHandle surfH, medialPtsH;
-  
+
   // get input from ports:
   get_input_handle("Surface", surfH, true);
-  
+
   // only compute output if inputs changed:
   if (inputs_changed_ || !oport_cached("MedialAxisPoints") ||
       gui_refinement_levels_.changed() ||
@@ -92,14 +93,14 @@ GenerateMedialAxisPoints::execute()
 
     // Set parameters
     algo_.set_int("refinement_levels", gui_refinement_levels_.get());
-    algo_.set_scalar("axis_minimum_angle", gui_axis_min_angle_.get());  
-    algo_.set_scalar("normal_minimum_angle", gui_normal_min_angle_.get());  
+    algo_.set_scalar("axis_minimum_angle", gui_axis_min_angle_.get());
+    algo_.set_scalar("normal_minimum_angle", gui_normal_min_angle_.get());
     algo_.set_scalar("maximum_distance_difference", gui_max_distance_.get());
 	algo_.set_scalar("forward_projection_multiplier", gui_forward_multiplier_.get());
-	algo_.set_scalar("backward_projection_multiplier", gui_back_multiplier_.get());  
-      
+	algo_.set_scalar("backward_projection_multiplier", gui_back_multiplier_.get());
+
     if(!(algo_.run(surfH, medialPtsH))) return;
-    
+
     // Send data downstream
     send_output_handle("MedialAxisPoints", medialPtsH);
   }

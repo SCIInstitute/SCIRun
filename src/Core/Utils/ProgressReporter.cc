@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +26,10 @@
 */
 
 
-
 ///
 ///@file  ProgressReporter.cc
 ///
-///@author 
+///@author
 ///       Yarden Livnat
 ///       Department of Computer Science
 ///       University of Utah
@@ -63,7 +61,7 @@ int AtomicCounter::operator()() const
 
 boost::atomic<int> AtomicCounter::counter_(0);
 
-bool SCIRun::Core::replaceSubstring(std::string& str, const std::string& from, const std::string& to) 
+bool SCIRun::Core::replaceSubstring(std::string& str, const std::string& from, const std::string& to)
 {
   size_t start_pos = str.find(from);
   if (start_pos == std::string::npos)

@@ -1,22 +1,21 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Core_Datatypes_Legacy_Field_HEADERS
   CastFData.h
@@ -63,20 +63,20 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
 )
 
 SET(Core_Datatypes_Legacy_Field_SRCS
-  cd_templates.cc	    	
-  cd_templates_fields_0.cc    	
-  cd_templates_fields_1.cc    	
+  cd_templates.cc
+  cd_templates_fields_0.cc
+  cd_templates_fields_1.cc
   cd_templates_fields_1a.cc
   cd_templates_fields_2.cc
   cd_templates_fields_2a.cc
-  cd_templates_fields_3.cc    	
+  cd_templates_fields_3.cc
   cd_templates_fields_3a.cc
   cd_templates_fields_4.cc
   cd_templates_fields_4a.cc
-  cd_templates_fields_5.cc	
-  cd_templates_fields_5a.cc	
-  cd_templates_fields_6.cc	
-  cd_templates_fields_6a.cc	
+  cd_templates_fields_5.cc
+  cd_templates_fields_5a.cc
+  cd_templates_fields_6.cc
+  cd_templates_fields_6a.cc
   cd_templates_fields_6b.cc
   CurveMesh.cc
   Field.cc
@@ -85,18 +85,18 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   HexVolMesh.cc
   ImageMesh.cc
   LatVolMesh.cc
-  Mesh.cc		
-  PointCloudMesh.cc  
+  Mesh.cc
+  PointCloudMesh.cc
   PrismVolMesh.cc
   QuadSurfMesh.cc
   ScanlineMesh.cc
   TetVolMesh.cc
   TriSurfMesh.cc
-  VFData.cc	
-  VFDataT_0.cc	
-  VFDataT_1.cc	
-  VFDataT_2.cc	
-  VMesh.cc		    	
+  VFData.cc
+  VFDataT_0.cc
+  VFDataT_1.cc
+  VFDataT_2.cc
+  VMesh.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Datatypes_Legacy_Field
@@ -104,12 +104,12 @@ SCIRUN_ADD_LIBRARY(Core_Datatypes_Legacy_Field
   ${Core_Datatypes_Legacy_Field_HEADERS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field 
+TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field
   Core_Basis
   Core_Exceptions_Legacy
-  Core_Geometry_Primitives     
-  Core_Math         
-  #Core_Persistent   
+  Core_Geometry_Primitives
+  Core_Math
+  #Core_Persistent
   Core_Thread
   #Core_Thread_Legacy
   Core_Utils
@@ -120,7 +120,7 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field
   #${GL_LIBRARY}
   #${M_LIBRARY}
   #${CBLAS_LIBRARY}
-  #${F_LIBRARY} 
+  #${F_LIBRARY}
   #${SCI_TEEM_LIBRARY}
   #${SCI_PNG_LIBRARY}
   #${SCI_ZLIB_LIBRARY}

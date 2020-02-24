@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_5.cc
+
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -87,61 +88,61 @@ template class HexVolMesh<HexTrilinearLgn<Point> >;
 template class GenericField<HVMesh, NDBasis, std::vector<double> >;
 
 //Constant
-template class GenericField<HVMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<HVMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<HVMesh, CFDdoubleBasis, std::vector<double> >;       
-template class GenericField<HVMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<HVMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<HVMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<HVMesh, CFDdoubleBasis, std::vector<double> >;
+template class GenericField<HVMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<HVMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<HVMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<HVMesh, CFDlonglongBasis,std::vector<long long> >;
-template class GenericField<HVMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<HVMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<HVMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<HVMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<HVMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<HVMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<HVMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<HVMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<HVMesh, CFDulongBasis,  std::vector<unsigned long> >;
 
 //Linear
-template class GenericField<HVMesh, FDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<HVMesh, FDVectorBasis, std::vector<Vector> >;       
-template class GenericField<HVMesh, FDdoubleBasis, std::vector<double> >;       
-template class GenericField<HVMesh, FDfloatBasis,  std::vector<float> >;        
+template class GenericField<HVMesh, FDTensorBasis, std::vector<Tensor> >;
+template class GenericField<HVMesh, FDVectorBasis, std::vector<Vector> >;
+template class GenericField<HVMesh, FDdoubleBasis, std::vector<double> >;
+template class GenericField<HVMesh, FDfloatBasis,  std::vector<float> >;
 template class GenericField<HVMesh, FDcomplexBasis, std::vector<complex> >;
 template class GenericField<HVMesh, FDintBasis,    std::vector<int> >;
 template class GenericField<HVMesh, FDlonglongBasis,std::vector<long long> >;
-template class GenericField<HVMesh, FDshortBasis,  std::vector<short> >;        
-template class GenericField<HVMesh, FDcharBasis,   std::vector<char> >;         
-template class GenericField<HVMesh, FDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<HVMesh, FDshortBasis,  std::vector<short> >;
+template class GenericField<HVMesh, FDcharBasis,   std::vector<char> >;
+template class GenericField<HVMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<HVMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<HVMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<HVMesh, FDulongBasis,  std::vector<unsigned long> >;
 
 
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFT("HexVolField<Tensor>", "Field",
-		      GenericField<HVMesh, FDTensorBasis, 
+		      GenericField<HVMesh, FDTensorBasis,
 		      std::vector<Tensor> >::maker,
-		      GenericField<HVMesh, CFDTensorBasis, 
+		      GenericField<HVMesh, CFDTensorBasis,
 		      std::vector<Tensor> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFV("HexVolField<Vector>", "Field",
-		      GenericField<HVMesh, FDVectorBasis, 
+		      GenericField<HVMesh, FDVectorBasis,
 		      std::vector<Vector> >::maker,
-		      GenericField<HVMesh, CFDVectorBasis, 
+		      GenericField<HVMesh, CFDVectorBasis,
 		      std::vector<Vector> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFd("HexVolField<double>", "Field",
-		      GenericField<HVMesh, FDdoubleBasis, 
+		      GenericField<HVMesh, FDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<HVMesh, CFDdoubleBasis, 
+		      GenericField<HVMesh, CFDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<HVMesh, NDBasis, 
+		      GenericField<HVMesh, NDBasis,
 		      std::vector<double> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFf("HexVolField<float>", "Field",
-		      GenericField<HVMesh, FDfloatBasis, 
+		      GenericField<HVMesh, FDfloatBasis,
 		      std::vector<float> >::maker,
-		      GenericField<HVMesh, CFDfloatBasis, 
+		      GenericField<HVMesh, CFDfloatBasis,
 		      std::vector<float> >::maker);
 PersistentTypeID
 backwards_compat_HVFco("HexVolField<complex>", "Field",
@@ -149,47 +150,47 @@ backwards_compat_HVFco("HexVolField<complex>", "Field",
           std::vector<complex> >::maker,
           GenericField<HVMesh, CFDcomplexBasis,
           std::vector<complex> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFi("HexVolField<int>", "Field",
-		      GenericField<HVMesh, FDintBasis, 
+		      GenericField<HVMesh, FDintBasis,
 		      std::vector<int> >::maker,
-		      GenericField<HVMesh, CFDintBasis, 
+		      GenericField<HVMesh, CFDintBasis,
 		      std::vector<int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFs("HexVolField<short>", "Field",
-		      GenericField<HVMesh, FDshortBasis, 
+		      GenericField<HVMesh, FDshortBasis,
 		      std::vector<short> >::maker,
-		      GenericField<HVMesh, CFDshortBasis, 
+		      GenericField<HVMesh, CFDshortBasis,
 		      std::vector<short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFc("HexVolField<char>", "Field",
-		      GenericField<HVMesh, FDcharBasis, 
+		      GenericField<HVMesh, FDcharBasis,
 		      std::vector<char> >::maker,
-		      GenericField<HVMesh, CFDcharBasis, 
+		      GenericField<HVMesh, CFDcharBasis,
 		      std::vector<char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFui("HexVolField<unsigned_int>", "Field",
-		       GenericField<HVMesh, FDuintBasis, 
+		       GenericField<HVMesh, FDuintBasis,
 		       std::vector<unsigned int> >::maker,
-		       GenericField<HVMesh, CFDuintBasis, 
+		       GenericField<HVMesh, CFDuintBasis,
 		       std::vector<unsigned int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFus("HexVolField<unsigned_short>", "Field",
-		       GenericField<HVMesh, FDushortBasis, 
+		       GenericField<HVMesh, FDushortBasis,
 		       std::vector<unsigned short> >::maker,
-		       GenericField<HVMesh, CFDushortBasis, 
+		       GenericField<HVMesh, CFDushortBasis,
 		       std::vector<unsigned short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFuc("HexVolField<unsigned_char>", "Field",
-		       GenericField<HVMesh, FDucharBasis, 
+		       GenericField<HVMesh, FDucharBasis,
 		       std::vector<unsigned char> >::maker,
-		       GenericField<HVMesh, CFDucharBasis, 
+		       GenericField<HVMesh, CFDucharBasis,
 		       std::vector<unsigned char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_HVFul("HexVolField<unsigned_long>", "Field",
-		       GenericField<HVMesh, FDulongBasis, 
+		       GenericField<HVMesh, FDulongBasis,
 		       std::vector<unsigned long> >::maker,
-		       GenericField<HVMesh, CFDulongBasis, 
+		       GenericField<HVMesh, CFDulongBasis,
 		       std::vector<unsigned long> >::maker);
 
 

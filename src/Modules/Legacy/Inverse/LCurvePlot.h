@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : LCurvePlot.h
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White, Jess Tate
-//    Date       : Oct 25th, 2017 (last update)
+
+///  File       : LCurvePlot.h
+///  Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White, Jess Tate
+///  Date       : Oct 25th, 2017 (last update)
 
 #ifndef MODULES_LEGACY_INVERSE_LCURVEPLOT_H__
 #define MODULES_LEGACY_INVERSE_LCURVEPLOT_H__

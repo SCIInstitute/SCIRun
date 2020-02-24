@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <QtGui>
 #include <iostream>
@@ -46,6 +46,18 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
   connect(highDPIAdjustCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateHighDPIAdjust(int)));
   connect(forceGridBackgroundCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateForceGridBackground(int)));
+  connect(viewerWidgetSelectionCorrectionCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateWidgetSelectionCorrection(int)));
+  connect(autoRotateViewerOnMouseReleaseCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoRotateViewer(int)));
+}
+
+void PreferencesWindow::updateWidgetSelectionCorrection(int state)
+{
+  SCIRun::Core::Preferences::Instance().widgetSelectionCorrection.setValue(state != 0);
+}
+
+void PreferencesWindow::updateAutoRotateViewer(int state)
+{
+  SCIRun::Core::Preferences::Instance().autoRotateViewerOnMouseRelease.setValue(state != 0);
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)

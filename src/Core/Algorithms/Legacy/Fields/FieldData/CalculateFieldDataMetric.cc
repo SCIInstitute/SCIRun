@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <vector>
 #include <algorithm>
 
@@ -38,16 +38,16 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 CalculateFieldDataMetricAlgo::
 run(std::vector<FieldHandle>& input, MatrixHandle& output)
 {
   algo_start("CalculateFieldDataMetric");
-  
+
   if (!(input.size()))
   {
     error("No input fields were provided");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   bool is_scalar = false;
@@ -130,21 +130,21 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
 
     double sum = 0.0;
     std::vector<double> values;
-    
+
     VField::size_type num_values = 0;
     for (size_t j=0;j<input.size();j++)
     {
       num_values += input[j]->vfield()->num_values();
     }
     values.resize(num_values);
-    
+
     VField::size_type offset = 0;
     for (size_t j=0;j<input.size();j++)
     {
       num_values = input[j]->vfield()->num_values();
       if (num_values) input[j]->vfield()->get_values(&(values[offset]),num_values);
     }
-    
+
     std::sort(values.begin(),values.end());
     output = new DenseMatrix(values[(values.size()/2)]);
     algo_end(); return (true);
@@ -172,7 +172,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output = new DenseMatrix(sum);    
+      output = new DenseMatrix(sum);
       algo_end(); return (true);
     }
     else if (is_tensor)
@@ -184,9 +184,9 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output = new DenseMatrix(sum);    
+      output = new DenseMatrix(sum);
       algo_end(); return (true);
-    }    
+    }
   }
   else if (check_option("method","value-mean"))
   {
@@ -244,7 +244,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       double val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -252,7 +252,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -288,7 +288,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       Vector val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -296,7 +296,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -332,7 +332,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       Tensor val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -340,7 +340,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -380,7 +380,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       double val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -388,7 +388,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -427,7 +427,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       Vector val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -435,7 +435,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -474,7 +474,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       Tensor val;
       double size;
       double weight;
-      
+
       for (size_t j=0;j<input.size();j++)
       {
         VMesh*  vmesh  = input[j]->vmesh();
@@ -482,7 +482,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         VMesh::size_type num_elems = vmesh->num_elems();
 
         vmesh->get_gaussian_scheme(coords,weights,vfield->basis_order());
-                
+
         if (coords.size() > 1)
         {
           for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -517,7 +517,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
 }
 
 
-bool 
+bool
 CalculateFieldDataMetricAlgo::
 run(FieldHandle input, MatrixHandle& output)
 {
@@ -528,4 +528,3 @@ run(FieldHandle input, MatrixHandle& output)
 
 
 } // namespace SCIRunAlgo
-

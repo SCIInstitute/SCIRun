@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,18 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms::Fields::Parameters; 
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
@@ -63,14 +63,14 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     error("No input field");
     return (false);
   }
-  
+
   FieldInformation fo(input);
-  
+
   const auto basistype = getOption(Parameters::OutputType);
   const auto buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
 
   auto basis_order = input->vfield()->basis_order();
-  
+
   if (basistype == "None")
   {
     if (buildBasisMapping)
@@ -83,19 +83,19 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       output = input;
       return (true);
     }
-    
+
     fo.make_nodata();
     output = CreateField(fo,input->mesh());
-    
+
     if (!output)
     {
       error("Could not create output field");
       return false;
     }
-    
+
     return (true);
   }
-  
+
   if (basistype == "Constant")
   {
     if (basis_order == -1)
@@ -122,16 +122,16 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     fo.make_constantdata();
     output = CreateField(fo,input->mesh());
-    
+
     VMesh::coords_type center;
     mesh->get_element_center(center);
-    
+
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_nodes = mesh->num_nodes();
     VMesh::size_type num_nodes_per_elem = mesh->num_nodes_per_elem();
 #endif
-    
+
     if (basis_order == 1)
     {
       if (buildBasisMapping)
@@ -142,7 +142,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         if (!outputData.allocated())
         {
           error("Could not allocate memory for mapping");
-          return (false);     
+          return (false);
         }
         const SparseRowMatrix::Rows& rows = outputData.rows();
         const SparseRowMatrix::Columns& columns = outputData.columns();
@@ -152,7 +152,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         mesh->get_weights(center,weights,1);
         VMesh::Node::array_type nodes;
 
-        index_type k=0, m=0;  
+        index_type k=0, m=0;
         for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
         {
           mesh->get_nodes(nodes,idx);
@@ -160,7 +160,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
           for(size_type j=0; j<num_nodes_per_elem; j++)
           {
             columns[k] = nodes[j];
-            values[k]  = weights[j]; 
+            values[k]  = weights[j];
             k++;
           }
           rows[idx] = idx*num_nodes_per_elem;
@@ -189,7 +189,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         if (!outputData.allocated())
         {
           error("Could not allocate memory for mapping");
-          return (false);     
+          return (false);
         }
         const SparseRowMatrix::Rows& rows = outputData.rows();
         const SparseRowMatrix::Columns& columns = outputData.columns();
@@ -200,7 +200,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         VMesh::Node::array_type nodes;
         VMesh::Edge::array_type edges;
 
-        index_type k=0, m=0, n=0;  
+        index_type k=0, m=0, n=0;
         for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
         {
           mesh->get_nodes(nodes,idx);
@@ -209,7 +209,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
           for(size_type j=0; j<num_nodes_per_elem; j++)
           {
             columns[k] = nodes[j];
-            values[k]  = weights[j]; 
+            values[k]  = weights[j];
             k++;
           }
 
@@ -217,7 +217,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
           for(size_type j=0; j<num_edges_per_elem; j++)
           {
             columns[k] = edges[j]+num_nodes;
-            values[k]  = weights[j+num_nodes_per_elem]; 
+            values[k]  = weights[j+num_nodes_per_elem];
             k++;
           }
 
@@ -232,7 +232,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 #endif
       }
       return (true);
-    }  
+    }
   }
 
 
@@ -265,12 +265,12 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     fo.make_lineardata();
     output = CreateField(fo,input->mesh());
-    
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER    
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_nodes = mesh->num_nodes();
 #endif
-    
+
     if (basis_order == 0)
     {
       if (buildBasisMapping)
@@ -290,13 +290,13 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
         mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
 
-        index_type k=0; 
-        rows[0] = 0; 
+        index_type k=0;
+        rows[0] = 0;
         for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
         {
           mesh->get_elems(elems,idx);
           for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-          rows[idx+1] = rows[idx]+elems.size();  
+          rows[idx+1] = rows[idx]+elems.size();
         }
 
         const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
@@ -332,7 +332,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         if (!mappingData.allocated())
         {
           error("Could not allocate memory for mapping");
-          return (false);   
+          return (false);
         }
 
         const SparseRowMatrix::Rows& rows = mappingData.rows();
@@ -342,7 +342,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         for(VMesh::index_type idx=0; idx<num_nodes; idx++)
         {
           columns[idx] = idx;
-          values[idx]  = 1.0; 
+          values[idx]  = 1.0;
           rows[idx] = idx;
           ofield->copy_value(ifield,idx,idx);
         }
@@ -353,7 +353,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 #endif
       }
       return (true);
-    }  
+    }
   }
 
   if (basistype == "Quadratic")
@@ -364,7 +364,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       mapping.reset();
     }
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     VMesh* mesh    = input->vmesh();
     VField* ifield = input->vfield();
     VMesh::size_type num_values = ifield->num_values();
@@ -385,7 +385,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     fo.make_quadraticdata();
     output = CreateField(fo,input->mesh());
-    
+
     if (buildBasisMapping)
     {
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -412,19 +412,19 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
 
         index_type k=0;
-        rows[0] = 0; 
+        rows[0] = 0;
         for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
         {
           mesh->get_elems(elems,idx);
           for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-          rows[idx+1] = rows[idx]+elems.size();  
+          rows[idx+1] = rows[idx]+elems.size();
         }
 
         for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
         {
           mesh->get_elems(elems,idx);
           for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-          rows[num_nodes+idx+1] = rows[num_nodes+idx]+elems.size();  
+          rows[num_nodes+idx+1] = rows[num_nodes+idx]+elems.size();
         }
 
         const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
@@ -452,7 +452,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         if (!mappingData.allocated())
         {
           error("Could not allocate memory for mapping");
-          return (false);    
+          return (false);
         }
         const SparseRowMatrix::Rows& rows = mappingData.rows();
         const SparseRowMatrix::Columns& columns = mappingData.columns();
@@ -461,20 +461,20 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         for(VMesh::index_type idx=0; idx<num_nodes; idx++)
         {
           columns[idx] = idx;
-          values[idx]  = 1.0; 
+          values[idx]  = 1.0;
           rows[idx] = idx;
           ofield->copy_value(ifield,idx,idx);
         }
         rows[num_nodes] = num_nodes;
 
-        VMesh::Node::array_type nodes;   
+        VMesh::Node::array_type nodes;
 
         for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
         {
           mesh->get_nodes(nodes,idx);
           columns[2*idx+num_nodes] = nodes[0];
           columns[2*idx+num_nodes+1] = nodes[1];
-          values[2*idx+num_nodes+1]  = 0.5; 
+          values[2*idx+num_nodes+1]  = 0.5;
           rows[idx+num_nodes] = 2*idx+num_nodes;
           /// @todo: Need to make this work
           ofield->copy_weighted_value(ifield,&(columns[2*idx+num_nodes]),&(values[2*idx+num_nodes] ),2,idx);
@@ -483,9 +483,9 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
         mapping = new SparseRowMatrix(num_nodes+num_edges,num_nodes,mappingData,num_nodes,true);
         return (true);
-      } 
+      }
 #endif
-    } 
+    }
   }
   return (true);
 }

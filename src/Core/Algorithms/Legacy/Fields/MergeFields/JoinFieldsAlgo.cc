@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -67,7 +67,7 @@ JoinFieldsAlgo::JoinFieldsAlgo()
   addParameter(MakeNoData, false);
 }
 
-bool 
+bool
 JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "JoinFields");
@@ -85,14 +85,14 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   bool make_no_data = get(MakeNoData).toBool();
   bool merge_nodes = get(MergeNodes).toBool();
   bool merge_elems = get(MergeElems).toBool();
-  
+
   double tol = get(Tolerance).toDouble();
   const double tol2 = tol*tol;
-  
+
   // Check whether mesh types are the same
   FieldInformation first(inputs[0]);
   first.make_unstructuredmesh();
-  
+
   /// Make sure mesh and mesh basis order are equal
   for (size_t p=1; p<inputs.size(); p++)
   {
@@ -101,13 +101,13 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     if (fi.get_mesh_type() != first.get_mesh_type())
     {
       error("Mesh elements need to be equal in order to join multiple fields together");
-      return (false);      
+      return (false);
     }
-  
+
     if (fi.mesh_basis_order() != first.mesh_basis_order())
     {
       error("Mesh elements need to be of the same order in for joining multiple fields together");
-      return (false);          
+      return (false);
     }
   }
 
@@ -123,9 +123,9 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
       if (fi.field_basis_order() != first.field_basis_order())
       {
         error("Fields need to have the same basis order");
-        return (false);                        
+        return (false);
       }
-      
+
       if (fi.get_data_type() != first.get_data_type())
       {
         if (fi.is_scalar() && first.is_scalar())
@@ -136,12 +136,12 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
         else
         {
           error("Fields have different data types");
-          return (false);                  
+          return (false);
         }
       }
     }
   }
-  
+
   if (match_node_values)
   {
     for (size_t p=0; p<inputs.size(); p++)
@@ -159,7 +159,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
         error("Node values can only be matched for scalar values");
         return (false);
       }
-      
+
       if (fi.is_float() || fi.is_double())
       {
         remark("Converting floating point values into integers for matching values");
@@ -167,18 +167,18 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
       }
     }
   }
-  
+
   BBox box;
   boost::scoped_ptr<SearchGridT<index_type> > node_grid;
   boost::scoped_ptr<SearchGridT<index_type> > elem_grid;
 
-  size_type ni = 0, nj = 0, nk = 0;    
-        
+  size_type ni = 0, nj = 0, nk = 0;
+
   size_type tot_num_nodes = 0;
   size_type tot_num_elems = 0;
-  
+
   if (merge_elems) merge_nodes = true;
-  
+
   // Compute bounding box and number of nodes
   // and elements
   for (size_t p = 0; p < inputs.size(); p++)
@@ -196,10 +196,10 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
 
   // Add an epsilon so all nodes will be inside
   if (merge_nodes)
-  {    
+  {
     if (!box.valid())
       THROW_ALGORITHM_PROCESSING_ERROR("Merging nodes will fail: BBox is empty or invalid, diagonal not provided.");
-    box.extend(1e-5*box.diagonal().length()); 
+    box.extend(1e-5*box.diagonal().length());
 
     const size_type s =  3*static_cast<size_type>
       ((ceil(pow(static_cast<double>(tot_num_nodes) , (1.0/3.0))))/2.0 + 1.0);
@@ -209,16 +209,16 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     size_type sx = static_cast<size_type>(ceil(diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
-    
+
     node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
 
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
-    
+
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;
-    nk = node_grid->get_nk()-1;    
+    nk = node_grid->get_nk()-1;
   }
 
   if (merge_elems)
@@ -231,16 +231,16 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     size_type sx = static_cast<size_type>(ceil(diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
-    
+
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
-    
+
     elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
-    
+
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;
-    nk = node_grid->get_nk()-1;    
+    nk = node_grid->get_nk()-1;
   }
 
   MeshHandle mesh = CreateMesh(first);
@@ -249,7 +249,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     error("Could not create output mesh");
     return (false);
   }
-  
+
   output = CreateField(first,mesh);
   if (!output)
   {
@@ -259,14 +259,14 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
 
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
-  
+
   omesh->node_reserve(tot_num_nodes);
   omesh->elem_reserve(tot_num_elems);
 
-  size_type nodes_offset = 0;      
-  size_type elems_offset = 0;  
-  size_type nodes_count = 0;      
-  size_type elems_count = 0;  
+  size_type nodes_offset = 0;
+  size_type elems_offset = 0;
+  size_type nodes_count = 0;
+  size_type elems_count = 0;
 
   Point P;
   std::vector<int> values;
@@ -285,10 +285,10 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   {
     elems_count = 0;
     nodes_count = 0;
-    
+
     VMesh* imesh = inputs[p]->vmesh();
     VField* ifield = inputs[p]->vfield();
-    
+
     VMesh::Node::array_type nodes, newnodes, nodes2;
     std::vector<index_type> newnodes_sorted;
 
@@ -296,16 +296,16 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     size_type num_nodes = imesh->num_nodes();
     std::vector<VMesh::Node::index_type> local_to_global(num_nodes,-1);
     std::vector<VMesh::Elem::index_type> local_to_global_elem;
-    
+
     if (merge_elems)
     {
       local_to_global_elem.resize(num_elems,-1);
     }
-    
+
     for (VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
     {
       imesh->get_nodes(nodes,idx);
-      
+
       newnodes.resize(nodes.size());
       for(size_t q=0; q< nodes.size(); q++)
       {
@@ -325,7 +325,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
             imesh->get_center(P,nodeq);
 
             if (match_node_values) ifield->get_value(curval,nodeq);
-             
+
             // Convert to grid coordinates.
             index_type bi, bj, bk, ei, ej, ek;
             node_grid->unsafe_locate(bi, bj, bk, P);
@@ -340,15 +340,15 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
             if (bk > nk) bk = nk;
             if (bk < 0) bk = 0;
 
-            ei = bi; ej = bj; ek = bk;          
+            ei = bi; ej = bj; ek = bk;
 
             index_type cidx = -1;
             double dmin = tol2;
             bool found = true;
-            
-            do 
+
+            do
             {
-              found = true; 
+              found = true;
               for (index_type i = bi; i <= ei; i++)
               {
                 if (i < 0 || i > ni) continue;
@@ -366,7 +366,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
                         SearchGridT<index_type>::iterator it, eit;
                         node_grid->lookup_ijk(it, eit, i, j, k);
 
-                        if (match_node_values) 
+                        if (match_node_values)
                         {
                           while (it != eit)
                           {
@@ -376,14 +376,14 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
                               omesh->get_center(point,VMesh::Node::index_type(*it));
                               const double dist  = (P-point).length2();
 
-                              if (dist < dmin) 
-                              { 
-                                cidx = *it; 
-                                dmin = dist; 
+                              if (dist < dmin)
+                              {
+                                cidx = *it;
+                                dmin = dist;
                               }
                             }
                             ++it;
-                          }                        
+                          }
                         }
                         else
                         {
@@ -393,10 +393,10 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
                             omesh->get_center(point,VMesh::Node::index_type(*it));
                             const double dist  = (P-point).length2();
 
-                            if (dist < dmin) 
-                            { 
-                              cidx = *it; 
-                              dmin = dist; 
+                            if (dist < dmin)
+                            {
+                              cidx = *it;
+                              dmin = dist;
                             }
                             ++it;
                           }
@@ -409,7 +409,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
               bi--;ei++;
               bj--;ej++;
               bk--;ek++;
-            } 
+            }
             while (!found);
 
             if (cidx >= 0)
@@ -434,15 +434,15 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
           {
             Point P;
             imesh->get_center(P,nodeq);
-          
-            index_type nidx = omesh->add_point(P); 
+
+            index_type nidx = omesh->add_point(P);
             nodes_count++;
             newnodes[q] = nidx;
             local_to_global[nodeq] = nidx;
           }
         }
       }
-      
+
       if (merge_elems)
       {
         newnodes_sorted.resize(newnodes.size());
@@ -451,7 +451,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
           newnodes_sorted[r] = newnodes[r];
         }
         std::sort(newnodes_sorted.begin(),newnodes_sorted.end());
-        
+
         Point p(0.0,0.0,0.0);
         for (size_t r=0; r< newnodes_sorted.size(); r++)
         {
@@ -460,7 +460,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
           p = (p + q).asPoint();
         }
         p = p*(1.0/newnodes_sorted.size());
-        
+
         // Convert to grid coordinates.
         index_type i, j, k;
         elem_grid->unsafe_locate(i, j, k, p);
@@ -474,35 +474,35 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
         {
           omesh->get_nodes(nodes2,VMesh::Elem::index_type(*it));
           std::sort(nodes2.begin(),nodes2.end());
-          
+
           // compare
-          
+
           bool similar = true;
           for (size_t h=0;h<nodes2.size();h++)
           {
             if (nodes2[h] != newnodes_sorted[h]) { similar = false; break;}
           }
-          
+
           if (similar) { found = true; oelem = VMesh::Elem::index_type(*it); break; }
           ++it;
-        }  
-      
+        }
+
         if (!found)
         {
-          oelem = omesh->add_elem(newnodes);          
+          oelem = omesh->add_elem(newnodes);
           elem_grid->insert(oelem,p);
           elems_count++;
           local_to_global_elem[idx] = oelem;
         }
-        
+
       }
       else
       {
-        omesh->add_elem(newnodes);          
+        omesh->add_elem(newnodes);
         elems_count++;
       }
     }
- 
+
     if (ifield->num_values() > 0)
     {
       if (ofield->basis_order() == 0 && ifield->basis_order() == 0)
@@ -516,7 +516,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
             {
               ofield->copy_value(ifield,j,local_to_global_elem[j]);
             }
-          }      
+          }
         }
         else
         {
@@ -535,13 +535,13 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
         }
       }
     }
-    
+
     elems_offset += elems_count;
     nodes_offset += nodes_count;
-    
+
     update_progress_max(p+1, inputs.size());
   }
-  
+
 
   return (true);
 }
@@ -558,4 +558,3 @@ AlgorithmOutput JoinFieldsAlgo::run(const AlgorithmInput& input) const
   output[Variables::OutputField] = outputField;
   return output;
 }
-

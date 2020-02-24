@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -95,65 +94,65 @@ PersistentTypeID backwards_compat_SCM("StructCurveMesh", "Mesh",
 template class StructCurveMesh<CrvLinearLgn<Point> >;
 
 //NoData
-template class GenericField<CMesh, NDBasis, std::vector<double> >; 
+template class GenericField<CMesh, NDBasis, std::vector<double> >;
 
 
 //Constant
-template class GenericField<CMesh, CFDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<CMesh, CFDVectorBasis, std::vector<Vector> >;       
-template class GenericField<CMesh, CFDdoubleBasis, std::vector<double> >;       
+template class GenericField<CMesh, CFDTensorBasis, std::vector<Tensor> >;
+template class GenericField<CMesh, CFDVectorBasis, std::vector<Vector> >;
+template class GenericField<CMesh, CFDdoubleBasis, std::vector<double> >;
 template class GenericField<CMesh, CFDfloatBasis,  std::vector<float> >;
 template class GenericField<CMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<CMesh, CFDlonglongBasis,std::vector<long long> >;
-template class GenericField<CMesh, CFDshortBasis,  std::vector<short> >;        
-template class GenericField<CMesh, CFDcharBasis,   std::vector<char> >;         
-template class GenericField<CMesh, CFDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<CMesh, CFDshortBasis,  std::vector<short> >;
+template class GenericField<CMesh, CFDcharBasis,   std::vector<char> >;
+template class GenericField<CMesh, CFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<CMesh, CFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<CMesh, CFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<CMesh, CFDulongBasis,  std::vector<unsigned long> >;
 
 //Linear
-template class GenericField<CMesh, FDCrTensorBasis, std::vector<Tensor> >;       
-template class GenericField<CMesh, FDCrVectorBasis, std::vector<Vector> >;       
-template class GenericField<CMesh, FDCrdoubleBasis, std::vector<double> >;       
-template class GenericField<CMesh, FDCrfloatBasis,  std::vector<float> >;        
+template class GenericField<CMesh, FDCrTensorBasis, std::vector<Tensor> >;
+template class GenericField<CMesh, FDCrVectorBasis, std::vector<Vector> >;
+template class GenericField<CMesh, FDCrdoubleBasis, std::vector<double> >;
+template class GenericField<CMesh, FDCrfloatBasis,  std::vector<float> >;
 template class GenericField<CMesh, FDCrcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, FDCrintBasis,    std::vector<int> >;
 template class GenericField<CMesh, FDCrlonglongBasis,std::vector<long long> >;
-template class GenericField<CMesh, FDCrshortBasis,  std::vector<short> >;        
-template class GenericField<CMesh, FDCrcharBasis,   std::vector<char> >;         
-template class GenericField<CMesh, FDCruintBasis,   std::vector<unsigned int> >; 
+template class GenericField<CMesh, FDCrshortBasis,  std::vector<short> >;
+template class GenericField<CMesh, FDCrcharBasis,   std::vector<char> >;
+template class GenericField<CMesh, FDCruintBasis,   std::vector<unsigned int> >;
 template class GenericField<CMesh, FDCrushortBasis, std::vector<unsigned short> >;
 template class GenericField<CMesh, FDCrucharBasis,  std::vector<unsigned char> >;
 template class GenericField<CMesh, FDCrulongBasis,  std::vector<unsigned long> >;
 
 
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFT("StructCurveField<Tensor>", "Field",
-		      GenericField<CMesh, FDCrTensorBasis, 
+		      GenericField<CMesh, FDCrTensorBasis,
 		      std::vector<Tensor> >::maker,
-		      GenericField<CMesh, CFDTensorBasis, 
+		      GenericField<CMesh, CFDTensorBasis,
 		      std::vector<Tensor> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFV("StructCurveField<Vector>", "Field",
-		      GenericField<CMesh, FDCrVectorBasis, 
+		      GenericField<CMesh, FDCrVectorBasis,
 		      std::vector<Vector> >::maker,
-		      GenericField<CMesh, CFDVectorBasis, 
+		      GenericField<CMesh, CFDVectorBasis,
 		      std::vector<Vector> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFd("StructCurveField<double>", "Field",
-		      GenericField<CMesh, FDCrdoubleBasis, 
+		      GenericField<CMesh, FDCrdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<CMesh, CFDdoubleBasis, 
+		      GenericField<CMesh, CFDdoubleBasis,
 		      std::vector<double> >::maker,
-		      GenericField<CMesh, NDBasis, 
+		      GenericField<CMesh, NDBasis,
 		      std::vector<double> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFf("StructCurveField<float>", "Field",
-		      GenericField<CMesh, FDCrfloatBasis, 
+		      GenericField<CMesh, FDCrfloatBasis,
 		      std::vector<float> >::maker,
-		      GenericField<CMesh, CFDfloatBasis, 
+		      GenericField<CMesh, CFDfloatBasis,
 		      std::vector<float> >::maker);
 PersistentTypeID
 backwards_compat_SCFco("StructCurveField<complex>", "Field",
@@ -163,45 +162,45 @@ backwards_compat_SCFco("StructCurveField<complex>", "Field",
           std::vector<complex> >::maker);
 PersistentTypeID
 backwards_compat_SCFi("StructCurveField<int>", "Field",
-		      GenericField<CMesh, FDCrintBasis, 
+		      GenericField<CMesh, FDCrintBasis,
 		      std::vector<int> >::maker,
-		      GenericField<CMesh, CFDintBasis, 
+		      GenericField<CMesh, CFDintBasis,
 		      std::vector<int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFs("StructCurveField<short>", "Field",
-		      GenericField<CMesh, FDCrshortBasis, 
+		      GenericField<CMesh, FDCrshortBasis,
 		      std::vector<short> >::maker,
-		      GenericField<CMesh, CFDshortBasis, 
+		      GenericField<CMesh, CFDshortBasis,
 		      std::vector<short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFc("StructCurveField<char>", "Field",
-		      GenericField<CMesh, FDCrcharBasis, 
+		      GenericField<CMesh, FDCrcharBasis,
 		      std::vector<char> >::maker,
-		      GenericField<CMesh, CFDcharBasis, 
+		      GenericField<CMesh, CFDcharBasis,
 		      std::vector<char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFui("StructCurveField<unsigned_int>", "Field",
-		       GenericField<CMesh, FDCruintBasis, 
+		       GenericField<CMesh, FDCruintBasis,
 		       std::vector<unsigned int> >::maker,
-		       GenericField<CMesh, CFDuintBasis, 
+		       GenericField<CMesh, CFDuintBasis,
 		       std::vector<unsigned int> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFus("StructCurveField<unsigned_short>", "Field",
-		       GenericField<CMesh, FDCrushortBasis, 
+		       GenericField<CMesh, FDCrushortBasis,
 		       std::vector<unsigned short> >::maker,
-		       GenericField<CMesh, CFDushortBasis, 
+		       GenericField<CMesh, CFDushortBasis,
 		       std::vector<unsigned short> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFuc("StructCurveField<unsigned_char>", "Field",
-		       GenericField<CMesh, FDCrucharBasis, 
+		       GenericField<CMesh, FDCrucharBasis,
 		       std::vector<unsigned char> >::maker,
-		       GenericField<CMesh, CFDucharBasis, 
+		       GenericField<CMesh, CFDucharBasis,
 		       std::vector<unsigned char> >::maker);
-PersistentTypeID 
+PersistentTypeID
 backwards_compat_SCFul("StructCurveField<unsigned_long>", "Field",
-		       GenericField<CMesh, FDCrulongBasis, 
+		       GenericField<CMesh, FDCrulongBasis,
 		       std::vector<unsigned long> >::maker,
-		       GenericField<CMesh, CFDulongBasis, 
+		       GenericField<CMesh, CFDulongBasis,
 		       std::vector<unsigned long> >::maker);
 
 //Linear

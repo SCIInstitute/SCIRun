@@ -1,30 +1,29 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
 #ifdef __APPLE__
@@ -42,6 +41,7 @@
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -73,6 +73,7 @@
 #include "comp/ClippingPlaneUniforms.h"
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -206,7 +207,7 @@ void SRInterface::runGCOnNextExecution()
     void SRInterface::inputMouseUp()
     {
       widgetUpdater_.reset();
-      tryAutoRotate = doAutoRotateOnDrag;
+      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -335,7 +336,6 @@ void SRInterface::runGCOnNextExecution()
     void SRInterface::setCameraRotation(const glm::quat& roation) {mCamera->setRotation(roation);}
     glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
-    void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
@@ -546,7 +546,7 @@ void SRInterface::runGCOnNextExecution()
             mCore.addComponent(entityID, commonUniforms);
 
             applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
-            applyUniform(entityID, SpireSubPass::Uniform("hack", mSelectionHack));
+            applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
 
             // Add components associated with entity. We just need a base class which
             // we can pass in an entity ID, then a derived class which bundles

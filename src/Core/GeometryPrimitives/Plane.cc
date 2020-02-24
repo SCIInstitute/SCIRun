@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/GeometryPrimitives/Plane.h>
 
 namespace SCIRun {
@@ -43,7 +43,7 @@ Plane::Plane(const Vector& normal, double distance)
 {
 }
 
-Plane::Plane(double a, double b, double c, double d) : n(Vector(a,b,c)), d(d) 
+Plane::Plane(double a, double b, double c, double d) : n(Vector(a,b,c)), d(d)
 {
   double l=n.length();
   d/=l;
@@ -60,7 +60,7 @@ Plane::Plane(const Plane &copy)
 {
 }
 
-Plane::Plane(const Point &p1, const Point &p2, const Point &p3) 
+Plane::Plane(const Point &p1, const Point &p2, const Point &p3)
 {
   Vector v1(p2-p1);
   Vector v2(p2-p3);
@@ -69,11 +69,11 @@ Plane::Plane(const Point &p1, const Point &p2, const Point &p3)
   d=-Dot(p1, n);
 }
 
-Plane::~Plane() 
+Plane::~Plane()
 {
 }
 
-void Plane::flip() 
+void Plane::flip()
 {
   n.x(-n.x());
   n.y(-n.y());
@@ -81,7 +81,7 @@ void Plane::flip()
   d=-d;
 }
 
-double Plane::eval_point(const Point &p) const 
+double Plane::eval_point(const Point &p) const
 {
   return Dot(p, n)+d;
 }
@@ -107,7 +107,7 @@ double Plane::distance() const
 }
 
 void
-Plane::ChangePlane(const Point &p1, const Point &p2, const Point &p3) 
+Plane::ChangePlane(const Point &p1, const Point &p2, const Point &p3)
 {
   Vector v1(p2-p1);
   Vector v2(p2-p3);
@@ -117,7 +117,7 @@ Plane::ChangePlane(const Point &p1, const Point &p2, const Point &p3)
 }
 
 void
-Plane::ChangePlane(const Point &P, const Vector &N) 
+Plane::ChangePlane(const Point &P, const Vector &N)
 {
   n = N;
   n.safe_normalize();
@@ -134,14 +134,14 @@ Plane::Intersect( const Point & s, const Vector & v, Point& hit ) const
   if( tmp > -1.e-6 && tmp < 1.e-6 ) // Vector v is parallel to plane
   {
     // vector from origin of line to point on plane
-      
+
     Vector temp = s - ptOnPlane;
 
     if ( temp.length() < 1.e-5 )
     {
       // the origin of plane and the origin of line are almost
       // the same
-	  
+
       hit = ptOnPlane;
       return 1;
     }
@@ -149,7 +149,7 @@ Plane::Intersect( const Point & s, const Vector & v, Point& hit ) const
     {
       // point s and d are not the same, but maybe s lies
       // in the plane anyways
-	  
+
       tmp = Dot( temp, n );
 
       if(tmp > -1.e-6 && tmp < 1.e-6)
@@ -196,7 +196,7 @@ Plane::Intersect(const Point & s, const Vector & v, double &t) const
       else return 0;
     }
   }
-  
+
   t = -((d + Dot(s, n)) / Dot(v, n));
   return 1;
 }
@@ -212,13 +212,12 @@ Plane::get(double (&abcd)[4]) const
 
 
 bool
-Plane::operator==(const Plane &rhs) const 
-{ 
+Plane::operator==(const Plane &rhs) const
+{
   double cosine = Dot(this->n, rhs.n);
   double d1 = this->eval_point(Point(0,0,0));
   double d2 = rhs.eval_point(Point(0,0,0));
-  return (fabs(double(d1-d2)) < 0.000001) && (fabs(double(cosine-1.0)) < 0.00001); 
+  return (fabs(double(d1-d2)) < 0.000001) && (fabs(double(cosine-1.0)) < 0.00001);
 }
 
 }}}
-

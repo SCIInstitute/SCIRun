@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>
@@ -35,7 +35,7 @@ namespace SCIRun {
 
 /// @class ReportMatrixRowMeasure
 /// @brief This module computes a measure on each row of the input matrix and
-/// stores the result in the output matrix. 
+/// stores the result in the output matrix.
 
 class ReportMatrixRowMeasure : public Module {
 public:
@@ -43,7 +43,7 @@ public:
   virtual void execute();
 
 private:
-  GuiString guimethod_;  
+  GuiString guimethod_;
 };
 
 
@@ -58,20 +58,18 @@ void
 ReportMatrixRowMeasure::execute()
 {
   MatrixHandle input, output;
-  
+
   if (!(get_input_handle("Matrix",input,true))) return;
 
   if (inputs_changed_ || guimethod_.changed() || !oport_cached("Vector"))
   {
     SCIRunAlgo::MathAlgo algo(this);
-    
+
     std::string method = guimethod_.get();
     if (!(algo.ApplyRowOperation(input,output,method))) return;
-    
+
     send_output_handle("Vector", output);
   }
 }
 
 } // End namespace SCIRun
-
-

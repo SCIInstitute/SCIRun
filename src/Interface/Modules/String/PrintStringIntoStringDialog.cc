@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/String/PrintStringIntoStringDialog.h>
 #include <Modules/Legacy/String/PrintStringIntoString.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -43,6 +43,6 @@ PrintStringIntoStringDialog::PrintStringIntoStringDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addLineEditManager(FormatString_,PrintStringIntoString::FormatString);
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
  *  NrrdToMatrix_IEPlugin.cc
  *
@@ -35,7 +35,7 @@
  *   University of Utah
  *
  */
- 
+
 
 // This is a plugin is meant to read simple text files with pure data
 // in ascii format into a SCIRun matrix.
@@ -53,12 +53,12 @@ MatrixHandle NrrdToMatrix_reader(ProgressReporter *pr, const char *filename);
 MatrixHandle NrrdToMatrix_reader(ProgressReporter *pr, const char *filename)
 {
   MatrixHandle result = 0;
-  
+
   Nrrd* nrrd = nrrdNew();
-    
+
   if (nrrd)
   {
-    if (nrrdLoad(nrrd, airStrdup(filename), 0)) 
+    if (nrrdLoad(nrrd, airStrdup(filename), 0))
     {
       char *err = biffGetDone(NRRD);
       pr->error("Read error on '" + std::string(filename) + "': " + err);
@@ -66,15 +66,15 @@ MatrixHandle NrrdToMatrix_reader(ProgressReporter *pr, const char *filename)
       return (result);
     }
 
-    
+
     if (nrrd->dim > 2)
     {
       pr->error("Nrrd has a dimension larger than 2 which cannot be stored into a matrix");
-      
+
       nrrdNix(nrrd);
       return (result);
     }
-    
+
     if (nrrd->dim < 1)
     {
       pr->error("Nrrd dimension is zero");
@@ -82,24 +82,24 @@ MatrixHandle NrrdToMatrix_reader(ProgressReporter *pr, const char *filename)
       nrrdNix(nrrd);
       return (result);
     }
-    
+
     int m = 1;
     int n = 1;
     if (nrrd->dim > 0) m = nrrd->axis[0].size;
     if (nrrd->dim > 1) n = nrrd->axis[1].size;
-    
+
     result = new DenseMatrix(n,m);
-    
+
     if (result.get_rep() == 0)
     {
       pr->error("Could not allocate the output Matrix");
       nrrdNix(nrrd);
-      return (result);    
+      return (result);
     }
     double* data = result->get_data_pointer();
-    
+
     int size = n*m;
-    
+
     switch (nrrd->type)
     {
       case nrrdTypeChar:
@@ -155,17 +155,16 @@ MatrixHandle NrrdToMatrix_reader(ProgressReporter *pr, const char *filename)
         pr->error("Unknown Nrrd type");
         nrrdNix(nrrd);
         result = 0;
-        return (result);    
+        return (result);
       }
     }
     nrrdNix(nrrd);
-    
+
   }
-  
+
   return(result);
 }
 
 static MatrixIEPlugin NrrdToMatrix_plugin("NrrdFile","{.nhdr} {.nrrd}", "",NrrdToMatrix_reader,0);
 
 } // end namespace
-

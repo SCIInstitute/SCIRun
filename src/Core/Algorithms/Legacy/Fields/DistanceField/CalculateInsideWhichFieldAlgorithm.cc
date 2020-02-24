@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h>
@@ -67,16 +68,16 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
   FieldHandle output;
   std::vector<FieldHandle> inputs;
   std::copy_if(objField.begin(), objField.end(), std::back_inserter(inputs), [](FieldHandle f){return f;});
-  
+
   //pull parameter from UI
   std::string method=getOption(Parameters::Method);
-  
+
   if(!input)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input fields given");
     return FieldHandle();
   }
-  
+
   for(size_t p=0;p<objField.size();p++)
   {
     if(!objField[p])
@@ -85,19 +86,19 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
       return FieldHandle();
     }
   }
-  
+
   // no precompiled version available so compile one
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   if(fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return FieldHandle();
   }
-  
+
   std::string outputType=getOption(Parameters::OutputType);
-  
+
   if(outputType!="same as input")
   {
     fo.set_data_type(outputType);
@@ -105,38 +106,38 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
 
   if(fo.is_vector()) fo.make_double();
   if(fo.is_tensor()) fo.make_double();
-  
+
   fo.make_constantdata();
-  
+
   if(checkOption(Parameters::DataLocation,"node"))
     fo.make_lineardata();
-  
+
   output=CreateField(fo,input->mesh());
-  
+
   if(!output)
   {
     error("Could not create output field");
     return FieldHandle();
   }
-  
+
   // For the moment we calculate everything in doubles
-  
+
   VField* ifield=input->vfield();
-  
+
   VMesh* omesh=output->vmesh();
   VField* ofield=output->vfield();
-  
+
   double outsideValue=get(Parameters::OutsideValue).toDouble();
   double startValue=get(Parameters::StartValue).toDouble();
   std::string changeOutsideValue=getOption(Parameters::ChangeOutsideValue);
-  
+
   if(changeOutsideValue=="true")
     ofield->set_all_values(outsideValue);
   else
     ofield->copy_values(ifield);
-  
+
   std::vector<VMesh*> objmesh(objField.size(),0);
-  
+
   if(ofield->basis_order()==0)
   {
     for(size_t p=0;p<objField.size();p++)
@@ -144,28 +145,28 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
       objmesh[p]=objField[p]->vmesh();
       objmesh[p]->synchronize(Mesh::ELEM_LOCATE_E);
     }
-    
+
     VMesh::size_type numElems=omesh->num_elems();
-    
+
     VMesh::Node::array_type nodes;
     VMesh::Elem::index_type cidx;
-    
+
     std::vector<Point> points1;
     std::vector<Point> points2;
-    
+
     std::vector<VMesh::coords_type> coords;
     std::vector<double> weights;
-    
+
     std::string samplingScheme=getOption(Parameters::SamplingScheme);
     if(samplingScheme=="regular1") omesh->get_regular_scheme(coords,weights,1);
     if(samplingScheme=="regular2") omesh->get_regular_scheme(coords,weights,2);
     if(samplingScheme=="regular3") omesh->get_regular_scheme(coords,weights,3);
     if(samplingScheme=="regular4") omesh->get_regular_scheme(coords,weights,4);
     if(samplingScheme=="regular5") omesh->get_regular_scheme(coords,weights,5);
-    
+
     std::string method=getOption(Parameters::Method);
     int cnt=0;
-    
+
     if(method=="one")
     {
       for(VMesh::Elem::index_type idx=0;idx<numElems;idx++)
@@ -182,7 +183,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
               break;
             }
           }
-          
+
           if(is_inside) ofield->set_value(startValue+p,idx);
         }
         cnt++;
@@ -210,7 +211,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
               break;
             }
           }
-          
+
           if(is_inside) ofield->set_value(startValue+p,idx);
         }
         cnt++;
@@ -238,7 +239,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
             else
               outside++;
           }
-          
+
           if(inside>=outside) ofield->set_value(startValue+p,idx);
         }
         cnt++;
@@ -258,17 +259,17 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
       objmesh[p] = objField[p]->vmesh();
       objmesh[p]->synchronize(Mesh::ELEM_LOCATE_E);
     }
-    
+
     VMesh::size_type numNodes = omesh->num_nodes();
-    
+
     int cnt = 0;
-    
+
     for(VMesh::Node::index_type idx=0; idx<numNodes;idx++)
     {
       Point point;
       VMesh::Elem::index_type cidx;
       omesh->get_center(point,idx);
-      
+
       for (size_t p=0; p<objmesh.size(); p++)
       {
         if (objmesh[p]->locate(cidx,point))
@@ -276,7 +277,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
           ofield->set_value(startValue+p,idx);
         }
       }
-      
+
       // Progress Reporting
       cnt++;
      /* if (cnt == 100)
@@ -289,17 +290,17 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
     return output;
 }
 
-  
+
 AlgorithmOutput CalculateInsideWhichFieldAlgorithm::run(const AlgorithmInput& input) const
 {
   auto inputField=input.get<Field>(Variables::InputField);
   auto inputFields=input.getList<Field>(Variables::InputFields);
-  
+
   FieldHandle outputField=run(inputField,inputFields);
-  
+
   if(!outputField)
     THROW_ALGORITHM_PROCESSING_ERROR("null returned on legacy run call.");
-  
+
   AlgorithmOutput output;
   output[Variables::OutputField] = outputField;
   return output;

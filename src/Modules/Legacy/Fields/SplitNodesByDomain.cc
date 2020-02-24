@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/SplitNodesByDomain.cc
 
 #include <Core/Algorithms/Fields/DomainFields/SplitNodesByDomain.h>
@@ -41,9 +42,9 @@ class SplitNodesByDomain : public Module {
   public:
     SplitNodesByDomain(GuiContext*);
     virtual ~SplitNodesByDomain() {}
-    
+
     virtual void execute();
-    
+
   private:
     SCIRunAlgo::SplitNodesByDomainAlgo algo_;
 };
@@ -62,19 +63,19 @@ void SplitNodesByDomain::execute()
   // Define local handles of data objects:
   FieldHandle input;
   FieldHandle output;
-  
-  // Get the new input data:    
+
+  // Get the new input data:
   if(!(get_input_handle("Field",input,true))) return;
 
   // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:  
+  // that executes every module downstream even if no data has changed:
   if (inputs_changed_ || !oport_cached("SplitField"))
   {
     update_state(Executing);
 
     if(!(algo_.run(input,output))) return;
 
-    // send new output if there is any:   
+    // send new output if there is any:
     send_output_handle("SplitField",output,false);
   }
 }
@@ -82,4 +83,3 @@ void SplitNodesByDomain::execute()
 
 
 } // End namespace SCIRun
-

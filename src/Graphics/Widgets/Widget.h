@@ -25,6 +25,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 

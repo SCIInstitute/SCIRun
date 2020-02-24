@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:          Martin Cole
+   Date:            June 15 2001
 */
 
-//    File   : HexMC.cc
-//    Author : Martin Cole
-//    Date   : Fri Jun 15 21:33:04 2001
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/UHexMC.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -55,7 +54,7 @@ void UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   VMesh::Elem::size_type csize;
   mesh_->size(csize);
   ncells_ = csize;
- 
+
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (basis_order_ == 0)
   {
@@ -76,7 +75,7 @@ void UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   }
   geomHandle_ = triangles_;
  #endif
-  
+
   trisurf_ = 0;
   quadsurf_ = 0;
   if (build_field_)
@@ -85,18 +84,18 @@ void UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
     {
       FieldInformation fi("QuadSurfMesh",basis_order_,"double");
       quadsurf_handle_ = CreateField(fi);
-      quadsurf_ = quadsurf_handle_->vmesh();  
+      quadsurf_ = quadsurf_handle_->vmesh();
     }
     else
     {
       FieldInformation fi("TriSurfMesh",basis_order_,"double");
       trisurf_handle_ = CreateField(fi);
-      trisurf_ = trisurf_handle_->vmesh();  
+      trisurf_ = trisurf_handle_->vmesh();
     }
   }
 }
 
-VMesh::Node::index_type UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
+VMesh::Node::index_type UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx)
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
@@ -112,16 +111,16 @@ VMesh::Node::index_type UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &t
 }
 
 void UHexMC::find_or_add_parent(index_type u0, index_type u1,
-                           double d0, index_type face) 
+                           double d0, index_type face)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     edge_map_[np] = face;
@@ -146,7 +145,7 @@ void UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->get_value( selfvalue, cell );
-  
+
   VMesh::DElem::array_type faces;
   mesh_->get_delems(faces, cell);
 
@@ -163,7 +162,7 @@ void UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
      {
       mesh_->get_nodes(face_nodes, faces[i]);
       mesh_->get_centers(p,face_nodes);
-      
+
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
@@ -171,7 +170,7 @@ void UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
         triangles_->add(p[2], p[3], p[0]);
       }
      #endif
-     
+
       if (build_field_)
       {
         for (int j=0; j<4; j++)
@@ -200,7 +199,7 @@ void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   mesh_->get_centers(p,node);
   field_->get_values(value,node);
 
-  for (int i=7; i>=0; i--) 
+  for (int i=7; i>=0; i--)
   {
     code = code*2+(value[i] < iso );
   }
@@ -211,14 +210,14 @@ void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
 //  TriangleCase *tcase=&tri_case[code];
   TRIANGLE_CASES *tcase=&triCases[code];
   int *vertex = tcase->edges;
-  
+
   Point q[12];
   VMesh::Node::index_type surf_node[12];
 
   // interpolate and project vertices
   index_type v = 0;
   std::vector<bool> visited(12, false);
-  while (vertex[v] != -1) 
+  while (vertex[v] != -1)
   {
     index_type i = vertex[v++];
     if (visited[i]) continue;
@@ -227,27 +226,27 @@ void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
     index_type v2 = edge_tab[i][1];
     const double d = (value[v1]-iso)/double(value[v1]-value[v2]);
     q[i] = Interpolate(p[v1], p[v2], d);
-		       
+
     if (build_field_)
     {
       surf_node[i] = find_or_add_edgepoint(node[v1], node[v2], d, q[i]);
     }
   }
-  
+
   v = 0;
-  while(vertex[v] != -1) 
+  while(vertex[v] != -1)
   {
     index_type v0 = vertex[v++];
     index_type v1 = vertex[v++];
     index_type v2 = vertex[v++];
-   
+
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (build_geom_)
     {
       triangles_->add(q[v0], q[v1], q[v2]);
     }
    #endif
-    
+
     if (build_field_)
     {
       if (surf_node[v0] != surf_node[v1] &&
@@ -272,26 +271,26 @@ FieldHandle UHexMC::get_field(double value)
   {
     quadsurf_handle_->vfield()->resize_values();
     quadsurf_handle_->vfield()->set_all_values(value);
-    return (quadsurf_handle_);  
+    return (quadsurf_handle_);
   }
   else
   {
     trisurf_handle_->vfield()->resize_values();
     trisurf_handle_->vfield()->set_all_values(value);
-    return (trisurf_handle_);  
+    return (trisurf_handle_);
   }
 }
 
-VMesh::Node::index_type UHexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+VMesh::Node::index_type UHexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p)
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
-  
+
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
   const edge_hash_type::iterator loc = edge_map_.find(np);
-  
+
   if (loc == edge_map_.end())
   {
     const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);

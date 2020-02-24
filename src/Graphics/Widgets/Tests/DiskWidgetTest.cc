@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
 
+#include <gtest/gtest.h>
 #include <Graphics/Widgets/DiskWidget.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
@@ -45,9 +45,6 @@ TEST(DiskWidgetTest, CanCreateSingleDiskReal)
 
   EXPECT_EQ(Point(1.5,1.5,0), disk.position());
   EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk1widget10100", disk.name());
-
-
-  //FAIL() << "todo";
 }
 
 TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
@@ -62,7 +59,4 @@ TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
 
   EXPECT_EQ(Point(1.5,1.5,0), disk.position());
   EXPECT_EQ("__disk__0", disk.name());
-
-
-  //FAIL() << "todo";
 }

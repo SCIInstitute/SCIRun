@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Mesh/VirtualMeshFacade.h
 
 #ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
-#define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
+#define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Mesh/share.h>
@@ -43,12 +43,12 @@ namespace Datatypes {
   {
   public:
     typedef MeshFacade<VirtualMeshType> my_base;
-    
+
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       /// @todo: necessary? interface to vmesh
-      //if (! vmesh->is_latvolmesh() 
-      //  && ! vmesh->is_trisurfmesh() 
+      //if (! vmesh->is_latvolmesh()
+      //  && ! vmesh->is_trisurfmesh()
       //  && ! vmesh->is_tetvolmesh())
       //  THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
@@ -85,11 +85,11 @@ namespace Datatypes {
       return vmesh_->num_edges();
     }
 
-    virtual size_t numFaces() const 
+    virtual size_t numFaces() const
     {
       return vmesh_->num_faces();
     }
-    
+
     virtual size_t numCells() const
     {
       /// @todo: need to split out that Synchronize enum
@@ -97,7 +97,7 @@ namespace Datatypes {
       return vmesh_->num_cells();
     }
 
-    virtual size_t numElements() const 
+    virtual size_t numElements() const
     {
       return vmesh_->num_elems();
     }
@@ -108,4 +108,3 @@ namespace Datatypes {
 }}}
 
 #endif
-

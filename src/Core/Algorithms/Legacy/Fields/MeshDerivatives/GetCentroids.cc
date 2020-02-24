@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -57,20 +58,20 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   {
     THROW_ALGORITHM_INPUT_ERROR("No input field");
   }
-  
+
   FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
-  
+
   std::string centroids;
   centroids=getOption(Parameters::Centroids);
-    
+
   VMesh* imesh = inputField->vmesh();
   MeshHandle mesh = CreateMesh(fo);
   VMesh* omesh = mesh->vmesh();
-  
+
   AlgorithmOutput outputField;
-  
+
   if (centroids=="Element")
   {
     imesh->synchronize(Mesh::ELEMS_E);
@@ -85,7 +86,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
 
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
@@ -105,7 +106,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
 
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
@@ -123,10 +124,10 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-    
+
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
@@ -147,7 +148,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
 
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
@@ -166,7 +167,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     }
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
@@ -175,20 +176,20 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   else if (centroids=="DElement")
   {
     imesh->synchronize(Mesh::DELEMS_E);
-    
+
     VMesh::size_type num_delems = imesh->num_delems();
     omesh->reserve_nodes(num_delems);
-    
+
     for (VMesh::DElem::index_type idx=0; idx < num_delems; idx++)
     {
       Point p;
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-    
+
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
-    
+
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");

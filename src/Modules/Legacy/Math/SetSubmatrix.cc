@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -28,14 +27,14 @@
 
 
 ///
-///@class SetSubmatrix
-///@brief Clip out a subregion from a Matrix
+/// @class SetSubmatrix
+/// @brief Clip out a subregion from a Matrix
 ///
-///@author
-///   Michael Callahan
-///   Department of Computer Science
-///   University of Utah
-///@date  January 2002
+/// @author
+///    Michael Callahan
+///    Department of Computer Science
+///    University of Utah
+/// @date  January 2002
 ///
 
 #include <Modules/Legacy/Math/SetSubmatrix.h>

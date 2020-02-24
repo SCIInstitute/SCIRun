@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -87,7 +87,7 @@ TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
   FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
   MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
   ASSERT_TRUE(mesh);
-  
+
   auto vmeshHandle = mesh->vmesh();
   ASSERT_TRUE(vmeshHandle);
 }

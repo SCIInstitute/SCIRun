@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -57,7 +57,7 @@ void CalculateMeshCenter::execute()
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Method);
-    
+
     auto output = algo().run(withInputData((InputField, field)));
 
     sendOutputFromAlgorithm(OutputField,output);

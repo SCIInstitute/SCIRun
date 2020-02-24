@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
  *  SimpleTextFileToMatrix_Plugin.cc
  *
@@ -35,7 +35,6 @@
  *   University of Utah
  *
  */
- 
 
 // This is a plugin is meant to read simple text files with pure data
 // in ascii format into a SCIRun matrix.
@@ -60,9 +59,9 @@ MatrixHandle SimpleTextFileHeaderMatrix_reader(ProgressReporter *pr, const char 
   SCIRun::size_type ncols = 0, ncols_from_file = 0;
   SCIRun::size_type nrows = 0, nrows_from_file = 0;
   SCIRun::size_type line_ncols = 0;
-  
+
   std::string line;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE DIMENSIONS OF THE MATRIX
   // AND CHECK THE FILE'S INTEGRITY.
 
@@ -71,7 +70,7 @@ MatrixHandle SimpleTextFileHeaderMatrix_reader(ProgressReporter *pr, const char 
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
-  
+
     try
     {
       inputfile.open(filename);
@@ -84,13 +83,13 @@ MatrixHandle SimpleTextFileHeaderMatrix_reader(ProgressReporter *pr, const char 
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-      
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); ++p)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
+
         // In this version of the simple text file to matrix plugin,
         // we are assuming that there is a header with two integer numbers
         // for the number of rows and the number of columns in the matrix
@@ -153,21 +152,21 @@ MatrixHandle SimpleTextFileHeaderMatrix_reader(ProgressReporter *pr, const char 
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
-    
+
     double* dataptr = result->get_data_pointer();
     int k = 0;
 
     try
     {
       inputfile.open(filename);
-    
+
       // read header and continue
       if (! getline(inputfile,line,'\n'))
       {
         if (pr) pr->error("Could not read first line of "+std::string(filename));
         return (result);
       }
-      
+
       while( getline(inputfile,line,'\n'))
       {
         if (line.size() > 0)
@@ -175,13 +174,13 @@ MatrixHandle SimpleTextFileHeaderMatrix_reader(ProgressReporter *pr, const char 
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-            
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
+
         multiple_from_string(line,values);
         for (size_t j=0; j<values.size();j++) dataptr[k++] = values[j];
       }
@@ -205,7 +204,7 @@ bool SimpleTextFileHeaderMatrix_writer(ProgressReporter *pr, MatrixHandle matrix
 
   MatrixHandle temp = matrix->dense();
   matrix = temp;
-  
+
   if (matrix.get_rep() == 0)
   {
     if (pr) pr->error("Empty matrix detected");
@@ -222,11 +221,11 @@ bool SimpleTextFileHeaderMatrix_writer(ProgressReporter *pr, MatrixHandle matrix
   try
   {
     outputfile.open(filename);
-    
+
     size_t k = 0;
-    for (int p=0; p<matrix->nrows(); p++)  
+    for (int p=0; p<matrix->nrows(); p++)
     {
-      for (int q=0; q<matrix->ncols(); q++)  
+      for (int q=0; q<matrix->ncols(); q++)
       {
         outputfile << dataptr[k++] << " ";
       }
@@ -244,4 +243,3 @@ bool SimpleTextFileHeaderMatrix_writer(ProgressReporter *pr, MatrixHandle matrix
 static MatrixIEPlugin SimpleTextFileHeaderMatrix_plugin("SimpleTextFileWithHeader","", "",SimpleTextFileHeaderMatrix_reader,SimpleTextFileHeaderMatrix_writer);
 
 } // end namespace
-

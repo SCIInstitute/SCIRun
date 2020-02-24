@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/GeometryPrimitives/SearchGridT.h
 
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
@@ -44,7 +44,7 @@
 namespace SCIRun {
 
 template<class INDEX>
-class SearchGridT 
+class SearchGridT
 {
   public:
     /// Include the types defined in Types into this class
@@ -64,26 +64,26 @@ class SearchGridT
         bin_.resize(x*y*z);
       }
 
-    inline void transform(const Core::Geometry::Transform &t) 
+    inline void transform(const Core::Geometry::Transform &t)
       { transform_.pre_trans(t);}
 
-    inline const Core::Geometry::Transform &get_transform() const 
+    inline const Core::Geometry::Transform &get_transform() const
       { return transform_; }
-      
-    inline Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans) 
+
+    inline Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
       { transform_ = trans; return transform_; }
-  
+
 
     /// Get the size of the search grid
     inline size_type get_ni() const { return ni_; }
     inline size_type get_nj() const { return nj_; }
     inline size_type get_nk() const { return nk_; }
 
-    inline bool locate(index_type &i, index_type &j, 
+    inline bool locate(index_type &i, index_type &j,
                        index_type &k, const Core::Geometry::Point &p) const
     {
       const Core::Geometry::Point r = transform_.unproject(p);
-      
+
       const double rx = floor(r.x());
       const double ry = floor(r.y());
       const double rz = floor(r.z());
@@ -102,11 +102,11 @@ class SearchGridT
     }
 
 
-    inline bool locate_clamp(index_type &i, index_type &j, 
+    inline bool locate_clamp(index_type &i, index_type &j,
                        index_type &k, const Core::Geometry::Point &p) const
     {
       const Core::Geometry::Point r = transform_.unproject(p);
-      
+
       double rx = floor(r.x());
       double ry = floor(r.y());
       double rz = floor(r.z());
@@ -125,25 +125,25 @@ class SearchGridT
       k = static_cast<index_type>(rz);
       return (true);
     }
-                                                  
-    inline void unsafe_locate(index_type &i, index_type &j, 
+
+    inline void unsafe_locate(index_type &i, index_type &j,
                               index_type &k, const Core::Geometry::Point &p) const
     {
       Core::Geometry::Point r;
       transform_.unproject(p, r);
-      
+
       i = static_cast<index_type>(r.x());
       j = static_cast<index_type>(r.y());
       k = static_cast<index_type>(r.z());
     }
-  
+
     void insert(INDEX val, const Core::Geometry::BBox &bbox)
     {
       index_type mini=0, minj=0, mink=0, maxi=0, maxj=0, maxk=0;
 
       locate(mini, minj, mink, bbox.get_min());
       locate(maxi, maxj, maxk, bbox.get_max());
-      
+
       for (index_type i = mini; i <= maxi; i++)
       {
         for (index_type j = minj; j <= maxj; j++)
@@ -154,7 +154,7 @@ class SearchGridT
           }
         }
       }
-    }   
+    }
 
     void remove(INDEX val, const Core::Geometry::BBox &bbox)
     {
@@ -181,7 +181,7 @@ class SearchGridT
       index_type i, j, k;
       unsafe_locate(i, j, k, point);
       bin_[linearize(i, j, k)].push_back(val);
-    }  
+    }
 
     void remove(INDEX val, const Core::Geometry::Point &point)
     {
@@ -190,7 +190,7 @@ class SearchGridT
       index_type q = linearize(i, j, k);
       std::remove(bin_[q].begin(),bin_[q].end(),val);
     }
-    
+
     inline bool lookup(iterator &begin, iterator &end, const Core::Geometry::Point &p)
     {
       index_type i, j, k;
@@ -201,19 +201,19 @@ class SearchGridT
         end   = bin_[q].end();
         return (true);
       }
-      return (false);    
+      return (false);
     }
-    
-    inline void lookup_ijk(iterator &begin, iterator &end, size_type i, size_type j, 
+
+    inline void lookup_ijk(iterator &begin, iterator &end, size_type i, size_type j,
                     size_type k)
     {
       index_type q = linearize(i, j, k);
       begin = bin_[q].begin();
-      end   = bin_[q].end();    
-    }                
-                      
-    
-    double min_distance_squared(const Core::Geometry::Point &p, size_type i, 
+      end   = bin_[q].end();
+    }
+
+
+    double min_distance_squared(const Core::Geometry::Point &p, size_type i,
                               size_type j, size_type k) const
     {
       Core::Geometry::Point r;
@@ -228,15 +228,15 @@ class SearchGridT
 
       if (r.z() < k) { r.z(k); }
       else if (r.z() > k+1) { r.z(k+1); }
-      
+
       // Project the cell intersection back to world space.
       Core::Geometry::Point q;
       transform_.project(r, q);
-      
+
       // Return distance from point to projected cell point.
       return (p - q).length2();
     }
-  
+
   private:
     index_type linearize(index_type i, index_type j, index_type k) const
       { return (((i * nj_) + j) * nk_ + k); }
@@ -247,9 +247,9 @@ class SearchGridT
     index_type ni_, nj_, nk_;
     /// Transformation to unitary coordinate system
     Core::Geometry::Transform transform_;
-    
+
     /// Where to store the lookup table
-    std::vector<std::vector<INDEX> > bin_;   
+    std::vector<std::vector<INDEX> > bin_;
 };
 
 

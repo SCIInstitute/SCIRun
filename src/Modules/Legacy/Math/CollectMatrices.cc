@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,14 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@brief Matrix operations -- concatenate, replace
+
+/// @brief Matrix operations -- concatenate, replace
 ///
-///@author
-///   David Weinstein &
-///   Chris Butson
-///   Department of Computer Science
-///   University of Utah
-///@date  July 2002
+/// @author
+///    David Weinstein &
+///    Chris Butson
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 2002
 
 #include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Core/Datatypes/DenseMatrix.h>
