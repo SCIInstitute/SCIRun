@@ -42,7 +42,7 @@ namespace SCIRun
       class SCISHARE WidgetFactory
       {
       public:
-        static void setGlyphFactory(AbstractGlyphFactoryPtr glyphMaker) { glyphMaker_ = glyphMaker; }
+        static void setGlyphFactory(AbstractGlyphFactoryPtr glyphMaker);
 
         static WidgetHandle createArrowWidget(const WidgetBaseParameters& gen, ArrowParameters params);
 

@@ -48,6 +48,8 @@ GeneralWidgetParameters WidgetFactory::packageWithGlyph(const WidgetBaseParamete
   return {params, glyphMaker_};
 }
 
+void WidgetFactory::setGlyphFactory(AbstractGlyphFactoryPtr glyphMaker) { glyphMaker_ = glyphMaker; }
+
 WidgetHandle WidgetFactory::createArrowWidget(const WidgetBaseParameters& gen,
                                                        ArrowParameters params)
 {

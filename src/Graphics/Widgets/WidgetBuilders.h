@@ -40,7 +40,7 @@ namespace SCIRun
     namespace Datatypes
     {
       template <class Derived>
-      class SCISHARE CommonWidgetBuilder
+      class CommonWidgetBuilder
       {
       public:
         explicit CommonWidgetBuilder(const Core::GeometryIDGenerator& g) : idGenerator_(g) {}

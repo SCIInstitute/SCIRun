@@ -33,14 +33,14 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
-
 #include <arc-look-at/ArcLookAt.hpp>
+#include <Interface/Modules/Render/share.h>
 
 namespace SCIRun{
   namespace Render{
 
     /// Basic camera class for spire, mimicking SCIRun v4.
-    class SRCamera
+    class SCISHARE SRCamera
     {
     public:
       explicit SRCamera(const ScreenParameters* screen);
