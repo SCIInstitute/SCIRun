@@ -124,9 +124,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_TNY_LIBRARY}
 )
 
-IF(QT5_BUILD)
-  TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)
-ENDIF()
+TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)
