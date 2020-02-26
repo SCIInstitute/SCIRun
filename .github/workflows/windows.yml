@@ -1,0 +1,62 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  windows-build:
+    runs-on: windows-latest
+
+#env:
+#  VCINSTALLDIR: ${{ 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' }}
+#  Qt5_DIR: ${{ 'Qt\5.13.1\msvc2017_64\lib\cmake\Qt5\' }}
+#  QTDIR: ${{ 'Qt\5.13.1\msvc2017_64\' }}
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.13.1
+        target: desktop
+        host: windows
+        arch: win64_msvc2017_64
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $Env:Qt5_Dir
+
+    # - name: Prepare
+    #   working-directory: bin
+    #   shell: cmd
+    #   run: |
+    #     curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+    #     qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
+
+    - name: Configure
+      working-directory: bin
+      shell: cmd
+      run: |
+        set CMAKE_PREFIX_PATH=$Env:Qt5_Dir
+        set QT5DIR=$Env:Qt5_Dir
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$Env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+    #
+    # - name: Compile
+    #   working-directory: bin
+    #   shell: cmd
+    #   run: cmake --build . --config Release -j 3
+
+    # - name: Package
+    #   working-directory: bin/SCIRun
+    #   shell: cmd
+    #   run: cmake --build . --config Release --target package
+
+#    - name: Release
+#      uses: softprops/action-gh-release@v1
+#      if: startsWith(github.ref, 'refs/tags/')
+#      with:
+#        files: build/gh-greets-qt_installer.exe
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
