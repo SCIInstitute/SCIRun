@@ -50,20 +50,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Prepare
-      working-directory: bin
-      shell: cmd
-      run: |
-        curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-        qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+        version: 5.14.1
 
-    # - name: Configure
+    # - name: Prepare
     #   working-directory: bin
     #   shell: cmd
     #   run: |
-    #     set CMAKE_PREFIX_PATH=Qt\5.13.1\msvc2017_64
-    #     set QT5DIR=%cd%\Qt\5.13.1\msvc2017_64
-    #     cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="$QT5DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
+    #     curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+    #     qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
+
+    - name: Configure
+      working-directory: bin
+      shell: cmd
+      run: |
+        set CMAKE_PREFIX_PATH=Qt\5.14.1\msvc2017_64
+        set QT5DIR=%cd%\Qt\5.14.1\msvc2017_64
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="$QT5DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
     #
     # - name: Compile
     #   working-directory: bin
