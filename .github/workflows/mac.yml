@@ -1,4 +1,4 @@
-name: mac
+name: mac-build
 
 on: [push, pull_request]
 
@@ -18,7 +18,7 @@ jobs:
 
     - name: make
       run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$(brew --prefix qt)
-      
+
   mac-build-headless:
 
     runs-on: macOS-latest
