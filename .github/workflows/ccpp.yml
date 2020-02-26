@@ -37,8 +37,7 @@ jobs:
       run: ./build.sh -DUSER_PYTHON_VERSION="3.5.6" -DQT5_BUILD:BOOL="ON" -DQt5_PATH=$(brew --prefix qt)
 
   windows-build:
-    timeout-minutes: 15
-    runs-on: windows-2016
+    runs-on: windows-latest
 
 #env:
 #  VCINSTALLDIR: ${{ 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' }}
