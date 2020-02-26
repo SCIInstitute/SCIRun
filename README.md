@@ -4,6 +4,8 @@
 <!-- https://github.com/SCIInstitute/SCIRun -->
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
+![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
+![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
 ![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
 <!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
 
