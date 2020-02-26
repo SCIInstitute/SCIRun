@@ -4,7 +4,8 @@
 https://github.com/SCIInstitute/SCIRun
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
-[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun)
+![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
+<!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
