@@ -51,7 +51,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Install Qt
-      uses: ouuan/install-qt-action@v2.3.1
+      uses: ouuan/install-qt-action@ouuan
       with:
         version: 5.13.1
 
