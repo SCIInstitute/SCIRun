@@ -51,9 +51,16 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Install Qt
-      uses: ouuan/install-qt-action@py7zr0.6b3
+      uses: ouuan/install-qt-action@v2.3.1
       with:
         version: 5.13.1
+        target: desktop
+        host: windows
+        arch: win64_msvc2017_64
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo %Qt5_Dir%
 
     # - name: Prepare
     #   working-directory: bin
