@@ -28,13 +28,6 @@ jobs:
     - name: Print out Qt directory
       run: echo $Env:Qt5_Dir
 
-    # - name: Prepare
-    #   working-directory: bin
-    #   shell: cmd
-    #   run: |
-    #     curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-    #     qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
-
     - name: Configure
       working-directory: bin
       shell: cmd
@@ -42,11 +35,11 @@ jobs:
         set CMAKE_PREFIX_PATH=$Env:Qt5_Dir
         set QT5DIR=$Env:Qt5_Dir
         cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DBUILD_HEADLESS:BOOL=ON -DQt5_PATH:PATH="$Env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
-    #
-    # - name: Compile
-    #   working-directory: bin
-    #   shell: cmd
-    #   run: cmake --build . --config Release -j 3
+
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
 
     # - name: Package
     #   working-directory: bin/SCIRun

@@ -1,7 +1,7 @@
 ![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
 
 ## SCIRun 5
-https://github.com/SCIInstitute/SCIRun
+<!-- https://github.com/SCIInstitute/SCIRun -->
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
 ![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
