@@ -37,7 +37,7 @@ jobs:
       run: ./build.sh -DUSER_PYTHON_VERSION="3.5.6" -DQT5_BUILD:BOOL="ON" -DQt5_PATH=$(brew --prefix qt)
 
   windows-build:
-    runs-on: windows-2016
+    runs-on: windows-latest
 
 #env:
 #  VCINSTALLDIR: ${{ 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' }}
@@ -74,7 +74,7 @@ jobs:
       run: |
         set CMAKE_PREFIX_PATH=$Env:Qt5_Dir
         set QT5DIR=$Env:Qt5_Dir
-        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="$Env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$Env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
     #
     # - name: Compile
     #   working-directory: bin
