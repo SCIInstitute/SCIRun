@@ -6,11 +6,6 @@ jobs:
   windows-build:
     runs-on: windows-latest
 
-#env:
-#  VCINSTALLDIR: ${{ 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' }}
-#  Qt5_DIR: ${{ 'Qt\5.13.1\msvc2017_64\lib\cmake\Qt5\' }}
-#  QTDIR: ${{ 'Qt\5.13.1\msvc2017_64\' }}
-
     steps:
 
     - name: Checkout

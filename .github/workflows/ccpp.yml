@@ -1,4 +1,4 @@
-name: CI
+name: linux
 
 on: [push, pull_request]
 
@@ -19,19 +19,3 @@ jobs:
 
     - name: make
       run: ./build.sh -DTRAVIS_BUILD:BOOL=ON -DQt5_PATH=$(dpkg -L qtbase5-dev) -DUSER_PYTHON_VERSION="3.6.7" -j3
-
-  mac-build:
-
-    runs-on: macOS-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Prepare
-      run: |
-        brew install qt
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
-
-    - name: make
-      run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$(brew --prefix qt)
