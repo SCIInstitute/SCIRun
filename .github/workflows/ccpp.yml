@@ -72,9 +72,9 @@ jobs:
       working-directory: bin
       shell: cmd
       run: |
-        set CMAKE_PREFIX_PATH=Qt\5.13.1\msvc2017_64
-        set QT5DIR=%cd%\Qt\5.13.1\msvc2017_64
-        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="$QT5DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
+        set CMAKE_PREFIX_PATH=$Env:Qt5_Dir
+        set QT5DIR=$Env:Qt5_Dir
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$QT5DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
     #
     # - name: Compile
     #   working-directory: bin
