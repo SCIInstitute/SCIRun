@@ -30,7 +30,7 @@ jobs:
     - name: Upload installer
       uses: actions/upload-artifact@v1
       with:
-        name: SCIRunWindows
+        name: SCIRunWindowsHeadlessInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
 
 #    - name: Release
@@ -65,7 +65,18 @@ jobs:
       run: |
         cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
     
-    # - name: Compile
-    #   working-directory: bin
-    #   shell: cmd
-    #   run: cmake --build . --config Release -j 3
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
+
+    - name: Package
+      working-directory: bin/SCIRun
+      shell: cmd
+      run: cmake --build . --config Release --target package
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunWindowsInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
