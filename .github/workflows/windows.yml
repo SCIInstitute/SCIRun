@@ -27,11 +27,11 @@ jobs:
       shell: cmd
       run: cmake --build . --config Release --target package
 
-   - name: Upload installer
-     uses: actions/upload-artifact@v1
-     with:
-       name: SCIRunWindows
-       path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunWindows
+        path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
 
 #    - name: Release
 #      uses: softprops/action-gh-release@v1
