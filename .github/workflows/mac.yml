@@ -18,6 +18,21 @@ jobs:
 
     - name: make
       run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$(brew --prefix qt)
+      
+    - name: Package
+      working-directory: bin/SCIRun
+      run: |
+        cmake -DBUILD_BUNDLE:BOOL=ON ../../src
+        make -j3
+        make package
+        chmod +x repair_package.sh
+        ./repair_package.sh
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunMacInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.X-Darwin.pkg
 
   mac-build-headless:
 
