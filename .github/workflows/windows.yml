@@ -3,7 +3,7 @@ name: windows-build
 on: [push, pull_request]
 
 jobs:
-  headless:
+  windows-build-headless:
     runs-on: windows-latest
 
     steps:
@@ -33,7 +33,7 @@ jobs:
         name: SCIRunWindowsHeadlessInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
 
-  gui:
+  windows-build-gui:
     runs-on: windows-latest
 
     steps:

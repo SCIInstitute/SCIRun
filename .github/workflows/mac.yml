@@ -3,7 +3,7 @@ name: mac-build
 on: [push, pull_request]
 
 jobs:
-  gui:
+  mac-build-gui:
 
     runs-on: macOS-latest
 
@@ -34,7 +34,7 @@ jobs:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.X-Darwin.pkg
 
-  headless:
+  mac-build-headless:
 
     runs-on: macOS-latest
 
