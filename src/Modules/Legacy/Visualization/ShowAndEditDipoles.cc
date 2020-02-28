@@ -48,49 +48,105 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
-#include <math.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/BBox.h>
 
 using namespace SCIRun;
-using namespace Core;
-using namespace Logging;
-using namespace Datatypes;
-using namespace Algorithms;
-using namespace Geometry;
-using namespace Graphics;
+using namespace SCIRun::Dataflow::Networks;
 using namespace Modules::Visualization;
-using namespace Dataflow::Networks;
 using namespace Graphics::Datatypes;
+using namespace Core::Algorithms;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Algorithms::Visualization;
 
 MODULE_INFO_DEF(ShowAndEditDipoles, Visualization, SCIRun)
 
+namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
+
+class ShowAndEditDipolesImpl
+{
+public:
+  ShowAndEditDipolesImpl(std::function<Dataflow::Networks::ModuleStateHandle()> s,
+    GeometryGeneratingModule* module) : state_(s), module_(module) {}
+  void setInput(FieldHandle input) { fieldInput_ = input; }
+  void loadData(bool inputsChanged);
+  bool shouldRefreshGeometry() const;
+  void refreshGeometry();
+  bool shouldToggleLastVectorShown() const;
+  void toggleLastVectorShown();
+  void generateGeomsList();
+  FieldHandle makePointCloud();
+  const std::vector<Graphics::Datatypes::GeometryHandle>& geoms() const { return geoms_; }
+  void saveToParameters();
+  void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);
+private:
+  std::function<Dataflow::Networks::ModuleStateHandle()> state_;
+  GeometryGeneratingModule* module_;
+  FieldHandle fieldInput_;
+  std::vector<Core::Geometry::Point> pos_;
+  std::vector<Core::Geometry::Vector> direction_;
+  std::vector<double> scale_;
+  Core::Geometry::BBox last_bounds_;
+  std::vector<Graphics::Datatypes::WidgetHandle> arrows_;
+  std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+  std::vector<Core::Geometry::Transform> previousTransforms_;
+
+  bool firstRun_ = true;
+  bool getFromFile_ = false;
+  bool lastVectorShown_ = false;
+  SizingType previousSizing_ = SizingType::ORIGINAL;
+  double sphereRadius_{0};
+  double cylinderRadius_{0};
+  double coneRadius_{0};
+  double diskRadius_{0};
+  double diskDistFromCenter_{0};
+  double diskWidth_{0};
+  size_t widgetIter_ = 0;
+  int resolution_ = 20;
+  double previousScaleFactor_ = 0.0;
+  double zeroVectorRescale_ = 1.0e-3;
+
+  Core::Datatypes::ColorRGB lineCol_ = {0.8, 0.8, 0.2};
+
+  void receiveInputPoints();
+  void receiveInputDirections();
+  void receiveInputScales();
+  void receiveInputField();
+  void generateOutputGeom();
+  void makeScalesPositive();
+  void resetData();
+  std::string widgetName(size_t i, size_t id, size_t iter);
+  void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
+  void moveDipolesTogether(const Core::Geometry::Transform &transform);
+  Graphics::Datatypes::GeometryHandle addLines();
+  void loadFromParameters();
+};
+}}}
+
 ShowAndEditDipoles::ShowAndEditDipoles()
-  : GeometryGeneratingModule(staticInfo_)
+  : GeometryGeneratingModule(staticInfo_), impl_(new ShowAndEditDipolesImpl([this]() { return get_state(); }, this))
 {
   INITIALIZE_PORT(DipoleInputField);
   INITIALIZE_PORT(DipoleOutputField);
   INITIALIZE_PORT(DipoleWidget);
-
-  firstRun_ = true;
-  getFromFile_ = false;
-  lastVectorShown_ = false;
-  previousSizing_ = SizingType::ORIGINAL;
-
-  lineCol_ = ColorRGB(0.8, 0.8, 0.2);
-
-  widgetIter_ = 0;
-  resolution_ = 20;
-  previousScaleFactor_ = 0.0;
-  zeroVectorRescale_ = 1.0e-3;
 }
 
 void ShowAndEditDipoles::setStateDefaults()
 {
   auto state = get_state();
+  using namespace Parameters;
   state->setValue(FieldName, std::string());
   state->setValue(WidgetScaleFactor, 1.0);
-  state->setValue(Sizing, SizingType::ORIGINAL);
+  state->setValue(Sizing, static_cast<int>(SizingType::ORIGINAL));
   state->setValue(ShowLastAsVector, false);
   state->setValue(MoveDipolesTogether, false);
   state->setValue(ShowLines, false);
@@ -106,8 +162,8 @@ void ShowAndEditDipoles::setStateDefaults()
 
 void ShowAndEditDipoles::execute()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  FieldInformation fi(fh);
+  auto input = getRequiredInput(DipoleInputField);
+  FieldInformation fi(input);
   auto state = get_state();
 
   // Point clouds must be linear, so we only loook for node-based data
@@ -122,52 +178,54 @@ void ShowAndEditDipoles::execute()
     return;
   }
 
-  loadData();
+  using namespace Parameters;
+  impl_->setInput(input);
+  impl_->loadData(inputsChanged());
 
   // Recreate all dipoles only if all were altered
-  if(inputsChanged()
-     || state->getValue(Reset).toBool()
-     || previousSizing_ != state->getValue(Sizing).toInt()
-     || previousScaleFactor_ != state->getValue(WidgetScaleFactor).toDouble()
-     || state->getValue(MoveDipolesTogether).toBool()
-     || getFromFile_)
+  if (inputsChanged() || impl_->shouldRefreshGeometry())
   {
-    refreshGeometry();
+    impl_->refreshGeometry();
   }
 
   // Only run if Show Last as Vector is toggled
-  if(lastVectorShown_ != state->getValue(ShowLastAsVector).toBool())
+  if (impl_->shouldToggleLastVectorShown())
   {
-    toggleLastVectorShown();
+    impl_->toggleLastVectorShown();
   }
 
-  generateGeomsList();
+  impl_->generateGeomsList();
 
-  sendOutput(DipoleOutputField, makePointCloud());
-
-  std::string idName = "SAEDField"
-    + GeometryObject::delimiter +
-    state->getValue(ShowAndEditDipoles::FieldName).toString() +
-    " (from " + id().id_ +")" +
-    "(" + std::to_string(widgetIter_) + ")";
+  sendOutput(DipoleOutputField, impl_->makePointCloud());
 
   // Generate composite geometry object
-  auto comp_geo = createGeomComposite(*this, "dipoles", geoms_.begin(), geoms_.end());
+  auto comp_geo = createGeomComposite(*this, "dipoles", impl_->geoms().begin(), impl_->geoms().end());
   sendOutput(DipoleWidget, comp_geo);
-  widgetIter_++;
 
-  saveToParameters();
+  impl_->saveToParameters();
 }
 
-void ShowAndEditDipoles::loadData()
+bool ShowAndEditDipolesImpl::shouldRefreshGeometry() const
 {
-  auto state = get_state();
+  return state_()->getValue(Parameters::Reset).toBool()
+    || static_cast<int>(previousSizing_) != state_()->getValue(Parameters::Sizing).toInt()
+    || previousScaleFactor_ != state_()->getValue(Parameters::WidgetScaleFactor).toDouble()
+    || state_()->getValue(Parameters::MoveDipolesTogether).toBool()
+    || getFromFile_;
+}
 
+bool ShowAndEditDipolesImpl::shouldToggleLastVectorShown() const
+{
+  return lastVectorShown_ != state_()->getValue(Parameters::ShowLastAsVector).toBool();
+}
+
+void ShowAndEditDipolesImpl::loadData(bool inputsChanged)
+{
   // Get new data upstream or load from existing data
-  getFromFile_ = firstRun_ && state->getValue(DataSaved).toBool();
+  getFromFile_ = firstRun_ && state_()->getValue(Parameters::DataSaved).toBool();
 
-  if(getFromFile_
-     && !state->getValue(Reset).toBool())
+  if (getFromFile_
+     && !state_()->getValue(Parameters::Reset).toBool())
   {
     loadFromParameters();
     makeScalesPositive();
@@ -175,18 +233,18 @@ void ShowAndEditDipoles::loadData()
   }
   else
   {
-    if(inputsChanged()
-       || state->getValue(Reset).toBool())
+    if (inputsChanged
+       || state_()->getValue(Parameters::Reset).toBool())
     {
-      ReceiveInputField();
+      receiveInputField();
       makeScalesPositive();
     }
 
     // Scaling
-    if(previousSizing_ != state->getValue(Sizing).toInt()
-       || previousScaleFactor_ != state->getValue(WidgetScaleFactor).toDouble())
+    if (static_cast<int>(previousSizing_) != state_()->getValue(Parameters::Sizing).toInt()
+       || previousScaleFactor_ != state_()->getValue(Parameters::WidgetScaleFactor).toDouble())
     {
-      ReceiveInputScales();
+      receiveInputScales();
       makeScalesPositive();
     }
   }
@@ -202,8 +260,8 @@ void ShowAndEditDipoles::loadData()
     }
   }
 
-  if((previousSizing_ != state->getValue(Sizing).toInt() || state->getValue(Reset).toBool())
-     && state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
+  if ((static_cast<int>(previousSizing_) != state_()->getValue(Parameters::Sizing).toInt() || state_()->getValue(Parameters::Reset).toBool())
+     && SizingType(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_VECTOR_DATA)
   {
     scale_.clear();
     for(size_t i = 0; i < pos_.size(); i++)
@@ -212,20 +270,17 @@ void ShowAndEditDipoles::loadData()
     }
   }
 
-  if(zeroVector)
+  if (zeroVector)
   {
-    warning("Input data contains zero vectors.");
+    module_->warning("Input data contains zero vectors.");
   }
 }
 
-
-
-void ShowAndEditDipoles::loadFromParameters()
+void ShowAndEditDipolesImpl::loadFromParameters()
 {
-  auto state = get_state();
-  VariableList positions = state->getValue(DipolePositions).toVector();
-  VariableList directions = state->getValue(DipoleDirections).toVector();
-  VariableList scales = state->getValue(DipoleScales).toVector();
+  VariableList positions = state_()->getValue(Parameters::DipolePositions).toVector();
+  VariableList directions = state_()->getValue(Parameters::DipoleDirections).toVector();
+  VariableList scales = state_()->getValue(Parameters::DipoleScales).toVector();
 
   pos_.resize(positions.size());
   direction_.resize(positions.size());
@@ -238,10 +293,9 @@ void ShowAndEditDipoles::loadFromParameters()
   }
 }
 
-void ShowAndEditDipoles::saveToParameters()
+void ShowAndEditDipolesImpl::saveToParameters()
 {
-  auto state = get_state();
-
+  widgetIter_++;
   VariableList positions;
   VariableList directions;
   VariableList scales;
@@ -251,57 +305,58 @@ void ShowAndEditDipoles::saveToParameters()
     directions.push_back(makeVariable("dip_dir", direction_[i].get_string()));
     scales.push_back(makeVariable("dip_scale", scale_[i]));
   }
-  state->setValue(DipolePositions, positions);
-  state->setValue(DipoleDirections, directions);
-  state->setValue(DipoleScales, scales);
-  state->setValue(DataSaved, true);
+  state_()->setValue(Parameters::DipolePositions, positions);
+  state_()->setValue(Parameters::DipoleDirections, directions);
+  state_()->setValue(Parameters::DipoleScales, scales);
+  state_()->setValue(Parameters::DataSaved, true);
 }
 
-void ShowAndEditDipoles::refreshGeometry()
+void ShowAndEditDipolesImpl::refreshGeometry()
 {
-  auto state = get_state();
   arrows_.clear();
 
-  GenerateOutputGeom();
-  state->setValue(Reset, false);
-  previousSizing_ = static_cast<SizingType>(state->getValue(Sizing).toInt());
-  previousScaleFactor_ = state->getValue(WidgetScaleFactor).toDouble();
+  generateOutputGeom();
+  state_()->setValue(Parameters::Reset, false);
+  previousSizing_ = static_cast<SizingType>(state_()->getValue(Parameters::Sizing).toInt());
+  previousScaleFactor_ = state_()->getValue(Parameters::WidgetScaleFactor).toDouble();
 }
 
-void ShowAndEditDipoles::toggleLastVectorShown()
+void ShowAndEditDipolesImpl::toggleLastVectorShown()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto bbox = fh->vmesh()->get_bounding_box();
-  auto state = get_state();
+  auto bbox = fieldInput_->vmesh()->get_bounding_box();
 
   size_t last_id = pos_.size() - 1;
 
   double scale = scale_[last_id];
-  if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-    scale /= state->getValue(LargestSize).toDouble();
+  if (static_cast<SizingType>(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
+    scale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
   // Overwrite point
   arrows_[last_id] = WidgetFactory::createArrowWidget(
-    *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
-    pos_[last_id], direction_[last_id], resolution_,
-    lastVectorShown_, last_id, ++widgetIter_, bbox);
+    {*module_, "SAED"},
+    {{scale * state_()->getValue(Parameters::WidgetScaleFactor).toDouble(),
+    "no-color",
+    pos_[last_id],
+    bbox,
+    resolution_},
+    pos_[last_id],
+    direction_[last_id],
+    lastVectorShown_, last_id, ++widgetIter_});
 
-  lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
+  lastVectorShown_ = state_()->getValue(Parameters::ShowLastAsVector).toBool();
 }
 
-void ShowAndEditDipoles::generateGeomsList()
+void ShowAndEditDipolesImpl::generateGeomsList()
 {
-  auto state = get_state();
-
   // Rewrite all existing geom
   geoms_.clear();
-  for(const auto& arrow : arrows_)
+  for (const auto& arrow : arrows_)
   {
-    for(const auto& widget : arrow->widgets_)
-      geoms_.push_back(widget);
+    auto composite = boost::dynamic_pointer_cast<CompositeWidget>(arrow);
+    geoms_.insert(geoms_.end(), composite->subwidgetBegin(), composite->subwidgetEnd());
   }
 
-  if(state->getValue(ShowLines).toBool())
+  if (state_()->getValue(Parameters::ShowLines).toBool())
     geoms_.push_back(addLines());
 }
 
@@ -328,14 +383,14 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         std::vector<std::string> matches;
 
         // Find all matches
-        while(regex_search(searchStart, vsf.selectionName.cend(), match, ind_r))
+        while (regex_search(searchStart, vsf.selectionName.cend(), match, ind_r))
         {
           matches.push_back(match[0]);
           searchStart = match.suffix().first;
         }
 
         // Remove parantheses
-        for(auto& match : matches)
+        for (auto& match : matches)
         {
           match = match.substr(1, match.length()-2);
         }
@@ -343,7 +398,7 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         // Cast to size_t
         widgetType = boost::lexical_cast<size_t>(matches[0]);
         widgetID = boost::lexical_cast<size_t>(matches[1]);
-        adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
+        impl_->adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
       }
       catch (...)
       {
@@ -358,24 +413,20 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void ShowAndEditDipoles::moveDipolesTogether(const Transform& transform)
+void ShowAndEditDipolesImpl::moveDipolesTogether(const Transform& transform)
 {
-  for(auto& pos : pos_)
+  for (auto& pos : pos_)
   {
     pos = transform * pos;
   }
 }
 
-void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
+void ShowAndEditDipolesImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
 {
-  auto state = get_state();
-  DenseMatrix center(4, 1);
+  auto bbox = fieldInput_->vmesh()->get_bounding_box();
+  bool is_vector = boost::dynamic_pointer_cast<ArrowWidget>(arrows_[id])->isVector();
 
-  auto fh = getRequiredInput(DipoleInputField);
-  auto bbox = fh->vmesh()->get_bounding_box();
-  bool is_vector = (arrows_[id]->isVector());
-
-  if(state->getValue(MoveDipolesTogether).toBool() && (type == ArrowWidgetSection::CYLINDER || type == ArrowWidgetSection::SPHERE))
+  if (state_()->getValue(Parameters::MoveDipolesTogether).toBool() && (type == ArrowWidgetSection::CYLINDER || type == ArrowWidgetSection::SPHERE))
   {
     moveDipolesTogether(transformMatrix);
   }
@@ -388,21 +439,22 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   }
   makeScalesPositive();
 
-  double currentScale = scale_[id] * state->getValue(WidgetScaleFactor).toDouble();
-  if (state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-    currentScale /= state->getValue(LargestSize).toDouble();
+  double currentScale = scale_[id] * state_()->getValue(Parameters::WidgetScaleFactor).toDouble();
+  if (state_()->getValue(Parameters::Sizing).toInt() == static_cast<int>(SizingType::NORMALIZE_BY_LARGEST_VECTOR))
+    currentScale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
-  arrows_[id] = WidgetFactory::createArrowWidget(*this, "SAED", currentScale, pos_[id], direction_[id],
-                                                 resolution_, is_vector, id, ++widgetIter_, bbox);
+  arrows_[id] = WidgetFactory::createArrowWidget(
+    {*module_, "SAED"},
+    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
+      pos_[id], direction_[id], is_vector, id, ++widgetIter_ });
 }
 
-void ShowAndEditDipoles::ReceiveInputPoints()
+void ShowAndEditDipolesImpl::receiveInputPoints()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto vf = fh->vfield();
+  auto vf = fieldInput_->vfield();
   Point p;
   pos_.clear();
-  for(const auto& node : fh->mesh()->getFacade()->nodes())
+  for(const auto& node : fieldInput_->mesh()->getFacade()->nodes())
   {
     size_t index = node.index();
     vf->get_center(p, index);
@@ -410,13 +462,12 @@ void ShowAndEditDipoles::ReceiveInputPoints()
   }
 }
 
-void ShowAndEditDipoles::ReceiveInputDirections()
+void ShowAndEditDipolesImpl::receiveInputDirections()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto vf = fh->vfield();
+  auto vf = fieldInput_->vfield();
   Vector v;
   direction_.clear();
-  for(const auto& node : fh->mesh()->getFacade()->nodes())
+  for(const auto& node : fieldInput_->mesh()->getFacade()->nodes())
   {
     size_t index = node.index();
     vf->get_value(v, index);
@@ -424,30 +475,28 @@ void ShowAndEditDipoles::ReceiveInputDirections()
   }
 }
 
-void ShowAndEditDipoles::ReceiveInputScales()
+void ShowAndEditDipolesImpl::receiveInputScales()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto vf = fh->vfield();
-  auto state = get_state();
+  auto vf = fieldInput_->vfield();
   Vector v;
   scale_.clear();
   double newLargest = 0.0;
-  for(const auto& node : fh->mesh()->getFacade()->nodes())
+  for (const auto& node : fieldInput_->mesh()->getFacade()->nodes())
   {
     size_t index = node.index();
     vf->get_value(v, index);
     scale_.push_back(v.length());
     newLargest = std::max(newLargest, std::abs(v.length()));
   }
-  state->setValue(LargestSize, newLargest);
+  state_()->setValue(Parameters::LargestSize, newLargest);
 }
 
-void ShowAndEditDipoles::makeScalesPositive()
+void ShowAndEditDipolesImpl::makeScalesPositive()
 {
   // If dipole is scaled below 0, make the scale positive and flip the direction
-  for(size_t i = 0; i < scale_.size(); i++)
+  for (size_t i = 0; i < scale_.size(); i++)
   {
-    if(scale_[i] < 0.0)
+    if (scale_[i] < 0.0)
     {
       scale_[i] = std::abs(scale_[i]);
       direction_[i] = -direction_[i];
@@ -455,18 +504,16 @@ void ShowAndEditDipoles::makeScalesPositive()
   }
 }
 
-void ShowAndEditDipoles::ReceiveInputField()
+void ShowAndEditDipolesImpl::receiveInputField()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto vf = fh->vfield();
-  auto state = get_state();
+  auto vf = fieldInput_->vfield();
   Point p;
   Vector v;
   direction_.clear();
   pos_.clear();
   scale_.clear();
   double newLargest = 0.0;
-  for(const auto& node : fh->mesh()->getFacade()->nodes())
+  for (const auto& node : fieldInput_->mesh()->getFacade()->nodes())
   {
     size_t index = node.index();
     vf->get_center(p, index);
@@ -476,63 +523,64 @@ void ShowAndEditDipoles::ReceiveInputField()
     scale_.push_back(v.length());
     newLargest = std::max(newLargest, std::abs(v.length()));
   }
-  state->setValue(LargestSize, newLargest);
+  state_()->setValue(Parameters::LargestSize, newLargest);
 }
 
-void ShowAndEditDipoles::GenerateOutputGeom()
+void ShowAndEditDipolesImpl::generateOutputGeom()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto state = get_state();
-  auto bbox = fh->vmesh()->get_bounding_box();
+  auto bbox = fieldInput_->vmesh()->get_bounding_box();
 
   last_bounds_ = bbox;
   arrows_.resize(0);
 
   std::string name = "SAED";
   // Create all but last dipole as vector
-  for(size_t i = 0; i < pos_.size() - 1; i++)
+  for (size_t i = 0; i < pos_.size() - 1; i++)
   {
     double scale = scale_[i];
-    if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-      scale /= state->getValue(LargestSize).toDouble();
+    if (static_cast<SizingType>(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
+      scale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
     arrows_.push_back(WidgetFactory::createArrowWidget(
-        *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
-        pos_[i], direction_[i], resolution_, true, i, ++widgetIter_,
-        bbox));
+        {*module_, name},
+        {{scale * state_()->getValue(Parameters::WidgetScaleFactor).toDouble(),
+        "no-color", pos_[i], bbox, resolution_},
+        pos_[i], direction_[i],
+        true, i, ++widgetIter_}));
   }
 
   // Create last dipoles separately to check if shown as vector
   size_t last_id = pos_.size() - 1;
 
   double scale = scale_[last_id];
-  if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-    scale /= state->getValue(LargestSize).toDouble();
+  if (static_cast<SizingType>(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
+    scale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
     arrows_.push_back(WidgetFactory::createArrowWidget(
-      *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
-      pos_[last_id], direction_[last_id], resolution_,
-      state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox));
+      {*module_, name},
+      {{scale * state_()->getValue(Parameters::WidgetScaleFactor).toDouble(),
+        "no-color",
+      pos_[last_id], bbox, resolution_},
+      pos_[last_id], direction_[last_id],
+      state_()->getValue(Parameters::ShowLastAsVector).toBool(),
+      last_id, ++widgetIter_ }));
 
-  lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
+  lastVectorShown_ = state_()->getValue(Parameters::ShowLastAsVector).toBool();
 }
 
-
-GeometryHandle ShowAndEditDipoles::addLines()
+GeometryHandle ShowAndEditDipolesImpl::addLines()
 {
-  auto fh = getRequiredInput(DipoleInputField);
-  auto state = get_state();
-  auto bbox = fh->vmesh()->get_bounding_box();
+  auto bbox = fieldInput_->vmesh()->get_bounding_box();
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
   std::string idName = "SAEDField" +
     GeometryObject::delimiter +
-    state->getValue(ShowAndEditDipoles::FieldName).toString()
-    + " (from " + id().id_ +")" +
+    state_()->getValue(Parameters::FieldName).toString()
+    + " (from " + module_->id().id_ +")" +
     "(" + std::to_string(widgetIter_) + ")";
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*this, idName, true));
-  GlyphGeom glyphs;
+  auto geom(boost::make_shared<GeometryObjectSpire>(*module_, idName, true));
+  Graphics::GlyphGeom glyphs;
 
   RenderState renState;
   renState.set(RenderState::USE_NORMALS, true);
@@ -543,9 +591,9 @@ GeometryHandle ShowAndEditDipoles::addLines()
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
 
   // Create lines between every point
-  for(size_t a = 0; a < pos_.size(); a++)
+  for (size_t a = 0; a < pos_.size(); a++)
   {
-    for(size_t b = a + 1; b < pos_.size(); b++)
+    for (size_t b = a + 1; b < pos_.size(); b++)
     {
       glyphs.addLine(pos_[a], pos_[b], lineCol_, lineCol_);
     }
@@ -555,13 +603,12 @@ GeometryHandle ShowAndEditDipoles::addLines()
   return geom;
 }
 
-FieldHandle ShowAndEditDipoles::makePointCloud()
+FieldHandle ShowAndEditDipolesImpl::makePointCloud()
 {
   FieldInformation fi("PointCloudMesh", 0, "Vector");
   auto ofield = CreateField(fi);
   auto mesh = ofield->vmesh();
   auto field = ofield->vfield();
-  auto state = get_state();
 
   for (size_t i = 0; i < arrows_.size(); i++)
   {
@@ -569,23 +616,23 @@ FieldHandle ShowAndEditDipoles::makePointCloud()
     field->resize_fdata();
 
     double scale = scale_[i];
-    if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-      scale /= state->getValue(LargestSize).toDouble();
+    if (state_()->getValue(Parameters::Sizing).toInt() == static_cast<int>(SizingType::NORMALIZE_BY_LARGEST_VECTOR))
+      scale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
     field->set_value(static_cast<Vector>(direction_[i] * scale), pcindex);
   }
   return ofield;
 }
 
-const AlgorithmParameterName ShowAndEditDipoles::FieldName("FieldName");
-const AlgorithmParameterName ShowAndEditDipoles::WidgetScaleFactor("WidgetScaleFactor");
-const AlgorithmParameterName ShowAndEditDipoles::Sizing("Sizing");
-const AlgorithmParameterName ShowAndEditDipoles::ShowLastAsVector("ShowLastAsVector");
-const AlgorithmParameterName ShowAndEditDipoles::ShowLines("ShowLines");
-const AlgorithmParameterName ShowAndEditDipoles::Reset("Reset");
-const AlgorithmParameterName ShowAndEditDipoles::MoveDipolesTogether("MoveDipolesTogether");
-const AlgorithmParameterName ShowAndEditDipoles::DipolePositions("DipolePositions");
-const AlgorithmParameterName ShowAndEditDipoles::DipoleDirections("DipoleDirections");
-const AlgorithmParameterName ShowAndEditDipoles::DipoleScales("DipoleScales");
-const AlgorithmParameterName ShowAndEditDipoles::DataSaved("DataSaved");
-const AlgorithmParameterName ShowAndEditDipoles::LargestSize("LargestSize");
+ALGORITHM_PARAMETER_DEF(Visualization, FieldName);
+ALGORITHM_PARAMETER_DEF(Visualization, WidgetScaleFactor);
+ALGORITHM_PARAMETER_DEF(Visualization, Sizing);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowLastAsVector);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowLines);
+ALGORITHM_PARAMETER_DEF(Visualization, Reset);
+ALGORITHM_PARAMETER_DEF(Visualization, MoveDipolesTogether);
+ALGORITHM_PARAMETER_DEF(Visualization, DipolePositions);
+ALGORITHM_PARAMETER_DEF(Visualization, DipoleDirections);
+ALGORITHM_PARAMETER_DEF(Visualization, DipoleScales);
+ALGORITHM_PARAMETER_DEF(Visualization, DataSaved);
+ALGORITHM_PARAMETER_DEF(Visualization, LargestSize);
