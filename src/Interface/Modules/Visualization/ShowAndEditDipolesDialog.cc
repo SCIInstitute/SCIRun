@@ -34,8 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
-
-using SAED = SCIRun::Modules::Visualization::ShowAndEditDipoles;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -46,21 +45,21 @@ ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(visualizationScalingFactorSpinBox, SAED::WidgetScaleFactor);
-  addRadioButtonGroupManager({originalSizeRButton, normalizeVectorDataRButton, normalizeByLargestVectorRButton}, SAED::Sizing);
+  addDoubleSpinBoxManager(visualizationScalingFactorSpinBox, Parameters::WidgetScaleFactor);
+  addRadioButtonGroupManager({originalSizeRButton, normalizeVectorDataRButton, normalizeByLargestVectorRButton}, Parameters::Sizing);
   connectButtonToExecuteSignal(originalSizeRButton);
   connectButtonToExecuteSignal(normalizeVectorDataRButton);
   connectButtonToExecuteSignal(normalizeByLargestVectorRButton);
-  addCheckBoxManager(showLastAsVectorCheckBox, SAED::ShowLastAsVector);
+  addCheckBoxManager(showLastAsVectorCheckBox, Parameters::ShowLastAsVector);
   connectButtonToExecuteSignal(showLastAsVectorCheckBox);
-  addCheckBoxManager(showLinesCheckBox, SAED::ShowLines);
+  addCheckBoxManager(showLinesCheckBox, Parameters::ShowLines);
   connectButtonToExecuteSignal(showLinesCheckBox);
-  addCheckBoxManager(moveDipolesTogetherCheckBox, SAED::MoveDipolesTogether);
+  addCheckBoxManager(moveDipolesTogetherCheckBox, Parameters::MoveDipolesTogether);
   connect(resetButton, SIGNAL(clicked()), this, SLOT(clickResetButton()));
   connectButtonToExecuteSignal(resetButton);
 }
 
 void ShowAndEditDipolesDialog::clickResetButton()
 {
-  state_->setValue(SAED::Reset, true);
+  state_->setValue(Parameters::Reset, true);
 }

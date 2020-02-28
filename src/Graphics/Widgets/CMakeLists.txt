@@ -35,6 +35,7 @@ SET(Graphics_Widgets_SRCS
   ConeWidget.cc
   DiskWidget.cc
   ArrowWidget.cc
+  GlyphFactory.cc
 )
 
 SET(Graphics_Widgets_HEADERS
@@ -45,6 +46,9 @@ SET(Graphics_Widgets_HEADERS
   CylinderWidget.h
   ConeWidget.h
   ArrowWidget.h
+  GlyphFactory.h
+  WidgetParameters.h
+  WidgetBuilders.h
   share.h
 )
 
@@ -68,3 +72,5 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+SCIRUN_ADD_TEST_DIR(Tests)

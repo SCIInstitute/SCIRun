@@ -33,8 +33,8 @@
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Modules {
@@ -120,7 +120,7 @@ namespace SCIRun {
           boost::optional<Core::Datatypes::ColorMapHandle> pcolormap,
           boost::optional<Core::Datatypes::ColorMapHandle> scolormap,
           boost::optional<Core::Datatypes::ColorMapHandle> tcolormap);
-        RenderState::InputPort getInput(std::string &port_name);
+        RenderState::InputPort getInput(const std::string &port_name);
         void setSuperquadricEmphasis(int emphasis);
 
         boost::shared_ptr<class GlyphBuilder> builder_;
