@@ -45,8 +45,7 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
-#include <Graphics/Widgets/SphereWidget.h>
-#include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <boost/lexical_cast.hpp>
@@ -238,14 +237,15 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
         if (i < positions.size())
           location = pointFromString(positions[i].toString());
 
-        auto seed = WidgetFactory::createSphere(*this,
-          widgetName(i),
-          scale,
-          "Color(0.5,0.5,0.5)",
-          location,
-          location,
-          bbox,
-          10);
+        auto seed = SphereWidgetBuilder(*this)
+          .tag(widgetName(i))
+          .scale(scale)
+          .defaultColor("Color(0.5,0.5,0.5)")
+          .origin(location)
+          .boundingBox(bbox)
+          .resolution(10)
+          .centerPoint(location)
+          .build();
         impl_->pointWidgets_.push_back(seed);
       }
     }
@@ -258,14 +258,15 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     moveCount_++;
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      auto seed = WidgetFactory::createSphere(*this,
-        widgetName(counter++) + std::string(moveCount_, ' '),
-        scale,
-        "Color(0.5,0.5,0.5)",
-        oldWidget->position(),
-        oldWidget->position(),
-        bbox,
-        10);
+      auto seed = SphereWidgetBuilder(*this)
+        .tag(widgetName(counter++) + std::string(moveCount_, ' '))
+        .scale(scale)
+        .defaultColor("Color(0.5,0.5,0.5)")
+        .origin(oldWidget->position())
+        .boundingBox(bbox)
+        .resolution(10)
+        .centerPoint(oldWidget->position())
+        .build();
       newWidgets.push_back(seed);
     }
     impl_->pointWidgets_ = newWidgets;
