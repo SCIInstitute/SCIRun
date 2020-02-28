@@ -29,6 +29,9 @@
 SET(Interface_Modules_Render_Tests_SRCS
   SRInterfaceTests.cc
   VarBufferTests.cc
+  ObjectTranslationTests.cc
+  ObjectRotationTests.cc
+  ObjectScalingTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Interface_Modules_Render_Tests

@@ -31,7 +31,6 @@
 #include "Registration.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
-#include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
@@ -56,7 +55,6 @@ void rendererRegisterAll(spire::Acorn& core)
   registerSystem_RenderTransTextGeom(core);
 
   // Register components
-  core.registerComponent<StaticSRInterface>();
   core.registerComponent<StaticWorldLight>();
   core.registerComponent<StaticClippingPlanes>();
   core.registerComponent<LightingUniforms>();

@@ -38,12 +38,14 @@
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Thread/Mutex.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/timer.hpp>
+#include <QOpenGLContext>
+#include <glm/gtc/quaternion.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -105,9 +107,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
-  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
+  connect(this, SIGNAL(mousePressSignalForGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
-  mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+  mSpire = RendererWeakPtr(mGLWidget->getSpire());
 
   //Set background Color
   auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
@@ -120,12 +122,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
     if (Preferences::Instance().useNewViewSceneMouseControls)
     {
-      spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+      spire->setMouseMode(MouseMode::MOUSE_NEWSCIRUN);
       spire->setZoomInverted(Preferences::Instance().invertMouseZoom);
     }
     else
     {
-      spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+      spire->setMouseMode(MouseMode::MOUSE_OLDSCIRUN);
     }
 
     spire->setBackgroundColor(bgColor_);
@@ -546,11 +548,11 @@ void ViewSceneDialog::pushCameraState()
 
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 
-  glm::vec3 v = spire->getCameraLookAt();
+  auto v = spire->getCameraLookAt();
   auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
   state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
 
-  glm::quat q = spire->getCameraRotation();
+  auto q = spire->getCameraRotation();
   auto rotation = makeAnonymousVariableList((double)q.w, (double)q.x, (double)q.y, (double)q.z);
   state_->setValue(Modules::Render::ViewScene::CameraRotation, rotation);
   pushingCameraState_ = false;
@@ -814,7 +816,7 @@ void ViewSceneDialog::frameFinished()
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
   auto spire = mSpire.lock();
-  auto trans = spire->getWidgetTransform().transform;
+  auto trans = spire->getWidgetTransform();
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);
@@ -936,13 +938,13 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-  if (selected_)
+  if (selectedWidget_)
   {
-    selected_ = false;
-    auto selName = restoreObjColor();
+    restoreObjColor();
     updateModifiedGeometries();
     unblockExecution();
-    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
+    Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
+    selectedWidget_.reset();
   }
 
   pushCameraState();
@@ -1052,12 +1054,12 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 
   if (index == 0)
   {
-    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    spire->setMouseMode(MouseMode::MOUSE_OLDSCIRUN);
     Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
   }
   else
   {
-    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    spire->setMouseMode(MouseMode::MOUSE_NEWSCIRUN);
     Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
   mConfigurationDock->updateZoomOptionVisibility();
@@ -1066,7 +1068,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::invertZoomClicked(bool value)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setZoomInverted(value);
   Preferences::Instance().invertMouseZoom.setValue(value);
 }
@@ -1074,7 +1076,7 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::adjustZoomSpeed(int value)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setZoomSpeed(value);
 }
 
@@ -1140,13 +1142,11 @@ void ViewSceneDialog::unlockAllTriggered()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewOnLoadChecked(bool value)
 {
-  //TODO: Add to SRInterface
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::useOrthoViewChecked(bool value)
 {
-  //TODO: Add to SRInterface
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1270,6 +1270,35 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
+namespace
+{
+  void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
+  {
+    for (auto& pass : widget->passes())
+    {
+      pass.addUniform("uAmbientColor", ambient);
+      pass.addUniform("uDiffuseColor", diffuse);
+      pass.addUniform("uSpecularColor", specular);
+    }
+  }
+
+  void colorWidgetRed(WidgetHandle widget)
+  {
+    colorWidget(widget,
+      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
+      glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
+  }
+
+  void restoreWidgetColor(WidgetHandle widget)
+  {
+    colorWidget(widget,
+      glm::vec4{0.1f, 0.1f, 0.1f, 1.0f},
+      glm::vec4{1.0f, 1.0f, 1.0f, 1.0f},
+      glm::vec4{0.1f, 1.0f, 1.0f, 1.0f});
+  }
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::selectObject(const int x, const int y)
 {
@@ -1294,38 +1323,18 @@ void ViewSceneDialog::selectObject(const int x, const int y)
       return;
     }
 
-    //get widgets
-    auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+    auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+    selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
-    //select widget
-    spire->select(glm::ivec2(x - mGLWidget->pos().x(), y - mGLWidget->pos().y()), objList, 0);
-
-    std::string selName = spire->getSelection();
-    if (selName != "")
+    if (selectedWidget_)
     {
-      for (const auto &obj : objList)
-      {
-        if (obj->uniqueID() == selName)
-        {
-          selected_ = true;
-          for (auto& pass : obj->passes())
-          {
-            pass.addUniform("uAmbientColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uDiffuseColor",
-              glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uSpecularColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-          }
-          break;
-        }
-      }
+      colorWidgetRed(selectedWidget_);
     }
   }
 }
 
 //--------------------------------------------------------------------------------------------------
-std::string ViewSceneDialog::restoreObjColor()
+void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
@@ -1333,46 +1342,11 @@ std::string ViewSceneDialog::restoreObjColor()
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-  auto spire = mSpire.lock();
-  if (!spire)
-    return "";
-
-  std::string selName = spire->getSelection();
-  if (!selName.empty())
+  if (selectedWidget_)
   {
-    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-    if (geomDataTransient && !geomDataTransient->empty())
-    {
-      auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-      if (!geomData)
-      {
-        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-        return "";
-      }
-      for (auto it = geomData->begin(); it != geomData->end(); ++it)
-      {
-        auto obj = *it;
-        auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-        if (realObj->uniqueID() == selName)
-        {
-          for (auto& pass : realObj->passes())
-          {
-            pass.addUniform("uAmbientColor",
-              glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-            pass.addUniform("uDiffuseColor",
-              glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-            pass.addUniform("uSpecularColor",
-              glm::vec4(0.1f, 1.0f, 1.0f, 1.0f));
-          }
-          break;
-        }
-      }
-    }
+    restoreWidgetColor(selectedWidget_);
   }
-  return selName;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Clipping Planes -----------------------------------------------------------------
@@ -1499,7 +1473,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 
   clippingPlaneGeoms_.clear();
   int index = 0;
-  for (auto i : clippingPlanes->clippingPlanes)
+  for (const auto& i : clippingPlanes->clippingPlanes)
   {
     if (clippingPlanes_[index].showFrame)
       buildGeometryClippingPlane(index, i, spire->getSceneBox());
@@ -1508,7 +1482,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, const BBox& bbox)
+void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& plane, const BBox& bbox)
 {
   BBox mBBox;
   mBBox.reset();
@@ -2008,12 +1982,6 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
     spire->setLightOn(index, value);
 }
 
-void ViewSceneDialog::updateLightDirection(int light)
-{
-
-}
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Materials -----------------------------------------------------------------------
@@ -2023,7 +1991,7 @@ void ViewSceneDialog::updateLightDirection(int light)
 void ViewSceneDialog::setAmbientValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Ambient, value);
-  setMaterialFactor(SRInterface::MAT_AMBIENT, value);
+  setMaterialFactor(MatFactor::MAT_AMBIENT, value);
   updateAllGeometries();
 }
 
@@ -2031,7 +1999,7 @@ void ViewSceneDialog::setAmbientValue(double value)
 void ViewSceneDialog::setDiffuseValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Diffuse, value);
-  setMaterialFactor(SRInterface::MAT_DIFFUSE, value);
+  setMaterialFactor(MatFactor::MAT_DIFFUSE, value);
   updateAllGeometries();
 }
 
@@ -2039,7 +2007,7 @@ void ViewSceneDialog::setDiffuseValue(double value)
 void ViewSceneDialog::setSpecularValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Specular, value);
-  setMaterialFactor(SRInterface::MAT_SPECULAR, value);
+  setMaterialFactor(MatFactor::MAT_SPECULAR, value);
   updateAllGeometries();
 }
 
@@ -2050,7 +2018,7 @@ void ViewSceneDialog::setShininessValue(double value)
   const static int minSpecExp = 1;
   state_->setValue(Modules::Render::ViewScene::Shine, value);
   //taking square of value makes the ui a little more intuitive in my opinion
-  setMaterialFactor(SRInterface::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
+  setMaterialFactor(MatFactor::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
   updateAllGeometries();
 }
 
@@ -2071,9 +2039,9 @@ void ViewSceneDialog::setFogOn(bool value)
 {
   state_->setValue(Modules::Render::ViewScene::FogOn, value);
   if (value)
-    setFog(SRInterface::FOG_INTENSITY, 1.0);
+    setFog(FogFactor::FOG_INTENSITY, 1.0);
   else
-    setFog(SRInterface::FOG_INTENSITY, 0.0);
+    setFog(FogFactor::FOG_INTENSITY, 0.0);
   updateAllGeometries();
 }
 
@@ -2117,7 +2085,7 @@ void ViewSceneDialog::assignFogColor()
 void ViewSceneDialog::setFogStartValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogStart, value);
-  setFog(SRInterface::FOG_START, value);
+  setFog(FogFactor::FOG_START, value);
   updateAllGeometries();
 }
 
@@ -2125,24 +2093,24 @@ void ViewSceneDialog::setFogStartValue(double value)
 void ViewSceneDialog::setFogEndValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogEnd, value);
-  setFog(SRInterface::FOG_END, value);
+  setFog(FogFactor::FOG_END, value);
   updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setMaterialFactor(int factor, double value)
+void ViewSceneDialog::setMaterialFactor(MatFactor factor, double value)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setMaterialFactor(static_cast<SRInterface::MatFactor>(factor), value);
+    spire->setMaterialFactor(factor, value);
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setFog(int factor, double value)
+void ViewSceneDialog::setFog(FogFactor factor, double value)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setFog(static_cast<SRInterface::FogFactor>(factor), value);
+    spire->setFog(factor, value);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2169,7 +2137,7 @@ void ViewSceneDialog::assignBackgroundColor()
     bgColor_ = newColor;
     mConfigurationDock->setSampleColor(bgColor_);
     state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
     bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
     if (useBg)
@@ -2183,7 +2151,7 @@ void ViewSceneDialog::assignBackgroundColor()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
   updateAllGeometries();
 }
@@ -2191,7 +2159,7 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
   updateAllGeometries();
 }
@@ -2199,7 +2167,7 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
   updateAllGeometries();
 }
