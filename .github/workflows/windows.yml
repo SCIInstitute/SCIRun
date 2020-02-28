@@ -3,7 +3,7 @@ name: windows-build
 on: [push, pull_request]
 
 jobs:
-  windows-build-headless:
+  headless:
     runs-on: windows-latest
 
     steps:
@@ -33,14 +33,7 @@ jobs:
         name: SCIRunWindowsHeadlessInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
 
-#    - name: Release
-#      uses: softprops/action-gh-release@v1
-#      if: startsWith(github.ref, 'refs/tags/')
-#      with:
-#        files: build/gh-greets-qt_installer.exe
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  windows-build:
+  gui:
     runs-on: windows-latest
 
     steps:
@@ -64,7 +57,7 @@ jobs:
       working-directory: bin
       run: |
         cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
-    
+
     - name: Compile
       working-directory: bin
       shell: cmd
