@@ -25,18 +25,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gtest/gtest.h>
 
-#include <Graphics/Widgets/DiskWidget.h>
-#include <Graphics/Widgets/GlyphFactory.h>
+#include <Graphics/Widgets/ConeWidget.h>
+#include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
-using namespace SCIRun;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-DiskWidget::DiskWidget(const GeneralWidgetParameters& gen,
-                       DiskParameters params)
-  : WidgetBase({gen.base.idGenerator, "DiskWidget::" + gen.base.tag, gen.base.mapping})
+TEST(ConeWidgetTest, CanCreateSingleConeReal)
 {
-  name_ = gen.glyphMaker->disk(params, *this);
-  setPosition(Point(params.p1 + params.p2)/2);
+  StubGeometryIDGenerator idGen;
+
+  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<RealGlyphFactory>()},
+  {
+    {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}}, true
+  });
+
+  EXPECT_EQ(Point(1.5,1.5,0), cone.position());
+  EXPECT_EQ("<dummyGeomId>ConeWidget::testCone1widget10100", cone.name());
+}
+
+TEST(ConeWidgetTest, CanCreateSingleConeStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}}, true
+  });
+
+  EXPECT_EQ(Point(1.5,1.5,0), cone.position());
+  EXPECT_EQ("__cone__0", cone.name());
+}
+
+TEST(ConeWidgetTest, CanSetupConeForRotation)
+{
+  StubGeometryIDGenerator idGen;
+
+  ConeParameters params {
+    {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}}, true };
+
+  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<RealGlyphFactory>()}, params);
+
+  cone.setTransformParameters<Rotation>(params.cylinder.common.origin);
+
+  auto rotationOrigin = getRotationOrigin(cone.transformParameters());
+
+  EXPECT_EQ(params.cylinder.common.origin, rotationOrigin);
 }

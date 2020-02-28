@@ -1,28 +1,28 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+The MIT License
 
-   Copyright (c) 2020 Scientific Computing and Imaging Institute,
-   University of Utah.
+Copyright (c) 2020 Scientific Computing and Imaging Institute,
+University of Utah.
 
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -31,6 +31,7 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/WidgetParameters.h>
 #include <Graphics/Widgets/share.h>
 
 namespace SCIRun
@@ -39,81 +40,61 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      // These will give different types of widget movement through ViewScene.
-      // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
+      class WidgetBase;
+
+      struct SCISHARE GeometryIdGetter
       {
-        TRANSLATE,
-        ROTATE,
-        SCALE
+        std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
       };
-      class SCISHARE WidgetBase : public GeometryObjectSpire
+
+      using WidgetObservable = Observable<WidgetBase*, WidgetMovement, SimpleWidgetEvent,
+        SimpleWidgetEventKey, SimpleWidgetEventValue, GeometryIdGetter>;
+
+      class SCISHARE WidgetBase : public GeometryObjectSpire,
+        public WidgetObservable,
+        public InputTransformMapper,
+        public Transformable
       {
       public:
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
+        explicit WidgetBase(const WidgetBaseParameters& params);
+        WidgetBase(const WidgetBase&) = delete;
+
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        void setToScale(const Core::Geometry::Vector& flipAxis);
-        void setToRotate();
-        void setToTranslate();
-        glm::vec3 getFlipVector();
-        WidgetMovement getMovementType();
 
-        glm::vec3 origin_;
-        std::vector<std::string> connectedIds_;
-        void addInitialId();
+        const std::string& name() const { return name_; }
 
+        virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
-      private:
-        WidgetMovement movementType_;
-        glm::vec3 flipAxis_;
+        std::string name_;
       };
 
-        using WidgetHandle = SharedPointer<WidgetBase>;
-
-        struct SCISHARE BoxPosition {
-          Core::Geometry::Point center_, right_, down_, in_;
-
-          void setPosition(const Core::Geometry::Point &center,
-                           const Core::Geometry::Point &right,
-                           const Core::Geometry::Point &down,
-                           const Core::Geometry::Point &in);
-          void getPosition(Core::Geometry::Point &center,
-                           Core::Geometry::Point &right,
-                           Core::Geometry::Point &down,
-                           Core::Geometry::Point &in) const;
-      };
+      using WidgetHandle = SharedPointer<WidgetBase>;
+      using WidgetList = std::vector<WidgetHandle>;
+      using WidgetListIterator = WidgetList::const_iterator;
 
       class SCISHARE CompositeWidget : public WidgetBase
       {
       public:
         template <typename WidgetIter>
-                CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
-                                WidgetIter begin, WidgetIter end)
-                : WidgetBase(idGenerator, tag, true)
+        CompositeWidget(const WidgetBaseParameters& params, WidgetIter begin, WidgetIter end)
+          : WidgetBase(params), widgets_(begin, end)
         {}
-      CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
-                  : WidgetBase(idGenerator, tag, true)
+        explicit CompositeWidget(const WidgetBaseParameters& params) : WidgetBase(params)
         {}
-        ~CompositeWidget();
-        void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
-        void addToList(WidgetHandle handle);
-        std::vector<std::string> getListOfConnectedIds();
 
-        std::vector<WidgetHandle> widgets_;
-      private:
+        void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
+        void propagateEvent(const SimpleWidgetEvent& e) override;
+        WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
+        WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
+
+      protected:
+        WidgetList widgets_;
+        void registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement);
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
-
-      template <typename WidgetIter>
-        static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-      {
-        return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
-      }
     }
   }
 }

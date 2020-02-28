@@ -6,6 +6,7 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_RENDER_TESTS_HELPER_H
+#define INTERFACE_MODULES_RENDER_TESTS_HELPER_H
 
-#ifndef Graphics_Widgets_ArrowWidget_H
-#define Graphics_Widgets_ArrowWidget_H
+#include <Interface/Modules/Render/ES/RendererCollaborators.h>
+#include <Interface/Modules/Render/ES/RendererInterface.h>
+#include <Interface/Modules/Render/ES/SRCamera.h>
 
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/share.h>
+namespace SCIRun
+{
+  namespace RenderTesting
+  {
+    class ScreenParametersTest : public SCIRun::Render::ScreenParameters
+    {
+    public:
+      size_t getScreenWidthPixels() const override;
+      size_t getScreenHeightPixels() const override;
+      SCIRun::Render::MouseMode getMouseMode() const override;
+    };
 
-namespace SCIRun {
-  namespace Graphics {
-    namespace Datatypes {
-      enum ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
+    class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
+    {
+    public:
+      SCIRun::Render::SRCamera& camera() const override;
+      const SCIRun::Render::ScreenParams& screen() const override;
+    };
 
-      class SCISHARE ArrowWidget : public CompositeWidget
-      {
-      public:
-        ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params);
-
-        bool isVector() const;
-
-      private:
-        bool isVector_;
-        static std::string widgetName(size_t i, size_t id, size_t iter);
-      };
-
-      using ArrowWidgetHandle = SharedPointer<ArrowWidget>;
-    }
+  bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);
   }
 }
+
 #endif

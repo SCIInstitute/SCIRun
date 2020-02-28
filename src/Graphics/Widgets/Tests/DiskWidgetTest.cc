@@ -26,33 +26,37 @@
 */
 
 
-#ifndef Graphics_Widgets_ArrowWidget_H
-#define Graphics_Widgets_ArrowWidget_H
+#include <gtest/gtest.h>
+#include <Graphics/Widgets/DiskWidget.h>
+#include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/share.h>
+using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
-  namespace Graphics {
-    namespace Datatypes {
-      enum ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
+TEST(DiskWidgetTest, CanCreateSingleDiskReal)
+{
+  StubGeometryIDGenerator idGen;
 
-      class SCISHARE ArrowWidget : public CompositeWidget
-      {
-      public:
-        ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params);
+  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<RealGlyphFactory>()},
+  {
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}
+  });
 
-        bool isVector() const;
-
-      private:
-        bool isVector_;
-        static std::string widgetName(size_t i, size_t id, size_t iter);
-      };
-
-      using ArrowWidgetHandle = SharedPointer<ArrowWidget>;
-    }
-  }
+  EXPECT_EQ(Point(1.5,1.5,0), disk.position());
+  EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk1widget10100", disk.name());
 }
-#endif
+
+TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {1,1,0}, {2,2,0}
+  });
+
+  EXPECT_EQ(Point(1.5,1.5,0), disk.position());
+  EXPECT_EQ("__disk__0", disk.name());
+}
