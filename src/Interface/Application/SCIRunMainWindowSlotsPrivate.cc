@@ -566,8 +566,10 @@ void SCIRunMainWindow::launchNewUserWizard()
 
 void SCIRunMainWindow::launchPythonWizard()
 {
+#ifdef BUILD_WITH_PYTHON
   PythonWizard *wiz = new PythonWizard( [this](const  QString& code) {pythonConsole_->runWizardCommand(code); }, this);
   wiz->show();
+#endif
 }
 
 void SCIRunMainWindow::adjustModuleDock(int state)

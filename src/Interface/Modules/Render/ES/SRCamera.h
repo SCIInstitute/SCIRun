@@ -32,18 +32,18 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
-#include <Interface/Modules/Render/ES/SRInterface.h>
-
+#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <arc-look-at/ArcLookAt.hpp>
+#include <Interface/Modules/Render/share.h>
 
 namespace SCIRun{
   namespace Render{
 
     /// Basic camera class for spire, mimicking SCIRun v4.
-    class SRCamera
+    class SCISHARE SRCamera
     {
     public:
-      explicit SRCamera(SRInterface& iface);
+      explicit SRCamera(const ScreenParameters* screen);
 
       /// Sets this camera to use a perspective projection transformation.
       void setAsPerspective();
@@ -52,10 +52,10 @@ namespace SCIRun{
       void setAsOrthographic(float halfWidth, float halfHeight);
 
       /// Handle mouse down.
-      void mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      void mouseDownEvent(const glm::ivec2& pos, MouseButton btn);
 
       /// Handle mouse movement.
-      void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      void mouseMoveEvent(const glm::ivec2& pos, MouseButton btn);
 
       /// Handle mouse wheel event.
       void mouseWheelEvent(int32_t delta, int zoomSpeed);
@@ -80,7 +80,6 @@ namespace SCIRun{
       void rotate(glm::vec2);
 
       // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
-      const glm::mat4& getWorldToProjection() const  {return mVP;}
       const glm::mat4& getWorldToView() const        {return mV;}
       const glm::mat4& getViewToProjection() const   {return mP;}
 
@@ -92,8 +91,7 @@ namespace SCIRun{
       float getZFar()   {return mZFar;}
       float getZNear()  {return mZNear;}
       float getFOVY()   {return mFOVY;}
-      float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
-                                static_cast<float>(mInterface.getScreenHeightPixels());}
+      float getAspect();
 
       float getDistance() const {return mArcLookAt->getDistance();}
       void setDistance(const float f) {mArcLookAt->setDistance(f); setClippingPlanes();}
@@ -132,7 +130,7 @@ namespace SCIRun{
       glm::mat4             mV            {};   ///< View transformation.
       glm::mat4             mP            {};   ///< Projection transformation.
 
-      SRInterface&                        mInterface;           ///< SRInterface.
+      const ScreenParameters*                   screenParameters_{nullptr};
       std::shared_ptr<spire::ArcLookAt>   mArcLookAt{};
       Core::Geometry::BBox                mSceneBBox{};
 

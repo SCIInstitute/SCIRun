@@ -26,8 +26,8 @@
 */
 
 
-#ifndef Graphics_Widgets_BoundingBoxWidget_H
-#define Graphics_Widgets_BoundingBoxWidget_H
+#ifndef Graphics_Widgets_BasicBoundingBoxWidget_H
+#define Graphics_Widgets_BasicBoundingBoxWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -38,11 +38,10 @@ namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
 
-      class SCISHARE BoundingBoxWidget : public WidgetBase
+      class SCISHARE BasicBoundingBoxWidget : public WidgetBase
       {
       public:
-        BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
-          const BoxPosition& pos, const Core::Geometry::Point& origin, const Core::Geometry::BBox& bbox);
+        BasicBoundingBoxWidget(const GeneralWidgetParameters& gen, BasicBoundingBoxParameters params);
       };
     }
   }
