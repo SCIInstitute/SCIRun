@@ -272,7 +272,6 @@ namespace SCIRun {
         PassList  mPasses; /// List of passes to setup.
         bool isClippable_;
         boost::optional<std::string> mColorMap;
-
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;

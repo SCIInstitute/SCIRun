@@ -547,7 +547,7 @@ public:
 	}
 
     // get all the objects who's bounding boxes intersect the given box
-	void GetIntersectedBoxes(const DISTBOXCLASS &boxclass, const BBox &ibox, std::vector<OBJECT> &intersected) const
+	void GetIntersectedBoxes(const DISTBOXCLASS &boxclass, const AxisAlignedBBox &ibox, std::vector<OBJECT> &intersected) const
   {
       // check our bounding box
 		if (ibox.intersect(bbox) == AxisAlignedBBox::OUTSIDE)

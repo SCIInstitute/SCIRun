@@ -33,8 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
@@ -479,7 +478,14 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
   mesh->begin(eiter);
   Point point;
   mesh->get_point(point, *eiter);
-  return WidgetFactory::createSphere(idGenerator, "GSPPFF",
-    radius, state->getValue(Parameters::ProbeColor).toString(),
-    point, point, mesh->get_bounding_box(), 10);
+
+  return SphereWidgetBuilder(idGenerator)
+    .tag("GSPPFF")
+    .scale(radius)
+    .defaultColor(state->getValue(Parameters::ProbeColor).toString())
+    .origin(point)
+    .boundingBox(mesh->get_bounding_box())
+    .resolution(10)
+    .centerPoint(point)
+    .build();
 }

@@ -30,7 +30,6 @@
 #define Graphics_Widgets_CylinderWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
@@ -41,17 +40,7 @@ namespace SCIRun {
       class SCISHARE CylinderWidget : public WidgetBase
       {
       public:
-        CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
-                       const std::string& name,
-                       double radius,
-                       const std::string& defaultColor,
-                       const Core::Geometry::Point& p1,
-                       const Core::Geometry::Point& p2,
-                       const Core::Geometry::Point& origin,
-                       const Core::Geometry::AxisAlignedBBox& bbox,
-                       int resolution);
-      private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
+        CylinderWidget(const GeneralWidgetParameters& gen, CylinderParameters params);
       };
 
       using CylinderWidgetHandle = SharedPointer<CylinderWidget>;

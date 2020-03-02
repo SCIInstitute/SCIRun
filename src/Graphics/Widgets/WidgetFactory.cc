@@ -27,100 +27,67 @@
 
 
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/ConeWidget.h>
+#include <Graphics/Widgets/CylinderWidget.h>
+#include <Graphics/Widgets/DiskWidget.h>
+#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/GlyphFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-ArrowWidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
-                                                       const std::string& name,
-                                                       double scale,
-                                                       const Point &pos,
-                                                       const Vector &dir,
-                                                       int resolution,
-                                                       bool show_as_vector,
-                                                       int widget_num,
-                                                       int widget_iter,
-                                                       const AxisAlignedBBox &bbox)
+AbstractGlyphFactoryPtr WidgetFactory::glyphMaker_(new RealGlyphFactory);
+
+GeneralWidgetParameters WidgetFactory::packageWithGlyph(const WidgetBaseParameters& params)
 {
-  return boost::make_shared<ArrowWidget>(idGenerator, name, scale, pos, dir,
-                                         resolution, show_as_vector,
-                                         widget_num, widget_iter, bbox);
+  return {params, glyphMaker_};
 }
 
-WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator,
-                                               double scale,
-                                               const BoxPosition& pos,
-                                               const Point& origin,
-                                               const AxisAlignedBBox& bbox)
+void WidgetFactory::setGlyphFactory(AbstractGlyphFactoryPtr glyphMaker) { glyphMaker_ = glyphMaker; }
+
+WidgetHandle WidgetFactory::createArrowWidget(const WidgetBaseParameters& gen,
+                                                       ArrowParameters params)
 {
-  auto widget = boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
-  widget->addInitialId();
-  widget->setToTranslate();
-  return widget;
+  return boost::make_shared<ArrowWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
-                                         const std::string& name,
-                                         double radius,
-                                         const std::string& defaultColor,
-                                         const Point& point,
-                                         const Core::Geometry::Point& origin,
-                                         const AxisAlignedBBox& bbox,
-                                         int resolution)
+WidgetHandle WidgetFactory::createBox(const WidgetBaseParameters& gen,
+                                               BasicBoundingBoxParameters params)
 {
-  auto widget = boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
-  return widget;
+  return boost::make_shared<BasicBoundingBoxWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGenerator,
-                                           const std::string& name,
-                                           double radius,
-                                           const std::string& defaultColor,
-                                           const Point& p1,
-                                           const Point& p2,
-                                           const Core::Geometry::Point& origin,
-                                           const AxisAlignedBBox& bbox,
-                                           int resolution)
+WidgetHandle WidgetFactory::createSphere(const WidgetBaseParameters& gen,
+                                         SphereParameters params)
 {
-  auto widget = boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
-  return widget;
+  return boost::make_shared<SphereWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
-                                       double radius,
-                                       const std::string& defaultColor,
-                                       const Point& p1,
-                                       const Point& p2,
-                                       const Core::Geometry::Point& origin,
-                                       const AxisAlignedBBox& bbox,
-                                       bool renderBase,
-                                       int resolution)
+WidgetHandle WidgetFactory::createCylinder(const WidgetBaseParameters& gen,
+                                           CylinderParameters params)
 {
-  auto widget = boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, renderBase, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
-  return widget;
+  return boost::make_shared<CylinderWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
-                                       double radius,
-                                       const std::string& defaultColor,
-                                       const Point& p1,
-                                       const Point& p2,
-                                       const Core::Geometry::Point& origin,
-                                       const AxisAlignedBBox& bbox,
-                                       int resolution)
+WidgetHandle WidgetFactory::createCone(const WidgetBaseParameters& gen,
+                                       ConeParameters params)
 {
-  auto widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
-  widget->addInitialId();
-  widget->setToTranslate();
-  return widget;
+  return boost::make_shared<ConeWidget>(packageWithGlyph(gen), params);
+}
+
+WidgetHandle WidgetFactory::createDisk(const WidgetBaseParameters& gen,
+                                       DiskParameters params)
+{
+  return boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
+}
+
+WidgetHandle SphereWidgetBuilder::build() const
+{
+  return WidgetFactory::createSphere({ idGenerator_, tag_, mapping_ },
+    { { scale_, defaultColor_, origin_, bbox_, resolution_ }, point_ });
 }

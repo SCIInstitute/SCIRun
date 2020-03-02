@@ -304,7 +304,7 @@ namespace
 
   }
 
-  ospcommon::box3f toOsprayBox(const BBox& box)
+  ospcommon::box3f toOsprayBox(const AxisAlignedBBox& box)
   {
     auto min = box.get_min();
     auto max = box.get_max();

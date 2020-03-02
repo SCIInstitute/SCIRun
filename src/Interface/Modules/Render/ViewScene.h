@@ -38,6 +38,8 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -47,17 +49,14 @@ class QStandardItem;
 class QGLWidget;
 
 namespace SCIRun {
-  namespace Render { class SRInterface; }
   namespace Gui {
 
     class GLWidget;
     class ViewSceneControlsDock;
 
-
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
     Q_OBJECT;
-
 
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
@@ -73,7 +72,7 @@ namespace SCIRun {
       void cameraLookAtChangeForwarder();
       void cameraDistnaceChangeForwarder();
       void lockMutexForwarder();
-      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
+      void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
@@ -171,7 +170,6 @@ namespace SCIRun {
       void toggleLight3(bool value);
       void setLight3Azimuth(int value);
       void setLight3Inclination(int value);
-      void updateLightDirection(int light);
       void lightingChecked(bool value);
 
       //---------------- Material Settings ---------------------------------------------------------
@@ -242,12 +240,12 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       void selectObject(const int x, const int y);
-      std::string restoreObjColor();
+      void restoreObjColor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
       void buildGeomClippingPlanes();
-      void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::AxisAlignedBBox& bbox);
+      void buildGeometryClippingPlane(int index, const glm::vec4& plane, const Core::Geometry::AxisAlignedBBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
       void updateScaleBarLength();
@@ -257,10 +255,10 @@ namespace SCIRun {
       void toggleLightOnOff(int index, bool value);
 
       //---------------- Materials -----------------------------------------------------------------
-      void setMaterialFactor(int factor, double value);
+      void setMaterialFactor(Render::MatFactor factor, double value);
 
       //---------------- Fog -----------------------------------------------------------------------
-      void setFog(int factor, double value);
+      void setFog(Render::FogFactor factor, double value);
       void setFogColor(const glm::vec4 &color);
 
       //---------------- Misc. ---------------------------------------------------------------------
@@ -285,7 +283,7 @@ namespace SCIRun {
 
 
       GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
-      std::weak_ptr<Render::SRInterface>    mSpire                        {};         ///< Instance of Spire.
+      Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
       QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
       QToolBar*                             mViewBar                      {nullptr};  ///< Tool bar for view options.
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
@@ -298,7 +296,7 @@ namespace SCIRun {
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
-      bool                                  selected_                     {false};
+      Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
