@@ -269,7 +269,7 @@
       <item>
        <widget class="QPushButton" name="customColorButton0_">
         <property name="text">
-         <string>Custom Color 0</string>
+         <string>Custom Color Min</string>
         </property>
        </widget>
       </item>
@@ -285,7 +285,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Custom Color 1</string>
+         <string>Custom Color Max</string>
         </property>
        </widget>
       </item>
