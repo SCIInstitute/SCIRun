@@ -138,6 +138,17 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   module_->setupPortSceneCollaborator(this);
 
+  if (module_->getModule()->isImplementationDisabled())
+  {
+    setOpacity(0.5);
+    auto colorize = new QGraphicsColorizeEffect;
+    colorize->setColor(QColor(150,0,0));
+    previousEffect_ = colorize;
+    setGraphicsEffect(previousEffect_);
+    QMessageBox::warning(nullptr, "Disabled module",
+      tr("Module %1 is disabled; you might need a different build of SCIRun.").arg(QString::fromStdString(module_->getModuleId())));
+  }
+
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << "ctor" << __FILE__ << __LINE__ << pos() << scenePos();
 #endif
@@ -694,6 +705,12 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
         auto newBlur = new QGraphicsBlurEffect;
         newBlur->setBlurRadius(blur->blurRadius());
         previousEffect_ = newBlur;
+      }
+      else if (auto colorize = qobject_cast<QGraphicsColorizeEffect*>(prev))
+      {
+        auto newColorize = new QGraphicsColorizeEffect;
+        newColorize->setColor(colorize->color());
+        previousEffect_ = newColorize;
       }
       else
         previousEffect_ = nullptr;
