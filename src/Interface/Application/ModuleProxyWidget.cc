@@ -687,6 +687,17 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
     dropShadow->setColor(Qt::darkGray);
     dropShadow->setOffset(5, 5);
     dropShadow->setBlurRadius(30);
+    {
+      auto prev = graphicsEffect();
+      if (auto blur = qobject_cast<QGraphicsBlurEffect*>(prev))
+      {
+        auto newBlur = new QGraphicsBlurEffect;
+        newBlur->setBlurRadius(blur->blurRadius());
+        previousEffect_ = newBlur;
+      }
+      else
+        previousEffect_ = nullptr;
+    }
     setGraphicsEffect(dropShadow);
   }
 
@@ -724,7 +735,7 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
     pos().x(), pos().y(), scenePos().x(), scenePos().y());
 #endif
 
-  setGraphicsEffect(nullptr);
+  setGraphicsEffect(previousEffect_);
 
 #ifdef MODULE_POSITION_LOGGING
   logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,
