@@ -26,6 +26,10 @@
 */
 
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 /// author James Hughes
 /// date   January 2014
 
