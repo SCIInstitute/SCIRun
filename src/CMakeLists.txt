@@ -374,13 +374,6 @@ ENDIF()
 # ENDIF()
 
 ########################################################################
-# Configure tetgen module build
-
-IF(WITH_TETGEN)
-  ADD_DEFINITIONS(-DWITH_TETGEN)
-ENDIF()
-
-########################################################################
 # Configure ospray module build-- TODO: convert into real external
 
 IF(WITH_OSPRAY)
