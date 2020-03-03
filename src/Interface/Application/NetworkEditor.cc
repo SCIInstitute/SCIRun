@@ -2025,6 +2025,17 @@ QString Gui::colorToString(const QColor& color)
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
 
+QColor Gui::stringToColor(const QString& s)
+{
+  static QRegularExpression re("rgb\\((\\d+), (\\d+), (\\d+)\\)");
+  auto match = re.match(s);
+  if (match.hasMatch())
+  {
+    return QColor(match.captured(1).toInt(), match.captured(2).toInt(), match.captured(3).toInt());
+  }
+  return {};
+}
+
 QGraphicsEffect* Gui::blurEffect(double radius)
 {
   auto blur = new QGraphicsBlurEffect;
