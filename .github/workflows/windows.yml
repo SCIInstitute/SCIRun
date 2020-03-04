@@ -1,0 +1,75 @@
+name: windows-build
+
+on: [push, pull_request]
+
+jobs:
+  windows-build-headless:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Configure
+      working-directory: bin
+      shell: cmd
+      run: |
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DBUILD_HEADLESS:BOOL=ON -DBUILD_WITH_PYTHON:BOOL=OFF
+
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
+
+    - name: Package
+      working-directory: bin/SCIRun
+      shell: cmd
+      run: cmake --build . --config Release --target package
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunWindowsHeadlessInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
+
+  windows-build-gui:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.13.1
+        target: desktop
+        host: windows
+        arch: win64_msvc2017_64
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $Env:Qt5_Dir
+
+    - name: Configure
+      working-directory: bin
+      run: |
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
+
+    - name: Package
+      working-directory: bin/SCIRun
+      shell: cmd
+      run: cmake --build . --config Release --target package
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunWindowsInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe

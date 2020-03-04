@@ -28,9 +28,7 @@
 
 #include <iostream>
 #include <Interface/qt_include.h>
-#ifdef QT5_BUILD
 #include <QtConcurrent>
-#endif
 #include "ui_Module.h"
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
