@@ -49,17 +49,12 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
     positionLabel_->setVisible(false);
   }
   connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
-  //TODO: sloppy.
-  //connect(alignmentComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeTextAlignment(const QString&)));
 
   connect(textEdit_, SIGNAL(textChanged()), this, SLOT(updateNote()));
 
   connect(buttonBox_->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(resetText()));
   connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
   connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
-
-  label_2->setHidden(true);
-  alignmentComboBox_->setHidden(true);
 
   //TODO: settable notes
   previousColor_ = Qt::white;
@@ -101,8 +96,9 @@ void NoteEditor::changeTextAlignment(const QString& text)
 
 void NoteEditor::changeTextColor()
 {
-  auto newColor = QColorDialog::getColor(previousColor_, this, "Choose text color");
-  setNoteColor(newColor);
+  previousColor_ = currentColor_;
+  currentColor_ = QColorDialog::getColor(currentColor_, this, "Choose text color");
+  setNoteColor(currentColor_);
 }
 
 void NoteEditor::setNoteHtml(const QString& text)
@@ -152,6 +148,10 @@ void NoteEditor::setNoteColor(const QColor& color)
     textEdit_->setTextColor(color);
     textEdit_->setPlainText(textEdit_->toPlainText());
     updateNote();
+  }
+  else
+  {
+    currentColor_ = previousColor_;
   }
 }
 
