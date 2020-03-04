@@ -165,7 +165,7 @@ void NoteEditor::resetTextColor()
   auto oldColor = textEdit_->textColor();
   textEdit_->setTextColor(previousColor_);
   textEdit_->setPlainText(textEdit_->toPlainText());
-  previousColor_ = oldColor;
+  previousColor_ = currentColor_ = oldColor;
 }
 
 void NoteEditor::ok()
