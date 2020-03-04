@@ -510,7 +510,7 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
   double r = radius < 0 ? 1.0 : radius;
   Vector pp1, pp2;
   double d_res = resolution;
-  double theta_inc = M_PI / (double)resolution, phi_inc = 0.5 * M_PI / (double)resolution;
+  double theta_inc = M_PI / d_res, phi_inc = 0.5 * M_PI / d_res;
 
   //generate triangles for the spheres
   for(int phi_strip = 1; phi_strip <= 2*resolution; ++phi_strip)
