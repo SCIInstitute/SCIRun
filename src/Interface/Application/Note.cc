@@ -120,12 +120,8 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
     if (!scene_)
       logWarning("Scene not set, network notes will not be displayed.");
 
-    #ifdef QT5_BUILD
     note_ = new QGraphicsTextItem("");
     scene_->addItem(note_);
-    #else
-    note_ = new QGraphicsTextItem("", nullptr, scene_);
-    #endif
 
     note_->setDefaultTextColor(Qt::white);
   }
