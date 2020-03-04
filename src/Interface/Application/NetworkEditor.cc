@@ -28,9 +28,7 @@
 
 #include <sstream>
 #include <Interface/qt_include.h>
-#ifdef QT5_BUILD
 #include <QtConcurrent>
-#endif
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -1118,12 +1116,9 @@ private:
 
 void scaleTextItem(QGraphicsTextItem* item, double textScale)
 {
-  #ifdef QT5_BUILD
   item->setTransform(QTransform::fromScale(textScale, textScale));
-  #else
-  item->scale(textScale, textScale);
-  #endif
 }
+
 void NetworkEditor::searchTextChanged(const QString& text)
 {
   if (text.isEmpty())
