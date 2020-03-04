@@ -29,6 +29,10 @@
 #ifndef SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
 #define SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <gl-shaders/GLShader.hpp>

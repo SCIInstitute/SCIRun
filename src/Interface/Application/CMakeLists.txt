@@ -175,11 +175,8 @@ TARGET_LINK_LIBRARIES(Interface_Application
 
 ENDIF()
 
-
-IF(QT5_BUILD)
-  TARGET_LINK_LIBRARIES(Interface_Application
-    Qt5::Network)
-ENDIF()
+TARGET_LINK_LIBRARIES(Interface_Application
+  Qt5::Network)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Application)
