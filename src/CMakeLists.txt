@@ -518,7 +518,7 @@ IF(NOT BUILD_HEADLESS)
 ENDIF()
 
 IF(TRAVIS_BUILD)
-  ADD_DEFINITIONS(-DTRAVIS_BUILD)
+  ADD_DEFINITIONS(-DOLDER_QT_SUPPORT_NEEDED)
 ENDIF()
 
 ########################################################################

@@ -2233,11 +2233,7 @@ void NetworkEditor::drawTagGroups()
       label->setData(TagTextKey, tagNum);
       static const QFontMetrics fm(labelFont);
 
-      #ifdef TRAVIS_BUILD // remove when Travis linux build has newer Qt 5 version
-      auto textWidthInPixels = fm.width(label->text());
-      #else
-      auto textWidthInPixels = fm.horizontalAdvance(label->text());
-      #endif
+      auto textWidthInPixels = fm.WIDTH_FUNC(label->text());
       label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
     }
   }

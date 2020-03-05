@@ -107,8 +107,6 @@ IF(TRAVIS_BUILD)
       # try building everything with clang!
     ENDIF()
   ENDIF()
-
-  ADD_DEFINITIONS(-DTRAVIS_BUILD)
 ENDIF()
 
 ###########################################
