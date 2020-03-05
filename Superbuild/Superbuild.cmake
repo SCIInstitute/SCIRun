@@ -114,7 +114,7 @@ ENDIF()
 ###########################################
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
-  IF(TRAVIS_BUILD)
+  IF(TRAVIS_BUILD OR UNIX)
     SET(QT_MIN_VERSION "5.4")
   ELSE()
     SET(QT_MIN_VERSION "5.13")
