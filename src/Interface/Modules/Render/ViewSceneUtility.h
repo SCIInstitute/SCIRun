@@ -28,6 +28,7 @@
 #ifndef INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 #define INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 
+#include <string>
 #include <glm/gtc/quaternion.hpp>
 #include <Interface/Modules/Render/share.h>
 
