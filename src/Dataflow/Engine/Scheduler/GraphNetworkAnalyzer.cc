@@ -76,7 +76,7 @@ int NetworkGraphAnalyzer::moduleCount() const
   return moduleCount_;
 }
 
-EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork(std::function<bool(const Networks::ConnectionDescription&)> connectionFilter)
+EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork(std::function<bool(const ConnectionDescription&)> connectionFilter)
 {
   moduleCount_ = 0;
   moduleIdLookup_.clear();
