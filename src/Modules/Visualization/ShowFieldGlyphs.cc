@@ -116,7 +116,7 @@ namespace SCIRun {
         ColorScheme getColoringType(const RenderState& renState, VField* fld);
         void getPoints(VMesh* mesh, std::vector<int>& indices, std::vector<Point>& points);
         std::unique_ptr<ShowFieldGlyphsPortHandler> portHandler_;
-        RenderState::InputPort getInput(std::string&& port_name);
+        RenderState::InputPort getInput(const std::string& port_name);
         void addGlyph(
           GlyphGeom& glyphs,
           int glyph_type,
@@ -348,7 +348,7 @@ void ShowFieldGlyphs::configureInputs(
   }
 }
 
-RenderState::InputPort GlyphBuilder::getInput(std::string&& port_name)
+RenderState::InputPort GlyphBuilder::getInput(const std::string& port_name)
 {
   if(port_name == "Primary")
   {
@@ -907,7 +907,6 @@ RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
 
   renState.set(RenderState::USE_NORMALS, true);
 
-  //renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowScalars).toBool());
   // Transparency
   int transparency = state->getValue(ShowFieldGlyphs::ScalarsTransparency).toInt();
   if(transparency == 0)
@@ -923,9 +922,6 @@ RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
   {
     renState.set(RenderState::USE_TRANSPARENT_NODES, true);
   }
-
-  //renState.mTransparencyInput = getInput(state->getValue(ShowFieldGlyphs::ScalarsTransparencyDataInput).toString());
-  //renState.mTransparencyInput = state->getValue(ShowFieldGlyphs::ScalarsTransparenycDataInput).toString();
 
   std::string g_type = state->getValue(ShowFieldGlyphs::ScalarsDisplayType).toString();
   if(g_type == "Lines")
@@ -963,7 +959,6 @@ RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::ScalarsColoringDataInput).toString());
-  //renState.mColorInput = state->getValue(ShowFieldGlyphs::ScalarsColorDataInput).toString();
 
   return renState;
 }
@@ -1028,7 +1023,6 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::TensorsColoringDataInput).toString());
-  //renState.mColorInput = state->getValue(ShowFieldGlyphs::TensorsColorDataInput).toString();
 
   return renState;
 }

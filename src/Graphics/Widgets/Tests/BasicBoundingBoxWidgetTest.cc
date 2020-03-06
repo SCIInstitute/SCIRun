@@ -25,37 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gtest/gtest.h>
 
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_STATIC_SR_INTERFACE_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_STATIC_SR_INTERFACE_H
+#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
-#include <cstdint>
-#include <entity-system/GenericSystem.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include "../SRInterface.h"
+using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
-namespace Render {
-
-/// Reference ID class.
-struct StaticSRInterface
+TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxReal)
 {
-    // -- Data --
-    SRInterface* instance_;
+  StubGeometryIDGenerator idGen;
 
-    // -- Functions --
-    StaticSRInterface() : instance_(nullptr) {}
-    StaticSRInterface(SRInterface* s) : instance_(s) {}
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
+  {
+    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
+  });
 
-    static const char* getName() {return "scirun:StaticSRInterface";}
+  EXPECT_EQ(Point(0,2,1), box.position());
+  EXPECT_EQ("bounding_box_cylinders102-21201021041001021-241-261", box.name());
 
-    bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
-    {
-        return true;
-    }
-};
 
-} // namespace Render
-} // namespace SCIRun
+  //FAIL() << "todo";
+}
 
-#endif
+TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxStubbed)
+{
+  StubGeometryIDGenerator idGen;
+
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
+  {
+    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
+    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
+  });
+
+  EXPECT_EQ(Point(0,2,1), box.position());
+  EXPECT_EQ("__basicBox__0", box.name());
+
+
+  //FAIL() << "todo";
+}
