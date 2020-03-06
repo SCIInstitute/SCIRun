@@ -567,7 +567,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   algoP->maxdist_ = maxdist;
   algoP->algo_ = this;
 
-  auto task_i = [&algoP,this](int i) { algoP->parallel(i); };
+  auto task_i = [&algoP](int i) { algoP->parallel(i); };
   Parallel::RunTasks(task_i, np);
 
   CopyProperties(*destination, *output);

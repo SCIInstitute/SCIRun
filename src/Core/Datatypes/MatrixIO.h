@@ -199,7 +199,7 @@ namespace Datatypes {
           if (f)
           {
             auto result = fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
-            if (result != this->rows() * this->cols())
+            if (result != this->get_dense_size())
             {
               //TODO: test
               if (false)
