@@ -57,7 +57,8 @@ namespace Engine {
   public:
     NetworkGraphAnalyzer(const Networks::NetworkInterface& network, const Networks::ModuleFilter& moduleFilter, bool precompute);
 
-    NetworkGraph::EdgeVector constructEdgeListFromNetwork();
+    NetworkGraph::EdgeVector constructEdgeListFromNetwork(std::function<bool(const Networks::ConnectionDescription&)> connectionFilter
+        = [](const Networks::ConnectionDescription&) { return true; });
     void computeExecutionOrder();
 
     const Networks::ModuleId& moduleAt(int vertex) const;
@@ -66,6 +67,7 @@ namespace Engine {
     const NetworkGraph::DirectedGraph& graph();
     int moduleCount() const;
     NetworkGraph::ComponentMap connectedComponents();
+    std::vector<Networks::ModuleId> downstreamModules(const Networks::ModuleId& mid);
 
   private:
     const Networks::NetworkInterface& network_;
