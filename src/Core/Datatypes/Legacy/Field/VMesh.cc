@@ -32,8 +32,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
-#include <Core/GeometryPrimitives/OrientedBBox.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;

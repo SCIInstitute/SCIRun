@@ -48,6 +48,7 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Plane.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 

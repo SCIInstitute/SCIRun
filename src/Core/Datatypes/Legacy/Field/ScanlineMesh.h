@@ -51,6 +51,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 

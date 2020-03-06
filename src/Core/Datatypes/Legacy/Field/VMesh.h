@@ -31,6 +31,8 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
+#include <Core/GeometryPrimitives/AxisAlignedBBox.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/Containers/StackBasedVector.h>
 #include <Core/Containers/StackVector.h>

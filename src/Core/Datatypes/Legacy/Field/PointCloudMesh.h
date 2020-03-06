@@ -41,6 +41,7 @@
 #include <Core/GeometryPrimitives/AxisAlignedBBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Basis/Locate.h>
