@@ -513,12 +513,12 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
   double theta_inc = M_PI / d_res, phi_inc = 0.5 * M_PI / d_res;
 
   //generate triangles for the spheres
-  for(int phi_strip = 1; phi_strip <= 2*resolution; ++phi_strip)
+  for(int v = 1; v <= 2*resolution; ++v)
   {
-    double phi = phi_strip * phi_inc;
-    for(int theta_strip = 0; theta_strip <= 2*resolution; ++theta_strip)
+    double phi = v * phi_inc;
+    for(int u = 0; u <= 2*resolution; ++u)
     {
-      double theta = theta_strip * theta_inc;
+      double theta = u * theta_inc;
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
@@ -533,9 +533,9 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       colors_.push_back(color);
       numVBOElements_+=2;
 
-      bool flipVertexOrder = theta_strip >= resolution;
-      int v1 = flipVertexOrder ? 1 : 2;
-      int v2 = flipVertexOrder ? 2 : 1;
+      int v1 = 1, v2 = 2;
+      if(u < resolution)
+        std::swap(v1, v2);
 
       indices_.push_back(0 + offset);
       indices_.push_back(v1 + offset);
