@@ -27,10 +27,15 @@
 
 
 SET(Graphics_Glyphs_SRCS
+  GlyphGeomUtility.cc
+  TensorGlyphBuilder.cc
   GlyphGeom.cc
 )
 
 SET(Graphics_Glyphs_HEADERS
+  GeomData.h
+  GlyphGeomUtility.h
+  TensorGlyphBuilder.h
   GlyphGeom.h
   share.h
 )

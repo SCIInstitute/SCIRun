@@ -96,6 +96,8 @@ public:
   void get_eigenvalues(double &l1, double &l2, double &l3);
 
   double norm() const;
+  Vector euclidean_norm() const;
+  void normal();
   double magnitude();
 
   void set_eigens(const Vector &e1, const Vector &e2, const Vector &e3);
@@ -125,7 +127,12 @@ public:
   double val(size_t i, size_t j) const { return mat_[i][j]; }
   double& val(size_t i, size_t j) { return mat_[i][j]; }
 
+  double linearCertainty();
+  double planarCertainty();
+  double sphericalCertainty();
+
 private:
+  double eigenValueSum();
   double mat_[3][3];
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;

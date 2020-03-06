@@ -253,6 +253,13 @@ double Tensor::norm() const
   return (a);
 }
 
+Vector Tensor::euclidean_norm() const
+{
+  auto eigvals = Vector(l1_, l2_, l3_);
+  eigvals.normalize();
+  return eigvals;
+}
+
 double Tensor::magnitude()
 {
   double eigenval1, eigenval2, eigenval3;
@@ -378,6 +385,26 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   e1_ = e1; e2_ = e2; e3_ = e3;
   l1_ = v1; l2_ = v2; l3_ = v3;
   have_eigens_ = 1;
+}
+
+double Tensor::eigenValueSum()
+{
+  return l1_ + l2_ + l3_;
+}
+
+double Tensor::linearCertainty()
+{
+  return (l1_ - l2_) / eigenValueSum();
+}
+
+double Tensor::planarCertainty()
+{
+  return 2.0 * (l2_ - l3_) / eigenValueSum();
+}
+
+double Tensor::sphericalCertainty()
+{
+  return 3.0 * (l3_) / eigenValueSum();
 }
 
 void Core::Geometry::Pio(Piostream& stream, Tensor& t)

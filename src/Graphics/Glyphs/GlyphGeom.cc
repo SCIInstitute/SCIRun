@@ -27,6 +27,8 @@
 
 
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Glyphs/TensorGlyphBuilder.h>
+#include <Graphics/Glyphs/GlyphGeomUtility.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Math/MiscMath.h>
@@ -38,9 +40,11 @@ using namespace Datatypes;
 using namespace Core::Geometry;
 using namespace Core::Datatypes;
 
-GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
-{
 
+GlyphGeom::GlyphGeom()
+{
+  geomData_.numVBOElements = 0;
+  geomData_.lineIndex = 0;
 }
 
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
@@ -49,7 +53,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   const Core::Datatypes::ColorMapHandle colorMap)
 {
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
-  bool useNormals = normals_.size() == points_.size();
+  bool useNormals = geomData_.normals.size() == geomData_.points.size();
   int numAttributes = 3;
 
   RenderType renderType = RenderType::RENDER_VBO_IBO;
@@ -111,7 +115,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
   if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  size_t pointsLeft = points_.size();
+  size_t pointsLeft = geomData_.points.size();
   size_t startOfPass = 0;
   int passNumber = 0;
   while(pointsLeft > 0)
@@ -133,13 +137,13 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
-    for (auto a : indices_) if(a >= startOfPass && a < endOfPass)
+    for (auto a : geomData_.indices) if(a >= startOfPass && a < endOfPass)
       iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
 
     BBox newBBox;
     for (size_t i = startOfPass; i < endOfPass; ++i)
     {
-      Vector point = points_.at(i);
+      Vector point = geomData_.points.at(i);
       newBBox.extend(Point(point.x(), point.y(), point.z()));
       vboBuffer->write(static_cast<float>(point.x()));
       vboBuffer->write(static_cast<float>(point.y()));
@@ -147,7 +151,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
       if (useNormals)
       {
-        Vector normal = normals_.at(i);
+        Vector normal = geomData_.normals.at(i);
         vboBuffer->write(static_cast<float>(normal.x()));
         vboBuffer->write(static_cast<float>(normal.y()));
         vboBuffer->write(static_cast<float>(normal.z()));
@@ -155,7 +159,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
       if (useColor)
       {
-        ColorRGB color = colors_.at(i);
+        ColorRGB color = geomData_.colors.at(i);
         if(!colorMap)
         {
           vboBuffer->write(static_cast<float>(color.r()));
@@ -174,7 +178,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
     startOfPass = endOfPass;
 
-    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
+    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, geomData_.numVBOElements, newBBox, true);
     SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
     state.set(RenderState::IS_ON, true);
@@ -312,29 +316,29 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector p;
   for (int strips = 0; strips <= num_strips; strips++)
   {
-    size_t offset = static_cast<size_t>(numVBOElements_);
+    size_t offset = static_cast<size_t>(geomData_.numVBOElements);
     p = std::cos(2. * M_PI * strips / num_strips) * u +
       std::sin(2. * M_PI * strips / num_strips) * crx;
     p.normalize();
     Vector normals(((p2-p1).length() * p + (r2-r1)*n).normal());
 
-    points_.push_back(r1 * p + Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(normals);
-    numVBOElements_++;
-    points_.push_back(r2 * p + Vector(p2));
-    colors_.push_back(color2);
-    normals_.push_back(normals);
-    numVBOElements_++;
+    geomData_.points.push_back(r1 * p + Vector(p1));
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(normals);
+    geomData_.numVBOElements++;
+    geomData_.points.push_back(r2 * p + Vector(p2));
+    geomData_.colors.push_back(color2);
+    geomData_.normals.push_back(normals);
+    geomData_.numVBOElements++;
 
-    indices_.push_back(0 + offset);
-    indices_.push_back(1 + offset);
-    indices_.push_back(2 + offset);
-    indices_.push_back(2 + offset);
-    indices_.push_back(1 + offset);
-    indices_.push_back(3 + offset);
+    geomData_.indices.push_back(0 + offset);
+    geomData_.indices.push_back(1 + offset);
+    geomData_.indices.push_back(2 + offset);
+    geomData_.indices.push_back(2 + offset);
+    geomData_.indices.push_back(1 + offset);
+    geomData_.indices.push_back(3 + offset);
   }
-  for (int jj = 0; jj < 6; jj++) indices_.pop_back();
+  for (int jj = 0; jj < 6; jj++) geomData_.indices.pop_back();
 }
 
 void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
@@ -350,21 +354,21 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   Vector u = Cross(crx, n).normal();
 
   // Center of base
-  size_t base_index = numVBOElements_;
+  size_t base_index = geomData_.numVBOElements;
   int points_per_loop = 2;
   if(renderBase)
   {
-    points_.push_back(Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(n);
-    numVBOElements_++;
+    geomData_.points.push_back(Vector(p1));
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(n);
+    geomData_.numVBOElements++;
     points_per_loop = 3;
   }
 
   // Precalculate
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
-  size_t offset = static_cast<size_t>(numVBOElements_);
+  size_t offset = static_cast<size_t>(geomData_.numVBOElements);
 
   Vector p;
 
@@ -376,34 +380,34 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
     p.normalize();
     Vector normals((length * p - radius * n).normal());
 
-    points_.push_back(radius * p + Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(normals);
-    points_.push_back(Vector(p2));
-    colors_.push_back(color2);
-    normals_.push_back(normals);
-    numVBOElements_ += 2;
+    geomData_.points.push_back(radius * p + Vector(p1));
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(normals);
+    geomData_.points.push_back(Vector(p2));
+    geomData_.colors.push_back(color2);
+    geomData_.normals.push_back(normals);
+    geomData_.numVBOElements += 2;
 
     if(renderBase)
     {
-      points_.push_back(radius * p + Vector(p1));
-      colors_.push_back(color1);
-      normals_.push_back(n);
-      numVBOElements_++;
+      geomData_.points.push_back(radius * p + Vector(p1));
+      geomData_.colors.push_back(color1);
+      geomData_.normals.push_back(n);
+      geomData_.numVBOElements++;
     }
   }
 
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
   {
-    indices_.push_back(strips);
-    indices_.push_back(strips + 1);
-    indices_.push_back(strips + points_per_loop);
+    geomData_.indices.push_back(strips);
+    geomData_.indices.push_back(strips + 1);
+    geomData_.indices.push_back(strips + points_per_loop);
     if(renderBase)
     {
-      indices_.push_back(base_index);
-      indices_.push_back(strips + 2);
-      indices_.push_back(strips + points_per_loop + 2);
+      geomData_.indices.push_back(base_index);
+      geomData_.indices.push_back(strips + 2);
+      geomData_.indices.push_back(strips + points_per_loop + 2);
     }
   }
 }
@@ -427,25 +431,25 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   int p1_index, p2_index;
   if(renderBase1)
   {
-    points_.push_back(Vector(p1));
-    p1_index = numVBOElements_;
-    colors_.push_back(color1);
-    normals_.push_back(n);
-    numVBOElements_++;
+    geomData_.points.push_back(Vector(p1));
+    p1_index = geomData_.numVBOElements;
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(n);
+    geomData_.numVBOElements++;
   }
   if(renderBase2)
   {
-    points_.push_back(Vector(p2));
-    p2_index = numVBOElements_;
-    colors_.push_back(color2);
-    normals_.push_back(-n);
-    numVBOElements_++;
+    geomData_.points.push_back(Vector(p2));
+    p2_index = geomData_.numVBOElements;
+    geomData_.colors.push_back(color2);
+    geomData_.normals.push_back(-n);
+    geomData_.numVBOElements++;
   }
 
   // Precalculate
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
-  size_t offset = static_cast<size_t>(numVBOElements_);
+  size_t offset = static_cast<size_t>(geomData_.numVBOElements);
 
   Vector p;
   // Add points, normals, and colors
@@ -455,52 +459,52 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
       std::sin(strip_angle * strips) * crx;
     p.normalize();
     Vector normals((length * p + (radius2-radius1)*n).normal());
-    points_.push_back(radius1 * p + Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(normals);
-    points_.push_back(radius2 * p + Vector(p2));
-    colors_.push_back(color2);
-    normals_.push_back(normals);
+    geomData_.points.push_back(radius1 * p + Vector(p1));
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(normals);
+    geomData_.points.push_back(radius2 * p + Vector(p2));
+    geomData_.colors.push_back(color2);
+    geomData_.normals.push_back(normals);
 
     // Points for base
     if(renderBase1)
     {
-      points_.push_back(radius1 * p + Vector(p1));
-      colors_.push_back(color1);
-      normals_.push_back(n);
+      geomData_.points.push_back(radius1 * p + Vector(p1));
+      geomData_.colors.push_back(color1);
+      geomData_.normals.push_back(n);
     }
     if(renderBase2)
     {
-      points_.push_back(radius2 * p + Vector(p2));
-      colors_.push_back(color2);
-      normals_.push_back(-n);
+      geomData_.points.push_back(radius2 * p + Vector(p2));
+      geomData_.colors.push_back(color2);
+      geomData_.normals.push_back(-n);
     }
-    numVBOElements_ += points_per_loop;
+    geomData_.numVBOElements += points_per_loop;
   }
 
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
   {
-    indices_.push_back(strips);
-    indices_.push_back(strips + 1);
-    indices_.push_back(strips + points_per_loop);
-    indices_.push_back(strips + points_per_loop);
-    indices_.push_back(strips + 1);
-    indices_.push_back(strips + points_per_loop + 1);
+    geomData_.indices.push_back(strips);
+    geomData_.indices.push_back(strips + 1);
+    geomData_.indices.push_back(strips + points_per_loop);
+    geomData_.indices.push_back(strips + points_per_loop);
+    geomData_.indices.push_back(strips + 1);
+    geomData_.indices.push_back(strips + points_per_loop + 1);
 
     // Render base
     if(renderBase1)
     {
-      indices_.push_back(p1_index);
-      indices_.push_back(strips + 2);
-      indices_.push_back(strips + points_per_loop + 2);
+      geomData_.indices.push_back(p1_index);
+      geomData_.indices.push_back(strips + 2);
+      geomData_.indices.push_back(strips + points_per_loop + 2);
     }
     if(renderBase2)
     {
       // Increment 1 if base 1 is present
-      indices_.push_back(strips + 2 + renderBase1);
-      indices_.push_back(p2_index);
-      indices_.push_back(strips + points_per_loop + 2 + renderBase1);
+      geomData_.indices.push_back(strips + 2 + renderBase1);
+      geomData_.indices.push_back(p2_index);
+      geomData_.indices.push_back(strips + points_per_loop + 2 + renderBase1);
     }
   }
 }
@@ -518,20 +522,20 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
   {
     for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
     {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      uint32_t offset = static_cast<uint32_t>(geomData_.numVBOElements);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
 
-      normals_.push_back(pp1);
-      normals_.push_back(pp2);
+      geomData_.normals.push_back(pp1);
+      geomData_.normals.push_back(pp2);
       pp1 *= r;
       pp2 *= r;
-      points_.push_back(pp1 + Vector(center));
-      colors_.push_back(color);
-      numVBOElements_++;
-      points_.push_back(pp2 + Vector(center));
-      colors_.push_back(color);
-      numVBOElements_++;
+      geomData_.points.push_back(pp1 + Vector(center));
+      geomData_.colors.push_back(color);
+      geomData_.numVBOElements++;
+      geomData_.points.push_back(pp2 + Vector(center));
+      geomData_.colors.push_back(color);
+      geomData_.numVBOElements++;
 
       //preserve vertex ordering for double sided rendering
       int v1 = 1, v2 = 2;
@@ -541,14 +545,14 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
         v2 = 1;
       }
 
-      indices_.push_back(0 + offset);
-      indices_.push_back(v1 + offset);
-      indices_.push_back(v2 + offset);
-      indices_.push_back(v2 + offset);
-      indices_.push_back(v1 + offset);
-      indices_.push_back(3 + offset);
+      geomData_.indices.push_back(0 + offset);
+      geomData_.indices.push_back(v1 + offset);
+      geomData_.indices.push_back(v2 + offset);
+      geomData_.indices.push_back(v2 + offset);
+      geomData_.indices.push_back(v1 + offset);
+      geomData_.indices.push_back(3 + offset);
     }
-    for (int jj = 0; jj < 6; jj++) indices_.pop_back();
+    for (int jj = 0; jj < 6; jj++) geomData_.indices.pop_back();
   }
 }
 
@@ -577,7 +581,7 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
 
-  uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+  uint32_t offset = static_cast<uint32_t>(geomData_.numVBOElements);
 
   std::vector<Vector> cone_rim_points;
 
@@ -591,13 +595,13 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
     Vector normals((length * p + radius * n).normal());
 
     Vector new_point = cone_radius * p + Vector(cone_p2);
-    points_.push_back(new_point);
-    colors_.push_back(color1);
-    normals_.push_back(normals);
-    points_.push_back(Vector(p1));
-    colors_.push_back(color2);
-    normals_.push_back(normals);
-    numVBOElements_ += 2;
+    geomData_.points.push_back(new_point);
+    geomData_.colors.push_back(color1);
+    geomData_.normals.push_back(normals);
+    geomData_.points.push_back(Vector(p1));
+    geomData_.colors.push_back(color2);
+    geomData_.normals.push_back(normals);
+    geomData_.numVBOElements += 2;
 
     cone_rim_points.push_back(new_point);
   }
@@ -605,9 +609,9 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
   {
-    indices_.push_back(strips);
-    indices_.push_back(strips + points_per_loop);
-    indices_.push_back(strips + 1);
+    geomData_.indices.push_back(strips);
+    geomData_.indices.push_back(strips + points_per_loop);
+    geomData_.indices.push_back(strips + 1);
   }
 
 
@@ -616,7 +620,7 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
   Vector bitangent = Cross(dir, tangent);
 
   Transform trans, rotate;
-  generateTransforms(p2, tangent, bitangent, dir, trans, rotate);
+  GlyphGeomUtility::generateTransforms(p2, tangent, bitangent, dir, trans, rotate);
 
   trans.post_scale ( Vector(1.0,1.0,1.0) * radius );
   rotate.post_scale( Vector(1.0,1.0,1.0) / radius );
@@ -647,7 +651,7 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
 
     for (int u = 0; u<nu; u++)
     {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      uint32_t offset = static_cast<uint32_t>(geomData_.numVBOElements);
       double nx = tab1.sin(u);
       double ny = tab1.cos(u);
 
@@ -673,466 +677,79 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
       // Use cone points around rim of ellipsoid
       if(v == nv - 2)
       {
-        points_.push_back(cone_rim_points[cone_rim_index]);
+        geomData_.points.push_back(cone_rim_points[cone_rim_index]);
         cone_rim_index++;
       }
       else
       {
-        points_.push_back(p1);
+        geomData_.points.push_back(p1);
       }
-      points_.push_back(p2);
+      geomData_.points.push_back(p2);
 
       // Add normals
-      normals_.push_back(v1);
-      normals_.push_back(v2);
+      geomData_.normals.push_back(v1);
+      geomData_.normals.push_back(v2);
 
       // Add color vectors from parameters
-      colors_.push_back(color1);
-      colors_.push_back(color1);
+      geomData_.colors.push_back(color1);
+      geomData_.colors.push_back(color1);
 
-      numVBOElements_ += 2;
+      geomData_.numVBOElements += 2;
 
-      indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(3 + offset);
+      geomData_.indices.push_back(0 + offset);
+      geomData_.indices.push_back(1 + offset);
+      geomData_.indices.push_back(2 + offset);
+      geomData_.indices.push_back(2 + offset);
+      geomData_.indices.push_back(1 + offset);
+      geomData_.indices.push_back(3 + offset);
     }
-    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+    for(int jj = 0; jj < 6; jj++) geomData_.indices.pop_back();
   }
 }
 
-void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
+void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& color, bool normalize)
 {
-  if(eigvals[0] < eigvals[1])
-  {
-    double temp = eigvals[0];
-    eigvals[0] = eigvals[1];
-    eigvals[1] = temp;
-    Vector tempVec = eigvectors[0];
-    eigvectors[0] = eigvectors[1];
-    eigvectors[1] = tempVec;
-  }
-  if(eigvals[1] < eigvals[2])
-  {
-    double temp = eigvals[1];
-    eigvals[1] = eigvals[2];
-    eigvals[2] = temp;
-    Vector tempVec = eigvectors[1];
-    eigvectors[1] = eigvectors[2];
-    eigvectors[2] = tempVec;
-  }
-  if(eigvals[0] < eigvals[1])
-  {
-    double temp = eigvals[0];
-    eigvals[0] = eigvals[1];
-    eigvals[1] = temp;
-    Vector tempVec = eigvectors[0];
-    eigvectors[0] = eigvectors[1];
-    eigvectors[1] = tempVec;
-  }
+  TensorGlyphBuilder builder(t, center);
+  builder.setColor(color);
+
+  if (normalize)
+    builder.normalizeTensor();
+  builder.scaleTensor(scale);
+  builder.makeTensorPositive();
+
+  builder.generateBox(geomData_);
+
 }
 
-std::vector<Vector> GlyphGeom::generateBoxPoints(const Transform& trans, const Vector& eigvals)
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, int resolution,
+                                  const ColorRGB& color, bool half, bool normalize)
 {
-  std::vector<Vector> box_points;
-  for(int x : {-1, 1})
-    {
-      for(int y : {-1, 1})
-        {
-          for(int z : {-1, 1})
-            {
-              box_points.emplace_back(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z()));
-            }
-        }
-    }
-  return box_points;
-}
+  TensorGlyphBuilder builder(t, center);
+  builder.setResolution(resolution);
+  builder.setColor(color);
 
-void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
-{
-  static const double zeroThreshold = 0.000001;
-  double eigval1, eigval2, eigval3;
-  t.get_eigenvalues(eigval1, eigval2, eigval3);
+  if (normalize)
+    builder.normalizeTensor();
+  builder.scaleTensor(scale);
+  builder.makeTensorPositive();
 
-  Vector eigvals(abs(eigval1), abs(eigval2), abs(eigval3));
-  if(normalize)
-    eigvals.normalize();
-  eigvals *= scale;
-
-  std::vector<Vector> eigvectors(3);
-  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
-
-  // Checks to see if eigenvalues are close to 0
-  bool eig_x_0 = eigvals.x() <= zeroThreshold;
-  bool eig_y_0 = eigvals.y() <= zeroThreshold;
-  bool eig_z_0 = eigvals.z() <= zeroThreshold;
-
-  // Set to 0 if below threshold
-  eigvals[0] = (!eig_x_0) * eigvals[0];
-  eigvals[1] = (!eig_y_0) * eigvals[1];
-  eigvals[2] = (!eig_z_0) * eigvals[2];
-
-  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
-  if(flatTensor)
-  {
-    reorderTensor(eigvectors, eigvals);
-
-    eig_x_0 = eigvals.x() <= zeroThreshold;
-    eig_y_0 = eigvals.y() <= zeroThreshold;
-    eig_z_0 = eigvals.z() <= zeroThreshold;
-    // Check for zero eigenvectors
-    if(eig_x_0)
-    {
-      eigvectors[0] = Cross(eigvectors[1], eigvectors[2]);
-    }
-    else if(eig_y_0)
-    {
-      eigvectors[1] = Cross(eigvectors[0], eigvectors[2]);
-    }
-    else if(eig_z_0)
-    {
-      eigvectors[2] = Cross(eigvectors[0], eigvectors[1]);
-    }
-  }
-
-  Transform trans, rotate;
-  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
-
-  std::vector<Vector> box_points = generateBoxPoints(trans, eigvals);
-  std::vector<Vector> column_vectors = rotate.get_column_vectors();
-
-  generateBoxSide(box_points[5], box_points[4], box_points[7], box_points[6], column_vectors[0], node_color);
-  generateBoxSide(box_points[7], box_points[6], box_points[3], box_points[2], column_vectors[1], node_color);
-  generateBoxSide(box_points[1], box_points[5], box_points[3], box_points[7], column_vectors[2], node_color);
-  generateBoxSide(box_points[3], box_points[2], box_points[1], box_points[0], -column_vectors[0], node_color);
-  generateBoxSide(box_points[1], box_points[0], box_points[5], box_points[4], -column_vectors[1], node_color);
-  generateBoxSide(box_points[2], box_points[6], box_points[0], box_points[4], -column_vectors[2], node_color);
-}
-
-void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector& p3, const Vector& p4,
-                                const Vector& normal, const ColorRGB& node_color)
-{
-  size_t offset = static_cast<size_t>(numVBOElements_);
-  points_.push_back(p1);
-  points_.push_back(p2);
-  points_.push_back(p3);
-  points_.push_back(p4);
-
-  for(int i = 0; i < 4; i++)
-  {
-    normals_.push_back(normal);
-    colors_.push_back(node_color);
-  }
-  numVBOElements_ += 4;
-
-  indices_.push_back(offset + 2);
-  indices_.push_back(offset);
-  indices_.push_back(offset + 3);
-  indices_.push_back(offset + 1);
-  indices_.push_back(offset + 3);
-  indices_.push_back(offset);
-}
-
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool half, bool normalize)
-{
-  static const double zeroThreshold = 0.000001;
-  std::vector<Vector> eigvectors(3);
-  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
-
-  double eigval1, eigval2, eigval3;
-  t.get_eigenvalues(eigval1, eigval2, eigval3);
-  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
-  if(normalize)
-    eigvals.normalize();
-  eigvals *= scale;
-
-  // Checks to see if eigenvalues are close to 0
-  bool eig_x_0 = eigvals.x() <= zeroThreshold;
-  bool eig_y_0 = eigvals.y() <= zeroThreshold;
-  bool eig_z_0 = eigvals.z() <= zeroThreshold;
-
-  // Set to 0 if below threshold
-  eigvals[0] = (!eig_x_0) * eigvals[0];
-  eigvals[1] = (!eig_y_0) * eigvals[1];
-  eigvals[2] = (!eig_z_0) * eigvals[2];
-
-  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
-  Vector zero_norm;
-
-  if(flatTensor)
-  {
-    reorderTensor(eigvectors, eigvals);
-
-    eig_x_0 = eigvals.x() <= zeroThreshold;
-    eig_y_0 = eigvals.y() <= zeroThreshold;
-    eig_z_0 = eigvals.z() <= zeroThreshold;
-    // Check for zero eigenvectors
-    if(eig_x_0)
-    {
-      zero_norm = Cross(eigvectors[1], eigvectors[2]);
-      eigvectors[0] = zero_norm;
-    }
-    else if(eig_y_0)
-    {
-      zero_norm = Cross(eigvectors[0], eigvectors[2]);
-      eigvectors[1] = zero_norm;
-    }
-    else if(eig_z_0)
-    {
-      zero_norm = Cross(eigvectors[0], eigvectors[1]);
-      eigvectors[2] = zero_norm;
-    }
-  }
-
-  Transform trans, rotate;
-  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
-
-  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
-  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
-
-  int nu = resolution + 1;
-
-  // Half ellipsoid criteria.
-  int nv = resolution;
-  if (half) nv /= 2;
-
-  // Should only happen when doing half ellipsoids.
-  if (nv < 2) nv = 2;
-
-  double end = half ? M_PI / 2 : M_PI;
-
-  SinCosTable tab1(nu, 0, 2 * M_PI);
-  SinCosTable tab2(nv, 0, end);
-
-  // Draw the ellipsoid
-  for (int v = 0; v<nv - 1; v++)
-  {
-    double nr1 = tab2.sin(v + 1);
-    double nr2 = tab2.sin(v);
-
-    double nz1 = tab2.cos(v + 1);
-    double nz2 = tab2.cos(v);
-
-    for (int u = 0; u<nu; u++)
-    {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-      double nx = tab1.sin(u);
-      double ny = tab1.cos(u);
-
-      double x1 = nr1 * nx;
-      double y1 = nr1 * ny;
-      double z1 = nz1;
-
-      double x2 = nr2 * nx;
-      double y2 = nr2 * ny;
-      double z2 = nz2;
-
-      // Rotate and translate points
-      Vector p1 = Vector(trans * Point(x1, y1, z1));
-      Vector p2 = Vector(trans * Point(x2, y2, z2));
-
-      Vector v1, v2;
-
-      if(flatTensor)
-      {
-        // Avoids recalculating norm vector and prevents vectors with infinite length
-        bool first_half = v < nv/2;
-        v1 = first_half ? zero_norm : -zero_norm;
-        v2 = first_half ? zero_norm : -zero_norm;
-      }
-      else
-      {
-        // Rotate norms
-        v1 = rotate * Vector(x1, y1, z1);
-        v2 = rotate * Vector(x2, y2, z2);
-      }
-
-      v1.safe_normalize();
-      v2.safe_normalize();
-
-      // Transorm points and add to points list
-      points_.push_back(p1);
-      points_.push_back(p2);
-
-      // Add normals
-      normals_.push_back(v1);
-      normals_.push_back(v2);
-
-      // Add color vectors from parameters
-      colors_.push_back(color);
-      colors_.push_back(color);
-
-      numVBOElements_ += 2;
-
-      indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(3 + offset);
-    }
-    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
-  }
-}
-
-inline double spow(double e, double x)
-{
-  // This for round off of very small numbers.
-  if( abs( e ) < 1.0e-6)
-    e = 0.0;
-
-  if (e < 0.0)
-  {
-    return (double)(pow(abs(e), x) * -1.0);
-  }
-  else
-  {
-    return (double)(pow(e, x));
-  }
+  builder.generateEllipsoid(geomData_, half);
 }
 
 void GlyphGeom::generateSuperquadricTensor(const Point& center, Tensor& t, double scale,
                                            int resolution, const ColorRGB& color, bool normalize,
                                            double emphasis)
 {
-  static const double zeroThreshold = 0.000001;
-  std::vector<Vector> eigvectors(3);
-  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
+  TensorGlyphBuilder builder(t, center);
+  builder.setResolution(resolution);
+  builder.setColor(color);
 
-  double eigval1, eigval2, eigval3;
-  t.get_eigenvalues(eigval1, eigval2, eigval3);
-  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
-  if(normalize)
-    eigvals.normalize();
-  eigvals *= scale;
+  if (normalize)
+    builder.normalizeTensor();
+  builder.scaleTensor(scale);
+  builder.makeTensorPositive();
 
-  // Checks to see if eigenvalues are close to 0
-  bool eig_x_0 = eigvals.x() <= zeroThreshold;
-  bool eig_y_0 = eigvals.y() <= zeroThreshold;
-  bool eig_z_0 = eigvals.z() <= zeroThreshold;
-
-  // Set to 0 if below threshold
-  eigvals[0] = (!eig_x_0) * eigvals[0];
-  eigvals[1] = (!eig_y_0) * eigvals[1];
-  eigvals[2] = (!eig_z_0) * eigvals[2];
-
-  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
-  Vector zero_norm;
-
-  if(flatTensor)
-  {
-    reorderTensor(eigvectors, eigvals);
-
-    eig_x_0 = eigvals.x() <= zeroThreshold;
-    eig_y_0 = eigvals.y() <= zeroThreshold;
-    eig_z_0 = eigvals.z() <= zeroThreshold;
-    // Check for zero eigenvectors
-    if(eig_x_0)
-    {
-      zero_norm = Cross(eigvectors[1], eigvectors[2]);
-      eigvectors[0] = zero_norm;
-    }
-    else if(eig_y_0)
-    {
-      zero_norm = Cross(eigvectors[0], eigvectors[2]);
-      eigvectors[1] = zero_norm;
-    }
-    else if(eig_z_0)
-    {
-      zero_norm = Cross(eigvectors[0], eigvectors[1]);
-      eigvectors[2] = zero_norm;
-    }
-  }
-
-  Transform trans, rotate;
-  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
-
-  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
-  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
-
-  int nu = resolution + 1;
-  int nv = resolution;
-
-  SinCosTable tab1(nu, 0, 2 * M_PI);
-  SinCosTable tab2(nv, 0, M_PI);
-
-  double cl = (eigvals[0] - eigvals[1]) / (eigvals[0] + eigvals[1] + eigvals[2]);
-  double cp = 2.0 * (eigvals[1] - eigvals[2]) / (eigvals[0] + eigvals[1] + eigvals[2]);
-  bool linear = cl >= cp;
-  double A = linear ? spow((1.0 - cp), emphasis) : spow((1.0 - cl), emphasis);
-  double B = linear ? spow((1.0 - cl), emphasis) : spow((1.0 - cp), emphasis);
-
-  double nr[2];
-  double nz[2];
-
-  for (int v=0; v < nv-1; v++)
-  {
-    nr[0] = tab2.sin(v+1);
-    nr[1] = tab2.sin(v);
-
-    nz[0] = tab2.cos(v+1);
-    nz[1] = tab2.cos(v);
-
-    for (int u=0; u<nu; u++)
-    {
-      double nx = tab1.sin(u);
-      double ny = tab1.cos(u);
-
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-      for(unsigned int i=0; i<2; i++)
-      {
-        // Transorm points and add to points list
-        double x, y, z;
-        if(linear) // Generate around x-axis
-        {
-          x =  spow(nz[i], B);
-          y = -spow(nr[i], B) * spow(ny, A);
-          z =  spow(nr[i], B) * spow(nx, A);
-        }
-        else       // Generate around z-axis
-        {
-          x = spow(nr[i], B) * spow(nx, A);
-          y = spow(nr[i], B) * spow(ny, A);
-          z = spow(nz[i], B);
-        }
-        Vector point = Vector(trans * Point(x, y, z));
-        points_.push_back(point);
-
-        // Add normals
-        double nnx, nny, nnz;
-        if(linear)
-        {
-          nnx =  spow(nz[i], 2.0-B);
-          nny = -spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
-          nnz =  spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
-        }
-        else
-        {
-          nnx = spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
-          nny = spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
-          nnz = spow(nz[i], 2.0-B);
-        }
-        Vector normal = rotate * Vector(nnx, nny, nnz);
-        normal.safe_normalize();
-        normals_.push_back(normal);
-
-        // Add color vectors from parameters
-        colors_.push_back(color);
-
-        numVBOElements_++;
-      }
-
-      indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(3 + offset);
-    }
-  }
-  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  builder.generateSuperquadricTensor(geomData_, emphasis);
 }
 
 void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius,
@@ -1147,7 +764,7 @@ void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_rad
   Transform trans;
   Transform rotate;
   /* Point center = p1 + (p2-p1) * 0.5; */
-  generateTransforms( p1, (p2-p1), trans, rotate );
+  GlyphGeomUtility::generateTransforms( p1, (p2-p1), trans, rotate );
 
   // Draw the torus
   for (int v=0; v<nv-1; v++)
@@ -1163,7 +780,7 @@ void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_rad
 
     for (int u=0; u<nu; u++)
     {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      uint32_t offset = static_cast<uint32_t>(geomData_.numVBOElements);
 
       double nx = tab1.sin(u);
       double ny = tab1.cos(u);
@@ -1176,81 +793,81 @@ void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_rad
 
       Vector p1 = Vector(trans * Point(x1, y1, z1));
       Vector p2 = Vector(trans * Point(x2, y2, z2));
-      points_.push_back(p1);
-      points_.push_back(p2);
+      geomData_.points.push_back(p1);
+      geomData_.points.push_back(p2);
 
       Vector v1 = rotate * Vector(nr1*nx, nr1*ny, z1);
       Vector v2 = rotate * Vector(nr2*nx, nr2*ny, z2);
       v1.safe_normalize();
       v2.safe_normalize();
-      normals_.push_back(v1);
-      normals_.push_back(v2);
+      geomData_.normals.push_back(v1);
+      geomData_.normals.push_back(v2);
 
-      colors_.push_back(color);
-      colors_.push_back(color);
+      geomData_.colors.push_back(color);
+      geomData_.colors.push_back(color);
 
-      numVBOElements_ += 2;
+      geomData_.numVBOElements += 2;
 
-      indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(3 + offset);
+      geomData_.indices.push_back(0 + offset);
+      geomData_.indices.push_back(1 + offset);
+      geomData_.indices.push_back(2 + offset);
+      geomData_.indices.push_back(2 + offset);
+      geomData_.indices.push_back(1 + offset);
+      geomData_.indices.push_back(3 + offset);
     }
   }
-  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  for(int jj = 0; jj < 6; jj++) geomData_.indices.pop_back();
 }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
-  points_.push_back(Vector(p1));
-  colors_.push_back(color1);
-  indices_.push_back(lineIndex_);
-  ++lineIndex_;
-  points_.push_back(Vector(p2));
-  colors_.push_back(color2);
-  indices_.push_back(lineIndex_);
-  ++lineIndex_;
-  ++numVBOElements_;
+  geomData_.points.push_back(Vector(p1));
+  geomData_.colors.push_back(color1);
+  geomData_.indices.push_back(geomData_.lineIndex);
+  ++geomData_.lineIndex;
+  geomData_.points.push_back(Vector(p2));
+  geomData_.colors.push_back(color2);
+  geomData_.indices.push_back(geomData_.lineIndex);
+  ++geomData_.lineIndex;
+  ++geomData_.numVBOElements;
 }
 
 void GlyphGeom::generatePoint(const Point& p, const ColorRGB& color)
 {
-  points_.push_back(Vector(p));
-  colors_.push_back(color);
-  indices_.push_back(lineIndex_);
-  ++lineIndex_;
-  ++numVBOElements_;
+  geomData_.points.push_back(Vector(p));
+  geomData_.colors.push_back(color);
+  geomData_.indices.push_back(geomData_.lineIndex);
+  ++geomData_.lineIndex;
+  ++geomData_.numVBOElements;
 }
 
 void GlyphGeom::generatePlane(const Point& p1, const Point& p2,
   const Point& p3, const Point& p4, const ColorRGB& color)
 {
-  points_.push_back(Vector(p1));
-  points_.push_back(Vector(p2));
-  points_.push_back(Vector(p3));
-  points_.push_back(Vector(p4));
-  colors_.push_back(color);
-  colors_.push_back(color);
-  colors_.push_back(color);
-  colors_.push_back(color);
+  geomData_.points.push_back(Vector(p1));
+  geomData_.points.push_back(Vector(p2));
+  geomData_.points.push_back(Vector(p3));
+  geomData_.points.push_back(Vector(p4));
+  geomData_.colors.push_back(color);
+  geomData_.colors.push_back(color);
+  geomData_.colors.push_back(color);
+  geomData_.colors.push_back(color);
   Vector n;
   n = Cross(p2 - p1, p4 - p1).normal();
-  normals_.push_back(n);
+  geomData_.normals.push_back(n);
   n = Cross(p3 - p2, p1 - p2).normal();
-  normals_.push_back(n);
+  geomData_.normals.push_back(n);
   n = Cross(p4 - p3, p2 - p3).normal();
-  normals_.push_back(n);
+  geomData_.normals.push_back(n);
   n = Cross(p1 - p4, p3 - p4).normal();
-  normals_.push_back(n);
-  indices_.push_back(0 + numVBOElements_);
-  indices_.push_back(1 + numVBOElements_);
-  indices_.push_back(2 + numVBOElements_);
-  indices_.push_back(2 + numVBOElements_);
-  indices_.push_back(3 + numVBOElements_);
-  indices_.push_back(0 + numVBOElements_);
-  numVBOElements_ += 4;
+  geomData_.normals.push_back(n);
+  geomData_.indices.push_back(0 + geomData_.numVBOElements);
+  geomData_.indices.push_back(1 + geomData_.numVBOElements);
+  geomData_.indices.push_back(2 + geomData_.numVBOElements);
+  geomData_.indices.push_back(2 + geomData_.numVBOElements);
+  geomData_.indices.push_back(3 + geomData_.numVBOElements);
+  geomData_.indices.push_back(0 + geomData_.numVBOElements);
+  geomData_.numVBOElements += 4;
 }
 
 // Addarrow from SCIRun 4
@@ -1261,7 +878,7 @@ void GlyphGeom::addArrow(const Point& center, const Vector& t,
   double ratio = 2.0;
   Transform trans;
   Transform rotate;
-  generateTransforms(center, t, trans, rotate);
+  GlyphGeomUtility::generateTransforms(center, t, trans, rotate);
 
   Vector offset = rotate * Vector(0,0,1);
   offset.safe_normalize();
@@ -1313,11 +930,11 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
 
   if (nu > 20) nu = 20;
   if (nv == 0) nv = 20;
-  SinCosTable& tab1 = tables_[nu];
+  SinCosTable& tab1 = geomData_.tables[nu];
 
   Transform trans;
   Transform rotate;
-  generateTransforms(center, t, trans, rotate);
+  GlyphGeomUtility::generateTransforms(center, t, trans, rotate);
 
   // Draw the cylinder
   double dz = length / static_cast<float>(nv);
@@ -1383,7 +1000,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double s
 
   Transform trans;
   Transform rotate;
-  generateTransforms(center, t, trans, rotate);
+  GlyphGeomUtility::generateTransforms(center, t, trans, rotate);
 
   trans.post_scale(Vector(1.0, 1.0, 1.0) * scales);
   rotate.post_scale(Vector(1.0, 1.0, 1.0) / scales);
@@ -1439,7 +1056,7 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
 
   Transform trans;
   Transform rotate;
-  generateTransforms(center, t, trans, rotate);
+  GlyphGeomUtility::generateTransforms(center, t, trans, rotate);
 
   //Draw the Box
   Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);
@@ -1511,41 +1128,3 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
   quadstrips.push_back(quadstrip6);
 }
 
-// from SCIRun 4
-void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
-                                   Transform& trans, Transform& rotate)
-{
-  Vector axis = normal;
-
-  axis.normalize();
-
-  Vector z(0, 0, 1), zrotaxis;
-
-  if((Abs(axis.x()) + Abs(axis.y())) < 1.e-5)
-  {
-    // Only x-z plane...
-    zrotaxis = Vector(0, 1, 0);
-  }
-  else
-  {
-    zrotaxis = Cross(axis, z);
-    zrotaxis.normalize();
-  }
-
-  double cangle = Dot(z, axis);
-  double zrotangle = -acos(cangle);
-
-  trans.pre_translate((Vector) center);
-  trans.post_rotate(zrotangle, zrotaxis);
-
-  rotate.post_rotate(zrotangle, zrotaxis);
-}
-
-void GlyphGeom::generateTransforms(const Point& center, const Vector& eigvec1, const Vector& eigvec2,
-                                   const Vector& eigvec3, Transform& translate, Transform& rotate)
-{
-  static const Point origin(0.0, 0.0, 0.0);
-  rotate = Transform(origin, eigvec1, eigvec2, eigvec3);
-  translate = rotate;
-  translate.pre_translate((Vector) center);
-}
