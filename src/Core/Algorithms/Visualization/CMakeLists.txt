@@ -30,6 +30,7 @@ SET(Algorithms_Visualization_SRCS
   DataConversions.cc
   OsprayRenderAlgorithm.cc
   OsprayDataAlgorithm.cc
+  ShowMeshBoundingBoxAlgorithm.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
@@ -37,6 +38,7 @@ SET(Algorithms_Visualization_HEADERS
   RenderFieldState.h
   OsprayRenderAlgorithm.h
   OsprayDataAlgorithm.h
+  ShowMeshBoundingBoxAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
