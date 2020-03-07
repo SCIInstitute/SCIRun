@@ -26,8 +26,8 @@
 */
 
 
-#ifndef Graphics_Glyphs_GEOM_DATA_H
-#define Graphics_Glyphs_GEOM_DATA_H
+#ifndef Graphics_Glyphs_GLPYH_CONSTRUCTOR_H
+#define Graphics_Glyphs_GLYPH_CONSTRUCTOR_H
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Color.h>
@@ -36,7 +36,7 @@
 
 namespace SCIRun {
 namespace Graphics {
-struct GeomData
+class SCISHARE GlyphContructor
 {
   std::vector<SinCosTable> tables;
   std::vector<Core::Geometry::Vector> points;

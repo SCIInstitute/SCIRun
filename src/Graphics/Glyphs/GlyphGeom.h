@@ -36,7 +36,7 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
 #include <Eigen/Dense>
-#include <Graphics/Glyphs/GeomData.h>
+#include <Graphics/Glyphs/GlyphConstructor.h>
 
 #include <Graphics/Glyphs/share.h>
 
@@ -98,7 +98,7 @@ namespace SCIRun {
       void addSphere(const Core::Geometry::Point& center, double radius, int nu=20, int nv=20, int half=0);
 
     private:
-      GeomData geomData_;
+      GlyphConstructor constructor_;
 
       void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, int resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void generateSphere(const Core::Geometry::Point& center, double radius, int resolution, const Core::Datatypes::ColorRGB& color);

@@ -33,7 +33,7 @@ SET(Graphics_Glyphs_SRCS
 )
 
 SET(Graphics_Glyphs_HEADERS
-  GeomData.h
+  GlpyhConstructor.h
   GlyphGeomUtility.h
   TensorGlyphBuilder.h
   GlyphGeom.h

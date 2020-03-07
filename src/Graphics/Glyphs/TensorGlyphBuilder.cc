@@ -158,7 +158,7 @@ void TensorGlyphBuilder::postScaleTransorms()
   rotate_.post_scale(Vector(1.0,1.0,1.0) / eigvalsVector);
 }
 
-void TensorGlyphBuilder::generateEllipsoid(GeomData& geomData, bool half)
+void TensorGlyphBuilder::generateEllipsoid(GlpyhConstructor& constructor, bool half)
 {
   computeTransforms();
   postScaleTransorms();
@@ -225,7 +225,7 @@ Point TensorGlyphBuilder::evaluateEllipsoidPoint(double sinPhi, double cosPhi,
   return Point(x, y, z);
 }
 
-void TensorGlyphBuilder::generateSuperquadricTensor(GeomData& geomData, double emphasis)
+void TensorGlyphBuilder::generateSuperquadricTensor(GlpyhConstructor& constructor, double emphasis)
 {
   makeTensorPositive();
   computeTransforms();
@@ -334,7 +334,7 @@ Point TensorGlyphBuilder::evaluateSuperquadricPointPlanar(double sinPhi, double 
   return Point(x, y, z);
 }
 
-void TensorGlyphBuilder::generateBox(GeomData& geomData)
+void TensorGlyphBuilder::generateBox(GlpyhConstructor& constructor)
 {
   computeTransforms();
 
@@ -352,7 +352,7 @@ void TensorGlyphBuilder::generateBox(GeomData& geomData)
   generateBoxSide(geomData, box_points[2], box_points[6], box_points[0], box_points[4], -normals[2]);
 }
 
-void TensorGlyphBuilder::generateBoxSide(GeomData& geomData, const Vector& p1, const Vector& p2,
+void TensorGlyphBuilder::generateBoxSide(GlpyhConstructor& constructor, const Vector& p1, const Vector& p2,
                                          const Vector& p3, const Vector& p4, const Vector& normal)
 {
   geomData.points.push_back(p1);
