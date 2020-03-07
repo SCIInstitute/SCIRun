@@ -36,6 +36,7 @@ SET(Modules_Visualization_SRCS
   RescaleColorMap.cc
   TextBuilder.cc
   ShowFieldWithOspray.cc
+  CreateTestingArrow.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -48,6 +49,7 @@ SET(Modules_Visualization_HEADERS
   RescaleColorMap.h
   TextBuilder.h
   ShowFieldWithOspray.h
+  CreateTestingArrow.h
   share.h
 )
 
@@ -64,6 +66,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Algorithms_Visualization
   Graphics_Glyphs
   Graphics_Datatypes
+  Graphics_Widgets
   ${SCI_FREETYPE_LIBRARY}
 )
 

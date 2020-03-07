@@ -1,0 +1,50 @@
+name: mac-build
+
+on: [push, pull_request]
+
+jobs:
+  mac-build-gui:
+
+    runs-on: macOS-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      run: |
+        brew install qt
+        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
+
+    - name: make
+      run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$(brew --prefix qt)
+
+    - name: Package
+      working-directory: bin/SCIRun
+      run: |
+        cmake -DBUILD_BUNDLE:BOOL=ON ../../src
+        make -j3
+        make package
+        chmod +x repair_package.sh
+        ./repair_package.sh
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v1
+      with:
+        name: SCIRunMacInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.X-Darwin.pkg
+
+  mac-build-headless:
+
+    runs-on: macOS-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      run: |
+        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
+
+    - name: make
+      run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DBUILD_HEADLESS:BOOL=ON

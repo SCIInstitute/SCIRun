@@ -89,13 +89,6 @@ ENDIF()
 OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
-# Configure Qt version
-
-SET(QT5_BUILD_DEFAULT ON)
-OPTION(QT5_BUILD "Qt 5 compatible build" ${QT5_BUILD_DEFAULT})
-MARK_AS_ADVANCED(QT5_BUILD)
-
-###########################################
 # Travis CI build needs to be as slim as possible
 OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
@@ -121,42 +114,28 @@ ENDIF()
 ###########################################
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
-  IF (NOT QT5_BUILD)
-    SET(QT_MIN_VERSION "4.8.6")
-    INCLUDE(FindQt4)
-    FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
-    SET(QT_USE_QTOPENGL TRUE)
-
-    IF(QT4_FOUND)
-      MESSAGE(STATUS "QTVERSION=${QTVERSION}")
-      MESSAGE(STATUS "Found use file: ${QT_USE_FILE}")
-    ELSE()
-      MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
-    ENDIF()
+  IF(TRAVIS_BUILD)
+    SET(QT_MIN_VERSION "5.4")
   ELSE()
-    IF(TRAVIS_BUILD)
-      SET(QT_MIN_VERSION "5.4")
-    ELSE()
-      SET(QT_MIN_VERSION "5.13")
-    ENDIF()
+    SET(QT_MIN_VERSION "5.13")
+  ENDIF()
 
-    SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
+  SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
 
-    IF(IS_DIRECTORY ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Core ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Gui ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Widgets ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Network ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5OpenGL ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Concurrent ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-    ELSE()
-      MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
-    ENDIF()
+  IF(IS_DIRECTORY ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Core ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Gui ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+	  FIND_PACKAGE(Qt5Widgets ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+	  FIND_PACKAGE(Qt5Network ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5OpenGL ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+	  FIND_PACKAGE(Qt5Concurrent ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  ELSE()
+    MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+  ENDIF()
 
-    IF(APPLE)
-      SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
-      MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
-    ENDIF()
+  IF(APPLE)
+    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+    MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
 ELSE()
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
@@ -266,7 +245,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
-    "-DQT5_BUILD:BOOL=${QT5_BUILD}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -313,26 +291,17 @@ IF(WIN32)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
-  IF(QT5_BUILD)
-    LIST(APPEND SCIRUN_CACHE_ARGS
-      "-DQt5_PATH:PATH=${Qt5_PATH}"
-      "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
-      "-DQt5Gui_DIR:PATH=${Qt5Gui_DIR}"
-      "-DQt5OpenGL_DIR:PATH=${Qt5OpenGL_DIR}"
-  	  "-DQt5Network_DIR:PATH=${Qt5Network_DIR}"
-   	  "-DQt5Widgets_DIR:PATH=${Qt5Widgets_DIR}"
-  	  "-DQt5Concurrent_DIR:PATH=${Qt5Concurrent_DIR}"
-      "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
-      "-DQWT_DIR:PATH=${QWT_DIR}"
-    )
-  ELSE()
-    LIST(APPEND SCIRUN_CACHE_ARGS
-      "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
-      "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
-      "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
-      "-DQWT_DIR:PATH=${QWT_DIR}"
-    )
-  ENDIF()
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DQt5_PATH:PATH=${Qt5_PATH}"
+    "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
+    "-DQt5Gui_DIR:PATH=${Qt5Gui_DIR}"
+    "-DQt5OpenGL_DIR:PATH=${Qt5OpenGL_DIR}"
+	  "-DQt5Network_DIR:PATH=${Qt5Network_DIR}"
+ 	  "-DQt5Widgets_DIR:PATH=${Qt5Widgets_DIR}"
+	  "-DQt5Concurrent_DIR:PATH=${Qt5Concurrent_DIR}"
+    "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
+    "-DQWT_DIR:PATH=${QWT_DIR}"
+  )
 ENDIF()
 
 ExternalProject_Add( SCIRun_external

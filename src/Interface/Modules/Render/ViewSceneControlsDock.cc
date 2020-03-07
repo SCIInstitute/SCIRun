@@ -182,7 +182,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
   connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
   connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
-  connect(autoRotateCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setAutoRotateOnDrag(bool)));
 
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -192,7 +191,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
-  connect(selectionHackCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleSelectionHack(bool)));
 
   setSampleColor(Qt::black);
 

@@ -61,7 +61,13 @@ private:
 }}
 
 #else
+namespace SCIRun
+{
+namespace Gui
+{
 class PythonConsoleWidget {};
+}
+}
 #endif
 
 #endif

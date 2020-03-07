@@ -29,23 +29,39 @@
 #ifndef MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 #define MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 
-#include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/BBox.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
-#include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Visualization/share.h>
 
-enum SizingType {
+namespace SCIRun {
+
+  namespace Core {
+    namespace Algorithms {
+      namespace Visualization {
+        ALGORITHM_PARAMETER_DECL(FieldName);
+        ALGORITHM_PARAMETER_DECL(WidgetScaleFactor);
+        ALGORITHM_PARAMETER_DECL(Sizing);
+        ALGORITHM_PARAMETER_DECL(ShowLastAsVector);
+        ALGORITHM_PARAMETER_DECL(ShowLines);
+        ALGORITHM_PARAMETER_DECL(Reset);
+        ALGORITHM_PARAMETER_DECL(MoveDipolesTogether);
+        ALGORITHM_PARAMETER_DECL(DipolePositions);
+        ALGORITHM_PARAMETER_DECL(DipoleDirections);
+        ALGORITHM_PARAMETER_DECL(DipoleScales);
+        ALGORITHM_PARAMETER_DECL(DataSaved);
+        ALGORITHM_PARAMETER_DECL(LargestSize);
+      }}}
+
+  namespace Modules {
+    namespace Visualization {
+
+      class ShowAndEditDipolesImpl;
+
+      enum class SizingType
+      {
         ORIGINAL,
         NORMALIZE_VECTOR_DATA,
         NORMALIZE_BY_LARGEST_VECTOR
-};
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+      };
 
       class SCISHARE ShowAndEditDipoles : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
@@ -53,21 +69,8 @@ namespace SCIRun {
       {
       public:
         ShowAndEditDipoles();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-
-        static const Core::Algorithms::AlgorithmParameterName FieldName;
-        static const Core::Algorithms::AlgorithmParameterName WidgetScaleFactor;
-        static const Core::Algorithms::AlgorithmParameterName Sizing;
-        static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
-        static const Core::Algorithms::AlgorithmParameterName ShowLines;
-        static const Core::Algorithms::AlgorithmParameterName Reset;
-        static const Core::Algorithms::AlgorithmParameterName MoveDipolesTogether;
-        static const Core::Algorithms::AlgorithmParameterName DipolePositions;
-        static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
-        static const Core::Algorithms::AlgorithmParameterName DipoleScales;
-        static const Core::Algorithms::AlgorithmParameterName DataSaved;
-        static const Core::Algorithms::AlgorithmParameterName LargestSize;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, DipoleInputField, Field);
         OUTPUT_PORT(0, DipoleOutputField, Field);
@@ -76,51 +79,8 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
       private:
-        std::vector<Core::Geometry::Point> pos_;
-        std::vector<Core::Geometry::Vector> direction_;
-        std::vector<double> scale_;
-        Core::Geometry::BBox last_bounds_;
-        std::vector<Graphics::Datatypes::ArrowWidgetHandle> arrows_;
-        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
-        std::vector<Core::Geometry::Transform> previousTransforms_;
-
-        bool firstRun_;
-        bool getFromFile_;
-        bool lastVectorShown_;
-        SizingType previousSizing_;
-        double sphereRadius_;
-        double cylinderRadius_;
-        double coneRadius_;
-        double diskRadius_;
-        double diskDistFromCenter_;
-        double diskWidth_;
-        size_t widgetIter_;
-        int resolution_;
-        double previousScaleFactor_;
-        double zeroVectorRescale_;
-
-        Core::Datatypes::ColorRGB lineCol_;
-
-        void loadData();
-        void refreshGeometry();
-        void toggleLastVectorShown();
-        void generateGeomsList();
-        void ReceiveInputPoints();
-        void ReceiveInputDirections();
-        void ReceiveInputScales();
-        void ReceiveInputField();
-        void GenerateOutputGeom();
-        void makeScalesPositive();
-        void resetData();
-        std::string widgetName(size_t i, size_t id, size_t iter);
-        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
-        void moveDipolesTogether(const Core::Geometry::Transform &transform);
+        SharedPointer<ShowAndEditDipolesImpl> impl_;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
-        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);
-        Graphics::Datatypes::GeometryHandle addLines();
-        FieldHandle makePointCloud();
-        void loadFromParameters();
-        void saveToParameters();
       };
     }
   }

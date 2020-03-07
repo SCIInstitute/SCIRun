@@ -1,10 +1,13 @@
 ![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
 
 ## SCIRun 5
-https://github.com/SCIInstitute/SCIRun
+<!-- https://github.com/SCIInstitute/SCIRun -->
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
-[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun)
+![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
+![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
+![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
+<!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
@@ -43,7 +46,7 @@ For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
   The MIT License
 
-  Copyright (c) 2016 Scientific Computing and Imaging Institute,
+  Copyright (c) 2020 Scientific Computing and Imaging Institute,
   University of Utah.
 
 
