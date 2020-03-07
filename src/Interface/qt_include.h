@@ -26,8 +26,4 @@
 */
 
 
-#ifdef QT5_BUILD
 #include <QtWidgets>
-#else
-#include <QtGui>
-#endif
