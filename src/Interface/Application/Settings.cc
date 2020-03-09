@@ -120,10 +120,81 @@ namespace
   }
 }
 
+namespace SCIRun
+{
+  namespace Gui
+  {
+    class SettingsValueInterface
+    {
+    public:
+      virtual ~SettingsValueInterface() {}
+      virtual void read() = 0;
+      virtual void postRead() = 0;
+      virtual void write() = 0;
+    };
+  }
+}
+
+template <typename T>
+using ReadConverter = std::function<T(const QVariant&)>;
+
+template <typename T>
+class SettingsValue : public SettingsValueInterface
+{
+public:
+  SettingsValue(const QString& name, ReadConverter<T> readConverter,
+    std::function<void(const T&)> postRead, std::function<T()> retriever) :
+    name_(name), readConverter_(readConverter),
+    postRead_(postRead), retriever_(retriever) {}
+
+  void read() override
+  {
+    QSettings settings;
+    if (settings.contains(name_))
+    {
+      value_ = readConverter_(settings.value(name_));
+      guiLogDebug("Setting read: {} = {}", name_.toStdString(), *value_);
+    }
+  }
+
+  void postRead() override
+  {
+    if (value_)
+      postRead_(*value_);
+  }
+
+  void write() override
+  {
+    QSettings settings;
+    settings.setValue(name_, retriever_());
+  }
+private:
+  boost::optional<T> value_;
+  const QString name_;
+  ReadConverter<T> readConverter_;
+  std::function<void(const T&)> postRead_;
+  std::function<T()> retriever_;
+};
+
 void SCIRunMainWindow::readSettings()
 {
   auto& prefs = Preferences::Instance();
   QSettings settings;
+
+  auto toInt = [](const QVariant& qv) { return qv.toInt(); };
+
+  settingsValues_ =
+  {
+    SettingsValueInterfacePtr(new SettingsValue<int>("connectionPipeType", toInt,
+      [this](int p) { setConnectionPipelineType(p); },
+      [this]() { return networkEditor_->connectionPipelineType(); }))
+  };
+
+  for (auto& setting : settingsValues_)
+  {
+    setting->read();
+    setting->postRead();
+  }
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names.
   //TODO: extract QSettings logic into "PreferencesIO" class
@@ -143,14 +214,6 @@ void SCIRunMainWindow::readSettings()
     .toStdString());
 
   //TODO: make a separate class for these keys, bad duplication.
-  const QString colorKey = qname(prefs.networkBackgroundColor);
-  if (settings.contains(colorKey))
-  {
-    auto value = settings.value(colorKey).toString();
-    prefs.networkBackgroundColor.setValue(value.toStdString());
-    networkEditor_->setBackground(QColor(value));
-    guiLogDebug("Setting read: background color = {}", networkEditor_->background().color().name().toStdString());
-  }
 
   const QString notePositionKey = "defaultNotePositionIndex";
   if (settings.contains(notePositionKey))
@@ -158,14 +221,6 @@ void SCIRunMainWindow::readSettings()
     int notePositionIndex = settings.value(notePositionKey).toInt();
     prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
     guiLogDebug("Setting read: default note position = {}", notePositionIndex);
-  }
-
-  const QString pipeTypeKey = "connectionPipeType";
-  if (settings.contains(pipeTypeKey))
-  {
-    int pipeType = settings.value(pipeTypeKey).toInt();
-    setConnectionPipelineType(pipeType);
-    guiLogDebug("Setting read: connection pipe style = {}", pipeType);
   }
 
   const auto snapTo = qname(prefs.modulesSnapToGrid);
@@ -396,6 +451,11 @@ void SCIRunMainWindow::writeSettings()
   QSettings settings;
   auto& prefs = Preferences::Instance();
 
+  for (auto& setting : settingsValues_)
+  {
+    setting->write();
+  }
+
   //TODO: centralize all these values in Preferences singleton, together with keys as names
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
@@ -410,7 +470,6 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.widgetSelectionCorrection), prefs.widgetSelectionCorrection.val());
   settings.setValue(qname(prefs.autoRotateViewerOnMouseRelease), prefs.autoRotateViewerOnMouseRelease.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
-  settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
