@@ -506,17 +506,19 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
 
 void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color)
 {
-  double num_strips = resolution;
-  if (num_strips < 0) num_strips = 20.0;
+  if (resolution < 3) resolution = 3;
   double r = radius < 0 ? 1.0 : radius;
   Vector pp1, pp2;
-  double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
+  double d_res = resolution;
+  double theta_inc = M_PI / d_res, phi_inc = 0.5 * M_PI / d_res;
 
   //generate triangles for the spheres
-  for (double phi = 0.; phi <= M_PI - phi_inc; phi += phi_inc)
+  for(int v = 1; v <= 2*resolution; ++v)
   {
-    for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
+    double phi = v * phi_inc;
+    for(int u = 0; u <= 2*resolution; ++u)
     {
+      double theta = u * theta_inc;
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
@@ -527,18 +529,13 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       pp2 *= r;
       points_.push_back(pp1 + Vector(center));
       colors_.push_back(color);
-      numVBOElements_++;
       points_.push_back(pp2 + Vector(center));
       colors_.push_back(color);
-      numVBOElements_++;
+      numVBOElements_+=2;
 
-      //preserve vertex ordering for double sided rendering
       int v1 = 1, v2 = 2;
-      if(theta < M_PI)
-      {
-        v1 = 2;
-        v2 = 1;
-      }
+      if(u < resolution)
+        std::swap(v1, v2);
 
       indices_.push_back(0 + offset);
       indices_.push_back(v1 + offset);
