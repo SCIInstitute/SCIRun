@@ -28,7 +28,8 @@
 
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/Connection.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Core/Logging/Log.h>
 
@@ -76,7 +77,7 @@ int NetworkGraphAnalyzer::moduleCount() const
   return moduleCount_;
 }
 
-EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork(std::function<bool(const ConnectionDescription&)> connectionFilter)
+EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
 {
   moduleCount_ = 0;
   moduleIdLookup_.clear();
@@ -98,8 +99,7 @@ EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork(std::function<bool
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
     {
-      if (connectionFilter(cd))
-        edges.push_back(std::make_pair(moduleIdLookup_.left.at(cd.out_.moduleId_), moduleIdLookup_.left.at(cd.in_.moduleId_)));
+      edges.push_back(std::make_pair(moduleIdLookup_.left.at(cd.out_.moduleId_), moduleIdLookup_.left.at(cd.in_.moduleId_)));
     }
   }
 
@@ -138,23 +138,32 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   return componentMap;
 }
 
-std::vector<ModuleId> NetworkGraphAnalyzer::downstreamModules(const ModuleId& mid)
+std::vector<ModuleId> NetworkGraphAnalyzer::downstreamModules(const ModuleId& mid) const
 {
-  auto edges = constructEdgeListFromNetwork([&](const ConnectionDescription& cd) { return cd.in_.moduleId_ != mid; });
-  UndirectedGraph undirected(edges.begin(), edges.end(), moduleCount_);
+  std::vector<ModuleId> downstream {mid};
+  fillDownstreamModules(mid, downstream);
+  return downstream;
+}
 
-  std::vector<int> component(boost::num_vertices(undirected));
-  boost::connected_components(undirected, &component[0]);
+void NetworkGraphAnalyzer::fillDownstreamModules(const ModuleId& mid, std::vector<ModuleId>& downstream) const
+{
+  auto module = network_.lookupModule(mid);
+  if (!module)
+    return;
 
-  auto id = moduleIdLookup_.left.at(mid);
-  int componentToFind = component[id];
-  std::vector<ModuleId> connected;
-  for (size_t i = 0; i < component.size(); ++i)
+  for (const auto& output : module->outputPorts())
   {
-    if (component[i] == componentToFind)
-      connected.push_back(moduleAt(i));
+    for (size_t i = 0; i < output->nconnections(); ++i)
+    {
+      auto c = output->connection(i);
+      if (!c->disabled())
+      {
+        auto down = c->iport_->getUnderlyingModuleId();
+        downstream.push_back(down);
+        fillDownstreamModules(down, downstream);
+      }
+    }
   }
-  return connected;
 }
 
 namespace SCIRun

@@ -146,7 +146,6 @@ namespace Engine {
     bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
   private:
     SCIRun::Dataflow::Networks::ModuleHandle module_;
-    //const SCIRun::Dataflow::Networks::NetworkInterface& network_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
     boost::shared_ptr<ExecuteSingleModuleImpl> orderImpl_;
