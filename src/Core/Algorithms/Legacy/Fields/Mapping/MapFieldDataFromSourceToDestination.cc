@@ -60,7 +60,7 @@ MapFieldDataFromSourceToDestinationAlgo::MapFieldDataFromSourceToDestinationAlgo
   using namespace Parameters;
   addParameter(DefaultValue, 0.0);
   addParameter(MaxDistance, -1.0);
-  addOption(MappingMethod, "interpolateddata", "interpolateddata|closestdata|singledestination");
+  addOption(MappingMethod, "closestdata", "interpolateddata|closestdata|singledestination");
 }
 
 namespace detail
