@@ -206,16 +206,18 @@ void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
 
 void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color)
 {
-  if (resolution < 0) resolution = 20.0;
+  if (resolution < 3) resolution = 3;
   if (radius < 0) radius = 1.0;
   double theta_inc = M_PI / resolution;
   double phi_inc = 0.5 * M_PI / resolution;
 
   //generate triangles for the spheres
-  for (double phi = 0.; phi <= M_PI - phi_inc; phi += phi_inc)
+  for(int v = 1; v <= 2*resolution; ++v)
   {
-    for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
+    double phi = v * phi_inc;
+    for(int u = 0; u <= 2*resolution; ++u)
     {
+      double theta = u * theta_inc;
       Vector p1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       Vector p2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
 
@@ -223,9 +225,8 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       constructor_.addVertex(radius * p1 + Vector(center), p1, color);
       constructor_.addVertex(radius * p2 + Vector(center), p2, color);
 
-      //preserve vertex ordering for double sided rendering
       int v1 = 1, v2 = 2;
-      if(theta >= M_PI)
+      if(u < resolution)
         std::swap(v1, v2);
 
       constructor_.addIndicesToOffset(0, v1, v2);
