@@ -35,7 +35,6 @@
 #include <Core/Math/TrigTable.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
-#include <Eigen/Dense>
 #include <Graphics/Glyphs/GlyphConstructor.h>
 
 #include <Graphics/Glyphs/share.h>

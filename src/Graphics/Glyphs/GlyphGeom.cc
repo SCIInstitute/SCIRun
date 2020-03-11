@@ -29,11 +29,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Glyphs/VectorGlyphBuilder.h>
 #include <Graphics/Glyphs/TensorGlyphBuilder.h>
-#include <Graphics/Glyphs/GlyphGeomUtility.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/Math/MiscMath.h>
-#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun;
 using namespace Graphics;

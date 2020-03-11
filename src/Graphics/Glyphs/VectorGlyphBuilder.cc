@@ -28,6 +28,7 @@
 
 #include <Graphics/Glyphs/VectorGlyphBuilder.h>
 #include <Graphics/Glyphs/GlyphGeomUtility.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun;
 using namespace Graphics;

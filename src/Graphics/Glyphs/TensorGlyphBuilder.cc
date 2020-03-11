@@ -28,6 +28,7 @@
 
 #include <Graphics/Glyphs/TensorGlyphBuilder.h>
 #include <Graphics/Glyphs/GlyphGeomUtility.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Math/MiscMath.h>
 
 using namespace SCIRun;
