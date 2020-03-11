@@ -139,6 +139,42 @@ template <typename T>
 using ReadConverter = std::function<T(const QVariant&)>;
 
 template <typename T>
+struct StdStringifier
+{
+  std::string operator()(const T& t) const
+  {
+    return std::to_string(t);
+  }
+};
+
+template <>
+struct StdStringifier<bool>
+{
+  std::string operator()(const bool& t) const
+  {
+    return t ? "true" : "false";
+  }
+};
+
+template <>
+struct StdStringifier<QString>
+{
+  std::string operator()(const QString& t) const
+  {
+    return t.toStdString();
+  }
+};
+
+template <>
+struct StdStringifier<QStringList>
+{
+  std::string operator()(const QStringList& t) const
+  {
+    return t.join(", ").toStdString();
+  }
+};
+
+template <typename T, typename Stringifier = StdStringifier<T>>
 class SettingsValue : public SettingsValueInterface
 {
 public:
@@ -153,7 +189,7 @@ public:
     if (settings.contains(name_))
     {
       value_ = readConverter_(settings.value(name_));
-      guiLogDebug("Setting read: {} = {}", name_.toStdString(), *value_);
+      guiLogDebug("Setting read: {} = {}", name_.toStdString(), stringify_(*value_));
     }
   }
 
@@ -174,6 +210,7 @@ private:
   ReadConverter<T> readConverter_;
   std::function<void(const T&)> postRead_;
   std::function<T()> retriever_;
+  Stringifier stringify_;
 };
 
 template <typename T, typename FuncT1, typename FuncT2>
@@ -187,6 +224,8 @@ namespace
 {
   ReadConverter<int> toInt = [](const QVariant& qv) { return qv.toInt(); };
   ReadConverter<bool> toBool = [](const QVariant& qv) { return qv.toBool(); };
+  ReadConverter<QString> toString = [](const QVariant& qv) { return qv.toString(); };
+  ReadConverter<QStringList> toStringList = [](const QVariant& qv) { return qv.toStringList(); };
 }
 
 #define prefs Preferences::Instance()
@@ -248,7 +287,22 @@ void SCIRunMainWindow::readSettings()
       [this]() { return provenanceWindow_->maxItems(); }),
     makeSetting("maxCores", toInt,
       [this](int p) { prefsWindow_->maxCoresSpinBox_->setValue(p); },
-      [this]() { return prefsWindow_->maxCoresSpinBox_->value(); })
+      [this]() { return prefsWindow_->maxCoresSpinBox_->value(); }),
+    makeSetting("dataDirectory", toString,
+      [this](const QString& s) { setDataDirectory(s); },
+      []() { return QString::fromStdString(prefs.dataDirectory().string()); }),
+    makeSetting("favoriteModules", toStringList,
+      [this](const QStringList& qsl) { favoriteModuleNames_ = qsl; },
+      [this]() { return favoriteModuleNames_; }),
+    makeSetting("dataPath", toStringList,
+      [this](const QStringList& qsl) { setDataPath(qsl.join(";")); },
+      []() { return convertPathList(prefs.dataPath()); }),
+    makeSetting("tagNames", toStringList,
+      [this](const QStringList& qsl) { tagManagerWindow_->setTagNames(qsl.toVector()); },
+      [this]() { return tagManagerWindow_->getTagNames(); }),
+    makeSetting("tagColors", toStringList,
+      [this](const QStringList& qsl) { tagManagerWindow_->setTagColors(qsl.toVector()); },
+      [this]() { return tagManagerWindow_->getTagColors(); })
   };
 
   for (auto& setting : settingsValues_)
@@ -275,48 +329,6 @@ void SCIRunMainWindow::readSettings()
     .toStdString());
 
   //TODO: make a separate class for these keys, bad duplication.
-
-  const QString favoriteModules = "favoriteModules";
-  if (settings.contains(favoriteModules))
-  {
-    auto faves = settings.value(favoriteModules).toStringList();
-    guiLogDebug("Setting read: favoriteModules = {}", faves.join(", ").toStdString());
-    favoriteModuleNames_ = faves;
-  }
-
-  const QString dataDirectory = "dataDirectory";
-  if (settings.contains(dataDirectory))
-  {
-    auto dataDir = settings.value(dataDirectory).toString();
-    guiLogDebug("Setting read: dataDirectory = {}", dataDir.toStdString());
-    setDataDirectory(dataDir);
-  }
-
-  const QString dataPath = "dataPath";
-  if (settings.contains(dataPath))
-  {
-    auto path = settings.value(dataPath).toStringList().join(";");
-    guiLogDebug("Setting read: dataPath = {}", path.toStdString());
-    setDataPath(path);
-  }
-
-  const QString tagNamesKey = "tagNames";
-  if (settings.contains(tagNamesKey))
-  {
-    auto tagNames = settings.value(tagNamesKey).toStringList();
-    guiLogDebug("Setting read: tagNames = {}", tagNames.join(";").toStdString());
-    tagManagerWindow_->setTagNames(tagNames.toVector());
-  }
-
-  const QString tagColorsKey = "tagColors";
-  if (settings.contains(tagColorsKey))
-  {
-    auto tagColors = settings.value(tagColorsKey).toStringList();
-    guiLogDebug("Setting read: tagColors = {}", tagColors.join(";").toStdString());
-    tagManagerWindow_->setTagColors(tagColors.toVector());
-  }
-  else
-    tagManagerWindow_->setTagColors(QVector<QString>());
 
   const QString triggeredScripts = "triggeredScripts";
   if (settings.contains(triggeredScripts))
@@ -381,11 +393,6 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("favoriteModules", favoriteModuleNames_);
-  settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
-  settings.setValue("dataPath", convertPathList(prefs.dataPath()));
-  settings.setValue("tagNames", tagManagerWindow_->getTagNames());
-  settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->scripts()));
   settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()));
   settings.setValue("macros", fromTypedList<QStringList>(macroEditor_->scripts()));
