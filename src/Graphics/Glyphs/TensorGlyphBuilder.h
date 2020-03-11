@@ -50,9 +50,9 @@ public:
   void normalizeTensor();
   void setColor(const Core::Datatypes::ColorRGB& color);
   void setResolution(double resolution);
-  void generateSuperquadricTensor(GlpyhConstructor& constructor, double emphasis);
-  void generateEllipsoid(GlpyhConstructor& constructor, bool half);
-  void generateBox(GlpyhConstructor& constructor);
+  void generateSuperquadricTensor(GlyphConstructor& constructor, double emphasis);
+  void generateEllipsoid(GlyphConstructor& constructor, bool half);
+  void generateBox(GlyphConstructor& constructor);
 
 private:
   Core::Geometry::Point evaluateSuperquadricPointLinear(double sinphi, double cosphi, double sintheta,
@@ -62,7 +62,7 @@ private:
   Core::Geometry::Point evaluateEllipsoidPoint(double sinphi, double cosphi, double sintheta, double costheta);
   Core::Geometry::Point evaluateSuperquadricPoint(bool linear, double sinPhi, double cosPhi, double sinTheta,
                                   double cosTheta, double A, double B);
-  void generateBoxSide(GlpyhConstructor& constructor, const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
+  void generateBoxSide(GlyphConstructor& constructor, const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
                        const Core::Geometry::Vector& p3, const Core::Geometry::Vector& p4,
                        const Core::Geometry::Vector& normal);
   std::vector<Core::Geometry::Vector> generateBoxPoints();

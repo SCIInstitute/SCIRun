@@ -26,27 +26,40 @@
 */
 
 
-#ifndef Graphics_Glyphs_GLPYH_CONSTRUCTOR_H
-#define Graphics_Glyphs_GLYPH_CONSTRUCTOR_H
+#ifndef Graphics_Glyphs_VECTOR_GLYPH_BUILDER_H
+#define Graphics_Glyphs_VECTOR_GLYPH_BUILDER_H
 
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Math/TrigTable.h>
+#include <Graphics/Glyphs/GlyphConstructor.h>
 #include <Graphics/Glyphs/share.h>
 
 namespace SCIRun {
 namespace Graphics {
-class SCISHARE GlyphContructor
+class SCISHARE VectorGlyphBuilder
 {
-  std::vector<SinCosTable> tables;
-  std::vector<Core::Geometry::Vector> points;
-  std::vector<Core::Geometry::Vector> normals;
-  std::vector<Core::Datatypes::ColorRGB> colors;
-  std::vector<size_t> indices;
-  size_t numVBOElements;
-  size_t lineIndex;
+public:
+  VectorGlyphBuilder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2);
+  void setResolution(double resolution);
+  void setColor1(const Core::Datatypes::ColorRGB& color);
+  void setColor2(const Core::Datatypes::ColorRGB& color);
+  void setP1(const Core::Geometry::Point& p);
+  void setP2(const Core::Geometry::Point& p);
+  void generateCylinder(GlyphConstructor& constructor, double radius1, double radius2, bool renderBase1, bool renderBase2);
+  void generateComet(GlyphConstructor& constructor, double radius, double sphere_extrusion);
+  void generateCone(GlyphConstructor& constructor, double radius, bool renderBase);
+  void generateTorus(GlyphConstructor& constructor, double major_radius, double minor_radius);
+  void generateArrow(GlyphConstructor& constructor, double radius, double ratio, bool render_cylinder_base, bool render_cone_base);
+
+private:
+  Core::Geometry::Point p1_ = {0, 0, 0};
+  Core::Geometry::Point p2_ = {0, 0, 0};
+  int resolution_ = 3;
+  Core::Datatypes::ColorRGB color1_ = {1.0, 1.0, 1.0};
+  Core::Datatypes::ColorRGB color2_ = {1.0, 1.0, 1.0};
 };
 }}
 
 #endif
-

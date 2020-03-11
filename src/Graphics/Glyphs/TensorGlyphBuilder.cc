@@ -158,7 +158,7 @@ void TensorGlyphBuilder::postScaleTransorms()
   rotate_.post_scale(Vector(1.0,1.0,1.0) / eigvalsVector);
 }
 
-void TensorGlyphBuilder::generateEllipsoid(GlpyhConstructor& constructor, bool half)
+void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool half)
 {
   computeTransforms();
   postScaleTransorms();
@@ -176,18 +176,17 @@ void TensorGlyphBuilder::generateEllipsoid(GlpyhConstructor& constructor, bool h
 
     for (int u = 0; u < nu_; ++u)
     {
-      uint32_t offset = static_cast<uint32_t>(geomData.numVBOElements);
       double sinTheta = tab1_.sin(u);
       double cosTheta = tab1_.cos(u);
 
       // Transorm points and add to points list
+      constructor.setOffset();
       for (int i = 0; i < 2; ++i)
       {
         Point point = evaluateEllipsoidPoint(sinPhi[i], cosPhi[i], sinTheta, cosTheta);
         Vector pVector = Vector(trans_ * point);
-        geomData.points.push_back(pVector);
 
-        Vector normal = Vector(point);
+        Vector normal;
         if(flatTensor_)
         {
           // Avoids recalculating norm vector and prevents vectors with infinite length
@@ -199,19 +198,14 @@ void TensorGlyphBuilder::generateEllipsoid(GlpyhConstructor& constructor, bool h
           normal = rotate_ * Vector(point);
           normal.safe_normalize();
         }
-        geomData.normals.push_back(normal);
-        geomData.colors.push_back(color_);
-        geomData.numVBOElements++;
+
+        constructor.addVertex(pVector, normal, color_);
       }
 
-      geomData.indices.push_back(0 + offset);
-      geomData.indices.push_back(1 + offset);
-      geomData.indices.push_back(2 + offset);
-      geomData.indices.push_back(2 + offset);
-      geomData.indices.push_back(1 + offset);
-      geomData.indices.push_back(3 + offset);
+      constructor.addIndicesToOffset(0, 1, 2);
+      constructor.addIndicesToOffset(2, 1, 3);
     }
-    for(int jj = 0; jj < 6; jj++) geomData.indices.pop_back();
+    constructor.popIndicesNTimes(6);
   }
 }
 
@@ -225,7 +219,7 @@ Point TensorGlyphBuilder::evaluateEllipsoidPoint(double sinPhi, double cosPhi,
   return Point(x, y, z);
 }
 
-void TensorGlyphBuilder::generateSuperquadricTensor(GlpyhConstructor& constructor, double emphasis)
+void TensorGlyphBuilder::generateSuperquadricTensor(GlyphConstructor& constructor, double emphasis)
 {
   makeTensorPositive();
   computeTransforms();
@@ -256,7 +250,7 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlpyhConstructor& constructo
 
     for (int u = 0; u < nu_; ++u)
     {
-      uint32_t offset = static_cast<uint32_t>(geomData.numVBOElements);
+      constructor.setOffset();
       double sinTheta = tab1_.sin(u);
       double cosTheta = tab1_.cos(u);
 
@@ -264,9 +258,7 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlpyhConstructor& constructo
       {
         // Transorm points and add to points list
         Point p = evaluateSuperquadricPoint(linear, sinPhi[i], cosPhi[i], sinTheta, cosTheta, A, B);
-
         Vector pVector = Vector(trans_ * p);
-        geomData.points.push_back(pVector);
 
         Vector normal;
         if(flatTensor_)
@@ -282,32 +274,25 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlpyhConstructor& constructo
           normal = rotate_ * normal;
           normal.safe_normalize();
         }
-        geomData.normals.push_back(normal);
-        geomData.colors.push_back(color_);
-        geomData.numVBOElements++;
+
+        constructor.addVertex(pVector, normal, color_);
       }
 
-      geomData.indices.push_back(0 + offset);
-      geomData.indices.push_back(1 + offset);
-      geomData.indices.push_back(2 + offset);
-      geomData.indices.push_back(2 + offset);
-      geomData.indices.push_back(1 + offset);
-      geomData.indices.push_back(3 + offset);
+      constructor.addIndicesToOffset(0, 1, 2);
+      constructor.addIndicesToOffset(2, 1, 3);
     }
   }
-  for(int jj = 0; jj < 6; jj++) geomData.indices.pop_back();
+  constructor.popIndicesNTimes(6);
 }
 
 Point TensorGlyphBuilder::evaluateSuperquadricPoint(bool linear, double sinPhi, double cosPhi,
                                                     double sinTheta, double cosTheta,
                                                     double A, double B)
 {
-  Point p;
   if (linear)
-    p = evaluateSuperquadricPointLinear(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
+    return evaluateSuperquadricPointLinear(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
   else
-    p = evaluateSuperquadricPointPlanar(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
-  return p;
+    return evaluateSuperquadricPointPlanar(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
 }
 
 // Generate around x-axis
@@ -334,7 +319,7 @@ Point TensorGlyphBuilder::evaluateSuperquadricPointPlanar(double sinPhi, double 
   return Point(x, y, z);
 }
 
-void TensorGlyphBuilder::generateBox(GlpyhConstructor& constructor)
+void TensorGlyphBuilder::generateBox(GlyphConstructor& constructor)
 {
   computeTransforms();
 
@@ -344,37 +329,24 @@ void TensorGlyphBuilder::generateBox(GlpyhConstructor& constructor)
     for(int d = 0; d < DIMENSIONS_; ++d)
       normals[d] = zeroNorm_;
 
-  generateBoxSide(geomData, box_points[5], box_points[4], box_points[7], box_points[6],  normals[0]);
-  generateBoxSide(geomData, box_points[7], box_points[6], box_points[3], box_points[2],  normals[1]);
-  generateBoxSide(geomData, box_points[1], box_points[5], box_points[3], box_points[7],  normals[2]);
-  generateBoxSide(geomData, box_points[3], box_points[2], box_points[1], box_points[0], -normals[0]);
-  generateBoxSide(geomData, box_points[1], box_points[0], box_points[5], box_points[4], -normals[1]);
-  generateBoxSide(geomData, box_points[2], box_points[6], box_points[0], box_points[4], -normals[2]);
+  generateBoxSide(constructor, box_points[5], box_points[4], box_points[7], box_points[6],  normals[0]);
+  generateBoxSide(constructor, box_points[7], box_points[6], box_points[3], box_points[2],  normals[1]);
+  generateBoxSide(constructor, box_points[1], box_points[5], box_points[3], box_points[7],  normals[2]);
+  generateBoxSide(constructor, box_points[3], box_points[2], box_points[1], box_points[0], -normals[0]);
+  generateBoxSide(constructor, box_points[1], box_points[0], box_points[5], box_points[4], -normals[1]);
+  generateBoxSide(constructor, box_points[2], box_points[6], box_points[0], box_points[4], -normals[2]);
 }
 
-void TensorGlyphBuilder::generateBoxSide(GlpyhConstructor& constructor, const Vector& p1, const Vector& p2,
-                                         const Vector& p3, const Vector& p4, const Vector& normal)
+void TensorGlyphBuilder::generateBoxSide(GlyphConstructor& constructor, const Vector& p1, const Vector& p2, const Vector& p3,
+                                         const Vector& p4, const Vector& normal)
 {
-  geomData.points.push_back(p1);
-  geomData.points.push_back(p2);
-  geomData.points.push_back(p3);
-  geomData.points.push_back(p4);
-
-  for(int p = 0; p < BOX_FACE_POINTS_; p++)
-  {
-    geomData.normals.push_back(normal);
-    geomData.colors.push_back(color_);
-  }
-
-  size_t offset = static_cast<size_t>(geomData.numVBOElements);
-  geomData.indices.push_back(offset + 2);
-  geomData.indices.push_back(offset);
-  geomData.indices.push_back(offset + 3);
-  geomData.indices.push_back(offset + 1);
-  geomData.indices.push_back(offset + 3);
-  geomData.indices.push_back(offset);
-
-  geomData.numVBOElements += BOX_FACE_POINTS_;
+  constructor.setOffset();
+  constructor.addVertex(p1, normal, color_);
+  constructor.addVertex(p2, normal, color_);
+  constructor.addVertex(p3, normal, color_);
+  constructor.addVertex(p4, normal, color_);
+  constructor.addIndicesToOffset(2, 0, 3);
+  constructor.addIndicesToOffset(1, 3, 0);
 }
 
 std::vector<Vector> TensorGlyphBuilder::generateBoxPoints()
