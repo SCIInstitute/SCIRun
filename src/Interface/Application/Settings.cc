@@ -176,18 +176,79 @@ private:
   std::function<T()> retriever_;
 };
 
+template <typename T, typename FuncT1, typename FuncT2>
+SettingsValueInterfacePtr makeSetting(const QString& name, ReadConverter<T> readConverter,
+  FuncT1 postRead, FuncT2 retriever)
+{
+  return SettingsValueInterfacePtr(new SettingsValue<T>(name, readConverter, postRead, retriever));
+}
+
+namespace
+{
+  ReadConverter<int> toInt = [](const QVariant& qv) { return qv.toInt(); };
+  ReadConverter<bool> toBool = [](const QVariant& qv) { return qv.toBool(); };
+}
+
+#define prefs Preferences::Instance()
+
 void SCIRunMainWindow::readSettings()
 {
-  auto& prefs = Preferences::Instance();
   QSettings settings;
-
-  auto toInt = [](const QVariant& qv) { return qv.toInt(); };
 
   settingsValues_ =
   {
-    SettingsValueInterfacePtr(new SettingsValue<int>("connectionPipeType", toInt,
+    makeSetting("connectionPipeType", toInt,
       [this](int p) { setConnectionPipelineType(p); },
-      [this]() { return networkEditor_->connectionPipelineType(); }))
+      [this]() { return networkEditor_->connectionPipelineType(); }),
+    makeSetting("defaultNotePositionIndex", toInt,
+      [this](int pos) { prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(pos); },
+      [this]() { return prefsWindow_->defaultNotePositionComboBox_->currentIndex(); }),
+    makeSetting(qname(prefs.modulesSnapToGrid), toBool,
+      [this](bool b) { prefs.modulesSnapToGrid.setValue(b); prefsWindow_->modulesSnapToCheckBox_->setChecked(b); },
+      []() { return prefs.modulesSnapToGrid.val(); }),
+    makeSetting(qname(prefs.highlightPorts), toBool,
+      [this](bool b) { prefs.highlightPorts.setValue(b); prefsWindow_->portSizeEffectsCheckBox_->setChecked(b); },
+      []() { return prefs.highlightPorts.val(); }),
+    makeSetting(qname(prefs.modulesAreDockable), toBool,
+      [this](bool b) { prefs.modulesAreDockable.setValueWithSignal(b); prefsWindow_->dockableModulesCheckBox_->setChecked(b); },
+      []() { return prefs.modulesAreDockable.val(); }),
+    makeSetting(qname(prefs.autoNotes), toBool,
+      [this](bool b) { prefs.autoNotes.setValue(b); prefsWindow_->autoModuleNoteCheckbox_->setChecked(b); },
+      []() { return prefs.autoNotes.val(); }),
+    makeSetting("disableModuleErrorDialogs", toBool,
+      [this](bool b) { prefsWindow_->setDisableModuleErrorDialogs(b); },
+      [this]() { return prefsWindow_->disableModuleErrorDialogs(); }),
+    makeSetting("showModuleErrorInlineMessages", toBool,
+      [this](bool b) { prefsWindow_->setModuleErrorInlineMessages(b); },
+      []() { return prefs.showModuleErrorInlineMessages.val(); }),
+    makeSetting(qname(prefs.highDPIAdjustment), toBool,
+      [this](bool b) { prefsWindow_->setHighDPIAdjustment(b);
+                      if (b) networkEditor_->setHighResolutionExpandFactor(); },
+      []() { return prefs.highDPIAdjustment.val(); }),
+    makeSetting("saveBeforeExecute", toBool,
+      [this](bool b) { prefsWindow_->setSaveBeforeExecute(b); },
+      [this]() { return prefsWindow_->saveBeforeExecute(); }),
+    makeSetting("newViewSceneMouseControls", toBool,
+      [](bool b) { prefs.useNewViewSceneMouseControls.setValue(b); },
+      []() { return prefs.useNewViewSceneMouseControls.val(); }),
+    makeSetting("invertMouseZoom", toBool,
+      [](bool b) { prefs.invertMouseZoom.setValue(b); },
+      []() { return prefs.invertMouseZoom.val(); }),
+    makeSetting("widgetSelectionCorrection", toBool,
+      [](bool b) { prefs.widgetSelectionCorrection.setValue(b); },
+      []() { return prefs.widgetSelectionCorrection.val(); }),
+    makeSetting("autoRotateViewerOnMouseRelease", toBool,
+      [](bool b) { prefs.autoRotateViewerOnMouseRelease.setValue(b); },
+      []() { return prefs.autoRotateViewerOnMouseRelease.val(); }),
+    makeSetting("forceGridBackground", toBool,
+      [this](bool b) { prefs.forceGridBackground.setValueWithSignal(b); prefsWindow_->forceGridBackgroundCheckBox_->setChecked(b);},
+      []() { return prefs.forceGridBackground.val(); }),
+    makeSetting("undoMaxItems", toInt,
+      [this](int p) { provenanceWindow_->setMaxItems(p); },
+      [this]() { return provenanceWindow_->maxItems(); }),
+    makeSetting("maxCores", toInt,
+      [this](int p) { prefsWindow_->maxCoresSpinBox_->setValue(p); },
+      [this]() { return prefsWindow_->maxCoresSpinBox_->value(); })
   };
 
   for (auto& setting : settingsValues_)
@@ -214,127 +275,6 @@ void SCIRunMainWindow::readSettings()
     .toStdString());
 
   //TODO: make a separate class for these keys, bad duplication.
-
-  const QString notePositionKey = "defaultNotePositionIndex";
-  if (settings.contains(notePositionKey))
-  {
-    int notePositionIndex = settings.value(notePositionKey).toInt();
-    prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
-    guiLogDebug("Setting read: default note position = {}", notePositionIndex);
-  }
-
-  const auto snapTo = qname(prefs.modulesSnapToGrid);
-  if (settings.contains(snapTo))
-  {
-    auto value = settings.value(snapTo).toBool();
-    prefs.modulesSnapToGrid.setValue(value);
-    prefsWindow_->modulesSnapToCheckBox_->setChecked(value);
-    guiLogDebug("Setting read: modules snap to grid = {}", prefs.modulesSnapToGrid);
-  }
-
-  const QString portHighlight = qname(prefs.highlightPorts);
-  if (settings.contains(portHighlight))
-  {
-    auto value = settings.value(portHighlight).toBool();
-    prefs.highlightPorts.setValue(value);
-    prefsWindow_->portSizeEffectsCheckBox_->setChecked(value);
-    guiLogDebug("Setting read: highlight ports on hover = {}", prefs.highlightPorts);
-  }
-
-  const QString dockable = qname(prefs.modulesAreDockable);
-  if (settings.contains(dockable))
-  {
-    auto value = settings.value(dockable).toBool();
-    prefs.modulesAreDockable.setValueWithSignal(value);
-    prefsWindow_->dockableModulesCheckBox_->setChecked(value);
-    guiLogDebug("Setting read: modules are dockable = {}", prefs.modulesAreDockable);
-  }
-
-  const QString autoNotes = qname(prefs.autoNotes);
-  if (settings.contains(autoNotes))
-  {
-    auto value = settings.value(autoNotes).toBool();
-    prefs.autoNotes.setValue(value);
-    prefsWindow_->autoModuleNoteCheckbox_->setChecked(value);
-    guiLogDebug("Setting read: automatic module notes = {}", prefs.autoNotes);
-  }
-
-  const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
-  if (settings.contains(disableModuleErrorDialogsKey))
-  {
-    bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    guiLogDebug("Setting read: disable module error dialogs = {}", disableModuleErrorDialogs);
-    prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
-  }
-
-  const QString showModuleErrorInlineMessagesKey = "showModuleErrorInlineMessages";
-  if (settings.contains(showModuleErrorInlineMessagesKey))
-  {
-    bool val = settings.value(showModuleErrorInlineMessagesKey).toBool();
-    guiLogDebug("Setting read: show module inline error = {}", val);
-    prefsWindow_->setModuleErrorInlineMessages(val);
-  }
-
-  {
-    const QString highDPIAdjustment = "highDPIAdjustment";
-    if (settings.contains(highDPIAdjustment))
-    {
-      bool val = settings.value(highDPIAdjustment).toBool();
-      guiLogDebug("Setting read: high DPI adjustment = {}", val);
-      prefsWindow_->setHighDPIAdjustment(val);
-      if (val)
-        networkEditor_->setHighResolutionExpandFactor();
-    }
-  }
-
-  const QString saveBeforeExecute = "saveBeforeExecute";
-  if (settings.contains(saveBeforeExecute))
-  {
-    bool mode = settings.value(saveBeforeExecute).toBool();
-    guiLogDebug("Setting read: save before execute = {}", mode);
-    prefsWindow_->setSaveBeforeExecute(mode);
-  }
-
-  const QString newViewSceneMouseControls = "newViewSceneMouseControls";
-  if (settings.contains(newViewSceneMouseControls))
-  {
-    bool mode = settings.value(newViewSceneMouseControls).toBool();
-    guiLogDebug("Setting read: newViewSceneMouseControls = {}", mode);
-    prefs.useNewViewSceneMouseControls.setValue(mode);
-  }
-
-  const QString invertMouseZoom = "invertMouseZoom";
-  if (settings.contains(invertMouseZoom))
-  {
-    bool mode = settings.value(invertMouseZoom).toBool();
-    guiLogDebug("Setting read: invertMouseZoom = {}", mode);
-    prefs.invertMouseZoom.setValue(mode);
-  }
-
-  const QString widgetSelectionCorrection = "widgetSelectionCorrection";
-  if (settings.contains(widgetSelectionCorrection))
-  {
-    bool mode = settings.value(widgetSelectionCorrection).toBool();
-    guiLogDebug("Setting read: widgetSelectionCorrection = {}", mode);
-    prefs.widgetSelectionCorrection.setValue(mode);
-  }
-
-  const QString autoRotateViewerOnMouseRelease = "autoRotateViewerOnMouseRelease";
-  if (settings.contains(autoRotateViewerOnMouseRelease))
-  {
-    bool mode = settings.value(autoRotateViewerOnMouseRelease).toBool();
-    guiLogDebug("Setting read: autoRotateViewerOnMouseRelease = {}", mode);
-    prefs.autoRotateViewerOnMouseRelease.setValue(mode);
-  }
-
-  const QString forceGridBackground = "forceGridBackground";
-  if (settings.contains(forceGridBackground))
-  {
-    bool mode = settings.value(forceGridBackground).toBool();
-    guiLogDebug("Setting read: forceGridBackground = {}", mode);
-    prefs.forceGridBackground.setValueWithSignal(mode);
-    prefsWindow_->forceGridBackgroundCheckBox_->setChecked(mode);
-  }
 
   const QString favoriteModules = "favoriteModules";
   if (settings.contains(favoriteModules))
@@ -382,8 +322,6 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(triggeredScripts))
   {
     auto scriptsMap = settings.value(triggeredScripts).toMap();
-    // guiLogDebug("Setting read: triggeredScripts = {}",
-    //  + QStringList(scriptsMap.keys()).join(";") + " -> " + valueListAsString(scriptsMap.values()).join(";"));
     triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
   }
 
@@ -426,22 +364,6 @@ void SCIRunMainWindow::readSettings()
     toolkitFiles_ = toolkits;
   }
 
-  const QString undoMaxItems = "undoMaxItems";
-  if (settings.contains(undoMaxItems))
-  {
-    auto max = settings.value(undoMaxItems).toInt();
-    guiLogDebug("Setting read: undoMaxItems = {}", max);
-    provenanceWindow_->setMaxItems(max);
-  }
-
-  const QString maxCores = "maxCores";
-  if (settings.contains(maxCores))
-  {
-    auto max = settings.value(maxCores).toInt();
-    guiLogDebug("Setting read: maxCores = {}", max);
-    prefsWindow_->maxCoresSpinBox_->setValue(max);
-  }
-
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -449,7 +371,6 @@ void SCIRunMainWindow::readSettings()
 void SCIRunMainWindow::writeSettings()
 {
   QSettings settings;
-  auto& prefs = Preferences::Instance();
 
   for (auto& setting : settingsValues_)
   {
@@ -460,21 +381,6 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
-  settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
-  settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
-  settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
-  settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
-  settings.setValue(qname(prefs.showModuleErrorInlineMessages), prefs.showModuleErrorInlineMessages.val());
-  settings.setValue(qname(prefs.highDPIAdjustment), prefs.highDPIAdjustment.val());
-  settings.setValue(qname(prefs.widgetSelectionCorrection), prefs.widgetSelectionCorrection.val());
-  settings.setValue(qname(prefs.autoRotateViewerOnMouseRelease), prefs.autoRotateViewerOnMouseRelease.val());
-  settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
-  settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
-  settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
-  settings.setValue("forceGridBackground", prefs.forceGridBackground.val());
-  settings.setValue("invertMouseZoom", prefs.invertMouseZoom.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
@@ -486,8 +392,6 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);
-  settings.setValue("undoMaxItems", provenanceWindow_->maxItems());
-  settings.setValue("maxCores", prefsWindow_->maxCoresSpinBox_->value());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());
