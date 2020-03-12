@@ -48,6 +48,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(forceGridBackgroundCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateForceGridBackground(int)));
   connect(viewerWidgetSelectionCorrectionCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateWidgetSelectionCorrection(int)));
   connect(autoRotateViewerOnMouseReleaseCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoRotateViewer(int)));
+  connect(moduleExecuteDownstreamOnlyCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleExecuteDownstream(int)));
 }
 
 void PreferencesWindow::updateWidgetSelectionCorrection(int state)
@@ -85,10 +86,33 @@ void PreferencesWindow::updateForceGridBackground(int state)
   SCIRun::Core::Preferences::Instance().forceGridBackground.setValueWithSignal(state != 0);
 }
 
+void PreferencesWindow::updateModuleExecuteDownstream(int state)
+{
+  SCIRun::Core::Preferences::Instance().moduleExecuteDownstreamOnly.setValue(state != 0);
+}
+
 void PreferencesWindow::setSaveBeforeExecute(bool mode)
 {
   updateSaveBeforeExecuteOption(mode ? 1 : 0);
   saveBeforeExecuteCheckBox_->setChecked(mode);
+}
+
+void PreferencesWindow::setModuleExecuteDownstreamOnly(bool mode)
+{
+  updateModuleExecuteDownstream(mode ? 1 : 0);
+  moduleExecuteDownstreamOnlyCheckBox_->setChecked(mode);
+}
+
+void PreferencesWindow::setAutoRotateViewerOnMouseRelease(bool mode)
+{
+  updateAutoRotateViewer(mode ? 1 : 0);
+  autoRotateViewerOnMouseReleaseCheckbox_->setChecked(mode);
+}
+
+void PreferencesWindow::setWidgetSelectionCorrection(bool mode)
+{
+  updateWidgetSelectionCorrection(mode ? 1 : 0);
+  viewerWidgetSelectionCorrectionCheckbox_->setChecked(mode);
 }
 
 void PreferencesWindow::setHighDPIAdjustment(bool highDPI)
