@@ -139,7 +139,7 @@ template <typename T>
 using ReadConverter = std::function<T(const QVariant&)>;
 
 template <typename T>
-struct StdStringifier
+struct Stringifier
 {
   std::string operator()(const T& t) const
   {
@@ -148,7 +148,7 @@ struct StdStringifier
 };
 
 template <>
-struct StdStringifier<bool>
+struct Stringifier<bool>
 {
   std::string operator()(const bool& t) const
   {
@@ -157,7 +157,7 @@ struct StdStringifier<bool>
 };
 
 template <>
-struct StdStringifier<QString>
+struct Stringifier<QString>
 {
   std::string operator()(const QString& t) const
   {
@@ -166,7 +166,7 @@ struct StdStringifier<QString>
 };
 
 template <>
-struct StdStringifier<QStringList>
+struct Stringifier<QStringList>
 {
   std::string operator()(const QStringList& t) const
   {
@@ -174,7 +174,34 @@ struct StdStringifier<QStringList>
   }
 };
 
-template <typename T, typename Stringifier = StdStringifier<T>>
+template <typename T>
+struct Stringifier<QList<T>>
+{
+  std::string operator()(const QList<T>& t) const
+  {
+    return "<list>";
+  }
+};
+
+template <>
+struct Stringifier<QByteArray>
+{
+  std::string operator()(const QByteArray& t) const
+  {
+    return "<byte array>";
+  }
+};
+
+template <>
+struct Stringifier<QMap<QString, QVariant>>
+{
+  std::string operator()(const QMap<QString, QVariant>& t) const
+  {
+    return "map [#items = " + std::to_string(t.size()) + "]";
+  }
+};
+
+template <typename T>
 class SettingsValue : public SettingsValueInterface
 {
 public:
@@ -210,7 +237,7 @@ private:
   ReadConverter<T> readConverter_;
   std::function<void(const T&)> postRead_;
   std::function<T()> retriever_;
-  Stringifier stringify_;
+  Stringifier<T> stringify_;
 };
 
 template <typename T, typename FuncT1, typename FuncT2>
@@ -226,14 +253,15 @@ namespace
   ReadConverter<bool> toBool = [](const QVariant& qv) { return qv.toBool(); };
   ReadConverter<QString> toString = [](const QVariant& qv) { return qv.toString(); };
   ReadConverter<QStringList> toStringList = [](const QVariant& qv) { return qv.toStringList(); };
+  ReadConverter<QMap<QString, QVariant>> toMap = [](const QVariant& qv) { return qv.toMap(); };
+  ReadConverter<QList<QVariant>> toList = [](const QVariant& qv) { return qv.toList(); };
+  ReadConverter<QByteArray> toByteArray = [](const QVariant& qv) { return qv.toByteArray(); };
 }
 
 #define prefs Preferences::Instance()
 
 void SCIRunMainWindow::readSettings()
 {
-  QSettings settings;
-
   settingsValues_ =
   {
     makeSetting("connectionPipeType", toInt,
@@ -291,6 +319,9 @@ void SCIRunMainWindow::readSettings()
     makeSetting("dataDirectory", toString,
       [this](const QString& s) { setDataDirectory(s); },
       []() { return QString::fromStdString(prefs.dataDirectory().string()); }),
+    makeSetting("networkDirectory", toString,
+      [this](const QString& s) { latestNetworkDirectory_.setPath(s); },
+      [this]() { return latestNetworkDirectory_.path(); }),
     makeSetting("favoriteModules", toStringList,
       [this](const QStringList& qsl) { favoriteModuleNames_ = qsl; },
       [this]() { return favoriteModuleNames_; }),
@@ -302,7 +333,34 @@ void SCIRunMainWindow::readSettings()
       [this]() { return tagManagerWindow_->getTagNames(); }),
     makeSetting("tagColors", toStringList,
       [this](const QStringList& qsl) { tagManagerWindow_->setTagColors(qsl.toVector()); },
-      [this]() { return tagManagerWindow_->getTagColors(); })
+      [this]() { return tagManagerWindow_->getTagColors(); }),
+    makeSetting("recentFiles", toStringList,
+      [this](const QStringList& qsl) { recentFiles_ = qsl; updateRecentFileActions(); },
+      [this]() { return recentFiles_; }),
+    makeSetting("toolkitFiles", toStringList,
+      [this](const QStringList& qsl) { toolkitFiles_ = qsl; },
+      [this]() { return toolkitFiles_; }),
+    makeSetting("triggeredScripts", toMap,
+      [this](const QMap<QString, QVariant>& qmap) { triggeredEventsWindow_->setScripts(toStrMap(qmap)); },
+      [this]() { return fromStrMap(triggeredEventsWindow_->scripts()); }),
+    makeSetting("triggeredScriptEnableFlags", toMap,
+      [this](const QMap<QString, QVariant>& qmap) { triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(qmap)); },
+      [this]() { return fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()); }),
+    makeSetting("savedSubnetworksNames", toMap,
+      [this](const QMap<QString, QVariant>& qmap) { savedSubnetworksNames_ = qmap; },
+      [this]() { return savedSubnetworksNames_; }),
+    makeSetting("savedSubnetworksXml", toMap,
+      [this](const QMap<QString, QVariant>& qmap) { savedSubnetworksXml_ = qmap; },
+      [this]() { return savedSubnetworksXml_; }),
+    makeSetting("macros", toList,
+      [this](const QList<QVariant>& ql) { macroEditor_->setScripts(toStrList(ql)); },
+      [this]() { return fromTypedList<QStringList>(macroEditor_->scripts()); }),
+    makeSetting("geometry", toByteArray,
+      [this](const QByteArray& ba) { restoreGeometry(ba); },
+      [this]() { return saveGeometry(); }),
+    makeSetting("windowState", toByteArray,
+      [this](const QByteArray& ba) { restoreState(ba); },
+      [this]() { return saveState(); })
   };
 
   for (auto& setting : settingsValues_)
@@ -311,95 +369,14 @@ void SCIRunMainWindow::readSettings()
     setting->postRead();
   }
 
-  //TODO: centralize all these values in Preferences singleton, together with keys as names.
   //TODO: extract QSettings logic into "PreferencesIO" class
   //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
-
-  latestNetworkDirectory_.setPath(settings.value("networkDirectory").toString());
-  guiLogDebug("Setting read: default network directory = {}", latestNetworkDirectory_.path().toStdString());
-  recentFiles_ = settings.value("recentFiles").toStringList();
-  updateRecentFileActions();
-  guiLogDebug("Setting read: recent network file list: \n\t{}",
-    QStringList(
-      QList<QString>::fromStdList(
-        std::list<QString>(
-          recentFiles_.begin(),
-          recentFiles_.begin() + std::min(recentFiles_.size(), 5))))
-    .join("\n\t")
-    .toStdString());
-
-  //TODO: make a separate class for these keys, bad duplication.
-
-  const QString triggeredScripts = "triggeredScripts";
-  if (settings.contains(triggeredScripts))
-  {
-    auto scriptsMap = settings.value(triggeredScripts).toMap();
-    triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
-  }
-
-  const QString triggeredScriptEnableFlags = "triggeredScriptEnableFlags";
-  if (settings.contains(triggeredScriptEnableFlags))
-  {
-    auto scriptsMap = settings.value(triggeredScriptEnableFlags).toMap();
-    guiLogDebug("Setting read: triggeredScriptEnableFlags = {} [size]", scriptsMap.size());
-    triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
-  }
-
-  const QString macros = "macros";
-  if (settings.contains(macros))
-  {
-    auto macrosList = settings.value(macros).toList();
-    macroEditor_->setScripts(toStrList(macrosList));
-  }
-
-  const QString savedSubnetworksNames = "savedSubnetworksNames";
-  if (settings.contains(savedSubnetworksNames))
-  {
-    auto subnetMap = settings.value(savedSubnetworksNames).toMap();
-    guiLogDebug("Setting read: savedSubnetworksNames = {} [size]", subnetMap.size());
-    savedSubnetworksNames_ = subnetMap;
-  }
-
-  const QString savedSubnetworksXml = "savedSubnetworksXml";
-  if (settings.contains(savedSubnetworksXml))
-  {
-    auto subnetMap = settings.value(savedSubnetworksXml).toMap();
-    guiLogDebug("Setting read: savedSubnetworksXml = {} [size]", subnetMap.size());
-    savedSubnetworksXml_ = subnetMap;
-  }
-
-  const QString toolkitFiles = "toolkitFiles";
-  if (settings.contains(toolkitFiles))
-  {
-    auto toolkits = settings.value(toolkitFiles).toStringList();
-    guiLogDebug("Setting read: toolkitFiles = {} [size]", toolkits.size());
-    toolkitFiles_ = toolkits;
-  }
-
-  restoreGeometry(settings.value("geometry").toByteArray());
-  restoreState(settings.value("windowState").toByteArray());
 }
 
 void SCIRunMainWindow::writeSettings()
 {
-  QSettings settings;
-
   for (auto& setting : settingsValues_)
   {
     setting->write();
   }
-
-  //TODO: centralize all these values in Preferences singleton, together with keys as names
-
-  settings.setValue("networkDirectory", latestNetworkDirectory_.path());
-  settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->scripts()));
-  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()));
-  settings.setValue("macros", fromTypedList<QStringList>(macroEditor_->scripts()));
-  settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
-  settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
-  settings.setValue("toolkitFiles", toolkitFiles_);
-
-  settings.setValue("geometry", saveGeometry());
-  settings.setValue("windowState", saveState());
 }
