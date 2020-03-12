@@ -88,7 +88,7 @@ void PreferencesWindow::updateForceGridBackground(int state)
 
 void PreferencesWindow::updateModuleExecuteDownstream(int state)
 {
-  SCIRun::Core::Preferences::Instance().moduleExecuteDownstreamOnly.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().moduleExecuteDownstreamOnly.setValueWithSignal(state != 0);
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)

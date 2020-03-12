@@ -81,6 +81,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
   Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
+  Preferences::Instance().moduleExecuteDownstreamOnly.connectValueChanged([this](bool value) { updateExecuteButtons(value); });
 
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
@@ -1989,6 +1990,11 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
   }
 
   tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
+}
+
+void NetworkEditor::updateExecuteButtons(bool downstream)
+{
+  adjustExecuteButtonsToDownstream(downstream);
 }
 
 QColor Gui::defaultTagColor(int tag)
