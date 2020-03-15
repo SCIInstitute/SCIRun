@@ -26,54 +26,27 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+#ifndef CORE_DATATYPES_METADATAOBJECT_H
+#define CORE_DATATYPES_METADATAOBJECT_H
 
-#include <vector>
-#include <Core/Utils/SmartPointers.h>
-#include <boost/optional.hpp>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <boost/make_shared.hpp>
-#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+  class SCISHARE MetadataObject : public Datatype
+  {
+  public:
+    explicit Metadata(const std::string& programData) : programData_(programData) {}
+    std::string program() const { return programData_; }
+    std::string dynamic_type_name() const override { return "MetadataObject"; }
+  protected:
+    std::string programData_;
+  };
 
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
-
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
-}}
-
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
-}
+}}}
 
 
 #endif
