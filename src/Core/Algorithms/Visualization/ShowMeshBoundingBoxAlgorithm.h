@@ -8,6 +8,9 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Visualization {
+  ALGORITHM_PARAMETER_DECL(XSize);
+  ALGORITHM_PARAMETER_DECL(YSize);
+  ALGORITHM_PARAMETER_DECL(ZSize);
   class SCISHARE ShowMeshBoundingBoxAlgorithm : public AlgorithmBase
   {
   public:

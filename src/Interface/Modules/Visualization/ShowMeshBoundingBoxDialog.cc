@@ -1,10 +1,11 @@
 #include <Interface/Modules/Visualization/ShowMeshBoundingBoxDialog.h>
+#include <Core/Algorithms/Visualization/ShowMeshBoundingBoxAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowMeshBoundingBoxDialog::ShowMeshBoundingBoxDialog(const std::string& name,
                                                      ModuleStateHandle state,
@@ -15,5 +16,7 @@ ShowMeshBoundingBoxDialog::ShowMeshBoundingBoxDialog(const std::string& name,
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  addRadioButtonGroupManager({ ascendButton_, descendButton_ }, Variables::Method);
+  addSpinBoxManager(xSpinBox_, Parameters::XSize);
+  addSpinBoxManager(ySpinBox_, Parameters::YSize);
+  addSpinBoxManager(zSpinBox_, Parameters::ZSize);
 }
