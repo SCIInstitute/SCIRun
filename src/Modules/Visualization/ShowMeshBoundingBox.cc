@@ -4,7 +4,7 @@
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ShowMeshBoundingBox, Visualization, SCIRun);
@@ -17,7 +17,9 @@ ShowMeshBoundingBox::ShowMeshBoundingBox() : GeometryGeneratingModule(staticInfo
 
 void ShowMeshBoundingBox::setStateDefaults()
 {
-  // setStateIntFromAlgo(Variables::Method);
+  setStateIntFromAlgo(Parameters::XSize);
+  setStateIntFromAlgo(Parameters::YSize);
+  setStateIntFromAlgo(Parameters::ZSize);
 }
 
 void
@@ -26,7 +28,10 @@ ShowMeshBoundingBox::execute()
   auto input = getRequiredInput(InputField);
   if (needToExecute())
   {
-    // setAlgoIntFromState(Variables::Method);
+    setAlgoIntFromState(Parameters::XSize);
+    setAlgoIntFromState(Parameters::YSize);
+    setAlgoIntFromState(Parameters::ZSize);
+
     auto output = algo().run(withInputData((InputField, input)));
     sendOutputFromAlgorithm(OutputGeom, output);
   }
