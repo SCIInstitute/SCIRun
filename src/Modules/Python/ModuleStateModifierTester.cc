@@ -92,14 +92,13 @@ void ModuleStateModifierTester::setStateDefaults()
 void ModuleStateModifierTester::execute()
 {
 #ifdef BUILD_WITH_PYTHON
-  warning(
-    "TODO"
-  );
+
   // auto matrices = getOptionalDynamicInputs(InputMatrix);
   // auto fields = getOptionalDynamicInputs(InputField);
   // auto strings = getOptionalDynamicInputs(InputString);
   if (needToExecute())
   {
+    remark(get_state()->getValue(Parameters::StateModifyingCode).toString());
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

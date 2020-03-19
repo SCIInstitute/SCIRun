@@ -78,6 +78,7 @@ namespace Gui {
         << new QAction("Replace With...", parent)
         //<< disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
+        << new QAction("Toggle Programmable Input Port", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
         << new QAction("Destroy", parent));
@@ -551,6 +552,7 @@ void ModuleWidget::setupModuleActions()
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
+  connect(actionsMenu_->getAction("Toggle Programmable Input Port"), &QAction::triggered, this, &ModuleWidget::toggleProgrammableInputPort);
   if (isViewScene_
     || theModule_->hasDynamicPorts()  //TODO: buggy combination, will disable for now. Fix is #1035
     || theModule_->id().name_ == "Subnet")
@@ -1608,6 +1610,27 @@ void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
   connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
   closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
   ports().setSceneFunc([proxy]() { return proxy->scene(); });
+}
+
+void ModuleWidget::toggleProgrammableInputPort()
+{
+  if (programmablePortEnabled_)
+    removeProgrammableInputPort();
+  else
+    addProgrammableInputPort();
+  programmablePortEnabled_ = !programmablePortEnabled_;
+}
+
+void ModuleWidget::addProgrammableInputPort()
+{
+  qDebug() << __FUNCTION__ << name_;
+  theModule_->setProgrammableInputPortEnabled(true);
+}
+
+void ModuleWidget::removeProgrammableInputPort()
+{
+  qDebug() << __FUNCTION__ << name_;
+  theModule_->setProgrammableInputPortEnabled(false);
 }
 
 void SubnetWidget::postLoadAction()

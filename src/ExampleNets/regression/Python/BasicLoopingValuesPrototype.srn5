@@ -461,13 +461,10 @@
 									<name>StateModifyingCode</name>
 									<value>
 										<which>2</which>
-										<value># Insert your Python code here. The SCIRun API package is automatically imported.
-
-def updateModule(id):
+										<value>def updateModule(id):
 	newX = scirun_get_module_state(id, &quot;XLocation&quot;) + 0.1
 	scirun_set_module_state(id, &quot;XLocation&quot;, newX)
-	#scirun_set_module_state(id, &quot;YLocation&quot;, params[1].item())
-	#scirun_set_module_state(id, &quot;ZLocation&quot;, params[2].item())</value>
+</value>
 									</value>
 								</second>
 							</item>
@@ -1138,28 +1135,28 @@ def updateModule(id):
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>1.75979644060134888e-01</value>
+													<value>2.60539621114730835e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>2.18819871544837952e-01</value>
+													<value>1.19456373155117035e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>9.59537863731384277e-01</value>
+													<value>9.45466578006744385e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-2.08803564310073853e-02</value>
+													<value>-1.54732614755630493e-01</value>
 												</value>
 											</item>
 										</value>
@@ -1618,7 +1615,7 @@ def updateModule(id):
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1896,7 +1893,7 @@ def updateModule(id):
 		<item>
 			<first>ModuleStateModifierTester:1</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
+				<first>-1.52000000000000000e+02</first>
 				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
@@ -1939,7 +1936,7 @@ def updateModule(id):
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>

@@ -1111,6 +1111,14 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
   }
 }
 
+void Module::setProgrammableInputPortEnabled(bool enable)
+{
+  if (enable)
+  {
+    //iports_->add_input_port()
+  }
+}
+
 std::string Module::helpPageUrl() const
 {
   auto url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:"

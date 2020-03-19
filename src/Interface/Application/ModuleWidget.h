@@ -247,6 +247,7 @@ private Q_SLOTS:
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled, int index);
   void showReplaceWithWidget();
+  void toggleProgrammableInputPort();
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;
@@ -255,7 +256,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;
   int previousPageIndex_ {0};
   QDialog* replaceWithDialog_{ nullptr };
@@ -307,6 +308,8 @@ private:
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
+  void addProgrammableInputPort();
+  void removeProgrammableInputPort();
 
   boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;

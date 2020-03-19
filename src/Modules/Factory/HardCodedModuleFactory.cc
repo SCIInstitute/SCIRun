@@ -126,6 +126,7 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
   {
     builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
+  builder.add_input_port(Port::ConstructionParams(PortId{ 1000, "PreexecuteCode" }, "MetadataObject", false));
   for (const auto& output : desc.output_ports_)
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));

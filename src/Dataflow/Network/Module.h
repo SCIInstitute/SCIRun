@@ -131,6 +131,7 @@ namespace Networks {
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
+    void setProgrammableInputPortEnabled(bool enable) override final;
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
