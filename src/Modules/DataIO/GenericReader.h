@@ -98,6 +98,7 @@ void GenericReader<HType, PortTag>::setStateDefaults()
   auto state = get_state();
   state->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
   state->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  state->setValue(SCIRun::Core::Algorithms::Variables::GuiFileTypeName, std::string());
   state->setValue(SCIRun::Core::Algorithms::Variables::ScriptEnvironmentVariable, std::string());
 }
 

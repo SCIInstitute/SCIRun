@@ -67,7 +67,7 @@ WriteField::WriteField()
 
   FieldIEPluginManager mgr;
   auto types = makeGuiTypesListForExport(mgr);
-  get_state()->setValue(Variables::FileTypeList, types);
+  get_state()->setTransientValue(Variables::FileTypeList, types);
 }
 
 bool WriteField::call_exporter(const std::string& filename)
