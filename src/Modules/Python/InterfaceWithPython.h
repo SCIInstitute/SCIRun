@@ -91,6 +91,9 @@ namespace SCIRun
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
+        #ifndef BUILD_WITH_PYTHON
+          DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+        #endif
       private:
         static Core::Thread::Mutex lock_;
         void runTopLevelCode() const;

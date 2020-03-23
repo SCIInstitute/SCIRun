@@ -55,6 +55,9 @@ public:
   void setModuleErrorInlineMessages(bool showInlineErrors);
 
   void setHighDPIAdjustment(bool highDPI);
+  void setModuleExecuteDownstreamOnly(bool mode);
+  void setAutoRotateViewerOnMouseRelease(bool mode);
+  void setWidgetSelectionCorrection(bool mode);
 
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
@@ -65,6 +68,7 @@ public Q_SLOTS:
   void updateForceGridBackground(int state);
   void updateWidgetSelectionCorrection(int state);
   void updateAutoRotateViewer(int state);
+  void updateModuleExecuteDownstream(int state);
 
 protected:
   void hideEvent(QHideEvent * event) override;

@@ -93,11 +93,6 @@ TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
   EXPECT_CALL(*dummyOutputPort, detach(&c));
 }
 
-std::ostream& operator<<(std::ostream& o, const ConnectionDescription& desc)
-{
-  return o << ConnectionId::create(desc).id_;
-}
-
 TEST(ConnectionIdTests, CanParseConnectionIdString)
 {
   ConnectionDescription desc(

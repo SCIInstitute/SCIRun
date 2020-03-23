@@ -57,7 +57,7 @@ ALGORITHM_PARAMETER_DEF(Fields, BuildMapping);
 
 ClipMeshBySelectionAlgo::ClipMeshBySelectionAlgo()
 {
-  addOption(Parameters::ClipMethod, "One Node", "Element Center|One Node|Most Nodes|All Nodes");
+  addOption(Parameters::ClipMethod, "Element Center", "Element Center|One Node|Most Nodes|All Nodes");
   addParameter(Parameters::BuildMapping, true);
 }
 

@@ -2215,7 +2215,7 @@ void ViewSceneDialog::sendBugReport()
   QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
   QString gpuInfo = "GPU: " % gpuVersion % "\n";
 
-#ifndef TRAVIS_BUILD // disable for older Qt 5 versions
+#ifndef OLDER_QT_SUPPORT_NEEDED // disable for older Qt 5 versions
   QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
   QString glInfo = "GL Version: " % glVersion % "\n";
   QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";

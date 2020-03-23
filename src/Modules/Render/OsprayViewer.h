@@ -100,6 +100,10 @@ namespace Render {
 
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
+  #ifndef WITH_OSPRAY
+    DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+  #endif
+
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
