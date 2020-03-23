@@ -62,9 +62,13 @@ namespace SCIRun {
       public:
         InterfaceWithTetGen();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        void execute() override;
+        void setStateDefaults() override;
+        bool hasDynamicPorts() const override { return true; }
+
+        #ifndef WITH_TETGEN
+          DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+        #endif
 
         INPUT_PORT(0, Main, Field);
         INPUT_PORT(1, Points, Field);

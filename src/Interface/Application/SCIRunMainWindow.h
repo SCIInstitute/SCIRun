@@ -60,6 +60,8 @@ class FileDownloader;
 class TriggeredEventsWindow;
 class MacroEditor;
 class NetworkEditorBuilder;
+class SettingsValueInterface;
+using SettingsValueInterfacePtr = std::shared_ptr<SettingsValueInterface>;
 
 class MainWindowCommands
 {
@@ -208,6 +210,7 @@ private:
   int dockSpace_{0};
   class DockManager* dockManager_;
   static const QString saveFragmentData_;
+  std::vector<SettingsValueInterfacePtr> settingsValues_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();

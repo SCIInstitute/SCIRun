@@ -374,13 +374,6 @@ ENDIF()
 # ENDIF()
 
 ########################################################################
-# Configure tetgen module build
-
-IF(WITH_TETGEN)
-  ADD_DEFINITIONS(-DWITH_TETGEN)
-ENDIF()
-
-########################################################################
 # Configure ospray module build-- TODO: convert into real external
 
 IF(WITH_OSPRAY)
@@ -524,8 +517,8 @@ IF(NOT BUILD_HEADLESS)
 
 ENDIF()
 
-IF(TRAVIS_BUILD)
-  ADD_DEFINITIONS(-DTRAVIS_BUILD)
+IF(TRAVIS_BUILD OR Qt5Widgets_VERSION VERSION_LESS 5.13.0)
+  ADD_DEFINITIONS(-DOLDER_QT_SUPPORT_NEEDED)
 ENDIF()
 
 ########################################################################
@@ -747,7 +740,7 @@ SET_PROPERTY(TARGET Core_XMLUtil         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
-SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
+#SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Importer         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serialization")

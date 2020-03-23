@@ -134,6 +134,7 @@ SET(Interface_Modules_Fields_HEADERS
   CreateImageDialog.h
   GetCentroidsFromMeshDialog.h
   CalculateMeshNodesDialog.h
+  InterfaceWithTetGenDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -188,16 +189,8 @@ SET(Interface_Modules_Fields_SOURCES
   CreateImageDialog.cc
   GetCentroidsFromMeshDialog.cc
   CalculateMeshNodesDialog.cc
+  InterfaceWithTetGenDialog.cc
 )
-
-IF(WITH_TETGEN)
-  SET(Interface_Modules_Fields_SOURCES ${Interface_Modules_Fields_SOURCES}
-    InterfaceWithTetGenDialog.cc
-  )
-  SET(Interface_Modules_Fields_HEADERS ${Interface_Modules_Fields_HEADERS}
-    InterfaceWithTetGenDialog.h
-  )
-ENDIF(WITH_TETGEN)
 
 QT_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS "${Interface_Modules_Fields_FORMS}")
 QT_WRAP_CPP(Interface_Modules_Fields_HEADERS_MOC "${Interface_Modules_Fields_HEADERS}")

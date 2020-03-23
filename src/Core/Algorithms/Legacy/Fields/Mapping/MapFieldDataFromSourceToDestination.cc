@@ -60,7 +60,7 @@ MapFieldDataFromSourceToDestinationAlgo::MapFieldDataFromSourceToDestinationAlgo
   using namespace Parameters;
   addParameter(DefaultValue, 0.0);
   addParameter(MaxDistance, -1.0);
-  addOption(MappingMethod, "interpolateddata", "interpolateddata|closestdata|singledestination");
+  addOption(MappingMethod, "closestdata", "interpolateddata|closestdata|singledestination");
 }
 
 namespace detail
@@ -567,7 +567,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   algoP->maxdist_ = maxdist;
   algoP->algo_ = this;
 
-  auto task_i = [&algoP,this](int i) { algoP->parallel(i); };
+  auto task_i = [&algoP](int i) { algoP->parallel(i); };
   Parallel::RunTasks(task_i, np);
 
   CopyProperties(*destination, *output);
