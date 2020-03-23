@@ -71,10 +71,13 @@ void TagManagerWindow::editTagColor()
 {
   auto tag = sender()->property(tagIndexProperty).toInt();
   auto color = QString::fromStdString(tagColors_[tag]);
-  auto newColor = QColorDialog::getColor(color, this, "Choose tag " + QString::number(tag) + " color");
-  auto colorStr = colorToString(newColor);
-  qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
-  tagColors_[tag] = colorStr.toStdString();
+  auto newColor = QColorDialog::getColor(stringToColor(color), this, "Choose tag " + QString::number(tag) + " color");
+  if (newColor.isValid())
+  {
+    auto colorStr = colorToString(newColor);
+    qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
+    tagColors_[tag] = colorStr.toStdString();
+  }
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)

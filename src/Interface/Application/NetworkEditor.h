@@ -262,6 +262,7 @@ namespace Gui {
     void setBackground(const QBrush& brush);
     QBrush background() const;
     void updateBackground(bool forceGrid);
+    void updateExecuteButtons(bool downstream);
 
     int connectionPipelineType() const;
 

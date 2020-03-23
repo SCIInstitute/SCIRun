@@ -88,6 +88,7 @@ namespace SCIRun
       BooleanVariable highDPIAdjustment;
       BooleanVariable widgetSelectionCorrection;
       BooleanVariable autoRotateViewerOnMouseRelease;
+      TrackedVariable<BooleanVariable> moduleExecuteDownstreamOnly;
       TrackedVariable<BooleanVariable> forceGridBackground;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;

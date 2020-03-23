@@ -53,9 +53,7 @@
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
-#ifdef WITH_TETGEN
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
-#endif
 #include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
@@ -155,9 +153,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
-  #ifdef WITH_TETGEN
   addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
-  #endif
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");

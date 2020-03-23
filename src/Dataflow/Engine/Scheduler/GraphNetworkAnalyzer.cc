@@ -28,7 +28,8 @@
 
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/Connection.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Core/Logging/Log.h>
 
@@ -137,6 +138,34 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   return componentMap;
 }
 
+std::vector<ModuleId> NetworkGraphAnalyzer::downstreamModules(const ModuleId& mid) const
+{
+  std::vector<ModuleId> downstream {mid};
+  fillDownstreamModules(mid, downstream);
+  return downstream;
+}
+
+void NetworkGraphAnalyzer::fillDownstreamModules(const ModuleId& mid, std::vector<ModuleId>& downstream) const
+{
+  auto module = network_.lookupModule(mid);
+  if (!module)
+    return;
+
+  for (const auto& output : module->outputPorts())
+  {
+    for (size_t i = 0; i < output->nconnections(); ++i)
+    {
+      auto c = output->connection(i);
+      if (!c->disabled())
+      {
+        auto down = c->iport_->getUnderlyingModuleId();
+        downstream.push_back(down);
+        fillDownstreamModules(down, downstream);
+      }
+    }
+  }
+}
+
 namespace SCIRun
 {
   namespace Dataflow
@@ -146,19 +175,20 @@ namespace SCIRun
       class ExecuteSingleModuleImpl
       {
       public:
-        ParallelModuleExecutionOrder order_;
-        bool isDownstreamFrom(const ModuleId& toCheckId, const ModuleId& rootId) const
+        std::vector<ModuleId> downstream_;
+        bool isDownstreamFromRoot(const ModuleId& toCheckId) const
         {
-          return order_.groupOf(toCheckId) >= order_.groupOf(rootId);
+          return std::find(downstream_.begin(), downstream_.end(), toCheckId) != downstream_.end();
         }
       };
     }
   }
 }
 
-ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
-  const SCIRun::Dataflow::Networks::NetworkInterface& network,
-  bool executeUpstream) : module_(mod), network_(network), executeUpstream_(executeUpstream)
+ExecuteSingleModule::ExecuteSingleModule(ModuleHandle mod,
+  const NetworkInterface& network,
+  bool executeUpstream) : module_(mod), //network_(network),
+  executeUpstream_(executeUpstream)
 {
   //TODO: composite with which filter?
   NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
@@ -167,13 +197,12 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
   if (!executeUpstream_)
   {
     orderImpl_.reset(new ExecuteSingleModuleImpl);
-    auto all = boost::lambda::constant(true);
-    BoostGraphParallelScheduler scheduleAll(all);
-    orderImpl_->order_ = scheduleAll.schedule(network_);
+    analyze.computeExecutionOrder();
+    orderImpl_->downstream_ = analyze.downstreamModules(module_->id());
   }
 }
 
-bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
+bool ExecuteSingleModule::operator()(ModuleHandle mod) const
 {
   auto toCheckId = mod->id();
   auto modIdIter = components_.find(toCheckId);
@@ -196,6 +225,6 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
   {
     // should execute if in same connected component, and downstream only
     return modIdIter->second == rootIdIter->second
-      && orderImpl_->isDownstreamFrom(toCheckId, rootId);
+      && orderImpl_->isDownstreamFromRoot(toCheckId);
   }
 }
