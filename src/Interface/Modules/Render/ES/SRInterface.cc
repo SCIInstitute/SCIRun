@@ -632,6 +632,10 @@ void SRInterface::runGCOnNextExecution()
       return nullptr;
     }
 
+namespace SCIRun
+{
+  namespace Render
+  {
     template <>
     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const TranslateParameters& p)
     {
@@ -649,7 +653,8 @@ void SRInterface::runGCOnNextExecution()
     {
       return boost::make_shared<ObjectRotationCalculator>(brop_, p);
     }
-
+  }
+}
     void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
     {
       doPostSelectSetup(x, y, depth);

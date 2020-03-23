@@ -130,6 +130,7 @@ namespace Networks {
     const MetadataMap& metadata() const override final;
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
+    bool isImplementationDisabled() const override { return false; }
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();

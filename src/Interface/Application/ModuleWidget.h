@@ -173,6 +173,8 @@ public:
   void collapsePinnedDialog();
 
   static double highResolutionExpandFactor_;
+  static QString downstreamOnlyIcon;
+  static QString allIcon;
 
   void setupPortSceneCollaborator(QGraphicsProxyWidget* proxy);
 
@@ -308,6 +310,7 @@ private:
 
   boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
+  QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;
 };

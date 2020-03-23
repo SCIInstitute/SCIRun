@@ -48,12 +48,6 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
   connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchParentheses()));
 }
 
-#ifdef TRAVIS_BUILD // remove when Travis linux build has newer Qt 5 version
-#define WIDTH_FUNC width
-#else
-#define WIDTH_FUNC horizontalAdvance
-#endif
-
 int CodeEditor::lineNumberAreaWidth()
 {
   int digits = 1;

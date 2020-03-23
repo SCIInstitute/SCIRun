@@ -138,6 +138,17 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   module_->setupPortSceneCollaborator(this);
 
+  if (module_->getModule()->isImplementationDisabled())
+  {
+    setOpacity(0.5);
+    auto colorize = new QGraphicsColorizeEffect;
+    colorize->setColor(QColor(150,0,0));
+    previousEffect_ = colorize;
+    setGraphicsEffect(previousEffect_);
+    QMessageBox::warning(nullptr, "Disabled module",
+      tr("Module %1 is disabled; you might need a different build of SCIRun.").arg(QString::fromStdString(module_->getModuleId())));
+  }
+
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << "ctor" << __FILE__ << __LINE__ << pos() << scenePos();
 #endif
@@ -687,6 +698,23 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
     dropShadow->setColor(Qt::darkGray);
     dropShadow->setOffset(5, 5);
     dropShadow->setBlurRadius(30);
+    {
+      auto prev = graphicsEffect();
+      if (auto blur = qobject_cast<QGraphicsBlurEffect*>(prev))
+      {
+        auto newBlur = new QGraphicsBlurEffect;
+        newBlur->setBlurRadius(blur->blurRadius());
+        previousEffect_ = newBlur;
+      }
+      else if (auto colorize = qobject_cast<QGraphicsColorizeEffect*>(prev))
+      {
+        auto newColorize = new QGraphicsColorizeEffect;
+        newColorize->setColor(colorize->color());
+        previousEffect_ = newColorize;
+      }
+      else
+        previousEffect_ = nullptr;
+    }
     setGraphicsEffect(dropShadow);
   }
 
@@ -724,7 +752,7 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
     pos().x(), pos().y(), scenePos().x(), scenePos().y());
 #endif
 
-  setGraphicsEffect(nullptr);
+  setGraphicsEffect(previousEffect_);
 
 #ifdef MODULE_POSITION_LOGGING
   logCritical("{} module {} hoverLeave at proxy pos {},{} scenePos {},{}", __LINE__,

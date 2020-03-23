@@ -81,6 +81,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
   Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
+  Preferences::Instance().moduleExecuteDownstreamOnly.connectValueChanged([this](bool value) { updateExecuteButtons(value); });
 
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
@@ -1991,6 +1992,11 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
   tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
 }
 
+void NetworkEditor::updateExecuteButtons(bool downstream)
+{
+  adjustExecuteButtonsToDownstream(downstream);
+}
+
 QColor Gui::defaultTagColor(int tag)
 {
   switch (tag)
@@ -2023,6 +2029,17 @@ QColor Gui::defaultTagColor(int tag)
 QString Gui::colorToString(const QColor& color)
 {
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+}
+
+QColor Gui::stringToColor(const QString& s)
+{
+  static QRegularExpression re("rgb\\((\\d+), (\\d+), (\\d+)\\)");
+  auto match = re.match(s);
+  if (match.hasMatch())
+  {
+    return QColor(match.captured(1).toInt(), match.captured(2).toInt(), match.captured(3).toInt());
+  }
+  return {};
 }
 
 QGraphicsEffect* Gui::blurEffect(double radius)
@@ -2222,11 +2239,7 @@ void NetworkEditor::drawTagGroups()
       label->setData(TagTextKey, tagNum);
       static const QFontMetrics fm(labelFont);
 
-      #ifdef TRAVIS_BUILD // remove when Travis linux build has newer Qt 5 version
-      auto textWidthInPixels = fm.width(label->text());
-      #else
-      auto textWidthInPixels = fm.horizontalAdvance(label->text());
-      #endif
+      auto textWidthInPixels = fm.WIDTH_FUNC(label->text());
       label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
     }
   }
