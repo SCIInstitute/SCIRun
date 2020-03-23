@@ -53,6 +53,7 @@ namespace Gui
   using TagNameFunc = std::function<QString(int)>;
 
   QString colorToString(const QColor& color);
+  QColor stringToColor(const QString& s);
 
   QGraphicsEffect* blurEffect(double radius = 2);
 

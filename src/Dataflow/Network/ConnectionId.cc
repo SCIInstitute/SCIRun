@@ -82,6 +82,11 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Conn
   return o << cid.id_;
 }
 
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ConnectionDescription& cd)
+{
+  return o << ConnectionId::create(cd);
+}
+
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {
   std::ostringstream cid;

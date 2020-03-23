@@ -133,7 +133,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom active");
-    networkEditor_->adjustExecuteButtonsToDownstream(true);
+    networkEditor_->adjustExecuteButtonsToDownstream(!Preferences::Instance().moduleExecuteDownstreamOnly);
 	}
   else if (event->key() == MetadataShiftKey)
   {
@@ -217,7 +217,7 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom inactive", 1000);
-    networkEditor_->adjustExecuteButtonsToDownstream(false);
+    networkEditor_->adjustExecuteButtonsToDownstream(Preferences::Instance().moduleExecuteDownstreamOnly);
 	}
   else if (event->key() == MetadataShiftKey)
   {

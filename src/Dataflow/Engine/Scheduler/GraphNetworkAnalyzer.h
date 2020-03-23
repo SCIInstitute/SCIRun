@@ -66,8 +66,10 @@ namespace Engine {
     const NetworkGraph::DirectedGraph& graph();
     int moduleCount() const;
     NetworkGraph::ComponentMap connectedComponents();
+    std::vector<Networks::ModuleId> downstreamModules(const Networks::ModuleId& mid) const;
 
   private:
+    void fillDownstreamModules(const Networks::ModuleId& mid, std::vector<Networks::ModuleId>& downstream) const;
     const Networks::NetworkInterface& network_;
     Networks::ModuleFilter moduleFilter_;
 
