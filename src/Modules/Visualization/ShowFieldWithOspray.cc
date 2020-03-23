@@ -90,8 +90,6 @@ void ShowFieldWithOspray::execute()
       state->setValue(Parameters::ShowEdges,false);
     }
 
-
-
     auto output = algo().run(withInputData((Field, field)(ColorMapObject, optionalAlgoInput(colorMap))));
     sendOutputFromAlgorithm(SceneGraph, output);
   }

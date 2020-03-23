@@ -99,6 +99,7 @@ namespace SCIRun
       int stackDepth_;
       QSizeF originalSize_;
       QTimeLine* timeLine_;
+      QGraphicsEffect* previousEffect_{nullptr};
     };
 
     class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget

@@ -97,6 +97,7 @@ SET(Modules_Legacy_Fields_HEADERS
   SmoothVecFieldMedian.h
   CalculateMeshNodes.h
   GenerateElectrode.h
+  InterfaceWithTetGen.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -209,17 +210,17 @@ SET(Modules_Legacy_Fields_SRCS
   MapFieldDataFromNodeToElem.cc
   ExtractSimpleIsosurface.cc
   ReorderNormalCoherently.cc
+  InterfaceWithTetGen.cc  
 )
 
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
-    InterfaceWithTetGen.cc
     InterfaceWithTetGenImpl.cc
   )
   SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
-    InterfaceWithTetGen.h
     InterfaceWithTetGenImpl.h
   )
+  ADD_DEFINITIONS(-DWITH_TETGEN)
 ENDIF()
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
