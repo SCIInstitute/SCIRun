@@ -59,7 +59,7 @@ static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
 
 RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo()
 {
-  addParameter(Variables::Operator, 0);
+  addParameter(Variables::Operator, static_cast<int>(TransformType::AFFINE));
 }
 
 AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input) const
@@ -71,20 +71,20 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input
   FieldHandle return_field;
   DenseMatrixHandle transform;
 
-  auto op = get(Variables::Operator).toInt();
+  auto op = TransformType(get(Variables::Operator).toInt());
   switch (op)
   {
-  case 0:
-    transform=runM(input_field, corres1, corres2, return_field);
+  case TransformType::MORPH:
+    transform = runMorph(input_field, corres1, corres2, return_field);
     break;
-  case 1:
-    transform=runA(input_field, corres1, corres2, return_field);
+  case TransformType::AFFINE:
+    transform = runAffine(input_field, corres1, corres2, return_field);
     break;
-  case 2:
-    transform=runP(input_field, corres1, corres2, return_field);
+  case TransformType::RIGID:
+    transform = runRigid_P(input_field, corres1, corres2, return_field);
     break;
-  case 3:
-    transform=runN(input_field, corres1, corres2, return_field);
+  case TransformType::NONE:
+    transform = runNone(input_field, corres1, corres2, return_field);
     break;
   }
 
@@ -96,7 +96,7 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input
   return output;
 }
 
-DenseMatrixHandle RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)  const
+DenseMatrixHandle RegisterWithCorrespondencesAlgo::runMorph(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)  const
 {
   double sumx2;
   double sumy2;
@@ -371,9 +371,8 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runM(FieldHandle input, Field
   return transform;
 }
 
-DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+DenseMatrixHandle RegisterWithCorrespondencesAlgo::runAffine(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
-  //std::cout << "runA" << std::endl;
   double sumx2;
   double sumy2;
   double sumz2;
@@ -641,9 +640,8 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
 }
 
 
-DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+DenseMatrixHandle RegisterWithCorrespondencesAlgo::runRigid_P(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
-    //std::cout << "runA" << std::endl;
     double sumx2;
     double sumy2;
     double sumz2;
@@ -939,7 +937,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
 }
 
 
-DenseMatrixHandle RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+DenseMatrixHandle RegisterWithCorrespondencesAlgo::runNone(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
   if (!input)
   {
@@ -1089,6 +1087,6 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
 }
 
 
-AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences1("Correspondences1");
-AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences2("Correspondences2");
-AlgorithmOutputName RegisterWithCorrespondencesAlgo::TransformMatrix("TransformMatrix");
+const AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences1("Correspondences1");
+const AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences2("Correspondences2");
+const AlgorithmOutputName RegisterWithCorrespondencesAlgo::TransformMatrix("TransformMatrix");

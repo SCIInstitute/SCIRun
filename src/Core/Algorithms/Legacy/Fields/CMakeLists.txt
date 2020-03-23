@@ -237,14 +237,6 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Algorithms_Math
 )
 
-IF(FALSE)
-  IF(WITH_TETGEN)
-    TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
-      ${TETGEN_LIBRARY}
-    )
-  ENDIF()
-ENDIF()
-
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)

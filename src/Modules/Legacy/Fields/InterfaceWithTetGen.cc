@@ -27,7 +27,9 @@
 
 
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
+#ifdef WITH_TETGEN
 #include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
+#endif
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -85,6 +87,7 @@ void InterfaceWithTetGen::setStateDefaults()
 
 void InterfaceWithTetGen::execute()
 {
+#ifdef WITH_TETGEN
   auto first_surface = getRequiredInput(Main);
   auto rest = getOptionalDynamicInputs(Regions);
   std::deque<FieldHandle> surfaces(rest.begin(), rest.end());
@@ -116,4 +119,7 @@ void InterfaceWithTetGen::execute()
     auto result = impl.runImpl(surfaces, points.get_value_or(nullptr), region_attribs.get_value_or(nullptr));
     sendOutput(TetVol, result);
   }
+#else
+  error("This module needs the build flag WITH_TETGEN enabled in order to work.");
+#endif
 }

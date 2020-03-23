@@ -207,6 +207,8 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
     shownName = strippedName(currentFile_);
     latestNetworkDirectory_ = QFileInfo(currentFile_).dir();
     recentFiles_.removeAll(currentFile_);
+    while (recentFiles_.size() > MaxRecentFiles - 1)
+      recentFiles_.removeLast();
     recentFiles_.prepend(currentFile_);
     updateRecentFileActions();
   }
