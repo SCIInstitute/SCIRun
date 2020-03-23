@@ -72,8 +72,8 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
-  connect(customColorButton0_, SIGNAL(clicked()), this, SLOT(selectCustomColor0()));
-  connect(customColorButton1_, SIGNAL(clicked()), this, SLOT(selectCustomColor1()));
+  connect(customColorButton0_, SIGNAL(clicked()), this, SLOT(selectCustomColorMin()));
+  connect(customColorButton1_, SIGNAL(clicked()), this, SLOT(selectCustomColorMax()));
 
   customColors_[0] = colorFromState(Parameters::CustomColor0);
   customColors_[1] = colorFromState(Parameters::CustomColor1);
@@ -99,7 +99,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
 }
 
-void CreateStandardColorMapDialog::selectCustomColor0()
+void CreateStandardColorMapDialog::selectCustomColorMin()
 {
   auto newColor = QColorDialog::getColor(customColors_[0], this, "Choose color");
   if (newColor.isValid()) customColors_[0] = newColor;
@@ -108,7 +108,7 @@ void CreateStandardColorMapDialog::selectCustomColor0()
   updateColorMapPreview();
 }
 
-void CreateStandardColorMapDialog::selectCustomColor1()
+void CreateStandardColorMapDialog::selectCustomColorMax()
 {
   auto newColor = QColorDialog::getColor(customColors_[1], this, "Choose color");
   if (newColor.isValid()) customColors_[1] = newColor;
@@ -141,13 +141,22 @@ static ColorRGB toColorRGB(QColor& in)
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 {
-  std::vector<ColorRGB> customData = {toColorRGB(customColors_[0]), toColorRGB(customColors_[1])};
   ColorMapHandle cmap;
-  cmap = (s.toStdString() == "Custom" ) ?
-    StandardColorMapFactory::create(customData, s.toStdString(), resolutionSlider_->value(),
-      static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked()) :
-    StandardColorMapFactory::create(s.toStdString(), resolutionSlider_->value(),
-      static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked());
+  if(s.toStdString() == "Custom" )
+  {
+    customColorButton0_->setVisible(true);
+    customColorButton1_->setVisible(true);
+    cmap = StandardColorMapFactory::create({toColorRGB(customColors_[0]), toColorRGB(customColors_[1])},
+             s.toStdString(), resolutionSlider_->value(),
+             static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked());
+  }
+  else
+  {
+    customColorButton0_->setVisible(false);
+    customColorButton1_->setVisible(false);
+    cmap = StandardColorMapFactory::create(s.toStdString(), resolutionSlider_->value(),
+             static_cast<double>(shiftSlider_->value()) / 100., invertCheck_->isChecked());
+  }
 
   StandardColorMapFactory::create();
   previewColorMap_->setStyleSheet(buildGradientString(*cmap));

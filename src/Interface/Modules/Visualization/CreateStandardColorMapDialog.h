@@ -112,8 +112,8 @@ namespace SCIRun {
     protected:
       virtual void pullSpecial() override;
     private Q_SLOTS:
-      void selectCustomColor0();
-      void selectCustomColor1();
+      void selectCustomColorMin();
+      void selectCustomColorMax();
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
       QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm) const;
