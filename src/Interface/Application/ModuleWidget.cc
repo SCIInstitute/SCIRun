@@ -33,6 +33,7 @@
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/Connection.h>
 
@@ -368,6 +369,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
+  updateProgrammablePorts();
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
@@ -738,6 +740,26 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
 {
   PortBuilder builder;
   builder.buildOutputs(this, moduleInfoProvider);
+}
+
+void ModuleWidget::updateProgrammablePorts()
+{
+  #if 0 //later maybe?
+  auto state = theModule_->get_state();
+  auto hasKey = state->containsKey(Core::Algorithms::Variables::ProgrammableInputPortEnabled);
+  qDebug() << moduleId_.c_str() << "port state: hasKey " << hasKey;
+  if (hasKey)
+    qDebug() << "\tvalue: " << state->getValue(Core::Algorithms::Variables::ProgrammableInputPortEnabled).toBool();
+
+  if (hasKey && state->getValue(Core::Algorithms::Variables::ProgrammableInputPortEnabled).toBool())
+  {
+    // do nothing, port is on by default
+  }
+  else
+  {
+    qDebug() << "\t\t" << "NEED TO TURN OFF PROG INPUT";
+  }
+  #endif
 }
 
 void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
@@ -1614,23 +1636,8 @@ void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
 
 void ModuleWidget::toggleProgrammableInputPort()
 {
-  if (programmablePortEnabled_)
-    removeProgrammableInputPort();
-  else
-    addProgrammableInputPort();
   programmablePortEnabled_ = !programmablePortEnabled_;
-}
-
-void ModuleWidget::addProgrammableInputPort()
-{
-  qDebug() << __FUNCTION__ << name_;
-  theModule_->setProgrammableInputPortEnabled(true);
-}
-
-void ModuleWidget::removeProgrammableInputPort()
-{
-  qDebug() << __FUNCTION__ << name_;
-  theModule_->setProgrammableInputPortEnabled(false);
+  theModule_->setProgrammableInputPortEnabled(programmablePortEnabled_);
 }
 
 void SubnetWidget::postLoadAction()

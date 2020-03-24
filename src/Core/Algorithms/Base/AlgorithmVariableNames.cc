@@ -51,6 +51,7 @@ PARAMETER(FormatString)
 PARAMETER(FunctionString)
 PARAMETER(ObjectInfo)
 PARAMETER(ScriptEnvironmentVariable)
+PARAMETER(ProgrammableInputPortEnabled)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)

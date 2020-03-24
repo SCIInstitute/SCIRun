@@ -35,6 +35,7 @@
 #include <atomic>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
@@ -231,6 +232,7 @@ Module::Module(const ModuleLookupInfo& info,
     setReexecutionStrategy(reexFactory->create(*this));
 
   impl_->executionState_->transitionTo(ModuleExecutionState::NotExecuted);
+  setProgrammableInputPortEnabled(false);
 }
 
 void Module::setId(const std::string& id)
@@ -490,8 +492,13 @@ void Module::setState(ModuleStateHandle state)
     impl_->state_->overwriteWith(*state);
   }
   initStateObserver(impl_->state_.get());
-  postStateChangeInternalSignalHookup();
+  postStateChangeInternalSignalHookup(); //TODO--add prog port default with this
   copyStateToMetadata();
+}
+
+void Module::postStateChangeInternalSignalHookup()
+{
+  setProgrammableInputPortEnabled(false);
 }
 
 AlgorithmBase& Module::algo()
@@ -1113,10 +1120,7 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
 
 void Module::setProgrammableInputPortEnabled(bool enable)
 {
-  if (enable)
-  {
-    //iports_->add_input_port()
-  }
+  get_state()->setValue(Variables::ProgrammableInputPortEnabled, enable);
 }
 
 std::string Module::helpPageUrl() const

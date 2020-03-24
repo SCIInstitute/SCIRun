@@ -68,6 +68,12 @@ void ModuleStateModifierTester::setStateDefaults()
 
   state->setValue(Parameters::StateModifyingCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
 }
+
+void ModuleStateModifierTester::postStateChangeInternalSignalHookup()
+{
+  setProgrammableInputPortEnabled(true);
+}
+
 //
 // std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
 // {

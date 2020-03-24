@@ -175,7 +175,7 @@ namespace Networks {
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
-    virtual void postStateChangeInternalSignalHookup() {}
+    virtual void postStateChangeInternalSignalHookup();
 
 /*** protected Dev-interface ****/
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;

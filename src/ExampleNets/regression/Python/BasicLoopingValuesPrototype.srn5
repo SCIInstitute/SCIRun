@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -42,6 +42,18 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -56,7 +68,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -91,6 +103,18 @@
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -144,7 +168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -209,6 +233,18 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -223,7 +259,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>12</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -311,6 +347,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SnapToElement</name>
 								</first>
 								<second>
@@ -383,8 +431,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -399,7 +459,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -437,6 +497,18 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -451,8 +523,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>StateModifyingCode</name>
@@ -482,8 +566,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -498,7 +594,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -538,6 +634,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Symmetric</name>
 								</first>
 								<second>
@@ -562,7 +670,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>38</count>
+							<count>39</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -818,6 +926,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>RenderAsLocation</name>
 								</first>
 								<second>
@@ -1034,7 +1154,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>50</count>
+							<count>51</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1489,6 +1609,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ScaleBarFontSize</name>
 								</first>
 								<second>
@@ -1697,7 +1829,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>12</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
@@ -1817,6 +1949,18 @@
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ModuleStateModifierTester:1</moduleId1_>
+				<port1_>
+					<name>MetadataCode</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GenerateSinglePointProbeFromField:0</moduleId2_>
+				<port2_>
+					<name>PreexecuteCode</name>
+					<id>1000</id>
 				</port2_>
 			</item>
 			<item>

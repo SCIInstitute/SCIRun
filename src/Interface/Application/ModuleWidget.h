@@ -302,14 +302,13 @@ private:
   void addOutputPortsToLayout(int index);
   void addOutputPortsToWidget(int index);
   void removeOutputPortsFromWidget(int index);
+  void updateProgrammablePorts();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
   bool deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
-  void addProgrammableInputPort();
-  void removeProgrammableInputPort();
 
   boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
