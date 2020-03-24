@@ -1,11 +1,12 @@
 #include <Interface/Modules/Visualization/ShowMeshBoundingBoxDialog.h>
-#include <Core/Algorithms/Visualization/ShowMeshBoundingBoxAlgorithm.h>
+#include <Modules/Visualization/ShowMeshBoundingBox.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Visualization;
+
+using SMBB = SCIRun::Modules::Visualization::ShowMeshBoundingBox;
 
 ShowMeshBoundingBoxDialog::ShowMeshBoundingBoxDialog(const std::string& name,
                                                      ModuleStateHandle state,
@@ -16,7 +17,7 @@ ShowMeshBoundingBoxDialog::ShowMeshBoundingBoxDialog(const std::string& name,
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  addSpinBoxManager(xSpinBox_, Parameters::XSize);
-  addSpinBoxManager(ySpinBox_, Parameters::YSize);
-  addSpinBoxManager(zSpinBox_, Parameters::ZSize);
+  addSpinBoxManager(xSpinBox_, SMBB::XSize);
+  addSpinBoxManager(ySpinBox_, SMBB::YSize);
+  addSpinBoxManager(zSpinBox_, SMBB::ZSize);
 }
