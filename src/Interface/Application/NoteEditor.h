@@ -68,7 +68,7 @@ private:
   Note currentNote_;
   QString noteHtmlBackup_;
   int fontSizeBackup_, positionBackup_;
-  QColor previousColor_;
+  QColor previousColor_, currentColor_;
   NotePosition position_;
   int defaultNoteFontSize_{ 20 };
   int callCount_{ 0 };

@@ -29,7 +29,7 @@
    <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <property name="geometry">
@@ -49,11 +49,31 @@
          <property name="title">
           <string>Execution Options</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
+         <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
            <widget class="QCheckBox" name="saveBeforeExecuteCheckBox_">
             <property name="text">
              <string>Auto-save before execute</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="moduleExecuteDownstreamOnlyCheckBox_">
+            <property name="toolTip">
+             <string> Shift key activates execute all</string>
+            </property>
+            <property name="text">
+             <string>Module execute button is downstream only</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="errorGraphicItemsCheckBox_">
+            <property name="text">
+             <string>Display errors inline</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -66,16 +86,6 @@
              <bool>false</bool>
             </property>
             <property name="tristate">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="errorGraphicItemsCheckBox_">
-            <property name="text">
-             <string>Display errors inline</string>
-            </property>
-            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>

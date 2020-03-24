@@ -90,6 +90,7 @@ namespace Networks {
     virtual bool isStoppable() const = 0;
     virtual bool executionDisabled() const = 0;
     virtual void setExecutionDisabled(bool disable) = 0;
+    virtual bool isImplementationDisabled() const = 0;
   };
 
   class SCISHARE ModuleInterface :
