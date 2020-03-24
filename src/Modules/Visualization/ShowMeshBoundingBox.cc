@@ -1,25 +1,118 @@
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/ShowMeshBoundingBox.h>
-#include <Core/Algorithms/Visualization/ShowMeshBoundingBoxAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Visualization;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+using namespace Modules::Visualization;
+using namespace Dataflow::Networks;
+using namespace Core;
+using namespace Core::Algorithms;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
+using namespace Graphics;
+using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(ShowMeshBoundingBox, Visualization, SCIRun);
 
+ShowMeshBoundingBoxImpl::ShowMeshBoundingBoxImpl()
+{}
+
+void ShowMeshBoundingBoxImpl::setSize(int x, int y, int z)
+{
+  x_ = x;
+  y_ = y;
+  z_ = z;
+}
+
+void ShowMeshBoundingBoxImpl::setBBox(const BBox& bbox)
+{
+  bbox_ = bbox;
+}
+
+void ShowMeshBoundingBoxImpl::addLineToAxis(GlyphGeom& glyphs, const Point& base, const Vector& axis,
+                                            const ColorRGB& col)
+{
+  glyphs.addLine(base, base + axis, col, col);
+}
+
+void ShowMeshBoundingBoxImpl::addLinesToAxisEachFace(GlyphGeom& glyphs, const Point& base,
+                                                     const Vector& axis, const Vector& dir1,
+                                                     const Vector& dir2, double offset,
+                                                     const ColorRGB& col)
+{
+  Vector off1 = offset * dir1;
+  Vector off2 = offset * dir2;
+  addLineToAxis(glyphs, base + off1,        axis, col);
+  addLineToAxis(glyphs, base + off1 + dir2, axis, col);
+  addLineToAxis(glyphs, base + off2,        axis, col);
+  addLineToAxis(glyphs, base + off2 + dir1, axis, col);
+}
+
+void ShowMeshBoundingBoxImpl::addLinesToAxis(GlyphGeom& glyphs, int count, const Point& base,
+                                             const Vector& axis, const Vector& dir1,
+                                             const Vector& dir2, const ColorRGB& col)
+{
+  if (count == 1)
+    addLinesToAxisEachFace(glyphs, base, axis, dir1, dir2, 0.5, col);
+  else if (count > 1)
+  {
+    addLineToAxis(glyphs, base, axis, col);
+    addLineToAxis(glyphs, base + dir1, axis, col);
+    addLineToAxis(glyphs, base + dir2, axis, col);
+    addLineToAxis(glyphs, base + dir1 + dir2, axis, col);
+
+    for (int i = 1; i < count-1; ++i)
+    {
+      double offset = double(i) / double(count-1);
+      addLinesToAxisEachFace(glyphs, base, axis, dir1, dir2, offset, col);
+    }
+  }
+}
+
+RenderState ShowMeshBoundingBoxImpl::getRenderState()
+{
+  RenderState renState;
+  renState.set(RenderState::USE_NORMALS, false);
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
+  renState.set(RenderState::USE_DEFAULT_COLOR, false);
+  return renState;
+}
+
+GeometryHandle ShowMeshBoundingBoxImpl::makeGeomemtry(const GeometryIDGenerator& idGen)
+{
+  auto min = bbox_.get_min();
+  auto x = Vector(bbox_.x_length(), 0, 0);
+  auto y = Vector(0, bbox_.y_length(), 0);
+  auto z = Vector(0, 0, bbox_.z_length());
+
+  GlyphGeom glyphs;
+  addLinesToAxis(glyphs, x_, min, x, y, z, ColorRGB(1,0,0));
+  addLinesToAxis(glyphs, y_, min, y, x, z, ColorRGB(0,1,0));
+  addLinesToAxis(glyphs, z_, min, z, x, y, ColorRGB(0,0,1));
+
+  auto geom(boost::make_shared<GeometryObjectSpire>(idGen, "ShowMeshBoundingBox", true));
+  glyphs.buildObject(*geom, geom->uniqueID(), false, 1.0, ColorScheme::COLOR_IN_SITU,
+                     getRenderState(), SpireIBO::PRIMITIVE::LINES, bbox_, true, nullptr);
+  return geom;
+}
+
 ShowMeshBoundingBox::ShowMeshBoundingBox() : GeometryGeneratingModule(staticInfo_)
 {
+  impl_ = ShowMeshBoundingBoxImpl();
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputGeom);
 }
 
 void ShowMeshBoundingBox::setStateDefaults()
 {
-  setStateIntFromAlgo(Parameters::XSize);
-  setStateIntFromAlgo(Parameters::YSize);
-  setStateIntFromAlgo(Parameters::ZSize);
+  auto state = get_state();
+  state->setValue(XSize, 2);
+  state->setValue(YSize, 2);
+  state->setValue(ZSize, 2);
 }
 
 void
@@ -28,11 +121,16 @@ ShowMeshBoundingBox::execute()
   auto input = getRequiredInput(InputField);
   if (needToExecute())
   {
-    setAlgoIntFromState(Parameters::XSize);
-    setAlgoIntFromState(Parameters::YSize);
-    setAlgoIntFromState(Parameters::ZSize);
+    auto state = get_state();
+    impl_.setSize(state->getValue(XSize).toInt(), state->getValue(YSize).toInt(),
+                  state->getValue(ZSize).toInt());
+    if (inputsChanged())
+      impl_.setBBox(input->vmesh()->get_bounding_box());
 
-    auto output = algo().run(withInputData((InputField, input)));
-    sendOutputFromAlgorithm(OutputGeom, output);
+    sendOutput(OutputGeom, impl_.makeGeomemtry(*this));
   }
 }
+
+const AlgorithmParameterName ShowMeshBoundingBox::XSize("XSize");
+const AlgorithmParameterName ShowMeshBoundingBox::YSize("YSize");
+const AlgorithmParameterName ShowMeshBoundingBox::ZSize("ZSize");
