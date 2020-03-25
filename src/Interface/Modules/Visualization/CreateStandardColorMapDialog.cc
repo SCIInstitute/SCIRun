@@ -78,6 +78,9 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   customColors_[0] = colorFromState(Parameters::CustomColor0);
   customColors_[1] = colorFromState(Parameters::CustomColor1);
 
+  customColorButton0_->setVisible(false);
+  customColorButton1_->setVisible(false);
+
   auto defaultMap = StandardColorMapFactory::create();
   auto rainbowIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
   if (rainbowIndex >= 0)
