@@ -797,7 +797,7 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorR
   generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
   std::vector<Vector> box_points = generateBoxPoints(trans, eigvals);
-  std::vector<Vector> column_vectors = rotate.get_column_vectors();
+  std::vector<Vector> column_vectors = rotate.get_rotation();
 
   generateBoxSide(box_points[5], box_points[4], box_points[7], box_points[6], column_vectors[0], node_color);
   generateBoxSide(box_points[7], box_points[6], box_points[3], box_points[2], column_vectors[1], node_color);
