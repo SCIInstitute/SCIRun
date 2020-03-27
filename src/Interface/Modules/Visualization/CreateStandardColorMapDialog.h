@@ -124,7 +124,7 @@ namespace SCIRun {
     private:
       QGraphicsScene* scene_;
       ColormapPreview* previewColorMap_;
-      QColor customColors_[2] = {{0, 0, 0}, {255, 255, 255}};
+      QColor customColors_[2] = {{0, 0, 0}, {0, 0, 0}};
     };
   }
 }

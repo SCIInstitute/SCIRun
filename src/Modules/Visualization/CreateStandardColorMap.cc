@@ -52,8 +52,8 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::ColorMapInvert, false);
   state->setValue(Parameters::ColorMapShift, 0.0);
   state->setValue(Parameters::AlphaUserPointsVector, Variable::List());
-  state->setValue(Parameters::CustomColor0, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::CustomColor1, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::CustomColor0, ColorRGB(0.2, 0.2, 0.2).toString());
+  state->setValue(Parameters::CustomColor1, ColorRGB(0.8, 0.8, 0.8).toString());
 }
 
 void CreateStandardColorMap::execute()
