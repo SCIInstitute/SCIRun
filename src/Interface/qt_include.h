@@ -27,3 +27,9 @@
 
 
 #include <QtWidgets>
+
+#ifdef OLDER_QT_SUPPORT_NEEDED // remove when Travis linux build has newer Qt 5 version
+#define WIDTH_FUNC width
+#else
+#define WIDTH_FUNC horizontalAdvance
+#endif

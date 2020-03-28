@@ -198,7 +198,13 @@ namespace Datatypes {
           FILE *f=fopen(this->raw_filename_.c_str(), "r");
           if (f)
           {
-            fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
+            auto result = fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
+            if (result != this->get_dense_size())
+            {
+              //TODO: test
+              if (false)
+                BOOST_THROW_EXCEPTION(SCIRun::Core::ExceptionBase() << FileNotFound("error reading matrix file"));
+            }
             fclose(f);
           }
           else

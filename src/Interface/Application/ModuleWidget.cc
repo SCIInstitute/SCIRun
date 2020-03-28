@@ -208,7 +208,8 @@ void ModuleWidgetDisplay::setupButtons(bool hasUI, QObject*)
 
 void ModuleWidgetDisplay::setupIcons()
 {
-  getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
+  auto currentExecuteIcon = Preferences::Instance().moduleExecuteDownstreamOnly ? ModuleWidget::downstreamOnlyIcon : ModuleWidget::allIcon;
+  getExecuteButton()->setIcon(QPixmap(currentExecuteIcon));
   getOptionsButton()->setText("");
   getOptionsButton()->setIcon(QPixmap(":/general/Resources/new/modules/options.png"));
   getHelpButton()->setText("");
@@ -227,14 +228,8 @@ void ModuleWidgetDisplay::setupIcons()
 
 void ModuleWidget::adjustExecuteButtonToDownstream(bool downOnly)
 {
-  if (downOnly)
-  {
-    fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_down.png"));
-  }
-  else
-  {
-    fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
-  }
+  currentExecuteIcon_ = downOnly ? &downstreamOnlyIcon : &allIcon;
+  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(*currentExecuteIcon_));
 }
 
 void ModuleWidgetDisplay::startExecuteMovie()
@@ -399,7 +394,12 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
         .arg(QString::fromStdString(theModule->name()))
         .arg(QString::fromStdString(theModule->replacementModuleName())));
   }
+
+  currentExecuteIcon_ = Preferences::Instance().moduleExecuteDownstreamOnly ? &downstreamOnlyIcon : &allIcon;
 }
+
+QString ModuleWidget::downstreamOnlyIcon(":/general/Resources/new/modules/run_down.png");
+QString ModuleWidget::allIcon(":/general/Resources/new/modules/run_all.png");
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
 {
@@ -1411,7 +1411,7 @@ void ModuleWidget::collapsePinnedDialog()
 
 void ModuleWidget::executeButtonPushed()
 {
-  auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
+  auto skipUpstream = currentExecuteIcon_ == &downstreamOnlyIcon;
   Q_EMIT executedManually(theModule_, !skipUpstream);
   changeExecuteButtonToStop();
 }
@@ -1441,7 +1441,7 @@ void ModuleWidget::changeExecuteButtonToStop()
 
 void ModuleWidget::changeExecuteButtonToPlay()
 {
-  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
+  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(*currentExecuteIcon_));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
   movePortWidgets(currentIndex(), TITLE_PAGE);

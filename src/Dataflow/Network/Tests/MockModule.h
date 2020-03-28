@@ -96,6 +96,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(executionDisabled, bool(void));
           MOCK_CONST_METHOD0(legacyPackageName, std::string());
           MOCK_CONST_METHOD0(legacyModuleName, std::string());
+          MOCK_CONST_METHOD0(isImplementationDisabled, bool());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;
