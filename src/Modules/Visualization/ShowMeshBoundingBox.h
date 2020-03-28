@@ -37,33 +37,8 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-  class ShowMeshBoundingBoxImpl
-  {
-  public:
-    ShowMeshBoundingBoxImpl();
-    void setSize(int x, int y, int z);
-    void setBBox(const Core::Geometry::BBox& bbox);
-    Graphics::Datatypes::GeometryHandle makeGeomemtry(const Core::GeometryIDGenerator& id);
-  private:
-    RenderState getRenderState();
-    void addLineToAxis(Graphics::GlyphGeom& glyphs, const Core::Geometry::Point& base,
-                       const Core::Geometry::Vector& axis, const Core::Datatypes::ColorRGB& col);
-    void addLinesToAxisEachFace(Graphics::GlyphGeom& glyphs, const Core::Geometry::Point& base,
-                                const Core::Geometry::Vector& axis,
-                                const Core::Geometry::Vector& dir1,
-                                const Core::Geometry::Vector& dir2, double offset,
-                                const Core::Datatypes::ColorRGB& col);
-    void addLinesToAxis(Graphics::GlyphGeom& glyphs, int count, const Core::Geometry::Point& base,
-                        const Core::Geometry::Vector& axis, const Core::Geometry::Vector& dir1,
-                        const Core::Geometry::Vector& dir2, const Core::Datatypes::ColorRGB& col);
-    Core::Geometry::BBox bbox_;
-    int x_ = 2;
-    int y_ = 2;
-    int z_ = 2;
-  };
+namespace SCIRun::Modules::Visualization {
+  class ShowMeshBoundingBoxImpl;
 
   class SCISHARE ShowMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
     public Has1InputPort<FieldPortTag>, public Has1OutputPort<GeometryPortTag>
@@ -82,9 +57,9 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName YSize;
     static const Core::Algorithms::AlgorithmParameterName ZSize;
   private:
-    ShowMeshBoundingBoxImpl impl_;
+    boost::shared_ptr<ShowMeshBoundingBoxImpl> impl_;
   };
-}}}
+}
 
 #endif
 

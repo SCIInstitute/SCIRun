@@ -44,6 +44,29 @@ using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(ShowMeshBoundingBox, Visualization, SCIRun);
 
+namespace SCIRun::Modules::Visualization {
+  class ShowMeshBoundingBoxImpl
+  {
+  public:
+    ShowMeshBoundingBoxImpl();
+    void setSize(int x, int y, int z);
+    void setBBox(const BBox& bbox);
+    GeometryHandle makeGeometry(const GeometryIDGenerator& id);
+  private:
+    RenderState getRenderState();
+    void addLineToAxis(GlyphGeom& glyphs, const Point& base, const Vector& axis, const ColorRGB& col);
+    void addLinesToAxisEachFace(GlyphGeom& glyphs, const Point& base, const Vector& axis,
+                                const Vector& dir1, const Vector& dir2, double offset,
+                                const ColorRGB& col);
+    void addLinesToAxis(GlyphGeom& glyphs, int count, const Point& base, const Vector& axis,
+                        const Vector& dir1, const Vector& dir2, const ColorRGB& col);
+    BBox bbox_;
+    int x_ = 2;
+    int y_ = 2;
+    int z_ = 2;
+  };
+}
+
 ShowMeshBoundingBoxImpl::ShowMeshBoundingBoxImpl()
 {}
 
@@ -110,7 +133,7 @@ RenderState ShowMeshBoundingBoxImpl::getRenderState()
   return renState;
 }
 
-GeometryHandle ShowMeshBoundingBoxImpl::makeGeomemtry(const GeometryIDGenerator& idGen)
+GeometryHandle ShowMeshBoundingBoxImpl::makeGeometry(const GeometryIDGenerator& idGen)
 {
   auto min = bbox_.get_min();
   auto x = Vector(bbox_.x_length(), 0, 0);
@@ -128,9 +151,9 @@ GeometryHandle ShowMeshBoundingBoxImpl::makeGeomemtry(const GeometryIDGenerator&
   return geom;
 }
 
-ShowMeshBoundingBox::ShowMeshBoundingBox() : GeometryGeneratingModule(staticInfo_)
+ShowMeshBoundingBox::ShowMeshBoundingBox() : GeometryGeneratingModule(staticInfo_),
+                                             impl_(new ShowMeshBoundingBoxImpl)
 {
-  impl_ = ShowMeshBoundingBoxImpl();
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputGeom);
 }
@@ -150,13 +173,13 @@ ShowMeshBoundingBox::execute()
   if (needToExecute())
   {
     if (inputsChanged())
-      impl_.setBBox(input->vmesh()->get_bounding_box());
+      impl_->setBBox(input->vmesh()->get_bounding_box());
 
     auto state = get_state();
-    impl_.setSize(state->getValue(XSize).toInt(), state->getValue(YSize).toInt(),
-                  state->getValue(ZSize).toInt());
+    impl_->setSize(state->getValue(XSize).toInt(), state->getValue(YSize).toInt(),
+                   state->getValue(ZSize).toInt());
 
-    sendOutput(OutputGeom, impl_.makeGeomemtry(*this));
+    sendOutput(OutputGeom, impl_->makeGeometry(*this));
   }
 }
 
