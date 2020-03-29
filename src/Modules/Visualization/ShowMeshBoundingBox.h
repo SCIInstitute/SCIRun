@@ -37,7 +37,9 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun::Modules::Visualization {
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
   class ShowMeshBoundingBoxImpl;
 
   class SCISHARE ShowMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
@@ -59,7 +61,7 @@ namespace SCIRun::Modules::Visualization {
   private:
     boost::shared_ptr<ShowMeshBoundingBoxImpl> impl_;
   };
-}
+}}}
 
 #endif
 
