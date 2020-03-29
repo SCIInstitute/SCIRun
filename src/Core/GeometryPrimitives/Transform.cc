@@ -29,6 +29,8 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <sstream>
+#include <functional>
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Plane.h>
@@ -57,6 +59,20 @@ Transform::Transform()
   inverse_valid = false;
 }
 
+std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Transform& t)
+{
+  double val;
+  char st;
+  is >> st;
+  for(int i = 0; i < 4; ++i)
+    for(int j = 0; j < 4; ++j)
+    {
+      is >> val >> st;
+      t.set_mat_val(j, i, val);
+    }
+  return is;
+}
+
 Transform::Transform(const Transform& copy) //: Persistent(copy)
 {
   for(int i=0;i<4;i++)
@@ -68,6 +84,11 @@ Transform::Transform(const Transform& copy) //: Persistent(copy)
     }
   }
   inverse_valid=copy.inverse_valid;
+}
+
+Transform::Transform(const double* pmat)
+{
+  set(pmat);
 }
 
 Transform::Transform(const Point& p, const Vector& i,
@@ -105,6 +126,18 @@ Transform::load_frame(const Vector& x,
   mat[3][0] = mat[3][1] = mat[3][2] = 0.0;
   imat[3][0] = imat[3][1] = imat[3][2] = 0.0;
 
+  change_basis(x, y, z);
+}
+
+void
+Transform::change_basis(Transform& T)
+{
+  T.compute_imat();
+  pre_mulmat(T.imat);
+}
+
+void Transform::change_basis(const Vector &x, const Vector &y, const Vector &z)
+{
   mat[0][0] = x.x();
   mat[1][0] = x.y();
   mat[2][0] = x.z();
@@ -132,15 +165,7 @@ Transform::load_frame(const Vector& x,
   inverse_valid = true;
 }
 
-void
-Transform::change_basis(Transform& T)
-{
-  T.compute_imat();
-  pre_mulmat(T.imat);
-}
-
-void
-Transform::post_trans(const Transform& T)
+void Transform::post_trans(const Transform &T)
 {
   post_mulmat(T.mat);
   inverse_valid = false;
@@ -163,7 +188,6 @@ Transform::print()
     printf("\n");
   }
   printf("\n");
-
 }
 
 void
@@ -176,7 +200,6 @@ Transform::printi()
     printf("\n");
   }
   printf("\n");
-
 }
 
 void
@@ -186,6 +209,15 @@ Transform::build_scale(double m[4][4], const Vector& v)
   m[0][0]=v.x();
   m[1][1]=v.y();
   m[2][2]=v.z();
+  inverse_valid = false;
+}
+
+void
+Transform::build_scale(double m[4][4], double d)
+{
+  load_identity(m);
+  for(int i = 0; i < 3; i++)
+    m[0][i]=d;
   inverse_valid = false;
 }
 
@@ -203,6 +235,24 @@ Transform::post_scale(const Vector& v)
 {
   double m[4][4];
   build_scale(m,v);
+  post_mulmat(m);
+  inverse_valid = false;
+}
+
+void
+Transform::pre_scale(double d)
+{
+  double m[4][4];
+  build_scale(m,d);
+  pre_mulmat(m);
+  inverse_valid = false;
+}
+
+void
+Transform::post_scale(double d)
+{
+  double m[4][4];
+  build_scale(m,d);
   post_mulmat(m);
   inverse_valid = false;
 }
@@ -469,7 +519,6 @@ Transform::project(const Point& p, Point& res) const
 void
 Transform::project_inplace(Point& p) const
 {
-
   Point t = p;
   double invw=1./(mat[3][0]*p.x()+mat[3][1]*p.y()+mat[3][2]*p.z()+mat[3][3]);
   t.x(invw*(mat[0][0]*p.x()+mat[0][1]*p.y()+mat[0][2]*p.z()+mat[0][3]));
@@ -491,7 +540,6 @@ Transform::unproject(const Point& p) const
 void
 Transform::unproject(const Point& p, Point& res) const
 {
-
   if(!inverse_valid) compute_imat();
   double invw=
     1./(imat[3][0]*p.x()+imat[3][1]*p.y()+imat[3][2]*p.z()+imat[3][3]);
@@ -592,6 +640,31 @@ Transform::get(double* gmat) const
   }
 }
 
+std::string
+Transform::get_string() const
+{
+  std::ostringstream oss;
+  oss << "[";
+  for(int i = 0; i < 4; i++)
+    oss << mat[0][i] << ", " << mat[1][i] << ", " << mat[2][i] << ", " << mat[3][i] << ";";
+  oss << "]";
+  return (oss.str());
+}
+
+std::ostream&
+SCIRun::Core::Geometry::operator<<( std::ostream& os, const Transform& t)
+{
+  os << '[';
+  for(int i = 0; i < 4; i++)
+  {
+    os << t.get_mat_val(0,i) << ", " << t.get_mat_val(1,i) << ", " << t.get_mat_val(2,i) << ", " << t.get_mat_val(3,i);
+    if(i < 3)
+      os << "; ";
+  }
+  os << ']';
+  return os;
+}
+
 // GL stores its matrices column-major.  Need to take the transpose...
 void
 Transform::get_trans(double* gmat) const
@@ -607,9 +680,9 @@ Transform::get_trans(double* gmat) const
 }
 
 void
-Transform::set(double* pmat)
+Transform::set(const double* pmat)
 {
-  double* p=pmat;
+  const double* p=pmat;
   for(int i=0;i<4;i++)
   {
     for(int j=0;j<4;j++)
@@ -682,8 +755,42 @@ Transform::invert()
     }
 }
 
-void
-Transform::compute_imat() const
+void Transform::orthogonalize()
+{
+  gram_schmidt(false);
+}
+
+void Transform::orthonormalize()
+{
+  gram_schmidt(true);
+}
+
+void Transform::gram_schmidt(bool normalize)
+{
+  auto vecs = get_rotation();
+  double vals[3];
+  // Get eigenvalues and normalize eigenvectors
+  for(int i = 0; i < 3; i++)
+  {
+    vals[i] = vecs[i].length();
+    vecs[i] /= vals[i];
+  }
+
+  // Gram-Schmidt process
+  auto proj_primary_secondary = Dot(vecs[1], vecs[0]) * vecs[0];
+  vecs[1] -= proj_primary_secondary;
+  vecs[1].normalize();
+  vecs[2] = Cross(vecs[0], vecs[1]);
+
+  // Multiply back in the eigenvalues if normalize not selected
+  if(!normalize)
+    for(int i = 0; i < 3; i++)
+      vecs[i] *= vals[i];
+
+  change_basis(vecs[0], vecs[1], vecs[2]);
+}
+
+void Transform::compute_imat() const
 {
   double a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
   a=mat[0][0]; b=mat[0][1]; c=mat[0][2]; d=mat[0][3];
@@ -839,7 +946,7 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
-std::vector<Vector> Transform::get_column_vectors() const
+std::vector<Vector> Transform::get_rotation() const
 {
   std::vector<Vector> column_vectors(3);
   for(int i = 0; i < 3; i++)
@@ -847,6 +954,11 @@ std::vector<Vector> Transform::get_column_vectors() const
     column_vectors[i] = Vector(mat[0][i], mat[1][i], mat[2][i]);
   }
   return column_vectors;
+}
+
+Point Transform::get_translation() const
+{
+  return Point(mat[0][3], mat[1][3], mat[2][3]);
 }
 
 Point
@@ -895,6 +1007,26 @@ SCIRun::Core::Geometry::operator*(const Transform &t, const Vector &d)
   }
 
   return Vector(result[0], result[1], result[2]);
+}
+
+Transform
+SCIRun::Core::Geometry::operator*(const Transform &t1, const Transform &t2)
+{
+  double pmat[16];
+  int index = -1;
+  for(int i = 0; i < 3; i++)
+  {
+    for(int j = 0; j < 4; j++)
+      pmat[++index] = t1.get_mat_val(i,0)*t2.get_mat_val(0,j)
+                    + t1.get_mat_val(i,1)*t2.get_mat_val(1,j)
+                    + t1.get_mat_val(i,2)*t2.get_mat_val(2,j);
+
+    pmat[index] += t1.get_mat_val(i,3); // displacement value
+  }
+  for(int i = 0; i < 3; i++)
+    pmat[++index] = 0;
+  pmat[++index] = 1;
+  return Transform(pmat);
 }
 
 const int TRANSFORM_VERSION = 1;
@@ -1055,4 +1187,12 @@ bool SCIRun::Core::Geometry::operator==(const Transform& lhs, const Transform& r
 bool SCIRun::Core::Geometry::operator!=(const Transform& lhs, const Transform& rhs)
 {
   return !(lhs == rhs);
+}
+
+Transform SCIRun::Core::Geometry::transformFromString(const std::string& str)
+{
+  std::istringstream istr(str);
+  Transform t;
+  istr >> t;
+  return t;
 }
