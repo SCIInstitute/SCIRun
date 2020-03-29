@@ -30,7 +30,7 @@
 #define CORE_GEOMETRY_ORIENTEDBBOX_H
 
 #include <Core/Utils/Legacy/Assert.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/BBoxBase.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
@@ -38,7 +38,7 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-class OrientedBBox
+class OrientedBBox : public Core::Geometry::BBoxBase
 {
 public:
   OrientedBBox(const Core::Geometry::Vector &e1, const Core::Geometry::Vector &e2, const Core::Geometry::Vector &e3);
@@ -106,9 +106,6 @@ public:
 
 private:
   std::vector<Vector> eigvecs_;
-  Point cmin_;
-  Point cmax_;
-  bool is_valid_;
 };
 
 SCISHARE std::ostream &operator<<(std::ostream &out, const OrientedBBox &b);

@@ -34,6 +34,7 @@
 #define NOMINMAX
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/BBoxBase.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
 #define NOMINMAX
@@ -44,15 +45,22 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-
-class BBox {
+  class BBox : public BBoxBase
+  {
   public:
     enum { INSIDE, INTERSECT, OUTSIDE };
 
-    BBox() : is_valid_(false) {}
+    BBox()
+    {
+      is_valid_ = false;
+    }
 
     BBox(const BBox& copy)
-    : cmin_(copy.cmin_), cmax_(copy.cmax_), is_valid_(copy.is_valid_) {}
+    {
+      cmin_ = copy.cmin_;
+      cmax_ = copy.cmax_;
+      is_valid_ = copy.is_valid_;
+    }
 
     BBox& operator=(const BBox& copy)
     {
@@ -63,41 +71,41 @@ class BBox {
     }
 
     BBox(const BBox& b1, const BBox& b2)
-      : cmin_(b1.cmin_), cmax_(b1.cmax_), is_valid_(true)
     {
+      cmin_ = b1.cmin_;
+      cmax_ = b1.cmax_;
+      is_valid_ = true;
       extend(b2.cmin_);
       extend(b2.cmax_);
     }
 
 
     BBox(const Point& p1, const Point& p2)
-      : cmin_(p1), cmax_(p1), is_valid_(true)
     {
+      cmin_ = p1;
+      cmax_ = p1;
+      is_valid_ = true;
       extend(p2);
     }
 
     BBox(const Point& p1, const Point& p2, const Point& p3)
-      : cmin_(p1), cmax_(p1), is_valid_(true)
     {
+      cmin_ = p1;
+      cmax_ = p1;
+      is_valid_ = true;
       extend(p2);
       extend(p3);
     }
 
-    explicit BBox(const std::vector<Point>& points) :
-      is_valid_(false)
+    explicit BBox(const std::vector<Point>& points)
     {
-      for (size_t j=0; j<points.size(); j++)
-      {
-        extend(points[j]);
-      }
+      is_valid_ = false;
+      for (auto& p : points)
+        extend(p);
     }
 
-    inline bool valid() const { return is_valid_; }
-    inline void set_valid(bool v) { is_valid_ = v; }
-    inline void reset() { is_valid_ = false; }
-
     /// Expand the bounding box to include point p
-    inline BBox& extend(const Point& p)
+    inline void extend(const Point& p)
     {
       if(is_valid_)
       {
@@ -110,7 +118,6 @@ class BBox {
         cmax_=p;
         is_valid_ = true;
       }
-      return *this;
     }
 
     /// Extend the bounding box on all sides by a margin
@@ -243,12 +250,6 @@ class BBox {
     /// returns true if the ray hit the bbox and returns the hit point
     /// in hitNear
     SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear) const;
-
-
-  private:
-    Point cmin_;
-    Point cmax_;
-    bool is_valid_;
 };
 
 SCISHARE std::ostream& operator<<(std::ostream& out, const BBox& b);
