@@ -44,7 +44,9 @@ using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(ShowMeshBoundingBox, Visualization, SCIRun);
 
-namespace SCIRun::Modules::Visualization {
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
   class ShowMeshBoundingBoxImpl
   {
   public:
@@ -65,7 +67,7 @@ namespace SCIRun::Modules::Visualization {
     int y_ = 2;
     int z_ = 2;
   };
-}
+}}}
 
 ShowMeshBoundingBoxImpl::ShowMeshBoundingBoxImpl()
 {}
