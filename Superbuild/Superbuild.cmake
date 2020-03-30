@@ -274,9 +274,7 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-Dembree_DIR:PATH=${Embree_DIR}"
-    "-DTBB_ROOT:PATH=${Tbb_DIR}"
-    "-DIspc_DIR:PATH=${Ispc_DIR}"
+    "-DOspray_External_Dir:PATH=${OSPRAY_BUILD_DIR}"
   )
 ENDIF()
 
