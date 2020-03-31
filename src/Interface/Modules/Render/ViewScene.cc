@@ -84,7 +84,7 @@ namespace
     return t;
   }
 
-  static std::vector<ViewSceneDialog*> viewSceneList;
+  //static std::vector<ViewSceneDialog*> viewSceneList;
 }
 
 ViewSceneManager ViewSceneDialog::viewSceneManager;
@@ -173,16 +173,19 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   glLayout->update();
   resize(qs);
 
-  viewSceneList.push_back(this);
-  for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
-
+  //viewSceneList.push_back(this);
+  //for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
+  viewSceneManager.addViewScene(this);
+  if(viewSceneManager.getGroupCount() < 1) viewSceneManager.addGroup();
+  viewSceneManager.moveViewSceneToGroup(this, 0);
 }
 
 ViewSceneDialog::~ViewSceneDialog()
 {
-  for(unsigned int i = 0; i < viewSceneList.size(); ++i) if(viewSceneList[i] == this)
-    viewSceneList.erase(viewSceneList.begin() + i);
-  for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
+//  for(unsigned int i = 0; i < viewSceneList.size(); ++i) if(viewSceneList[i] == this)
+//    viewSceneList.erase(viewSceneList.begin() + i);
+//  for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
+  viewSceneManager.removeViewScene(this);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -987,8 +990,9 @@ void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateViewScenesToUpdate()
 {
-  viewScenesToUpdate.clear();
-  for(auto vsd : viewSceneList) viewScenesToUpdate.push_back(vsd);
+  viewSceneManager.getViewSceneGroupAsVector(this, viewScenesToUpdate);
+  //viewScenesToUpdate.clear();
+  //for(auto vsd : viewSceneList) viewScenesToUpdate.push_back(vsd);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1010,6 +1014,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
     auto btn = mGLWidget->getSpireButton(event);
 
+    updateViewScenesToUpdate();
     for(auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
   }
 }

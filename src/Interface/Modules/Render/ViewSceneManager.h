@@ -32,15 +32,15 @@
 #include <unordered_set>
 #include <vector>
 #include <cstdint>
-//#include <Interface/Modules/Render/ViewScene.h>
 
 namespace SCIRun
 {
   namespace Gui
   {
+    class ViewSceneDialog;
     class ViewSceneManager
     {
-    class ViewSceneDialog;
+
     public:
       ViewSceneManager();
       ~ViewSceneManager();
@@ -55,13 +55,13 @@ namespace SCIRun
       bool removeViewSceneFromGroup(ViewSceneDialog* vsd, uint16_t group);
 
       bool getViewSceneGroupNumber(ViewSceneDialog* vsd, uint16_t& group);
-      std::vector<ViewSceneDialog*> getViewSceneGroupAsVector(uint16_t group);
-      std::vector<ViewSceneDialog*> getViewSceneGroupAsVector(ViewSceneDialog* vsd);
+      void getViewSceneGroupAsVector(uint16_t group, std::vector<ViewSceneDialog*>& out);
+      void getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out);
+      uint16_t getGroupCount() {return viewSceneGroups.size();}
 
     private:
       std::vector<std::unordered_set<ViewSceneDialog*>> viewSceneGroups     {};
       std::unordered_set<ViewSceneDialog*>              ungroupedViewScenes {};
-
     };
   }
 }

@@ -27,6 +27,7 @@
 */
 
 #include "Interface/Modules/Render/ViewSceneManager.h"
+#include <iostream>
 
 using namespace SCIRun::Gui;
 
@@ -104,18 +105,15 @@ bool ViewSceneManager::getViewSceneGroupNumber(ViewSceneDialog* vsd, uint16_t& g
   return false;
 }
 
-std::vector<ViewSceneManager::ViewSceneDialog*> ViewSceneManager::getViewSceneGroupAsVector(uint16_t group)
+void ViewSceneManager::getViewSceneGroupAsVector(uint16_t group, std::vector<ViewSceneDialog*>& out)
 {
-  std::vector<ViewSceneDialog*> viewSceneList;
-  for(auto vsd : viewSceneGroups[group])
-    viewSceneList.push_back(vsd);
-  return viewSceneList;
+  out.clear();
+  for(auto vsd : viewSceneGroups[group]) out.push_back(vsd);
 }
 
-std::vector<ViewSceneManager::ViewSceneDialog*> ViewSceneManager::getViewSceneGroupAsVector(ViewSceneDialog* vsd)
+void ViewSceneManager::getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out)
 {
-  uint16_t group;
-  if(getViewSceneGroupNumber(vsd, group))
-    return getViewSceneGroupAsVector(group);
-  return {vsd};
+  uint16_t group; out.clear();
+  if(getViewSceneGroupNumber(vsd, group)) getViewSceneGroupAsVector(group, out);
+  else                                    out.push_back(vsd);
 }
