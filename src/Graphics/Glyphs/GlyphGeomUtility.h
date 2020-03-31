@@ -55,13 +55,13 @@ public:
 inline double GlyphGeomUtility::spow(double e, double x)
 {
   // This for round off of very small numbers.
-  if (abs(e) < 1.0e-6)
+  if (std::abs(e) < 1.0e-6)
     e = 0.0;
 
   if (e < 0.0)
-    return (double)(pow(abs(e), x) * -1.0);
+    return std::pow(std::abs(e), x) * -1.0;
   else
-    return (double)(pow(e, x));
+    return std::pow(e, x);
 }
 }}
 

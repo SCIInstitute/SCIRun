@@ -127,12 +127,12 @@ public:
   double val(size_t i, size_t j) const { return mat_[i][j]; }
   double& val(size_t i, size_t j) { return mat_[i][j]; }
 
-  double linearCertainty();
-  double planarCertainty();
-  double sphericalCertainty();
+  double linearCertainty() const;
+  double planarCertainty() const;
+  double sphericalCertainty() const;
 
 private:
-  double eigenValueSum();
+  double eigenValueSum() const;
   double mat_[3][3];
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;

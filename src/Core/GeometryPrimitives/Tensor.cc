@@ -387,22 +387,22 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   have_eigens_ = 1;
 }
 
-double Tensor::eigenValueSum()
+double Tensor::eigenValueSum() const
 {
   return l1_ + l2_ + l3_;
 }
 
-double Tensor::linearCertainty()
+double Tensor::linearCertainty() const
 {
   return (l1_ - l2_) / eigenValueSum();
 }
 
-double Tensor::planarCertainty()
+double Tensor::planarCertainty() const
 {
   return 2.0 * (l2_ - l3_) / eigenValueSum();
 }
 
-double Tensor::sphericalCertainty()
+double Tensor::sphericalCertainty() const
 {
   return 3.0 * (l3_) / eigenValueSum();
 }
