@@ -33,6 +33,8 @@
 #define NOMINMAX
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
+#include <Interface/Modules/Render/ViewSceneManager.h>
+//#include <Interface/Modules/Render/ES/SRInterface.h>
 
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -66,12 +68,12 @@ namespace SCIRun {
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
 
+      static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
       void updateViewScenesToUpdate();
-
 
     Q_SIGNALS:
       void newGeometryValueForwarder();

@@ -87,6 +87,8 @@ namespace
   static std::vector<ViewSceneDialog*> viewSceneList;
 }
 
+ViewSceneManager ViewSceneDialog::viewSceneManager;
+
 //--------------------------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state, QWidget* parent) :
   ModuleDialogGeneric(state, parent),
