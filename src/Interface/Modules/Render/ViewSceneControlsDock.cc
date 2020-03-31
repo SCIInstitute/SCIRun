@@ -84,6 +84,12 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
     parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 
+  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
+  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
+  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
+  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdated()), this, SLOT(updateViewSceneTree()));
+  updateViewSceneTree();
+
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
   connect(lightingCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(lightingChecked(bool)));
@@ -225,6 +231,67 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   ////Controls Tab
   transparencyGroupBox_->setVisible(false);
+}
+
+void ViewSceneControlsDock::updateViewSceneTree()
+{
+  viewSceneTreeWidget_->clear();
+
+  int numGroups = ViewSceneDialog::viewSceneManager.getGroupCount();
+  std::vector<ViewSceneDialog*> ungroupedMemebers;
+  ViewSceneDialog::viewSceneManager.getUngroupedViewScenesAsVector(ungroupedMemebers);
+
+  for(int i = 0; i < numGroups; ++i)
+  {
+    auto group = new QTreeWidgetItem(viewSceneTreeWidget_, QStringList(QString::fromStdString("Group:" + std::to_string(i))));
+    viewSceneTreeWidget_->addTopLevelItem(group);
+    group->setData(1, Qt::EditRole, i);
+
+    std::vector<ViewSceneDialog*> groupMemebers;
+    ViewSceneDialog::viewSceneManager.getViewSceneGroupAsVector(i, groupMemebers);
+    for(int j = 0; j < groupMemebers.size(); ++j)
+    {
+      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(groupMemebers[j]->getName())));
+      item->setCheckState(0, Qt::Checked);
+      item->setData(1, Qt::EditRole, (qulonglong)groupMemebers[j]);
+    }
+
+    for(int j = 0; j < ungroupedMemebers.size(); ++j)
+    {
+      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(ungroupedMemebers[j]->getName())));
+      item->setCheckState(0, Qt::Unchecked);
+      item->setData(1, Qt::EditRole,  (qulonglong)ungroupedMemebers[j]);
+    }
+  }
+
+  viewSceneTreeWidget_->expandAll();
+}
+
+void ViewSceneControlsDock::addGroup()
+{
+  ViewSceneDialog::viewSceneManager.addGroup();
+}
+
+void ViewSceneControlsDock::removeGroup()
+{
+  uint16_t size = ViewSceneDialog::viewSceneManager.getGroupCount();
+  if(size > 0) ViewSceneDialog::viewSceneManager.removeGroup(size - 1);
+}
+
+void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
+{
+  QTreeWidgetItem* p = widgetItem->parent();
+  uint16_t g = p->data(1, Qt::EditRole).toInt();
+  if (widgetItem->checkState(column) == Qt::Unchecked)
+  {
+    ViewSceneDialog* vs = (ViewSceneDialog*)widgetItem->data(1, Qt::EditRole).toULongLong();
+    ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
+  }
+  else if (widgetItem->checkState(column) == Qt::Checked)
+  {
+    ViewSceneDialog* vs = (ViewSceneDialog*)widgetItem->data(1, Qt::EditRole).toULongLong();
+    ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
+  }
 }
 
 void ViewSceneControlsDock::setSampleColor(const QColor& color)
@@ -415,7 +482,6 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
     if (stateIter != showFieldStates.end())
     {
       auto state = stateIter->second;
-
       updateCheckStates(name, {
         state->getValue(Parameters::ShowNodes).toBool(),
         state->getValue(Parameters::ShowEdges).toBool(),

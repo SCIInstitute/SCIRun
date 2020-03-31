@@ -73,7 +73,7 @@ namespace SCIRun {
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
-      void updateViewScenesToUpdate();
+      std::string getName() {return name_;}
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
@@ -337,6 +337,7 @@ namespace SCIRun {
       friend class ViewSceneControlsDock;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
+      std::string                                       name_               {""};
     };
 
   } // namespace Gui

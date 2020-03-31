@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -105,6 +105,43 @@
            </item>
           </layout>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="CameraLocks">
+       <attribute name="title">
+        <string>Camera Locks</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_9">
+        <item row="7" column="0">
+         <widget class="QTreeWidget" name="viewSceneTreeWidget_">
+          <property name="columnCount">
+           <number>1</number>
+          </property>
+          <column>
+           <property name="text">
+            <string>Groups</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="addGroup_">
+            <property name="text">
+             <string>Add Group</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="removeGroup_">
+            <property name="text">
+             <string>Remove Group</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

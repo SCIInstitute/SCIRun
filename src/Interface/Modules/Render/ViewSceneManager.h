@@ -32,14 +32,16 @@
 #include <unordered_set>
 #include <vector>
 #include <cstdint>
+#include <QApplication>
 
 namespace SCIRun
 {
   namespace Gui
   {
     class ViewSceneDialog;
-    class ViewSceneManager
+    class ViewSceneManager : public QObject
     {
+    Q_OBJECT;
 
     public:
       ViewSceneManager();
@@ -58,6 +60,11 @@ namespace SCIRun
       void getViewSceneGroupAsVector(uint16_t group, std::vector<ViewSceneDialog*>& out);
       void getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out);
       uint16_t getGroupCount() {return viewSceneGroups.size();}
+
+      void getUngroupedViewScenesAsVector(std::vector<ViewSceneDialog*>& viewScenes);
+
+    Q_SIGNALS:
+        void groupsUpdated();
 
     private:
       std::vector<std::unordered_set<ViewSceneDialog*>> viewSceneGroups     {};
