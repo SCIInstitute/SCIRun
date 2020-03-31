@@ -29,12 +29,7 @@
 #ifndef MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_H
 #define MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_H
 
-#include <Core/GeometryPrimitives/BBox.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {

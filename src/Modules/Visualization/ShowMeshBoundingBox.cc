@@ -31,6 +31,11 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
