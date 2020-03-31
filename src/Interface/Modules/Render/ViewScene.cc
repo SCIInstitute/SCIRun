@@ -83,6 +83,8 @@ namespace
         t.set_mat_val(i, j, mat[j][i]);
     return t;
   }
+
+  static std::vector<ViewSceneDialog*> viewSceneList;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -168,6 +170,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   glLayout->addWidget(mGLWidget);
   glLayout->update();
   resize(qs);
+
+  viewSceneList.push_back(this);
+  for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
+
+}
+
+ViewSceneDialog::~ViewSceneDialog()
+{
+  for(unsigned int i = 0; i < viewSceneList.size(); ++i) if(viewSceneList[i] == this)
+    viewSceneList.erase(viewSceneList.begin() + i);
+  for(auto vsd : viewSceneList) vsd->updateViewScenesToUpdate(), std::cout << vsd << "\n";
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -926,12 +939,94 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, float y)
+{
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  spire->inputMouseDown(btn, x, y);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::inputMouseMoveHelper(Render::MouseButton btn, float x, float y)
+{
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  spire->inputMouseMove(btn, x, y);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::inputMouseUpHelper()
+{
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  spire->inputMouseUp();
+  pushCameraState();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
+{
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  spire->inputMouseWheel(delta);
+  if (scaleBar_.visible)
+  {
+    updateScaleBarLength();
+    scaleBarGeom_ = buildGeometryScaleBar();
+    updateModifiedGeometries();
+  }
+  state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::updateViewScenesToUpdate()
+{
+  viewScenesToUpdate.clear();
+  for(auto vsd : viewSceneList) viewScenesToUpdate.push_back(vsd);
+}
+
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
+  }
+  else
+  {
+    auto spire = mSpire.lock();
+    if(!spire) return;
+
+    int x_window = event->x() - mGLWidget->pos().x();
+    int y_window = event->y() - mGLWidget->pos().y();
+    float x_ss, y_ss;
+    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
+    auto btn = mGLWidget->getSpireButton(event);
+
+    for(auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
+  }
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
+{
+  if(!shiftdown_)
+  {
+    auto spire = mSpire.lock();
+    if(!spire) return;
+
+    int x_window = event->x() - mGLWidget->pos().x();
+    int y_window = event->y() - mGLWidget->pos().y();
+    float x_ss, y_ss;
+    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
+    auto btn = mGLWidget->getSpireButton(event);
+
+    for(auto vsd : viewScenesToUpdate) vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
 }
 
@@ -946,28 +1041,19 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
     selectedWidget_.reset();
   }
-
-  pushCameraState();
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
-{
+  else if(!shiftdown_)
+  {
+    for(auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {
-  if (scaleBar_.visible)
+  if (!selectedWidget_)
   {
-    updateScaleBarLength();
-    scaleBarGeom_ = buildGeometryScaleBar();
-    updateModifiedGeometries();
+    for(auto vsd : viewScenesToUpdate) vsd->inputMouseWheelHelper(event->delta());
   }
-
-  auto spire = mSpire.lock();
-  if(!spire) return;
-  state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -61,9 +61,16 @@ namespace SCIRun {
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
+      ~ViewSceneDialog();
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
+
+      void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
+      void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
+      void inputMouseUpHelper();
+      void inputMouseWheelHelper(int32_t delta);
+      void updateViewScenesToUpdate();
 
 
     Q_SIGNALS:
@@ -322,6 +329,8 @@ namespace SCIRun {
       QPushButton*                                      controlLock_        {nullptr};
       QPushButton*                                      autoViewButton_     {nullptr};
       QPushButton*                                      viewBarBtn_         {nullptr};
+
+      std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
       friend class ViewSceneControlsDock;
 
