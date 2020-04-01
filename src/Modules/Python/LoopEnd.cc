@@ -69,6 +69,8 @@ void LoopEnd::setStateDefaults()
   auto state = get_state();
 
   state->setValue(Parameters::LoopEndCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
+  state->setValue(Parameters::NumberOfRetries, 50);
 }
 
 void LoopEnd::postStateChangeInternalSignalHookup()

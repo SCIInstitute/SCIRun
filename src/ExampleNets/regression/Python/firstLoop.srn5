@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateString:0</first>
@@ -26,7 +26,47 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>b</value>
+										<value>a</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateString:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>A</value>
 									</value>
 								</second>
 							</item>
@@ -56,7 +96,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -66,7 +106,38 @@
 									<name>LoopEndCode</name>
 									<value>
 										<which>2</which>
-										<value># Insert your Python code here. The SCIRun API package is automatically imported.</value>
+										<value># Insert your Python code here. The SCIRun API package is automatically imported.
+
+str = scirun_get_module_input_value_by_index(&quot;LoopEnd:0&quot;, 2)
+print(str)
+if (str &gt;= &apos;z&apos;):
+	print(&quot;end of loop!&quot;)
+else:
+	print(&quot;continue loop&quot;)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NumberOfRetries</name>
+								</first>
+								<second>
+									<name>NumberOfRetries</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +149,7 @@
 									<name>ProgrammableInputPortEnabled</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +177,14 @@
 									<name>LoopIncrementCode</name>
 									<value>
 										<which>2</which>
-										<value># Insert your Python code here. The SCIRun API package is automatically imported.</value>
+										<value>
+m = %moduleId%
+key = &quot;InputString&quot;
+letter = scirun_get_module_state(m, key)[0]
+print(letter)
+#letter = chr(ord(letter) + 1) 
+#print(letter)
+#scirun_set_module_state(m, key, letter)</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +196,7 @@
 									<name>ProgrammableInputPortEnabled</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -146,65 +224,23 @@
 									<name>LoopStartCode</name>
 									<value>
 										<which>2</which>
-										<value># Insert your Python code here. The SCIRun API package is automatically imported.</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ProgrammableInputPortEnabled</name>
-								</first>
-								<second>
-									<name>ProgrammableInputPortEnabled</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ModuleStateModifierTester:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Python</category_name_>
-						<module_name_>ModuleStateModifierTester</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>ProgrammableInputPortEnabled</name>
-								</first>
-								<second>
-									<name>ProgrammableInputPortEnabled</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>StateModifyingCode</name>
-								</first>
-								<second>
-									<name>StateModifyingCode</name>
-									<value>
-										<which>2</which>
 										<value># Insert your Python code here. The SCIRun API package is automatically imported.
 
-m = &quot;CreateString:0&quot;
-key = &quot;InputString&quot;
-letter = scirun_get_module_state(m, key)[0]
-letter = chr(ord(letter) + 1) 
-scirun_set_module_state(m, key, letter)</value>
+#m = &quot;CreateString:0&quot;
+#key = &quot;InputString&quot;
+#scirun_set_module_state(m, key, &quot;a&quot;)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -257,6 +293,166 @@ scirun_set_module_state(m, key, letter)</value>
 									<value>
 										<which>2</which>
 										<value>Left</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedVertical</name>
+								</first>
+								<second>
+									<name>FixedVertical</name>
+									<value>
+										<which>2</which>
+										<value>Top</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FontName</name>
+								</first>
+								<second>
+									<name>FontName</name>
+									<value>
+										<which>2</which>
+										<value>FreeSansBold</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FontSize</name>
+								</first>
+								<second>
+									<name>FontSize</name>
+									<value>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PositionType</name>
+								</first>
+								<second>
+									<name>PositionType</name>
+									<value>
+										<which>2</which>
+										<value>Preset</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextAlpha</name>
+								</first>
+								<second>
+									<name>TextAlpha</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowString:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>12</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CoordinateHorizontal</name>
+								</first>
+								<second>
+									<name>CoordinateHorizontal</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CoordinateVertical</name>
+								</first>
+								<second>
+									<name>CoordinateVertical</name>
+									<value>
+										<which>1</which>
+										<value>8.49999999999999978e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedHorizontal</name>
+								</first>
+								<second>
+									<name>FixedHorizontal</name>
+									<value>
+										<which>2</which>
+										<value>Center</value>
 									</value>
 								</second>
 							</item>
@@ -1057,11 +1253,23 @@ scirun_set_module_state(m, key, letter)</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>3</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>LoopEnd:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:0</moduleId1_>
+				<port1_>
 					<name>NewString</name>
 					<id>0</id>
 				</port1_>
@@ -1072,12 +1280,24 @@ scirun_set_module_state(m, key, letter)</value>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ModuleStateModifierTester:0</moduleId1_>
+				<moduleId1_>CreateString:1</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowString:1</moduleId2_>
+				<port2_>
+					<name>String</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>LoopIncrement:0</moduleId1_>
 				<port1_>
 					<name>MetadataCode</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>CreateString:0</moduleId2_>
+				<moduleId2_>CreateString:1</moduleId2_>
 				<port2_>
 					<name>PreexecuteCode</name>
 					<id>1000</id>
@@ -1095,16 +1315,35 @@ scirun_set_module_state(m, key, letter)</value>
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ShowString:1</moduleId1_>
+				<port1_>
+					<name>RenderedString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateString:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>6.80000000000000000e+01</first>
-				<second>3.52000000000000000e+02</second>
+				<first>0.00000000000000000e+00</first>
+				<second>3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:1</first>
+			<second>
+				<first>2.28000000000000000e+02</first>
+				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1117,36 +1356,36 @@ scirun_set_module_state(m, key, letter)</value>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>7.60000000000000000e+01</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopStart:0</first>
 			<second>
-				<first>3.00000000000000000e+01</first>
-				<second>1.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ModuleStateModifierTester:0</first>
-			<second>
-				<first>-7.60000000000000000e+01</first>
-				<second>2.28000000000000000e+02</second>
+				<first>0.00000000000000000e+00</first>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowString:0</first>
 			<second>
-				<first>6.60000000000000000e+01</first>
-				<second>4.54000000000000000e+02</second>
+				<first>0.00000000000000000e+00</first>
+				<second>4.56000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowString:1</first>
+			<second>
+				<first>1.71000000000000000e+02</first>
+				<second>4.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>5.50000000000000000e+01</first>
-				<second>5.66000000000000000e+02</second>
+				<first>0.00000000000000000e+00</first>
+				<second>5.32000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1159,10 +1398,14 @@ scirun_set_module_state(m, key, letter)</value>
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CreateString:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:1</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -1178,11 +1421,11 @@ scirun_set_module_state(m, key, letter)</value>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ModuleStateModifierTester:0</first>
+			<first>ShowString:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ShowString:0</first>
+			<first>ShowString:1</first>
 			<second>-1</second>
 		</item>
 		<item>

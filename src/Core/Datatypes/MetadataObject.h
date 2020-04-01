@@ -42,7 +42,10 @@ namespace Datatypes {
   public:
     explicit MetadataObject(const std::string& programData) : programData_(programData) {}
     std::string program() const { return programData_; }
-    virtual void process() { logCritical("Processing metadata object program data: \n{}", programData_); }
+    virtual void process(const std::string& modId)
+    {
+      logCritical("Processing metadata object [modId={}] program data: \n{}", modId, programData_); 
+    }
     std::string dynamic_type_name() const override { return "MetadataObject"; }
     Datatype* clone() const override { return new MetadataObject(programData_); }
   protected:

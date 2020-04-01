@@ -51,4 +51,5 @@ LoopEndDialog::LoopEndDialog(const std::string& name, ModuleStateHandle state,
   //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
   //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+  connect(pythonDocPushButton_, &QPushButton::clicked, []() { openPythonAPIDoc(); });
 }

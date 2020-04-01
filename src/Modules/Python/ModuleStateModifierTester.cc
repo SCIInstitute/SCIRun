@@ -32,8 +32,8 @@
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
-#include <Core/Datatypes/MetadataObject.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#include <regex>
 #endif
 
 using namespace SCIRun;
@@ -49,16 +49,9 @@ ALGORITHM_PARAMETER_DEF(Python, StateModifyingCode);
 
 MODULE_INFO_DEF(ModuleStateModifierTester, Python, SCIRun)
 
-//Mutex InterfaceWithPython::lock_("InterfaceWithPython");
-//bool InterfaceWithPython::matlabInitialized_{ false };
-
 ModuleStateModifierTester::ModuleStateModifierTester() : Module(staticInfo_)
 {
   INITIALIZE_PORT(MetadataCode);
-//
-// #ifdef BUILD_WITH_PYTHON
-//   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
-// #endif
 }
 
 void ModuleStateModifierTester::setStateDefaults()
@@ -73,47 +66,23 @@ void ModuleStateModifierTester::postStateChangeInternalSignalHookup()
   setProgrammableInputPortEnabled(true);
 }
 
-//
-// std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
-// {
-//   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
-//     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-//     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
-// }
-//
-// std::vector<std::string> InterfaceWithPython::connectedPortIds() const
-// {
-//   std::vector<std::string> ids;
-//   for (const auto& port : inputPorts())
-//   {
-//     if (port->nconnections() > 0)
-//     {
-//       ids.push_back(port->id().toString());
-//     }
-//   }
-//   return ids;
-// }
+Mutex PythonExecutingMetadataObject::lock_("PythonExecutingMetadataObject");
 
-class PythonExecutingMetadataObject : public MetadataObject
+void PythonExecutingMetadataObject::process(const std::string& modId)
 {
-public:
-  using MetadataObject::MetadataObject;
-
-  void process() override
+  MetadataObject::process(modId);
+  auto progWithId = std::regex_replace(programData_, std::regex("\\%moduleId\\%"), "\"" + modId + "\"");
+  logCritical("Post-processed code: {}", progWithId);
   {
-    MetadataObject::process();
-    PythonInterpreter::Instance().run_script(programData_);
-    logCritical("Done python execution.");
+    NamedGuard g(lock_.get(), "PythonExecutingMetadataObject");
+    PythonInterpreter::Instance().run_script(progWithId);
   }
-};
+  logCritical("Done python execution.");
+}
 
 void ModuleStateModifierTester::execute()
 {
 #ifdef BUILD_WITH_PYTHON
-
-  // auto matrices = getOptionalDynamicInputs(InputMatrix);
-  // auto fields = getOptionalDynamicInputs(InputField);
-  // auto strings = getOptionalDynamicInputs(InputString);
   if (needToExecute())
   {
     auto code = get_state()->getValue(Parameters::StateModifyingCode).toString();

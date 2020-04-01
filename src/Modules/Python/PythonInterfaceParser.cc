@@ -55,21 +55,24 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateOutputSyntax(const s
 
   for (const auto& var : outputVarsToCheck)
   {
-    auto varName = state_->getValue(var).toString();
-
-    auto regexString = "(\\h*)" + varName + " = (.+)";
-    //std::cout << "REGEX STRING " << regexString << std::endl;
-    boost::regex outputRegex(regexString);
-    boost::smatch what;
-    if (regex_match(line, what, outputRegex))
+    if (state_->containsKey(var))
     {
-      int rhsIndex = what.size() > 2 ? 2 : 1;
-      auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
-      auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
-      auto converted = whitespace + "scirun_set_module_transient_state(\"" +
-        moduleId_() + "\",\"" + varName + "\"," + rhs + ")";
-      //std::cout << "CONVERTED TO " << converted << std::endl;
-      return converted;
+      auto varName = state_->getValue(var).toString();
+
+      auto regexString = "(\\h*)" + varName + " = (.+)";
+      //std::cout << "REGEX STRING " << regexString << std::endl;
+      boost::regex outputRegex(regexString);
+      boost::smatch what;
+      if (regex_match(line, what, outputRegex))
+      {
+        int rhsIndex = what.size() > 2 ? 2 : 1;
+        auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
+        auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
+        auto converted = whitespace + "scirun_set_module_transient_state(\"" +
+          moduleId_() + "\",\"" + varName + "\"," + rhs + ")";
+        //std::cout << "CONVERTED TO " << converted << std::endl;
+        return converted;
+      }
     }
   }
 
@@ -80,15 +83,18 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateInputSyntax(const st
 {
   for (const auto& portId : portIds_)
   {
-    auto inputName = state_->getValue(Name(portId)).toString();
-    //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;
-    //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_() << "\", \"" << portId << "\")" << std::endl;
-    auto index = line.find(inputName);
-    if (index != std::string::npos)
+    if (state_->containsKey(Name(portId)))
     {
-      auto codeCopy = line;
-      return codeCopy.replace(index, inputName.length(),
-        "scirun_get_module_input_value(\"" + moduleId_() + "\", \"" + portId + "\")");
+      auto inputName = state_->getValue(Name(portId)).toString();
+      //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;
+      //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_() << "\", \"" << portId << "\")" << std::endl;
+      auto index = line.find(inputName);
+      if (index != std::string::npos)
+      {
+        auto codeCopy = line;
+        return codeCopy.replace(index, inputName.length(),
+          "scirun_get_module_input_value(\"" + moduleId_() + "\", \"" + portId + "\")");
+      }
     }
   }
   return line;

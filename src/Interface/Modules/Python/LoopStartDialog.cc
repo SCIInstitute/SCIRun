@@ -50,5 +50,5 @@ LoopStartDialog::LoopStartDialog(const std::string& name, ModuleStateHandle stat
   //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
-  //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+  connect(pythonDocPushButton_, &QPushButton::clicked, []() { openPythonAPIDoc(); });
 }

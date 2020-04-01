@@ -27,6 +27,7 @@
 
 
 #include <Modules/Python/LoopIncrement.h>
+#include <Modules/Python/ModuleStateModifierTester.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
@@ -73,27 +74,6 @@ void LoopIncrement::postStateChangeInternalSignalHookup()
   setProgrammableInputPortEnabled(true);
 }
 
-//
-// std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
-// {
-//   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
-//     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-//     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
-// }
-//
-// std::vector<std::string> InterfaceWithPython::connectedPortIds() const
-// {
-//   std::vector<std::string> ids;
-//   for (const auto& port : inputPorts())
-//   {
-//     if (port->nconnections() > 0)
-//     {
-//       ids.push_back(port->id().toString());
-//     }
-//   }
-//   return ids;
-// }
-
 void LoopIncrement::execute()
 {
 #ifdef BUILD_WITH_PYTHON
@@ -105,7 +85,7 @@ void LoopIncrement::execute()
   {
     auto code = get_state()->getValue(Parameters::LoopIncrementCode).toString();
     remark(code);
-    //sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
+    sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

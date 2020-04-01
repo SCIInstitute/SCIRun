@@ -30,6 +30,7 @@
 #define MODULES_PYTHON_MODULESTATEMODIFIERTESTER_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/MetadataObject.h>
 #include <Core/Thread/Mutex.h>
 #include <Modules/Python/share.h>
 
@@ -43,6 +44,17 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(StateModifyingCode);
       }
+    }
+    namespace Datatypes
+    {
+      class SCISHARE PythonExecutingMetadataObject : public MetadataObject
+      {
+      public:
+        using MetadataObject::MetadataObject;
+        void process(const std::string& modId) override;
+      private:
+        static Core::Thread::Mutex lock_;
+      };
     }
   }
 
@@ -59,21 +71,7 @@ namespace SCIRun
         void execute() override;
         void setStateDefaults() override;
         void postStateChangeInternalSignalHookup() override;
-        // HAS_DYNAMIC_PORTS
-        // INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
-        // INPUT_PORT_DYNAMIC(1, InputField, Field);
-        // INPUT_PORT_DYNAMIC(2, InputString, String);
         OUTPUT_PORT(0, MetadataCode, MetadataObject);
-        // OUTPUT_PORT(1, PythonMatrix2, Matrix);
-        // OUTPUT_PORT(2, PythonMatrix3, Matrix);
-        // OUTPUT_PORT(3, PythonField1, Field);
-        // OUTPUT_PORT(4, PythonField2, Field);
-        // OUTPUT_PORT(5, PythonField3, Field);
-        // OUTPUT_PORT(6, PythonString1, String);
-        // OUTPUT_PORT(7, PythonString2, String);
-        // OUTPUT_PORT(8, PythonString3, String);
-
-        //static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
@@ -81,11 +79,9 @@ namespace SCIRun
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
       private:
-        static Core::Thread::Mutex lock_;
         //void runTopLevelCode() const;
         //std::vector<std::string> connectedPortIds() const;
         //SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
-        //static bool matlabInitialized_;
       };
 
     }

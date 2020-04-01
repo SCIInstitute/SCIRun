@@ -488,8 +488,12 @@ void Module::runProgrammablePortInput()
   auto prog = getOptionalInputAtIndex<MetadataObject>(ProgrammablePortId());
   if (prog && *prog)
   {
-    logCritical("MetadataObject found!");
-    (*prog)->process();
+    logCritical("MetadataObject found! {}", id().id_);
+    (*prog)->process(id());
+  }
+  else
+  {
+    logCritical("\tMetadataObject NOT found! {}", id().id_);
   }
 }
 
