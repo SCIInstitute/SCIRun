@@ -60,6 +60,7 @@ SET(Core_Datatypes_HEADERS
   MatrixIO.h
   MatrixTypeConversions.h
   MatrixMathVisitors.h
+  MetadataObject.h
   PropertyManagerExtensions.h
   Scalar.h
   share.h
