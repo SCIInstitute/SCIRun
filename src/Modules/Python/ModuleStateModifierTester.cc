@@ -36,6 +36,7 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -93,6 +94,19 @@ void ModuleStateModifierTester::postStateChangeInternalSignalHookup()
 //   return ids;
 // }
 
+class PythonExecutingMetadataObject : public MetadataObject
+{
+public:
+  using MetadataObject::MetadataObject;
+
+  void process() override
+  {
+    MetadataObject::process();
+    PythonInterpreter::Instance().run_script(programData_);
+    logCritical("Done python execution??");
+  }
+};
+
 void ModuleStateModifierTester::execute()
 {
 #ifdef BUILD_WITH_PYTHON
@@ -104,7 +118,7 @@ void ModuleStateModifierTester::execute()
   {
     auto code = get_state()->getValue(Parameters::StateModifyingCode).toString();
     remark(code);
-    sendOutput(MetadataCode, boost::make_shared<MetadataObject>(code));
+    sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
