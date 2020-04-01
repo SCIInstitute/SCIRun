@@ -42,6 +42,7 @@ const static Vector z_axis = Vector(0,0,1);
 TEST(OrientedBBoxTests, Constructor)
 {
   OrientedBBox obbox(x_axis, y_axis, z_axis);
+  EXPECT_EQ(false, obbox.valid());
 }
 
 TEST(OrientedBBoxTests, Extend)

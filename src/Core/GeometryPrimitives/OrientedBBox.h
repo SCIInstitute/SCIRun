@@ -38,76 +38,24 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-class OrientedBBox
+class SCISHARE OrientedBBox
 {
 public:
   OrientedBBox(const Core::Geometry::Vector &e1, const Core::Geometry::Vector &e2, const Core::Geometry::Vector &e3);
   /// Expand the bounding box to include point p
-  inline void extend(const Point &p)
-  {
-    auto originToPos = Vector(p);
-    if (is_valid_)
-      for (int iDim = 0; iDim < 3; ++iDim)
-      {
-        auto projectedPos = Dot(originToPos, eigvecs_[iDim]);
-        cmin_[iDim] = std::min(projectedPos, cmin_[iDim]);
-        cmax_[iDim] = std::max(projectedPos, cmax_[iDim]);
-      }
-    else
-    {
-      is_valid_ = true;
-      for (int iDim = 0; iDim < 3; ++iDim)
-      {
-        auto projectedPos = Dot(originToPos, eigvecs_[iDim]);
-        cmin_[iDim] = projectedPos;
-        cmax_[iDim] = projectedPos;
-      }
-    }
-  }
 
-  /// Extend the bounding box on all sides by a margin
-  /// For example to expand it by a certain epsilon to make
-  /// sure that a lookup will be inside the bounding box
-  inline void extend(double val)
-  {
-    if (is_valid_)
-    {
-      cmin_.x(cmin_.x()-val);
-      cmin_.y(cmin_.y()-val);
-      cmin_.z(cmin_.z()-val);
-      cmax_.x(cmax_.x()+val);
-      cmax_.y(cmax_.y()+val);
-      cmax_.z(cmax_.z()+val);
-    }
-  }
-
-  inline bool valid() const
-  { return is_valid_; }
-
-  inline Vector diagonal() const
-  {
-    //TODO: needs invariant check, or refactoring.
-    ASSERT(is_valid_);
-    return cmax_-cmin_;
-  }
-
-  inline Point get_min() const
-  { return cmin_; }
-
-  inline Point get_max() const
-  { return cmax_; }
-
-  inline Point center() const
-  {
-    /// @todo: C assert: assert(is_valid_);
-    Vector d = diagonal();
-    return cmin_ + (d * 0.5);
-  }
+  Core::Geometry::Point center() const;
+  Core::Geometry::Point get_max() const;
+  Core::Geometry::Point get_min() const;
+  Core::Geometry::Vector diagonal() const;
+  bool valid() const;
+  void extend(double val);
+  void extend(const Core::Geometry::Point &p);
 
 private:
   std::vector<Vector> eigvecs_;
-  Point cmin_;
-  Point cmax_;
+  Core::Geometry::Point cmin_;
+  Core::Geometry::Point cmax_;
   bool is_valid_;
 };
 
