@@ -40,6 +40,7 @@ SET(Core_Datatypes_SRCS
   Scalar.cc
   SparseRowMatrixFromMap.cc
   String.cc
+  MetadataObject.cc
 )
 
 SET(Core_Datatypes_HEADERS
