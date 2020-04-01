@@ -31,6 +31,9 @@ SET(Modules_Python_SRCS
   InterfaceWithPython.cc
   PythonInterfaceParser.cc
   ModuleStateModifierTester.cc
+  LoopEnd.cc
+  LoopStart.cc
+  LoopIncrement.cc
 )
 
 SET(Modules_Python_HEADERS
@@ -38,6 +41,9 @@ SET(Modules_Python_HEADERS
   InterfaceWithPython.h
   PythonInterfaceParser.h
   ModuleStateModifierTester.h
+  LoopEnd.h
+  LoopStart.h
+  LoopIncrement.h
   share.h
 )
 

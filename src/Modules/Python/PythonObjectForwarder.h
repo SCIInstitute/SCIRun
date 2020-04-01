@@ -87,10 +87,7 @@ namespace SCIRun
               if (var.name().name() == "string")
               {
                 auto valueStr = var.toString();
-                if (!valueStr.empty())
-                  module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>(valueStr));
-                else
-                  module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>("Empty string or non-string received"));
+                module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received"));
               }
               else if (var.name().name() == Core::Python::pyDenseMatrixLabel())
               {

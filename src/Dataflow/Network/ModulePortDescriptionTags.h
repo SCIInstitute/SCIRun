@@ -343,6 +343,8 @@ namespace Modules
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
+struct DummyPortName : Dataflow::Networks::StaticPortName<Core::Datatypes::Datatype, 999> {};
+
   /// @todo: make metafunc for Input/Output
 
   template <size_t numPorts, class ModuleType>
