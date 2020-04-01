@@ -45,12 +45,14 @@ TEST(BBoxTests, ExtendPerformance)
 
   auto end = std::chrono::steady_clock::now();
   auto diff = end - start;
-  std::cout << "1,000,000 Extend Calls" << " : " << std::chrono::duration<double, std::milli>(diff).count() << " ms\n";
+  std::cout << "1,000,000 Extend Calls" << " : "
+            << std::chrono::duration<double, std::milli>(diff).count() << " ms\n";
 }
 
 TEST(BBoxTests, Constructor)
 {
   BBox bbox;
+  EXPECT_EQ(false, bbox.valid());
 }
 
 TEST(BBoxTests, Extend)
