@@ -32,9 +32,7 @@
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <boost/algorithm/string.hpp>
+#include <Core/Datatypes/MetadataObject.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
@@ -104,7 +102,9 @@ void ModuleStateModifierTester::execute()
   // auto strings = getOptionalDynamicInputs(InputString);
   if (needToExecute())
   {
-    remark(get_state()->getValue(Parameters::StateModifyingCode).toString());
+    auto code = get_state()->getValue(Parameters::StateModifyingCode).toString();
+    remark(code);
+    sendOutput(MetadataCode, boost::make_shared<MetadataObject>(code));
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

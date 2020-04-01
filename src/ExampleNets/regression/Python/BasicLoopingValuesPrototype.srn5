@@ -353,7 +353,7 @@
 									<name>ProgrammableInputPortEnabled</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -545,9 +545,9 @@
 									<name>StateModifyingCode</name>
 									<value>
 										<which>2</which>
-										<value>def updateModule(id):
-	newX = scirun_get_module_state(id, &quot;XLocation&quot;) + 0.1
-	scirun_set_module_state(id, &quot;XLocation&quot;, newX)
+										<value>m = %moduleid%
+newX = scirun_get_module_state(m, &quot;XLocation&quot;) + 0.1
+scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 </value>
 									</value>
 								</second>

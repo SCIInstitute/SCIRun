@@ -36,6 +36,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/MetadataObject.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
@@ -64,6 +65,12 @@ using namespace SCIRun::Core::Thread;
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
   return m.name() + " [" + m.id().id_ + "]";
+}
+
+PortId SCIRun::Dataflow::Networks::ProgrammablePortId()
+{
+  static PortId preexecute{ 1000, "PreexecuteCode" };
+  return preexecute;
 }
 
 namespace detail
@@ -365,6 +372,9 @@ void Module::copyStateToMetadata()
 bool Module::executeWithSignals() NOEXCEPT
 {
   auto starting = "STARTING MODULE: " + id().id_;
+
+  runProgrammablePortInput();
+
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
   if (!LogSettings::Instance().verbose())
@@ -471,6 +481,16 @@ bool Module::executeWithSignals() NOEXCEPT
 
   impl_->executeEnds_(executionTime, id());
   return impl_->returnCode_;
+}
+
+void Module::runProgrammablePortInput()
+{
+  auto prog = getOptionalInputAtIndex<MetadataObject>(ProgrammablePortId());
+  if (prog && *prog)
+  {
+    logCritical("MetadataObject found!");
+    (*prog)->process();
+  }
 }
 
 ModuleStateHandle Module::get_state()

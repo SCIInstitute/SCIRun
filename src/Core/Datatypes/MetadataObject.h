@@ -30,6 +30,7 @@
 #define CORE_DATATYPES_METADATAOBJECT_H
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Logging/Log.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -39,9 +40,11 @@ namespace Datatypes {
   class SCISHARE MetadataObject : public Datatype
   {
   public:
-    explicit Metadata(const std::string& programData) : programData_(programData) {}
+    explicit MetadataObject(const std::string& programData) : programData_(programData) {}
     std::string program() const { return programData_; }
+    virtual void process() { logCritical("Processing metadata object program data: \n{}", programData_); }
     std::string dynamic_type_name() const override { return "MetadataObject"; }
+    Datatype* clone() const override { return new MetadataObject(programData_); }
   protected:
     std::string programData_;
   };
