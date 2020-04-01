@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>g</value>
+										<value>d</value>
 									</value>
 								</second>
 							</item>
@@ -214,8 +214,20 @@ scirun_set_module_state(m, key, letter)</value>
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IterationCount</name>
+								</first>
+								<second>
+									<name>IterationCount</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>LoopStartCode</name>
@@ -226,9 +238,9 @@ scirun_set_module_state(m, key, letter)</value>
 										<which>2</which>
 										<value># Insert your Python code here. The SCIRun API package is automatically imported.
 
-#m = &quot;CreateString:0&quot;
-#key = &quot;InputString&quot;
-#scirun_set_module_state(m, key, &quot;a&quot;)</value>
+m = %moduleId%
+key = &quot;InputString&quot;
+scirun_set_module_state(m, key, &quot;a&quot;)</value>
 									</value>
 								</second>
 							</item>

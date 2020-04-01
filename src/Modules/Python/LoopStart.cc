@@ -28,6 +28,7 @@
 
 #include <Modules/Python/LoopStart.h>
 #include <Modules/Python/PythonObjectForwarder.h>
+#include <Modules/Python/ModuleStateModifierTester.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
@@ -77,41 +78,26 @@ void LoopStart::postStateChangeInternalSignalHookup()
   get_state()->setValue(Parameters::IterationCount, 0);
 }
 
-//
-// std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
-// {
-//   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
-//     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-//     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
-// }
-//
-// std::vector<std::string> InterfaceWithPython::connectedPortIds() const
-// {
-//   std::vector<std::string> ids;
-//   for (const auto& port : inputPorts())
-//   {
-//     if (port->nconnections() > 0)
-//     {
-//       ids.push_back(port->id().toString());
-//     }
-//   }
-//   return ids;
-// }
-
 void LoopStart::execute()
 {
 #ifdef BUILD_WITH_PYTHON
 
   // auto matrices = getOptionalDynamicInputs(InputMatrix);
   // auto fields = getOptionalDynamicInputs(InputField);
-  // auto strings = getOptionalDynamicInputs(InputString);
+  auto incrCode = getRequiredInput(LoopIncrementCodeObject);
   //if (needToExecute())
   {
     auto state = get_state();
-    auto code = state->getValue(Parameters::LoopStartCode).toString();
-    remark(code);
-    state->setValue(Parameters::IterationCount, state->getValue(Parameters::IterationCount).toInt() + 1);
-    //sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
+    auto startCode = state->getValue(Parameters::LoopStartCode).toString();
+    //remark(startCode);
+
+
+
+    const auto counter = state->getValue(Parameters::IterationCount).toInt();
+    auto code = 0 == counter ? startCode : incrCode->program();
+
+    sendOutput(LoopStartCodeObject, boost::make_shared<PythonExecutingMetadataObject>(code));
+    state->setValue(Parameters::IterationCount, counter + 1);
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
