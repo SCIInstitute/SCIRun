@@ -269,7 +269,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>22655</value>
+										<value>64849</value>
 									</value>
 								</second>
 							</item>
@@ -281,7 +281,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>26067</value>
+										<value>67523</value>
 									</value>
 								</second>
 							</item>
@@ -389,7 +389,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>-3.01309483051300009e-01</value>
+										<value>-7.09492254257199084e-02</value>
 									</value>
 								</second>
 							</item>
@@ -401,7 +401,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>-1.39481441974639853e-01</value>
+										<value>-1.08012566149234757e+00</value>
 									</value>
 								</second>
 							</item>
@@ -413,7 +413,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>-6.05914609432220419e-01</value>
+										<value>1.06224639415740896e-01</value>
 									</value>
 								</second>
 							</item>
@@ -545,9 +545,15 @@
 									<name>StateModifyingCode</name>
 									<value>
 										<which>2</which>
-										<value>m = %moduleid%
-newX = scirun_get_module_state(m, &quot;XLocation&quot;) + 0.1
+										<value>import time
+
+m = &quot;GenerateSinglePointProbeFromField:0&quot; #%moduleid%
+newX = scirun_get_module_state(m, &quot;XLocation&quot;) - 0.1
+newY = scirun_get_module_state(m, &quot;YLocation&quot;) - 0.1
+#print(&quot;sleeping on python side&quot;)
+#time.sleep(1)
 scirun_set_module_state(m, &quot;XLocation&quot;, newX)
+scirun_set_module_state(m, &quot;YLocation&quot;, newY)
 </value>
 									</value>
 								</second>
@@ -1200,7 +1206,7 @@ scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 									<name>CameraDistance</name>
 									<value>
 										<which>1</which>
-										<value>7.81733942031860352e+00</value>
+										<value>6.18527650833129883e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1219,21 +1225,21 @@ scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-4.15000081062316895e-01</value>
+													<value>-6.54816627502441406e-04</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-4.15000081062316895e-01</value>
+													<value>-6.97406530380249023e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-4.15000081062316895e-01</value>
+													<value>0.00000000000000000e+00</value>
 												</value>
 											</item>
 										</value>
@@ -1255,28 +1261,28 @@ scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>2.60539621114730835e-01</value>
+													<value>1.79870009422302246e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>1.19456373155117035e-01</value>
+													<value>-3.56136620044708252e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>9.45466578006744385e-01</value>
+													<value>8.05455744266510010e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-1.54732614755630493e-01</value>
+													<value>-4.38239932060241699e-01</value>
 												</value>
 											</item>
 										</value>
@@ -1747,7 +1753,7 @@ scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>

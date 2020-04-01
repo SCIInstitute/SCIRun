@@ -103,7 +103,7 @@ public:
   {
     MetadataObject::process();
     PythonInterpreter::Instance().run_script(programData_);
-    logCritical("Done python execution??");
+    logCritical("Done python execution.");
   }
 };
 
