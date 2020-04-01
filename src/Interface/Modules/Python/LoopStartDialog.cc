@@ -47,8 +47,8 @@ LoopStartDialog::LoopStartDialog(const std::string& name, ModuleStateHandle stat
   }
 
   addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::LoopStartCode);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+  addSpinBoxManager(iterationCountSpinBox_, Parameters::IterationCount);
+  connect(resetIterationCountPushButton_, &QPushButton::clicked, [this]() { state_->setValue(Parameters::IterationCount, 0); });
 
   connect(pythonDocPushButton_, &QPushButton::clicked, []() { openPythonAPIDoc(); });
 }

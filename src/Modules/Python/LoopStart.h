@@ -42,6 +42,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(LoopStartCode);
+        ALGORITHM_PARAMETER_DECL(IterationCount);
       }
     }
   }
@@ -51,7 +52,7 @@ namespace SCIRun
     namespace Python
     {
       class SCISHARE LoopStart : public SCIRun::Dataflow::Networks::Module,
-        public HasNoInputPorts,
+        public Has1InputPort<MetadataObjectPortTag>,
         public Has1OutputPort<MetadataObjectPortTag>
       {
       public:
@@ -63,7 +64,8 @@ namespace SCIRun
         // INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
         // INPUT_PORT_DYNAMIC(1, InputField, Field);
         // INPUT_PORT_DYNAMIC(2, InputString, String);
-        OUTPUT_PORT(0, MetadataCode, MetadataObject);
+        INPUT_PORT(0, LoopIncrementCodeObject, MetadataObject);
+        OUTPUT_PORT(0, LoopStartCodeObject, MetadataObject);
         // OUTPUT_PORT(1, PythonMatrix2, Matrix);
         // OUTPUT_PORT(2, PythonMatrix3, Matrix);
         // OUTPUT_PORT(3, PythonField1, Field);

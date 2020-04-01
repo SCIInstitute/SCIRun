@@ -54,7 +54,7 @@ MODULE_INFO_DEF(LoopEnd, Python, SCIRun)
 
 LoopEnd::LoopEnd() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(MetadataCode);
+  INITIALIZE_PORT(LoopEndCodeObject);
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputString);
@@ -112,7 +112,7 @@ void LoopEnd::execute()
     auto convertedCode = translator_->translate(code);
     PythonInterpreter::Instance().run_script(convertedCode.code);
     PythonObjectForwarderImpl<LoopEnd> impl(*this);
-    if (oport_connected(MetadataCode))
+    if (oport_connected(LoopEndCodeObject))
       impl.waitForOutputFromTransientState("loopEndCondition", DummyPortName(), DummyPortName(), DummyPortName());
   }
 #else

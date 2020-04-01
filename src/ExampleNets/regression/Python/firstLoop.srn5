@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>a</value>
+										<value>g</value>
 									</value>
 								</second>
 							</item>
@@ -181,10 +181,10 @@ else:
 m = %moduleId%
 key = &quot;InputString&quot;
 letter = scirun_get_module_state(m, key)[0]
-print(letter)
-#letter = chr(ord(letter) + 1) 
 #print(letter)
-#scirun_set_module_state(m, key, letter)</value>
+letter = chr(ord(letter) + 1) 
+#print(letter)
+scirun_set_module_state(m, key, letter)</value>
 									</value>
 								</second>
 							</item>
@@ -1253,7 +1253,7 @@ print(letter)
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>6</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
@@ -1294,10 +1294,22 @@ print(letter)
 			<item>
 				<moduleId1_>LoopIncrement:0</moduleId1_>
 				<port1_>
-					<name>MetadataCode</name>
+					<name>LoopIncrementCodeObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>CreateString:1</moduleId2_>
+				<moduleId2_>LoopStart:0</moduleId2_>
+				<port2_>
+					<name>LoopIncrementCodeObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>LoopStart:0</moduleId1_>
+				<port1_>
+					<name>LoopStartCodeObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateString:0</moduleId2_>
 				<port2_>
 					<name>PreexecuteCode</name>
 					<id>1000</id>
@@ -1349,58 +1361,71 @@ print(letter)
 		<item>
 			<first>LoopEnd:0</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>6.08000000000000000e+02</second>
+				<first>1.52000000000000000e+02</first>
+				<second>5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
-				<first>7.60000000000000000e+01</first>
+				<first>-1.52000000000000000e+02</first>
 				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopStart:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
-				<second>7.60000000000000000e+01</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowString:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
+				<first>-1.52000000000000000e+02</first>
 				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowString:1</first>
 			<second>
-				<first>1.71000000000000000e+02</first>
-				<second>4.08000000000000000e+02</second>
+				<first>7.60000000000000000e+01</first>
+				<second>3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
+				<first>-7.60000000000000000e+01</first>
 				<second>5.32000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="19" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateString:1</first>
+			<second class_id="21" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:16pt;&quot;&gt;Don&apos;t connect this one yet--crashes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Don&apos;t connect this one yet--crashes</noteText>
+				<position>3</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="20" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="21" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>CreateString:0</first>
 			<second>-1</second>
 		</item>
@@ -1433,7 +1458,7 @@ print(letter)
 			<second>-1</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="22" tracking_level="0" version="0">
+	<disabledModules class_id="24" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -1441,12 +1466,12 @@ print(letter)
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="23" tracking_level="0" version="0">
+	<moduleTagLabels class_id="25" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
-	<subnetworks class_id="24" tracking_level="0" version="0">
+	<subnetworks class_id="26" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</subnetworks>

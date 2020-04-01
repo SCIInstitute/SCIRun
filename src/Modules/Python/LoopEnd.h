@@ -64,7 +64,7 @@ namespace SCIRun
         INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
         INPUT_PORT_DYNAMIC(1, InputField, Field);
         INPUT_PORT_DYNAMIC(2, InputString, String);
-        OUTPUT_PORT(0, MetadataCode, MetadataObject);
+        OUTPUT_PORT(0, LoopEndCodeObject, MetadataObject);
         // OUTPUT_PORT(1, PythonMatrix2, Matrix);
         // OUTPUT_PORT(2, PythonMatrix3, Matrix);
         // OUTPUT_PORT(3, PythonField1, Field);

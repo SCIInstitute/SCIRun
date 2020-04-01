@@ -55,7 +55,8 @@ MODULE_INFO_DEF(LoopIncrement, Python, SCIRun)
 
 LoopIncrement::LoopIncrement() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(MetadataCode);
+  INITIALIZE_PORT(LoopEndCodeObject);
+  INITIALIZE_PORT(LoopIncrementCodeObject);
 //
 // #ifdef BUILD_WITH_PYTHON
 //   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
@@ -85,7 +86,7 @@ void LoopIncrement::execute()
   {
     auto code = get_state()->getValue(Parameters::LoopIncrementCode).toString();
     remark(code);
-    sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
+    sendOutput(LoopIncrementCodeObject, boost::make_shared<PythonExecutingMetadataObject>(code));
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

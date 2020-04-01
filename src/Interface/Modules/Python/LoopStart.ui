@@ -94,13 +94,43 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pythonDocPushButton_">
-       <property name="text">
-        <string>Load Python API Documentation</string>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Loop Count</string>
        </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Iteration</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="iterationCountSpinBox_">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="resetIterationCountPushButton_">
+          <property name="text">
+           <string>Reset Loop Counter</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pythonDocPushButton_">
+     <property name="text">
+      <string>Load Python API Documentation</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

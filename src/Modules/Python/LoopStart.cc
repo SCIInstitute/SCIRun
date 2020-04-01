@@ -46,6 +46,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, LoopStartCode);
+ALGORITHM_PARAMETER_DEF(Python, IterationCount);
 
 MODULE_INFO_DEF(LoopStart, Python, SCIRun)
 
@@ -54,7 +55,8 @@ MODULE_INFO_DEF(LoopStart, Python, SCIRun)
 
 LoopStart::LoopStart() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(MetadataCode);
+  INITIALIZE_PORT(LoopStartCodeObject);
+  INITIALIZE_PORT(LoopIncrementCodeObject);
 //
 // #ifdef BUILD_WITH_PYTHON
 //   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
@@ -66,11 +68,13 @@ void LoopStart::setStateDefaults()
   auto state = get_state();
 
   state->setValue(Parameters::LoopStartCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::IterationCount, 0);
 }
 
 void LoopStart::postStateChangeInternalSignalHookup()
 {
   setProgrammableInputPortEnabled(true);
+  get_state()->setValue(Parameters::IterationCount, 0);
 }
 
 //
@@ -101,10 +105,12 @@ void LoopStart::execute()
   // auto matrices = getOptionalDynamicInputs(InputMatrix);
   // auto fields = getOptionalDynamicInputs(InputField);
   // auto strings = getOptionalDynamicInputs(InputString);
-  if (needToExecute())
+  //if (needToExecute())
   {
-    auto code = get_state()->getValue(Parameters::LoopStartCode).toString();
+    auto state = get_state();
+    auto code = state->getValue(Parameters::LoopStartCode).toString();
     remark(code);
+    state->setValue(Parameters::IterationCount, state->getValue(Parameters::IterationCount).toInt() + 1);
     //sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
   }
 #else
