@@ -32,7 +32,7 @@
 #define CORE_GEOMETRY_BBOX_H 1
 
 #define NOMINMAX
-#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
@@ -200,7 +200,8 @@ class BBox {
     inline Vector diagonal() const
     {
       //TODO: needs invariant check, or refactoring.
-      ASSERT(is_valid_);
+      if (!is_valid_)
+        THROW_INVALID_STATE("OrientedBBox is not valid.");
       return cmax_-cmin_;
     }
 

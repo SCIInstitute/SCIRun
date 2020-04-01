@@ -28,20 +28,24 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <chrono>
 #include <stdlib.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Geometry;
 
 TEST(BBoxTests, ExtendPerformance)
 {
   BBox bbox;
   auto start = std::chrono::steady_clock::now();
+  static unsigned int seed = 42;
 
   for(int i = 0; i < 1000000; ++i)
-    bbox.extend(Point(rand(), rand(), rand()));
+    bbox.extend(Point(rand_r(&seed), rand_r(&seed), rand_r(&seed)));
 
   auto end = std::chrono::steady_clock::now();
   auto diff = end - start;
@@ -53,6 +57,7 @@ TEST(BBoxTests, Constructor)
 {
   BBox bbox;
   EXPECT_EQ(false, bbox.valid());
+  EXPECT_THROW(bbox.diagonal(), InvalidStateException);
 }
 
 TEST(BBoxTests, Extend)
