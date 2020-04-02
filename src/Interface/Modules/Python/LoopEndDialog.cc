@@ -27,6 +27,7 @@
 
 
 #include <Interface/Modules/Python/LoopEndDialog.h>
+#include <Modules/Python/PythonObjectForwarder.h>
 #include <Modules/Python/LoopEnd.h>
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
@@ -47,9 +48,8 @@ LoopEndDialog::LoopEndDialog(const std::string& name, ModuleStateHandle state,
   }
 
   addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::LoopEndCode);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+  addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
+  addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
-  //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
   connect(pythonDocPushButton_, &QPushButton::clicked, []() { openPythonAPIDoc(); });
 }

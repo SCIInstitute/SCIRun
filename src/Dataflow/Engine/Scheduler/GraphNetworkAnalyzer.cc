@@ -156,7 +156,7 @@ void NetworkGraphAnalyzer::fillDownstreamModules(const ModuleId& mid, std::vecto
     for (size_t i = 0; i < output->nconnections(); ++i)
     {
       auto c = output->connection(i);
-      if (!c->disabled())
+      if (!c->disabled() && !c->isVirtual())
       {
         auto down = c->iport_->getUnderlyingModuleId();
         downstream.push_back(down);

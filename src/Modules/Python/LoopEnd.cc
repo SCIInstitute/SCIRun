@@ -27,6 +27,7 @@
 
 
 #include <Modules/Python/LoopEnd.h>
+#include <Modules/Python/LoopIncrement.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
@@ -69,8 +70,8 @@ void LoopEnd::setStateDefaults()
   auto state = get_state();
 
   state->setValue(Parameters::LoopEndCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
-  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
-  state->setValue(Parameters::NumberOfRetries, 50);
+  state->setValue(Parameters::PollingIntervalMilliseconds, 10);
+  state->setValue(Parameters::NumberOfRetries, 5);
 }
 
 void LoopEnd::postStateChangeInternalSignalHookup()
@@ -118,4 +119,9 @@ void LoopEnd::execute()
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
 #endif
+}
+
+bool LoopEnd::checkForVirtualConnection(const ModuleInterface& downstream) const
+{
+  return dynamic_cast<const LoopIncrement*>(&downstream) != nullptr;
 }

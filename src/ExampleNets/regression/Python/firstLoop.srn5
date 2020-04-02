@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>d</value>
+										<value>a</value>
 									</value>
 								</second>
 							</item>
@@ -125,7 +125,7 @@ else:
 									<name>NumberOfRetries</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>13</value>
 									</value>
 								</second>
 							</item>
@@ -137,7 +137,7 @@ else:
 									<name>PollingIntervalMilliseconds</name>
 									<value>
 										<which>0</which>
-										<value>200</value>
+										<value>5</value>
 									</value>
 								</second>
 							</item>
@@ -224,7 +224,7 @@ scirun_set_module_state(m, key, letter)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1183,7 +1183,7 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1265,7 +1265,7 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
@@ -1300,6 +1300,18 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 				<moduleId2_>ShowString:1</moduleId2_>
 				<port2_>
 					<name>String</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>LoopEnd:0</moduleId1_>
+				<port1_>
+					<name>LoopEndCodeObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>LoopIncrement:0</moduleId2_>
+				<port2_>
+					<name>LoopEndCodeObject</name>
 					<id>0</id>
 				</port2_>
 			</item>

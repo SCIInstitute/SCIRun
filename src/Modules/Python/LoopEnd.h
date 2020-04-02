@@ -74,7 +74,7 @@ namespace SCIRun
         // OUTPUT_PORT(7, PythonString2, String);
         // OUTPUT_PORT(8, PythonString3, String);
 
-        //static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
+        bool checkForVirtualConnection(const ModuleInterface& downstream) const override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
