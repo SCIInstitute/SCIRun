@@ -40,6 +40,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -113,16 +114,17 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   {
     try
     {
-      ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
-
-      connections_[id] = conn;
+      bool virtualConnection = outputModule->checkForVirtualConnection(*inputModule);
+      connections_[id] = boost::make_shared<Connection>(
+        outputModule->getOutputPort(outputPortId),
+        inputModule->getInputPort(inputPortId),
+        id, virtualConnection);
 
       return id;
     }
     catch (const SCIRun::Core::ExceptionBase& e)
     {
-      std::cout << "Caught exception making a connection: " << e.what() << std::endl;
-      ///????????
+      logCritical("Caught exception making a connection: {}", e.what());
       return ConnectionId(""); //??
     }
   }
