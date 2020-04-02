@@ -196,18 +196,14 @@ std::string Network::toString() const
   return ostr.str();
 }
 
-struct Describe
+NetworkInterface::ConnectionDescriptionList Network::connections(bool includeVirtual) const
 {
-  ConnectionDescription operator()(const Network::Connections::value_type& p) const
-  {
-    return p.first.describe();
-  }
-};
-
-NetworkInterface::ConnectionDescriptionList Network::connections() const
-{
+  Connections toDescribe;
+  std::copy_if(connections_.begin(), connections_.end(), std::inserter(toDescribe, toDescribe.begin()),
+    [includeVirtual](const Connections::value_type& c) { return includeVirtual || !c.second->isVirtual(); });
   ConnectionDescriptionList conns;
-  std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());
+  std::transform(toDescribe.begin(), toDescribe.end(), std::back_inserter(conns),
+    [](const Connections::value_type& c) { return c.first.describe(); });
   return conns;
 }
 

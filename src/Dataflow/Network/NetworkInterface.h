@@ -88,7 +88,7 @@ namespace Networks {
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
     virtual void disable_connection(const ConnectionId&) = 0;
-    virtual ConnectionDescriptionList connections() const = 0;
+    virtual ConnectionDescriptionList connections(bool includeVirtual) const = 0;
     virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
     virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) = 0;

@@ -94,7 +94,7 @@ EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
 
   std::vector<Edge> edges;
 
-  for (const ConnectionDescription& cd : network_.connections())
+  for (const ConnectionDescription& cd : network_.connections(false))
   {
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
