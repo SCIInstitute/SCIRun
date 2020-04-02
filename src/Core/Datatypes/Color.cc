@@ -40,6 +40,11 @@ ColorRGB::ColorRGB()
 {
 }
 
+ColorRGB::ColorRGB(double v)
+  : r_(v), g_(v), b_(v), a_(1.0)
+{
+}
+
 ColorRGB::ColorRGB(double r, double g, double b)
   : r_(r), g_(g), b_(b), a_(1.0)
 {
@@ -71,7 +76,7 @@ ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
   }
 }
 
-ColorRGB::ColorRGB(unsigned long int rgbHexValue) :
+ColorRGB::ColorRGB(unsigned int rgbHexValue) :
   r_(((rgbHexValue & 0xFF0000) >> 16) / 255.0),
   g_(((rgbHexValue & 0xFF00) >> 8) / 255.0),
   b_((rgbHexValue & 0xFF) / 255.0),

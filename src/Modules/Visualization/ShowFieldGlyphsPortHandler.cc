@@ -657,7 +657,8 @@ namespace SCIRun{
         if(colorMap) realColorMap = colorMap.get();
         else realColorMap = StandardColorMapFactory::create();
 
-        textureMap = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+        textureMap = StandardColorMapFactory::create(
+          realColorMap->getColorData(), realColorMap->getColorMapName(),
           realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
           realColorMap->getColorMapInvert(), 0.5, 1.0, realColorMap->getAlphaLookup());
 
