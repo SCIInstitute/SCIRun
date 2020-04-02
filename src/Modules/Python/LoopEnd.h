@@ -42,6 +42,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(LoopEndCode);
+        ALGORITHM_PARAMETER_DECL(LoopEndCondition);
         class InterfaceWithPythonCodeTranslator;
       }
     }

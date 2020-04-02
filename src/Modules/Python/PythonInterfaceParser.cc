@@ -39,8 +39,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
 InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(ModuleIdGetter moduleId,
-  const ModuleStateHandle& state)
-  : moduleId_(moduleId), state_(state)
+  const ModuleStateHandle& state, const std::vector<AlgorithmParameterName>& outputNamesToCheck)
+  : moduleId_(moduleId), state_(state), outputNamesToCheck_(outputNamesToCheck)
 {
 }
 
@@ -51,9 +51,7 @@ PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translate(const std::stri
 
 std::string InterfaceWithPythonCodeTranslatorImpl::translateOutputSyntax(const std::string& line) const
 {
-  auto outputVarsToCheck = InterfaceWithPython::outputNameParameters();
-
-  for (const auto& var : outputVarsToCheck)
+  for (const auto& var : outputNamesToCheck_)
   {
     if (state_->containsKey(var))
     {
@@ -83,7 +81,7 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateInputSyntax(const st
 {
   for (const auto& portId : portIds_)
   {
-    if (state_->containsKey(Name(portId)))
+    //if (state_->containsKey(Name(portId)))
     {
       auto inputName = state_->getValue(Name(portId)).toString();
       //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;

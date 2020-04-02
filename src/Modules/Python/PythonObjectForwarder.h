@@ -36,6 +36,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Python/PythonDatatypeConverter.h>
 #include <boost/thread.hpp>
+#include <Core/Logging/Log.h>
 #include <Modules/Python/share.h>
 
 namespace SCIRun
@@ -63,7 +64,8 @@ namespace SCIRun
           }
 
           template <class StringPort, class MatrixPort, class FieldPort>
-          void waitForOutputFromTransientState(const std::string& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort& fieldPort)
+          Datatypes::DatatypeHandle waitForOutputFromTransientState(const std::string& transientKey,
+            const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort& fieldPort)
           {
             int tries = 0;
             auto state = module_.get_state();
@@ -81,34 +83,55 @@ namespace SCIRun
               boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
             }
 
+            Datatypes::DatatypeHandle output;
+
             if (valueOption)
             {
               auto var = Dataflow::Networks::transient_value_cast<Variable>(valueOption);
+              logCritical("ValueOption found, typename is {}", var.name().name());
               if (var.name().name() == "string")
               {
                 auto valueStr = var.toString();
-                module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received"));
+                auto strObj = boost::make_shared<Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received");
+                output = strObj;
+                module_.sendOutput(stringPort, strObj);
+              }
+              else if (var.name().name() == "int")
+              {
+                auto valueInt = var.toInt();
+                output = boost::make_shared<Datatypes::DenseMatrix>(1, 1, valueInt);
+                // special case, don't send, just return value
+                //module_.sendOutput(matrixPort, output);
               }
               else if (var.name().name() == Core::Python::pyDenseMatrixLabel())
               {
                 auto dense = boost::dynamic_pointer_cast<Core::Datatypes::DenseMatrix>(var.getDatatype());
                 if (dense)
+                {
+                  output = dense;
                   module_.sendOutput(matrixPort, dense);
+                }
               }
               else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
               {
                 auto sparse = boost::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
                 if (sparse)
+                {
+                  output = sparse;
                   module_.sendOutput(matrixPort, sparse);
+                }
               }
               else if (var.name().name() == Core::Python::pyFieldLabel())
               {
                 auto field = boost::dynamic_pointer_cast<Core::Datatypes::Field>(var.getDatatype());
                 if (field)
+                {
+                  output = field;
                   module_.sendOutput(fieldPort, field);
+                }
               }
             }
-
+            return output;
           }
         private:
           PythonModule& module_;

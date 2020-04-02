@@ -47,6 +47,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, LoopEndCode);
+ALGORITHM_PARAMETER_DEF(Python, LoopEndCondition);
 
 MODULE_INFO_DEF(LoopEnd, Python, SCIRun)
 
@@ -61,7 +62,7 @@ LoopEnd::LoopEnd() : Module(staticInfo_)
   INITIALIZE_PORT(InputString);
 
 #ifdef BUILD_WITH_PYTHON
-  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), { Parameters::LoopEndCondition }));
 #endif
 }
 
@@ -72,6 +73,7 @@ void LoopEnd::setStateDefaults()
   state->setValue(Parameters::LoopEndCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 10);
   state->setValue(Parameters::NumberOfRetries, 5);
+  state->setValue(Parameters::LoopEndCondition, std::string("loopEndCondition"));
 }
 
 void LoopEnd::postStateChangeInternalSignalHookup()
@@ -113,8 +115,14 @@ void LoopEnd::execute()
     auto convertedCode = translator_->translate(code);
     PythonInterpreter::Instance().run_script(convertedCode.code);
     PythonObjectForwarderImpl<LoopEnd> impl(*this);
+    DatatypeHandle endCondition;
     if (oport_connected(LoopEndCodeObject))
-      impl.waitForOutputFromTransientState("loopEndCondition", DummyPortName(), DummyPortName(), DummyPortName());
+      endCondition = impl.waitForOutputFromTransientState("loopEndCondition", DummyPortName(), DummyPortName(), DummyPortName());
+
+    if (endCondition)
+      logCritical("Generated end condition, value = {}", dynamic_cast<DenseMatrix*>(endCondition.get())->get(0,0));
+    else
+      logCritical("End condition not generated.");
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

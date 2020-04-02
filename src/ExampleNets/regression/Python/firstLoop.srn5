@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>a</value>
+										<value>b</value>
 									</value>
 								</second>
 							</item>
@@ -113,7 +113,9 @@ print(str)
 if (str &gt;= &apos;z&apos;):
 	print(&quot;end of loop!&quot;)
 else:
-	print(&quot;continue loop&quot;)</value>
+	print(&quot;continue loop&quot;)
+
+loopEndCondition = (str &gt;= &apos;z&apos;)</value>
 									</value>
 								</second>
 							</item>
@@ -224,7 +226,7 @@ scirun_set_module_state(m, key, letter)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
