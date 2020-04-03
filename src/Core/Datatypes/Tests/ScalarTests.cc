@@ -68,7 +68,7 @@ TEST(ColorTests, EmptyStringYieldsWhite)
 
 TEST(ColorTests, CanParseHexValue)
 {
-  ColorRGB c(0x27213c);
+  ColorRGB c(0x27213cu);
   ColorRGB c2(39/255.0, 33/255.0, 60/255.0);
   EXPECT_EQ(c, c2);
 }

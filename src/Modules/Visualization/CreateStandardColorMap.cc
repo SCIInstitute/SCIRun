@@ -52,6 +52,8 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::ColorMapInvert, false);
   state->setValue(Parameters::ColorMapShift, 0.0);
   state->setValue(Parameters::AlphaUserPointsVector, Variable::List());
+  state->setValue(Parameters::CustomColor0, ColorRGB(0.2, 0.2, 0.2).toString());
+  state->setValue(Parameters::CustomColor1, ColorRGB(0.8, 0.8, 0.8).toString());
 }
 
 void CreateStandardColorMap::execute()
@@ -74,9 +76,20 @@ void CreateStandardColorMap::execute()
     }
 
     //just in case there is a problem with the QT values...
-    res = std::min(std::max(res,2),256);
-    shift = std::min(std::max(shift,-1.),1.);
-    sendOutput(ColorMapObject, StandardColorMapFactory::create(name, res, shift, inv, 0.5, 1.0, points));
+    res = std::min(std::max(res, 2), 256);
+    shift = std::min(std::max(shift, -1.0), 1.0);
+
+
+    std::vector<ColorRGB> customData;
+    customData.push_back(ColorRGB(state->getValue(Parameters::CustomColor0).toString()));
+    customData.push_back(ColorRGB(state->getValue(Parameters::CustomColor1).toString()));
+
+    ColorMapHandle cmap;
+    cmap = (name == "Custom" ) ?
+      StandardColorMapFactory::create(customData, name, res, shift, inv, 0.5, 1.0, points) :
+      StandardColorMapFactory::create(name, res, shift, inv, 0.5, 1.0, points);
+
+    sendOutput(ColorMapObject, cmap);
   }
 }
 
@@ -86,3 +99,5 @@ ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaUserPointsVector);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaFunctionVector);
+ALGORITHM_PARAMETER_DEF(Visualization, CustomColor0);
+ALGORITHM_PARAMETER_DEF(Visualization, CustomColor1);

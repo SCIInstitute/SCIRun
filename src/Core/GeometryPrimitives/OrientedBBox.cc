@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
 using namespace SCIRun;
@@ -81,7 +82,8 @@ bool OrientedBBox::valid() const
 Vector OrientedBBox::diagonal() const
 {
   //TODO: needs invariant check, or refactoring.
-  ASSERT(is_valid_);
+  if (!is_valid_)
+    THROW_INVALID_STATE("OrientedBBox is not valid.");
   return cmax_-cmin_;
 }
 
@@ -93,7 +95,6 @@ Point OrientedBBox::get_max() const
 
 Point OrientedBBox::center() const
 {
-  /// @todo: C assert: assert(is_valid_);
   Vector d = diagonal();
   return cmin_ + (d * 0.5);
 }

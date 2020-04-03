@@ -28,10 +28,13 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/OrientedBBox.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Geometry;
 
 const static double errorOfMargin = 1.0e-10;
@@ -43,6 +46,7 @@ TEST(OrientedBBoxTests, Constructor)
 {
   OrientedBBox obbox(x_axis, y_axis, z_axis);
   EXPECT_EQ(false, obbox.valid());
+  EXPECT_THROW(obbox.diagonal(), InvalidStateException);
 }
 
 TEST(OrientedBBoxTests, Extend)

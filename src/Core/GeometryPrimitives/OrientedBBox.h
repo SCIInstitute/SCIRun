@@ -29,7 +29,6 @@
 #ifndef CORE_GEOMETRY_ORIENTEDBBOX_H
 #define CORE_GEOMETRY_ORIENTEDBBOX_H
 
-#include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/BBoxBase.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
