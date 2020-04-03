@@ -126,7 +126,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>20</value>
 									</value>
 								</second>
 							</item>
@@ -138,7 +138,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>20</value>
 									</value>
 								</second>
 							</item>
@@ -150,7 +150,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>20</value>
 									</value>
 								</second>
 							</item>
@@ -269,7 +269,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>58074</value>
+										<value>3329</value>
 									</value>
 								</second>
 							</item>
@@ -281,7 +281,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>63010</value>
+										<value>4105</value>
 									</value>
 								</second>
 							</item>
@@ -389,7 +389,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>-5.99999999999999978e-01</value>
+										<value>-5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -401,7 +401,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>-5.99999999999999978e-01</value>
+										<value>-5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -553,6 +553,8 @@ loopWhileCondition = (abs(diff[0][0]) &lt;= 1)</value>
 newX = scirun_get_module_state(m, &quot;XLocation&quot;) - 0.1
 newY = scirun_get_module_state(m, &quot;YLocation&quot;) - 0.1
 
+matrixI = 
+
 scirun_set_module_state(m, &quot;XLocation&quot;, newX)
 scirun_set_module_state(m, &quot;YLocation&quot;, newY)</value>
 									</value>
@@ -594,7 +596,7 @@ scirun_set_module_state(m, &quot;YLocation&quot;, newY)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>7</value>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -754,7 +756,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999911e+00</value>
+										<value>3.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1393,28 +1395,28 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>4.70243304967880249e-01</value>
+													<value>-8.74276831746101379e-03</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-5.86456209421157837e-02</value>
+													<value>-2.47123211622238159e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>2.70258486270904541e-01</value>
+													<value>7.87460446357727051e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-8.38088154792785645e-01</value>
+													<value>-5.64587414264678955e-01</value>
 												</value>
 											</item>
 										</value>
@@ -2205,21 +2207,21 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			<first>LoopEnd:0</first>
 			<second>
 				<first>-2.60000000000000000e+02</first>
-				<second>3.94000000000000000e+02</second>
+				<second>3.92000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
 				<first>-3.80000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<second>-2.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopStart:0</first>
 			<second>
-				<first>-2.04000000000000000e+02</first>
-				<second>-1.39000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2232,7 +2234,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 		<item>
 			<first>ReportMatrixInfo:1</first>
 			<second>
-				<first>-4.56000000000000000e+02</first>
+				<first>-6.08000000000000000e+02</first>
 				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>

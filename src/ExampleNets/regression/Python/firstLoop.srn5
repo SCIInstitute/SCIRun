@@ -66,7 +66,7 @@
 									<name>InputString</name>
 									<value>
 										<which>2</which>
-										<value>A</value>
+										<value>z</value>
 									</value>
 								</second>
 							</item>
@@ -250,7 +250,7 @@ scirun_set_module_state(m, key, letter)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>26</value>
 									</value>
 								</second>
 							</item>
@@ -1291,7 +1291,7 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
@@ -1366,6 +1366,18 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>LoopStart:0</moduleId1_>
+				<port1_>
+					<name>LoopStartCodeObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateString:1</moduleId2_>
+				<port2_>
+					<name>PreexecuteCode</name>
+					<id>1000</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowString:0</moduleId1_>
 				<port1_>
 					<name>RenderedString</name>
@@ -1411,22 +1423,22 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 		<item>
 			<first>LoopEnd:0</first>
 			<second>
-				<first>1.52000000000000000e+02</first>
-				<second>5.32000000000000000e+02</second>
+				<first>1.51000000000000000e+02</first>
+				<second>5.33000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
+				<first>-1.53000000000000000e+02</first>
+				<second>7.70000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>LoopStart:0</first>
 			<second>
 				<first>-7.60000000000000000e+01</first>
-				<second>2.28000000000000000e+02</second>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
