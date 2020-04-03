@@ -66,14 +66,6 @@ namespace SCIRun
         INPUT_PORT_DYNAMIC(1, InputField, Field);
         INPUT_PORT_DYNAMIC(2, InputString, String);
         OUTPUT_PORT(0, LoopEndCodeObject, MetadataObject);
-        // OUTPUT_PORT(1, PythonMatrix2, Matrix);
-        // OUTPUT_PORT(2, PythonMatrix3, Matrix);
-        // OUTPUT_PORT(3, PythonField1, Field);
-        // OUTPUT_PORT(4, PythonField2, Field);
-        // OUTPUT_PORT(5, PythonField3, Field);
-        // OUTPUT_PORT(6, PythonString1, String);
-        // OUTPUT_PORT(7, PythonString2, String);
-        // OUTPUT_PORT(8, PythonString3, String);
 
         bool checkForVirtualConnection(const ModuleInterface& downstream) const override;
 
@@ -83,9 +75,6 @@ namespace SCIRun
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
       private:
-        static Core::Thread::Mutex lock_;
-        //void runTopLevelCode() const;
-        //std::vector<std::string> connectedPortIds() const;
         SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
       };
 

@@ -50,9 +50,6 @@ ALGORITHM_PARAMETER_DEF(Python, LoopIncrementCode);
 
 MODULE_INFO_DEF(LoopIncrement, Python, SCIRun)
 
-//Mutex InterfaceWithPython::lock_("InterfaceWithPython");
-//bool InterfaceWithPython::matlabInitialized_{ false };
-
 LoopIncrement::LoopIncrement() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LoopEndCodeObject);

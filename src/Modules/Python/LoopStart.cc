@@ -51,9 +51,6 @@ ALGORITHM_PARAMETER_DEF(Python, IterationCount);
 
 MODULE_INFO_DEF(LoopStart, Python, SCIRun)
 
-//Mutex InterfaceWithPython::lock_("InterfaceWithPython");
-//bool InterfaceWithPython::matlabInitialized_{ false };
-
 LoopStart::LoopStart() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LoopStartCodeObject);
@@ -81,17 +78,11 @@ void LoopStart::postStateChangeInternalSignalHookup()
 void LoopStart::execute()
 {
 #ifdef BUILD_WITH_PYTHON
-
-  // auto matrices = getOptionalDynamicInputs(InputMatrix);
-  // auto fields = getOptionalDynamicInputs(InputField);
   auto incrCode = getRequiredInput(LoopIncrementCodeObject);
   //if (needToExecute())
   {
     auto state = get_state();
     auto startCode = state->getValue(Parameters::LoopStartCode).toString();
-    //remark(startCode);
-
-
 
     const auto counter = state->getValue(Parameters::IterationCount).toInt();
     auto code = 0 == counter ? startCode : incrCode->program();

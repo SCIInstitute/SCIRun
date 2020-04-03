@@ -75,19 +75,13 @@ namespace SCIRun
         // OUTPUT_PORT(7, PythonString2, String);
         // OUTPUT_PORT(8, PythonString3, String);
 
-        //static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
-
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
       private:
-        static Core::Thread::Mutex lock_;
-        //void runTopLevelCode() const;
-        //std::vector<std::string> connectedPortIds() const;
         //SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
-        //static bool matlabInitialized_;
       };
 
     }

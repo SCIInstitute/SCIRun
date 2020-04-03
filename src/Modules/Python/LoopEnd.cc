@@ -51,9 +51,6 @@ ALGORITHM_PARAMETER_DEF(Python, LoopWhileCondition);
 
 MODULE_INFO_DEF(LoopEnd, Python, SCIRun)
 
-//Mutex InterfaceWithPython::lock_("InterfaceWithPython");
-//bool InterfaceWithPython::matlabInitialized_{ false };
-
 LoopEnd::LoopEnd() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LoopEndCodeObject);
@@ -81,27 +78,6 @@ void LoopEnd::postStateChangeInternalSignalHookup()
   setProgrammableInputPortEnabled(true);
 }
 
-//
-// std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
-// {
-//   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
-//     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-//     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
-// }
-//
-// std::vector<std::string> InterfaceWithPython::connectedPortIds() const
-// {
-//   std::vector<std::string> ids;
-//   for (const auto& port : inputPorts())
-//   {
-//     if (port->nconnections() > 0)
-//     {
-//       ids.push_back(port->id().toString());
-//     }
-//   }
-//   return ids;
-// }
-
 void LoopEnd::execute()
 {
 #ifdef BUILD_WITH_PYTHON
@@ -117,7 +93,8 @@ void LoopEnd::execute()
     PythonObjectForwarderImpl<LoopEnd> impl(*this);
     DatatypeHandle whileCondition;
     if (oport_connected(LoopEndCodeObject))
-      whileCondition = impl.waitForOutputFromTransientState(get_state()->getValue(Parameters::LoopWhileCondition).toString(), DummyPortName(), DummyPortName(), DummyPortName());
+      whileCondition = impl.waitForOutputFromTransientState(get_state()->getValue(Parameters::LoopWhileCondition).toString(),
+        DummyPortName(), DummyPortName(), DummyPortName());
 
     if (whileCondition)
     {
