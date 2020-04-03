@@ -76,11 +76,11 @@ void BasicPlotter::setStateDefaults()
   state->setValue(Parameters::TransposeData, false);
 
   auto colors = makeAnonymousVariableList(
-    ColorRGB(0x27213c).toString(),
-    ColorRGB(0x5A352A).toString(),
-    ColorRGB(0xA33B20).toString(),
-    ColorRGB(0xA47963).toString(),
-    ColorRGB(0xA6A57A).toString()
+    ColorRGB(0x27213cu).toString(),
+    ColorRGB(0x5A352Au).toString(),
+    ColorRGB(0xA33B20u).toString(),
+    ColorRGB(0xA47963u).toString(),
+    ColorRGB(0xA6A57Au).toString()
   );
   state->setValue(Parameters::PlotColors, colors);
 }
