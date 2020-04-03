@@ -47,7 +47,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, LoopEndCode);
-ALGORITHM_PARAMETER_DEF(Python, LoopEndCondition);
+ALGORITHM_PARAMETER_DEF(Python, LoopWhileCondition);
 
 MODULE_INFO_DEF(LoopEnd, Python, SCIRun)
 
@@ -62,7 +62,7 @@ LoopEnd::LoopEnd() : Module(staticInfo_)
   INITIALIZE_PORT(InputString);
 
 #ifdef BUILD_WITH_PYTHON
-  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), { Parameters::LoopEndCondition }));
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), { Parameters::LoopWhileCondition }));
 #endif
 }
 
@@ -73,7 +73,7 @@ void LoopEnd::setStateDefaults()
   state->setValue(Parameters::LoopEndCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 10);
   state->setValue(Parameters::NumberOfRetries, 5);
-  state->setValue(Parameters::LoopEndCondition, std::string("loopEndCondition"));
+  state->setValue(Parameters::LoopWhileCondition, std::string("loopWhileCondition"));
 }
 
 void LoopEnd::postStateChangeInternalSignalHookup()
@@ -115,12 +115,21 @@ void LoopEnd::execute()
     auto convertedCode = translator_->translate(code);
     PythonInterpreter::Instance().run_script(convertedCode.code);
     PythonObjectForwarderImpl<LoopEnd> impl(*this);
-    DatatypeHandle endCondition;
+    DatatypeHandle whileCondition;
     if (oport_connected(LoopEndCodeObject))
-      endCondition = impl.waitForOutputFromTransientState("loopEndCondition", DummyPortName(), DummyPortName(), DummyPortName());
+      whileCondition = impl.waitForOutputFromTransientState(get_state()->getValue(Parameters::LoopWhileCondition).toString(), DummyPortName(), DummyPortName(), DummyPortName());
 
-    if (endCondition)
-      logCritical("Generated end condition, value = {}", dynamic_cast<DenseMatrix*>(endCondition.get())->get(0,0));
+    if (whileCondition)
+    {
+      auto dense = dynamic_cast<DenseMatrix*>(whileCondition.get());
+      auto endVal = dense->get(0,0);
+      logCritical("Generated end condition, value = {}", endVal);
+      if (endVal)
+      {
+        logCritical("Attempting to enqueue execute again...");
+        enqueueExecuteAgain(true);
+      }
+    }
     else
       logCritical("End condition not generated.");
   }

@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>b</value>
+										<value>a</value>
 									</value>
 								</second>
 							</item>
@@ -96,7 +96,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -115,7 +115,31 @@ if (str &gt;= &apos;z&apos;):
 else:
 	print(&quot;continue loop&quot;)
 
-loopEndCondition = (str &gt;= &apos;z&apos;)</value>
+loopWhileCondition = (str &lt;= &apos;z&apos;)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LoopEndCondition</name>
+								</first>
+								<second>
+									<name>LoopEndCondition</name>
+									<value>
+										<which>2</which>
+										<value>loopEndCondition</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LoopWhileCondition</name>
+								</first>
+								<second>
+									<name>LoopWhileCondition</name>
+									<value>
+										<which>2</which>
+										<value>loopWhileCondition</value>
 									</value>
 								</second>
 							</item>
@@ -226,7 +250,7 @@ scirun_set_module_state(m, key, letter)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
