@@ -32,7 +32,6 @@
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
-#include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
@@ -78,7 +77,6 @@ void ModuleDescriptionLookup::addMoreModules()
 {
   addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CalculateGradients >("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<InterfaceWithCleaver>("InterfaceWithCleaver", "NewField", "SCIRun", "New module", "...");
