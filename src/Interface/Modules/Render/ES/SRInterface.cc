@@ -566,7 +566,7 @@ void SRInterface::runGCOnNextExecution()
       updateCamera();
       updateWorldLight();
 
-      mCore.execute(0, 50);
+      mCore.execute(0, 0);
 
 
       GLfloat depth;
