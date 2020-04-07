@@ -233,6 +233,11 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   transparencyGroupBox_->setVisible(false);
 }
 
+static bool vsdComp(ViewSceneDialog* a, ViewSceneDialog* b)
+{
+  return a->getName() < b->getName();
+}
+
 void ViewSceneControlsDock::updateViewSceneTree()
 {
   viewSceneTreeWidget_->clear();
@@ -240,6 +245,8 @@ void ViewSceneControlsDock::updateViewSceneTree()
   int numGroups = ViewSceneDialog::viewSceneManager.getGroupCount();
   std::vector<ViewSceneDialog*> ungroupedMemebers;
   ViewSceneDialog::viewSceneManager.getUngroupedViewScenesAsVector(ungroupedMemebers);
+  std::sort(ungroupedMemebers.begin(), ungroupedMemebers.end(), vsdComp);
+  std::cout << "0\n";
 
   for(int i = 0; i < numGroups; ++i)
   {
@@ -249,6 +256,7 @@ void ViewSceneControlsDock::updateViewSceneTree()
 
     std::vector<ViewSceneDialog*> groupMemebers;
     ViewSceneDialog::viewSceneManager.getViewSceneGroupAsVector(i, groupMemebers);
+    std::sort(groupMemebers.begin(), groupMemebers.end(), vsdComp);
     for(int j = 0; j < groupMemebers.size(); ++j)
     {
       auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(groupMemebers[j]->getName())));
