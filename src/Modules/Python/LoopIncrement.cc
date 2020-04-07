@@ -46,7 +46,7 @@ using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
-ALGORITHM_PARAMETER_DEF(Python, LoopIncrementCode);
+
 
 MODULE_INFO_DEF(LoopIncrement, Python, SCIRun)
 

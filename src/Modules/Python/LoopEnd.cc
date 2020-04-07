@@ -27,7 +27,7 @@
 
 
 #include <Modules/Python/LoopEnd.h>
-#include <Modules/Python/LoopIncrement.h>
+#include <Modules/Python/LoopStart.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
@@ -117,5 +117,5 @@ void LoopEnd::execute()
 
 bool LoopEnd::checkForVirtualConnection(const ModuleInterface& downstream) const
 {
-  return dynamic_cast<const LoopIncrement*>(&downstream) != nullptr;
+  return dynamic_cast<const LoopStart*>(&downstream) != nullptr;
 }

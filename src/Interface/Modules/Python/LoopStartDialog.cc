@@ -42,11 +42,14 @@ LoopStartDialog::LoopStartDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   {
-    pythonCodePlainTextEdit_ = new CodeEditor(this);
-    tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
+    pythonStartCodePlainTextEdit_ = new CodeEditor(this);
+    tabWidget->widget(0)->layout()->addWidget(pythonStartCodePlainTextEdit_);
+    pythonIncrementCodePlainTextEdit_ = new CodeEditor(this);
+    tabWidget->widget(0)->layout()->addWidget(pythonIncrementCodePlainTextEdit_);
   }
 
-  addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::LoopStartCode);
+  addPlainTextEditManager(pythonStartCodePlainTextEdit_, Parameters::LoopStartCode);
+  addPlainTextEditManager(pythonIncrementCodePlainTextEdit_, Parameters::LoopIncrementCode);
   addSpinBoxManager(iterationCountSpinBox_, Parameters::IterationCount);
   connect(resetIterationCountPushButton_, &QPushButton::clicked, [this]() { state_->setValue(Parameters::IterationCount, 0); });
 

@@ -168,7 +168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -235,6 +235,30 @@
 							</item>
 							<item>
 								<first>
+									<name>CustomColor0</name>
+								</first>
+								<second>
+									<name>CustomColor0</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.2,0.2,0.2)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CustomColor1</name>
+								</first>
+								<second>
+									<name>CustomColor1</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.8,0.8,0.8)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ProgrammableInputPortEnabled</name>
 								</first>
 								<second>
@@ -269,7 +293,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>3329</value>
+										<value>5453</value>
 									</value>
 								</second>
 							</item>
@@ -281,7 +305,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>4105</value>
+										<value>6060</value>
 									</value>
 								</second>
 							</item>
@@ -389,7 +413,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>-5.00000000000000000e-01</value>
+										<value>-1.14113888144493103e+00</value>
 									</value>
 								</second>
 							</item>
@@ -401,7 +425,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>-5.00000000000000000e-01</value>
+										<value>-6.84602618217468151e-01</value>
 									</value>
 								</second>
 							</item>
@@ -413,7 +437,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>6.06426477432250977e-01</value>
 									</value>
 								</second>
 							</item>
@@ -473,7 +497,10 @@
 diff = scirun_get_module_input_value_by_index(&quot;LoopEnd:0&quot;, 0)
 print(diff)
 
-loopWhileCondition = (abs(diff[0][0]) &lt;= 1)</value>
+loopWhileCondition = (abs(diff[0][0]) &lt;= 1)
+
+# automatically set these into transient state for LoopStart
+#nextLoopData[&quot;diff&quot;] = diff</value>
 									</value>
 								</second>
 							</item>
@@ -553,10 +580,14 @@ loopWhileCondition = (abs(diff[0][0]) &lt;= 1)</value>
 newX = scirun_get_module_state(m, &quot;XLocation&quot;) - 0.1
 newY = scirun_get_module_state(m, &quot;YLocation&quot;) - 0.1
 
-matrixI = 
+#matrixI = 
 
 scirun_set_module_state(m, &quot;XLocation&quot;, newX)
-scirun_set_module_state(m, &quot;YLocation&quot;, newY)</value>
+scirun_set_module_state(m, &quot;YLocation&quot;, newY)
+
+# accessing previous loop data from transient state
+#loopInput[&quot;diff&quot;]
+</value>
 									</value>
 								</second>
 							</item>
@@ -596,7 +627,7 @@ scirun_set_module_state(m, &quot;YLocation&quot;, newY)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>6</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -1395,28 +1426,28 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-8.74276831746101379e-03</value>
+													<value>5.72078585624694824e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-2.47123211622238159e-01</value>
+													<value>4.37772214412689209e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>7.87460446357727051e-01</value>
+													<value>-4.58012744784355164e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>-5.64587414264678955e-01</value>
+													<value>-6.92085981369018555e-01</value>
 												</value>
 											</item>
 										</value>
@@ -2193,7 +2224,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>
 				<first>-3.04000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<second>-1.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
@@ -2213,8 +2244,8 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
-				<first>-3.80000000000000000e+02</first>
-				<second>-2.30000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2256,7 +2287,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			<first>ViewScene:0</first>
 			<second>
 				<first>-7.60000000000000000e+01</first>
-				<second>3.04000000000000000e+02</second>
+				<second>3.03000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>

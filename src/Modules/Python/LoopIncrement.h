@@ -41,7 +41,7 @@ namespace SCIRun
     {
       namespace Python
       {
-        ALGORITHM_PARAMETER_DECL(LoopIncrementCode);
+
       }
     }
   }

@@ -47,10 +47,9 @@ public:
   LoopStartDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-// private Q_SLOTS:
-//   void resetObject();
 private:
-  CodeEditor* pythonCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonStartCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonIncrementCodePlainTextEdit_ {nullptr};
 };
 
 }

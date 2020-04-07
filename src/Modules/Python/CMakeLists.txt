@@ -33,7 +33,7 @@ SET(Modules_Python_SRCS
   ModuleStateModifierTester.cc
   LoopEnd.cc
   LoopStart.cc
-  LoopIncrement.cc
+  #LoopIncrement.cc
 )
 
 SET(Modules_Python_HEADERS
@@ -43,7 +43,7 @@ SET(Modules_Python_HEADERS
   ModuleStateModifierTester.h
   LoopEnd.h
   LoopStart.h
-  LoopIncrement.h
+  #LoopIncrement.h
   share.h
 )
 

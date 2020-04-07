@@ -66,7 +66,7 @@
 									<name>InputString</name>
 									<value>
 										<which>2</which>
-										<value>z</value>
+										<value>Z</value>
 									</value>
 								</second>
 							</item>
@@ -108,14 +108,15 @@
 										<which>2</which>
 										<value># Insert your Python code here. The SCIRun API package is automatically imported.
 
-str = scirun_get_module_input_value_by_index(&quot;LoopEnd:0&quot;, 2)
-print(str)
-if (str &gt;= &apos;z&apos;):
+str1 = scirun_get_module_input_value_by_index(&quot;LoopEnd:0&quot;, 2)
+str2 = scirun_get_module_input_value_by_index(&quot;LoopEnd:0&quot;, 3)
+print(str1)
+if (str1 &gt;= &apos;z&apos;):
 	print(&quot;end of loop!&quot;)
 else:
 	print(&quot;continue loop&quot;)
 
-loopWhileCondition = (str &lt; &apos;z&apos;)</value>
+loopWhileCondition = (str1 &lt; &apos;z&apos;)</value>
 									</value>
 								</second>
 							</item>
@@ -250,7 +251,7 @@ scirun_set_module_state(m, key, letter)</value>
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>26</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -266,7 +267,10 @@ scirun_set_module_state(m, key, letter)</value>
 
 m = %moduleId%
 key = &quot;InputString&quot;
-scirun_set_module_state(m, key, &quot;a&quot;)</value>
+letter = &quot;a&quot;
+if m.endswith(&quot;1&quot;):
+  letter = &quot;A&quot;
+scirun_set_module_state(m, key, letter)</value>
 									</value>
 								</second>
 							</item>
@@ -1291,7 +1295,7 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>9</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
@@ -1315,6 +1319,18 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 				<port2_>
 					<name>String</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:1</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>LoopEnd:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>
@@ -1430,8 +1446,8 @@ scirun_set_module_state(m, key, &quot;a&quot;)</value>
 		<item>
 			<first>LoopIncrement:0</first>
 			<second>
-				<first>-1.53000000000000000e+02</first>
-				<second>7.70000000000000000e+01</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>

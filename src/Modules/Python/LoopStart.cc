@@ -48,24 +48,28 @@ using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, LoopStartCode);
 ALGORITHM_PARAMETER_DEF(Python, IterationCount);
+ALGORITHM_PARAMETER_DEF(Python, LoopIncrementCode);
 
 MODULE_INFO_DEF(LoopStart, Python, SCIRun)
 
 LoopStart::LoopStart() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LoopStartCodeObject);
-  INITIALIZE_PORT(LoopIncrementCodeObject);
-//
-// #ifdef BUILD_WITH_PYTHON
-//   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
-// #endif
+  INITIALIZE_PORT(LoopEndCodeObject);
+  INITIALIZE_PORT(PythonMatrix1);
+  INITIALIZE_PORT(PythonField1);
+  INITIALIZE_PORT(PythonString1);
+  INITIALIZE_PORT(PythonMatrix2);
+  INITIALIZE_PORT(PythonField2);
+  INITIALIZE_PORT(PythonString2);
 }
 
 void LoopStart::setStateDefaults()
 {
   auto state = get_state();
 
-  state->setValue(Parameters::LoopStartCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::LoopStartCode, std::string("# Insert your loop start Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::LoopIncrementCode, std::string("# Insert your loop increment Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::IterationCount, 0);
 }
 
@@ -78,14 +82,15 @@ void LoopStart::postStateChangeInternalSignalHookup()
 void LoopStart::execute()
 {
 #ifdef BUILD_WITH_PYTHON
-  auto incrCode = getRequiredInput(LoopIncrementCodeObject);
-  //if (needToExecute())
+  auto incrCode = getRequiredInput(LoopEndCodeObject);
+  if (needToExecute())
   {
     auto state = get_state();
     auto startCode = state->getValue(Parameters::LoopStartCode).toString();
+    auto incrCode = state->getValue(Parameters::LoopIncrementCode).toString();
 
     const auto counter = state->getValue(Parameters::IterationCount).toInt();
-    auto code = 0 == counter ? startCode : incrCode->program();
+    auto code = 0 == counter ? startCode : incrCode;
 
     sendOutput(LoopStartCodeObject, boost::make_shared<PythonExecutingMetadataObject>(code));
     state->setValue(Parameters::IterationCount, counter + 1);

@@ -42,6 +42,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(LoopStartCode);
+        ALGORITHM_PARAMETER_DECL(LoopIncrementCode);
         ALGORITHM_PARAMETER_DECL(IterationCount);
       }
     }
@@ -53,35 +54,27 @@ namespace SCIRun
     {
       class SCISHARE LoopStart : public SCIRun::Dataflow::Networks::Module,
         public Has1InputPort<MetadataObjectPortTag>,
-        public Has1OutputPort<MetadataObjectPortTag>
+        public Has7OutputPorts<MetadataObjectPortTag, MatrixPortTag, MatrixPortTag, FieldPortTag, FieldPortTag, StringPortTag, StringPortTag>
       {
       public:
         LoopStart();
         void execute() override;
         void setStateDefaults() override;
         void postStateChangeInternalSignalHookup() override;
-        // HAS_DYNAMIC_PORTS
-        // INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
-        // INPUT_PORT_DYNAMIC(1, InputField, Field);
-        // INPUT_PORT_DYNAMIC(2, InputString, String);
-        INPUT_PORT(0, LoopIncrementCodeObject, MetadataObject);
+        INPUT_PORT(0, LoopEndCodeObject, MetadataObject);
         OUTPUT_PORT(0, LoopStartCodeObject, MetadataObject);
-        // OUTPUT_PORT(1, PythonMatrix2, Matrix);
-        // OUTPUT_PORT(2, PythonMatrix3, Matrix);
-        // OUTPUT_PORT(3, PythonField1, Field);
-        // OUTPUT_PORT(4, PythonField2, Field);
-        // OUTPUT_PORT(5, PythonField3, Field);
-        // OUTPUT_PORT(6, PythonString1, String);
-        // OUTPUT_PORT(7, PythonString2, String);
-        // OUTPUT_PORT(8, PythonString3, String);
+        OUTPUT_PORT(1, PythonMatrix1, Matrix);
+        OUTPUT_PORT(2, PythonMatrix2, Matrix);
+        OUTPUT_PORT(3, PythonField1, Field);
+        OUTPUT_PORT(4, PythonField2, Field);
+        OUTPUT_PORT(5, PythonString1, String);
+        OUTPUT_PORT(6, PythonString2, String);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
-      private:
-        //SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
       };
 
     }

@@ -31,7 +31,7 @@ SET(Interface_Modules_Python_FORMS
   InterfaceWithPython.ui
   ModuleStateModifierTester.ui
   LoopStart.ui
-  LoopIncrement.ui
+  #LoopIncrement.ui
   LoopEnd.ui
 )
 
@@ -40,7 +40,7 @@ SET(Interface_Modules_Python_HEADERS
   InterfaceWithPythonDialog.h
   ModuleStateModifierTesterDialog.h
   LoopStartDialog.h
-  LoopIncrementDialog.h
+  #LoopIncrementDialog.h
   LoopEndDialog.h
   share.h
 )
@@ -50,7 +50,7 @@ SET(Interface_Modules_Python_SOURCES
   InterfaceWithPythonDialog.cc
   ModuleStateModifierTesterDialog.cc
   LoopStartDialog.cc
-  LoopIncrementDialog.cc
+  #LoopIncrementDialog.cc
   LoopEndDialog.cc
 )
 
