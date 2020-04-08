@@ -82,8 +82,8 @@ void LoopStart::postStateChangeInternalSignalHookup()
 void LoopStart::execute()
 {
 #ifdef BUILD_WITH_PYTHON
-  auto incrCode = getRequiredInput(LoopEndCodeObject);
-  if (needToExecute())
+  auto loopInfo = getOptionalInput(LoopEndCodeObject);
+  //if (needToExecute())
   {
     auto state = get_state();
     auto startCode = state->getValue(Parameters::LoopStartCode).toString();
