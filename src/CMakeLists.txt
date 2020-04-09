@@ -260,6 +260,11 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
+IF(WITH_OSPRAY)
+  set(ospray_DIR ${Ospray_External_Dir}/install/ospray/lib/cmake/ospray-2.0.1)
+  find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -374,17 +379,10 @@ ENDIF()
 # ENDIF()
 
 ########################################################################
-# Configure ospray module build-- TODO: convert into real external
+# Configure ospray module build
 
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
-  SET(OSPRAY_INCLUDE_DIRS
-    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
-    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/components"
-    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
-    "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
-    )
-  #message(${OSPRAY_INCLUDE_DIRS})
   SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
@@ -556,10 +554,6 @@ INCLUDE_DIRECTORIES(
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
-
-IF(WITH_OSPRAY)
-  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
-ENDIF()
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
