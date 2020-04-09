@@ -2,7 +2,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -26,10 +26,6 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(ospray_GIT_TAG "origin/scirun-build")
-SET(ospray_DEPENDENCIES 
-  "Tbb_external" 
-  "Embree_external" 
-  "Ispc_external")
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
@@ -44,14 +40,7 @@ ExternalProject_Add(Ospray_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -Dembree_DIR:PATH=${Embree_DIR}
-    -DOSPRAY_TASKING_SYSTEM:STRING=TBB
-    -DTBB_ROOT:PATH=${Tbb_DIR}
-    -DOSPRAY_ENABLE_TESTING:BOOL=OFF
-    -DOSPRAY_SG_CHOMBO:BOOL=OFF
-    -DOSPRAY_SG_OPENIMAGEIO:BOOL=OFF
-    -DOSPRAY_SG_VTK:BOOL=OFF
-    -DISPC_EXECUTABLE:PATH=${Ispc_DIR}/ispc
+    -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)
