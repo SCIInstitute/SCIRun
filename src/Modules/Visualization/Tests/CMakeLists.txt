@@ -38,7 +38,6 @@ SET(Modules_Visualization_Tests_SRCS
 )
 
 IF(WITH_OSPRAY)
-  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
   SET(Modules_Visualization_Tests_SRCS ${Modules_Visualization_Tests_SRCS}
     OsprayFieldRenderTests.cc
   )
@@ -63,5 +62,5 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
 )
 
 IF(WITH_OSPRAY)
-  TARGET_LINK_LIBRARIES(Modules_Visualization_Tests ${OSPRAY_LIBRARIES})
+  TARGET_LINK_LIBRARIES(Modules_Visualization_Tests ospray::ospray)
 ENDIF()
