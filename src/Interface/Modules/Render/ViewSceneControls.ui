@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>567</width>
+    <width>660</width>
     <height>662</height>
    </rect>
   </property>
@@ -2511,7 +2511,7 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="shadingButtonGroup_"/>
   <buttongroup name="planeButtonGroup_"/>
+  <buttongroup name="shadingButtonGroup_"/>
  </buttongroups>
 </ui>
