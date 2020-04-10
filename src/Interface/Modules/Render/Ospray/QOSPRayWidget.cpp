@@ -14,32 +14,41 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#pragma once
-
-#define NOMINMAX
-
-// ospray public
-#include <ospray/ospray.h>
-// ospcommon
-#include <components/ospcommon/vec.h>
-// std
 #include <string>
-#include <vector>
-#include <Interface/qt_include.h>
 
-class ColorMap
+#include "QOSPRayWidget.h"
+
+#ifdef __APPLE__
+  #include <OpenGL/glu.h>
+#else
+  #include <GL/glu.h>
+#endif
+
+QOSPRayWidget::QOSPRayWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-public:
 
-  ColorMap(std::string name, std::vector<ospcommon::vec3f> colors);
+}
 
-  std::string getName() const;
-  std::vector<ospcommon::vec3f> getColors() const;
+QOSPRayWidget::~QOSPRayWidget()
+{
 
-  QImage getImage();
+}
 
-protected:
+void QOSPRayWidget::initializeGL()
+{
 
-  std::string name;
-  std::vector<ospcommon::vec3f> colors;
-};
+}
+
+void QOSPRayWidget::paintGL()
+{
+  //ospRenderFrame(frameBuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
+
+  //uint32_t *mappedFrameBuffer = (unsigned int *) ospMapFrameBuffer(frameBuffer);
+  //glDrawPixels(windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE, mappedFrameBuffer);
+  //ospUnmapFrameBuffer(mappedFrameBuffer, frameBuffer);
+}
+
+void QOSPRayWidget::resizeGL(int width, int height)
+{
+
+}

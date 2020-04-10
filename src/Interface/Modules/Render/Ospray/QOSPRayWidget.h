@@ -18,81 +18,25 @@
 
 #define NOMINMAX
 #include <ospray/ospray.h>
-#include <components/ospcommon/box.h>
+
 #include <Interface/qt_include.h>
-#include <vector>
+#include <QOpenGLWidget>
 
-class VolumeViewer;
-class QOSPRayWindow;
-
-class ProbeCoordinateWidget : public QWidget {
-
+class QOSPRayWidget : public QOpenGLWidget
+{
 Q_OBJECT
 
 public:
-
-  ProbeCoordinateWidget(const std::string &label, ospcommon::vec2f range);
-
-  float getValue() { return spinBox.value(); }
-
-Q_SIGNALS:
-
-  void probeCoordinateChanged();
-
-protected Q_SLOTS:
-
-  void updateValue();
+  QOSPRayWidget(QWidget *parent);
+  virtual ~QOSPRayWidget();
 
 protected:
+  virtual void initializeGL();
+  virtual void paintGL();
+  virtual void resizeGL(int width, int height);
 
-  ospcommon::vec2f range;
-
-  QSlider slider;
-  QDoubleSpinBox spinBox;
-};
-
-
-class ProbeWidget : public QWidget {
-
-Q_OBJECT
-
-public:
-
-  ProbeWidget(VolumeViewer *volumeViewer);
-
-Q_SIGNALS:
-
-  void enabled(bool);
-  void probeChanged();
-
-public Q_SLOTS:
-
-  void setEnabled(bool value);
-  void setVolume(OSPVolume volume) { this->volume = volume; Q_EMIT(probeChanged()); }
-  void updateProbe();
-  void render();
-
-protected:
-
-  //! The parent volume viewer.
-  VolumeViewer *volumeViewer;
-
-  //! The OSPRay window.
-  QOSPRayWindow *osprayWindow;
-
-  //! Bounding box to consider.
-  ospcommon::box3f boundingBox;
-
-  //! Active volume to probe.
-  OSPVolume volume;
-
-  //! Whether the probe is enabled.
-  bool isEnabled;
-
-  //! The probe coordinate.
-  osp::vec3f coordinate;
-
-  // UI elements.
-  std::vector<ProbeCoordinateWidget *> probeCoordinateWidgets;
-  QLabel sampleValueLabel;
+  //virtual void mousePressEvent(QMouseEvent * event);
+  //virtual void mouseReleaseEvent(QMouseEvent * event);
+  //virtual void mouseMoveEvent(QMouseEvent * event);
+  //virtual void wheelEvent(QWheelEvent* event);
 };

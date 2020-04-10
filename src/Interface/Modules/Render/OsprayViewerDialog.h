@@ -88,10 +88,8 @@ namespace SCIRun {
 
       float getFloat(const Core::Algorithms::Name& name) const;
 
-      void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& geom);
-      VolumeViewer* viewer_ {nullptr};
+      void createViewer();
       QStatusBar* statusBar_ {nullptr};
-      boost::shared_ptr<OsprayObjectImpl> impl_;
 
       QToolBar* toolBar_{nullptr};
       //QToolBar*                             viewBar_;
