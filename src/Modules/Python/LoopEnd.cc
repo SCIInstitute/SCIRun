@@ -96,7 +96,13 @@ void LoopEnd::execute()
       return;
     }
 
-    auto pyDict = wrapDatatypesInMap(matrices, fields, strings);
+    if (loopStart_)
+    {
+      //oops, didnt mean to copy these.
+      boost::python::object pyDict = wrapDatatypesInMap(matrices, fields, strings);
+      loopStart_->get_state()->setTransientValue("PreviousLoopData", pyDict);
+      logCritical("next iteration data sent");
+    }
 
     auto code = get_state()->getValue(Parameters::LoopEndCode).toString();
     //remark(code);
@@ -134,5 +140,6 @@ void LoopEnd::execute()
 
 bool LoopEnd::checkForVirtualConnection(const ModuleInterface& downstream) const
 {
-  return dynamic_cast<const LoopStart*>(&downstream) != nullptr;
+  loopStart_ = const_cast<LoopStart*>(dynamic_cast<const LoopStart*>(&downstream));
+  return loopStart_ != nullptr;
 }

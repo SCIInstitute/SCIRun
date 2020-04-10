@@ -293,7 +293,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>214</value>
+										<value>540</value>
 									</value>
 								</second>
 							</item>
@@ -305,7 +305,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>357</value>
+										<value>660</value>
 									</value>
 								</second>
 							</item>
@@ -413,7 +413,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>6.00000000000000089e-01</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -425,7 +425,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000067e-01</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -437,7 +437,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>-4.00000000000000078e-01</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -588,7 +588,7 @@ loopWhileCondition = (abs(diff[0][0]) &lt;= 1)
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>51</value>
+										<value>18</value>
 									</value>
 								</second>
 							</item>
@@ -625,9 +625,10 @@ scirun_set_module_state(m, dir, newVal)
 # accessing previous loop data from transient state
 #loopInput[&quot;diff&quot;]
 prev = scirun_get_module_transient_state(&quot;LoopStart:0&quot;, &quot;PreviousLoopData&quot;)
-diff = prev.get(0)
-print(&quot;prev diff: &quot;)
-print(diff[0][0])
+print(prev)
+#diff = prev.get(0)
+#print(&quot;prev diff: &quot;)
+#print(diff[0][0])
 </value>
 									</value>
 								</second>
@@ -1427,28 +1428,28 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>6.55322551727294922e-01</value>
+													<value>7.69720435142517090e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>3.52334082126617432e-01</value>
+													<value>1.02585576474666595e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>2.63920575380325317e-01</value>
+													<value>4.06481549143791199e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value>
 													<which>1</which>
-													<value>6.13806307315826416e-01</value>
+													<value>6.28771424293518066e-01</value>
 												</value>
 											</item>
 										</value>

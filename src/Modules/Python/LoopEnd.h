@@ -77,6 +77,7 @@ namespace SCIRun
       private:
         SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
         int execCount_ {0};
+        mutable ModuleInterface* loopStart_;  // so hacky
       };
 
     }
