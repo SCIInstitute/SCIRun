@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ShowMeshBoundingBox",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "",
+    "header": "Modules/Visualization/ShowMeshBoundingBox.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ShowMeshBoundingBoxDialog",
+    "header": "Interface/Modules/Visualization/ShowMeshBoundingBoxDialog.h"
+  }
+}

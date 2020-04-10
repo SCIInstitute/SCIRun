@@ -14,12 +14,9 @@
 ## limitations under the License.                                           ##
 ## ======================================================================== ##
 
-#INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
-INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
 SET(QT_USE_QTOPENGL TRUE)
-#INCLUDE(${QT_USE_FILE})
-SET(LIBS ${LIBS} Qt5::OpenGL ${QT_LIBRARIES} ${OSPRAY_LIBRARIES})
+SET(LIBS ${LIBS} Qt5::OpenGL ${QT_LIBRARIES})
 
 FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIRS})
@@ -80,6 +77,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Ospray
   Core_Algorithms_Visualization
   Modules_Render
   ${LIBS}
+  ospray::ospray
 )
 
 IF(BUILD_SHARED_LIBS)
