@@ -72,12 +72,12 @@ void PythonExecutingMetadataObject::process(const std::string& modId)
 {
   MetadataObject::process(modId);
   auto progWithId = std::regex_replace(programData_, std::regex("\\%moduleId\\%"), "\"" + modId + "\"");
-  logCritical("Post-processed code: {}", progWithId);
+  //logCritical("Post-processed code: {}", progWithId);
   {
     NamedGuard g(lock_.get(), "PythonExecutingMetadataObject");
     PythonInterpreter::Instance().run_script(progWithId);
   }
-  logCritical("Done python execution.");
+  //logCritical("Done python execution.");
 }
 
 void ModuleStateModifierTester::execute()

@@ -88,7 +88,7 @@ namespace SCIRun
             if (valueOption)
             {
               auto var = Dataflow::Networks::transient_value_cast<Variable>(valueOption);
-              logCritical("ValueOption found, typename is {}", var.name().name());
+              //logCritical("ValueOption found, typename is {}", var.name().name());
               if (var.name().name() == "string")
               {
                 auto valueStr = var.toString();

@@ -29,6 +29,7 @@
 #include <Interface/Modules/Python/LoopEndDialog.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Modules/Python/LoopEnd.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
@@ -50,6 +51,7 @@ LoopEndDialog::LoopEndDialog(const std::string& name, ModuleStateHandle state,
   addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::LoopEndCode);
   addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+  addSpinBoxManager(maxIterationsSpinBox_, Core::Algorithms::Variables::MaxIterations);
 
   connect(pythonDocPushButton_, &QPushButton::clicked, []() { openPythonAPIDoc(); });
 }

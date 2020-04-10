@@ -76,6 +76,7 @@ namespace SCIRun
         #endif
       private:
         SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
+        int execCount_ {0};
       };
 
     }

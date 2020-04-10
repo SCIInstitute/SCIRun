@@ -93,6 +93,14 @@ namespace
   }
 }
 
+boost::python::dict SCIRun::Core::Python::wrapDatatypesInMap(const std::vector<Datatypes::MatrixHandle>& matrices,
+  const std::vector<FieldHandle>& fields, const std::vector<Datatypes::StringHandle>& strings)
+{
+  boost::python::dict d;
+  d[0] = convertFieldToPython(fields[0]);
+  return d;
+}
+
 boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 {
   matlabarray ma;

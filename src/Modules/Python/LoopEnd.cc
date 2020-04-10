@@ -29,6 +29,7 @@
 #include <Modules/Python/LoopEnd.h>
 #include <Modules/Python/LoopStart.h>
 #include <Modules/Python/PythonObjectForwarder.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
@@ -42,6 +43,7 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Python;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
@@ -70,6 +72,7 @@ void LoopEnd::setStateDefaults()
   state->setValue(Parameters::LoopEndCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 10);
   state->setValue(Parameters::NumberOfRetries, 5);
+  state->setValue(Variables::MaxIterations, 100);
   state->setValue(Parameters::LoopWhileCondition, std::string("loopWhileCondition"));
 }
 
@@ -86,8 +89,17 @@ void LoopEnd::execute()
   auto strings = getOptionalDynamicInputs(InputString);
   if (needToExecute())
   {
+    if (execCount_ >= get_state()->getValue(Variables::MaxIterations).toInt())
+    {
+      execCount_ = 0;
+      warning("Max iterations reached.");
+      return;
+    }
+
+    auto pyDict = wrapDatatypesInMap(matrices, fields, strings);
+
     auto code = get_state()->getValue(Parameters::LoopEndCode).toString();
-    remark(code);
+    //remark(code);
     auto convertedCode = translator_->translate(code);
     PythonInterpreter::Instance().run_script(convertedCode.code);
     PythonObjectForwarderImpl<LoopEnd> impl(*this);
@@ -100,11 +112,16 @@ void LoopEnd::execute()
     {
       auto dense = dynamic_cast<DenseMatrix*>(whileCondition.get());
       auto endVal = dense->get(0,0);
-      logCritical("Generated end condition, value = {}", endVal);
+      //logCritical("Generated end condition, value = {}", endVal);
       if (endVal)
       {
-        logCritical("Attempting to enqueue execute again...");
+        //logCritical("Attempting to enqueue execute again...");
         enqueueExecuteAgain(true);
+        execCount_++;
+      }
+      else
+      {
+        execCount_ = 0;
       }
     }
     else

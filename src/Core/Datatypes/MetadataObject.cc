@@ -36,7 +36,7 @@ MetadataObject::MetadataObject(const std::string& programData) : programData_(pr
 
 void MetadataObject::process(const std::string& modId)
 {
-  logCritical("Processing metadata object [modId={}] program data: \n{}", modId, programData_);
+  //logCritical("Processing metadata object [modId={}] program data: \n{}", modId, programData_);
 }
 
 Datatype* MetadataObject::clone() const
