@@ -42,10 +42,10 @@ TEST(BBoxTests, ExtendPerformance)
 {
   BBox bbox;
   auto start = std::chrono::steady_clock::now();
-  static unsigned int seed = 42;
+  srand(42);
 
   for(int i = 0; i < 1000000; ++i)
-    bbox.extend(Point(rand_r(&seed), rand_r(&seed), rand_r(&seed)));
+    bbox.extend(Point(rand(), rand(), rand()));
 
   auto end = std::chrono::steady_clock::now();
   auto diff = end - start;
