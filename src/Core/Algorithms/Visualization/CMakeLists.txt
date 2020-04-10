@@ -52,7 +52,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
 )
 
 IF(WITH_OSPRAY)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ${OSPRAY_LIBRARIES})
+  TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ospray::ospray)
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
