@@ -208,7 +208,7 @@ namespace Geometry {
     {
       //TODO: needs invariant check, or refactoring.
       if (!is_valid_)
-        THROW_INVALID_STATE("OrientedBBox is not valid.");
+        THROW_INVALID_STATE("BBox is not valid.");
       return cmax_-cmin_;
     }
 
