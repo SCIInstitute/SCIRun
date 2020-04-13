@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -140,6 +140,9 @@
              <string>Remove Group</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="groupRemoveSpinBox_"/>
           </item>
          </layout>
         </item>

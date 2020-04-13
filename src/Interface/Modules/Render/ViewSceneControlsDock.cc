@@ -87,8 +87,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
   connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
   connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
-  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdated()), this, SLOT(updateViewSceneTree()));
+  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
   updateViewSceneTree();
+  groupRemoveSpinBox_->setRange(0, 0);
 
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
@@ -233,9 +234,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   transparencyGroupBox_->setVisible(false);
 }
 
-static bool vsdComp(ViewSceneDialog* a, ViewSceneDialog* b)
+static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
 {
-  return a->getName() < b->getName();
+  return std::get<0>(a)->getName() < std::get<0>(b)->getName();
 }
 
 void ViewSceneControlsDock::updateViewSceneTree()
@@ -245,8 +246,6 @@ void ViewSceneControlsDock::updateViewSceneTree()
   int numGroups = ViewSceneDialog::viewSceneManager.getGroupCount();
   std::vector<ViewSceneDialog*> ungroupedMemebers;
   ViewSceneDialog::viewSceneManager.getUngroupedViewScenesAsVector(ungroupedMemebers);
-  std::sort(ungroupedMemebers.begin(), ungroupedMemebers.end(), vsdComp);
-  std::cout << "0\n";
 
   for(int i = 0; i < numGroups; ++i)
   {
@@ -256,19 +255,17 @@ void ViewSceneControlsDock::updateViewSceneTree()
 
     std::vector<ViewSceneDialog*> groupMemebers;
     ViewSceneDialog::viewSceneManager.getViewSceneGroupAsVector(i, groupMemebers);
-    std::sort(groupMemebers.begin(), groupMemebers.end(), vsdComp);
-    for(int j = 0; j < groupMemebers.size(); ++j)
-    {
-      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(groupMemebers[j]->getName())));
-      item->setCheckState(0, Qt::Checked);
-      item->setData(1, Qt::EditRole, (qulonglong)groupMemebers[j]);
-    }
 
-    for(int j = 0; j < ungroupedMemebers.size(); ++j)
+    std::vector<std::pair<ViewSceneDialog*, bool>> viewScenesToDisplay;
+    for(ViewSceneDialog* vsd : groupMemebers) viewScenesToDisplay.push_back(std::make_pair(vsd, true));
+    for(ViewSceneDialog* vsd : ungroupedMemebers) viewScenesToDisplay.push_back(std::make_pair(vsd, false));
+    std::sort(viewScenesToDisplay.begin(), viewScenesToDisplay.end(), vsdPairComp);
+
+    for(int j = 0; j < viewScenesToDisplay.size(); ++j)
     {
-      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(ungroupedMemebers[j]->getName())));
-      item->setCheckState(0, Qt::Unchecked);
-      item->setData(1, Qt::EditRole,  (qulonglong)ungroupedMemebers[j]);
+      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(std::get<0>(viewScenesToDisplay[j])->getName())));
+      item->setCheckState(0, (std::get<1>(viewScenesToDisplay[j])) ? Qt::Checked : Qt::Unchecked);
+      item->setData(1, Qt::EditRole, (qulonglong)std::get<0>(viewScenesToDisplay[j]));
     }
   }
 
@@ -278,19 +275,21 @@ void ViewSceneControlsDock::updateViewSceneTree()
 void ViewSceneControlsDock::addGroup()
 {
   ViewSceneDialog::viewSceneManager.addGroup();
+  groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
 void ViewSceneControlsDock::removeGroup()
 {
-  uint16_t size = ViewSceneDialog::viewSceneManager.getGroupCount();
-  if(size > 0) ViewSceneDialog::viewSceneManager.removeGroup(size - 1);
+  uint32_t group = groupRemoveSpinBox_->value();
+  ViewSceneDialog::viewSceneManager.removeGroup(group);
+  groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
 void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
 {
   QTreeWidgetItem* p = widgetItem->parent();
   if(!p) return;
-  uint16_t g = p->data(1, Qt::EditRole).toInt();
+  uint32_t g = p->data(1, Qt::EditRole).toInt();
   if (widgetItem->checkState(column) == Qt::Unchecked)
   {
     ViewSceneDialog* vs = (ViewSceneDialog*)widgetItem->data(1, Qt::EditRole).toULongLong();

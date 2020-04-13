@@ -50,21 +50,22 @@ namespace SCIRun
       void addViewScene(ViewSceneDialog* vsd);
       void removeViewScene(ViewSceneDialog* vsd);
 
-      uint16_t addGroup();
-      bool removeGroup(uint16_t group);
+      uint32_t addGroup();
+      bool removeGroup(uint32_t group);
 
-      bool moveViewSceneToGroup(ViewSceneDialog* vsd, uint16_t group);
-      bool removeViewSceneFromGroup(ViewSceneDialog* vsd, uint16_t group);
+      bool moveViewSceneToGroup(ViewSceneDialog* vsd, uint32_t group);
+      bool removeViewSceneFromGroup(ViewSceneDialog* vsd, uint32_t group);
 
-      bool getViewSceneGroupNumber(ViewSceneDialog* vsd, uint16_t& group);
-      void getViewSceneGroupAsVector(uint16_t group, std::vector<ViewSceneDialog*>& out);
+      bool getViewSceneGroupNumber(ViewSceneDialog* vsd, uint32_t& group);
+      void getViewSceneGroupAsVector(uint32_t group, std::vector<ViewSceneDialog*>& out);
       void getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out);
-      uint16_t getGroupCount() {return viewSceneGroups.size();}
+      uint32_t getGroupCount() {return viewSceneGroups.size();}
 
       void getUngroupedViewScenesAsVector(std::vector<ViewSceneDialog*>& viewScenes);
+      void groupsUpdated();
 
     Q_SIGNALS:
-        void groupsUpdated();
+        void groupsUpdatedSignal();
 
     private:
       std::vector<std::unordered_set<ViewSceneDialog*>> viewSceneGroups     {};

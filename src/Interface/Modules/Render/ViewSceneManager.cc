@@ -27,6 +27,7 @@
 */
 
 #include "Interface/Modules/Render/ViewSceneManager.h"
+#include "Interface/Modules/Render/ViewScene.h"
 #include <iostream>
 
 using namespace SCIRun::Gui;
@@ -49,21 +50,21 @@ void ViewSceneManager::removeViewScene(ViewSceneDialog* vsd)
 {
   if(!ungroupedViewScenes.erase(vsd))
   {
-    uint16_t size = viewSceneGroups.size();
-    for(uint16_t i = 0; i < size; ++i)
+    uint32_t size = viewSceneGroups.size();
+    for(uint32_t i = 0; i < size; ++i)
       if(viewSceneGroups[i].erase(vsd)) return;
   }
   groupsUpdated();
 }
 
-uint16_t ViewSceneManager::addGroup()
+uint32_t ViewSceneManager::addGroup()
 {
   viewSceneGroups.push_back(std::unordered_set<ViewSceneDialog*>());
   groupsUpdated();
-  return static_cast<uint16_t>(viewSceneGroups.size()-1);
+  return static_cast<uint32_t>(viewSceneGroups.size()-1);
 }
 
-bool ViewSceneManager::removeGroup(uint16_t group)
+bool ViewSceneManager::removeGroup(uint32_t group)
 {
   if(group < viewSceneGroups.size())
   {
@@ -75,7 +76,7 @@ bool ViewSceneManager::removeGroup(uint16_t group)
   return false;
 }
 
-bool ViewSceneManager::moveViewSceneToGroup(ViewSceneDialog* vsd, uint16_t group)
+bool ViewSceneManager::moveViewSceneToGroup(ViewSceneDialog* vsd, uint32_t group)
 {
   if(group < viewSceneGroups.size() && ungroupedViewScenes.erase(vsd))
   {
@@ -86,7 +87,7 @@ bool ViewSceneManager::moveViewSceneToGroup(ViewSceneDialog* vsd, uint16_t group
   return false;
 }
 
-bool ViewSceneManager::removeViewSceneFromGroup(ViewSceneDialog* vsd, uint16_t group)
+bool ViewSceneManager::removeViewSceneFromGroup(ViewSceneDialog* vsd, uint32_t group)
 {
   if(group < viewSceneGroups.size() && viewSceneGroups[group].erase(vsd))
   {
@@ -97,10 +98,10 @@ bool ViewSceneManager::removeViewSceneFromGroup(ViewSceneDialog* vsd, uint16_t g
   return false;
 }
 
-bool ViewSceneManager::getViewSceneGroupNumber(ViewSceneDialog* vsd, uint16_t& group)
+bool ViewSceneManager::getViewSceneGroupNumber(ViewSceneDialog* vsd, uint32_t& group)
 {
-  uint16_t size = viewSceneGroups.size();
-  for(uint16_t i = 0; i < size; ++i)
+  uint32_t size = viewSceneGroups.size();
+  for(uint32_t i = 0; i < size; ++i)
   {
     if(viewSceneGroups[i].find(vsd) != viewSceneGroups[i].end())
     {
@@ -111,7 +112,7 @@ bool ViewSceneManager::getViewSceneGroupNumber(ViewSceneDialog* vsd, uint16_t& g
   return false;
 }
 
-void ViewSceneManager::getViewSceneGroupAsVector(uint16_t group, std::vector<ViewSceneDialog*>& out)
+void ViewSceneManager::getViewSceneGroupAsVector(uint32_t group, std::vector<ViewSceneDialog*>& out)
 {
   out.clear();
   for(auto vsd : viewSceneGroups[group]) out.push_back(vsd);
@@ -119,14 +120,27 @@ void ViewSceneManager::getViewSceneGroupAsVector(uint16_t group, std::vector<Vie
 
 void ViewSceneManager::getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out)
 {
-  uint16_t group; out.clear();
+  uint32_t group; out.clear();
   if(getViewSceneGroupNumber(vsd, group)) getViewSceneGroupAsVector(group, out);
   else                                    out.push_back(vsd);
 }
 
 void ViewSceneManager::getUngroupedViewScenesAsVector(std::vector<ViewSceneDialog*>& viewScenes)
 {
-  viewScenes.clear();
+  uint32_t size = viewSceneGroups.size();
   for(auto vsd : ungroupedViewScenes)
     viewScenes.push_back(vsd);
+}
+
+void ViewSceneManager::groupsUpdated()
+{
+  uint32_t size = viewSceneGroups.size();
+  for(uint32_t i = 0; i < size; ++i)
+    for(ViewSceneDialog* vsd : viewSceneGroups[i])
+      vsd->setViewScenesToUpdate(viewSceneGroups[i]);
+
+  for(ViewSceneDialog* vsd : ungroupedViewScenes)
+    vsd->setViewScenesToUpdate({vsd});
+
+  groupsUpdatedSignal();
 }
