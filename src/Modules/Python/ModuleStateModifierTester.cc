@@ -71,6 +71,7 @@ Mutex PythonExecutingMetadataObject::lock_("PythonExecutingMetadataObject");
 void PythonExecutingMetadataObject::process(const std::string& modId)
 {
   MetadataObject::process(modId);
+#ifdef BUILD_WITH_PYTHON
   auto progWithId = std::regex_replace(programData_, std::regex("\\%moduleId\\%"), "\"" + modId + "\"");
   //logCritical("Post-processed code: {}", progWithId);
   {
@@ -78,6 +79,7 @@ void PythonExecutingMetadataObject::process(const std::string& modId)
     PythonInterpreter::Instance().run_script(progWithId);
   }
   //logCritical("Done python execution.");
+#endif
 }
 
 void ModuleStateModifierTester::execute()
