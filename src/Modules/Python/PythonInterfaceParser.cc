@@ -36,6 +36,7 @@
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(ModuleIdGetter moduleId,
