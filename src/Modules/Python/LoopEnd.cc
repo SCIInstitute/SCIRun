@@ -43,7 +43,6 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Python;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
@@ -99,7 +98,7 @@ void LoopEnd::execute()
     if (loopStart_)
     {
       //oops, didnt mean to copy these.
-      boost::python::object pyDict = wrapDatatypesInMap(matrices, fields, strings);
+      boost::python::object pyDict = Core::Python::wrapDatatypesInMap(matrices, fields, strings);
       loopStart_->get_state()->setTransientValue("PreviousLoopData", pyDict);
       logCritical("next iteration data sent");
     }
