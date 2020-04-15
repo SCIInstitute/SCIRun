@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>1223</height>
+    <height>1222</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1098</width>
-         <height>839</height>
+         <width>1100</width>
+         <height>835</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -262,6 +262,16 @@
      <addaction name="actionRunMacro4_"/>
      <addaction name="actionRunMacro5_"/>
     </widget>
+    <widget class="QMenu" name="hideConnectionsOfTypeMenu_">
+     <property name="title">
+      <string>Hide connections of type</string>
+     </property>
+     <addaction name="actionHideFieldPipes_"/>
+     <addaction name="actionHideMatrixPipes_"/>
+     <addaction name="actionHideStringPipes_"/>
+     <addaction name="actionHideColorMapPipes_"/>
+     <addaction name="actionHideGeometryPipes_"/>
+    </widget>
     <addaction name="actionExecuteAll_"/>
     <addaction name="separator"/>
     <addaction name="actionPinAllModuleUIs_"/>
@@ -285,6 +295,8 @@
     <addaction name="actionMakeSubnetwork_"/>
     <addaction name="separator"/>
     <addaction name="menuMacros"/>
+    <addaction name="separator"/>
+    <addaction name="hideConnectionsOfTypeMenu_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -1348,6 +1360,31 @@
   <action name="actionPython_Wizard_2">
    <property name="text">
     <string>Python Wizard...</string>
+   </property>
+  </action>
+  <action name="actionHideFieldPipes_">
+   <property name="text">
+    <string>Field</string>
+   </property>
+  </action>
+  <action name="actionHideMatrixPipes_">
+   <property name="text">
+    <string>Matrix</string>
+   </property>
+  </action>
+  <action name="actionHideStringPipes_">
+   <property name="text">
+    <string>String</string>
+   </property>
+  </action>
+  <action name="actionHideGeometryPipes_">
+   <property name="text">
+    <string>Geometry</string>
+   </property>
+  </action>
+  <action name="actionHideColorMapPipes_">
+   <property name="text">
+    <string>ColorMap</string>
    </property>
   </action>
  </widget>

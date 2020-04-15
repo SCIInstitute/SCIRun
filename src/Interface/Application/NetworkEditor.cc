@@ -660,6 +660,44 @@ void NetworkEditor::setVisibility(bool visible)
   }
 }
 
+void NetworkEditor::hidePipesByType(const std::string& type)
+{
+  if (connectionDimmingTimeLine_)
+  {
+    qDebug() << "Already dimming certain connections, please wait.";
+    return;
+  }
+
+  std::vector<ConnectionLine*> conns;
+  Q_FOREACH(auto item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (type == c->connectedPorts().first->get_typename())
+      {
+        guiLogDebug("dimming {}", c->id().id_);
+        conns.push_back(c);
+      }
+    }
+  }
+  if (!conns.empty())
+  {
+    connectionDimmingTimeLine_ = new QTimeLine(ConnectionHideTimeMS_, this);
+    connect(connectionDimmingTimeLine_, &QTimeLine::valueChanged,
+      [conns](qreal q)
+      {
+        std::for_each(conns.begin(), conns.end(), [q](ConnectionLine* c) { c->setOpacity(q); });
+      });
+    connect(connectionDimmingTimeLine_, &QTimeLine::finished, [this]()
+      {
+        connectionDimmingTimeLine_->deleteLater();
+        connectionDimmingTimeLine_ = nullptr;
+      });
+    connectionDimmingTimeLine_->start();
+  }
+
+}
+
 //TODO copy/paste
 ModuleWidget* NetworkEditor::selectedModule() const
 {

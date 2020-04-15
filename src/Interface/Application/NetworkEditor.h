@@ -292,6 +292,8 @@ namespace Gui {
     void sendItemsToParent();
     bool containsModule(const std::string& moduleId) const;
 
+    void hidePipesByType(const std::string& type);
+
     using ConnectorFunc = std::function<void(NetworkEditor*)>;
     static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }
 
@@ -299,6 +301,8 @@ namespace Gui {
     static void setViewUpdateFunc(ViewUpdateFunc func) { viewUpdateFunc_ = func; }
 
     static void setMiniview(QGraphicsView* miniview) { miniview_ = miniview; }
+
+    static const int ConnectionHideTimeMS_ {15000};
 
     struct InEditingContext
     {
@@ -436,6 +440,7 @@ namespace Gui {
     ModuleWidgetPlacementManager modulePlacement_;
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
+    QTimeLine* connectionDimmingTimeLine_{nullptr};
 
     // for subnets
     NetworkEditorParameters ctorParams_;

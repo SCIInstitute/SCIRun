@@ -42,10 +42,13 @@ LoopStartDialog::LoopStartDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   {
+    auto layout = tabWidget->widget(0)->layout();
     pythonStartCodePlainTextEdit_ = new CodeEditor(this);
-    tabWidget->widget(0)->layout()->addWidget(pythonStartCodePlainTextEdit_);
+    layout->addWidget(new QLabel("Loop initialization code", this));
+    layout->addWidget(pythonStartCodePlainTextEdit_);
     pythonIncrementCodePlainTextEdit_ = new CodeEditor(this);
-    tabWidget->widget(0)->layout()->addWidget(pythonIncrementCodePlainTextEdit_);
+    layout->addWidget(new QLabel("Loop increment code", this));
+    layout->addWidget(pythonIncrementCodePlainTextEdit_);
   }
 
   addPlainTextEditManager(pythonStartCodePlainTextEdit_, Parameters::LoopStartCode);
