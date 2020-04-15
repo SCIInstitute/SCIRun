@@ -50,6 +50,7 @@ public:
 private:
   CodeEditor* pythonStartCodePlainTextEdit_ {nullptr};
   CodeEditor* pythonIncrementCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonOutputCodePlainTextEdit_{ nullptr };
 };
 
 }

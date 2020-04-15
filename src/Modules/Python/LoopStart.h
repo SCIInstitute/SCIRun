@@ -44,6 +44,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(LoopStartCode);
         ALGORITHM_PARAMETER_DECL(LoopIncrementCode);
         ALGORITHM_PARAMETER_DECL(IterationCount);
+        ALGORITHM_PARAMETER_DECL(LoopOutputCode);
+        class InterfaceWithPythonCodeTranslator;
       }
     }
   }
@@ -75,6 +77,8 @@ namespace SCIRun
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
+      private:
+        SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
       };
 
     }

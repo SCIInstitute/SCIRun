@@ -31,6 +31,7 @@
 #include <Modules/Python/ModuleStateModifierTester.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
+#include <Modules/Python/InterfaceWithPython.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/MetadataObject.h>
@@ -49,6 +50,7 @@ using namespace SCIRun::Core::Algorithms::Python;
 ALGORITHM_PARAMETER_DEF(Python, LoopStartCode);
 ALGORITHM_PARAMETER_DEF(Python, IterationCount);
 ALGORITHM_PARAMETER_DEF(Python, LoopIncrementCode);
+ALGORITHM_PARAMETER_DEF(Python, LoopOutputCode);
 
 MODULE_INFO_DEF(LoopStart, Python, SCIRun)
 
@@ -70,7 +72,17 @@ void LoopStart::setStateDefaults()
 
   state->setValue(Parameters::LoopStartCode, std::string("# Insert your loop start Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::LoopIncrementCode, std::string("# Insert your loop increment Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::LoopOutputCode, std::string("# Insert your loop output variable Python code here. Use the InterfaceWithPython default names for now."));
   state->setValue(Parameters::IterationCount, 0);
+
+  state->setValue(Parameters::PythonOutputField1Name, std::string("fieldOutput1"));
+  state->setValue(Parameters::PythonOutputField2Name, std::string("fieldOutput2"));
+
+  state->setValue(Parameters::PythonOutputString1Name, std::string("stringOutput1"));
+  state->setValue(Parameters::PythonOutputString2Name, std::string("stringOutput2"));
+
+  state->setValue(Parameters::PythonOutputMatrix1Name, std::string("matrixOutput1"));
+  state->setValue(Parameters::PythonOutputMatrix2Name, std::string("matrixOutput2"));
 }
 
 void LoopStart::postStateChangeInternalSignalHookup()
@@ -94,6 +106,30 @@ void LoopStart::execute()
 
     sendOutput(LoopStartCodeObject, boost::make_shared<PythonExecutingMetadataObject>(code));
     state->setValue(Parameters::IterationCount, counter + 1);
+
+    if (counter > 0)
+    {
+      //auto outputCode = state->getValue(Parameters::LoopOutputCode).toString();
+      //auto convertedCode = translator_->translate(outputCode);
+      ////NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
+      //PythonInterpreter::Instance().run_script(convertedCode.code);
+
+      //PythonObjectForwarderImpl<LoopStart> impl(*this);
+
+      //DummyPortName nil;
+      //if (oport_connected(PythonString1))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, nil, nil);
+      //if (oport_connected(PythonString2))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, nil, nil);
+      //if (oport_connected(PythonMatrix1))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), nil, PythonMatrix1, nil);
+      //if (oport_connected(PythonMatrix2))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), nil, PythonMatrix2, nil);
+      //if (oport_connected(PythonField1))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), nil, nil, PythonField1);
+      //if (oport_connected(PythonField2))
+      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), nil, nil, PythonField2);
+    }
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

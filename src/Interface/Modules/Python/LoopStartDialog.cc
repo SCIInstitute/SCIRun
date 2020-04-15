@@ -49,10 +49,14 @@ LoopStartDialog::LoopStartDialog(const std::string& name, ModuleStateHandle stat
     pythonIncrementCodePlainTextEdit_ = new CodeEditor(this);
     layout->addWidget(new QLabel("Loop increment code", this));
     layout->addWidget(pythonIncrementCodePlainTextEdit_);
+    pythonOutputCodePlainTextEdit_ = new CodeEditor(this);
+    layout->addWidget(new QLabel("Loop output code", this));
+    layout->addWidget(pythonOutputCodePlainTextEdit_);
   }
 
   addPlainTextEditManager(pythonStartCodePlainTextEdit_, Parameters::LoopStartCode);
   addPlainTextEditManager(pythonIncrementCodePlainTextEdit_, Parameters::LoopIncrementCode);
+  addPlainTextEditManager(pythonOutputCodePlainTextEdit_, Parameters::LoopOutputCode);
   addSpinBoxManager(iterationCountSpinBox_, Parameters::IterationCount);
   connect(resetIterationCountPushButton_, &QPushButton::clicked, [this]() { state_->setValue(Parameters::IterationCount, 0); });
 

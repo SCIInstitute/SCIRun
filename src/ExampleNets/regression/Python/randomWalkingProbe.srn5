@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="12">
+<boost_serialization signature="serialization::archive" version="16">
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>12</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:0</first>
@@ -293,7 +293,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>540</value>
+										<value>351</value>
 									</value>
 								</second>
 							</item>
@@ -305,7 +305,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>660</value>
+										<value>540</value>
 									</value>
 								</second>
 							</item>
@@ -425,7 +425,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>-2.00000000000000067e-01</value>
 									</value>
 								</second>
 							</item>
@@ -437,7 +437,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -578,7 +578,7 @@ loopWhileCondition = (abs(diff[0][0]) &lt;= 1)
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>11</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -588,7 +588,7 @@ loopWhileCondition = (abs(diff[0][0]) &lt;= 1)
 									<name>IterationCount</name>
 									<value>
 										<which>0</which>
-										<value>18</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -623,12 +623,31 @@ scirun_set_module_state(m, dir, newVal)
 
 
 # accessing previous loop data from transient state
-#loopInput[&quot;diff&quot;]
 prev = scirun_get_module_transient_state(&quot;LoopStart:0&quot;, &quot;PreviousLoopData&quot;)
 print(prev)
+diff = prev.get(0)
+print(&quot;prev diff: &quot;)
+print(diff[0][0])
+</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LoopOutputCode</name>
+								</first>
+								<second>
+									<name>LoopOutputCode</name>
+									<value>
+										<which>2</which>
+										<value># Insert your loop output variable Python code here. Use the InterfaceWithPython default names for now.
+
+#prev = scirun_get_module_transient_state(&quot;LoopStart:0&quot;, &quot;PreviousLoopData&quot;)
+#print(prev)
 #diff = prev.get(0)
 #print(&quot;prev diff: &quot;)
 #print(diff[0][0])
+#matrixOutput1 = diff
 </value>
 									</value>
 								</second>
@@ -658,6 +677,78 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField1Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField2Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix1Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix2Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString2Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput2</value>
 									</value>
 								</second>
 							</item>
@@ -731,6 +822,34 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			</item>
 			<item>
 				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1920,7 +2039,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2002,7 +2121,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>15</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
@@ -2149,6 +2268,18 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>LoopStart:0</moduleId1_>
+				<port1_>
+					<name>PythonMatrix1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>MapFieldDataFromSourceToDestination:0</moduleId1_>
 				<port1_>
 					<name>Remapped_Destination</name>
@@ -2187,7 +2318,7 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>12</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
@@ -2253,6 +2384,13 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 			</second>
 		</item>
 		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-2.07000000000000000e+02</first>
+				<second>-1.06000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
 				<first>1.52000000000000000e+02</first>
@@ -2283,11 +2421,11 @@ scirun_set_module_state(m, &quot;ZLocation&quot;, 0.0)</value>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 	</moduleNotes>
@@ -2296,7 +2434,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>12</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
@@ -2332,6 +2470,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ReportMatrixInfo:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
 			<second>-1</second>
 		</item>
 		<item>
