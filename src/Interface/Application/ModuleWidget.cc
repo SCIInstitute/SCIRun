@@ -332,7 +332,7 @@ namespace
   QString backgroundColorByName(const QString& name)
   {
     if (name.contains("Loop"))
-      return moduleRGBA(0, 200, 50);
+      return moduleRGBA(13, 152, 186);
 
     return moduleRGBA(99,99,104);
   }
