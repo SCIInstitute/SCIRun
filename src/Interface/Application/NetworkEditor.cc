@@ -213,6 +213,19 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
     }
   );
 #endif
+
+#if 0
+  if (name.find("Loop") != std::string::npos)
+  {
+    qDebug() << "Special shape logic for loopers";
+    auto diamondBackground = new LoopDiamondPolygon();
+    scene_->addItem(diamondBackground);
+    ensureVisible(diamondBackground);
+    diamondBackground->setPos(proxy->pos());
+    diamondBackground->setZValue(-99999);
+    proxy->setBackgroundPolygon(diamondBackground);
+  }
+#endif
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)

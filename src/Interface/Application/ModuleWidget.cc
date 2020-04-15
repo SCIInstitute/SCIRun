@@ -322,16 +322,19 @@ QGroupBox* ModuleWidgetDisplay::getButtonGroup() const
 static const int UNSET = -1;
 static const int SELECTED = -50;
 
-typedef boost::bimap<QString, int> ColorStateLookup;
-typedef ColorStateLookup::value_type ColorStatePair;
-static ColorStateLookup colorStateLookup;
-void fillColorStateLookup(const QString& background);
-
 namespace
 {
   ModuleId id(ModuleHandle mod)
   {
     return mod ? mod->id() : ModuleId();
+  }
+
+  QString backgroundColorByName(const QString& name)
+  {
+    if (name.contains("Loop"))
+      return moduleRGBA(0, 200, 50);
+
+    return moduleRGBA(99,99,104);
   }
 }
 
@@ -356,7 +359,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   inputPortLayout_(nullptr),
   outputPortLayout_(nullptr),
   deleting_(false),
-  defaultBackgroundColor_(moduleRGBA(99,99,104)),
+  defaultBackgroundColor_(backgroundColorByName(name)),
   isViewScene_(name == "ViewScene" || name == "OsprayViewer") //TODO
 {
   fillColorStateLookup(defaultBackgroundColor_);
@@ -524,7 +527,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
   if (color == Qt::red)
   {
     errored_ = true;
-    updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
+    updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   }
   fullWidgetDisplay_->setStatusColor(moduleRGBA(color.red(), color.green(), color.blue()));
 }
@@ -1114,16 +1117,13 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
-void fillColorStateLookup(const QString& background)
+void ModuleWidget::fillColorStateLookup(const QString& background)
 {
-  if (colorStateLookup.empty())
-  {
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), static_cast<int>(ModuleExecutionState::Waiting)));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(170, 204, 170), static_cast<int>(ModuleExecutionState::Executing)));
-    colorStateLookup.insert(ColorStatePair(background, static_cast<int>(ModuleExecutionState::Completed)));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(164, 211, 238), SELECTED));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), static_cast<int>(ModuleExecutionState::Errored)));
-  }
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(205,190,112), static_cast<int>(ModuleExecutionState::Waiting)));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(170, 204, 170), static_cast<int>(ModuleExecutionState::Executing)));
+  colorStateLookup_.insert(ColorStatePair(background, static_cast<int>(ModuleExecutionState::Completed)));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(164, 211, 238), SELECTED));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(176, 23, 31), static_cast<int>(ModuleExecutionState::Errored)));
 }
 
 //primitive state machine--updateBackgroundColor slot needs the thread-safe state machine too
@@ -1133,12 +1133,12 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   {
   case static_cast<int>(ModuleExecutionState::Waiting):
   {
-    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
+    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Executing):
   {
-    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Executing)));
+    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Executing)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Completed):
@@ -1157,7 +1157,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 
     if (errored_)
     {
-      colorToUse = colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored));
+      colorToUse = colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored));
     }
 
     static const QString rounded("color: white; border-radius: 7px;");
@@ -1166,13 +1166,13 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
     fullWidgetDisplay_->getTitle()->setStyleSheet(style);
     fullWidgetDisplay_->getButtonGroup()->setStyleSheet(style);
 
-    previousModuleState_ = colorStateLookup.left.at(colorToUse);
+    previousModuleState_ = colorStateLookup_.left.at(colorToUse);
   }
 }
 
 void ModuleWidget::setColorSelected()
 {
-  Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(SELECTED));
+  Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(SELECTED));
   Q_EMIT moduleSelected(true);
 }
 
@@ -1495,7 +1495,7 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 {
   skipExecuteDueToFatalError_ = true;
   qDebug() << "Dialog error: " << message;
-  updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
+  updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 

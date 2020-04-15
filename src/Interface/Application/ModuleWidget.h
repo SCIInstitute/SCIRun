@@ -34,6 +34,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
+#include <boost/bimap.hpp>
 #include <set>
 #include <deque>
 #include <atomic>
@@ -309,6 +310,11 @@ private:
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
+
+  typedef boost::bimap<QString, int> ColorStateLookup;
+  typedef ColorStateLookup::value_type ColorStatePair;
+  ColorStateLookup colorStateLookup_;
+  void fillColorStateLookup(const QString& background);
 
   boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
