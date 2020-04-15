@@ -29,9 +29,9 @@
 #include <Modules/Python/LoopStart.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Modules/Python/ModuleStateModifierTester.h>
+#include <Modules/Python/InterfaceWithPython.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
-#include <Modules/Python/InterfaceWithPython.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/MetadataObject.h>
