@@ -64,6 +64,13 @@ LoopStart::LoopStart() : Module(staticInfo_)
   INITIALIZE_PORT(PythonMatrix2);
   INITIALIZE_PORT(PythonField2);
   INITIALIZE_PORT(PythonString2);
+
+#ifdef BUILD_WITH_PYTHON
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(),
+    { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name,
+    Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name,
+    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name}));
+#endif
 }
 
 void LoopStart::setStateDefaults()
@@ -74,6 +81,8 @@ void LoopStart::setStateDefaults()
   state->setValue(Parameters::LoopIncrementCode, std::string("# Insert your loop increment Python code here. The SCIRun API package is automatically imported."));
   state->setValue(Parameters::LoopOutputCode, std::string("# Insert your loop output variable Python code here. Use the InterfaceWithPython default names for now."));
   state->setValue(Parameters::IterationCount, 0);
+  state->setValue(Parameters::NumberOfRetries, 5);
+  state->setValue(Parameters::PollingIntervalMilliseconds, 10);
 
   state->setValue(Parameters::PythonOutputField1Name, std::string("fieldOutput1"));
   state->setValue(Parameters::PythonOutputField2Name, std::string("fieldOutput2"));
@@ -109,26 +118,28 @@ void LoopStart::execute()
 
     if (counter > 0)
     {
-      //auto outputCode = state->getValue(Parameters::LoopOutputCode).toString();
-      //auto convertedCode = translator_->translate(outputCode);
-      ////NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      //PythonInterpreter::Instance().run_script(convertedCode.code);
+      auto outputCode = state->getValue(Parameters::LoopOutputCode).toString();
+      //logCritical("LoopStart outputCode: {}", outputCode);
+      auto convertedCode = translator_->translate(outputCode);
+      //logCritical("LoopStart converted outputCode: {}", convertedCode.code);
+      NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
+      PythonInterpreter::Instance().run_script(convertedCode.code);
 
-      //PythonObjectForwarderImpl<LoopStart> impl(*this);
+      PythonObjectForwarderImpl<LoopStart> impl(*this);
 
-      //DummyPortName nil;
-      //if (oport_connected(PythonString1))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, nil, nil);
-      //if (oport_connected(PythonString2))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, nil, nil);
-      //if (oport_connected(PythonMatrix1))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), nil, PythonMatrix1, nil);
-      //if (oport_connected(PythonMatrix2))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), nil, PythonMatrix2, nil);
-      //if (oport_connected(PythonField1))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), nil, nil, PythonField1);
-      //if (oport_connected(PythonField2))
-      //  impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), nil, nil, PythonField2);
+      DummyPortName nil;
+      if (oport_connected(PythonString1))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, nil, nil);
+      if (oport_connected(PythonString2))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, nil, nil);
+      if (oport_connected(PythonMatrix1))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), nil, PythonMatrix1, nil);
+      if (oport_connected(PythonMatrix2))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), nil, PythonMatrix2, nil);
+      if (oport_connected(PythonField1))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), nil, nil, PythonField1);
+      if (oport_connected(PythonField2))
+       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), nil, nil, PythonField2);
     }
   }
 #else

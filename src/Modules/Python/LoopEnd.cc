@@ -60,7 +60,8 @@ LoopEnd::LoopEnd() : Module(staticInfo_)
   INITIALIZE_PORT(InputString);
 
 #ifdef BUILD_WITH_PYTHON
-  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), { Parameters::LoopWhileCondition }));
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(),
+    { Parameters::LoopWhileCondition }));
 #endif
 }
 
@@ -88,7 +89,7 @@ void LoopEnd::execute()
   auto strings = getOptionalDynamicInputs(InputString);
   if (needToExecute())
   {
-    if (execCount_ >= get_state()->getValue(Variables::MaxIterations).toInt())
+    if (execCount_ >= get_state()->getValue(Variables::MaxIterations).toInt() - 1)
     {
       execCount_ = 0;
       warning("Max iterations reached.");
@@ -100,7 +101,7 @@ void LoopEnd::execute()
       //oops, didnt mean to copy these.
       boost::python::object pyDict = Core::Python::wrapDatatypesInMap(matrices, fields, strings);
       loopStart_->get_state()->setTransientValue("PreviousLoopData", pyDict);
-      logCritical("next iteration data sent");
+      //logCritical("next iteration data sent");
     }
 
     auto code = get_state()->getValue(Parameters::LoopEndCode).toString();
