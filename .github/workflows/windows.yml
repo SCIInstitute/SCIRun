@@ -107,5 +107,5 @@ jobs:
     - name: Upload installer
       uses: actions/upload-artifact@v1
       with:
-        name: SCIRunWindowsInstaller
+        name: SCIRunWindowsPythonInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.X-win64.exe
