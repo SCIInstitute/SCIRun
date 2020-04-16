@@ -75,6 +75,10 @@ namespace Core
 
   #define THROW_INVALID_ARGUMENT(message)  SCIRUN_THROW(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
+  struct SCISHARE InvalidStateException : virtual ExceptionBase {};
+
+  #define THROW_INVALID_STATE(message)  SCIRUN_THROW(SCIRun::Core::InvalidStateException() << SCIRun::Core::ErrorMessage(message))
+
   using DimensionMismatchInfo = boost::error_info<struct tag_dimension_mismatch, std::string>;
   using InvalidArgumentValueInfo = boost::error_info<struct tag_invalid_argument_value, std::string>;
   using NotImplementedInfo = boost::error_info<struct tag_not_implemented, std::string>;
