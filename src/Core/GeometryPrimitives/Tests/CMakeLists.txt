@@ -30,6 +30,8 @@ SET(Core_Geometry_Primitives_Tests_SRCS
   PointTests.cc
   TransformTests.cc
   VectorTests.cc
+  BBoxTests.cc
+  OrientedBBoxTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Geometry_Primitives_Tests
