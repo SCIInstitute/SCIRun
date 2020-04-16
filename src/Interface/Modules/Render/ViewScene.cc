@@ -1569,8 +1569,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& plane, const BBox& bbox)
 {
-  BBox mBBox;
-  mBBox.reset();
+  if (!bbox.valid()) return;
   Vector diag(bbox.diagonal());
   Point c(bbox.center());
   Vector n(plane.x, plane.y, plane.z);
