@@ -258,7 +258,7 @@ void ViewSceneControlsDock::updateViewSceneTree()
 
     std::vector<std::pair<ViewSceneDialog*, bool>> viewScenesToDisplay;
     for(auto vsd : groupMembers) viewScenesToDisplay.emplace_back(vsd, true);
-    for(ViewSceneDialog* vsd : ungroupedMemebers) viewScenesToDisplay.push_back(std::make_pair(vsd, false));
+    for(auto vsd : ungroupedMemebers) viewScenesToDisplay.emplace_back(vsd, false);
     std::sort(viewScenesToDisplay.begin(), viewScenesToDisplay.end(), vsdPairComp);
 
     for(int j = 0; j < viewScenesToDisplay.size(); ++j)
