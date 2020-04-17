@@ -27,7 +27,7 @@
 */
 
 #include "Interface/Modules/Render/ViewSceneManager.h"
-#include "Interface/Modules/Render/ViewScene.h"
+#include <Interface/Modules/Render/ViewScene.h>
 #include <iostream>
 
 using namespace SCIRun::Gui;
