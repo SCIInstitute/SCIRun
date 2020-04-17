@@ -257,7 +257,7 @@ void ViewSceneControlsDock::updateViewSceneTree()
     ViewSceneDialog::viewSceneManager.getViewSceneGroupAsVector(i, groupMemebers);
 
     std::vector<std::pair<ViewSceneDialog*, bool>> viewScenesToDisplay;
-    for(auto vsd : groupMembers) viewScenesToDisplay.emplace_back(vsd, true);
+    for(auto vsd : groupMemebers) viewScenesToDisplay.emplace_back(vsd, true);
     for(auto vsd : ungroupedMemebers) viewScenesToDisplay.emplace_back(vsd, false);
     std::sort(viewScenesToDisplay.begin(), viewScenesToDisplay.end(), vsdPairComp);
 
@@ -265,7 +265,7 @@ void ViewSceneControlsDock::updateViewSceneTree()
     {
       auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(std::get<0>(viewScenesToDisplay[j])->getName())));
       item->setCheckState(0, (std::get<1>(viewScenesToDisplay[j])) ? Qt::Checked : Qt::Unchecked);
-      item->setData(1, Qt::EditRole, (qulonglong)std::get<0>(viewScenesToDisplay[j]));
+      item->setData(1, Qt::EditRole, QVariant::fromValue(std::get<0>(viewScenesToDisplay[j])));
     }
   }
 
@@ -290,16 +290,11 @@ void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, in
   QTreeWidgetItem* p = widgetItem->parent();
   if(!p) return;
   uint32_t g = p->data(1, Qt::EditRole).toInt();
+  ViewSceneDialog* vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
   if (widgetItem->checkState(column) == Qt::Unchecked)
-  {
-    ViewSceneDialog* vs = (ViewSceneDialog*)widgetItem->data(1, Qt::EditRole).toULongLong();
     ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
-  }
   else if (widgetItem->checkState(column) == Qt::Checked)
-  {
-    ViewSceneDialog* vs = (ViewSceneDialog*)widgetItem->data(1, Qt::EditRole).toULongLong();
     ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
-  }
 }
 
 void ViewSceneControlsDock::setSampleColor(const QColor& color)
