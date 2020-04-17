@@ -1005,7 +1005,6 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
     auto btn = mGLWidget->getSpireButton(event);
 
-    //viewSceneManager.getViewSceneGroupAsVector(this, viewScenesToUpdate);
     for(auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
   }
 }
