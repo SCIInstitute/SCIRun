@@ -344,6 +344,8 @@ namespace Gui {
     void pinAllModuleUIs();
     void hideAllModuleUIs();
     void restoreAllModuleUIs();
+    void seeThroughAllModuleUIs();
+    void normalOpacityAllModuleUIs();
     void updateViewport();
     void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void setMouseAsDragMode();

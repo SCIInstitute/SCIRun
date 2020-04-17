@@ -1412,7 +1412,25 @@ void ModuleWidget::pinUI()
 void ModuleWidget::hideUI()
 {
   if (dockable_)
+  {
     dockable_->hide();
+  }
+}
+
+void ModuleWidget::seeThroughUI()
+{
+  if (dockable_)
+  {
+    dockable_->setWindowOpacity(0.6);
+  }
+}
+
+void ModuleWidget::normalOpacityUI()
+{
+  if (dockable_)
+  {
+    dockable_->setWindowOpacity(1);
+  }
 }
 
 void ModuleWidget::showUI()

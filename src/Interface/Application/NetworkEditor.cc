@@ -1826,6 +1826,26 @@ void NetworkEditor::hideAllModuleUIs()
   }
 }
 
+void NetworkEditor::seeThroughAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->seeThroughUI();
+  }
+}
+
+void NetworkEditor::normalOpacityAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->normalOpacityUI();
+  }
+}
+
 void NetworkEditor::restoreAllModuleUIs()
 {
   if (!isActiveWindow())

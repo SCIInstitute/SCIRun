@@ -197,6 +197,8 @@ public Q_SLOTS:
   void pinUI();
   void hideUI();
   void showUI();
+  void seeThroughUI();
+  void normalOpacityUI();
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
