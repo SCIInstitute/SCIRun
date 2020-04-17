@@ -25,36 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_GEOMETRY_BBOXBASE_H
-#define CORE_GEOMETRY_BBOXBASE_H 1
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/share.h>
+#include <Core/GeometryPrimitives/BBoxBase.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
-class BBoxBase
-{
-protected:
-  Point cmin_;
-  Point cmax_;
-  bool is_valid_;
-public:
-  BBoxBase(bool valid);
-  BBoxBase(bool valid, const Point& cmin, const Point& cmax);
-  virtual ~BBoxBase() {};
-  inline bool valid() const { return is_valid_; }
-  inline void set_valid(bool v) { is_valid_ = v; }
-  inline void reset() { is_valid_ = false; }
-  inline void extend(const Point& p);
-  inline void extend(double val);
-  virtual Vector diagonal() const = 0;
-  virtual Point get_min() const = 0;
-  virtual Point get_max() const = 0;
-  virtual Point center() const = 0;
-};
-}}}
+using namespace SCIRun::Core::Geometry;
 
-#endif
+BBoxBase::BBoxBase(bool valid) : is_valid_(valid)
+{ }
+
+BBoxBase::BBoxBase(bool valid, const Point& cmin, const Point& cmax)
+  : is_valid_(valid), cmin_(cmin), cmax_(cmax)
+{ }

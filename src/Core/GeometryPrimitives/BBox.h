@@ -50,17 +50,11 @@ namespace Geometry {
   public:
     enum { INSIDE, INTERSECT, OUTSIDE };
 
-    BBox()
-    {
-      is_valid_ = false;
-    }
+    BBox() : BBoxBase(false)
+    { }
 
-    BBox(const BBox& copy)
-    {
-      cmin_ = copy.cmin_;
-      cmax_ = copy.cmax_;
-      is_valid_ = copy.is_valid_;
-    }
+    BBox(const BBox& copy) : BBoxBase(copy.is_valid_, copy.cmin_, copy.cmax_)
+    { }
 
     BBox& operator=(const BBox& copy)
     {
@@ -70,34 +64,25 @@ namespace Geometry {
       return *this;
     }
 
-    BBox(const BBox& b1, const BBox& b2)
+    BBox(const BBox& b1, const BBox& b2) : BBoxBase(true, b1.cmin_, b1.cmax_)
     {
-      cmin_ = b1.cmin_;
-      cmax_ = b1.cmax_;
-      is_valid_ = true;
       extend(b2.cmin_);
       extend(b2.cmax_);
     }
 
 
-    BBox(const Point& p1, const Point& p2)
+    BBox(const Point& p1, const Point& p2) : BBoxBase(true, p1, p2)
     {
-      cmin_ = p1;
-      cmax_ = p1;
-      is_valid_ = true;
       extend(p2);
     }
 
-    BBox(const Point& p1, const Point& p2, const Point& p3)
+    BBox(const Point& p1, const Point& p2, const Point& p3) : BBoxBase(true, p1, p2)
     {
-      cmin_ = p1;
-      cmax_ = p1;
-      is_valid_ = true;
       extend(p2);
       extend(p3);
     }
 
-    explicit BBox(const std::vector<Point>& points)
+    explicit BBox(const std::vector<Point>& points) : BBoxBase(false)
     {
       is_valid_ = false;
       for (auto& p : points)
