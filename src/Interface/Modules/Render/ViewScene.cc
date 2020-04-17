@@ -981,10 +981,9 @@ void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& viewScenesToUpdate)
+void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes)
 {
-  this->viewScenesToUpdate.clear();
-  for(auto vsd : viewScenesToUpdate) this->viewScenesToUpdate.push_back(vsd);
+  viewScenesToUpdate.assign(scenes.begin(), scenes.end());
 }
 
 //--------------------------------------------------------------------------------------------------
