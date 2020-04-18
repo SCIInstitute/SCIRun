@@ -12,4 +12,7 @@ cd bin
 for %%D in (Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Svg Qt5Widgets) do (copy %qt%\bin\%%D.dll SCIRun\%cfg%\) 
 copy Externals\Build\Qwt_external\src\%cfg%\qwt.dll SCIRun\%cfg%\
 copy Externals\Source\Python_external\PCbuild\amd64\python38.dll SCIRun\%cfg%\
-xcopy /s %qt%\plugins\platforms SCIRun\%cfg%\
+cd SCIRun\%cfg%\
+mkdir platforms
+cd ..\..
+xcopy /s %qt%\plugins\platforms SCIRun\%cfg%\platforms\
