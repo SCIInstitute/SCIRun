@@ -48,6 +48,7 @@ namespace SCIRun
       void takeScreenshot();
       QImage getScreenshot();
       void saveScreenshot();
+      void saveScreenshot(const QString& filename);
       QString screenshotFile() const;
       Modules::Render::RGBMatrices toMatrix() const;
 

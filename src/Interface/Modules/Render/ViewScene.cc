@@ -2179,6 +2179,14 @@ void ViewSceneDialog::screenshotClicked()
   screenshotTaker_->saveScreenshot();
 }
 
+void ViewSceneDialog::autoSaveScreenshot()
+{
+  QThread::sleep(1);
+  takeScreenshot();
+  screenshotTaker_->saveScreenshot(QString("/Users/dan/Desktop/viewscene_%1_%2.png")
+    .arg(windowTitle().replace(':', '-')).arg(QTime::currentTime().toString("hh.mm.ss.zzz")));
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendBugReport()
 {

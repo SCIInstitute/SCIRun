@@ -256,6 +256,7 @@ namespace Gui {
 
     void disableViewScenes();
     void enableViewScenes();
+    void saveImages();
 
     //TODO: this class is getting too big and messy, schedule refactoring
 

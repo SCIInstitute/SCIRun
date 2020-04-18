@@ -2068,6 +2068,18 @@ void NetworkEditor::updateExecuteButtons(bool downstream)
   adjustExecuteButtonsToDownstream(downstream);
 }
 
+void NetworkEditor::saveImages()
+{
+  Q_FOREACH(auto item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->saveImagesFromViewScene();
+    }
+  }
+}
+
 QColor Gui::defaultTagColor(int tag)
 {
   switch (tag)

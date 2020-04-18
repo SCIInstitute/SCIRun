@@ -138,6 +138,8 @@ public:
   bool executionDisabled() const { return disabled_; }
   void setExecutionDisabled(bool disabled);
 
+  void saveImagesFromViewScene();
+
   void highlightPorts();
   void unhighlightPorts();
 

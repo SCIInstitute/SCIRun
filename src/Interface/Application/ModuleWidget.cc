@@ -50,6 +50,9 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 
+//TODO
+#include <Interface/Modules/Render/ViewScene.h>
+
 using namespace SCIRun;
 using namespace Core;
 using namespace Gui;
@@ -1642,6 +1645,14 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
   for (const auto& output : ports().outputs())
   {
     output->setConnectionsDisabled(disabled_ || disabled);
+  }
+}
+
+void ModuleWidget::saveImagesFromViewScene()
+{
+  if (isViewScene_)
+  {
+    qobject_cast<ViewSceneDialog*>(dialog_)->autoSaveScreenshot();
   }
 }
 

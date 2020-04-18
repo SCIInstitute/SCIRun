@@ -147,7 +147,7 @@ void NetworkEditor::removeSubnetPortHolders()
 
 std::vector<QGraphicsItem*> NetworkEditor::subnetItemsToMove()
 {
-  auto nonCompanionItems = scene_->items().toVector().toStdVector();
+  std::vector<QGraphicsItem*> nonCompanionItems(scene_->items().begin(), scene_->items().end());
 
   nonCompanionItems.erase(std::remove_if(nonCompanionItems.begin(), nonCompanionItems.end(),
     [](QGraphicsItem* item)
@@ -427,18 +427,25 @@ std::string SubnetModule::listComponentIds() const
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
+template <typename Iter>
+QSet<typename Iter::value_type> toSet(Iter b, Iter e)
+{
+  return QSet<typename Iter::value_type>(b, e);
+}
+
 QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> items) const
 {
-  auto subnetItems = items.toSet();
+  auto subnetItems = toSet(items.begin(), items.end());
   Q_FOREACH(QGraphicsItem* item, items)
   {
     auto module = getModule(item);
     if (module)
     {
-      subnetItems.unite(module->connections().toSet());
+      auto cs = module->connections();
+      subnetItems.unite(toSet(cs.begin(), cs.end()));
     }
   }
-  return subnetItems.toList();
+  return subnetItems.values();
 }
 
 namespace

@@ -77,6 +77,11 @@ void Screenshot::saveScreenshot()
   }
 }
 
+void Screenshot::saveScreenshot(const QString& filename)
+{
+  screenshot_.save(filename);
+}
+
 QString Screenshot::screenshotFile() const
 {
   return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", filePath, "*.png");
