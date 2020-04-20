@@ -90,7 +90,7 @@ namespace Geometry {
     }
 
     /// Expand the bounding box to include point p
-    inline void extend(const Point& p)
+    inline void extend(const Point& p) override
     {
       if(is_valid_)
       {
@@ -108,7 +108,7 @@ namespace Geometry {
     /// Extend the bounding box on all sides by a margin
     /// For example to expand it by a certain epsilon to make
     /// sure that a lookup will be inside the bounding box
-    inline void extend(double val)
+    inline void extend(double val) override
     {
       if (is_valid_)
       {
@@ -153,7 +153,7 @@ namespace Geometry {
     /// with normal normal, and radius r.
     SCISHARE void extend_disk(const Point& cen, const Vector& normal, double r);
 
-    inline Point center() const
+    inline Point center() const override
     {
       /// @todo: C assert: assert(is_valid_);
       Vector d = diagonal();
@@ -183,13 +183,13 @@ namespace Geometry {
     /// Scale the bounding box by s, centered around o
     SCISHARE void scale(double s, const Vector &o);
 
-    inline Point get_min() const
+    inline Point get_min() const override
       { return cmin_; }
 
-    inline Point get_max() const
+    inline Point get_max() const override
       { return cmax_; }
 
-    inline Vector diagonal() const
+    inline Vector diagonal() const override
     {
       //TODO: needs invariant check, or refactoring.
       if (!is_valid_)

@@ -76,9 +76,6 @@ void OrientedBBox::extend(double val)
   }
 }
 
-bool OrientedBBox::valid() const
-{ return is_valid_; }
-
 Vector OrientedBBox::diagonal() const
 {
   //TODO: needs invariant check, or refactoring.

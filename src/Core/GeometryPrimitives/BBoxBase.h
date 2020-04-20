@@ -48,8 +48,8 @@ public:
   inline bool valid() const { return is_valid_; }
   inline void set_valid(bool v) { is_valid_ = v; }
   inline void reset() { is_valid_ = false; }
-  inline void extend(const Point& p);
-  inline void extend(double val);
+  virtual void extend(const Point& p) = 0;
+  virtual void extend(double val) = 0;
   virtual Vector diagonal() const = 0;
   virtual Point get_min() const = 0;
   virtual Point get_max() const = 0;
