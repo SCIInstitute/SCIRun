@@ -134,7 +134,7 @@ namespace SCIRun
       void runGCOnNextExecution() override;
 
       //---------------- Rendering -----------------------------------------------------------------
-      void doFrame(double currentTime, double constantDeltaTime) override; // Performs a frame.
+      void doFrame(double constantDeltaTime) override; // Performs a frame.
       void setLightColor(int index, float r, float g, float b) override;
       void setLightOn(int index, bool value) override;
       void setLightAzimuth(int index, float azimuth) override;
