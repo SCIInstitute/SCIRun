@@ -427,14 +427,19 @@ std::string SubnetModule::listComponentIds() const
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
+//TODO: breaks older compilers. Will disable for now
+#if 0
 template <typename Iter>
 QSet<typename Iter::value_type> toSet(Iter b, Iter e)
 {
   return QSet<typename Iter::value_type>(b, e);
 }
+#endif
 
 QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> items) const
 {
+  throw "not implemented";
+#if 0
   auto subnetItems = toSet(items.begin(), items.end());
   Q_FOREACH(QGraphicsItem* item, items)
   {
@@ -446,6 +451,7 @@ QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> it
     }
   }
   return subnetItems.values();
+#endif
 }
 
 namespace
