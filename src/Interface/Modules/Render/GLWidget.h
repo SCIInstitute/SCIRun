@@ -96,8 +96,6 @@ private:
   QTimer*                               mTimer             {};
   double                                mFrameTime         {0.0};
   bool                                  mFrameRequested    {false};
-
-  double                                mCurrentTime       {0.0};
 };
 
 } // end of namespace Gui
