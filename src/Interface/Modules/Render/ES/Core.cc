@@ -137,7 +137,12 @@ bool ESCore::hasShaderPromise() const
   return false;
 }
 
-void ESCore::execute(double currentTime, double constantFrameTime)
+void ESCore::executeWithoutAdvancingClock()
+{
+  execute(0);
+}
+
+void ESCore::execute(double constantFrameTime)
 {
   mCurrentTime += constantFrameTime;
   // Update the current static time component before renormalization.
