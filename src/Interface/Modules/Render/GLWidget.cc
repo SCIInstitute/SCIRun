@@ -81,8 +81,7 @@ void GLWidget::paintGL()
 {
   //set to 200ms to force promise fullfilment every frame if a good frame as been requested
   double lUpdateTime = mFrameRequested ? 0.2 : updateTime;
-  mCurrentTime += lUpdateTime;
-  mGraphics->doFrame(mCurrentTime, lUpdateTime);
+  mGraphics->doFrame(lUpdateTime);
 
   if (mFrameRequested && !mGraphics->hasShaderPromise())
   {
