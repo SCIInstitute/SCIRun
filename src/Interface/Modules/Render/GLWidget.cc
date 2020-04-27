@@ -49,7 +49,7 @@ const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QWidget* parent) :
-    QOpenGLWidget(parent)
+  QOpenGLWidget(parent), canClickMouse_(true)
 {
   mGraphics.reset(new Render::SRInterface());
 
@@ -116,10 +116,19 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  makeCurrent();
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseDown(event->x(), event->y(), btn);
-  event->ignore();
+  if (canClickMouse_)
+  {
+    makeCurrent();
+    auto btn = getSpireButton(event);
+    mGraphics->inputMouseDown(event->x(), event->y(), btn);
+    event->ignore();
+  }
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::allowMousePresses(bool allow)
+{
+  canClickMouse_ = allow;
 }
 
 //------------------------------------------------------------------------------

@@ -928,7 +928,7 @@ void ViewSceneDialog::resizingDone()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  if (shiftdown_)
+  if (shiftdown_ && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool())
   {
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
@@ -940,10 +940,12 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selectedWidget_)
   {
+    mGLWidget->allowMousePresses(false);
     restoreObjColor();
     updateModifiedGeometries();
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
+    mGLWidget->allowMousePresses(true);
     selectedWidget_.reset();
   }
 

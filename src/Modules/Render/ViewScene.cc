@@ -127,6 +127,7 @@ void ViewScene::setStateDefaults()
   state->setValue(CameraDistance, 3.0);
   state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(IsExecuting, false);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
@@ -233,6 +234,9 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
+  auto state = get_state();
+  state->setValue(IsExecuting, true);
+
   fireTransientStateChangeSignalForGeomData();
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
@@ -243,7 +247,7 @@ void ViewScene::execute()
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
     ModuleStateInterface::TransientValueOption screenshotDataOption;
-    screenshotDataOption = get_state()->getTransientValue(Parameters::ScreenshotData);
+    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
@@ -252,6 +256,7 @@ void ViewScene::execute()
     }
   }
 #endif
+  state->setValue(IsExecuting, false);
 }
 
 void ViewScene::processViewSceneObjectFeedback()
@@ -328,3 +333,4 @@ const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
 const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
 const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
 const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
+const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");

@@ -71,6 +71,7 @@ public:
   void setLockPanning(bool lock);
   void setLockRotation(bool lock);
   void requestFrame() {mFrameRequested = true;}
+  void allowMousePresses(bool allow);
 
 Q_SIGNALS:
   void fatalError(const QString& message);
@@ -91,6 +92,7 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
+  bool canClickMouse_;
   Render::MouseButton getSpireButton(QMouseEvent* event);
 
   Render::RendererPtr                   mGraphics          {};  ///< Interface to spire.

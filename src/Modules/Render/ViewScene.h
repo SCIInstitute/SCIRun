@@ -133,6 +133,7 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName CameraDistance;
     static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
     static const Core::Algorithms::AlgorithmParameterName CameraRotation;
+    static const Core::Algorithms::AlgorithmParameterName IsExecuting;
 
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
