@@ -928,7 +928,6 @@ void ViewSceneDialog::resizingDone()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  mousePressFinished_ = false;
   if (canSelectWidget())
   {
     mouseButtonPressed_ = true;
@@ -936,7 +935,6 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
   }
-  mousePressFinished_ = true;
 }
 
 bool ViewSceneDialog::canSelectWidget()
@@ -948,8 +946,6 @@ bool ViewSceneDialog::canSelectWidget()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-  while (!mousePressFinished_)
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   if (selectedWidget_)
   {
     restoreObjColor();

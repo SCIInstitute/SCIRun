@@ -298,7 +298,6 @@ namespace SCIRun {
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
-      bool                                  mousePressFinished_           {true};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
