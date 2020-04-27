@@ -928,33 +928,47 @@ void ViewSceneDialog::resizingDone()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  if (shiftdown_ && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool())
+  mousePressFinished_ = false;
+  if (canSelectWidget())
   {
+    mouseButtonPressed_ = true;
+    mGLWidget->allowMousePresses(false);
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
   }
+  mousePressFinished_ = true;
+}
+
+bool ViewSceneDialog::canSelectWidget()
+{
+  return shiftdown_ && !mouseButtonPressed_
+    && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
+  while (!mousePressFinished_)
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   if (selectedWidget_)
   {
-    mGLWidget->allowMousePresses(false);
     restoreObjColor();
     updateModifiedGeometries();
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
-    mGLWidget->allowMousePresses(true);
     selectedWidget_.reset();
   }
 
+  mGLWidget->allowMousePresses(true);
+  mouseButtonPressed_ = false;
   pushCameraState();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
+  if (canSelectWidget())
+    mousePressEvent(event);
 }
 
 //--------------------------------------------------------------------------------------------------
