@@ -926,7 +926,7 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+void ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
 {
   if (canSelectWidget())
   {
@@ -937,10 +937,17 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   }
 }
 
+//--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::canSelectWidget() const
 {
   return shiftdown_ && !mouseButtonPressed_
     && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+{
+  tryWidgetSelection(event);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -963,8 +970,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  if (canSelectWidget())
-    mousePressEvent(event);
+  tryWidgetSelection(event);
 }
 
 //--------------------------------------------------------------------------------------------------

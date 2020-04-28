@@ -240,6 +240,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       bool canSelectWidget() const;
+      void tryWidgetSelection(QMouseEvent* event);
       void selectObject(const int x, const int y);
       void restoreObjColor();
 
