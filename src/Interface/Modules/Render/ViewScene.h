@@ -239,7 +239,7 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      bool canSelectWidget();
+      bool canSelectWidget() const;
       void selectObject(const int x, const int y);
       void restoreObjColor();
 

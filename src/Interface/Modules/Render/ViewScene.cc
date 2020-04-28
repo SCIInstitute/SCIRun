@@ -931,13 +931,13 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   if (canSelectWidget())
   {
     mouseButtonPressed_ = true;
-    mGLWidget->allowMousePresses(false);
+    mGLWidget->setAllowMousePresses(false);
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
   }
 }
 
-bool ViewSceneDialog::canSelectWidget()
+bool ViewSceneDialog::canSelectWidget() const
 {
   return shiftdown_ && !mouseButtonPressed_
     && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
@@ -955,7 +955,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     selectedWidget_.reset();
   }
 
-  mGLWidget->allowMousePresses(true);
+  mGLWidget->setAllowMousePresses(true);
   mouseButtonPressed_ = false;
   pushCameraState();
 }

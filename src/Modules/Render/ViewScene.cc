@@ -52,6 +52,17 @@ MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
 Mutex ViewScene::mutex_("ViewScene");
 
+ViewScene::ScopedExecutionReporter::ScopedExecutionReporter(ModuleStateHandle state)
+{
+  state_ = state;
+  state_->setValue(IsExecuting, true);
+}
+
+ViewScene::ScopedExecutionReporter::~ScopedExecutionReporter()
+{
+  state_->setValue(IsExecuting, false);
+}
+
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, VSMutex);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
@@ -235,7 +246,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 void ViewScene::execute()
 {
   auto state = get_state();
-  state->setValue(IsExecuting, true);
+  auto executionReporter = ScopedExecutionReporter(state);
 
   fireTransientStateChangeSignalForGeomData();
 #ifdef BUILD_HEADLESS
@@ -256,7 +267,6 @@ void ViewScene::execute()
     }
   }
 #endif
-  state->setValue(IsExecuting, false);
 }
 
 void ViewScene::processViewSceneObjectFeedback()

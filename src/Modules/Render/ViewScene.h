@@ -159,6 +159,14 @@ namespace Render {
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
 
     ActiveGeometryMap activeGeoms_;
+
+    class ScopedExecutionReporter
+    {
+      Dataflow::Networks::ModuleStateHandle state_;
+    public:
+      ScopedExecutionReporter(Dataflow::Networks::ModuleStateHandle state);
+      ~ScopedExecutionReporter();
+    };
   };
 }}}
 
