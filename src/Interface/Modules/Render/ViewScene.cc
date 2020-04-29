@@ -60,6 +60,59 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
 using namespace SCIRun::Modules::Render;
 
+namespace SCIRun {
+namespace Gui {
+  class WidgetColorChanger
+  {
+    glm::vec4                                         previousDiffuseColor_  {0.0};
+    glm::vec4                                         previousAmbientColor_  {0.0};
+    glm::vec4                                         previousSpecularColor_ {0.0};
+
+  public:
+    WidgetColorChanger() {}
+    void setDiffuseColor(glm::vec4 col)
+    {
+      previousDiffuseColor_ = col;
+    }
+
+    void setAmbientColor(glm::vec4 col)
+    {
+      previousAmbientColor_ = col;
+    }
+
+    void setSpecularColor(glm::vec4 col)
+    {
+      previousSpecularColor_ = col;
+    }
+
+    void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
+    {
+      for (auto& pass : widget->passes())
+      {
+        pass.addUniform("uAmbientColor", ambient);
+        pass.addUniform("uDiffuseColor", diffuse);
+        pass.addUniform("uSpecularColor", specular);
+      }
+    }
+
+    void colorWidgetRed(WidgetHandle widget)
+    {
+      colorWidget(widget,
+        glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
+        glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+        glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
+    }
+
+    void restoreWidgetColor(WidgetHandle widget)
+    {
+      colorWidget(widget,
+                  previousAmbientColor_,
+                  previousDiffuseColor_,
+                  previousSpecularColor_);
+    }
+  };
+}}
+
 namespace
 {
   class DialogIdGenerator : public GeometryIDGenerator
@@ -941,6 +994,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   if (selectedWidget_)
   {
     restoreObjColor();
+    selectedWidget_->changeID();
     updateModifiedGeometries();
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
@@ -1270,33 +1324,19 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
-namespace
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::backupColorValues(WidgetHandle widget)
 {
-  void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
-  {
-    for (auto& pass : widget->passes())
+  for (auto& pass : widget->passes())
+    for (auto& uniform : pass.mUniforms)
     {
-      pass.addUniform("uAmbientColor", ambient);
-      pass.addUniform("uDiffuseColor", diffuse);
-      pass.addUniform("uSpecularColor", specular);
+      if (uniform.name == "uSpecularColor")
+        widgetColorChanger_->setSpecularColor(uniform.data);
+      else if (uniform.name == "uDiffuseColor")
+        widgetColorChanger_->setDiffuseColor(uniform.data);
+      else if (uniform.name == "uAmbientColor")
+        widgetColorChanger_->setAmbientColor(uniform.data);
     }
-  }
-
-  void colorWidgetRed(WidgetHandle widget)
-  {
-    colorWidget(widget,
-      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
-      glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
-      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
-  }
-
-  void restoreWidgetColor(WidgetHandle widget)
-  {
-    colorWidget(widget,
-      glm::vec4{0.1f, 0.1f, 0.1f, 1.0f},
-      glm::vec4{1.0f, 1.0f, 1.0f, 1.0f},
-      glm::vec4{0.1f, 1.0f, 1.0f, 1.0f});
-  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1328,7 +1368,9 @@ void ViewSceneDialog::selectObject(const int x, const int y)
 
     if (selectedWidget_)
     {
-      colorWidgetRed(selectedWidget_);
+      widgetColorChanger_ = new WidgetColorChanger();
+      backupColorValues(selectedWidget_);
+      widgetColorChanger_->colorWidgetRed(selectedWidget_);
     }
   }
 }
@@ -1343,9 +1385,7 @@ void ViewSceneDialog::restoreObjColor()
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   if (selectedWidget_)
-  {
-    restoreWidgetColor(selectedWidget_);
-  }
+    widgetColorChanger_->restoreWidgetColor(selectedWidget_);
 }
 
 //--------------------------------------------------------------------------------------------------
