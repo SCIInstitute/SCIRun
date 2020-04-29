@@ -45,7 +45,7 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-  class BBox : public BBoxBase
+  class SCISHARE BBox : public BBoxBase
   {
   public:
     enum { INSIDE, INTERSECT, OUTSIDE };

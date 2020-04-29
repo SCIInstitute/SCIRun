@@ -35,7 +35,7 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-class BBoxBase
+class SCISHARE BBoxBase
 {
 protected:
   Point cmin_;
