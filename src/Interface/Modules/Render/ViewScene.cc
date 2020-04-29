@@ -62,7 +62,7 @@ using namespace SCIRun::Modules::Render;
 
 namespace SCIRun {
 namespace Gui {
-  class WidgetColorChanger
+  class SCISHARE WidgetColorChanger
   {
     glm::vec4                                         previousDiffuseColor_  {0.0};
     glm::vec4                                         previousAmbientColor_  {0.0};
