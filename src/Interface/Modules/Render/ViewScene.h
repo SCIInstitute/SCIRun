@@ -53,7 +53,7 @@ namespace SCIRun {
 
     class GLWidget;
     class ViewSceneControlsDock;
-    class WidgetColorChanger;
+    class ScopedWidgetColorChanger;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -291,7 +291,7 @@ namespace SCIRun {
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
-      WidgetColorChanger*                   widgetColorChanger_           {nullptr};
+      SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};

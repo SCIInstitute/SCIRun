@@ -62,32 +62,23 @@ using namespace SCIRun::Modules::Render;
 
 namespace SCIRun {
 namespace Gui {
-  class SCISHARE WidgetColorChanger
+  class SCISHARE ScopedWidgetColorChanger
   {
-    glm::vec4                                         previousDiffuseColor_  {0.0};
-    glm::vec4                                         previousAmbientColor_  {0.0};
-    glm::vec4                                         previousSpecularColor_ {0.0};
-
   public:
-    WidgetColorChanger() {}
-    void setDiffuseColor(glm::vec4 col)
+    ScopedWidgetColorChanger(WidgetHandle widget)
+    : widget_(widget)
     {
-      previousDiffuseColor_ = col;
+      backupColorValues();
     }
 
-    void setAmbientColor(glm::vec4 col)
+    ~ScopedWidgetColorChanger()
     {
-      previousAmbientColor_ = col;
+      colorWidget(previousAmbientColor_, previousDiffuseColor_, previousSpecularColor_);
     }
 
-    void setSpecularColor(glm::vec4 col)
+    void colorWidget(glm::vec4 ambient, glm::vec4 diffuse, glm::vec4 specular)
     {
-      previousSpecularColor_ = col;
-    }
-
-    void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
-    {
-      for (auto& pass : widget->passes())
+      for (auto& pass : widget_->passes())
       {
         pass.addUniform("uAmbientColor", ambient);
         pass.addUniform("uDiffuseColor", diffuse);
@@ -95,20 +86,31 @@ namespace Gui {
       }
     }
 
-    void colorWidgetRed(WidgetHandle widget)
+    void colorWidgetRed()
     {
-      colorWidget(widget,
-        glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
-        glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
-        glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
+      colorWidget(glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
+                  glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+                  glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
     }
 
-    void restoreWidgetColor(WidgetHandle widget)
+  private:
+    WidgetHandle widget_;
+    glm::vec4                                         previousDiffuseColor_  {0.0};
+    glm::vec4                                         previousSpecularColor_ {0.0};
+    glm::vec4                                         previousAmbientColor_  {0.0};
+
+    void backupColorValues()
     {
-      colorWidget(widget,
-                  previousAmbientColor_,
-                  previousDiffuseColor_,
-                  previousSpecularColor_);
+      for (auto& pass : widget_->passes())
+        for (auto& uniform : pass.mUniforms)
+        {
+          if (uniform.name == "uAmbientColor")
+            previousAmbientColor_ = uniform.data;
+          else if (uniform.name == "uDiffuseColor")
+            previousDiffuseColor_ = uniform.data;
+          else if (uniform.name == "uSpecularColor")
+            previousSpecularColor_ = uniform.data;
+        }
     }
   };
 }}
@@ -1325,21 +1327,6 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::backupColorValues(WidgetHandle widget)
-{
-  for (auto& pass : widget->passes())
-    for (auto& uniform : pass.mUniforms)
-    {
-      if (uniform.name == "uSpecularColor")
-        widgetColorChanger_->setSpecularColor(uniform.data);
-      else if (uniform.name == "uDiffuseColor")
-        widgetColorChanger_->setDiffuseColor(uniform.data);
-      else if (uniform.name == "uAmbientColor")
-        widgetColorChanger_->setAmbientColor(uniform.data);
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::selectObject(const int x, const int y)
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
@@ -1368,9 +1355,8 @@ void ViewSceneDialog::selectObject(const int x, const int y)
 
     if (selectedWidget_)
     {
-      widgetColorChanger_ = new WidgetColorChanger();
-      backupColorValues(selectedWidget_);
-      widgetColorChanger_->colorWidgetRed(selectedWidget_);
+      widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_);
+      widgetColorChanger_->colorWidgetRed();
     }
   }
 }
@@ -1385,7 +1371,7 @@ void ViewSceneDialog::restoreObjColor()
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   if (selectedWidget_)
-    widgetColorChanger_->restoreWidgetColor(selectedWidget_);
+    widgetColorChanger_.reset();
 }
 
 //--------------------------------------------------------------------------------------------------
