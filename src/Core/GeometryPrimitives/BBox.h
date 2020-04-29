@@ -151,7 +151,7 @@ namespace Geometry {
 
     /// Expand the bounding box to include a disk centered at cen,
     /// with normal normal, and radius r.
-    SCISHARE void extend_disk(const Point& cen, const Vector& normal, double r);
+    void extend_disk(const Point& cen, const Vector& normal, double r);
 
     inline Point center() const override
     {
@@ -175,13 +175,13 @@ namespace Geometry {
     }
 
     /// Check whether two BBoxes are similar
-    SCISHARE bool is_similar_to(const BBox &b, double diff=0.5) const;
+    bool is_similar_to(const BBox &b, double diff=0.5) const;
 
     /// Move the bounding box
-    SCISHARE void translate(const Vector &v);
+    void translate(const Vector &v);
 
     /// Scale the bounding box by s, centered around o
-    SCISHARE void scale(double s, const Vector &o);
+    void scale(double s, const Vector &o);
 
     inline Point get_min() const override
       { return cmin_; }
@@ -229,13 +229,13 @@ namespace Geometry {
     inline double z_length() { return (cmax_.z() - cmin_.z()); }
 
     /// bbox's that share a face overlap
-    SCISHARE bool overlaps(const BBox& bb) const;
+    bool overlaps(const BBox& bb) const;
     /// bbox's that share a face do not overlap_inside
-    SCISHARE bool overlaps_inside(const BBox& bb) const;
+    bool overlaps_inside(const BBox& bb) const;
 
     /// returns true if the ray hit the bbox and returns the hit point
     /// in hitNear
-    SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear) const;
+    bool intersect(const Point& e, const Vector& v, Point& hitNear) const;
 };
 
 SCISHARE std::ostream& operator<<(std::ostream& out, const BBox& b);
