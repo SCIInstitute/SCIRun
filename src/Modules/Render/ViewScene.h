@@ -160,7 +160,7 @@ namespace Render {
 
     ActiveGeometryMap activeGeoms_;
 
-    class ScopedExecutionReporter
+    class SCISHARE ScopedExecutionReporter
     {
       Dataflow::Networks::ModuleStateHandle state_;
     public:
