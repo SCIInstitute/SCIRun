@@ -36,8 +36,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/share.h>
 
-class OsprayObjectImpl;
-class VolumeViewer;
+class QOSPRayWidget;
 
 namespace SCIRun {
 
@@ -88,13 +87,11 @@ namespace SCIRun {
 
       float getFloat(const Core::Algorithms::Name& name) const;
 
-      void createViewer();
-      QStatusBar* statusBar_ {nullptr};
+      QOSPRayWidget* viewer_;
 
+      QStatusBar* statusBar_ {nullptr};
       QToolBar* toolBar_{nullptr};
-      //QToolBar*                             viewBar_;
-      //QComboBox*                            mDownViewBox;
-      //QComboBox*                            mUpVectorBox;
+
       ViewOspraySceneConfigDialog* configDialog_;
       QAction* lockRotation_;
       QAction* lockPan_;

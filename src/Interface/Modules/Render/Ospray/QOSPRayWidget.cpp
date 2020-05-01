@@ -14,19 +14,22 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#include <string>
-
 #include "QOSPRayWidget.h"
 
-#ifdef __APPLE__
-  #include <OpenGL/glu.h>
-#else
-  #include <GL/glu.h>
-#endif
+#include <iostream>
+#include <string>
+
+
+static bool osprayInitilized = false;
 
 QOSPRayWidget::QOSPRayWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
+  renderer.addModelToGroup(tvp, tvc, 3, ind, 1);
+  renderer.addInstaceOfGroup();
 
+  renderTimer = new QTimer(this);
+  connect(renderTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  renderTimer->start(16);
 }
 
 QOSPRayWidget::~QOSPRayWidget()
@@ -41,14 +44,18 @@ void QOSPRayWidget::initializeGL()
 
 void QOSPRayWidget::paintGL()
 {
-  //ospRenderFrame(frameBuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
-
-  //uint32_t *mappedFrameBuffer = (unsigned int *) ospMapFrameBuffer(frameBuffer);
-  //glDrawPixels(windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE, mappedFrameBuffer);
-  //ospUnmapFrameBuffer(mappedFrameBuffer, frameBuffer);
+  renderer.renderFrame();
 }
 
 void QOSPRayWidget::resizeGL(int width, int height)
 {
+  renderer.resize(width, height);
+}
 
+void QOSPRayWidget::updateRenderer()
+{
+  if(isValid())
+  {
+    update();
+  }
 }

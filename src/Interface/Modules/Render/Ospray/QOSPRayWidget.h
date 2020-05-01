@@ -16,11 +16,10 @@
 
 #pragma once
 
-#define NOMINMAX
-#include <ospray/ospray.h>
-
 #include <Interface/qt_include.h>
 #include <QOpenGLWidget>
+
+#include "OSPRayRenderer.h"
 
 class QOSPRayWidget : public QOpenGLWidget
 {
@@ -30,10 +29,22 @@ public:
   QOSPRayWidget(QWidget *parent);
   virtual ~QOSPRayWidget();
 
+public Q_SLOTS:
+    void updateRenderer();
+
 protected:
   virtual void initializeGL();
   virtual void paintGL();
   virtual void resizeGL(int width, int height);
+
+  OSPRayRenderer renderer {};
+
+  float tvp[9] {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+  float tvc[9] { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+  uint32_t ind[3] { 0, 1, 2};
+
+  QTimer* renderTimer {nullptr};
+
 
   //virtual void mousePressEvent(QMouseEvent * event);
   //virtual void mouseReleaseEvent(QMouseEvent * event);

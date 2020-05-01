@@ -26,15 +26,18 @@
 */
 
 
-#include <es-log/trace-log.h>
+
+#include <Modules/Render/OsprayViewer.h>
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
+#include <Interface/Modules/Render/Ospray/QOSPRayWidget.h>
 #include <Interface/Modules/Render/ViewOspraySceneConfig.h>
 #include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/Color.h>
-#include <Modules/Render/OsprayViewer.h>
-#include <Core/Logging/Log.h>
-#include <boost/algorithm/string/predicate.hpp>
 
+#include <Core/Datatypes/Color.h>
+#include <Core/Logging/Log.h>
+
+#include <boost/algorithm/string/predicate.hpp>
+//#include <es-log/trace-log.h>
 
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
@@ -114,6 +117,10 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
+
+  viewer_ = new QOSPRayWidget(parent);
+  osprayLayout->addWidget(viewer_);
+
   /*
   #ifdef WITH_OSPRAY
   {
@@ -148,13 +155,6 @@ void OsprayViewerDialog::newGeometryValue()
     createViewer(*compGeom);
   }
   */
-#endif
-}
-
-void OsprayViewerDialog::createViewer()
-{
-#ifdef WITH_OSPRAY
-
 #endif
 }
 
