@@ -1025,7 +1025,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   {
     spire->widgetMouseMove(btn, x_window, y_window);
   }
-  else
+  else if(!shiftdown_)
   {
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
