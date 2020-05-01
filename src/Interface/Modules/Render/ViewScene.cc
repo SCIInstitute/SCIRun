@@ -1001,6 +1001,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
     int x_window = event->x() - mGLWidget->pos().x();
     int y_window = event->y() - mGLWidget->pos().y();
+
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
     auto btn = mGLWidget->getSpireButton(event);
@@ -1012,17 +1013,22 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  if(!shiftdown_)
-  {
-    auto spire = mSpire.lock();
-    if(!spire) return;
+  auto spire = mSpire.lock();
+  if(!spire) return;
 
-    int x_window = event->x() - mGLWidget->pos().x();
-    int y_window = event->y() - mGLWidget->pos().y();
+  int x_window = event->x() - mGLWidget->pos().x();
+  int y_window = event->y() - mGLWidget->pos().y();
+
+  auto btn = mGLWidget->getSpireButton(event);
+
+  if(selectedWidget_)
+  {
+    spire->widgetMouseMove(btn, x_window, y_window);
+  }
+  else
+  {
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-    auto btn = mGLWidget->getSpireButton(event);
-
     for(auto vsd : viewScenesToUpdate) vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
 }

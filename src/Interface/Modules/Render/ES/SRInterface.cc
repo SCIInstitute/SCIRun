@@ -198,7 +198,10 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::widgetMouseDown(MouseButton btn, int x, int y)
     {
-
+      if (widgetUpdater_.currentWidget())
+      {
+        widgetUpdater_.updateWidget(x, y);
+      }
     }
 
     //----------------------------------------------------------------------------------------------
