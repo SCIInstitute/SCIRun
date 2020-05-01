@@ -37,6 +37,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowFieldWithOspray.ui
   ShowAndEditDipoles.ui
   ShowMeshBoundingBox.ui
+  ShowOrientationAxes.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -51,6 +52,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowFieldWithOsprayDialog.h
   ShowAndEditDipolesDialog.h
   ShowMeshBoundingBoxDialog.h
+  ShowOrientationAxesDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -64,6 +66,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowFieldWithOsprayDialog.cc
   ShowAndEditDipolesDialog.cc
   ShowMeshBoundingBoxDialog.cc
+  ShowOrientationAxesDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
