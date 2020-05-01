@@ -45,7 +45,7 @@ public:
   virtual ~Acorn();
 
   /// Execute core with current time in milliseconds.
-  virtual void execute(double currentTime, double constantFrameTime) = 0;
+  virtual void execute(double constantFrameTime) = 0;
 
   /// Runs the system once over all applicable components.
   void runSystemOnce(const std::string& systemName);

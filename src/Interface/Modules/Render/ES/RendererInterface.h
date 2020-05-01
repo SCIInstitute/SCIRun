@@ -80,7 +80,7 @@ namespace SCIRun
       virtual void inputMouseWheel(int32_t delta) = 0;
       virtual void setMouseMode(MouseMode mode) = 0;
       virtual void eventResize(size_t width, size_t height) = 0;
-      virtual void doFrame(double currentTime, double constantDeltaTime) = 0;
+      virtual void doFrame(double constantDeltaTime) = 0;
     };
 
     class SCISHARE RendererModuleInterface

@@ -585,7 +585,7 @@ void SRInterface::runGCOnNextExecution()
       updateCamera();
       updateWorldLight();
 
-      mCore.execute(0, 50);
+      mCore.executeWithoutAdvancingClock();
 
 
       GLfloat depth;
@@ -1619,7 +1619,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::doFrame(double currentTime, double constantDeltaTime)
+    void SRInterface::doFrame(double constantDeltaTime)
     {
       // todo Only render a frame if something has changed (new or deleted
       // objects, or the view point has changed).
@@ -1627,7 +1627,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       updateCamera();
       updateWorldLight();
 
-      mCore.execute(currentTime, constantDeltaTime);
+      mCore.execute(constantDeltaTime);
 
       // Do not even attempt to render if the framebuffer is not complete. This
       // can happen when the rendering window is hidden (in SCIRun5 for example);
