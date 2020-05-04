@@ -59,10 +59,10 @@ namespace Visualization {
     void addOrientationArrows(GlyphGeom& glyphs, const Point& pos) const;
     BBox getBBox(const Point& pos) const;
     BBox bbox_;
-    double x_ = 0;
-    double y_ = 0;
-    double z_ = 0;
-    double scale_ = 1;
+    double x_ = 0.0;
+    double y_ = 0.0;
+    double z_ = 0.0;
+    double scale_ = 1.0;
     const int RESOLUTION_ = 20;
     const double ARROW_RATIO_ = 0.2;
     const bool RENDER_CYLINDER_BASE_ = false;
@@ -156,10 +156,10 @@ ShowOrientationAxes::ShowOrientationAxes() : GeometryGeneratingModule(staticInfo
 void ShowOrientationAxes::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Scale, 1);
-  state->setValue(X, 0);
-  state->setValue(Y, 0);
-  state->setValue(Z, 0);
+  state->setValue(Scale, 1.0);
+  state->setValue(X, 0.0);
+  state->setValue(Y, 0.0);
+  state->setValue(Z, 0.0);
 }
 
 void ShowOrientationAxes::execute()
