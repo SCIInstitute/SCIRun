@@ -237,6 +237,9 @@ namespace SCIRun {
       void addConfigurationDock();
       QColor checkColorSetting(std::string& rgb, QColor defaultColor);
       void pullCameraState();
+      void pushCameraDistance();
+      void pushCameraLookAt();
+      void pushCameraRotation();
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
