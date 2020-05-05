@@ -41,7 +41,7 @@ glm::quat ViewSceneUtility::stringToQuat(const std::string &s)
   {
     try
     {
-      static boost::regex r("Quaternion\\((.+),\\ ?(.+),\\ ?(.+),\\ ?(.+)\\)");
+      static boost::regex r("Quaternion\\((.+),\\s?(.+),\\s?(.+),\\s?(.+)\\)");
       boost::smatch what;
       regex_match(s, what, r);
       w = boost::lexical_cast<double>(what[1]);
