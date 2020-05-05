@@ -25,41 +25,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Render/ViewSceneUtility.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
+#include <sstream>
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+using namespace SCIRun::Render::Gui;
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
-
-namespace SCIRun {
-namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+glm::quat ViewSceneUtility::stringToQuat(const std::string &s)
 {
-public:
-  ESCore();
-  virtual ~ESCore();
+  double w, x, y, z;
+  w = 1.0;
+  x = y = z = 0.0f;
+  if (!s.empty())
+  {
+    try
+    {
+      static boost::regex r("Quaternion\\((.+),\ ?(.+),\ ?(.+),\ ?(.+)\\)");
+      boost::smatch what;
+      regex_match(s, what, r);
+      w = boost::lexical_cast<double>(what[1]);
+      x = boost::lexical_cast<double>(what[2]);
+      y = boost::lexical_cast<double>(what[3]);
+      z = boost::lexical_cast<double>(what[4]);
+    }
+    catch (...)
+    {
+      // keeps as default view
+    }
+  }
+  return glm::normalize(glm::quat(w, x, y, z));
+}
 
-  std::string toString(std::string prefix) const;
-
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
-
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
-
-} // namespace Render
-} // namespace SCIRun
-
-#endif
+std::string ViewSceneUtility::quatToString(const glm::quat &q)
+{
+  return "Quaternion(" + std::to_string((double)q.w) + ","
+                       + std::to_string((double)q.x) + ","
+                       + std::to_string((double)q.y) + ","
+                       + std::to_string((double)q.z) + ")";
+}

@@ -26,40 +26,37 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#ifndef MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_H
+#define MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_H
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Render {
+namespace Modules {
+namespace Visualization {
+  class ShowMeshBoundingBoxImpl;
 
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
-{
-public:
-  ESCore();
-  virtual ~ESCore();
+  class SCISHARE ShowMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
+    public Has1InputPort<FieldPortTag>, public Has1OutputPort<GeometryPortTag>
+  {
+  public:
+    ShowMeshBoundingBox();
+    virtual void execute();
+    virtual void setStateDefaults();
 
-  std::string toString(std::string prefix) const;
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, OutputGeom, GeometryObject);
 
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
-
-} // namespace Render
-} // namespace SCIRun
+    static const Core::Algorithms::AlgorithmParameterName XSize;
+    static const Core::Algorithms::AlgorithmParameterName YSize;
+    static const Core::Algorithms::AlgorithmParameterName ZSize;
+  private:
+    boost::shared_ptr<ShowMeshBoundingBoxImpl> impl_;
+  };
+}}}
 
 #endif
+

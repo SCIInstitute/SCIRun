@@ -6,6 +6,7 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,41 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_GEOMETRY_ORIENTEDBBOX_H
+#define CORE_GEOMETRY_ORIENTEDBBOX_H
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
-
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
-namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+namespace Core {
+namespace Geometry {
+class SCISHARE OrientedBBox
 {
 public:
-  ESCore();
-  virtual ~ESCore();
+  OrientedBBox(const Core::Geometry::Vector &e1, const Core::Geometry::Vector &e2, const Core::Geometry::Vector &e3);
+  /// Expand the bounding box to include point p
 
-  std::string toString(std::string prefix) const;
-
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
+  Core::Geometry::Point center() const;
+  Core::Geometry::Point get_max() const;
+  Core::Geometry::Point get_min() const;
+  Core::Geometry::Vector diagonal() const;
+  bool valid() const;
+  void extend(double val);
+  void extend(const Core::Geometry::Point &p);
 
 private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
+  std::vector<Vector> eigvecs_;
+  Core::Geometry::Point cmin_;
+  Core::Geometry::Point cmax_;
+  bool is_valid_;
 };
 
-} // namespace Render
-} // namespace SCIRun
+SCISHARE std::ostream &operator<<(std::ostream &out, const OrientedBBox &b);
+SCISHARE void Pio(Piostream &, OrientedBBox &);
+
+}}}
 
 #endif

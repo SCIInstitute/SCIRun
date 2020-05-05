@@ -26,40 +26,26 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#include <Interface/Modules/Visualization/ShowMeshBoundingBoxDialog.h>
+#include <Modules/Visualization/ShowMeshBoundingBox.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
-namespace Render {
+using SMBB = SCIRun::Modules::Visualization::ShowMeshBoundingBox;
 
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+ShowMeshBoundingBoxDialog::ShowMeshBoundingBoxDialog(const std::string& name,
+                                                     ModuleStateHandle state,
+                                                     QWidget* parent/* = 0*/)
+  : ModuleDialogGeneric(state, parent)
 {
-public:
-  ESCore();
-  virtual ~ESCore();
+  setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
 
-  std::string toString(std::string prefix) const;
-
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
-
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
-
-} // namespace Render
-} // namespace SCIRun
-
-#endif
+  addSpinBoxManager(xSpinBox_, SMBB::XSize);
+  addSpinBoxManager(ySpinBox_, SMBB::YSize);
+  addSpinBoxManager(zSpinBox_, SMBB::ZSize);
+}

@@ -470,7 +470,6 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
   switch(fieldLocation)
   {
     case FieldDataType::node:
-      std::cout << "node data\n";
       for (const auto& node : portHandler_->getPrimaryFacade()->nodes())
       {
         indices.push_back(node.index());
@@ -480,7 +479,6 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
       }
       break;
     case FieldDataType::edge:
-      std::cout << "edge data\n";
       for (const auto& edge : portHandler_->getPrimaryFacade()->edges())
       {
         indices.push_back(edge.index());
@@ -490,7 +488,6 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
       }
       break;
     case FieldDataType::face:
-      std::cout << "face data\n";
       for (const auto& face : portHandler_->getPrimaryFacade()->faces())
       {
         indices.push_back(face.index());
@@ -500,7 +497,6 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
       }
       break;
     case FieldDataType::cell:
-      std::cout << "cell data\n";
       for (const auto& cell : portHandler_->getPrimaryFacade()->cells())
       {
         indices.push_back(cell.index());
@@ -801,11 +797,11 @@ void GlyphBuilder::renderTensors(
         case RenderState::GlyphType::ELLIPSOID_GLYPH:
           glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
           break;
-        case RenderState::GlyphType::SUPERELLIPSOID_GLYPH:
+        case RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH:
         {
           double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
           if(emphasis > 0.0)
-            glyphs.addSuperEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            glyphs.addSuperquadricTensor(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
           else
             glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
         }
@@ -1000,8 +996,9 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
     renState.mGlyphType = RenderState::GlyphType::ELLIPSOID_GLYPH;
   else if(glyph == "Spheres")
     renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
-  else if(glyph == "Superellipsoids")
-    renState.mGlyphType = RenderState::GlyphType::SUPERELLIPSOID_GLYPH;
+  else if(glyph == "Superquadrics"
+       || glyph == "Superellipsoids") // This case matches old name in case files had it saved in state
+    renState.mGlyphType = RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH;
   else
     renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
 

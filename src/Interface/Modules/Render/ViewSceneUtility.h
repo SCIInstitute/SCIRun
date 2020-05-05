@@ -25,40 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
+#define INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#include <string>
+#include <glm/gtc/quaternion.hpp>
+#include <Interface/Modules/Render/share.h>
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
-
+#include <iosfwd>
 namespace SCIRun {
 namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+namespace Gui {
+class SCISHARE ViewSceneUtility
 {
 public:
-  ESCore();
-  virtual ~ESCore();
-
-  std::string toString(std::string prefix) const;
-
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
-
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
+  static glm::quat stringToQuat(const std::string &s);
+  static std::string quatToString(const glm::quat &q);
 };
-
+} // namespace Gui
 } // namespace Render
 } // namespace SCIRun
 

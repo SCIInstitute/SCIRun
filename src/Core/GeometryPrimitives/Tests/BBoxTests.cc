@@ -6,6 +6,7 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,41 +26,58 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gtest/gtest.h>
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#include <Core/Utils/Exception.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <chrono>
+#include <stdlib.h>
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
-namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+TEST(BBoxTests, ExtendPerformance)
 {
-public:
-  ESCore();
-  virtual ~ESCore();
+  BBox bbox;
+  auto start = std::chrono::steady_clock::now();
+  srand(42);
 
-  std::string toString(std::string prefix) const;
+  for(int i = 0; i < 1000000; ++i)
+    bbox.extend(Point(rand(), rand(), rand()));
 
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
+  auto end = std::chrono::steady_clock::now();
+  auto diff = end - start;
+  std::cout << "1,000,000 Extend Calls" << " : "
+            << std::chrono::duration<double, std::milli>(diff).count() << " ms\n";
+}
 
-private:
-  bool hasGeomPromise() const;
+TEST(BBoxTests, Constructor)
+{
+  BBox bbox;
+  EXPECT_EQ(false, bbox.valid());
+  EXPECT_THROW(bbox.diagonal(), InvalidStateException);
+}
 
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
+TEST(BBoxTests, Extend)
+{
+  BBox bbox;
 
-} // namespace Render
-} // namespace SCIRun
+  bbox.extend(Point(1, 2, 3));
+  bbox.extend(Point(4, 5, 6));
 
-#endif
+  EXPECT_EQ(Point(1, 2, 3), bbox.get_min());
+  EXPECT_EQ(Point(4, 5, 6), bbox.get_max());
+}
+
+TEST(BBoxTests, ExtendScalar)
+{
+  BBox bbox;
+  bbox.extend(Point(0, 0, 0));
+  bbox.extend(2);
+
+  EXPECT_EQ(Point(-2, -2, -2), bbox.get_min());
+  EXPECT_EQ(Point(2, 2, 2), bbox.get_max());
+  EXPECT_EQ(Point(0, 0, 0), bbox.center());
+}

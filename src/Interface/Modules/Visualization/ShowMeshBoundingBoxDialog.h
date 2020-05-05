@@ -26,40 +26,24 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#ifndef INTERFACE_MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_DIALOG_H
+#define INTERFACE_MODULES_VISUALIZATION_SHOW_MESH_BOUNDING_BOX_DIALOG_H
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+#include "Interface/Modules/Visualization/ui_ShowMeshBoundingBox.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Render {
+namespace Gui {
+  class SCISHARE ShowMeshBoundingBoxDialog : public ModuleDialogGeneric,
+    public Ui::ShowMeshBoundingBox
+  {
+    Q_OBJECT
 
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
-{
-public:
-  ESCore();
-  virtual ~ESCore();
-
-  std::string toString(std::string prefix) const;
-
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
-
-private:
-  bool hasGeomPromise() const;
-
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
-
-} // namespace Render
-} // namespace SCIRun
+  public:
+    ShowMeshBoundingBoxDialog(const std::string& name,
+      SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+  };
+}}
 
 #endif

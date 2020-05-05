@@ -26,40 +26,49 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
-#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#include <Graphics/Glyphs/GlyphGeomUtility.h>
+#include <Core/Math/MiscMath.h>
 
-#include <es-acorn/Acorn.hpp>
-#include <gl-state/GLState.hpp>
+using namespace SCIRun;
+using namespace Graphics;
+using namespace Core::Geometry;
 
-namespace SCIRun {
-namespace Render {
-
-/// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+void GlyphGeomUtility::generateTransforms(const Point& center, const Vector& normal,
+                                          Transform& trans, Transform& rotate)
 {
-public:
-  ESCore();
-  virtual ~ESCore();
+  Vector axis = normal;
 
-  std::string toString(std::string prefix) const;
+  axis.normalize();
 
-  void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
-  void setBackgroundColor(float r, float g, float b, float a);
-  void runGCOnNextExecution(){runGC = true;}
-  bool hasShaderPromise() const;
+  Vector z(0, 0, 1), zrotaxis;
 
-private:
-  bool hasGeomPromise() const;
+  if((Abs(axis.x()) + Abs(axis.y())) < 1.e-5)
+  {
+    // Only x-z plane...
+    zrotaxis = Vector(0, 1, 0);
+  }
+  else
+  {
+    zrotaxis = Cross(axis, z);
+    zrotaxis.normalize();
+  }
 
-  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
-  float           r_, g_, b_, a_;
-};
+  double cangle = Dot(z, axis);
+  double zrotangle = -acos(cangle);
 
-} // namespace Render
-} // namespace SCIRun
+  trans.pre_translate((Vector) center);
+  trans.post_rotate(zrotangle, zrotaxis);
 
-#endif
+  rotate.post_rotate(zrotangle, zrotaxis);
+}
+
+void GlyphGeomUtility::generateTransforms(const Point& center, const Vector& eigvec1,
+                                          const Vector& eigvec2, const Vector& eigvec3,
+                                          Transform& translate, Transform& rotate)
+{
+  static const Point origin(0.0, 0.0, 0.0);
+  rotate = Transform(origin, eigvec1, eigvec2, eigvec3);
+  translate = rotate;
+  translate.pre_translate((Vector) center);
+}
+
