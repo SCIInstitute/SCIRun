@@ -33,7 +33,6 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
-#include <glm/glm.hpp>
 
 namespace SCIRun
 {
@@ -131,6 +130,7 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName Light3Inclination;
     static const Core::Algorithms::AlgorithmParameterName ShowViewer;
     static const Core::Algorithms::AlgorithmParameterName CameraDistance;
+    static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
     static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
     static const Core::Algorithms::AlgorithmParameterName CameraRotation;
     static const Core::Algorithms::AlgorithmParameterName IsExecuting;
