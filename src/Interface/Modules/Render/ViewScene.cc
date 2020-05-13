@@ -62,19 +62,49 @@ using namespace SCIRun::Modules::Render;
 
 namespace SCIRun {
 namespace Gui {
+  enum WidgetColor
+  {
+    RED,
+    GREEN,
+    BLUE
+  };
+
   class SCISHARE ScopedWidgetColorChanger
   {
   public:
-    ScopedWidgetColorChanger(WidgetHandle widget)
+  ScopedWidgetColorChanger(WidgetHandle widget, WidgetColor color)
     : widget_(widget)
     {
       backupColorValues();
+      if (widget_)
+      {
+        backupColorValues();
+        switch (color)
+        {
+        case WidgetColor::RED:
+          colorWidgetRed();
+          break;
+        case WidgetColor::GREEN:
+          colorWidgetGreen();
+          break;
+        case WidgetColor::BLUE:
+          colorWidgetBlue();
+          break;
+        }
+      }
     }
 
     ~ScopedWidgetColorChanger()
     {
-      colorWidget(previousAmbientColor_, previousDiffuseColor_, previousSpecularColor_);
+      if (widget_)
+        colorWidget(previousAmbientColor_, previousDiffuseColor_, previousSpecularColor_);
     }
+
+  private:
+    WidgetHandle widget_;
+    glm::vec4                                         previousDiffuseColor_  {0.0};
+    glm::vec4                                         previousSpecularColor_ {0.0};
+    glm::vec4                                         previousAmbientColor_  {0.0};
 
     void colorWidget(glm::vec4 ambient, glm::vec4 diffuse, glm::vec4 specular)
     {
@@ -93,11 +123,19 @@ namespace Gui {
                   glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
     }
 
-  private:
-    WidgetHandle widget_;
-    glm::vec4                                         previousDiffuseColor_  {0.0};
-    glm::vec4                                         previousSpecularColor_ {0.0};
-    glm::vec4                                         previousAmbientColor_  {0.0};
+    void colorWidgetGreen()
+    {
+      colorWidget(glm::vec4{0.0f, 0.1f, 0.0f, 1.0f},
+                  glm::vec4{0.0f, 1.0f, 0.0f, 1.0f},
+                  glm::vec4{0.0f, 0.1f, 0.0f, 1.0f});
+    }
+
+    void colorWidgetBlue()
+    {
+      colorWidget(glm::vec4{0.0f, 0.0f, 0.1f, 1.0f},
+                  glm::vec4{0.0f, 0.0f, 1.0f, 1.0f},
+                  glm::vec4{0.0f, 0.0f, 0.1f, 1.0f});
+    }
 
     void backupColorValues()
     {
@@ -1379,11 +1417,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
     selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
-    if (selectedWidget_)
-    {
-      widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_);
-      widgetColorChanger_->colorWidgetRed();
-    }
+    widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_, WidgetColor::RED);
   }
 }
 
@@ -1396,8 +1430,7 @@ void ViewSceneDialog::restoreObjColor()
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-  if (selectedWidget_)
-    widgetColorChanger_.reset();
+  widgetColorChanger_.reset();
 }
 
 //--------------------------------------------------------------------------------------------------
