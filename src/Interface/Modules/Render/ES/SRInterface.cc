@@ -37,6 +37,7 @@
 #include <QOpenGLWidget>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -781,7 +782,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
       auto screenPos = service_->screen().positionFromClick(x, y);
       glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
       auto trans = gen::Transform();
-      trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+      trans.setPosition(xyz(invViewProj_ * glm::vec4(transVec, 0.0, 0.0)));
       return trans;
     }
 
@@ -802,7 +803,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
 
       glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
       currentSposView.z = -projectedW_;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
+      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(xy(originView_), originView_.z);
 
       float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
         * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));
@@ -993,7 +994,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
         for (auto i : clippingPlanes_)
         {
           glm::vec3 n3(i.x, i.y, i.z);
-          double d = i.d;
+          float d = i.d;
           glm::vec4 n(0.0);
           if (glm::length(n3) > 0.0)
           {

@@ -77,7 +77,7 @@ public:
 
   /// Dollys the camera towards(negative) / away(positive) from the look at
   /// point. With vairiable zoomspeed.
-  void doZoom(glm::float_t camZoom, int zoomSpeed = 65);
+  void doZoom(float camZoom, int zoomSpeed = 65);
 
   /// Uses a custom function to determine camera zoom. Downwards and to the
   /// right increases size, upwards or to the left decreases size
@@ -94,8 +94,8 @@ public:
   void setView(const glm::vec3& view, const glm::vec3& up);
 
   /// Retrieves the camera's distance away from the look at point.
-  glm::float_t getDistance() const {return mCamDistance;}
-  void setDistance(const glm::float_t f) {mCamDistance = f;}
+  float getDistance() const {return mCamDistance;}
+  void setDistance(const float f) {mCamDistance = f;}
 
   /// Retrieves the current lookat point.
   glm::vec3 getLookAt() const {return mCamLookAt;}
@@ -112,7 +112,7 @@ private:
   std::unique_ptr<spire::ArcBall>  mArcBall;
 
   glm::vec3                 mCamLookAt   {0.0f};     ///< Current lookat position.
-  glm::float_t              mCamDistance {3.0f};   ///< Distance from look-at.
+  float                     mCamDistance {3.0f};   ///< Distance from look-at.
 
   // The following are reference variables set when doReferenceDown is called.
   glm::vec2                 mReferenceScreenPos;
