@@ -441,6 +441,8 @@ namespace
             return boost::python::object(transient_value_cast<bool>(v));
           if (transient_value_check<Variable>(v))
             return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
+          if (transient_value_check<boost::python::object>(v))
+            return transient_value_cast<boost::python::object>(v);
 
           return boost::python::object();
         }
@@ -613,7 +615,7 @@ boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
 
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
-  cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
+  //cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
 
   nec_.executeAll(lookup);
   return "Execution started."; //TODO: attach log for execution ended event.

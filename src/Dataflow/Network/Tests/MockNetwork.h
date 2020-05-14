@@ -54,7 +54,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(nconnections, size_t());
           MOCK_METHOD1(disable_connection, void(const ConnectionId&));
           MOCK_CONST_METHOD0(toString, std::string());
-          MOCK_CONST_METHOD0(connections, ConnectionDescriptionList());
+          MOCK_CONST_METHOD1(connections, ConnectionDescriptionList(bool));
           MOCK_CONST_METHOD0(errorCode, int());
           MOCK_METHOD1(incrementErrorCode, void(const ModuleId&));
           MOCK_METHOD0(settings, NetworkGlobalSettings&());

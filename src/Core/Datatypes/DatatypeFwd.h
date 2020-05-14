@@ -52,6 +52,7 @@ namespace Datatypes {
   class GeometryObject;
   class ColorMap;
   class Bundle;
+  class MetadataObject;
 
   typedef SharedPointer<String> StringHandle;
   typedef SharedPointer<GeometryObject> GeometryBaseHandle;

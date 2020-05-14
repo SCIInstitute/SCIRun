@@ -41,6 +41,18 @@ namespace SCIRun
   {
     class ModuleWidget;
 
+    class LoopDiamondPolygon : public QGraphicsPolygonItem
+    {
+    public:
+      explicit LoopDiamondPolygon(QGraphicsItem* parent = nullptr);
+      void mouseMoveEventPublic(QGraphicsSceneMouseEvent *event)
+      {
+        mouseMoveEvent(event);
+      }
+    private:
+      QPolygonF shape_;
+    };
+
     class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {
 	    Q_OBJECT
@@ -52,6 +64,7 @@ namespace SCIRun
       void createStartupNote();
       void adjustHeight(int delta);
       void adjustWidth(int delta);
+      void setBackgroundPolygon(LoopDiamondPolygon* p);
 
       //TODO: move to utility
       static void ensureItemVisible(QGraphicsItem* item);
@@ -100,6 +113,7 @@ namespace SCIRun
       QSizeF originalSize_;
       QTimeLine* timeLine_;
       QGraphicsEffect* previousEffect_{nullptr};
+      LoopDiamondPolygon* backgroundShape_ {nullptr};
     };
 
     class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget

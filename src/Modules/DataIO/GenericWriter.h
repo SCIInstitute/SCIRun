@@ -94,6 +94,7 @@ void GenericWriter<HType, PortTag, PortDescriber>::setStateDefaults()
 {
   get_state()->setValue(stateFilename_, std::string());
   get_state()->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  get_state()->setValue(SCIRun::Core::Algorithms::Variables::GuiFileTypeName, std::string());
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

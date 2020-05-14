@@ -65,7 +65,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
-
+      void autoSaveScreenshot();
 
     Q_SIGNALS:
       void newGeometryValueForwarder();

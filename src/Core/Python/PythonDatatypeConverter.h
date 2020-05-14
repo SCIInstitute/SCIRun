@@ -91,6 +91,10 @@ namespace SCIRun
       SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
       SCISHARE boost::python::dict convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
+      SCISHARE boost::python::dict wrapDatatypesInMap(
+        const std::vector<Datatypes::MatrixHandle>& matrices, 
+        const std::vector<FieldHandle>& fields,
+        const std::vector<Datatypes::StringHandle>& strings);
 
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);

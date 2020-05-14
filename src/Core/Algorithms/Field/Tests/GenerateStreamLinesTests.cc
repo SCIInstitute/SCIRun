@@ -210,7 +210,7 @@ static std::map<std::string, std::vector<int>> meshOutputByMethod
   { { "AdamsBashforth", {400617, 399617, 400617} },
     { "Heun", {400617, 399617, 400617} },
     { "RungeKutta", {400617, 399617, 400617} },
-    { "RungeKuttaFehlberg", {214100, 213100, 214100} },
+    { "RungeKuttaFehlberg", {214099, 213099, 214099} },
     { "CellWalk", {98120, 97120, 98120} }
   };
 

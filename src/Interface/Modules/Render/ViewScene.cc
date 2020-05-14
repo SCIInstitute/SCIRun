@@ -2263,6 +2263,18 @@ void ViewSceneDialog::screenshotClicked()
   screenshotTaker_->saveScreenshot();
 }
 
+void ViewSceneDialog::autoSaveScreenshot()
+{
+  QThread::sleep(1);
+  takeScreenshot();
+  auto file = Screenshot::screenshotDirectory() +
+    QString("/%1_%2.png")
+    .arg(windowTitle().replace(':', '-'))
+    .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
+
+  screenshotTaker_->saveScreenshot(file);
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendBugReport()
 {
@@ -2272,7 +2284,7 @@ void ViewSceneDialog::sendBugReport()
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
   QImage image = screenshotTaker_->getScreenshot();
-  QString location = QDir::homePath() % QLatin1String("/scirun5screenshots/scirun_bug.png");
+  QString location = Screenshot::screenshotDirectory() + ("/scirun_bug.png");
   image.save(location);
 
   // Generate email template
