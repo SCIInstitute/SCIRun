@@ -213,6 +213,19 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
     }
   );
 #endif
+
+#if 0
+  if (name.find("Loop") != std::string::npos)
+  {
+    qDebug() << "Special shape logic for loopers";
+    auto diamondBackground = new LoopDiamondPolygon();
+    scene_->addItem(diamondBackground);
+    ensureVisible(diamondBackground);
+    diamondBackground->setPos(proxy->pos());
+    diamondBackground->setZValue(-99999);
+    proxy->setBackgroundPolygon(diamondBackground);
+  }
+#endif
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
@@ -658,6 +671,44 @@ void NetworkEditor::setVisibility(bool visible)
     else if (auto c = dynamic_cast<ConnectionLine*>(item))
       c->setVisible(visibleItems_);
   }
+}
+
+void NetworkEditor::hidePipesByType(const std::string& type)
+{
+  if (connectionDimmingTimeLine_)
+  {
+    qDebug() << "Already dimming certain connections, please wait.";
+    return;
+  }
+
+  std::vector<ConnectionLine*> conns;
+  Q_FOREACH(auto item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (type == c->connectedPorts().first->get_typename())
+      {
+        guiLogDebug("dimming {}", c->id().id_);
+        conns.push_back(c);
+      }
+    }
+  }
+  if (!conns.empty())
+  {
+    connectionDimmingTimeLine_ = new QTimeLine(ConnectionHideTimeMS_, this);
+    connect(connectionDimmingTimeLine_, &QTimeLine::valueChanged,
+      [conns](qreal q)
+      {
+        std::for_each(conns.begin(), conns.end(), [q](ConnectionLine* c) { c->setOpacity(q); });
+      });
+    connect(connectionDimmingTimeLine_, &QTimeLine::finished, [this]()
+      {
+        connectionDimmingTimeLine_->deleteLater();
+        connectionDimmingTimeLine_ = nullptr;
+      });
+    connectionDimmingTimeLine_->start();
+  }
+
 }
 
 //TODO copy/paste
@@ -1775,6 +1826,26 @@ void NetworkEditor::hideAllModuleUIs()
   }
 }
 
+void NetworkEditor::seeThroughAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->seeThroughUI();
+  }
+}
+
+void NetworkEditor::normalOpacityAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->normalOpacityUI();
+  }
+}
+
 void NetworkEditor::restoreAllModuleUIs()
 {
   if (!isActiveWindow())
@@ -1995,6 +2066,18 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
 void NetworkEditor::updateExecuteButtons(bool downstream)
 {
   adjustExecuteButtonsToDownstream(downstream);
+}
+
+void NetworkEditor::saveImages()
+{
+  Q_FOREACH(auto item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->saveImagesFromViewScene();
+    }
+  }
 }
 
 QColor Gui::defaultTagColor(int tag)

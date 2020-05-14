@@ -137,6 +137,8 @@ namespace Networks {
 
   using DirectModuleDescriptionLookupMap = std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess>;
 
+  SCISHARE PortId ProgrammablePortId();
+
 }}}
 
 #endif

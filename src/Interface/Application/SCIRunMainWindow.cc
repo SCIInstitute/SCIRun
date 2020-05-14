@@ -259,6 +259,20 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
 
+  auto dimFunc = [this](const char* type)
+  {
+    return [this, type]()
+    {
+      showStatusMessage(QString("Dimming connections of type ") + type, NetworkEditor::ConnectionHideTimeMS_);
+      networkEditor_->hidePipesByType(type);
+    };
+  };
+  connect(actionHideFieldPipes_, &QAction::triggered, dimFunc("Field"));
+  connect(actionHideMatrixPipes_, &QAction::triggered, dimFunc("Matrix"));
+  connect(actionHideStringPipes_, &QAction::triggered, dimFunc("String"));
+  connect(actionHideGeometryPipes_, &QAction::triggered, dimFunc("Geometry"));
+  connect(actionHideColorMapPipes_, &QAction::triggered, dimFunc("ColorMap"));
+
   actionCut_->setIcon(QPixmap(":/general/Resources/cut.png"));
   actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
   actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));

@@ -32,8 +32,8 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id)
-  : oport_(oport), iport_(iport), id_(id)
+Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id, bool isVirtual)
+  : oport_(oport), iport_(iport), id_(id), virtual_(isVirtual)
 {
   ENSURE_NOT_NULL(oport_, "output port is null");
   ENSURE_NOT_NULL(iport_, "input port is null");

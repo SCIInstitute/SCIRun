@@ -128,7 +128,7 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   connect(canvas, SIGNAL(curveSelected(int, const QString&)), this, SLOT(highlightCurve(int, const QString&)));
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
-  canvas->setBorderRadius( 15 );
+  //canvas->setBorderRadius( 3 ); //TODO: this line is buggy in Qt5. Plus, the background color doesn't work.
 
   setCanvas( canvas );
 

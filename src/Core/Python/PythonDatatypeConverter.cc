@@ -41,6 +41,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Python;
@@ -91,6 +92,25 @@ namespace
     list["values"] = values;
     return list;
   }
+}
+
+boost::python::dict SCIRun::Core::Python::wrapDatatypesInMap(const std::vector<Datatypes::MatrixHandle>& matrices,
+  const std::vector<FieldHandle>& fields, const std::vector<Datatypes::StringHandle>& strings)
+{
+  boost::python::dict d;
+  int i = 0;
+  for (const auto& m : matrices)
+  {
+    if (auto dense = castMatrix::toDense(m))
+      d[i++] = convertMatrixToPython(dense);
+    else if (auto sparse = castMatrix::toSparse(m))
+      d[i++] = convertMatrixToPython(sparse);
+  }
+  for (const auto& f : fields)
+    d[i++] = convertFieldToPython(f);
+  for (const auto& s : strings)
+    d[i++] = convertStringToPython(s);
+  return d;
 }
 
 boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)

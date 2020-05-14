@@ -301,7 +301,15 @@ NetworkFileHandle FileImportCommand::processXmlFile(const std::string& filename)
 
 bool RunPythonScriptCommandGui::execute()
 {
-  auto script = Application::Instance().parameters()->pythonScriptFile().get();
+  auto& app = Application::Instance();
+  if (app.parameters()->quitAfterOneScriptedExecution())
+  {
+    SCIRunMainWindow::Instance()->skipSaveCheck();
+    SCIRunMainWindow::Instance()->setupQuitAfterExecute();
+    app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
+  }
+
+  auto script = app.parameters()->pythonScriptFile().get();
   SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
   return true;
 }

@@ -16,7 +16,11 @@ endif()
 # http://www.boost.org/doc/libs/1_58_0/more/getting_started/windows.html
 # http://www.boost.org/doc/libs/1_58_0/more/getting_started/unix-variants.html
 if(WIN32)
-  set(DEBUG_POSTFIX "-gyd")
+  if(BUILD_WITH_PYTHON)
+    set(DEBUG_POSTFIX "-gyd")
+  else()
+    set(DEBUG_POSTFIX "-gd")
+  endif()
   set(boost_LIB_PREFIX "lib")
 else()
   set(DEBUG_POSTFIX "-yd")

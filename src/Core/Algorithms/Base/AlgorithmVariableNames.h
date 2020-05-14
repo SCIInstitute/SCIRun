@@ -51,10 +51,12 @@ public:
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;
+  static const AlgorithmParameterName GuiFileTypeName;
   static const AlgorithmParameterName FormatString;
 	static const AlgorithmParameterName FunctionString;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
+  static const AlgorithmParameterName ProgrammableInputPortEnabled;
 
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;
