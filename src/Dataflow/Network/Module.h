@@ -131,6 +131,8 @@ namespace Networks {
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
+    void setProgrammableInputPortEnabled(bool enable) override final;
+    bool checkForVirtualConnection(const ModuleInterface& downstream) const override { return false; }
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
@@ -174,7 +176,7 @@ namespace Networks {
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
-    virtual void postStateChangeInternalSignalHookup() {}
+    virtual void postStateChangeInternalSignalHookup();
 
 /*** protected Dev-interface ****/
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
@@ -190,6 +192,7 @@ namespace Networks {
   private:
     Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+    void runProgrammablePortInput();
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>

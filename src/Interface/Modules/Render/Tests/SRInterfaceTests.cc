@@ -69,5 +69,5 @@ TEST(SRInterfaceTest,
 {
   SRInterface srinterface;
 
-  srinterface.doFrame(0, 50);
+  srinterface.doFrame(50);
 }

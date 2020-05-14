@@ -74,7 +74,7 @@ TEST_F(PortTests, AggregatesConnections)
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
   {
-    Connection c(outputPort, inputPort, "test");
+    Connection c(outputPort, inputPort, "test", false);
     //connection added on construction
     ASSERT_EQ(1, inputPort->nconnections());
     ASSERT_EQ(1, outputPort->nconnections());
@@ -94,15 +94,15 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
-  Connection c(outputPort, inputPort, "test");
+  Connection c(outputPort, inputPort, "test", false);
   ASSERT_EQ(1, inputPort->nconnections());
   ASSERT_EQ(1, outputPort->nconnections());
 
   //shouldn't be able to connect a second output to the same input.
-  EXPECT_THROW(Connection c(outputPort, inputPort, "test"), InvalidArgumentException);
+  EXPECT_THROW(Connection c(outputPort, inputPort, "test", false), InvalidArgumentException);
 
   OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  EXPECT_THROW(Connection c(outputPort2, inputPort, "test"), InvalidArgumentException);
+  EXPECT_THROW(Connection c(outputPort2, inputPort, "test", false), InvalidArgumentException);
 }
 
 /// @todo: this verification pushed up to higher layer.
@@ -116,7 +116,7 @@ TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
   {
-    EXPECT_THROW(Connection c(outputPort, inputPort, "test"), InvalidArgumentException);
+    EXPECT_THROW(Connection c(outputPort, inputPort, "test", false), InvalidArgumentException);
     //connection constructor should throw for type mismatch
     ASSERT_EQ(0, inputPort->nconnections());
     ASSERT_EQ(0, outputPort->nconnections());

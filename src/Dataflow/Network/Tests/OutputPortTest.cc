@@ -70,7 +70,7 @@ TEST_F(OutputPortTest, SendSomeData)
   //EXPECT_CALL(*inputModule, getInputPort(2)).WillRepeatedly(Return(inputPort));
   //EXPECT_CALL(*outputModule, getOutputPort(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c(outputPort, inputPort, "test");
+  Connection c(outputPort, inputPort, "test", false);
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
@@ -114,8 +114,8 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   //EXPECT_CALL(*inputPort2, get_typename()).WillRepeatedly(Return(pcp.type_name));
   //EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c1(outputPort, inputPort, "test1");
-  Connection c2(outputPort, inputPort2, "test2");
+  Connection c1(outputPort, inputPort, "test1", false);
+  Connection c2(outputPort, inputPort2, "test2", false);
   EXPECT_EQ(2, outputPort->nconnections());
 
   const int dataValue = 2;
