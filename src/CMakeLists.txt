@@ -51,6 +51,10 @@ ENDIF()
 
 PROJECT(SCIRun)
 
+IF(GENERATE_COMPILATION_DATABASE)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ENDIF()
+
 ###############################################################################
 # Don't allow the user to build in the src directory...
 #

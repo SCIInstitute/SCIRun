@@ -60,6 +60,10 @@ ENDIF()
 OPTION(BUILD_TESTING "Build with tests." OFF)
 
 ###########################################
+# Configure compilation database generation
+OPTION(GENERATE_COMPILATION_DATABASE "Generate Compilation Database." ON)
+
+###########################################
 # Configure python
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
@@ -257,6 +261,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
+    "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
 IF(BUILD_WITH_PYTHON)
