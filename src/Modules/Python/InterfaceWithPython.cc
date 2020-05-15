@@ -82,7 +82,7 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonString3);
 
 #ifdef BUILD_WITH_PYTHON
-  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state()));
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), outputNameParameters()));
 #endif
 }
 
@@ -114,7 +114,7 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
 {
   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
+    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name};
 }
 
 std::vector<std::string> InterfaceWithPython::connectedPortIds() const
@@ -160,24 +160,25 @@ void InterfaceWithPython::execute()
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
 
+    DummyPortName nil;
     if (oport_connected(PythonString1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, nil, nil);
     if (oport_connected(PythonString2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, nil, nil);
     if (oport_connected(PythonString3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString3Name).toString(), PythonString3, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString3Name).toString(), PythonString3, nil, nil);
     if (oport_connected(PythonMatrix1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), nil, PythonMatrix1, nil);
     if (oport_connected(PythonMatrix2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), PythonString1, PythonMatrix2, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), nil, PythonMatrix2, nil);
     if (oport_connected(PythonMatrix3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix3Name).toString(), PythonString1, PythonMatrix3, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix3Name).toString(), nil, PythonMatrix3, nil);
     if (oport_connected(PythonField1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), nil, nil, PythonField1);
     if (oport_connected(PythonField2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), PythonString1, PythonMatrix1, PythonField2);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), nil, nil, PythonField2);
     if (oport_connected(PythonField3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), nil, nil, PythonField3);
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
