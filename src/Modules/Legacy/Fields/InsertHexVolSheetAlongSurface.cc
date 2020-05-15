@@ -1085,7 +1085,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections_KDTree(
 
   for (size_t h=0; h<hexmesh.hexes.size(); h++)
   {
-    BBox hbbox = BBox();
+    BBox hbbox;
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[0]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[1]]);
     hbbox.extend(hexmesh.points[hexmesh.hexes[h].verts[2]]);
