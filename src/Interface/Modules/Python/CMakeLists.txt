@@ -29,17 +29,29 @@
 SET(Interface_Modules_Python_FORMS
   PythonObjectForwarder.ui
   InterfaceWithPython.ui
+  ModuleStateModifierTester.ui
+  LoopStart.ui
+  #LoopIncrement.ui
+  LoopEnd.ui
 )
 
 SET(Interface_Modules_Python_HEADERS
   PythonObjectForwarderDialog.h
   InterfaceWithPythonDialog.h
+  ModuleStateModifierTesterDialog.h
+  LoopStartDialog.h
+  #LoopIncrementDialog.h
+  LoopEndDialog.h
   share.h
 )
 
 SET(Interface_Modules_Python_SOURCES
   PythonObjectForwarderDialog.cc
   InterfaceWithPythonDialog.cc
+  ModuleStateModifierTesterDialog.cc
+  LoopStartDialog.cc
+  #LoopIncrementDialog.cc
+  LoopEndDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS "${Interface_Modules_Python_FORMS}")

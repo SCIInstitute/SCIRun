@@ -75,6 +75,10 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
   dataSeriesComboBox_->setDisabled(true);
 
   plotDialog_ = new PlotDialog(this);
+
+	//broken in Qt5
+	backgroundColorLabel_->hide();
+	backgroundColorPushButton_->hide();
 }
 
 BasicPlotterDialog::~BasicPlotterDialog()
@@ -95,7 +99,7 @@ void BasicPlotterDialog::pullSpecial()
   backgroundColor_ = colorFromState(Parameters::PlotBackgroundColor);
   plotDialog_->plot()->setCanvasBackground(backgroundColor_);
 
-	if (plotDialog_ && plotDialog_->isVisible())
+	if (plotDialog_->isVisible())
 		updatePlot();
 }
 

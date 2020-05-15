@@ -998,7 +998,7 @@ void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 
 void SCIRun::Gui::openPythonAPIDoc()
 {
-  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
+  openUrl("http://sciinstitute.github.io/scirun.pages/python.html", "SCIRun Python API page");
 }
 
 namespace detail

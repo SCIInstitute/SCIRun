@@ -64,7 +64,7 @@ namespace SCIRun
         {
         public:
           InterfaceWithPythonCodeTranslatorImpl(ModuleIdGetter moduleId,
-            const Dataflow::Networks::ModuleStateHandle& state);
+            const Dataflow::Networks::ModuleStateHandle& state, const std::vector<AlgorithmParameterName>& outputNamesToCheck);
 
           void updatePorts(const std::vector<std::string>& portIds) override { portIds_ = portIds; }
           PythonCodeBlock translate(const std::string& code) const override;
@@ -80,6 +80,7 @@ namespace SCIRun
         private:
           ModuleIdGetter moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;
+          std::vector<AlgorithmParameterName> outputNamesToCheck_;
           std::vector<std::string> portIds_;
           void parsePart(PythonCode& blocks, const std::string& part) const;
         };
