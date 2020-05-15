@@ -172,7 +172,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   int displayLength = state->getValue(DisplayLength).toInt();
   uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
   auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, BBox(), true);
+    numVBOElements, BBox(Point{}, Point{}), true);
 
   // Construct IBO.
 
