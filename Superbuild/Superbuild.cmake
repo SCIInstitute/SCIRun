@@ -122,18 +122,7 @@ IF(NOT BUILD_HEADLESS)
     SET(QT_MIN_VERSION "5.13")
   ENDIF()
 
-  SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
-
-  IF(IS_DIRECTORY ${Qt5_PATH})
-    FIND_PACKAGE(Qt5Core ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-    FIND_PACKAGE(Qt5Gui ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-	  FIND_PACKAGE(Qt5Widgets ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-	  FIND_PACKAGE(Qt5Network ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-    FIND_PACKAGE(Qt5OpenGL ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-	  FIND_PACKAGE(Qt5Concurrent ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
-  ELSE()
-    MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
-  ENDIF()
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED)
 
   IF(APPLE)
     SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
@@ -291,7 +280,6 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DQt5_PATH:PATH=${Qt5_PATH}"
     "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
     "-DQt5Gui_DIR:PATH=${Qt5Gui_DIR}"
     "-DQt5OpenGL_DIR:PATH=${Qt5OpenGL_DIR}"
