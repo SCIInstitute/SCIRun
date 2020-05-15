@@ -86,8 +86,7 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests)
 
 }
 
-
-TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests2)
+TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTetTests2)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
@@ -134,7 +133,7 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests2)
   EXPECT_EQ(result8->vmesh()->num_nodes(), 1828);
 }
 
-TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests3)
+TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTetTests3)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
@@ -278,7 +277,7 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests)
 
 }
 
-TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests2)
+TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTests2)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
@@ -326,7 +325,7 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests2)
 
 }
 
-TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests3)
+TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTests3)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
@@ -374,7 +373,7 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests3)
 
 }
 
-TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests4)
+TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTests4)
 {
   SplitFieldByConnectedRegionAlgo algo;
 

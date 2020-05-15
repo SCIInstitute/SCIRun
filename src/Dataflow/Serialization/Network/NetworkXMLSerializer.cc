@@ -180,7 +180,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
 {
   NetworkXML networkXML;
-  auto conns = network->connections();
+  auto conns = network->connections(true);
   for (const auto& desc : conns)
   {
     if (connFilter(desc))

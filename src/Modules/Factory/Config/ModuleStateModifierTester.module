@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ModuleStateModifierTester",
+    "namespace": "Python",
+    "status": "In progress",
+    "description": "This module sends pre-execute code to a downstream module via the new metadata port/programmable pipe.",
+    "header": "Modules/Python/ModuleStateModifierTester.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ModuleStateModifierTesterDialog",
+    "header": "Interface/Modules/Python/ModuleStateModifierTesterDialog.h"
+  }
+}

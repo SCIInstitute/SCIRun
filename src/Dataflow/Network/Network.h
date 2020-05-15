@@ -62,7 +62,7 @@ namespace Networks {
     bool disconnect(const ConnectionId&) override;
     size_t nconnections() const override;
     void disable_connection(const ConnectionId&) override;
-    ConnectionDescriptionList connections() const override;
+    ConnectionDescriptionList connections(bool includeVirtual) const override;
     int errorCode() const override;
     void incrementErrorCode(const ModuleId& moduleId) override;
     bool containsViewScene() const override;
