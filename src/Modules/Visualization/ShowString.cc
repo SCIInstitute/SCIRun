@@ -177,7 +177,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
   uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(), true);
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(Point{}, Point{}), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
