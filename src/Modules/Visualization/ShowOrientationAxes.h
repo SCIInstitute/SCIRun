@@ -33,7 +33,7 @@ namespace Visualization {
   class ShowOrientationAxesImpl;
 
   class SCISHARE ShowOrientationAxes : public Dataflow::Networks::GeometryGeneratingModule,
-    public Has1InputPort<FieldPortTag>, public Has1OutputPort<GeometryPortTag>
+    public HasNoInputPorts, public Has1OutputPort<GeometryPortTag>
   {
   public:
     ShowOrientationAxes();

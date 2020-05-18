@@ -23,9 +23,6 @@
 
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/ShowOrientationAxes.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -149,7 +146,6 @@ GeometryHandle ShowOrientationAxesImpl::makeGeometry(const GeometryIDGenerator& 
 ShowOrientationAxes::ShowOrientationAxes() : GeometryGeneratingModule(staticInfo_),
                                              impl_(new ShowOrientationAxesImpl)
 {
-  INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputGeom);
 }
 
