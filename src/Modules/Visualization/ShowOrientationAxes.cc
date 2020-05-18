@@ -164,7 +164,6 @@ void ShowOrientationAxes::setStateDefaults()
 
 void ShowOrientationAxes::execute()
 {
-  auto input = getRequiredInput(InputField);
   if (needToExecute())
   {
     auto state = get_state();

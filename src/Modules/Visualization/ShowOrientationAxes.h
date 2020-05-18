@@ -40,7 +40,6 @@ namespace Visualization {
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputGeom, GeometryObject);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
