@@ -122,7 +122,12 @@ IF(NOT BUILD_HEADLESS)
     SET(QT_MIN_VERSION "5.13")
   ENDIF()
 
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED)
+  IF(NOT UNIX)
+    IF(NOT IS_DIRECTORY ${Qt5_PATH})
+      MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    ENDIF()
+  ENDIF()
+  FIND_PACKAGE(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED PATHS /usr/local/Cellar/qt HINTS ${Qt5_PATH})
 
   IF(APPLE)
     SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
