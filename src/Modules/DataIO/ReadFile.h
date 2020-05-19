@@ -28,7 +28,7 @@
 
 #ifndef MODULES_DATAIO_READ_FILE_H
 #define MODULES_DATAIO_READ_FILE_H
-\
+
 #include <Dataflow/Network/Module.h>
 #include <Modules/DataIO/share.h>
 

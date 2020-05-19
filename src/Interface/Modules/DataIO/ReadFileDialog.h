@@ -25,32 +25,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadFile.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Logging/Log.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Modules::DataIO;
+#ifndef INTERFACE_MODULES_READ_FILE_H
+#define INTERFACE_MODULES_READ_FILE_H
 
-MODULE_INFO_DEF(ReadFile, DataIO, SCIRun)
+#include "Interface/Modules/DataIO/ui_ReadFile.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/DataIO/share.h>
 
-ReadFile::ReadFile() : Module(staticInfo_)
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE ReadFileDialog : public ModuleDialogGeneric,
+  public Ui::ReadFileDialog, public RemembersFileDialogDirectory
 {
-  INITIALIZE_PORT(Matrix);
-  INITIALIZE_PORT(Field);
+	Q_OBJECT
+
+public:
+  ReadFileDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
+
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
+
+}
 }
 
-void ReadFile::setStateDefaults()
-{
-  auto state = get_state();
-
-  state->setValue(Variables::Filename, std::string("foo.txt"));
-}
-
-void ReadFile::execute()
-{
-  logCritical("File to read: {}", get_state()->getValue(Variables::Filename).toString());
-}
+#endif
