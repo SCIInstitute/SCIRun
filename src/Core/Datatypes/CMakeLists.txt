@@ -40,6 +40,7 @@ SET(Core_Datatypes_SRCS
   Scalar.cc
   SparseRowMatrixFromMap.cc
   String.cc
+  MetadataObject.cc
 )
 
 SET(Core_Datatypes_HEADERS
@@ -60,6 +61,7 @@ SET(Core_Datatypes_HEADERS
   MatrixIO.h
   MatrixTypeConversions.h
   MatrixMathVisitors.h
+  MetadataObject.h
   PropertyManagerExtensions.h
   Scalar.h
   share.h

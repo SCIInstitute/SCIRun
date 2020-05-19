@@ -65,11 +65,14 @@ void WriteMatrixDialog::pushFileNameToState()
 
 void WriteMatrixDialog::saveFile()
 {
-  auto types = state_->getValue(Variables::FileTypeList).toString();
+  auto types = transient_value_cast<std::string>(state_->getTransientValue(Variables::FileTypeList));
+  selectedFilter_ = QString::fromStdString(state_->getValue(Variables::GuiFileTypeName).toString());
   auto file = QFileDialog::getSaveFileName(this, "Save Matrix File", dialogDirectory(), QString::fromStdString(types), &selectedFilter_);
   if (file.length() > 0)
   {
-    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
+    auto filter = selectedFilter_.toStdString();
+    state_->setValue(Variables::GuiFileTypeName, filter);
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(filter);
     state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);

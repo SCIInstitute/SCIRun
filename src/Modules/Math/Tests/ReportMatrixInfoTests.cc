@@ -89,7 +89,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
 
   const std::string viewScenePortName = "GeneralGeom";
 
-  EXPECT_EQ(1, hasDynamic->numInputPorts());
+  EXPECT_EQ(2, hasDynamic->numInputPorts());
   EXPECT_EQ(1, hasDynamic->findInputPortsWithName(viewScenePortName).size());
 
   ModuleHandle input1 = network->add_module(ShowField::staticInfo_);
@@ -105,7 +105,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
 
-    Connection c(oport, iport, "test");
+    Connection c(oport, iport, "test", false);
     std::cout << 1 << std::endl;
     printInputPorts(hasDynamic);
     ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
@@ -115,20 +115,20 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
 
-    EXPECT_EQ(2, hasDynamic->numInputPorts());
+    EXPECT_EQ(3, hasDynamic->numInputPorts());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
 
     removeSignal(ConnectionId::create(desc));
   }
   printInputPorts(hasDynamic);
-  ASSERT_EQ(1, hasDynamic->numInputPorts());
+  ASSERT_EQ(2, hasDynamic->numInputPorts());
   EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
   {
     auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
-    Connection c1(oport, iport, "test");
+    Connection c1(oport, iport, "test", false);
     printInputPorts(hasDynamic);
     ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
@@ -136,22 +136,22 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
 
-    EXPECT_EQ(2, hasDynamic->numInputPorts());
+    EXPECT_EQ(3, hasDynamic->numInputPorts());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
 
-    Connection c2(oport, hasDynamic->inputPorts()[1], "test");
+    Connection c2(oport, hasDynamic->inputPorts()[1], "test", false);
     printInputPorts(hasDynamic);
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
-    EXPECT_EQ(3, hasDynamic->numInputPorts());
+    EXPECT_EQ(4, hasDynamic->numInputPorts());
 
     removeSignal(ConnectionId::create(desc1));
     removeSignal(ConnectionId::create(desc2));
   }
   printInputPorts(hasDynamic);
-  ASSERT_EQ(1, hasDynamic->numInputPorts());
+  ASSERT_EQ(2, hasDynamic->numInputPorts());
   EXPECT_EQ(1, hasDynamic->findInputPortsWithName(viewScenePortName).size());
   EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
@@ -160,31 +160,31 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
-    boost::shared_ptr<Connection> c1 = boost::make_shared<Connection>(oport, iport, "test");
+    auto c1 = boost::make_shared<Connection>(oport, iport, "test", false);
     printInputPorts(hasDynamic);
     ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
-    EXPECT_EQ(2, hasDynamic->numInputPorts());
+    EXPECT_EQ(3, hasDynamic->numInputPorts());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
     printInputPorts(hasDynamic);
-    Connection c2(oport, hasDynamic->inputPorts()[1], "test");
+    Connection c2(oport, hasDynamic->inputPorts()[1], "test", false);
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
-    EXPECT_EQ(3, hasDynamic->numInputPorts());
+    EXPECT_EQ(4, hasDynamic->numInputPorts());
     EXPECT_EQ(3, hasDynamic->findInputPortsWithName(viewScenePortName).size());
     c1.reset();
     removeSignal(ConnectionId::create(desc1));
 
     EXPECT_EQ(1, oport->nconnections());
-    EXPECT_EQ(2, hasDynamic->numInputPorts());
+    EXPECT_EQ(3, hasDynamic->numInputPorts());
     removeSignal(ConnectionId::create(desc2));
   }
-  ASSERT_EQ(1, hasDynamic->numInputPorts());
+  ASSERT_EQ(2, hasDynamic->numInputPorts());
   EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 }

@@ -114,7 +114,7 @@
        </widget>
       </item>
       <item row="5" column="0">
-       <widget class="QLabel" name="label_9">
+       <widget class="QLabel" name="backgroundColorLabel_">
         <property name="text">
          <string>Background color</string>
         </property>

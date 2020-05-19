@@ -61,6 +61,7 @@ void PortColorLookup::init()
     ("Bundle", "orange")
     ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan
     ("ComplexMatrix", "brown")
+    ("MetadataObject", "darkGray")
     ("Datatype", "white");
 }
 

@@ -33,6 +33,7 @@ SET(Modules_DataIO_SRCS
   WriteField.cc
   WriteG3D.cc
   WriteMatrix.cc
+  ReadFile.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -44,6 +45,7 @@ SET(Modules_DataIO_HEADERS
   WriteField.h
   WriteG3D.h
   WriteMatrix.h
+  ReadFile.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_DataIO

@@ -88,6 +88,10 @@ void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 
 void SCIRunMainWindow::exitApplication(int code)
 {
+  if (Application::Instance().parameters()->saveViewSceneScreenshotsOnQuit())
+  {
+    networkEditor_->saveImages();
+  }
   close();
   returnCode_ = code;
   qApp->exit(code);

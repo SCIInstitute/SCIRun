@@ -57,6 +57,7 @@ namespace Modules
   struct SCISHARE BundlePortTag {};
   struct SCISHARE NrrdPortTag {};
   struct SCISHARE DatatypePortTag {};
+  struct SCISHARE MetadataObjectPortTag {};
 
   template <typename Base>
   struct DynamicPortTag : Base
@@ -326,6 +327,7 @@ namespace Modules
   PORT_SPEC(Nrrd);
   PORT_SPEC(ComplexMatrix);
   PORT_SPEC(Datatype);
+  PORT_SPEC(MetadataObject);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 #define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
@@ -340,6 +342,8 @@ namespace Modules
   Dataflow::Networks::StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
+
+struct DummyPortName : Dataflow::Networks::StaticPortName<Core::Datatypes::Datatype, 999> {};
 
   /// @todo: make metafunc for Input/Output
 
