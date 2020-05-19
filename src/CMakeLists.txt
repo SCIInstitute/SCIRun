@@ -463,7 +463,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED PATHS /usr/local/Cellar/qt HINTS ${Qt5_PATH})
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt5_PATH})
 
   IF(Qt5Core_FOUND)
     MESSAGE(STATUS "Found Qt version: ${Qt5Core_VERSION_STRING}")
