@@ -122,6 +122,8 @@ IF(NOT BUILD_HEADLESS)
     SET(QT_MIN_VERSION "5.13")
   ENDIF()
 
+  SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
+
   IF(IS_DIRECTORY ${Qt5_PATH})
     FIND_PACKAGE(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED HINTS ${Qt5_PATH})
   ELSE()
