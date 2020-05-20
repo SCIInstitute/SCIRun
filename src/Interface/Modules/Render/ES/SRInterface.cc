@@ -384,10 +384,8 @@ void SRInterface::runGCOnNextExecution()
       std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
       if (!fboMan)
         return nullptr;
-      std::string fboName = "Selection:FBO:0";
-      GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D,
-        screen_.width, screen_.height, 1,
-        fboName);
+      const std::string fboName = "Selection:FBO:0";
+      GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, fboName);
       fboMan->bindFBO(fboId);
 
       //a map from selection id to name
@@ -397,126 +395,19 @@ void SRInterface::runGCOnNextExecution()
       //modify and add each object to draw
       for (auto& widget : widgets)
       {
-        std::string objectName = widget->uniqueID();
-        uint32_t selid = getSelectIDForName(objectName);
-        selMap.insert(std::make_pair(selid, objectName));
-        glm::vec4 selCol = getVectorForID(selid);
-
-        // Add vertex buffer objects.
-        for (const auto& vbo : widget->vbos())
-        {
-          if (vbo.onGPU)
-          {
-            // Generate vector of attributes to pass into the entity system.
-            std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-            for (const auto& attribData : vbo.attributes)
-            {
-              attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
-            }
-
-            vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
-          }
-        }
-
-        // Add index buffer objects.
-        for (const auto& ibo : widget->ibos())
-        {
-          auto primType = computePrimitiveType(ibo.indexSize);
-          auto primitive = computePrimitive(ibo);
-
-          int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-          iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
-        }
-
-        std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-        if (auto shaderMan = sm.lock())
-        {
-          // Add passes
-          for (auto& pass : widget->passes())
-          {
-            uint64_t entityID = getEntityIDForName(pass.passName, 0);
-
-            if (pass.renderType == RenderType::RENDER_VBO_IBO)
-            {
-              addVBOToEntity(entityID, pass.vboName);
-              addIBOToEntity(entityID, pass.iboName);
-            }
-
-            // Load vertex and fragment shader will use an already loaded program.
-            //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
-            //					addShaderToEntity(entityID, "Shaders/Selection");
-            //					shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
-
-            const char* selectionShaderName = "Shaders/Selection";
-            GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
-            if (shaderID == 0)
-            {
-              const char* vs =
-                "uniform mat4 uModelViewProjection;\n"
-                "uniform vec4 uColor;\n"
-                "uniform bool hack;\n"
-                "attribute vec3 aPos;\n"
-                "varying vec4 fColor;\n"
-                "void main()\n"
-                "{\n"
-                "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
-                "  if(hack) gl_Position.xy = ((gl_Position.xy/gl_Position.w) * vec2(0.5) - vec2(0.5)) * gl_Position.w;\n"
-                "  fColor = uColor;\n"
-                "}\n";
-              const char* fs =
-                "#ifdef OPENGL_ES\n"
-                "  #ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-                "    precision highp float;\n"
-                "  #else\n"
-                "    precision mediump float;\n"
-                "  #endif\n"
-                "#endif\n"
-                "varying vec4 fColor;\n"
-                "void main()\n"
-                "{\n"
-                "  gl_FragColor = fColor;\n"
-                "}\n";
-
-              shaderID = shaderMan->addInMemoryVSFS(vs, fs, selectionShaderName);
-            }
-            addShaderToEntity(entityID, selectionShaderName);
-
-            // Add transformation
-            gen::Transform trafo;
-            mCore.addComponent(entityID, trafo);
-
-            // Add SCIRun render state.
-            SRRenderState state;
-            state.state = pass.renderState;
-            mCore.addComponent(entityID, state);
-            RenderBasicGeom geom;
-            mCore.addComponent(entityID, geom);
-            ren::CommonUniforms commonUniforms;
-            mCore.addComponent(entityID, commonUniforms);
-
-            applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
-            applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
-
-            // Add components associated with entity. We just need a base class which
-            // we can pass in an entity ID, then a derived class which bundles
-            // all associated components (including types) together. We can use
-            // a variadic template for this. This will allow us to place any components
-            // we want on the objects in question in show field. This could lead to
-            // much simpler customization.
-
-            pass.renderState.mSortType = mRenderSortType;
-            pass.renderState.set(RenderState::ActionFlags::USE_BLEND, false);
-            mCore.addComponent(entityID, pass);
-            entityList.push_back(entityID);
-          }
-        }
+        addSelectVertexBufferObjects(widget, vboMan);
+        addSelectIndexBufferObjects(widget, iboMan);
+        
+        auto passInfo = addSelectPasses(widget);
+        selMap.insert({ std::get<0>(passInfo), std::get<1>(passInfo) });
+        auto newEntities = std::get<2>(passInfo);
+        entityList.insert(entityList.end(), newEntities.begin(), newEntities.end());
       }
 
       updateCamera();
       updateWorldLight();
 
       mCore.executeWithoutAdvancingClock();
-
 
       GLfloat depth;
 
@@ -525,8 +416,7 @@ void SRInterface::runGCOnNextExecution()
         {
           ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
           GLuint value;
-          if (fboMan->readFBO(mCore, fboName, x, y, 1, 1,
-                              (GLvoid*)&value, (GLvoid*)&depth))
+          if (fboMan->readFBO(mCore, fboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
           {
             auto it = selMap.find(value);
             if (it != selMap.end())
@@ -552,6 +442,123 @@ void SRInterface::runGCOnNextExecution()
       }
 
       return widgetUpdater_.currentWidget();
+    }
+
+    std::tuple<uint32_t, std::string, std::vector<uint64_t>> SCIRun::Render::SRInterface::addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget)
+    {
+      std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+      auto shaderMan = sm.lock();
+      if (!shaderMan)
+        return {};
+
+      std::string objectName = widget->uniqueID();
+      uint32_t selid = getSelectIDForName(objectName);
+      glm::vec4 selCol = getVectorForID(selid);
+      std::vector<uint64_t> entityIds;
+
+      for (auto& pass : widget->passes())
+      {
+        uint64_t entityID = getEntityIDForName(pass.passName, 0);
+
+        if (pass.renderType == RenderType::RENDER_VBO_IBO)
+        {
+          addVBOToEntity(entityID, pass.vboName);
+          addIBOToEntity(entityID, pass.iboName);
+        }
+
+        const char* selectionShaderName = "Shaders/Selection";
+        GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
+        if (shaderID == 0)
+        {
+          const char* vs =
+            "uniform mat4 uModelViewProjection;\n"
+            "uniform vec4 uColor;\n"
+            "uniform bool hack;\n"
+            "attribute vec3 aPos;\n"
+            "varying vec4 fColor;\n"
+            "void main()\n"
+            "{\n"
+            "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
+            "  if(hack) gl_Position.xy = ((gl_Position.xy/gl_Position.w) * vec2(0.5) - vec2(0.5)) * gl_Position.w;\n"
+            "  fColor = uColor;\n"
+            "}\n";
+          const char* fs =
+            "#ifdef OPENGL_ES\n"
+            "  #ifdef GL_FRAGMENT_PRECISION_HIGH\n"
+            "    precision highp float;\n"
+            "  #else\n"
+            "    precision mediump float;\n"
+            "  #endif\n"
+            "#endif\n"
+            "varying vec4 fColor;\n"
+            "void main()\n"
+            "{\n"
+            "  gl_FragColor = fColor;\n"
+            "}\n";
+
+          shaderID = shaderMan->addInMemoryVSFS(vs, fs, selectionShaderName);
+        }
+        addShaderToEntity(entityID, selectionShaderName);
+
+        // Add transformation
+        gen::Transform trafo;
+        mCore.addComponent(entityID, trafo);
+
+        // Add SCIRun render state.
+        SRRenderState state;
+        state.state = pass.renderState;
+        mCore.addComponent(entityID, state);
+        RenderBasicGeom geom;
+        mCore.addComponent(entityID, geom);
+        ren::CommonUniforms commonUniforms;
+        mCore.addComponent(entityID, commonUniforms);
+
+        applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
+        applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
+
+        // Add components associated with entity. We just need a base class which
+        // we can pass in an entity ID, then a derived class which bundles
+        // all associated components (including types) together. We can use
+        // a variadic template for this. This will allow us to place any components
+        // we want on the objects in question in show field. This could lead to
+        // much simpler customization.
+
+        pass.renderState.mSortType = mRenderSortType;
+        pass.renderState.set(RenderState::ActionFlags::USE_BLEND, false);
+        mCore.addComponent(entityID, pass);
+        entityIds.push_back(entityID);
+      }
+      return { selid, objectName, entityIds };
+    }
+
+    void SCIRun::Render::SRInterface::addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan)
+    {
+      for (const auto& vbo : widget->vbos())
+      {
+        if (vbo.onGPU)
+        {
+          // Generate vector of attributes to pass into the entity system.
+          std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+          for (const auto& attribData : vbo.attributes)
+          {
+            attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+          }
+
+          vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
+        }
+      }
+    }
+
+    void SCIRun::Render::SRInterface::addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan)
+    {
+      for (const auto& ibo : widget->ibos())
+      {
+        auto primType = computePrimitiveType(ibo.indexSize);
+        auto primitive = computePrimitive(ibo);
+
+        int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+        iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+      }
     }
 
     GLenum SCIRun::Render::SRInterface::computePrimitiveType(size_t indexSize)

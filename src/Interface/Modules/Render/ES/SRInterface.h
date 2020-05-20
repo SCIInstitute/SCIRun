@@ -49,6 +49,12 @@
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
 #include <Interface/Modules/Render/share.h>
 
+namespace ren
+{
+  class VBOMan;
+  class IBOMan;
+  class FBOMan;
+}
 
 namespace SCIRun
 {
@@ -107,6 +113,9 @@ namespace SCIRun
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
+      std::tuple<uint32_t, std::string, std::vector<uint64_t>> addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget);
+      void addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan);
+      void addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan);
       GLenum computePrimitiveType(size_t indexSize);
       GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
