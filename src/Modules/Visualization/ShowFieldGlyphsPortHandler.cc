@@ -490,35 +490,31 @@ namespace SCIRun{
       // Returns color vector for tensor that are using rgb conversion
       Geometry::Vector ShowFieldGlyphsPortHandler::getTensorColorVector(Geometry::Tensor& t)
       {
+        auto newT = Geometry::Tensor(t);
+        const static double epsilon = pow(2, -50);
         Geometry::Vector colorVector;
-        double eigval1, eigval2, eigval3;
-        t.get_eigenvalues(eigval1, eigval2, eigval3);
+        std::vector<double> eigvals(3);
+        std::vector<Geometry::Vector> eigvecs(3);
+        t.get_eigenvectors(eigvecs[0], eigvecs[1], eigvecs[2]);
+        t.get_eigenvalues(eigvals[0], eigvals[1], eigvals[2]);
+        for (int i = 0; i < 3; ++i)
+          eigvals[i] = std::abs(eigvals[i]);
 
-        if(eigval1 == eigval2 && eigval1 != eigval3){
-          Geometry::Vector eigvec3_norm = t.get_eigenvector3().normal();
-          Geometry::Vector xCross = Cross(eigvec3_norm, Geometry::Vector(1,0,0));
-          Geometry::Vector yCross = Cross(eigvec3_norm, Geometry::Vector(0,1,0));
-          Geometry::Vector zCross = Cross(eigvec3_norm, Geometry::Vector(0,0,1));
-          xCross.normalize();
-          yCross.normalize();
-          zCross.normalize();
+        newT.set_outside_eigens(eigvecs[0], eigvecs[1], eigvecs[2], eigvals[0], eigvals[1], eigvals[2]);
+        newT.reorderTensorValues();
+        newT.get_eigenvalues(eigvals[0], eigvals[1], eigvals[2]);
+        newT.get_eigenvectors(eigvecs[0], eigvecs[1], eigvecs[2]);
 
-          double epsilon = pow(2, -52);
-          if(std::abs(Dot(xCross, yCross)) > (1-epsilon)){
-            colorVector = xCross;
-          }
-          else if(std::abs(Dot(yCross, zCross)) > (1-epsilon)){
-            colorVector = yCross;
-          }
-          else if(std::abs(Dot(xCross, zCross)) > (1-epsilon)){
-            colorVector = zCross;
-          }
-          else{
-            colorVector = t.get_eigenvector1();
-          }
-        } else{
-          colorVector = t.get_eigenvector1();
+        if (std::abs(eigvals[0] - eigvals[1]) < epsilon)
+        {
+          if (std::abs(eigvals[1] - eigvals[2]) < epsilon)
+            colorVector = (eigvecs[0] + eigvecs[1] + eigvecs[2]).normal();
+          else
+            colorVector = (eigvecs[0] + eigvecs[1]).normal();
         }
+        else
+          colorVector = eigvecs[0];
+
         colorVector = Abs(colorVector);
         colorVector.normalize();
         return colorVector;

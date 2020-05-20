@@ -45,6 +45,7 @@
 #include <Core/Containers/Array1.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
 #include <iosfwd>
 #include <vector>
@@ -84,19 +85,22 @@ public:
   Tensor& operator-=(const Tensor&);
   Tensor operator*(const double) const;
   Vector operator*(const Vector&) const;
+  Tensor operator/(const double) const;
 
   static std::string type_name(int i = -1);
 
   void build_mat_from_eigens();
   void build_eigens_from_mat();
+  void reorderTensorValues();
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
-  const Vector &get_eigenvector1() const { ASSERT(have_eigens_); return e1_; }
-  const Vector &get_eigenvector2() const { ASSERT(have_eigens_); return e2_; }
-  const Vector &get_eigenvector3() const { ASSERT(have_eigens_); return e3_; }
+  const Vector get_eigenvector1();
+  const Vector get_eigenvector2();
+  const Vector get_eigenvector3();
   void get_eigenvalues(double &l1, double &l2, double &l3);
+  Core::Datatypes::DenseColumnMatrix mandel();
 
   double norm() const;
-  Vector euclidean_norm() const;
+  Vector normalized_eigvals() const;
   void normal();
   double magnitude();
 
@@ -177,6 +181,23 @@ Tensor symmetricTensorFromSixElementArray(const Indexable& array)
     array[4],
     array[5]
     );
+}
+
+template <typename Indexable>
+Tensor symmetricTensorFromMandel(const Indexable& array)
+{
+  const static double sqrt2 = std::sqrt(2);
+  // std::vector<Vector> eigvecs(3);
+  // eigvecs[0] = Vector(        array(0), sqrt2 * array(3), sqrt2 * array(4));
+  // eigvecs[1] = Vector(sqrt2 * array(3),         array(1), sqrt2 * array(5));
+  // eigvecs[2] = Vector(sqrt2 * array(4), sqrt2 * array(5),         array(2));
+  return Tensor(array(0),
+                array(3)/sqrt2,
+                array(4)/sqrt2,
+                array(1),
+                array(5)/sqrt2,
+                array(2));
+  // return Tensor(eigvecs[0], eigvecs[1], eigvecs[2]);
 }
 
 template <typename Indexable>

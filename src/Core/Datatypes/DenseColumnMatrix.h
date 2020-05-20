@@ -82,6 +82,10 @@ namespace Datatypes {
     {
       (*this)(i,j) = val;
     }
+    void put(int i, const T& val)
+    {
+      (*this)(i,0) = val;
+    }
 
     /// Persistent representation...
     virtual std::string dynamic_type_name() const override { return type_id.type; }

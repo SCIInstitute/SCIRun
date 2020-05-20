@@ -38,9 +38,11 @@
 ///
 
 
+#include "Core/Datatypes/MatrixFwd.h"
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Utils/Legacy/Assert.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 #include <iostream>
 
@@ -50,6 +52,7 @@
 
 using namespace SCIRun;
 using namespace Core::Geometry;
+using namespace Core::Datatypes;
 
 Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
 {
@@ -152,8 +155,9 @@ Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   e1_(e1), e2_(e2), e3_(e3),
   l1_(e1.length()), l2_(e2.length()), l3_(e3.length())
 {
+  have_eigens_ = 1;
+  reorderTensorValues();
   build_mat_from_eigens();
-  have_eigens_=1;
 }
 
 Tensor::Tensor(const double **cmat) : l1_(0), l2_(0), l3_(0)
@@ -253,13 +257,14 @@ double Tensor::norm() const
   return (a);
 }
 
-Vector Tensor::euclidean_norm() const
+Vector Tensor::normalized_eigvals() const
 {
   auto eigvals = Vector(l1_, l2_, l3_);
   eigvals.normalize();
   return eigvals;
 }
 
+// Frobenius norm
 double Tensor::magnitude()
 {
   double eigenval1, eigenval2, eigenval3;
@@ -334,35 +339,89 @@ Vector Tensor::operator*(const Vector& v) const
 		v.x()*mat_[2][0]+v.y()*mat_[2][1]+v.z()*mat_[2][2]);
 }
 
+Tensor Tensor::operator/(const double s) const
+{
+  Tensor t1(*this);
+  for (int i=0; i<3; i++)
+    for (int j=0; j<3; j++)
+      t1.mat_[i][j]/=s;
+  if (t1.have_eigens_) {
+    t1.e1_/=s; t1.e2_/=s; t1.e3_/=s;
+    t1.l1_/=s; t1.l2_/=s; t1.l3_/=s;
+  }
+  return t1;
+}
+
 void Tensor::build_eigens_from_mat()
 {
   if (have_eigens_) return;
-  float ten[7];
-  ten[0] = 1.0;
-  ten[1] = mat_[0][0];
-  ten[2] = mat_[0][1];
-  ten[3] = mat_[0][2];
-  ten[4] = mat_[1][1];
-  ten[5] = mat_[1][2];
-  ten[6] = mat_[2][2];
-  float eval[3];
-  float evec[9];
+  DenseMatrix dm = DenseMatrix(3, 3);
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      dm(i,j) = mat_[i][j];
 
-  tenEigensolve_f(eval, evec, ten);
+  auto es = Eigen::EigenSolver<Eigen::Matrix3d>(dm);
+  auto vecs = es.eigenvectors();
+  auto vals = es.eigenvalues();
 
-  e1_ = Vector(evec[0], evec[1], evec[2]);
-  e2_ = Vector(evec[3], evec[4], evec[5]);
-  e3_ = Vector(evec[6], evec[7], evec[8]);
-  l1_ = eval[0];
-  l2_ = eval[1];
-  l3_ = eval[2];
+  e1_ = Vector(real(vecs(0, 0)), real(vecs(0, 1)), real(vecs(0, 2)));
+  e2_ = Vector(real(vecs(1, 0)), real(vecs(1, 1)), real(vecs(1, 2)));
+  e3_ = Vector(real(vecs(2, 0)), real(vecs(2, 1)), real(vecs(2, 2)));
+  l1_ = real(vals(0));
+  l2_ = real(vals(1));
+  l3_ = real(vals(2));
   have_eigens_ = 1;
+  reorderTensorValues();
+}
+
+void Tensor::reorderTensorValues()
+{
+  if (!have_eigens_) return;
+  std::vector<Vector> eigvecs = { e1_, e2_, e3_ };
+  std::vector<double> eigvals = { l1_, l2_, l3_ };
+  std::vector<std::pair<double, Vector>> sortList(3);
+  for (int d = 0; d < 3; ++d)
+    sortList[d] = std::make_pair(eigvals[d], eigvecs[d]);
+
+  std::sort(std::begin(sortList), std::end(sortList),
+            std::greater<std::pair<double, Vector>>());
+
+  for (int d = 0; d < 3; ++d)
+  {
+    eigvals[d] = sortList[d].first;
+    eigvecs[d] = sortList[d].second;
+  }
+
+  e1_ = eigvecs[0];
+  e2_ = eigvecs[1];
+  e3_ = eigvecs[2];
+  l1_ = eigvals[0];
+  l2_ = eigvals[1];
+  l3_ = eigvals[2];
 }
 
 void Tensor::get_eigenvectors(Vector &e1, Vector &e2, Vector &e3)
 {
   if (!have_eigens_) build_eigens_from_mat();
   e1=e1_; e2=e2_; e3=e3_;
+}
+
+const Vector Tensor::get_eigenvector1()
+{
+  if (!have_eigens_) build_eigens_from_mat();
+  return e1_;
+}
+
+const Vector Tensor::get_eigenvector2()
+{
+  if (!have_eigens_) build_eigens_from_mat();
+  return e2_;
+}
+
+const Vector Tensor::get_eigenvector3()
+{
+  if (!have_eigens_) build_eigens_from_mat();
+  return e3_;
 }
 
 void Tensor::get_eigenvalues(double &l1, double &l2, double &l3)
@@ -372,10 +431,11 @@ void Tensor::get_eigenvalues(double &l1, double &l2, double &l3)
 }
 
 void Tensor::set_eigens(const Vector &e1, const Vector &e2, const Vector &e3) {
-  e1_ = e1; e2_ = e2; e3_ = e3;
   l1_ = e1.length(); l2_ = e2.length(); l3_ = e3.length();
-  build_mat_from_eigens();
+  e1_ = e1 / l1_; e2_ = e2 / l2_; e3_ = e3 / l3_;
   have_eigens_ = 1;
+  reorderTensorValues();
+  build_mat_from_eigens();
 }
 
 void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
@@ -385,6 +445,30 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   e1_ = e1; e2_ = e2; e3_ = e3;
   l1_ = v1; l2_ = v2; l3_ = v3;
   have_eigens_ = 1;
+  reorderTensorValues();
+  build_mat_from_eigens();
+}
+
+DenseColumnMatrix Tensor::mandel()
+{
+  if (!have_eigens_) build_eigens_from_mat();
+  std::vector<Vector> eigvecs(3);
+  get_eigenvectors(eigvecs[0], eigvecs[1], eigvecs[2]);
+  std::vector<double> eigvals(3);
+  get_eigenvalues(eigvals[0], eigvals[1], eigvals[2]);
+  const static double sqrt2 = std::sqrt(2);
+  for (int i = 0; i < 3; ++i)
+    eigvecs[i] *= eigvals[i];
+
+  auto mandel = DenseColumnMatrix(6);
+  for(int i = 0; i < 3; ++i)
+    mandel.put(i, mat_[i][i]);
+
+  mandel.put(3, mat_[0][1] * sqrt2);
+  mandel.put(4, mat_[0][2] * sqrt2);
+  mandel.put(5, mat_[1][2] * sqrt2);
+
+  return mandel;
 }
 
 double Tensor::eigenValueSum() const
