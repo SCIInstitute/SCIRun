@@ -29,6 +29,8 @@
 #include <QtGui>
 #include <Interface/Application/StateViewer.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/ModuleProxyWidget.h>
+#include <Interface/Application/ModuleWidget.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -36,4 +38,15 @@ using namespace SCIRun::Core;
 StateViewer::StateViewer(NetworkEditor* network, QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
+
+  stateTreeWidget_->clear();
+  for (const auto& item : network->scene()->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto mod = new QTreeWidgetItem();
+      mod->setText(0, QString::fromStdString(w->getModuleWidget()->getModuleId()));
+      stateTreeWidget_->addTopLevelItem(mod);
+    }
+  }
 }

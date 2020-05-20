@@ -6,16 +6,35 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>473</width>
+    <height>482</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>450</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>State Viewer</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QTreeWidget" name="treeWidget">
+   <item row="2" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTreeWidget" name="stateTreeWidget_">
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
      <column>
       <property name="text">
        <string>Module</string>
@@ -43,7 +62,7 @@
       </property>
       <item>
        <property name="text">
-        <string>XSize</string>
+        <string>YSize</string>
        </property>
        <property name="text">
         <string>int</string>
@@ -54,7 +73,7 @@
       </item>
       <item>
        <property name="text">
-        <string>YSize</string>
+        <string>XSize</string>
        </property>
        <property name="text">
         <string>int</string>
@@ -75,16 +94,6 @@
        </property>
       </item>
      </item>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
     </widget>
    </item>
   </layout>
