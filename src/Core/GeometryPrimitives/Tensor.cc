@@ -462,11 +462,11 @@ DenseColumnMatrix Tensor::mandel()
 
   auto mandel = DenseColumnMatrix(6);
   for(int i = 0; i < 3; ++i)
-    mandel.put(i, mat_[i][i]);
+    mandel(i) = mat_[i][i];
 
-  mandel.put(3, mat_[0][1] * sqrt2);
-  mandel.put(4, mat_[0][2] * sqrt2);
-  mandel.put(5, mat_[1][2] * sqrt2);
+  mandel(3) = mat_[0][1] * sqrt2;
+  mandel(4) = mat_[0][2] * sqrt2;
+  mandel(5) = mat_[1][2] * sqrt2;
 
   return mandel;
 }
