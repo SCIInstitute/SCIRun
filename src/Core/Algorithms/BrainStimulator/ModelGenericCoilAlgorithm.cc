@@ -153,12 +153,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					{
 						this->Terminate();
 					}
-
-					//std::cout << "~ClosedSegments() Points Indices Values: " <<  points.size() << " " << indices.size() << " " << values.size() << std::endl;
-
-					//assert(points.size() > 0);
-					//assert(points.size() == values.size());
-					//assert(points.size()*2 == indices.size());
 				}
 
 				void Terminate()
@@ -170,9 +164,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					indices.push_back(psize-pc);
 
 					values.push_back(values[values.size()-1]);
-
-					//std::cout << "ClosedSegment-Teminate-> psize:" << psize << " pc:" << pc << "    " << std::endl;
-
 					pc = 0;
 				}
 		};
@@ -186,11 +177,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					std::vector<double>& v)
 						:BaseSegments(p,i,v)
 				{}
-				~OpenSegments()
-				{
-					//assert(points.size() > 0);
-					//assert(indices.size() == values.size()*2);
-				}
 		};
 
 		//--------------------------------------------------------------
@@ -199,7 +185,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 		{
 			public:
 				BaseCoilgen(const AlgorithmBase* algo, ModelTMSCoilAlgorithm::Args& args) :
-				  ref_cnt(0),
 				  algo(algo),
 
 				  coilLOD(args.coilLevelDetails),
@@ -232,9 +217,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 					this->Generate(meshFieldHandle);
 				}
-
-				//! Global reference counting
-				int ref_cnt;
 
 			protected:
 
@@ -350,12 +332,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
 				}
 
-				~CircularWireCoilgen()
-				{
-				}
-
-
-				virtual void Generate(FieldHandle& meshHandle) const
+				void Generate(FieldHandle& meshHandle) const override
 				{
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
@@ -423,16 +400,12 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 							originRight += step;
 						}
-
-
-
 					}
 					else
 					{
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
-
 
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
@@ -452,7 +425,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 		class MultiloopsCoilgen : public BaseCoilgen
 		{
 			public:
-
 				MultiloopsCoilgen(
 					const AlgorithmBase* algo,
 					ModelTMSCoilAlgorithm::Args args )
@@ -467,11 +439,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 				}
 
-				~MultiloopsCoilgen()
-				{
-				}
-
-				virtual void Generate(FieldHandle& meshHandle) const
+				void Generate(FieldHandle& meshHandle) const override
 				{
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
@@ -479,11 +447,8 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 					Vector step(0,0,coilLayersStep);
 
-
-
 					if(coilType == 1)
 					{
-						//Vector origin(0, 0, -0.5*(1.0/coilLayers));
 						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
 
 						for(size_t l = 0; l < coilLayers; l++)
@@ -528,8 +493,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						return;
 					}
 
-
-
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
 					FieldInformation fi("CurveMesh",0,"double");
@@ -543,9 +506,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				}
 
 			protected:
-
 				void GenPointsSpiralLeft(OpenSegments& segments, Vector center) const
-
 				{
 					double dr = (outerR - innerR) / rings;
 
@@ -589,10 +550,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				{
 
 				}
-
 		};
-
-
 
 		//! dipoles domain discretization
 		// (replicating paper doi:10.1006/nimg.2002.1282)
@@ -611,39 +569,16 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 				}
 
-				~DipolesCoilgen()
-				{
-				}
-
-				virtual void Generate(FieldHandle& meshHandle) const
+				void Generate(FieldHandle& meshHandle) const override
 				{
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
-					//std::vector<size_t> coilIndices;
-
-					//std::vector<double> radiiInner = preRadiiInner();
-					//std::vector<double> radiiOuter = preRadiiOuter();
-					//std::vector<double> numElements = preNumElem(radiiInner);
-					//std::vector<double> numCoupling = preNumAdjElem(radiiInner);
-
-
-					//print_vector(radiiInner);
-					//print_vector(radiiOuter);
-
-					//print_vector(numElements);
-					//print_vector(numCoupling);
-
-					//assert(radiiInner.size() == radiiOuter.size());
-
-
-					//algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
 
 					Vector step(0,0,coilLayersStep);
 
 					double dr = 0.0;
 					if(rings > 1)
 						dr = (outerR - innerR) / (rings - 1);
-
 
 					if(coilType == 1)
 					{
@@ -716,7 +651,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						return;
 					}
 
-
 					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);
 					assert(dipolePoints.size() == dipoleValues.size());
@@ -735,18 +669,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				}
 
 		protected:
-
-
-				void print_vector(const std::vector<double>& v) const
-				{
-					std::cout << std::endl;
-					for(int i=0;i<v.size();++i)
-					{
-						std::cout << v[i] << " ";
-					}
-					std::cout << std::endl;
-				}
-
 				const std::vector<double> preRadiiInner() const
 				{
 					std::vector<double> preRadii;
@@ -763,7 +685,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						preRadii.push_back(d);
 						d += step;
 					}
-
 
 					//const double vals[16] = {0.00d, 0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d};
 					//std::vector<double> preRadii(vals,vals+16);
