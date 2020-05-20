@@ -107,6 +107,8 @@ namespace SCIRun
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
+      GLenum computePrimitiveType(size_t indexSize);
+      GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
 
       //---------------- Clipping Planes -----------------------------------------------------------

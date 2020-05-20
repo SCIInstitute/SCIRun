@@ -394,7 +394,6 @@ void SRInterface::runGCOnNextExecution()
       std::map<uint32_t, std::string> selMap;
       std::vector<uint64_t> entityList;
 
-      int nameIndex = 0;
       //modify and add each object to draw
       for (auto& widget : widgets)
       {
@@ -404,12 +403,8 @@ void SRInterface::runGCOnNextExecution()
         glm::vec4 selCol = getVectorForID(selid);
 
         // Add vertex buffer objects.
-        std::vector<char*> vbo_buffer;
-        std::vector<size_t> stride_vbo;
-        for (auto it = widget->vbos().cbegin(); it != widget->vbos().cend(); ++it, ++nameIndex)
+        for (const auto& vbo : widget->vbos())
         {
-          const auto& vbo = *it;
-
           if (vbo.onGPU)
           {
             // Generate vector of attributes to pass into the entity system.
@@ -421,59 +416,13 @@ void SRInterface::runGCOnNextExecution()
 
             vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
           }
-
-          vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
-          size_t stride = 0;
-          for (auto a : vbo.attributes)
-            stride += a.sizeInBytes;
-          stride_vbo.push_back(stride);
         }
 
         // Add index buffer objects.
-        nameIndex = 0;
-        for (auto it = widget->ibos().cbegin(); it != widget->ibos().cend(); ++it, ++nameIndex)
+        for (const auto& ibo : widget->ibos())
         {
-          const auto& ibo = *it;
-          GLenum primType = GL_UNSIGNED_SHORT;
-          switch (ibo.indexSize)
-          {
-          case 1: // 8-bit
-            primType = GL_UNSIGNED_BYTE;
-            break;
-
-          case 2: // 16-bit
-            primType = GL_UNSIGNED_SHORT;
-            break;
-
-          case 4: // 32-bit
-            primType = GL_UNSIGNED_INT;
-            break;
-
-          default:
-            primType = GL_UNSIGNED_INT;
-            throw std::invalid_argument("Unable to determine index buffer depth.");
-            break;
-          }
-
-          GLenum primitive = GL_TRIANGLES;
-          switch (ibo.prim)
-          {
-            case SpireIBO::PRIMITIVE::POINTS:
-              primitive = GL_POINTS;
-              break;
-
-            case SpireIBO::PRIMITIVE::LINES:
-              primitive = GL_LINES;
-              break;
-
-            case SpireIBO::PRIMITIVE::TRIANGLES:
-              primitive = GL_TRIANGLES;
-              break;
-
-            case SpireIBO::PRIMITIVE::QUADS:
-              primitive = GL_QUADS;
-              break;
-          }
+          auto primType = computePrimitiveType(ibo.indexSize);
+          auto primitive = computePrimitive(ibo);
 
           int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
           iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
@@ -603,6 +552,53 @@ void SRInterface::runGCOnNextExecution()
       }
 
       return widgetUpdater_.currentWidget();
+    }
+
+    GLenum SCIRun::Render::SRInterface::computePrimitiveType(size_t indexSize)
+    {
+      auto primType = GL_UNSIGNED_SHORT;
+      switch (indexSize)
+      {
+      case 1: // 8-bit
+        primType = GL_UNSIGNED_BYTE;
+        break;
+
+      case 2: // 16-bit
+        primType = GL_UNSIGNED_SHORT;
+        break;
+
+      case 4: // 32-bit
+        primType = GL_UNSIGNED_INT;
+        break;
+
+      default:
+        throw std::invalid_argument("Unable to determine index buffer depth.");
+      }
+      return primType;
+    }
+
+    GLenum SCIRun::Render::SRInterface::computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo)
+    {
+      auto primitive = GL_TRIANGLES;
+      switch (ibo.prim)
+      {
+      case SpireIBO::PRIMITIVE::POINTS:
+        primitive = GL_POINTS;
+        break;
+
+      case SpireIBO::PRIMITIVE::LINES:
+        primitive = GL_LINES;
+        break;
+
+      case SpireIBO::PRIMITIVE::TRIANGLES:
+        primitive = GL_TRIANGLES;
+        break;
+
+      case SpireIBO::PRIMITIVE::QUADS:
+        primitive = GL_QUADS;
+        break;
+      }
+      return primitive;
     }
 
     glm::mat4 SRInterface::getStaticCameraViewProjection()
