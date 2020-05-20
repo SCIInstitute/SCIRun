@@ -38,6 +38,7 @@
 #include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Subnetworks.h>
+#include <Interface/Application/StateViewer.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -2393,6 +2394,12 @@ void NetworkEditor::cleanUpNetwork()
 {
   controller_->cleanUpNetwork();
   centerView();
+}
+
+void NetworkEditor::showStateViewer()
+{
+  StateViewer viewer(this);
+  viewer.exec();
 }
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
