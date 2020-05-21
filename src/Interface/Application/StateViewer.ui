@@ -32,6 +32,12 @@
    </item>
    <item row="1" column="0">
     <widget class="QTreeWidget" name="stateTreeWidget_">
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>

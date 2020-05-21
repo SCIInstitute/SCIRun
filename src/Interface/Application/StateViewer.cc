@@ -35,6 +35,16 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 
+static const std::map<int, QString> variableTypeLabels =
+  {
+    {0, "int"},
+    {1, "double"},
+    {2, "string"},
+    {3, "boolean"},
+    {4, "option"},
+    {5, "list"}
+  };
+
 StateViewer::StateViewer(NetworkEditor* network, QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
@@ -45,8 +55,24 @@ StateViewer::StateViewer(NetworkEditor* network, QWidget* parent) : QDialog(pare
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto mod = new QTreeWidgetItem();
-      mod->setText(0, QString::fromStdString(w->getModuleWidget()->getModuleId()));
+      auto widget = w->getModuleWidget();
+      mod->setText(0, QString::fromStdString(widget->getModuleId()));
       stateTreeWidget_->addTopLevelItem(mod);
+      auto module = widget->getModule();
+      auto stateMap = module->cstate();
+      auto keys = stateMap->getKeys();
+      for (const auto& key : keys)
+      {
+        auto val = stateMap->getValue(key);
+        std::ostringstream ostr;
+        ostr << val.value();
+        auto treeVal = new QTreeWidgetItem(mod);
+        treeVal->setText(0, QString::fromStdString(key.name()));
+        treeVal->setText(1, variableTypeLabels.at(val.value().which()));
+        treeVal->setText(2, QString::fromStdString(ostr.str()));
+      }
     }
   }
+  stateTreeWidget_->resizeColumnToContents(0);
+  stateTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
 }
