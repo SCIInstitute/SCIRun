@@ -38,11 +38,9 @@
 ///
 
 
-#include "Core/Datatypes/MatrixFwd.h"
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Utils/Legacy/Assert.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
 #include <iostream>
 
@@ -52,7 +50,6 @@
 
 using namespace SCIRun;
 using namespace Core::Geometry;
-using namespace Core::Datatypes;
 
 Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
 {
@@ -69,8 +66,8 @@ Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
 
 Tensor::Tensor(const Tensor& copy)
 {
-  for(int i=0; i<3; i++)
-    for(int j=0; j<3; j++)
+  for(int i=0; i<DIM_; i++)
+    for(int j=0; j<DIM_; j++)
       mat_[i][j]=copy.mat_[i][j];
   have_eigens_=copy.have_eigens_;
   if (have_eigens_) {
@@ -145,8 +142,8 @@ Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6)
 Tensor::Tensor(int v) : l1_(0), l2_(0), l3_(0)
 {
   have_eigens_=0;
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       if (i==j) mat_[i][j]=v;
       else mat_[i][j]=0;
 }
@@ -162,17 +159,17 @@ Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
 
 Tensor::Tensor(const double **cmat) : l1_(0), l2_(0), l3_(0)
 {
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       mat_[i][j]=cmat[i][j];
   have_eigens_=0;
 }
 
 void Tensor::build_mat_from_eigens() {
   if (!have_eigens_) return;
-  double E[3][3];
-  double S[3][3];
-  double SE[3][3];
+  double E[DIM_][DIM_];
+  double S[DIM_][DIM_];
+  double SE[DIM_][DIM_];
   Vector e1n(e1_);
   Vector e2n(e2_);
   Vector e3n(e3_);
@@ -187,24 +184,24 @@ void Tensor::build_mat_from_eigens() {
   S[1][0] = 0;   S[1][1] = l2_; S[1][2] = 0;
   S[2][0] = 0;   S[2][1] = 0;   S[2][2] = l3_;
   int i,j,k;
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++) {
+  for (i=0; i<DIM_; i++)
+    for (j=0; j<DIM_; j++) {
       SE[i][j]=0;
-      for (k=0; k<3; k++)
+      for (k=0; k<DIM_; k++)
         SE[i][j] += S[i][k] * E[j][k];  // S x E-transpose
     }
-    for (i=0; i<3; i++)
-      for (j=0; j<3; j++) {
+    for (i=0; i<DIM_; i++)
+      for (j=0; j<DIM_; j++) {
         mat_[i][j]=0;
-        for (k=0; k<3; k++)
+        for (k=0; k<DIM_; k++)
           mat_[i][j] += E[i][k] * SE[k][j];
       }
 }
 
 bool Tensor::operator==(const Tensor& t) const
 {
-  for(int i=0;i<3;i++)
-    for(int j=0;j<3;j++)
+  for(int i=0;i<DIM_;i++)
+    for(int j=0;j<DIM_;j++)
       if( mat_[i][j]!=t.mat_[i][j])
         return false;
 
@@ -213,8 +210,8 @@ bool Tensor::operator==(const Tensor& t) const
 
 bool Tensor::operator!=(const Tensor& t) const
 {
-  for(int i=0;i<3;i++)
-    for(int j=0;j<3;j++)
+  for(int i=0;i<DIM_;i++)
+    for(int j=0;j<DIM_;j++)
       if( mat_[i][j]!=t.mat_[i][j])
         return true;
 
@@ -223,8 +220,8 @@ bool Tensor::operator!=(const Tensor& t) const
 
 Tensor& Tensor::operator=(const Tensor& copy)
 {
-  for(int i=0;i<3;i++)
-    for(int j=0;j<3;j++)
+  for(int i=0;i<DIM_;i++)
+    for(int j=0;j<DIM_;j++)
       mat_[i][j]=copy.mat_[i][j];
   have_eigens_=copy.have_eigens_;
   if (have_eigens_) {
@@ -236,8 +233,8 @@ Tensor& Tensor::operator=(const Tensor& copy)
 
 Tensor& Tensor::operator=(const double& d)
 {
-  for(int i=0;i<3;i++)
-    for(int j=0;j<3;j++)
+  for(int i=0;i<DIM_;i++)
+    for(int j=0;j<DIM_;j++)
       mat_[i][j]=d;
   have_eigens_=0;
   return *this;
@@ -248,10 +245,10 @@ double Tensor::norm() const
 {
   double a = 0.0;
   double sum;
-  for (int i=0;i<3;i++)
+  for (int i=0;i<DIM_;i++)
   {
     sum = 0.0;
-    for (int j=0;j<3;j++) sum += fabs(mat_[i][j]);
+    for (int j=0;j<DIM_;j++) sum += fabs(mat_[i][j]);
     if (sum > a) a = sum;
   }
   return (a);
@@ -285,8 +282,8 @@ Tensor Tensor::operator-(const Tensor& t) const
 {
   Tensor t1(*this);
   t1.have_eigens_=0;
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       t1.mat_[i][j]-=t.mat_[i][j];
   return t1;
 }
@@ -294,8 +291,8 @@ Tensor Tensor::operator-(const Tensor& t) const
 Tensor& Tensor::operator-=(const Tensor& t)
 {
   have_eigens_=0;
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       mat_[i][j]-=t.mat_[i][j];
   return *this;
 }
@@ -304,8 +301,8 @@ Tensor Tensor::operator+(const Tensor& t) const
 {
   Tensor t1(*this);
   t1.have_eigens_=0;
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       t1.mat_[i][j]+=t.mat_[i][j];
   return t1;
 }
@@ -313,8 +310,8 @@ Tensor Tensor::operator+(const Tensor& t) const
 Tensor& Tensor::operator+=(const Tensor& t)
 {
   have_eigens_=0;
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       mat_[i][j]+=t.mat_[i][j];
   return *this;
 }
@@ -322,8 +319,8 @@ Tensor& Tensor::operator+=(const Tensor& t)
 Tensor Tensor::operator*(const double s) const
 {
   Tensor t1(*this);
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       t1.mat_[i][j]*=s;
   if (t1.have_eigens_) {
     t1.e1_*=s; t1.e2_*=s; t1.e3_*=s;
@@ -342,8 +339,8 @@ Vector Tensor::operator*(const Vector& v) const
 Tensor Tensor::operator/(const double s) const
 {
   Tensor t1(*this);
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
+  for (int i=0; i<DIM_; i++)
+    for (int j=0; j<DIM_; j++)
       t1.mat_[i][j]/=s;
   if (t1.have_eigens_) {
     t1.e1_/=s; t1.e2_/=s; t1.e3_/=s;
@@ -355,10 +352,9 @@ Tensor Tensor::operator/(const double s) const
 void Tensor::build_eigens_from_mat()
 {
   if (have_eigens_) return;
-  DenseMatrix dm = DenseMatrix(3, 3);
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
-      dm(i,j) = mat_[i][j];
+  Eigen::Matrix3d dm;
+  for (int i = 0; i < DIM_; ++i)
+    dm.row(i) = Eigen::Vector3d::Map(&mat_[i][0], DIM_);
 
   auto es = Eigen::EigenSolver<Eigen::Matrix3d>(dm);
   auto vecs = es.eigenvectors();
@@ -377,27 +373,12 @@ void Tensor::build_eigens_from_mat()
 void Tensor::reorderTensorValues()
 {
   if (!have_eigens_) return;
-  std::vector<Vector> eigvecs = { e1_, e2_, e3_ };
-  std::vector<double> eigvals = { l1_, l2_, l3_ };
-  std::vector<std::pair<double, Vector>> sortList(3);
-  for (int d = 0; d < 3; ++d)
-    sortList[d] = std::make_pair(eigvals[d], eigvecs[d]);
+  std::map<double, Vector> sorted = { {l1_, e1_}, {l2_, e2_}, {l3_, e3_} };
 
-  std::sort(std::begin(sortList), std::end(sortList),
-            std::greater<std::pair<double, Vector>>());
-
-  for (int d = 0; d < 3; ++d)
-  {
-    eigvals[d] = sortList[d].first;
-    eigvecs[d] = sortList[d].second;
-  }
-
-  e1_ = eigvecs[0];
-  e2_ = eigvecs[1];
-  e3_ = eigvecs[2];
-  l1_ = eigvals[0];
-  l2_ = eigvals[1];
-  l3_ = eigvals[2];
+  auto sortedEigsIter = sorted.begin();
+  std::tie(l1_, e1_) = *sortedEigsIter++;
+  std::tie(l2_, e2_) = *sortedEigsIter++;
+  std::tie(l3_, e3_) = *sortedEigsIter++;
 }
 
 void Tensor::get_eigenvectors(Vector &e1, Vector &e2, Vector &e3)
@@ -449,19 +430,19 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   build_mat_from_eigens();
 }
 
-DenseColumnMatrix Tensor::mandel()
+Eigen::MatrixXd Tensor::mandel()
 {
   if (!have_eigens_) build_eigens_from_mat();
-  std::vector<Vector> eigvecs(3);
+  std::vector<Vector> eigvecs(DIM_);
   get_eigenvectors(eigvecs[0], eigvecs[1], eigvecs[2]);
-  std::vector<double> eigvals(3);
+  std::vector<double> eigvals(DIM_);
   get_eigenvalues(eigvals[0], eigvals[1], eigvals[2]);
   const static double sqrt2 = std::sqrt(2);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < DIM_; ++i)
     eigvecs[i] *= eigvals[i];
 
-  auto mandel = DenseColumnMatrix(6);
-  for(int i = 0; i < 3; ++i)
+  Eigen::MatrixXd mandel(6,1);
+  for(int i = 0; i < DIM_; ++i)
     mandel(i) = mat_[i][i];
 
   mandel(3) = mat_[0][1] * sqrt2;

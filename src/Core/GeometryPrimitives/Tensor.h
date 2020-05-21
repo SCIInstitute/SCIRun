@@ -45,7 +45,7 @@
 #include <Core/Containers/Array1.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Eigen/Dense>
 
 #include <iosfwd>
 #include <vector>
@@ -97,7 +97,7 @@ public:
   const Vector get_eigenvector2();
   const Vector get_eigenvector3();
   void get_eigenvalues(double &l1, double &l2, double &l3);
-  Core::Datatypes::DenseColumnMatrix mandel();
+  Eigen::MatrixXd mandel();
 
   double norm() const;
   Vector normalized_eigvals() const;
@@ -136,8 +136,10 @@ public:
   double sphericalCertainty() const;
 
 private:
+  const static int DIM_ = 3;
+  const static int SIZE_ = DIM_ * DIM_;
   double eigenValueSum() const;
-  double mat_[3][3];
+  double mat_[DIM_][DIM_];
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;
   int have_eigens_; //do NOT change to bool, it will break Pio system
