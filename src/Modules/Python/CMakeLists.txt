@@ -30,12 +30,20 @@ SET(Modules_Python_SRCS
   PythonObjectForwarder.cc
   InterfaceWithPython.cc
   PythonInterfaceParser.cc
+  ModuleStateModifierTester.cc
+  LoopEnd.cc
+  LoopStart.cc
+  #LoopIncrement.cc
 )
 
 SET(Modules_Python_HEADERS
   PythonObjectForwarder.h
   InterfaceWithPython.h
   PythonInterfaceParser.h
+  ModuleStateModifierTester.h
+  LoopEnd.h
+  LoopStart.h
+  #LoopIncrement.h
   share.h
 )
 

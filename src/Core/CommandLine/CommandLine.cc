@@ -57,6 +57,7 @@ public:
       //("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("most-recent,1", "load the most recently used file")
       ("interactive,i", "interactive mode")
+      ("save-images,z", "save all ViewScene images before quitting")
       ("headless,x", "disable GUI")
       ("input-file", po::value<std::vector<std::string>>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "Python script--interpret and drop into embedded console")
@@ -166,6 +167,7 @@ public:
       bool disableSplash,
       bool isRegressionMode,
       bool interactiveMode,
+      bool saveImages,
       bool quitAfterOneScriptedExecution,
       bool loadMostRecentFile,
       bool isVerboseMode,
@@ -173,6 +175,7 @@ public:
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
       disableSplash_(disableSplash), isRegressionMode_(isRegressionMode),
       interactiveMode_(interactiveMode),
+      saveImages_(saveImages),
       quitAfterOneScriptedExecution_(quitAfterOneScriptedExecution),
       loadMostRecentFile_(loadMostRecentFile),
       isVerboseMode_(isVerboseMode),
@@ -180,7 +183,7 @@ public:
     {}
     bool help_, version_, executeNetwork_, executeNetworkAndQuit_,
       disableGui_, disableSplash_, isRegressionMode_, interactiveMode_,
-      quitAfterOneScriptedExecution_,
+      saveImages_, quitAfterOneScriptedExecution_,
       loadMostRecentFile_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(
@@ -256,6 +259,11 @@ public:
   bool interactiveMode() const override
   {
     return flags_.interactiveMode_;
+  }
+
+  bool saveViewSceneScreenshotsOnQuit() const override
+  {
+    return flags_.saveImages_;
   }
 
   bool quitAfterOneScriptedExecution() const override
@@ -368,6 +376,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
         parsed.count("no_splash") != 0,
         parsed.count("regression") != 0,
         parsed.count("interactive") != 0,
+        parsed.count("save-images") != 0,
         parsed.count("Script") != 0,
         parsed.count("most-recent") != 0,
         parsed.count("verbose") != 0,

@@ -1642,7 +1642,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& pla
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(), false, nullptr);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1657,7 +1657,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& pla
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(), false, nullptr);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
@@ -1899,7 +1899,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   uniforms.push_back(SpireSubPass::Uniform("uTrans", shift));
   uniforms.push_back(SpireSubPass::Uniform("uColor", color));
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, BBox(), true);
+    numVBOElements, BBox(Point{}, Point{}), true);
 
   // Construct IBO.
 
@@ -2293,6 +2293,18 @@ void ViewSceneDialog::screenshotClicked()
   screenshotTaker_->saveScreenshot();
 }
 
+void ViewSceneDialog::autoSaveScreenshot()
+{
+  QThread::sleep(1);
+  takeScreenshot();
+  auto file = Screenshot::screenshotDirectory() +
+    QString("/%1_%2.png")
+    .arg(windowTitle().replace(':', '-'))
+    .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
+
+  screenshotTaker_->saveScreenshot(file);
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendBugReport()
 {
@@ -2302,7 +2314,7 @@ void ViewSceneDialog::sendBugReport()
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
   QImage image = screenshotTaker_->getScreenshot();
-  QString location = QDir::homePath() % QLatin1String("/scirun5screenshots/scirun_bug.png");
+  QString location = Screenshot::screenshotDirectory() + ("/scirun_bug.png");
   image.save(location);
 
   // Generate email template

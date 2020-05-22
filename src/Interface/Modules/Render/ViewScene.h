@@ -67,7 +67,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
-
+      
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
@@ -75,7 +75,7 @@ namespace SCIRun {
       void inputMouseWheelHelper(int32_t delta);
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
       std::string getName() {return name_;}
-
+      void autoSaveScreenshot();
 
     Q_SIGNALS:
       void newGeometryValueForwarder();

@@ -40,6 +40,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -113,16 +114,17 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   {
     try
     {
-      ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
-
-      connections_[id] = conn;
+      bool virtualConnection = outputModule->checkForVirtualConnection(*inputModule);
+      connections_[id] = boost::make_shared<Connection>(
+        outputModule->getOutputPort(outputPortId),
+        inputModule->getInputPort(inputPortId),
+        id, virtualConnection);
 
       return id;
     }
     catch (const SCIRun::Core::ExceptionBase& e)
     {
-      std::cout << "Caught exception making a connection: " << e.what() << std::endl;
-      ///????????
+      logCritical("Caught exception making a connection: {}", e.what());
       return ConnectionId(""); //??
     }
   }
@@ -194,18 +196,14 @@ std::string Network::toString() const
   return ostr.str();
 }
 
-struct Describe
+NetworkInterface::ConnectionDescriptionList Network::connections(bool includeVirtual) const
 {
-  ConnectionDescription operator()(const Network::Connections::value_type& p) const
-  {
-    return p.first.describe();
-  }
-};
-
-NetworkInterface::ConnectionDescriptionList Network::connections() const
-{
+  Connections toDescribe;
+  std::copy_if(connections_.begin(), connections_.end(), std::inserter(toDescribe, toDescribe.begin()),
+    [includeVirtual](const Connections::value_type& c) { return includeVirtual || !c.second->isVirtual(); });
   ConnectionDescriptionList conns;
-  std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());
+  std::transform(toDescribe.begin(), toDescribe.end(), std::back_inserter(conns),
+    [](const Connections::value_type& c) { return c.first.describe(); });
   return conns;
 }
 

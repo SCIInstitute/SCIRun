@@ -92,7 +92,7 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   //EXPECT_CALL(*inputModule, get_input_port(p2)).WillOnce(Return(inputPort));
   //EXPECT_CALL(*outputModule, get_output_port(p1)).WillOnce(Return(outputPort));
 
-  Connection c(outputPort, inputPort, "test");
+  Connection c(outputPort, inputPort, "test", false);
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));

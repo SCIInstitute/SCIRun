@@ -557,6 +557,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
   msgBox->setModal(false);
+  msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
   msgBox->show();
 }
 

@@ -67,7 +67,7 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& po
 QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
 {
   QStringList bcList;
-  bcList << "numeric array" << "struct array";
+  bcList << "struct array" << "numeric array";
   auto bcBox = new QComboBox();
   bcBox->addItems(bcList);
 

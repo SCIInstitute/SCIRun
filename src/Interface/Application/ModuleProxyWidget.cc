@@ -156,6 +156,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+  delete backgroundShape_;
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << "~dtor" << __FILE__ << __LINE__ << pos() << scenePos();
 #endif
@@ -495,6 +496,10 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
   if (stackDepth_ == 1)
     ensureThisVisible();
+
+  if (backgroundShape_)
+    backgroundShape_->mouseMoveEventPublic(event);
+
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;
 
@@ -581,6 +586,26 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   return ret;
 }
 
+//TODO
+LoopDiamondPolygon::LoopDiamondPolygon(QGraphicsItem* parent) : QGraphicsPolygonItem(parent)
+{
+  shape_ << QPointF(-100, 0) << QPointF(0, 70)
+                          << QPointF(100, 0) << QPointF(0, -70)
+                          << QPointF(-100, 0);
+  setPolygon(shape_);
+
+  setFlag(QGraphicsItem::ItemIsMovable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, false);
+  //setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+  setFillRule(Qt::WindingFill);
+  setPen(QPen(Qt::darkGray, 5, Qt::SolidLine));
+  setBrush(Qt::darkGray);
+}
+
+void ModuleProxyWidget::setBackgroundPolygon(LoopDiamondPolygon* p)
+{
+  backgroundShape_ = p;
+}
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
