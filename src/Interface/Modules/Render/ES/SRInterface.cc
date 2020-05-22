@@ -983,12 +983,12 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
         //boundbox transformation
-        glm::mat4 trans_bb = glm::mat4();
+        glm::mat4 trans_bb = glm::mat4(1.0f);
         glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
         glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
-        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
+        glm::mat4 temp = glm::scale(glm::mat4(1.0f), scale_bb);
         trans_bb = temp * trans_bb;
-        temp = glm::translate(glm::mat4(), center_bb);
+        temp = glm::translate(glm::mat4(1.0f), center_bb);
         trans_bb = temp * trans_bb;
         int index = 0;
         for (auto i : clippingPlanes_)

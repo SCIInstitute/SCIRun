@@ -107,8 +107,8 @@ glm::mat4 ArcLookAt::getWorldViewTransform() const
   glm::mat4 finalTrafo(1.0);
   for (int i = 0; i < mCamLookAt.length(); ++i)
     finalTrafo[3][i] = -mCamLookAt[i];
-  finalTrafo          = mArcBall->getTransformation() * finalTrafo;
-  finalTrafo[3][2]   += -mCamDistance;
+  finalTrafo         = mArcBall->getTransformation() * finalTrafo;
+  finalTrafo[3][2]  -= mCamDistance;
 
   return finalTrafo;
 }

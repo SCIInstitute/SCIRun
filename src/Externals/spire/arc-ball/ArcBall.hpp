@@ -64,7 +64,7 @@ public:
   /// \param screenToTCS    Transformation from screen coordinates
   ///                       to TCS. \p center and \p radius are given in TCS.
   ArcBall(const glm::vec3& center, float radius, bool inverted = false,
-          const glm::mat4& screenToTCS = glm::mat4());
+          const glm::mat4& screenToTCS = glm::mat4(1.0f));
 
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
   /// \param mouseScreenCoords  Mouse screen coordinates.

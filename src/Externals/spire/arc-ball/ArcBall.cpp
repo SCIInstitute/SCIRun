@@ -79,13 +79,13 @@ glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 void ArcBall::beginDrag(const glm::vec2& msc)
 {
   mQDown       = mQNow;
-  mVSphereDown = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0f, 1.0)));
+  mVSphereDown = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0f, 1.0f)));
 }
 
 //------------------------------------------------------------------------------
 void ArcBall::drag(const glm::vec2& msc)
 {
-  glm::vec3 mVSphereNow = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0, 1.0)));
+  glm::vec3 mVSphereNow = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0f, 1.0f)));
 
   // Construct a quaternion from two points on the unit sphere.
   glm::quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);

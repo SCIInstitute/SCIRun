@@ -73,7 +73,6 @@ namespace SCIRun
       SRObject(const std::string& name, const glm::mat4& objToWorld,
         const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
         mName(name),
-        mObjectToWorld(objToWorld),
         mBBox(bbox),
         mColorMap(colorMap),
         mPort(port)
@@ -102,7 +101,6 @@ namespace SCIRun
       };
 
       std::string mName;
-      glm::mat4 mObjectToWorld;
       std::list<SRPass> mPasses;
       Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
 
@@ -115,7 +113,7 @@ namespace SCIRun
     {
       glm::vec2 initialPosition_;
       float w_;
-      glm::mat4 viewProj;
+      glm::mat4 viewProj {1.0f};
     };
 
     struct SCISHARE RotateParameters
@@ -231,7 +229,7 @@ namespace SCIRun
       ObjectTransformCalculatorFactory transformFactory_;
       TransformCalcMakerMapping transformCalcMakerMapping_;
       SRCamera* camera_ {nullptr};
-      glm::mat4 widgetTransform_ {};
+      glm::mat4 widgetTransform_ {1.0f};
     };
 
     class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable
@@ -251,7 +249,7 @@ namespace SCIRun
     private:
       glm::vec2 initialPosition_;
       float w_;
-      glm::mat4 invViewProj_;
+      glm::mat4 invViewProj_ {1.0f};
     };
 
     class SCISHARE ObjectScaleCalculator : public ObjectTransformCalculatorBase
