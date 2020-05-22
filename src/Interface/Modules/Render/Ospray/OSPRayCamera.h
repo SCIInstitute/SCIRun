@@ -25,39 +25,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
 
-#include <Interface/qt_include.h>
-#include <QOpenGLWidget>
+#include <arc-look-at/ArcLookAt.hpp>
+#include <glm/glm.hpp>
+#include <ospray/ospray.h>
 
 namespace SCIRun { namespace Render {
 
-class OSPRayRenderer;
-
-class QOSPRayWidget : public QOpenGLWidget
+enum class MouseButton
 {
-Q_OBJECT
-
-public:
-  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
-  virtual ~QOSPRayWidget();
-
-public Q_SLOTS:
-    void updateRenderer();
-
-protected:
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-
-  OSPRayRenderer* renderer {nullptr};
-
-  QTimer* renderTimer {nullptr};
-
-  //virtual void mousePressEvent(QMouseEvent * event);
-  //virtual void mouseReleaseEvent(QMouseEvent * event);
-  //virtual void mouseMoveEvent(QMouseEvent * event);
-  //virtual void wheelEvent(QWheelEvent* event);
+  MOUSE_NONE,
+  MOUSE_LEFT,
+  MOUSE_RIGHT,
+  MOUSE_MIDDLE,
 };
 
-}}
+class OSPRayCamera
+{
+public:
+  OSPRayCamera();
+  ~OSPRayCamera();
+
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
+  void mouseRelease();
+  void mouseWheel(int delta);
+
+  OSPCamera getOSPCamera();
+
+  void setAspect(float aspect) {aspect_ = aspect;}
+
+private:
+  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
+  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
+  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
+  float aspect_     { 1.0f};
+  float fovy_       {60.0f};
+  float aperture_   {0.0f};
+
+  spire::ArcLookAt lookat_ {       };
+  OSPCamera camera_        {nullptr};
+
+};
+
+} /*Render*/ } /*SCIRun*/

@@ -26,22 +26,21 @@
 */
 
 
-
-#include <Modules/Render/OsprayViewer.h>
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
-#include <Interface/Modules/Render/Ospray/QOSPRayWidget.h>
-#include <Interface/Modules/Render/ViewOspraySceneConfig.h>
-#include <Modules/Render/ViewScene.h>
-
-#include <Core/Datatypes/Color.h>
-#include <Core/Logging/Log.h>
 
 #include <boost/algorithm/string/predicate.hpp>
-//#include <es-log/trace-log.h>
 
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 #endif
+
+#include "Modules/Render/OsprayViewer.h"
+#include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
+#include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
+#include "Interface/Modules/Render/ViewOspraySceneConfig.h"
+#include "Modules/Render/ViewScene.h"
+#include "Core/Datatypes/Color.h"
+#include "Core/Logging/Log.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -49,22 +48,29 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Render;
 
 
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
+  statusBar_ = new QStatusBar(this);
+
+  renderer_ = new OSPRayRenderer();
+  viewer_ = new QOSPRayWidget(parent, renderer_);
 
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
   addConfigurationDialog();
   addToolBar();
-
   setMinimumSize(200, 200);
+
+  statusBar_->setMaximumHeight(20);
+  osprayLayout->addWidget(viewer_);
 
   addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
@@ -87,16 +93,12 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
   addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
 
-  //?? these lead to weird camera swings
-  //addSliderManager(configDialog_->directionalLightAzimuthSlider_, Parameters::DirectionalLightAzimuth);
-  //addSliderManager(configDialog_->directionalLightElevationSlider_, Parameters::DirectionalLightElevation);
-
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
 
   connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
-  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(int)));
+  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(igeomDataTransientnt)));
 
   connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
   connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
@@ -115,46 +117,36 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
 
-  statusBar_ = new QStatusBar(this);
-  statusBar_->setMaximumHeight(20);
+  float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+  float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+  uint32_t ind[3] = { 0, 1, 2};
 
-  viewer_ = new QOSPRayWidget(parent);
-  osprayLayout->addWidget(viewer_);
+  //renderer_->addModelToGroup(1, tvp, tvc, NULL, ind, 3, 1);
+  //renderer_->addInstaceOfGroup();
+}
 
-  /*
-  #ifdef WITH_OSPRAY
-  {
-    std::ostringstream ostr;
-    ostr << "Ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
-      << OSPRAY_VERSION_PATCH;
-    auto versionLabel = new QLabel(QString::fromStdString(ostr.str()));
-    versionLabel->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
-    statusBar_->addPermanentWidget(versionLabel);
-  }
-  #endif
-  */
+OsprayViewerDialog::~OsprayViewerDialog()
+{
+  delete viewer_;
+  delete renderer_;
+
+  delete statusBar_;
 }
 
 void OsprayViewerDialog::newGeometryValue()
 {
 #ifdef WITH_OSPRAY
-/*
-  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
-  {
-    auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
-    if (!geom)
-    {
-      logWarning("Logical error: ViewSceneDialog received an empty object.");
-      return;
-    }
-    auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
 
-    //TODO
-    delete viewer_;
-    createViewer(*compGeom);
-  }
-  */
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (!geomDataTransient || geomDataTransient->empty()) return;
+
+  auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
+  if (!geom) return;
+
+  auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+
+  //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
+  renderer_->updateGeometries(compGeom.get()->objects());
 #endif
 }
 
@@ -381,4 +373,48 @@ void OsprayViewerDialog::pullSpecial()
   configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
   configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
   configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());
+}
+
+void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
+{
+  int xWindow = xIn - viewer_->pos().x();
+  int yWindow = yIn - viewer_->pos().y();
+
+  xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
+  yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+}
+
+SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
+{
+  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
+  if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
+  return btn;
+}
+
+void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
+{
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  renderer_->mousePress(xSS, ySS, getRenderButton(event));
+}
+
+void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
+{
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  renderer_->mouseMove(xSS, ySS, getRenderButton(event));
+}
+
+void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+  renderer_->mouseRelease();
+}
+
+void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
+{
+  renderer_->mouseWheel(event->delta());
 }

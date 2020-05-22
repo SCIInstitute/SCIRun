@@ -41,6 +41,18 @@ namespace Core
 {
 namespace Datatypes
 {
+  enum GeometryType
+  {
+    NO_TYPE,
+    TRI_SURFACE,
+    QUAD_SURFACE,
+    STRUCTURED_VOLUME,
+    UNSTRUCTURED_VOLUME,
+    SPHERE,
+    CYLINDER,
+    EDGE,
+    STREAMLINE,
+  };
 
   using GeomList = std::set<GeometryBaseHandle>;
 
@@ -83,34 +95,49 @@ namespace Datatypes
 
     virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
 
-    //TODO:
-    Core::Geometry::BBox box;
     struct FieldData
     {
-      std::vector<float> vertex, color, vertex_normal;
-      std::vector<int32_t> index;
+      std::vector<float> vertex, normal, color, texCoord;
+      std::vector<uint32_t> index;
       int dim_x, dim_y,dim_z;
       float origin_x,origin_y,origin_z;
       float spacing_x, spacing_y, spacing_z;
     };
 
-    FieldData data;
-    struct transferFunc
+    enum class MaterialType
+    {
+      DIELECTRIC,
+      METAL,
+      REFRACTIVE,
+      CAR_PAINT,
+    };
+
+    struct Material
+    {
+      float albedo[3] {0.8f, 0.1f, 0.8f};
+      float roughness {0.0f};
+      float opacity {1.0f};
+      float ior {1.45f};
+      MaterialType type {MaterialType::DIELECTRIC};
+    };
+
+    struct TransferFunc
     {
       std::vector<float> colors;
       std::vector<float> opacities;
     };
-    transferFunc tfn;
 
+    //TODO:
+    Core::Geometry::BBox box;
+    FieldData data;
+    Material material;
+    TransferFunc tfn;
     double radius;
+    uint64_t id;
+    uint64_t version;
+    bool updatedFeildData {true};
 
-    bool isStreamline{ false };
-    bool isCylinder{ false };
-    bool isSurface{ false };
-    bool isSphere{ false };
-    bool isEdge{ false };
-    bool isVolume{ false };
-    std::string GeomType;
+    GeometryType type {GeometryType::NO_TYPE};
   };
 
   using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;

@@ -75,14 +75,12 @@ namespace SCIRun
           Core::Datatypes::OsprayGeometryObjectHandle addUnstructVol(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle addCylinder(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)const;
-          void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const;
+          void ReorderNodes(std::vector<uint32_t> index, std::vector<uint32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<uint32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const;
           std::list<Vertex_u> sort_cc(EdgeVector sub_edges) const;
           bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const;
-          std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_index) const;
+          std::vector<uint32_t> sort_points(EdgeVector edges, std::vector<uint32_t>& cc_index) const;
           Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
-
-
         };
       }
     }

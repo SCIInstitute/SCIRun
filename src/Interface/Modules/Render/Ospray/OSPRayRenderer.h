@@ -25,11 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
+
 #include <vector>
 #include <cstdio>
 
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
+
+#include "OSPRayDataManager.h"
+#include "OSPRayCamera.h"
+#include "Core/Datatypes/Geometry.h"
+
+namespace SCIRun { namespace Render {
 
 class OSPRayRenderer
 {
@@ -37,24 +45,47 @@ public:
   OSPRayRenderer();
   virtual ~OSPRayRenderer();
 
-  void renderFrame(); //renders frame with current context
-  void displayFrame();
+  //Rendering---------------------------------------------------------------------------------------
+  void renderFrame(); //renders frame with current OpenGL context
+
+  //Interaction-------------------------------------------------------------------------------------
   void resize(int width, int height);
-  void addGroup();
-  void addModelToGroup(float* vertexPositions, float* vertexColors, uint32_t vertexCount,
-  uint32_t* indices, size_t indexCount);
-  void addInstaceOfGroup();
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
+  void mouseRelease();
+  void mouseWheel(int delta);
+
+  //Data--------------------------------------------------------------------------------------------
+  void updateGeometries(const std::vector<Core::Datatypes::OsprayGeometryObjectHandle>& geometries);
+
+  //Getters-----------------------------------------------------------------------------------------
+  int width() {return width_;}
+  int height() {return height_;}
 
 private:
+  void addGroup();
+  void addInstaceOfGroup();
+  void addMeshToGroup(uint64_t id, uint64_t version,
+    Core::Datatypes::OsprayGeometryObject::FieldData& data, uint32_t vertsPerPoly,
+    Core::Datatypes::OsprayGeometryObject::Material& material);
+  void addMaterial(OSPGeometricModel model, Core::Datatypes::OsprayGeometryObject::Material& mat);
+
   static int osprayRendererInstances;
+  static OSPRayDataManager dataManager;
 
-  int width  {16};
-  int height {16};
+  int width_  {16};
+  int height_ {16};
+  uint32_t framesAccumulated {0};
 
-  OSPFrameBuffer frameBuffer {nullptr};
-  OSPRenderer    renderer    {nullptr};
-  OSPCamera      camera      {nullptr};
-  OSPWorld       world       {nullptr};
+  bool isScivis {true};
 
-  OSPGroup group {nullptr};
+  OSPFrameBuffer frameBuffer_ {nullptr};
+  OSPRenderer    renderer_    {nullptr};
+  OSPRayCamera*  camera_      {nullptr};
+  OSPWorld       world_       {nullptr};
+
+
+  OSPGroup group_ {nullptr};
 };
+
+}}

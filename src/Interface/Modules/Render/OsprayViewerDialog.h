@@ -36,72 +36,90 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/share.h>
 
-class QOSPRayWidget;
+
 
 namespace SCIRun {
 
-  namespace Gui {
-
-    class ViewOspraySceneConfigDialog;
-
-    class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric, public Ui::OsprayViewer
-    {
-      Q_OBJECT
-
-    public:
-      OsprayViewerDialog(const std::string& name,
-        Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = nullptr);
-      void adjustToolbar() override;
-    Q_SIGNALS:
-      void newGeometryValueForwarder();
-    protected:
-      virtual void pullSpecial() override;
-      void contextMenuEvent(QContextMenuEvent* evt) override {}
-    private Q_SLOTS:
-      void newGeometryValue();
-      void autoViewClicked();
-      void autoRotateClicked();
-      void screenshotClicked();
-      void nextTimestepClicked();
-      void playTimestepsClicked();
-      void configButtonClicked();
-      void setHeight(int h);
-      void setWidth(int w);
-      void setViewportCamera();
-      void setLightColor();
-      void setBGColor();
-      void setCameraWidgets();
-    private:
-      void addToolBar();
-      void addConfigurationButton();
-      void addConfigurationDialog();
-      void addAutoViewButton();
-      void addViewBarButton();
-      void addAutoRotateButton();
-      void addTimestepButtons();
-      void addScreenshotButton();
-      void addControlLockButton();
-      void addToolbarButton(QPushButton* button);
-      void toggleLockColor(bool locked);
-
-      float getFloat(const Core::Algorithms::Name& name) const;
-
-      QOSPRayWidget* viewer_;
-
-      QStatusBar* statusBar_ {nullptr};
-      QToolBar* toolBar_{nullptr};
-
-      ViewOspraySceneConfigDialog* configDialog_;
-      QAction* lockRotation_;
-      QAction* lockPan_;
-      QAction* lockZoom_;
-      QPushButton* controlLock_;
-      QPushButton* autoViewButton_;
-      QPushButton* autoRotateButton_;
-      QPushButton* playTimestepsButton_;
-    };
-  }
+namespace Render {
+  class QOSPRayWidget;
+  class OSPRayRenderer;
+  enum class MouseButton;
 }
+
+namespace Gui {
+
+class ViewOspraySceneConfigDialog;
+
+class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric, public Ui::OsprayViewer
+{
+  Q_OBJECT;
+
+public:
+  OsprayViewerDialog(const std::string& name,
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+  ~OsprayViewerDialog();
+  void adjustToolbar() override;
+
+Q_SIGNALS:
+  void newGeometryValueForwarder();
+
+protected:
+  virtual void pullSpecial() override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void wheelEvent(QWheelEvent* event) override;
+  void contextMenuEvent(QContextMenuEvent* evt) override {}
+
+private Q_SLOTS:
+  void newGeometryValue();
+  void autoViewClicked();
+  void autoRotateClicked();
+  void screenshotClicked();
+  void nextTimestepClicked();
+  void playTimestepsClicked();
+  void configButtonClicked();
+  void setHeight(int h);
+  void setWidth(int w);
+  void setViewportCamera();
+  void setLightColor();
+  void setBGColor();
+  void setCameraWidgets();
+
+private:
+  void addToolBar();
+  void addConfigurationButton();
+  void addConfigurationDialog();
+  void addAutoViewButton();
+  void addViewBarButton();
+  void addAutoRotateButton();
+  void addTimestepButtons();
+  void addScreenshotButton();
+  void addControlLockButton();
+  void addToolbarButton(QPushButton* button);
+  void toggleLockColor(bool locked);
+  void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
+  Render::MouseButton getRenderButton(QMouseEvent* event);
+
+  float getFloat(const Core::Algorithms::Name& name) const;
+
+  Render::QOSPRayWidget* viewer_ {nullptr};
+
+  Render::OSPRayRenderer* renderer_ {nullptr};
+
+  QStatusBar* statusBar_ {nullptr};
+  QToolBar* toolBar_ {nullptr};
+
+  ViewOspraySceneConfigDialog* configDialog_;
+  QAction* lockRotation_;
+  QAction* lockPan_;
+  QAction* lockZoom_;
+  QPushButton* controlLock_;
+  QPushButton* autoViewButton_;
+  QPushButton* autoRotateButton_;
+  QPushButton* playTimestepsButton_;
+};
+}}
 
 #endif

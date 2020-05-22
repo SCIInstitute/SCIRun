@@ -25,6 +25,8 @@ SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 SET(SRCS ${SRCS}
   QOSPRayWidget.cpp
   OSPRayRenderer.cpp
+  OSPRayDataManager.cpp
+  OSPRayCamera.cpp
   #util.h
   #util.cpp
   #importer/Importer.h
@@ -39,6 +41,8 @@ SET(SRCS ${SRCS}
 SET(MOC_HEADERS
   QOSPRayWidget.h
   OSPRayRenderer.h
+  OSPRayDataManager.h
+  OSPRayCamera.h
   share.h
 )
 
