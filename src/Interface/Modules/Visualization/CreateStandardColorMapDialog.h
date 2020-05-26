@@ -86,12 +86,14 @@ namespace SCIRun {
     void addDefaultLine();
     void addPoint(const QPointF& point);
     void removePoint(const QPointF& point);
+    QPointF lastPos;
     public Q_SLOTS:
       void clearAlphaPointGraphics();
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
+      virtual void mouseMoveEvent(QMouseEvent* event) override;
     private:
       void removeDefaultLine();
       void drawAlphaPolyline();

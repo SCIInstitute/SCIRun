@@ -231,6 +231,7 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   if (event->buttons() & Qt::LeftButton)
   {
     auto center = mapToScene(event->pos());
+    lastPos = mapToScene(event->pos());
     if(event->modifiers() == Qt::ShiftModifier)
       removePoint(center);
     else
@@ -239,6 +240,18 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
 
   //TODO: remove point if event & RightMouseButton
   //TODO: points are movable!
+}
+
+void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
+{
+  QGraphicsView::mouseReleaseEvent(event);
+  if (event->buttons() & Qt::LeftButton)
+  {
+    removePoint(lastPos);
+    lastPos = mapToScene(event->pos());
+    addPoint(lastPos);
+
+  }
 }
 
 static QPen alphaLinePen(Qt::red, 1);
@@ -265,6 +278,7 @@ void ColormapPreview::addPoint(const QPointF& point)
 
   static QPen pointPen(Qt::white, 1);
   auto item = scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
+  item->setFlag(QGraphicsItem::ItemIsMovable, true);
   item->setZValue(1);
   alphaManager_.insert(point);
 
