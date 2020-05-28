@@ -140,19 +140,61 @@ namespace detail
     PrioritizedReaderMap<DataHandle> prioritizedReaderMap = PrioritizedReaderMapBuilder<DataHandle>::value;
   };
 
-  //TODO Tark: fill these maps out with all supported filetypes.
   template <>
   PrioritizedReaderMap<MatrixHandle> PrioritizedReaderMapBuilder<MatrixHandle>::value =
   {
     // .mat type: try reading as Matlab first, then SCIRun format
-    {".mat", { PluginReader<MatrixHandle>("Matlab Matrix"), BuiltInReader<MatrixHandle>() }}
+    {".mat", { PluginReader<MatrixHandle>("Matlab Matrix"), BuiltInReader<MatrixHandle>() }},
+    {".igb", { PluginReader<MatrixHandle>("IGBFile") }},
+    {".txt", { PluginReader<MatrixHandle>("SimpleTextFile") }},
+    {"", { PluginReader<MatrixHandle>("ECGSimFile"),
+          PluginReader<MatrixHandle>("ECGSimFileBinary"),
+          PluginReader<MatrixHandle>("SimpleTextFile") }},
   };
 
   template <>
   PrioritizedReaderMap<FieldHandle> PrioritizedReaderMapBuilder<FieldHandle>::value =
   {
+    {".fld", { BuiltInReader<FieldHandle>() }},
     {".mat", { PluginReader<FieldHandle>("Matlab Field") }},
-    {".fld", { BuiltInReader<FieldHandle>() }}
+    {".elem", { PluginReader<FieldHandle>("CARPMesh"),
+               PluginReader<FieldHandle>("JHUFileToTetVol"),
+               PluginReader<FieldHandle>("TetVolField") }},
+    {".lon", { PluginReader<FieldHandle>("CARPMesh") }},
+    {".pts", { PluginReader<FieldHandle>("CARPMesh"),
+              PluginReader<FieldHandle>("CVRTI_FacPtsFileToTriSurf"),
+              PluginReader<FieldHandle>("CurveField"),
+              PluginReader<FieldHandle>("JHUFileToTetVol"),
+              PluginReader<FieldHandle>("PointCloudField"),
+              PluginReader<FieldHandle>("TetVolField"),
+              PluginReader<FieldHandle>("TriSurfField") }},
+    {".fac", { PluginReader<FieldHandle>("CVRTI_FacPtsFileToTriSurf"),
+              PluginReader<FieldHandle>("TriSurfField") }},
+    {".tri", { PluginReader<FieldHandle>("CVRTI_FacPtsFileToTriSurf"),
+              PluginReader<FieldHandle>("EcgsimFileToTriSurf"),
+              PluginReader<FieldHandle>("TriSurfField") }},
+    {".pos", { PluginReader<FieldHandle>("CVRTI_FacPtsFileToTriSurf"),
+              PluginReader<FieldHandle>("CurveField"),
+              PluginReader<FieldHandle>("JHUFileToTetVol"),
+              PluginReader<FieldHandle>("PointCloudField"),
+              PluginReader<FieldHandle>("TetVolField"),
+              PluginReader<FieldHandle>("TriSurfField") }},
+    {".edge", { PluginReader<FieldHandle>("CurveField") }},
+    {".nhdr", { PluginReader<FieldHandle>("NrrdFile"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnElements,InvertParity]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnElements]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnNodes,InvertParity]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnNodes]"), }},
+    {".nrrd", { PluginReader<FieldHandle>("NrrdFile"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnElements,InvertParity]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnElements]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnNodes,InvertParity]"),
+               PluginReader<FieldHandle>("NrrdFile[DataOnNodes]"), }},
+    {".obj", { PluginReader<FieldHandle>("ObjToField") }},
+    {".txt", { PluginReader<FieldHandle>("PointCloudField") }},
+    {".tet", { PluginReader<FieldHandle>("JHUFileToTetVol"),
+              PluginReader<FieldHandle>("TetVolField") }},
+    {".m", { PluginReader<FieldHandle>("TriSurfFieldToM") }}
   };
 }
 
