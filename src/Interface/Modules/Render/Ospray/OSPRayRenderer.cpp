@@ -38,14 +38,11 @@
 using namespace SCIRun::Render;
 using namespace SCIRun::Core::Datatypes;
 
-int OSPRayRenderer::osprayRendererInstances = 0;
+//int OSPRayRenderer::osprayRendererInstances = 0;
 OSPRayDataManager OSPRayRenderer::dataManager;
 
 OSPRayRenderer::OSPRayRenderer()
 {
-  printf("i\n");
-  if(!OSPRayRenderer::osprayRendererInstances++) ospInit();
-
   frameBuffer_ = ospNewFrameBuffer(width_, height_, OSP_FB_SRGBA, OSP_FB_COLOR | OSP_FB_ACCUM);
   renderer_ = ospNewRenderer("scivis");
   camera_ = new OSPRayCamera();
@@ -62,7 +59,7 @@ OSPRayRenderer::OSPRayRenderer()
   ospSetParam(light, "direction", OSP_VEC3F, dir);
   ospCommit(light);
 
-  ospSetObjectAsData(world_, "light", OSP_LIGHT, light);
+  //ospSetObjectAsData(world_, "light", OSP_LIGHT, light);
   ospCommit(world_);
   ospRelease(light);
 }
@@ -73,8 +70,6 @@ OSPRayRenderer::~OSPRayRenderer()
   if(renderer_) ospRelease(renderer_);
   if(camera_) delete camera_;
   if(world_) ospRelease(world_);
-
-  if(!--OSPRayRenderer::osprayRendererInstances) ospShutdown();
 }
 
 
@@ -82,7 +77,7 @@ OSPRayRenderer::~OSPRayRenderer()
 //Rendering-----------------------------------------------------------------------------------------
 void OSPRayRenderer::renderFrame()
 {
-  if(framesAccumulated < 256)
+  if(framesAccumulated < 64)
   {
     OSPFuture fut = ospRenderFrame(frameBuffer_, renderer_, camera_->getOSPCamera(), world_);
     ospWait(fut);
@@ -97,7 +92,7 @@ void OSPRayRenderer::renderFrame()
 
 
 //Interaction---------------------------------------------------------------------------------------
-void OSPRayRenderer::resize(int width, int height)
+void OSPRayRenderer::resize(uint32_t width, uint32_t height)
 {
   width_ = width;
   this->height_ = height;
@@ -140,19 +135,27 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
 {
   for(auto& geometry : geometries)
   {
+    printf("ID: %d\n", geometry->id);
     switch(geometry->type)
     {
       case GeometryType::TRI_SURFACE:
       {
         printf("TRI_SURFACE\n");
-        addMeshToGroup(geometry->id, geometry->version, geometry->data, 3, geometry->material);
+        addMeshToGroup(&*geometry, 3);
         addInstaceOfGroup();
         break;
       }
       case GeometryType::QUAD_SURFACE:
       {
         printf("QUAD_SURFACE\n");
-        addMeshToGroup(geometry->id, geometry->version, geometry->data, 4, geometry->material);
+        addMeshToGroup(&*geometry, 4);
+        addInstaceOfGroup();
+        break;
+      }
+      case GeometryType::STRUCTURED_VOLUME:
+      {
+        printf("STRUCTURED_VOLUME\n");
+        addStructuredVolumeToGroup(&*geometry);
         addInstaceOfGroup();
         break;
       }
@@ -212,9 +215,40 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
   ospRelease(material);
 }
 
-void OSPRayRenderer::addMeshToGroup(uint64_t id, uint64_t version,
-  OsprayGeometryObject::FieldData& data, uint32_t vertsPerPoly, OsprayGeometryObject::Material& material)
+void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tnf)
 {
+  float valueRange[] = {0.0 , 1.0f};
+
+  size_t numColors = tnf.colors.size()/3;
+  OSPData colorDataTemp = ospNewSharedData(tnf.colors.data(), OSP_VEC3F, numColors);
+  OSPData colorData = ospNewData(OSP_VEC3F, numColors);
+  ospCopyData(colorDataTemp, colorData);
+  ospRelease(colorDataTemp);
+
+  OSPData opacityDataTemp = ospNewSharedData(tnf.opacities.data(), OSP_FLOAT, tnf.opacities.size());
+  OSPData opacityData = ospNewData(OSP_FLOAT, tnf.opacities.size());
+  ospCopyData(opacityDataTemp, opacityData);
+  ospRelease(opacityDataTemp);
+
+  OSPTransferFunction transferFunction = ospNewTransferFunction("piecewiseLinear");
+  ospSetParam(transferFunction, "valueRange", OSP_VEC2F, valueRange);
+  ospSetParam(transferFunction, "color", OSP_DATA, &colorData);
+  ospSetParam(transferFunction, "opacity", OSP_DATA, &opacityData);
+  ospCommit(transferFunction);
+  ospRelease(colorData);
+  ospRelease(opacityData);
+
+  ospSetParam(model, "transferFunction", OSP_TRANSFER_FUNCTION, &transferFunction);
+  ospCommit(model);
+  ospRelease(transferFunction);
+}
+
+void OSPRayRenderer::addMeshToGroup(OsprayGeometryObject* geometryObject, uint32_t vertsPerPoly)
+{
+  if(!group_) addGroup();
+
+  OsprayGeometryObject::FieldData& data = geometryObject->data;
+
   float* vertices   = data.vertex.size()   > 0 ? data.vertex.data()   : NULL;
   float* colors     = data.color.size()    > 0 ? data.color.data()    : NULL;
   float* normals    = data.normal.size()   > 0 ? data.normal.data()   : NULL;
@@ -224,15 +258,30 @@ void OSPRayRenderer::addMeshToGroup(uint64_t id, uint64_t version,
   uint32_t numVertices = data.vertex.size() / 3;
   size_t numPolygons = data.index.size() / vertsPerPoly;
 
-  if(!group_) addGroup();
-
-  OSPGeometry geometry = dataManager.updateAndGetMesh(id, version,
+  OSPGeometry geometry = dataManager.updateAndGetMesh(geometryObject->id, geometryObject->version,
     vertices, normals, colors, texCoords, indices, numVertices, numPolygons, vertsPerPoly);
 
   OSPGeometricModel model = ospNewGeometricModel(geometry);
-  addMaterial(model, material); //also commits changes
+  addMaterial(model, geometryObject->material); //also commits changes
 
   ospSetObjectAsData(group_, "geometry", OSP_GEOMETRIC_MODEL, model);
+  ospCommit(group_);
+  ospRelease(model);
+}
+
+void OSPRayRenderer::addStructuredVolumeToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject)
+{
+  if(!group_) addGroup();
+
+  OsprayGeometryObject::FieldData& data = geometryObject->data;
+
+  OSPVolume volume = dataManager.updateAndgetStructuredVolume(geometryObject->id, geometryObject->version,
+    data.origin, data.spacing, data.dim, data.color.data());
+
+  OSPVolumetricModel model = ospNewVolumetricModel(volume);
+  addTransferFunction(model, geometryObject->tfn); //also commits changes
+
+  ospSetObjectAsData(group_, "volume", OSP_VOLUMETRIC_MODEL, model);
   ospCommit(group_);
   ospRelease(model);
 }

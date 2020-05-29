@@ -43,43 +43,49 @@ public:
   OSPGeometry updateAndGetMesh(uint64_t id, uint64_t version,
     float* vertices, float* normals, float* colors, float* texCoords, uint32_t* indices,
     size_t numVertices, size_t numPolygons, uint32_t vertsPerPoly);
-
   OSPGeometry addMesh(uint64_t id, uint64_t version, float* vertices, float* normals, float* colors,
     float* texCoords, uint32_t* indices, size_t numVertices, size_t numPolygons, uint32_t vertsPerPoly);
+
+
+  OSPVolume updateAndgetStructuredVolume(uint64_t id, uint64_t version, float gridOrigin[3],
+    float gridSpacing[3], uint32_t dataSize[3], float* data);
+  OSPVolume addStructuredVolume(uint64_t id, uint64_t version, float gridOrigin[3],
+    float gridSpacing[3], uint32_t dataSize[3], float* data);
+
   OSPGeometry getMesh(uint64_t id);
-  void removeMesh(uint64_t id);
+  OSPVolume getVolume(uint64_t id);
+
+  void removeObject(uint64_t id);
 
 private:
 
 
-  struct MeshData
+  struct ObjectData
   {
-    //float*      vertices     {nullptr};
-    //float*      normals      {nullptr};
-    //float*      colors       {nullptr};
-    //float*      texCoords    {nullptr};
-    //uint32_t*   indices      {nullptr};
-    //size_t      numVertices  {0};
-    //size_t      numPolygons  {0};
-    //uint32_t    vertsPerPoly {0};
     uint64_t    version      {0};
-    OSPGeometry geometry     {nullptr};
+    union
+    {
+      OSPObject   object;
+      OSPGeometry geometry;
+      OSPVolume   volume;
+    };
 
-    MeshData()
+    ObjectData()
     {
-      //geometry = ospNewGeometry("mesh");
+      object = nullptr;
     }
-    ~MeshData()
+
+    ~ObjectData()
     {
-      if(geometry) ospRelease(geometry);
-      //if(vertices) delete[] vertices;
-      //if(normals) delete[] normals;
-      //if(colors) delete[] colors;
-      //if(indices) delete[] indices;
+      if(object)
+      {
+        printf("Delete Version: %d\n", version);
+        ospRelease(object);
+      }
     }
   };
 
-  std::map<uint64_t, MeshData> geomMap;
+  std::map<uint64_t, ObjectData> geomMap;
 };
 
 }}

@@ -99,9 +99,9 @@ namespace Datatypes
     {
       std::vector<float> vertex, normal, color, texCoord;
       std::vector<uint32_t> index;
-      int dim_x, dim_y,dim_z;
-      float origin_x,origin_y,origin_z;
-      float spacing_x, spacing_y, spacing_z;
+      uint32_t dim[3];
+      float origin[3];
+      float spacing[3];
     };
 
     enum class MaterialType
@@ -127,17 +127,17 @@ namespace Datatypes
       std::vector<float> opacities;
     };
 
+    GeometryType type {GeometryType::NO_TYPE};
+
     //TODO:
     Core::Geometry::BBox box;
     FieldData data;
     Material material;
     TransferFunc tfn;
     double radius;
+
     uint64_t id;
     uint64_t version;
-    bool updatedFeildData {true};
-
-    GeometryType type {GeometryType::NO_TYPE};
   };
 
   using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;

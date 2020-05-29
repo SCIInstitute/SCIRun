@@ -49,32 +49,32 @@ public:
   void renderFrame(); //renders frame with current OpenGL context
 
   //Interaction-------------------------------------------------------------------------------------
-  void resize(int width, int height);
+  void resize(uint32_t width, uint32_t height);
   void mousePress(float x, float y, MouseButton btn);
   void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
-  void mouseWheel(int delta);
+  void mouseWheel(int32_t delta);
 
   //Data--------------------------------------------------------------------------------------------
   void updateGeometries(const std::vector<Core::Datatypes::OsprayGeometryObjectHandle>& geometries);
 
   //Getters-----------------------------------------------------------------------------------------
-  int width() {return width_;}
-  int height() {return height_;}
+  uint32_t width() {return width_;}
+  uint32_t height() {return height_;}
 
 private:
   void addGroup();
   void addInstaceOfGroup();
-  void addMeshToGroup(uint64_t id, uint64_t version,
-    Core::Datatypes::OsprayGeometryObject::FieldData& data, uint32_t vertsPerPoly,
-    Core::Datatypes::OsprayGeometryObject::Material& material);
+  void addMeshToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject, uint32_t vertsPerPoly);
+  void addStructuredVolumeToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject);
   void addMaterial(OSPGeometricModel model, Core::Datatypes::OsprayGeometryObject::Material& mat);
+  void addTransferFunction(OSPVolumetricModel model,  Core::Datatypes::OsprayGeometryObject::TransferFunc& transFunc);
 
   static int osprayRendererInstances;
   static OSPRayDataManager dataManager;
 
-  int width_  {16};
-  int height_ {16};
+  uint32_t width_  {16};
+  uint32_t height_ {16};
   uint32_t framesAccumulated {0};
 
   bool isScivis {true};

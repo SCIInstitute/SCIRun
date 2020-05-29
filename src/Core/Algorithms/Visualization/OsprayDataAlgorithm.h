@@ -49,6 +49,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(Radius);
         ALGORITHM_PARAMETER_DECL(UseNormals);
         ALGORITHM_PARAMETER_DECL(ShowEdges);
+        ALGORITHM_PARAMETER_DECL(ModuleID);
       }
 
       namespace Visualization

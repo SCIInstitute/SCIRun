@@ -66,6 +66,7 @@ ALGORITHM_PARAMETER_DEF(OsprayVisualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(OsprayVisualization, Radius);
 ALGORITHM_PARAMETER_DEF(OsprayVisualization, UseNormals);
 ALGORITHM_PARAMETER_DEF(OsprayVisualization, ShowEdges);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, ModuleID);
 
 OsprayDataAlgorithm::OsprayDataAlgorithm()
 {
@@ -76,6 +77,7 @@ OsprayDataAlgorithm::OsprayDataAlgorithm()
   addParameter(Parameters::Radius, 0.1);
   addParameter(Parameters::UseNormals, true);
   addParameter(Parameters::ShowEdges, false);
+  addParameter(Parameters::ModuleID, 0);
 }
 
 struct detect_loops : public boost::dfs_visitor<>
@@ -350,15 +352,15 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   Vector dimensions_ = Vector(1.0,1.0,1.0);
   for (size_t p=0;p<dim.size();p++) dimensions_[p] = static_cast<double>(dim[p]);
 
-  fieldData.dim_x = dimensions_[0];
-  fieldData.dim_y = dimensions_[1];
-  fieldData.dim_z = dimensions_[2];
-  fieldData.origin_x = center.x() - size.x()/2.0;
-  fieldData.origin_y = center.y() - size.y()/2.0;
-  fieldData.origin_z = center.z() - size.z()/2.0;
-  fieldData.spacing_x = size.x()/dimensions_[0];
-  fieldData.spacing_y = size.y()/dimensions_[1];
-  fieldData.spacing_z = size.z()/dimensions_[2];
+  fieldData.dim[0] = dimensions_[0];
+  fieldData.dim[1] = dimensions_[1];
+  fieldData.dim[2] = dimensions_[2];
+  fieldData.origin[0] = center.x() - size.x()/2.0;
+  fieldData.origin[2] = center.y() - size.y()/2.0;
+  fieldData.origin[2] = center.z() - size.z()/2.0;
+  fieldData.spacing[0] = size.x()/dimensions_[0];
+  fieldData.spacing[1] = size.y()/dimensions_[1];
+  fieldData.spacing[2] = size.z()/dimensions_[2];
 
   double value;
   //std::cout << "mname:" << field->mesh()->type_name << std::endl;
@@ -388,6 +390,24 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
     obj->tfn.opacities.push_back(alpha);
     obj->tfn.opacities.push_back(alpha);
   }
+  else
+  {
+    auto red = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+    auto green = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+    auto blue = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+    obj->tfn.colors.push_back(red);
+    obj->tfn.colors.push_back(green);
+    obj->tfn.colors.push_back(blue);
+    obj->tfn.colors.push_back(red);
+    obj->tfn.colors.push_back(green);
+    obj->tfn.colors.push_back(blue);
+
+    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+    obj->tfn.opacities.push_back(alpha);
+    obj->tfn.opacities.push_back(alpha);
+  }
+
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
   return obj;
@@ -450,6 +470,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
       index_new.push_back(nodesFromCell[i%8]);
     }
   }
+
   if (colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap->getColorMapName());
@@ -461,6 +482,24 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
     obj->tfn.opacities.push_back(alpha);
     obj->tfn.opacities.push_back(alpha);
   }
+  else
+  {
+    auto red = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+    auto green = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+    auto blue = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+    obj->tfn.colors.push_back(red);
+    obj->tfn.colors.push_back(green);
+    obj->tfn.colors.push_back(blue);
+    obj->tfn.colors.push_back(red);
+    obj->tfn.colors.push_back(green);
+    obj->tfn.colors.push_back(blue);
+
+    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+    obj->tfn.opacities.push_back(alpha);
+    obj->tfn.opacities.push_back(alpha);
+  }
+
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
   fieldData.index = index_new;
@@ -681,6 +720,7 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   }
 
   renderable->version = getNewVersionNumber();
+  renderable->id = get(Parameters::ModuleID).toInt();
 
   AlgorithmOutput output;
   output[Name("SceneGraph")] = renderable;
