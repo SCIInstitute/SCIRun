@@ -137,7 +137,7 @@
           <item>
            <widget class="QPushButton" name="removeGroup_">
             <property name="text">
-             <string>Remove Group</string>
+             <string>Remove Group Number:</string>
             </property>
            </widget>
           </item>
