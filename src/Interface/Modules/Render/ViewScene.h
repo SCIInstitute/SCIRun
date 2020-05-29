@@ -34,7 +34,7 @@
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/ViewSceneManager.h>
-//#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <atomic>
 
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
