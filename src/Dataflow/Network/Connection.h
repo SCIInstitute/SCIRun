@@ -42,7 +42,7 @@ namespace SCIRun {
       class SCISHARE Connection
       {
       public:
-        Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id);
+        Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id, bool isVirtual);
         ~Connection();
 
         OutputPortHandle oport_;
@@ -53,8 +53,11 @@ namespace SCIRun {
 
         bool disabled() const { return disabled_; }
         void setDisable(bool disable);
+
+        bool isVirtual() const { return virtual_; }
       private:
         bool disabled_ {false};
+        bool virtual_ {false};
       };
 
 }}}

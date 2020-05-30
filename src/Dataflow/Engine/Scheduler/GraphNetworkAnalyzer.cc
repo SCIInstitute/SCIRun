@@ -94,7 +94,7 @@ EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
 
   std::vector<Edge> edges;
 
-  for (const ConnectionDescription& cd : network_.connections())
+  for (const ConnectionDescription& cd : network_.connections(false))
   {
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
@@ -156,7 +156,7 @@ void NetworkGraphAnalyzer::fillDownstreamModules(const ModuleId& mid, std::vecto
     for (size_t i = 0; i < output->nconnections(); ++i)
     {
       auto c = output->connection(i);
-      if (!c->disabled())
+      if (!c->disabled() && !c->isVirtual())
       {
         auto down = c->iport_->getUnderlyingModuleId();
         downstream.push_back(down);

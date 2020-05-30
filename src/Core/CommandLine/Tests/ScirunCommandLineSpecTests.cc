@@ -46,6 +46,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -r [ --regression ] arg regression test a network\n"
     "  -1 [ --most-recent ]    load the most recently used file\n"
     "  -i [ --interactive ]    interactive mode\n"
+    "  -z [ --save-images ]    save all ViewScene images before quitting\n"
     "  -x [ --headless ]       disable GUI\n"
     "  --input-file arg        SCIRun Network Input File\n"
     "  -s [ --script ] arg     Python script--interpret and drop into embedded \n"

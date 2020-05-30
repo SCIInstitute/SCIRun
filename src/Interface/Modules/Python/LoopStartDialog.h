@@ -26,36 +26,31 @@
 */
 
 
-#ifndef INTERFACE_MODULES_WRITE_G3D_H
-#define INTERFACE_MODULES_WRITE_G3D_H
+#ifndef INTERFACE_MODULES_PYTHON_LoopStartDialog_H
+#define INTERFACE_MODULES_PYTHON_LoopStartDialog_H
 
-#include "Interface/Modules/DataIO/ui_WriteG3DDialog.h"
-#include <boost/shared_ptr.hpp>
+#include "Interface/Modules/Python/ui_LoopStart.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
+#include <Interface/Modules/Python/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE WriteG3DDialog : public ModuleDialogGeneric,
-  public Ui::WriteG3DDialog, public RemembersFileDialogDirectory
+  class CodeEditor;
+
+class SCISHARE LoopStartDialog : public ModuleDialogGeneric,
+  public Ui::LoopStart
 {
 	Q_OBJECT
 
 public:
-  WriteG3DDialog(const std::string& name,
+  LoopStartDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
-
-private Q_SLOTS:
-  void pushFileNameToState();
-  void saveFile();
-  void assignDefaultColor();
+    QWidget* parent = nullptr);
 private:
-  QColor defaultColor_;
+  CodeEditor* pythonStartCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonIncrementCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonOutputCodePlainTextEdit_{ nullptr };
 };
 
 }

@@ -236,7 +236,7 @@ void TextBuilder::printString(const std::string& oneline,
     uniforms.push_back(SpireSubPass::Uniform("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0)));
     uniforms.push_back(SpireSubPass::Uniform("uColor", color_));
     auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
-      numVBOElements, BBox(), true);
+      numVBOElements, BBox(Point{}, Point{}), true);
 
     geom.vbos().push_back(geomVBO);
 

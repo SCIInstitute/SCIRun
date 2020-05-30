@@ -64,14 +64,14 @@ protected:
 
 TEST_F(ConnectionTests, CtorThrowsWithNullPorts)
 {
-  ASSERT_THROW(Connection(OutputPortHandle(), InputPortHandle(), "fake"), NullPointerException);
-  ASSERT_THROW(Connection(dummyOutputPort, InputPortHandle(), "fake"), NullPointerException);
-  ASSERT_THROW(Connection(OutputPortHandle(), dummyInputPort, "fake"), NullPointerException);
+  ASSERT_THROW(Connection(OutputPortHandle(), InputPortHandle(), "fake", false), NullPointerException);
+  ASSERT_THROW(Connection(dummyOutputPort, InputPortHandle(), "fake", false), NullPointerException);
+  ASSERT_THROW(Connection(OutputPortHandle(), dummyInputPort, "fake", false), NullPointerException);
 }
 
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
-  Connection c(dummyOutputPort, dummyInputPort, "test");
+  Connection c(dummyOutputPort, dummyInputPort, "test", false);
   ASSERT_TRUE(c.iport_ != nullptr);
   ASSERT_TRUE(c.oport_ != nullptr);
   ASSERT_EQ(c.oport_, dummyOutputPort);
@@ -83,12 +83,12 @@ TEST_F(ConnectionTests, CtorConnectsSelfToPorts)
 {
   EXPECT_CALL(*dummyInputPort, attach(_));
   EXPECT_CALL(*dummyOutputPort, attach(_));
-  Connection c(dummyOutputPort, dummyInputPort, "test");
+  Connection c(dummyOutputPort, dummyInputPort, "test", false);
 }
 
 TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
 {
-  Connection c(dummyOutputPort, dummyInputPort, "test");
+  Connection c(dummyOutputPort, dummyInputPort, "test", false);
   EXPECT_CALL(*dummyInputPort, detach(&c));
   EXPECT_CALL(*dummyOutputPort, detach(&c));
 }
