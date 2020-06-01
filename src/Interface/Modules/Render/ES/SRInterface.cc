@@ -197,32 +197,45 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseDown(int x, int y, MouseButton btn)
-    {
-      autoRotateVector = glm::vec2(0.0, 0.0);
-      tryAutoRotate = false;
-      mCamera->mouseDownEvent(glm::ivec2{x,y}, btn);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseUp()
-    {
-      widgetUpdater_.reset();
-      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseMove(int x, int y, MouseButton btn)
+    void SRInterface::widgetMouseDown(MouseButton btn, int x, int y)
     {
       if (widgetUpdater_.currentWidget())
       {
         widgetUpdater_.updateWidget(x, y);
       }
-      else
-      {
-        mCamera->mouseMoveEvent(glm::ivec2{x,y}, btn);
-        updateCamera();
-      }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::widgetMouseMove(MouseButton btn, int x, int y)
+    {
+      widgetUpdater_.updateWidget(x, y);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::widgetMouseUp()
+    {
+      widgetUpdater_.reset();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::inputMouseDown(MouseButton btn, float x, float y)
+    {
+      autoRotateVector = glm::vec2(0.0, 0.0);
+      tryAutoRotate = false;
+      mCamera->mouseDownEvent(btn, glm::vec2{x,y});
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::inputMouseMove(MouseButton btn, float x, float y)
+    {
+      mCamera->mouseMoveEvent(btn, glm::vec2{x,y});
+      updateCamera();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::inputMouseUp()
+    {
+      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -235,6 +248,12 @@ void SRInterface::runGCOnNextExecution()
       }
     }
 
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out)
+    {
+      x_out =  2.0f * static_cast<float>(x_in) / static_cast<float>(getScreenWidthPixels())  - 1.0f;
+      y_out = -2.0f * static_cast<float>(y_in) / static_cast<float>(getScreenHeightPixels()) + 1.0f;
+    }
 
     //----------------------------------------------------------------------------------------------
     //---------------- Camera ----------------------------------------------------------------------
@@ -942,7 +961,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::checkClippingPlanes(int n)
+    void SRInterface::checkClippingPlanes(unsigned int n)
     {
       while (n >= clippingPlanes_.size())
       {

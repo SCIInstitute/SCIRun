@@ -52,10 +52,10 @@ namespace SCIRun{
       void setAsOrthographic(float halfWidth, float halfHeight);
 
       /// Handle mouse down.
-      void mouseDownEvent(const glm::ivec2& pos, MouseButton btn);
+      void mouseDownEvent(MouseButton btn, const glm::vec2 &pos);
 
       /// Handle mouse movement.
-      void mouseMoveEvent(const glm::ivec2& pos, MouseButton btn);
+      void mouseMoveEvent(MouseButton btn, const glm::vec2 &pos);
 
       /// Handle mouse wheel event.
       void mouseWheelEvent(int32_t delta, int zoomSpeed);
@@ -108,7 +108,6 @@ namespace SCIRun{
 
     private:
       void buildTransform();
-      glm::vec2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
       bool                  mPerspective  {true};               ///< True if we are using a perspective
       bool                  lockRotation_ {false};
