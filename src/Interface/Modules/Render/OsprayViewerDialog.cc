@@ -32,7 +32,7 @@
 
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
-#endif
+
 
 #include "Modules/Render/OsprayViewer.h"
 #include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
@@ -41,11 +41,14 @@
 #include "Modules/Render/ViewScene.h"
 #include "Core/Datatypes/Color.h"
 #include "Core/Logging/Log.h"
+#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+  #ifdef WITH_OSPRAY
 using namespace SCIRun::Core::Algorithms::Render;
+#endif
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Render;
@@ -55,6 +58,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
+  #ifdef WITH_OSPRAY
   statusBar_ = new QStatusBar(this);
 
   renderer_ = new OSPRayRenderer();
@@ -123,14 +127,15 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   //renderer_->addModelToGroup(1, tvp, tvc, NULL, ind, 3, 1);
   //renderer_->addInstaceOfGroup();
+  #endif
 }
 
 OsprayViewerDialog::~OsprayViewerDialog()
 {
+#ifdef WITH_OSPRAY
   delete viewer_;
   delete renderer_;
-
-  delete statusBar_;
+#endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -195,14 +200,17 @@ void OsprayViewerDialog::addConfigurationButton()
 
 void OsprayViewerDialog::configButtonClicked()
 {
+#ifdef WITH_OSPRAY
   configDialog_->setVisible(!configDialog_->isVisible());
+#endif
 }
 
 void OsprayViewerDialog::addConfigurationDialog()
 {
+  #ifdef WITH_OSPRAY
   auto name = windowTitle() + " Configuration";
   configDialog_ = new ViewOspraySceneConfigDialog(name, this);
-
+#endif
   // configDialog_->setSampleColor(bgColor_);
   // configDialog_->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
   //   scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
@@ -364,6 +372,7 @@ void OsprayViewerDialog::setBGColor()
 
 void OsprayViewerDialog::pullSpecial()
 {
+  #ifdef WITH_OSPRAY
   auto ambient = colorFromState(Parameters::AmbientLightColor);
   configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
   configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
@@ -373,48 +382,61 @@ void OsprayViewerDialog::pullSpecial()
   configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
   configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
   configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());
+  #endif
 }
 
 void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
+#ifdef WITH_OSPRAY
   int xWindow = xIn - viewer_->pos().x();
   int yWindow = yIn - viewer_->pos().y();
 
   xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
   yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+#endif
 }
 
 SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
+  #ifdef WITH_OSPRAY
   auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
   return btn;
+  #endif
 }
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
 {
+  #ifdef WITH_OSPRAY
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
   renderer_->mousePress(xSS, ySS, getRenderButton(event));
+  #endif
 }
 
 void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
 {
+  #ifdef WITH_OSPRAY
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
   renderer_->mouseMove(xSS, ySS, getRenderButton(event));
+  #endif
 }
 
 void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
 {
+#ifdef WITH_OSPRAY
   renderer_->mouseRelease();
+  #endif
 }
 
 void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
 {
+  #ifdef WITH_OSPRAY
   renderer_->mouseWheel(event->delta());
+  #endif
 }
