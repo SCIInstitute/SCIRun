@@ -75,12 +75,17 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void inputMouseDown(int x, int y, MouseButton btn) override;
-      void inputMouseMove(int x, int y, MouseButton btn) override;
+      void widgetMouseDown(MouseButton btn, int x, int y) override;
+      void widgetMouseMove(MouseButton btn, int x, int y) override;
+      void widgetMouseUp() override;
+      void inputMouseDown(MouseButton btn, float x, float y) override;
+      void inputMouseMove(MouseButton btn, float x, float y) override;
       void inputMouseUp() override;
       void inputMouseWheel(int32_t delta) override;
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
       MouseMode getMouseMode() const override    {return mMouseMode;}
+      void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
+
 
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
@@ -175,7 +180,7 @@ namespace SCIRun
       static uint32_t getIDForVector(const glm::vec4& vec);
 
       //---------------- Clipping Planes -----------------------------------------------------------
-      void checkClippingPlanes(int n);// make sure clipping plane number matches
+      void checkClippingPlanes(unsigned int n);// make sure clipping plane number matches
       double getMaxProjLength(const glm::vec3 &n);
       void updateClippingPlanes();
 

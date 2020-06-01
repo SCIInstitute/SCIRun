@@ -79,52 +79,50 @@ namespace SCIRun {
                               static_cast<float>(screenParameters_->getScreenHeightPixels());}
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::mouseDownEvent(const glm::ivec2& pos, MouseButton)
+    void SRCamera::mouseDownEvent(MouseButton btn, const glm::vec2& pos)
     {
-      glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
-      mArcLookAt->doReferenceDown(screenSpace);
-      lastMousePos  = screenSpace;
+      mArcLookAt->doReferenceDown(pos);
+      lastMousePos  = pos;
       mouseMoveVec  = glm::vec2(0.0, 0.0);
       mouseMoveVecR = glm::vec2(0.0, 0.0);
       autoRotateVec = glm::vec2(0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::mouseMoveEvent(const glm::ivec2& pos, MouseButton btn)
+    void SRCamera::mouseMoveEvent(MouseButton btn, const glm::vec2& pos)
     {
       static const float avFac = 0.2f;
-      glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (screenParameters_->getMouseMode())
       {
         case MouseMode::MOUSE_OLDSCIRUN:
-          if (btn == MouseButton::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
-          if (btn == MouseButton::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(screenSpace);
+          if (btn == MouseButton::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(pos);
+          if (btn == MouseButton::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(pos);
           if (btn == MouseButton::MOUSE_MIDDLE && !lockRotation_)
           {
-            mArcLookAt->doRotation(screenSpace);
-            mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
-            mouseMoveVecR = (1.0f - avFac) * (screenSpace - lastMousePos) + avFac * mouseMoveVec;
+            mArcLookAt->doRotation(pos);
+            mouseMoveVec = avFac * (pos - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
+            mouseMoveVecR = (1.0f - avFac) * (pos - lastMousePos) + avFac * mouseMoveVec;
             if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)*0.7f)
               autoRotateVec = glm::vec2(0.0, 0.0);
             else
               autoRotateVec = mouseMoveVec;
-            lastMousePos = screenSpace;
+            lastMousePos = pos;
           }
           break;
 
         case MouseMode::MOUSE_NEWSCIRUN:
           if (btn == MouseButton::MOUSE_LEFT && !lockRotation_)
           {
-            mArcLookAt->doRotation(screenSpace);
-            mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
-            mouseMoveVecR = (1.0f - avFac) * (screenSpace - lastMousePos) + avFac * mouseMoveVec;
+            mArcLookAt->doRotation(pos);
+            mouseMoveVec = avFac * (pos - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
+            mouseMoveVecR = (1.0f - avFac) * (pos - lastMousePos) + avFac * mouseMoveVec;
             if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)*0.7f)
               autoRotateVec = glm::vec2(0.0, 0.0);
             else
               autoRotateVec = mouseMoveVec;
-            lastMousePos = screenSpace;
+            lastMousePos = pos;
           }
-          if (btn == MouseButton::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
+          if (btn == MouseButton::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(pos);
           break;
       }
       setClippingPlanes();
