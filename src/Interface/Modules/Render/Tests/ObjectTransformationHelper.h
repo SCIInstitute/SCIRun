@@ -42,6 +42,7 @@ namespace SCIRun
     public:
       size_t getScreenWidthPixels() const override;
       size_t getScreenHeightPixels() const override;
+      void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
       SCIRun::Render::MouseMode getMouseMode() const override;
     };
 
