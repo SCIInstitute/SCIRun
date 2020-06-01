@@ -194,7 +194,10 @@ namespace detail
     {".txt", { PluginReader<FieldHandle>("PointCloudField") }},
     {".tet", { PluginReader<FieldHandle>("JHUFileToTetVol"),
               PluginReader<FieldHandle>("TetVolField") }},
-    {".m", { PluginReader<FieldHandle>("TriSurfFieldToM") }}
+    {".stl", { PluginReader<FieldHandle>("TriSurfFieldSTL[ASCII]"),
+              PluginReader<FieldHandle>("TriSurfFieldSTL[Binary]") }},
+    {".m", { PluginReader<FieldHandle>("TriSurfFieldToM") }},
+    {".vtk", {PluginReader<FieldHandle>("VtkToTriSurfField") }}
   };
 }
 
