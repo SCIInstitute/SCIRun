@@ -37,6 +37,7 @@ static const ScreenParams screen_;
 
 size_t ScreenParametersTest::getScreenWidthPixels() const { return screen_.width; }
 size_t ScreenParametersTest::getScreenHeightPixels() const { return screen_.height; }
+void ScreenParametersTest::calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) { throw "not needed"; }
 MouseMode ScreenParametersTest::getMouseMode() const { throw "not needed"; }
 
 static const ScreenParametersTest spt;

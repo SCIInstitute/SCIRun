@@ -84,6 +84,13 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
     parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 
+  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
+  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
+  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
+  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
+  updateViewSceneTree();
+  groupRemoveSpinBox_->setRange(0, 0);
+
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
   connect(lightingCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(lightingChecked(bool)));
@@ -225,6 +232,69 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   ////Controls Tab
   transparencyGroupBox_->setVisible(false);
+}
+
+static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
+{
+  return std::get<0>(a)->getName() < std::get<0>(b)->getName();
+}
+
+void ViewSceneControlsDock::updateViewSceneTree()
+{
+  viewSceneTreeWidget_->clear();
+
+  int numGroups = ViewSceneDialog::viewSceneManager.getGroupCount();
+  std::vector<ViewSceneDialog*> ungroupedMemebers;
+  ViewSceneDialog::viewSceneManager.getUngroupedViewScenesAsVector(ungroupedMemebers);
+
+  for(int i = 0; i < numGroups; ++i)
+  {
+    auto group = new QTreeWidgetItem(viewSceneTreeWidget_, QStringList(QString::fromStdString("Group:" + std::to_string(i))));
+    viewSceneTreeWidget_->addTopLevelItem(group);
+    group->setData(1, Qt::EditRole, i);
+
+    std::vector<ViewSceneDialog*> groupMemebers;
+    ViewSceneDialog::viewSceneManager.getViewSceneGroupAsVector(i, groupMemebers);
+
+    std::vector<std::pair<ViewSceneDialog*, bool>> viewScenesToDisplay;
+    for(auto vsd : groupMemebers) viewScenesToDisplay.emplace_back(vsd, true);
+    for(auto vsd : ungroupedMemebers) viewScenesToDisplay.emplace_back(vsd, false);
+    std::sort(viewScenesToDisplay.begin(), viewScenesToDisplay.end(), vsdPairComp);
+
+    for(int j = 0; j < viewScenesToDisplay.size(); ++j)
+    {
+      auto item = new QTreeWidgetItem(group, QStringList(QString::fromStdString(std::get<0>(viewScenesToDisplay[j])->getName())));
+      item->setCheckState(0, (std::get<1>(viewScenesToDisplay[j])) ? Qt::Checked : Qt::Unchecked);
+      item->setData(1, Qt::EditRole, QVariant::fromValue(std::get<0>(viewScenesToDisplay[j])));
+    }
+  }
+
+  viewSceneTreeWidget_->expandAll();
+}
+
+void ViewSceneControlsDock::addGroup()
+{
+  ViewSceneDialog::viewSceneManager.addGroup();
+  groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
+}
+
+void ViewSceneControlsDock::removeGroup()
+{
+  uint32_t group = groupRemoveSpinBox_->value();
+  ViewSceneDialog::viewSceneManager.removeGroup(group);
+  groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
+}
+
+void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
+{
+  QTreeWidgetItem* p = widgetItem->parent();
+  if(!p) return;
+  uint32_t g = p->data(1, Qt::EditRole).toInt();
+  ViewSceneDialog* vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
+  if (widgetItem->checkState(column) == Qt::Unchecked)
+    ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
+  else if (widgetItem->checkState(column) == Qt::Checked)
+    ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
 }
 
 void ViewSceneControlsDock::setSampleColor(const QColor& color)
@@ -415,7 +485,6 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
     if (stateIter != showFieldStates.end())
     {
       auto state = stateIter->second;
-
       updateCheckStates(name, {
         state->getValue(Parameters::ShowNodes).toBool(),
         state->getValue(Parameters::ShowEdges).toBool(),
