@@ -26,7 +26,7 @@
 */
 
 #include <Modules/DataIO/ReadFile.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -76,14 +76,14 @@ namespace detail
     explicit PluginReader(const std::string& pluginFileTypeName) : pluginFileTypeName_(pluginFileTypeName) {}
     DataHandle operator()(const Filename& filename) const
     {
-      GenericIEPluginManager<typename DataHandle::element_type> mgr;
-      auto pl = mgr.get_plugin(pluginFileTypeName_);
+      auto pl = mgr_.get_plugin(pluginFileTypeName_);
       if (pl)
         return pl->readFile(filename.string(), nullLogger);
       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("No custom reader found to handle that file type.");
     }
   private:
     std::string pluginFileTypeName_;
+    typename StaticIEPluginGetter<typename DataHandle::element_type>::Manager mgr_;
   };
 
   template <class DataHandle>
