@@ -27,7 +27,7 @@
 
 
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
-
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <boost/algorithm/string/predicate.hpp>
 
 #ifdef WITH_OSPRAY
@@ -38,7 +38,7 @@
 #include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
 #include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
 #include "Interface/Modules/Render/ViewOspraySceneConfig.h"
-#include "Modules/Render/ViewScene.h"
+
 #include "Core/Datatypes/Color.h"
 #include "Core/Logging/Log.h"
 #endif
@@ -398,13 +398,11 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 
 SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
-  #ifdef WITH_OSPRAY
   auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
   return btn;
-  #endif
 }
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
