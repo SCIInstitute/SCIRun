@@ -51,6 +51,10 @@ ENDIF()
 
 PROJECT(SCIRun)
 
+IF(GENERATE_COMPILATION_DATABASE)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ENDIF()
+
 ###############################################################################
 # Don't allow the user to build in the src directory...
 #
@@ -459,14 +463,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
-  FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
-  FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
-  FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
-  FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
-  FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
-	FIND_PACKAGE(Qt5PrintSupport REQUIRED HINTS ${Qt5_PATH})
-	FIND_PACKAGE(Qt5Svg REQUIRED HINTS ${Qt5_PATH})
+  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt5_PATH})
 
   IF(Qt5Core_FOUND)
     MESSAGE(STATUS "Found Qt version: ${Qt5Core_VERSION_STRING}")
