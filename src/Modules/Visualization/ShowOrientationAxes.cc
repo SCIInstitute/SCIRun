@@ -146,6 +146,7 @@ GeometryHandle ShowOrientationAxesImpl::makeGeometry(const GeometryIDGenerator& 
 ShowOrientationAxes::ShowOrientationAxes() : GeometryGeneratingModule(staticInfo_),
                                              impl_(new ShowOrientationAxesImpl)
 {
+  INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputGeom);
 }
 
@@ -160,6 +161,7 @@ void ShowOrientationAxes::setStateDefaults()
 
 void ShowOrientationAxes::execute()
 {
+  auto inputField = getOptionalInput(InputField);
   if (needToExecute())
   {
     auto state = get_state();
