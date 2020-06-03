@@ -30,6 +30,7 @@
 #define INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
 
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
+#include "Interface/Modules/Render/ViewScene.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -106,6 +107,10 @@ namespace SCIRun {
       void selectLight3Color() {selectLightColor(3);}
       void setSliderDefaultPos();
       void setSliderCenterPos();
+      void updateViewSceneTree();
+      void addGroup();
+      void removeGroup();
+      void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
 
     };
   }
