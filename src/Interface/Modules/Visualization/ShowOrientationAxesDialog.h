@@ -38,6 +38,17 @@ namespace Gui {
   public:
     ShowOrientationAxesDialog(const std::string& name,
       SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+  private:
+   void adjustScale(float scaleFactor) const;
+   const float upScale_ = 1.25;
+   const float doubleUpScale_ = upScale_ * upScale_;
+   const float downScale_ = 0.8;
+   const float doubleDownScale_ = downScale_ * downScale_;
+  private Q_SLOTS:
+   void scaleUpPush() const;
+   void scaleDoubleUpPush() const;
+   void scaleDownPush() const;
+   void scaleDoubleDownPush() const;
   };
 }}
 

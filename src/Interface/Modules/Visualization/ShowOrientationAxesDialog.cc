@@ -20,10 +20,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Modules/Visualization/ShowOrientationAxesDialog.h>
 #include <Modules/Visualization/ShowOrientationAxes.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
@@ -31,17 +30,50 @@ using namespace SCIRun::Dataflow::Networks;
 
 using SOA = SCIRun::Modules::Visualization::ShowOrientationAxes;
 
-ShowOrientationAxesDialog::ShowOrientationAxesDialog(const std::string& name,
-                                                     ModuleStateHandle state,
-                                                     QWidget* parent/* = 0*/)
-  : ModuleDialogGeneric(state, parent)
+ShowOrientationAxesDialog::ShowOrientationAxesDialog(
+    const std::string& name, ModuleStateHandle state, QWidget* parent /* = 0*/)
+    : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
-	fixSize();
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
   addDoubleSpinBoxManager(scaleDoubleSpinBox_, SOA::Scale);
+  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleUpPush()));
+  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleUpPush()));
+  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
+  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
+
   addDoubleSpinBoxManager(xDoubleSpinBox_, SOA::X);
   addDoubleSpinBoxManager(yDoubleSpinBox_, SOA::Y);
   addDoubleSpinBoxManager(zDoubleSpinBox_, SOA::Z);
+  addCheckBoxManager(scaleByFieldCheckBox_,SOA::ScaleByField);
+  addCheckBoxManager(usePositionOfFieldCheckBox_, SOA::UseFieldPosition);
+}
+
+void ShowOrientationAxesDialog::adjustScale(float scaleFactor) const
+{
+  auto scale = state_->getValue(SOA::Scale).toDouble();
+  scale *= scaleFactor;
+  state_->setValue(SOA::Scale, scale);
+}
+
+void ShowOrientationAxesDialog::scaleUpPush() const
+{
+  adjustScale(upScale_);
+}
+
+void ShowOrientationAxesDialog::scaleDoubleUpPush() const
+{
+  adjustScale(doubleUpScale_);
+}
+
+void ShowOrientationAxesDialog::scaleDownPush() const
+{
+  adjustScale(downScale_);
+}
+
+void ShowOrientationAxesDialog::scaleDoubleDownPush() const
+{
+  adjustScale(doubleDownScale_);
 }

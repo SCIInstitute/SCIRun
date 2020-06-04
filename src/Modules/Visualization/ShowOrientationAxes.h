@@ -49,7 +49,10 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName X;
     static const Core::Algorithms::AlgorithmParameterName Y;
     static const Core::Algorithms::AlgorithmParameterName Z;
-  private:
+    static const Core::Algorithms::AlgorithmParameterName ScaleByField;
+    static const Core::Algorithms::AlgorithmParameterName UseFieldPosition;
+
+   private:
     boost::shared_ptr<ShowOrientationAxesImpl> impl_;
   };
 }}}

@@ -20,14 +20,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
-#include <Modules/Visualization/ShowOrientationAxes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Modules/Visualization/ShowOrientationAxes.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -50,6 +51,9 @@ namespace Visualization {
     ShowOrientationAxesImpl();
     void setScale(double scale);
     void setPosition(double x, double y, double z);
+    void setField(FieldHandle field);
+    void setFieldScaling(bool useFieldScale);
+    void setFieldPositioning(bool useFieldPosition);
     GeometryHandle makeGeometry(const GeometryIDGenerator& id) const;
   private:
     RenderState getRenderState() const;
@@ -60,6 +64,10 @@ namespace Visualization {
     double y_ = 0.0;
     double z_ = 0.0;
     double scale_ = 1.0;
+    double fieldScale_ = 1.0;
+    Point fieldPosition_ {0.0, 0.0, 0.0};
+    bool fieldScaling_ = false;
+    bool fieldPositioning_ = false;
     const int RESOLUTION_ = 20;
     const double ARROW_RATIO_ = 0.2;
     const bool RENDER_CYLINDER_BASE_ = false;
@@ -83,6 +91,23 @@ void ShowOrientationAxesImpl::setPosition(double x, double y, double z)
   z_ = z;
 }
 
+void ShowOrientationAxesImpl::setField(FieldHandle field)
+{
+  auto bbox = field->vmesh()->get_bounding_box();
+  fieldScale_ = 0.5 * std::min(bbox.x_length(), std::min(bbox.y_length(), bbox.z_length()));
+  fieldPosition_ = bbox.center();
+}
+
+void ShowOrientationAxesImpl::setFieldScaling(bool useFieldScale)
+{
+  fieldScaling_ = useFieldScale;
+}
+
+void ShowOrientationAxesImpl::setFieldPositioning(bool useFieldPosition)
+{
+  fieldPositioning_ = useFieldPosition;
+}
+
 void ShowOrientationAxesImpl::setScale(double scale)
 {
   scale_ = scale;
@@ -101,29 +126,37 @@ RenderState ShowOrientationAxesImpl::getRenderState() const
 
 void ShowOrientationAxesImpl::addOrientationArrows(GlyphGeom& glyphs, const Point& pos) const
 {
-  double radius = 0.1 * scale_;
+  double vectorLength = scale_;
+  if (fieldScaling_)
+    vectorLength *= fieldScale_;
+
+  double radius = 0.1 * vectorLength;
 
   // Positive
-  glyphs.addArrow(pos, pos + Vector(scale_, 0, 0), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos + Vector(vectorLength, 0, 0), radius, ARROW_RATIO_, RESOLUTION_,
                   RED_, RED_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
-  glyphs.addArrow(pos, pos + Vector(0, scale_, 0), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos + Vector(0, vectorLength, 0), radius, ARROW_RATIO_, RESOLUTION_,
                   GREEN_, GREEN_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
-  glyphs.addArrow(pos, pos + Vector(0, 0, scale_), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos + Vector(0, 0, vectorLength), radius, ARROW_RATIO_, RESOLUTION_,
                   BLUE_, BLUE_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
 
   // Negative
-  glyphs.addArrow(pos, pos - Vector(scale_, 0, 0), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos - Vector(vectorLength, 0, 0), radius, ARROW_RATIO_, RESOLUTION_,
                   RED_NEGATIVE_, RED_NEGATIVE_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
-  glyphs.addArrow(pos, pos - Vector(0, scale_, 0), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos - Vector(0, vectorLength, 0), radius, ARROW_RATIO_, RESOLUTION_,
                   GREEN_NEGATIVE_, GREEN_NEGATIVE_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
-  glyphs.addArrow(pos, pos - Vector(0, 0, scale_), radius, ARROW_RATIO_, RESOLUTION_,
+  glyphs.addArrow(pos, pos - Vector(0, 0, vectorLength), radius, ARROW_RATIO_, RESOLUTION_,
                   BLUE_NEGATIVE_, BLUE_NEGATIVE_, RENDER_CYLINDER_BASE_, RENDER_CONE_BASE_);
 }
 
 BBox ShowOrientationAxesImpl::getBBox(const Point& pos) const
 {
+  double vectorLength = scale_;
+  if (fieldScaling_)
+    vectorLength *= fieldScale_;
+
   BBox bbox = BBox();
-  Vector halfDiag = Vector(scale_, scale_, scale_);
+  Vector halfDiag = Vector(vectorLength, vectorLength, vectorLength);
   bbox.extend(pos - halfDiag);
   bbox.extend(pos + halfDiag);
   return bbox;
@@ -132,7 +165,7 @@ BBox ShowOrientationAxesImpl::getBBox(const Point& pos) const
 GeometryHandle ShowOrientationAxesImpl::makeGeometry(const GeometryIDGenerator& idGen) const
 {
   GlyphGeom glyphs;
-  Point pos = Point(x_, y_, z_);
+  Point pos = fieldPositioning_ ? fieldPosition_ : Point(x_, y_, z_);
 
   addOrientationArrows(glyphs, pos);
   BBox bbox = getBBox(pos);
@@ -157,6 +190,8 @@ void ShowOrientationAxes::setStateDefaults()
   state->setValue(X, 0.0);
   state->setValue(Y, 0.0);
   state->setValue(Z, 0.0);
+  state->setValue(ScaleByField, false);
+  state->setValue(UseFieldPosition, false);
 }
 
 void ShowOrientationAxes::execute()
@@ -165,7 +200,13 @@ void ShowOrientationAxes::execute()
   if (needToExecute())
   {
     auto state = get_state();
+    if (inputField)
+      impl_->setField(inputField.get());
+
+    impl_->setFieldScaling(state->getValue(ScaleByField).toBool() && inputField);
     impl_->setScale(state->getValue(Scale).toDouble());
+
+    impl_->setFieldPositioning(state->getValue(UseFieldPosition).toBool() && inputField);
     impl_->setPosition(state->getValue(X).toDouble(), state->getValue(Y).toDouble(),
                        state->getValue(Z).toDouble());
 
@@ -177,3 +218,5 @@ const AlgorithmParameterName ShowOrientationAxes::Scale("Scale");
 const AlgorithmParameterName ShowOrientationAxes::X("X");
 const AlgorithmParameterName ShowOrientationAxes::Y("Y");
 const AlgorithmParameterName ShowOrientationAxes::Z("Z");
+const AlgorithmParameterName ShowOrientationAxes::ScaleByField("ScaleByField");
+const AlgorithmParameterName ShowOrientationAxes::UseFieldPosition("UseFieldPosition");

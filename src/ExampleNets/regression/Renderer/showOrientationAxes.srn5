@@ -38,7 +38,7 @@
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>4</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>5</value>
 									</value>
 								</second>
 							</item>
@@ -98,7 +98,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -462,7 +462,7 @@
 									<name>ShowFaces</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -600,7 +600,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>7</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -622,7 +622,31 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>1.00000014156103645e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleByField</name>
+								</first>
+								<second>
+									<name>ScaleByField</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>UseFieldPosition</name>
+								</first>
+								<second>
+									<name>UseFieldPosition</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -646,7 +670,7 @@
 									<name>Y</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -658,7 +682,7 @@
 									<name>Z</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -722,7 +746,7 @@
 									<name>CameraDistance</name>
 									<value>
 										<which>1</which>
-										<value>8.46667098999023438e+00</value>
+										<value>1.23298721313476562e+01</value>
 									</value>
 								</second>
 							</item>
@@ -746,7 +770,7 @@
 									<name>CameraLookAt</name>
 									<value>
 										<which>2</which>
-										<value>[1, 1, 1]</value>
+										<value>[1.5, 2, 2.5]</value>
 									</value>
 								</second>
 							</item>
@@ -758,7 +782,7 @@
 									<name>CameraRotation</name>
 									<value>
 										<which>2</which>
-										<value>Quaternion(0.924779,0.317969,-0.194542,0.076374)</value>
+										<value>Quaternion(0.463587,0.635933,0.430958,0.441534)</value>
 									</value>
 								</second>
 							</item>
@@ -1308,7 +1332,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -1319,6 +1343,18 @@
 				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowOrientationAxes:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
