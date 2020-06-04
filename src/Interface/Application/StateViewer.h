@@ -45,6 +45,8 @@ namespace Gui {
 
   public:
     StateViewer(NetworkEditor* network, QWidget* parent = nullptr);
+  public Q_SLOTS:
+    void prepareMenu(const QPoint& pos);
   };
 }}
 

@@ -27,6 +27,7 @@
 
 
 #include <QtGui>
+#include <QMenu>
 #include <Interface/Application/StateViewer.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ModuleProxyWidget.h>
@@ -50,6 +51,8 @@ StateViewer::StateViewer(NetworkEditor* network, QWidget* parent) : QDialog(pare
   setupUi(this);
 
   stateTreeWidget_->clear();
+  stateTreeWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(stateTreeWidget_, &QTreeWidget::customContextMenuRequested, this, &StateViewer::prepareMenu);
   for (const auto& item : network->scene()->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -75,4 +78,44 @@ StateViewer::StateViewer(NetworkEditor* network, QWidget* parent) : QDialog(pare
   }
   stateTreeWidget_->resizeColumnToContents(0);
   stateTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+}
+
+void StateViewer::prepareMenu(const QPoint& pos)
+{
+  auto item = stateTreeWidget_->itemAt(pos);
+  if (!item)
+    return;
+
+  if (!item->parent())
+    return;
+
+  auto parent = item->parent();
+  auto moduleId = parent->text(0);
+  auto stateId = item->text(0);
+  auto stateType = item->text(1);
+  auto stateValue = item->text(2);
+
+  static auto quoteAString = [](const QString& val, const QString& type)
+  {
+    if (type == "string")
+      return "'" + val + "'";
+    return val;
+  };
+
+  auto getCode = new QAction("Copy Python state GET code to clipboard", this);
+  connect(getCode, &QAction::triggered, [=]() { 
+    QGuiApplication::clipboard()->setText(
+      tr("scirun_get_module_state('%1', '%2')")
+        .arg(moduleId).arg(stateId)); });
+  auto setCode = new QAction("Copy Python state SET code to clipboard", this);
+  connect(setCode, &QAction::triggered, [=]() {
+    QGuiApplication::clipboard()->setText(
+      tr("scirun_set_module_state('%1', '%2', %3)")
+        .arg(moduleId).arg(stateId).arg(quoteAString(stateValue, stateType))); });
+
+  QMenu menu(this);
+  menu.addAction(getCode);
+  menu.addAction(setCode);
+
+  menu.exec(stateTreeWidget_->mapToGlobal(pos));
 }
