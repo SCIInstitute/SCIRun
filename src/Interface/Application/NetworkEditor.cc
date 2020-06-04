@@ -2398,6 +2398,7 @@ void NetworkEditor::cleanUpNetwork()
 
 void NetworkEditor::showStateViewer()
 {
+  //TODO: make non-modal, but needs update slot
   StateViewer viewer(this);
   viewer.exec();
 }
