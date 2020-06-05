@@ -33,7 +33,7 @@
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 
-
+#include <Modules/Render/ViewScene.h>
 #include "Modules/Render/OsprayViewer.h"
 #include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
 #include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
@@ -396,12 +396,12 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 #endif
 }
 
-SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
+SCIRun::Render::OsprayMouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
-  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
-  if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
-  else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
-  else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
+  auto btn = SCIRun::Render::OsprayMouseButton::MOUSE_NONE;
+  if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::OsprayMouseButton::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::OsprayMouseButton::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::OsprayMouseButton::MOUSE_MIDDLE;
   return btn;
 }
 

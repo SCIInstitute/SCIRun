@@ -50,8 +50,8 @@ public:
 
   //Interaction-------------------------------------------------------------------------------------
   void resize(uint32_t width, uint32_t height);
-  void mousePress(float x, float y, MouseButton btn);
-  void mouseMove(float x, float y, MouseButton btn);
+  void mousePress(float x, float y, OsprayMouseButton btn);
+  void mouseMove(float x, float y, OsprayMouseButton btn);
   void mouseRelease();
   void mouseWheel(int32_t delta);
 
