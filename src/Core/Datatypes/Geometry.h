@@ -69,7 +69,8 @@ namespace Datatypes
     //weird signature--need to avoid raw ptrs and shared_from_this for now
     virtual void addToList(GeometryBaseHandle handle, GeomList& list);
 
-    const std::string& uniqueID() const { return objectName_; }
+    const std::string uniqueID() const { return objectName_ + std::to_string(idIncrement_); }
+    void changeID() { ++idIncrement_; }
 
     virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
 
@@ -77,6 +78,7 @@ namespace Datatypes
 
   private:
     const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
+    boost::atomic<int> idIncrement_ {0}; // Incrementing this lets you update the object without updating every other geometry object
   };
 
   struct SCISHARE ModuleFeedback
