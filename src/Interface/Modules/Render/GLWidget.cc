@@ -112,15 +112,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-    /** TODO VS_FLICKER
-  if (canClickMouse_)
-  {
-    makeCurrent();
-    auto btn = getSpireButton(event);
-    graphics_->inputMouseDown(event->x(), event->y(), btn);
-    event->ignore();
-  }
-    **/
   event->ignore();
 }
 
@@ -133,9 +124,6 @@ void GLWidget::setAllowMousePresses(bool allow)
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  /** TODO VS_FLICKER
-  graphics_->inputMouseUp();
-  **/
   makeCurrent();
   event->ignore();
 }
