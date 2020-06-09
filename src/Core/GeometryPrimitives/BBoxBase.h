@@ -42,9 +42,9 @@ protected:
   Point cmax_;
   bool is_valid_;
 public:
-  BBoxBase(bool valid);
+  explicit BBoxBase(bool valid);
   BBoxBase(bool valid, const Point& cmin, const Point& cmax);
-  virtual ~BBoxBase() {};
+  virtual ~BBoxBase() {}
   inline bool valid() const { return is_valid_; }
   inline void set_valid(bool v) { is_valid_ = v; }
   inline void reset() { is_valid_ = false; }
