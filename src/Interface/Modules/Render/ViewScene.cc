@@ -1121,7 +1121,6 @@ bool ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
   if (canSelectWidget())
   {
     mouseButtonPressed_ = true;
-    mGLWidget->setAllowMousePresses(false);
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
     widgetSelected = true;
