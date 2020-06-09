@@ -110,19 +110,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   event->ignore();
 }
 
-void GLWidget::mousePressEvent(QMouseEvent* event)
+void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   event->ignore();
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::setAllowMousePresses(bool allow)
-{
-  canClickMouse_ = allow;
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   makeCurrent();
   event->ignore();

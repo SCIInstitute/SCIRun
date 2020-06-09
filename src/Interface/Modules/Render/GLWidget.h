@@ -72,7 +72,6 @@ public:
   void setLockPanning(bool lock);
   void setLockRotation(bool lock);
   void requestFrame() {frameRequested_ = true;}
-  void setAllowMousePresses(bool allow);
 
 Q_SIGNALS:
   void fatalError(const QString& message);
@@ -97,7 +96,6 @@ private:
   QTimer*                               timer_             {};
   bool                                  frameRequested_    {false};
   double                                frameTime_         {0.0};
-  bool                                  canClickMouse_     {true};
 };
 
 } // end of namespace Gui
