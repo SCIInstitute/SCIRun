@@ -1063,17 +1063,6 @@ void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, flo
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::widgetMouseMoveHelper(Render::MouseButton btn, float x, float y)
-{
-  auto spire = mSpire.lock();
-  if (!spire) return;
-
-  if (selectedWidget_)
-    spire->widgetMouseMove(btn, x, y);
-
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::inputMouseMoveHelper(Render::MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
@@ -1142,8 +1131,6 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   if(selectedWidget_)
   {
     spire->widgetMouseMove(btn, x_window, y_window);
-    for (auto vsd : viewScenesToUpdate)
-      vsd->widgetMouseMoveHelper(btn, x_window, y_window);
   }
   else if(!shiftdown_)
   {

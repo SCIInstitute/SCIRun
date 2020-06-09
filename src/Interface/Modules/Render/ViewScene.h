@@ -72,7 +72,6 @@ namespace SCIRun {
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
-      void widgetMouseMoveHelper(Render::MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
