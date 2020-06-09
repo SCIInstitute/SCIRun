@@ -32,14 +32,16 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include "Interface/Modules/Render/ui_ViewScene.h"
-
-#include <Modules/Visualization/TextBuilder.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Interface/Modules/Render/ViewSceneManager.h>
+#include <Modules/Render/ViewScene.h>
+#include <Modules/Visualization/TextBuilder.h>
+#include <atomic>
+#include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -53,6 +55,7 @@ namespace SCIRun {
 
     class GLWidget;
     class ViewSceneControlsDock;
+    class ScopedWidgetColorChanger;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -61,9 +64,19 @@ namespace SCIRun {
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
+      ~ViewSceneDialog();
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
+
+      static ViewSceneManager viewSceneManager;
+      void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
+      void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
+      void widgetMouseMoveHelper(Render::MouseButton btn, float x, float y);
+      void inputMouseUpHelper();
+      void inputMouseWheelHelper(int32_t delta);
+      void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
+      std::string getName() {return name_;}
       void autoSaveScreenshot();
 
     Q_SIGNALS:
@@ -242,10 +255,15 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
+      void removeSelectedWidget();
       bool canSelectWidget() const;
-      void tryWidgetSelection(QMouseEvent* event);
+      bool tryWidgetSelection(QMouseEvent* event);
       void selectObject(const int x, const int y);
+      Modules::Render::ViewScene::GeomListPtr getGeomData();
+      void addSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
+      bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
+      void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
@@ -294,6 +312,7 @@ namespace SCIRun {
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
+      SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};
@@ -329,9 +348,12 @@ namespace SCIRun {
       QPushButton*                                      autoViewButton_     {nullptr};
       QPushButton*                                      viewBarBtn_         {nullptr};
 
+      std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
+
       friend class ViewSceneControlsDock;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
+      std::string                                       name_               {""};
     };
 
   } // namespace Gui

@@ -107,15 +107,12 @@ SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  // Extract appropriate key.
-  auto btn = getSpireButton(event);
-  graphics_->inputMouseMove(event->x(), event->y(), btn);
   event->ignore();
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
+    /** TODO VS_FLICKER
   if (canClickMouse_)
   {
     makeCurrent();
@@ -123,6 +120,8 @@ void GLWidget::mousePressEvent(QMouseEvent* event)
     graphics_->inputMouseDown(event->x(), event->y(), btn);
     event->ignore();
   }
+    **/
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
@@ -134,14 +133,16 @@ void GLWidget::setAllowMousePresses(bool allow)
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
+  /** TODO VS_FLICKER
   graphics_->inputMouseUp();
+  **/
+  makeCurrent();
   event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
-  graphics_->inputMouseWheel(event->delta());
   event->ignore();
 }
 

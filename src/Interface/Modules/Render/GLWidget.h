@@ -63,6 +63,7 @@ public:
   ~GLWidget();
 
   Render::RendererPtr getSpire() const {return graphics_;}
+  Render::MouseButton getSpireButton(QMouseEvent* event);
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
@@ -92,11 +93,10 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  Render::MouseButton getSpireButton(QMouseEvent* event);
-
   Render::RendererPtr                   graphics_          {};  ///< Interface to spire.
   QTimer*                               timer_             {};
   bool                                  frameRequested_    {false};
+  double                                frameTime_         {0.0};
   bool                                  canClickMouse_     {true};
 };
 
