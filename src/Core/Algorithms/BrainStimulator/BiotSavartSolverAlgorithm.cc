@@ -699,7 +699,7 @@ AlgorithmOutput BiotSavartSolverAlgorithm::run(const AlgorithmInput& input) cons
 	else
 		cases[oports] = nullptr;
 
-  for (const auto& c : cases)
+  for (auto& c : cases)
   {
     if (!run(mesh, coil, c.second, c.first))
     {
