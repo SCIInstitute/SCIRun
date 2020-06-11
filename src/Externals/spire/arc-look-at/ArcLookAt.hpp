@@ -107,6 +107,9 @@ public:
   /// Retrieves the world transformation for the camera (looking down
   /// negative z).
   glm::mat4 getWorldViewTransform() const;
+  glm::vec3 getUp();
+  glm::vec3 getPos();
+  glm::vec3 getTarget() {return -mCamLookAt;}
 
 private:
   std::unique_ptr<spire::ArcBall>  mArcBall;
