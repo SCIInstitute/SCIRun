@@ -1054,7 +1054,7 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseDownHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
@@ -1063,7 +1063,7 @@ void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, flo
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseMoveHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
