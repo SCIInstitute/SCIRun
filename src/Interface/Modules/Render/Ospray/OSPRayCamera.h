@@ -26,36 +26,46 @@
 */
 
 
-#ifndef MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
-#define MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
+#include <arc-look-at/ArcLookAt.hpp>
+#include <glm/glm.hpp>
+#include <ospray/ospray.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+namespace SCIRun { namespace Render {
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+enum class MouseButton
+{
+  MOUSE_NONE,
+  MOUSE_LEFT,
+  MOUSE_RIGHT,
+  MOUSE_MIDDLE,
+};
 
-      class SCISHARE ShowFieldWithOspray : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<OsprayGeometryPortTag>
-      {
-      public:
-        ShowFieldWithOspray();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+class OSPRayCamera
+{
+public:
+  OSPRayCamera();
+  ~OSPRayCamera();
 
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
+  void mouseRelease();
+  void mouseWheel(int delta);
 
-        uint32_t id;
+  OSPCamera getOSPCamera();
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-      };
-    }
-  }
-}
+  void setAspect(float aspect) {aspect_ = aspect;}
 
-#endif
+private:
+  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
+  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
+  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
+  float aspect_     { 1.0f};
+  float fovy_       {60.0f};
+  float aperture_   {0.0f};
+
+  spire::ArcLookAt lookat_ {       };
+  OSPCamera camera_        {nullptr};
+
+};
+
+} /*Render*/ } /*SCIRun*/
