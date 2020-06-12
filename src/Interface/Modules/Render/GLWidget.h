@@ -63,6 +63,7 @@ public:
   ~GLWidget();
 
   Render::RendererPtr getSpire() const {return mGraphics;}
+  Render::MouseButton getSpireButton(QMouseEvent* event);
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
@@ -91,14 +92,10 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  Render::MouseButton getSpireButton(QMouseEvent* event);
-
   Render::RendererPtr                   mGraphics          {};  ///< Interface to spire.
   QTimer*                               mTimer             {};
   double                                mFrameTime         {0.0};
   bool                                  mFrameRequested    {false};
-
-  double                                mCurrentTime       {0.0};
 };
 
 } // end of namespace Gui

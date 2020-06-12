@@ -903,6 +903,13 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
     QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
     QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
     QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+    QObject::connect(mainWindow_->actionPeakBehindModuleUIs_, &QAction::triggered,
+      [this, editor]() {
+        if (mainWindow_->actionPeakBehindModuleUIs_->isChecked())
+          editor->seeThroughAllModuleUIs();
+        else
+          editor->normalOpacityAllModuleUIs();
+        });
     QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
   }
   // children only

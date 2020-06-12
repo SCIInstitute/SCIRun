@@ -54,13 +54,18 @@ void ShowFieldWithOspray::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::Radius);
   setStateBoolFromAlgo(Parameters::UseNormals);
   setStateBoolFromAlgo(Parameters::ShowEdges);
+  setStateIntFromAlgo(Parameters::ModuleID);
 }
 
 ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
 {
+
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
+
+  static uint32_t lastMoudleID = 0;
+  id = ++lastMoudleID;
 }
 
 void ShowFieldWithOspray::execute()
@@ -68,8 +73,12 @@ void ShowFieldWithOspray::execute()
   auto field = getRequiredInput(Field);
   auto colorMap = getOptionalInput(ColorMapObject);
 
+
+
   if (needToExecute())
   {
+
+
     setAlgoDoubleFromState(Parameters::DefaultColorR);
     setAlgoDoubleFromState(Parameters::DefaultColorG);
     setAlgoDoubleFromState(Parameters::DefaultColorB);
@@ -83,12 +92,15 @@ void ShowFieldWithOspray::execute()
     FieldInformation info(field);
     if (info.is_curvemesh())
     {
-      state->setValue(Parameters::ShowEdges,true);
+      state->setValue(Parameters::ShowEdges, true);
     }
     else if (info.is_pointcloudmesh())
     {
-      state->setValue(Parameters::ShowEdges,false);
+      state->setValue(Parameters::ShowEdges, false);
     }
+
+    state->setValue(Parameters::ModuleID, static_cast<int>(id));
+    setAlgoIntFromState(Parameters::ModuleID);
 
     auto output = algo().run(withInputData((Field, field)(ColorMapObject, optionalAlgoInput(colorMap))));
     sendOutputFromAlgorithm(SceneGraph, output);

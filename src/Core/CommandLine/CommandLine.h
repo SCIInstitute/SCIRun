@@ -59,6 +59,7 @@ namespace SCIRun {
         virtual bool disableSplash() const = 0;
         virtual bool isRegressionMode() const = 0;
         virtual bool interactiveMode() const = 0;
+        virtual bool saveViewSceneScreenshotsOnQuit() const = 0;
         virtual bool quitAfterOneScriptedExecution() const = 0;
         virtual bool loadMostRecentFile() const = 0;
         virtual DeveloperParametersPtr developerParameters() const = 0;

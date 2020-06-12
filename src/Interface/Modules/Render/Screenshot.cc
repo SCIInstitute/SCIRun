@@ -33,18 +33,24 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Datatypes;
 
-const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
+
 
 Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   : QObject(parent),
   viewport_(glwidget),
   index_(0)
 {
+}
+
+QString Screenshot::screenshotDirectory()
+{
+  static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
   QDir dir(filePath);
   if (!dir.exists())
   {
     dir.mkpath(filePath);
   }
+  return filePath;
 }
 
 void Screenshot::takeScreenshot()
@@ -77,9 +83,14 @@ void Screenshot::saveScreenshot()
   }
 }
 
+void Screenshot::saveScreenshot(const QString& filename)
+{
+  screenshot_.save(filename);
+}
+
 QString Screenshot::screenshotFile() const
 {
-  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", filePath, "*.png");
+  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
   //TODO: might want to have an option to save to an auto-generated file for speed
   //return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
