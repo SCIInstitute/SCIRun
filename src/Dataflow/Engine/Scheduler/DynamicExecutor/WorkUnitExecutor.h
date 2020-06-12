@@ -47,7 +47,7 @@ namespace SCIRun {
           {
             //Core::Logging::Log::get("executor").setVerbose(shouldLog_);
           }
-          void run()
+          void run() const
           {
             //log_->trace_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
             auto exec = lookup_->lookupExecutable(module_->id());

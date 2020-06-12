@@ -615,7 +615,7 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-boost::shared_ptr<std::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+SpecialInterruptibleThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
@@ -645,7 +645,7 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-boost::shared_ptr<std::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+SpecialInterruptibleThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);

@@ -47,10 +47,10 @@ namespace DynamicExecutor {
   class SCISHARE ExecutionThreadGroup : boost::noncopyable
   {
   public:
-    void startExecution(ModuleExecutor&& executor)
+    void startExecution(const ModuleExecutor& executor)
     {
       //auto thread = 
-      executeThreads_.create_thread([&]() { executor.run(); });
+      executeThreads_.create_thread([=]() { executor.run(); });
       //Core::Thread::Guard g(mapLock_->get());
       //threadsByModuleId_[executor.module_->id().id_] = thread;
     }
@@ -128,7 +128,7 @@ namespace DynamicExecutor {
             //log_->trace_if(shouldLog_, "~~~Processing {}", unit->get_id());
 
             ModuleExecutor executor(unit, lookup_, producer_);
-            executeThreadGroup_->startExecution(std::move(executor));
+            executeThreadGroup_->startExecution(executor);
           }
           else
           {

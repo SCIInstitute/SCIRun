@@ -32,6 +32,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
 #include <boost/atomic.hpp>
+#include <boost/thread.hpp>
 #include <Core/Thread/ConditionVariable.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -66,7 +67,7 @@ namespace Engine {
   };
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-
+  using SpecialInterruptibleThreadPtr = SharedPointer<boost::thread>;
 
   class SCISHARE ExecutionQueueManager
   {
@@ -74,7 +75,7 @@ namespace Engine {
     ExecutionQueueManager();
     void initExecutor(ExecutionStrategyFactoryHandle factory);
     void setExecutionStrategy(ExecutionStrategyHandle exec);
-    boost::shared_ptr<std::thread> enqueueContext(ExecutionContextHandle context);
+    SpecialInterruptibleThreadPtr enqueueContext(ExecutionContextHandle context);
     void start();
     void stop();
   private:
@@ -84,7 +85,7 @@ namespace Engine {
 
     ExecutionStrategyHandle currentExecutor_;
 
-    boost::shared_ptr<std::thread> executionLaunchThread_;
+    SpecialInterruptibleThreadPtr executionLaunchThread_;
     Core::Thread::Mutex executionMutex_;
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...

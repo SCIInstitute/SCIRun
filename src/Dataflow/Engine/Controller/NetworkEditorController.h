@@ -110,7 +110,7 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    boost::shared_ptr<std::thread> executeAll(const Networks::ExecutableLookup* lookup);
+    SpecialInterruptibleThreadPtr executeAll(const Networks::ExecutableLookup* lookup);
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     virtual Networks::NetworkFileHandle saveNetwork() const override;
@@ -169,7 +169,7 @@ namespace Engine {
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
 
-    boost::shared_ptr<std::thread> executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    SpecialInterruptibleThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
     ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
 

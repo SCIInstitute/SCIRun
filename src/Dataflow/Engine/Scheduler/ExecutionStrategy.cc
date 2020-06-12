@@ -75,10 +75,10 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::start()
 {
-  executionLaunchThread_.reset(new std::thread([this]() { executeTopContext(); }));
+  executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
 }
 
-boost::shared_ptr<std::thread> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+SpecialInterruptibleThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -125,7 +125,7 @@ void ExecutionQueueManager::stop()
 {
   if (executionLaunchThread_)
   {
-    //executionLaunchThread_->interrupt();
+    executionLaunchThread_->interrupt();
     executionLaunchThread_.reset();
   }
 }
