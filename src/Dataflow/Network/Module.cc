@@ -437,11 +437,11 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
-  catch (const std::thread_interrupted&)
-  {
-    error("MODULE ERROR: execution thread interrupted by user.");
-    threadStopValue = true;
-  }
+  //catch (const std::thread_interrupted&)
+  //{
+  //  error("MODULE ERROR: execution thread interrupted by user.");
+  //  threadStopValue = true;
+  //}
   catch (...)
   {
     error("MODULE ERROR: unhandled exception caught");

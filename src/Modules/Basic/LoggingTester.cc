@@ -69,12 +69,12 @@ void LoggingTester::execute()
 
   {
     ScopedTimeLogger s("Example ScopedTimeLogger, sleeping for 0.1 seconds");
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
   {
     ScopedTimeRemarker s(this, "Example ScopedTimeRemarker, sleeping for 0.1 seconds");
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
   LOG_FUNCTION_SCOPE;

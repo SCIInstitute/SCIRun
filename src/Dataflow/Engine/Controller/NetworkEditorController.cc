@@ -288,7 +288,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   for (const auto& input : module->inputPorts())
   {
@@ -314,7 +314,7 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   auto newMod = addModule(newModuleName);
 
   /// @todo: see above
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   /// @todo duplication
   if (portToConnect->isInput())

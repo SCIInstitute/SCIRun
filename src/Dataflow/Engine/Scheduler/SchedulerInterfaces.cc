@@ -70,7 +70,7 @@ void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& l
   if (!waitedAlready_ && lookup.containsViewScene())
   {
     logWarning("Waiting for rendering system initialization....");
-    boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+    std::this_thread::sleep_for(std::chrono::milliseconds(800));
     logWarning("Done waiting.");
     waitedAlready_ = true;
   }

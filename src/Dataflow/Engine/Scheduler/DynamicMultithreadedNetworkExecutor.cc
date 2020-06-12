@@ -82,8 +82,8 @@ namespace SCIRun {
 
           waitForStartupInit(*network_);
 
-          std::thread consume(boost::ref(*consumer_));
-          std::thread produce(boost::ref(*producer_));
+          std::thread consume(std::ref(*consumer_));
+          std::thread produce(std::ref(*producer_));
           consume.join();
           produce.join();
           executeThreads_->joinAll();
@@ -91,14 +91,14 @@ namespace SCIRun {
 
         void interruptModule(const std::string& id) const
         {
-          if (executeThreads_)
-          {
-            auto thread = executeThreads_->getThreadForModule(id);
-            if (thread)
-            {
-              thread->interrupt();
-            }
-          }
+          //if (executeThreads_)
+          //{
+          //  auto thread = executeThreads_->getThreadForModule(id);
+          //  if (thread)
+          //  {
+          //    thread->interrupt();
+          //  }
+          //}
         }
       private:
         mutable DynamicExecutor::ExecutionThreadGroupPtr executeThreads_;

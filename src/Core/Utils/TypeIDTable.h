@@ -31,7 +31,8 @@
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H
 
-#include <mutex>
+#include <Core/Thread/Mutex.h>
+#include <map>
 #include <boost/noncopyable.hpp>
 #include <boost/optional.hpp>
 #include <Core/Utils/share.h>
@@ -53,7 +54,7 @@ namespace Utility
     //do locking internally
     CtorInfoOption findConstructorInfo(const std::string& key) const
     {
-      std::mutex::scoped_lock s(lock_);
+      Core::Thread::Guard s(lock_);
       auto iter = lookup_.find(key);
       if (iter == lookup_.end())
         return CtorInfoOption();
@@ -62,7 +63,7 @@ namespace Utility
 
     bool registerConstructorInfo(const std::string& key, const CtorInfo& info)
     {
-      std::mutex::scoped_lock s(lock_);
+      Core::Thread::Guard s(lock_);
       auto iter = lookup_.find(key);
       if (iter != lookup_.end())
       {

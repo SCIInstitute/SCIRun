@@ -79,7 +79,7 @@ namespace SCIRun
               valueOption = state->getTransientValue(transientKey);
 
               tries++;
-              boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
+              std::this_thread::sleep_for(std::chrono::milliseconds(waitTime_));
             }
 
             Datatypes::DatatypeHandle output;

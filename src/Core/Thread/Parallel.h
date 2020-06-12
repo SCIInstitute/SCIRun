@@ -59,6 +59,7 @@ namespace Thread
     void create_thread(Args&&... args) { threads_.emplace_back(args...); }
 
     void join_all();
+    void clear() { threads_.clear(); }
   private:
     std::vector<std::thread> threads_;
   };

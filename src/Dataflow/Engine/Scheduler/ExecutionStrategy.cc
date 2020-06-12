@@ -125,7 +125,7 @@ void ExecutionQueueManager::stop()
 {
   if (executionLaunchThread_)
   {
-    executionLaunchThread_->interrupt();
+    //executionLaunchThread_->interrupt();
     executionLaunchThread_.reset();
   }
 }
