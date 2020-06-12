@@ -236,6 +236,8 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
       removePoint(center);
     else
       addPoint(center);
+
+    std::cout<<"pressed\n";
   }
 
   //TODO: remove point if event & RightMouseButton
@@ -244,14 +246,21 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
 
 void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
 {
-  QGraphicsView::mouseReleaseEvent(event);
-  if (event->buttons() & Qt::LeftButton)
-  {
-    removePoint(lastPos);
-    lastPos = mapToScene(event->pos());
-    addPoint(lastPos);
+  QGraphicsView::mouseMoveEvent(event);
 
+  if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier) {
+    removeDefaultLine();
+    auto size = alphaManager_.size();
+    alphaManager_.erase(lastPos);
+    lastPos = mapToScene(event->pos());
+    alphaManager_.insert(lastPos);
+    drawAlphaPolyline();
   }
+}
+
+void ColormapPreview::mouseReleaseEvent(QMouseEvent* event)
+{
+  alphaManager_.pushToState();
 }
 
 static QPen alphaLinePen(Qt::red, 1);
@@ -281,6 +290,7 @@ void ColormapPreview::addPoint(const QPointF& point)
   item->setFlag(QGraphicsItem::ItemIsMovable, true);
   item->setZValue(1);
   alphaManager_.insert(point);
+  alphaManager_.pushToState();
 
   drawAlphaPolyline();
 }
@@ -291,19 +301,26 @@ void ColormapPreview::removePoint(const QPointF& point)
 
   removeDefaultLine();
 
+  scene()->removeItem(getPoint(point));
+
+  alphaManager_.erase(point);
+  alphaManager_.pushToState();
+  drawAlphaPolyline();
+}
+
+QGraphicsItem* ColormapPreview::getPoint(const QPointF& point)
+{
   for (auto& item : scene()->items())
   {
     if (dynamic_cast<QGraphicsEllipseItem*>(item) &&
     item->boundingRect().left()<=point.x() && item->boundingRect().right()>=point.x() &&
     item->boundingRect().bottom()>=point.y() && item->boundingRect().top()<=point.y()) {
-        scene()->removeItem(item);
-
+        return item;
     }
   }
-
-  alphaManager_.erase(point);
-  drawAlphaPolyline();
 }
+
+
 
 bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 {
@@ -314,13 +331,11 @@ bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
-  pushToState();
 }
 
 void AlphaFunctionManager::erase(const QPointF& p)
 {
   alphaPoints_.erase(p);
-  pushToState();
 }
 
 int AlphaFunctionManager::size()
@@ -331,7 +346,6 @@ int AlphaFunctionManager::size()
 void AlphaFunctionManager::clear()
 {
   alphaPoints_.clear();
-  pushToState();
 }
 
 void AlphaFunctionManager::pushToState()
@@ -384,6 +398,7 @@ void ColormapPreview::clearAlphaPointGraphics()
       scene()->removeItem(item);
   }
   alphaManager_.clear();
+  alphaManager_.pushToState();
   addDefaultLine();
 }
 

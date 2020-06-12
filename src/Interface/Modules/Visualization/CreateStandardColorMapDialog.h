@@ -52,11 +52,11 @@ namespace SCIRun {
       void clear();
       void insert(const QPointF& p);
       void erase(const QPointF& p);
+      void pushToState();
       int size();
       bool alreadyExists(const QPointF& p) const;
     private:
       void updateAlphaFunction();
-      void pushToState();
       std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       double pointYToAlpha(double y) const;
       QPointF colorToPoint(double color) const;
@@ -83,10 +83,8 @@ namespace SCIRun {
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         const boost::atomic<bool>& pulling,
         QWidget* parent = nullptr);
-    void addDefaultLine();
-    void addPoint(const QPointF& point);
-    void removePoint(const QPointF& point);
-    QPointF lastPos;
+      void addDefaultLine();
+      void addPoint(const QPointF& point);
     public Q_SLOTS:
       void clearAlphaPointGraphics();
     Q_SIGNALS:
@@ -94,9 +92,13 @@ namespace SCIRun {
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
       virtual void mouseMoveEvent(QMouseEvent* event) override;
+      virtual void mouseReleaseEvent(QMouseEvent* event) override;
     private:
       void removeDefaultLine();
       void drawAlphaPolyline();
+      QGraphicsItem* getPoint(const QPointF& point);
+      void removePoint(const QPointF& point);
+      QPointF lastPos;
 
       QGraphicsItem* alphaPath_;
       const QPointF defaultStart_;
