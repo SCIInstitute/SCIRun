@@ -437,7 +437,7 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
-  catch (const boost::thread_interrupted&)
+  catch (const std::thread_interrupted&)
   {
     error("MODULE ERROR: execution thread interrupted by user.");
     threadStopValue = true;

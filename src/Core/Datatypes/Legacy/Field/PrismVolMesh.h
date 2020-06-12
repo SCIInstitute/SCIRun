@@ -55,7 +55,6 @@
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
-#include <boost/thread.hpp>
 #include <boost/unordered_map.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
@@ -3091,7 +3090,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
@@ -3105,7 +3104,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::FACES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -3119,7 +3118,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -3133,7 +3132,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -3147,7 +3146,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -3161,7 +3160,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   // Wait until threads are done

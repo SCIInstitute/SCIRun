@@ -30,7 +30,8 @@
 #define CORE_THREAD_PARLLEL_H
 
 #include <boost/noncopyable.hpp>
-#include <boost/function.hpp>
+#include <thread>
+#include <vector>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
@@ -42,7 +43,7 @@ namespace Thread
   class SCISHARE Parallel : public boost::noncopyable
   {
   public:
-    typedef boost::function<void(int)> IndexedTask;
+    typedef std::function<void(int)> IndexedTask;
     static void RunTasks(IndexedTask task, int numProcs);
     static unsigned int NumCores();
     static void SetMaximumCores(unsigned int max);
@@ -50,6 +51,18 @@ namespace Thread
     static unsigned int maximumCoresSetByUser_;
     static unsigned int capByUserCoreCount(unsigned int numProcs);
   };
+
+  class SCISHARE ThreadGroup : public boost::noncopyable
+  {
+  public:
+    template <typename ...Args>
+    void create_thread(Args&&... args) { threads_.emplace_back(args...); }
+
+    void join_all();
+  private:
+    std::vector<std::thread> threads_;
+  };
+
 
 }}}
 

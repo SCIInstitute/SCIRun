@@ -30,7 +30,6 @@
 #include <Interface/qt_include.h>
 #include <QtConcurrent>
 #include "ui_Module.h"
-#include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>

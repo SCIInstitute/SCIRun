@@ -33,7 +33,6 @@
 #include <iostream>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
-#include <boost/thread.hpp>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Module.h>

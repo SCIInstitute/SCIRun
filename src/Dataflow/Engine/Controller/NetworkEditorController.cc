@@ -29,7 +29,6 @@
 /// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.cc
 
 #include <iostream>
-#include <boost/thread.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -616,7 +615,7 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+boost::shared_ptr<std::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
@@ -646,7 +645,7 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+boost::shared_ptr<std::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);

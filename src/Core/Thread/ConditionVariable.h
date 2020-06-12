@@ -31,7 +31,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <Core/Thread/Mutex.h>
-#include <boost/thread/condition_variable.hpp>  /// @todo: pimpl?
+#include <condition_variable>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
@@ -40,7 +40,7 @@ namespace Core
 {
   namespace Thread
   {
-    typedef boost::unique_lock<boost::mutex> UniqueLock;
+    typedef std::unique_lock<std::mutex> UniqueLock;
 
     class SCISHARE ConditionVariable : boost::noncopyable
     {
@@ -50,7 +50,7 @@ namespace Core
       void conditionBroadcast();
     private:
       std::string name_;
-      boost::condition_variable impl_;
+      std::condition_variable impl_;
     };
   }
 }

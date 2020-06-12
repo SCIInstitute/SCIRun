@@ -31,7 +31,6 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;

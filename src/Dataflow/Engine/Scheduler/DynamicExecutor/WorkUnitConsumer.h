@@ -35,7 +35,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
-#include <boost/thread/thread.hpp>
+#include <Core/Thread/Parallel.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -63,13 +63,13 @@ namespace DynamicExecutor {
     }
     void clear()
     {
-      executeThreads_.reset(new boost::thread_group);
+      executeThreads_.reset(new std::thread_group);
       threadsByModuleId_.clear();
       std::ostringstream lockName;
       lockName << "threadMap " << this;
       mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
     }
-    boost::thread* getThreadForModule(const std::string& moduleId) const
+    std::thread* getThreadForModule(const std::string& moduleId) const
     {
       if (!mapLock_)
       {
@@ -85,8 +85,8 @@ namespace DynamicExecutor {
       return it->second;
     }
   private:
-    mutable boost::shared_ptr<boost::thread_group> executeThreads_;
-    std::map<std::string, boost::thread*> threadsByModuleId_;
+    mutable boost::shared_ptr<std::thread_group> executeThreads_;
+    std::map<std::string, std::thread*> threadsByModuleId_;
     mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
   };
 

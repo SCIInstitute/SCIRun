@@ -33,7 +33,6 @@
 #include <Core/Logging/ScopedFunctionLogger.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;

@@ -133,7 +133,7 @@ FieldTypeID::FieldTypeID(const std::string&type,
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
     if (FieldTypeIDTable == 0)
     {
@@ -169,7 +169,7 @@ SCIRun::CreateField(const std::string& type, MeshHandle mesh)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
     auto it = FieldTypeIDTable->find(type);
     if (it != FieldTypeIDTable->end())
@@ -192,7 +192,7 @@ SCIRun::CreateField(const std::string& type)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
     std::map<std::string,FieldTypeID*>::iterator it;
     it = FieldTypeIDTable->find(type);

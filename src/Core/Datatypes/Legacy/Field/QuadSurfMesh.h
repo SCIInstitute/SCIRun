@@ -55,7 +55,6 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <boost/thread.hpp>
 #include <boost/unordered_map.hpp>
 #include <Core/Persistent/PersistentSTL.h>
 
@@ -2637,7 +2636,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
@@ -2651,7 +2650,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NORMALS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -2665,7 +2664,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -2679,7 +2678,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -2693,7 +2692,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -2707,7 +2706,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    std::thread syncthread(syncclass);
   }
 
   // Wait until threads are done

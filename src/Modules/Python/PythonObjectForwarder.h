@@ -35,7 +35,6 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Python/PythonDatatypeConverter.h>
-#include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Modules/Python/share.h>
 

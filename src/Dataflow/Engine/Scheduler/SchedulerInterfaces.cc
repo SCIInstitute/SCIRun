@@ -28,7 +28,6 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
 #include <boost/lambda/core.hpp>
 #include <Core/Logging/Log.h>
 

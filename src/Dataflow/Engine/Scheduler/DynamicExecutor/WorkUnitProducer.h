@@ -35,7 +35,6 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 #include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
@@ -136,7 +135,7 @@ namespace SCIRun {
           //static Core::Logging::Logger2 log_;
           //bool shouldLog_;
           size_t numModules_;
-          mutable boost::thread::id id_;
+          mutable std::thread::id id_;
         };
 
         typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;

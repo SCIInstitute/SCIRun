@@ -28,7 +28,6 @@
 
 #include <Core/Thread/Parallel.h>
 #include <Core/Logging/Log.h>
-#include <boost/thread/thread.hpp>
 #include <vector>
 #include <iostream>
 
@@ -37,27 +36,27 @@ using namespace SCIRun::Core::Logging;
 
 void Parallel::RunTasks(IndexedTask task, int numProcs)
 {
-  boost::thread_group threads;
+  ThreadGroup threads;
 
-  for (int i = 0; i < capByUserCoreCount(numProcs); ++i)
+  for (unsigned int i = 0; i < capByUserCoreCount(numProcs); ++i)
   {
-    threads.create_thread(boost::bind(task, i));
+    threads.create_thread(task, i);
   }
 
-  try
-  {
+  //try
+  //{
     threads.join_all();
-  }
-  catch (boost::thread_interrupted&)
-  {
-    threads.interrupt_all();
-    throw;
-  }
+  //}
+  //catch (std::thread_interrupted&)
+  //{
+  //  threads.interrupt_all();
+  //  throw;
+  //}
 }
 
 unsigned int Parallel::NumCores()
 {
-  return capByUserCoreCount(boost::thread::hardware_concurrency());
+  return capByUserCoreCount(std::thread::hardware_concurrency());
 }
 
 void Parallel::SetMaximumCores(unsigned int max)
@@ -80,3 +79,12 @@ unsigned int Parallel::capByUserCoreCount(unsigned int numProcs)
 }
 
 unsigned int Parallel::maximumCoresSetByUser_(std::numeric_limits<unsigned int>::max());
+
+ void ThreadGroup::join_all()
+ {
+   for (auto& t : threads_)
+   {
+     if (t.joinable())
+       t.join();
+   }
+ }

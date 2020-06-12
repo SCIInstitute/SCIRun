@@ -32,7 +32,6 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/thread.hpp>
 #include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header

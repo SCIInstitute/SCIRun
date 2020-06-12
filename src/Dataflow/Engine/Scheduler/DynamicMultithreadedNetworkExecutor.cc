@@ -82,8 +82,8 @@ namespace SCIRun {
 
           waitForStartupInit(*network_);
 
-          boost::thread consume(boost::ref(*consumer_));
-          boost::thread produce(boost::ref(*producer_));
+          std::thread consume(boost::ref(*consumer_));
+          std::thread produce(boost::ref(*producer_));
           consume.join();
           produce.join();
           executeThreads_->joinAll();
@@ -128,7 +128,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  boost::thread execution(runner);
+  std::thread execution(runner);
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const
