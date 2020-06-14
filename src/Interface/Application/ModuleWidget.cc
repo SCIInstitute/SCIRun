@@ -1047,6 +1047,7 @@ ModuleWidget::~ModuleWidget()
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
+  theModule_->disconnectStateListeners();
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
 

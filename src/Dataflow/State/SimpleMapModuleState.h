@@ -56,6 +56,7 @@ namespace State {
     virtual TransientValueOption getTransientValue(const Name& name) const override;
     virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) override;
     virtual void fireTransientStateChangeSignal() override;
+    virtual void disconnectAll() override;
 
   protected:
     typedef std::map<Name, Value> StateMap;
