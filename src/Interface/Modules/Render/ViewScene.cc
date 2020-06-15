@@ -1174,11 +1174,11 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   if (selectedWidget_)
   {
     restoreObjColor();
-    selectedWidget_->changeID();
     updateModifiedGeometries();
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
-    for (auto vsd : viewScenesToUpdate) vsd->removeSelectedWidget();
+    selectedWidget_->changeID();
+    selectedWidget_.reset();
 
     auto spire = mSpire.lock();
     if(!spire) return;
@@ -1454,12 +1454,6 @@ void ViewSceneDialog::autoRotateDown()
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::removeSelectedWidget()
-{
-  selectedWidget_.reset();
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
   auto name = showFieldName.toStdString();
@@ -1542,19 +1536,9 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
     if (selectedWidget_)
-    {
-      for (auto vsd : viewScenesToUpdate) vsd->addSelectedWidget(selectedWidget_);
       widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_,
                                                                          WidgetColor::RED);
-    }
   }
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::addSelectedWidget(WidgetHandle widget)
-{
-  if (checkForSelectedWidget(widget))
-    selectedWidget_ = widget;
 }
 
 //--------------------------------------------------------------------------------------------------

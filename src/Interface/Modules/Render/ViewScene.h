@@ -254,12 +254,10 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      void removeSelectedWidget();
       bool canSelectWidget() const;
       bool tryWidgetSelection(QMouseEvent* event);
       void selectObject(const int x, const int y);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
-      void addSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
       void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
