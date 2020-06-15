@@ -41,7 +41,6 @@ SET(Core_Datatypes_SRCS
   SparseRowMatrixFromMap.cc
   String.cc
   MetadataObject.cc
-  SymmetricTensor.cc
 )
 
 SET(Core_Datatypes_HEADERS
@@ -51,7 +50,10 @@ SET(Core_Datatypes_HEADERS
   Datatype.h
   DatatypeFwd.h
   DenseMatrix.h
-  SymmetricTensor.h
+  TensorBase.h
+  DyadicTensor.h
+  SymmetricDyadicTensor.h
+  Dyadic3DTensor.h
   DenseColumnMatrix.h
   Geometry.h
   HasId.h
