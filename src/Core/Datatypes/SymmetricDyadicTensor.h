@@ -25,27 +25,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_DATATYPES_SYMMETRIC_DYADIC_TENSOR_H
+#define CORE_DATATYPES_SYMMETRIC_DYADIC_TENSOR_H
 
-#include <Core/Datatypes/SymmetricTensor.h>
+#include <Core/Datatypes/DyadicTensor.h>
+#include "Core/Datatypes/DenseMatrix.h"
+#include "Core/Datatypes/MatrixFwd.h"
+#include <Core/Datatypes/share.h>
 
-using namespace SCIRun;
-using namespace Core::Geometry;
-using namespace Core::Datatypes;
+namespace SCIRun {
+namespace Core {
+  namespace Datatypes {
+    template <typename T>
+    class SymmetricDyadicTensor : public DyadicTensor<T>
+    {
+     public:
+      SymmetricDyadicTensor(size_t dim) : DyadicTensor<T>(dim, dim), dim_(dim)
+      {
+        addSymmetryGroups();
+      }
+      SymmetricDyadicTensor(size_t dim, T val) : DyadicTensor<T>(dim, dim, val), dim_(dim)
+      {
+        addSymmetryGroups();
+      }
+      SymmetricDyadicTensor(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
+          : DyadicTensor<T>(eigvecs.size(), eigvecs.size()), dim_(eigvecs.size())
+      {
+        addSymmetryGroups();
+      }
 
-template <typename T>
-SymmetricTensor<T>::SymmetricTensor(const Vector& e1, const Vector& e2, const Vector& e3)
-  : Eigen::Tensor<T, 2, Eigen::RowMajor>(3, 3)
-{
-  eigvals_ = {e1.length(), e2.length(), e3.length()};
-  eigvecs_ = {e1 / eigvals_[0], e2 / eigvals_[1], e3 / eigvals_[2]};
+     private:
+      void addSymmetryGroups()
+      {
+        for (int i = 0; i < dim_; ++i)
+          for (int j = 0; j < dim_; ++j)
+            if (i != j) dsym_.addSymmetry(i, j);
+      }
+
+    protected:
+      size_t dim_ = 1;
+      Eigen::DynamicSGroup dsym_;
+    };
+  }
+}
 }
 
-template <typename T>
-SymmetricTensor<T>::SymmetricTensor(const Vector& e1, const Vector& e2, const Vector& e3,
-                                 double v1, double v2, double v3)
-  : Eigen::Tensor<T, 2, Eigen::RowMajor>(3, 3)
-{
-  eigvals_ = {v1, v2, v3};
-  eigvecs_ = {e1, e2, e3};
-}
-
+#endif

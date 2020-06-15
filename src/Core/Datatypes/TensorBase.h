@@ -25,27 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_DATATYPES_TENSOR_BASE_H
+#define CORE_DATATYPES_TENSOR_BASE_H
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <unsupported/Eigen/CXX11/TensorSymmetry>
+#include "unsupported/Eigen/CXX11/src/TensorSymmetry/Symmetry.h"
+#include <Core/Datatypes/share.h>
 
-#include <Core/Datatypes/SymmetricTensor.h>
-
-using namespace SCIRun;
-using namespace Core::Datatypes;
-using namespace Core::Geometry;
-using namespace ::testing;
-
-TEST(SymmetricTensorTest, CanConstructTensor)
-{
-  /* SymmetricTensor<double> t(Vector(1.6, 0.9, 4.3), */
-                            /* Vector(4.0, 6.4, 7), */
-                            /* Vector(6, 34, 1)); */
-  /* SymmetricTensor<double> t2; */
-  /* t(0,0) = 3.14; */
-  /* std::cout << "t val " << t << "\n"; */
-  /* std::cout << "t2 val " << t2 << "\n"; */
-  /* Eigen::Tensor<double, 2> t3(3,3); */
-  /* std::cout << "t3 val " << t3 << "\n"; */
+namespace SCIRun {
+namespace Core {
+  namespace Datatypes {
+    template <typename T, int Rank>
+    class TensorBase : public Eigen::Tensor<T, Rank>
+    {
+     public:
+      using Eigen::Tensor<T, Rank>::Tensor;
+    };
+  }
+}
 }
 
+#endif

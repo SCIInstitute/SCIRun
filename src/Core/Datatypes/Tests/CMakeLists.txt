@@ -37,7 +37,7 @@ SET(Core_Datatypes_Tests_SRCS
   SparseRowMatrixFromMapTest.cc
   MatrixTypeConversionTests.cc
   MatrixTestCases.h
-  SymmetricTensorTests.cc
+  DyadicTensorTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests
