@@ -50,6 +50,7 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName Y;
     static const Core::Algorithms::AlgorithmParameterName Z;
     static const Core::Algorithms::AlgorithmParameterName ScaleByField;
+    static const Core::Algorithms::AlgorithmParameterName ScaleByScaleFactor;
     static const Core::Algorithms::AlgorithmParameterName UseFieldPosition;
 
    private:

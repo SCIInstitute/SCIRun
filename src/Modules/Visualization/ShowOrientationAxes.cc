@@ -191,6 +191,7 @@ void ShowOrientationAxes::setStateDefaults()
   state->setValue(Y, 0.0);
   state->setValue(Z, 0.0);
   state->setValue(ScaleByField, false);
+  state->setValue(ScaleByScaleFactor, true);
   state->setValue(UseFieldPosition, false);
 }
 
@@ -204,7 +205,10 @@ void ShowOrientationAxes::execute()
       impl_->setField(inputField.get());
 
     impl_->setFieldScaling(state->getValue(ScaleByField).toBool() && inputField);
-    impl_->setScale(state->getValue(Scale).toDouble());
+    if (state->getValue(ScaleByScaleFactor).toBool())
+      impl_->setScale(state->getValue(Scale).toDouble());
+    else
+      impl_->setScale(1.0);
 
     impl_->setFieldPositioning(state->getValue(UseFieldPosition).toBool() && inputField);
     impl_->setPosition(state->getValue(X).toDouble(), state->getValue(Y).toDouble(),
@@ -219,4 +223,5 @@ const AlgorithmParameterName ShowOrientationAxes::X("X");
 const AlgorithmParameterName ShowOrientationAxes::Y("Y");
 const AlgorithmParameterName ShowOrientationAxes::Z("Z");
 const AlgorithmParameterName ShowOrientationAxes::ScaleByField("ScaleByField");
+const AlgorithmParameterName ShowOrientationAxes::ScaleByScaleFactor("ScaleByScaleFactor");
 const AlgorithmParameterName ShowOrientationAxes::UseFieldPosition("UseFieldPosition");

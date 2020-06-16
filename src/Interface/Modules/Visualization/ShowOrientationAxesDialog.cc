@@ -48,7 +48,21 @@ ShowOrientationAxesDialog::ShowOrientationAxesDialog(
   addDoubleSpinBoxManager(yDoubleSpinBox_, SOA::Y);
   addDoubleSpinBoxManager(zDoubleSpinBox_, SOA::Z);
   addCheckBoxManager(scaleByFieldCheckBox_,SOA::ScaleByField);
+  addCheckBoxManager(scaleFactorCheckBox_, SOA::ScaleByScaleFactor);
   addCheckBoxManager(usePositionOfFieldCheckBox_, SOA::UseFieldPosition);
+
+  connectButtonsToExecuteSignal();
+}
+
+void ShowOrientationAxesDialog::connectButtonsToExecuteSignal()
+{
+  connectButtonToExecuteSignal(upScaleToolButton_);
+  connectButtonToExecuteSignal(doubleUpScaleToolButton_);
+  connectButtonToExecuteSignal(downScaleToolButton_);
+  connectButtonToExecuteSignal(doubleDownScaleToolButton_);
+  connectButtonToExecuteSignal(scaleByFieldCheckBox_);
+  connectButtonToExecuteSignal(scaleFactorCheckBox_);
+  connectButtonToExecuteSignal(usePositionOfFieldCheckBox_);
 }
 
 void ShowOrientationAxesDialog::adjustScale(float scaleFactor) const

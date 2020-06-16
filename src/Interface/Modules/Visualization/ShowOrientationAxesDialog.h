@@ -40,6 +40,7 @@ namespace Gui {
       SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
   private:
    void adjustScale(float scaleFactor) const;
+   void connectButtonsToExecuteSignal();
    const float upScale_ = 1.25;
    const float doubleUpScale_ = upScale_ * upScale_;
    const float downScale_ = 0.8;
