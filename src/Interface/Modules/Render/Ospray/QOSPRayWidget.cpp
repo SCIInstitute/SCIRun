@@ -25,37 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include "QOSPRayWidget.h"
 
-#ifndef MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
-#define MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
+#include <iostream>
+#include <string>
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+#include "OSPRayRenderer.h"
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+using namespace SCIRun::Render;
 
-      class SCISHARE ShowFieldWithOspray : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<OsprayGeometryPortTag>
-      {
-      public:
-        ShowFieldWithOspray();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
-
-        uint32_t id;
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-      };
-    }
-  }
+QOSPRayWidget::QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer) :
+  QOpenGLWidget(parent), renderer(renderer)
+{
+  renderTimer = new QTimer(this);
+  connect(renderTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  renderTimer->start(16);
 }
 
-#endif
+QOSPRayWidget::~QOSPRayWidget()
+{
+
+}
+
+void QOSPRayWidget::initializeGL()
+{
+
+}
+
+void QOSPRayWidget::paintGL()
+{
+  renderer->renderFrame();
+}
+
+void QOSPRayWidget::resizeGL(int width, int height)
+{
+  renderer->resize(width, height);
+}
+
+void QOSPRayWidget::updateRenderer()
+{
+  if(isValid()) update();
+}
