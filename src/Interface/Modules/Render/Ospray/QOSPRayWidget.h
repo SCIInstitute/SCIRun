@@ -25,37 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#ifndef MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
-#define MODULES_VISUALIZATION_SHOWFIELDWITHOSPRAY_H
+#include <Interface/qt_include.h>
+#include <QOpenGLWidget>
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+namespace SCIRun { namespace Render {
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+class OSPRayRenderer;
 
-      class SCISHARE ShowFieldWithOspray : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<OsprayGeometryPortTag>
-      {
-      public:
-        ShowFieldWithOspray();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+class QOSPRayWidget : public QOpenGLWidget
+{
+Q_OBJECT
 
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
+public:
+  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
+  virtual ~QOSPRayWidget();
 
-        uint32_t id;
+public Q_SLOTS:
+    void updateRenderer();
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-      };
-    }
-  }
-}
+protected:
+  virtual void initializeGL();
+  virtual void paintGL();
+  virtual void resizeGL(int width, int height);
 
-#endif
+  OSPRayRenderer* renderer {nullptr};
+
+  QTimer* renderTimer {nullptr};
+
+  //virtual void mousePressEvent(QMouseEvent * event);
+  //virtual void mouseReleaseEvent(QMouseEvent * event);
+  //virtual void mouseMoveEvent(QMouseEvent * event);
+  //virtual void wheelEvent(QWheelEvent* event);
+};
+
+}}

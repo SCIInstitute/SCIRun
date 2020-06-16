@@ -218,5 +218,25 @@ namespace SCIRun {
       mArcLookAt->doRotation(vector);
       setClippingPlanes();
     }
+
+    ////----------------------------------------------------------------------------------------------
+    //glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
+    //{
+    //  float windowOriginX = 0.0f;
+    //  float windowOriginY = 0.0f;
+
+    //  // Transform incoming mouse coordinates into screen space.
+    //  glm::vec2 mouseScreenSpace;
+    //  mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX)
+    //    / static_cast<float>(screenParameters_->getScreenWidthPixels()) - 1.0f;
+    //  mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
+    //    / static_cast<float>(screenParameters_->getScreenHeightPixels()) - 1.0f;
+
+    //  // Rotation with flipped axes feels much more natural. It places it inside the
+    //  // correct OpenGL coordinate system (with origin in the center of the screen).
+    //  mouseScreenSpace.y = -mouseScreenSpace.y;
+
+    //  return mouseScreenSpace;
+    //}
   } // namespace Render
 } // namespace SCIRun
