@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Logging/Log.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -39,15 +40,15 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::DataIO;
 
-MODULE_INFO_DEF(ReadFile, DataIO, SCIRun)
+MODULE_INFO_DEF(AutoReadFile, DataIO, SCIRun)
 
-ReadFile::ReadFile() : Module(staticInfo_)
+AutoReadFile::AutoReadFile() : Module(staticInfo_)
 {
   INITIALIZE_PORT(Matrix);
   INITIALIZE_PORT(Field);
 }
 
-void ReadFile::setStateDefaults()
+void AutoReadFile::setStateDefaults()
 {
   auto state = get_state();
 
@@ -201,7 +202,7 @@ namespace detail
   };
 }
 
-void ReadFile::execute()
+void AutoReadFile::execute()
 {
   if (needToExecute())
   {
@@ -210,6 +211,11 @@ void ReadFile::execute()
     if (filename.empty())
     {
       THROW_ALGORITHM_INPUT_ERROR("Empty filename, try again.");
+    }
+
+    if (!boost::filesystem::exists(filename))
+    {
+      THROW_ALGORITHM_INPUT_ERROR("File does not exist.");
     }
 
     bool asMatrix = oport_connected(Matrix);

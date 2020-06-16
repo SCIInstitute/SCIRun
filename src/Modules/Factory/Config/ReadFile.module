@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "ReadFile",
+    "name": "AutoReadFile",
     "namespace": "DataIO",
     "status": "In progress",
     "description": "This module reads files intelligently.",
