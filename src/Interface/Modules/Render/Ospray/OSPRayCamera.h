@@ -32,7 +32,7 @@
 
 namespace SCIRun { namespace Render {
 
-enum class MouseButton
+enum class OsprayMouseButton
 {
   MOUSE_NONE,
   MOUSE_LEFT,
@@ -46,8 +46,8 @@ public:
   OSPRayCamera();
   ~OSPRayCamera();
 
-  void mousePress(float x, float y, MouseButton btn);
-  void mouseMove(float x, float y, MouseButton btn);
+  void mousePress(float x, float y, OsprayMouseButton btn);
+  void mouseMove(float x, float y, OsprayMouseButton btn);
   void mouseRelease();
   void mouseWheel(int delta);
 

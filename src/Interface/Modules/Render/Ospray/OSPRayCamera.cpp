@@ -59,12 +59,12 @@ OSPCamera OSPRayCamera::getOSPCamera()
   return camera_;
 }
 
-void OSPRayCamera::mousePress(float x, float y, MouseButton btn)
+void OSPRayCamera::mousePress(float x, float y, OsprayMouseButton btn)
 {
   switch(btn)
   {
-    case MouseButton::MOUSE_LEFT:
-    case MouseButton::MOUSE_RIGHT:
+    case OsprayMouseButton::MOUSE_LEFT:
+    case OsprayMouseButton::MOUSE_RIGHT:
       lookat_.doReferenceDown(glm::vec2(x, -y));
     break;
 
@@ -72,17 +72,17 @@ void OSPRayCamera::mousePress(float x, float y, MouseButton btn)
   }
 }
 
-void OSPRayCamera::mouseMove(float x, float y, MouseButton btn)
+void OSPRayCamera::mouseMove(float x, float y, OsprayMouseButton btn)
 {
   switch(btn)
   {
-  case MouseButton::MOUSE_LEFT:
+  case OsprayMouseButton::MOUSE_LEFT:
     lookat_.doRotation(glm::vec2(x, -y));
     pos_ = lookat_.getPos();
     up_ = lookat_.getUp();
     break;
 
-  case MouseButton::MOUSE_RIGHT:
+  case OsprayMouseButton::MOUSE_RIGHT:
     lookat_.doPan(glm::vec2(x, -y));
     pos_ = lookat_.getPos();
     target_ = lookat_.getTarget();

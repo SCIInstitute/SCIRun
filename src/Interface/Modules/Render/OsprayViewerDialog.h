@@ -43,7 +43,7 @@ namespace SCIRun {
 namespace Render {
   class QOSPRayWidget;
   class OSPRayRenderer;
-  enum class MouseButton;
+  enum class OsprayMouseButton;
 }
 
 namespace Gui {
@@ -100,7 +100,7 @@ private:
   void addToolbarButton(QPushButton* button);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
-  Render::MouseButton getRenderButton(QMouseEvent* event);
+  Render::OsprayMouseButton getRenderButton(QMouseEvent* event);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 

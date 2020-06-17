@@ -104,12 +104,12 @@ void OSPRayRenderer::resize(uint32_t width, uint32_t height)
   camera_->setAspect(static_cast<float>(width_) / height_);
 }
 
-void OSPRayRenderer::mousePress(float x, float y, MouseButton btn)
+void OSPRayRenderer::mousePress(float x, float y, OsprayMouseButton btn)
 {
   camera_->mousePress(x, y, btn);
 }
 
-void OSPRayRenderer::mouseMove(float x, float y, MouseButton btn)
+void OSPRayRenderer::mouseMove(float x, float y, OsprayMouseButton btn)
 {
   camera_->mouseMove(x, y, btn);
   ospResetAccumulation(frameBuffer_);
