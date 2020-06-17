@@ -66,6 +66,7 @@ namespace State {
     state_changed_sig_t stateChangedSignal_;
     std::map<Name, state_changed_sig_t> specificStateChangeSignalMap_;
     std::string name_;
+    std::vector<boost::signals2::connection> generalStateConnections_, specificStateConnections_;
   private:
     void print() const;
   };

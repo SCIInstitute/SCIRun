@@ -1159,7 +1159,7 @@ std::string Module::newHelpPageUrl() const
   return "https://sciinstitute.github.io/scirun.pages/modules.html#" + name();
 }
 
-void Module::disconnectStateListeners() 
+void Module::disconnectStateListeners()
 {
-  get_state()->
+  get_state()->disconnectAll();
 }

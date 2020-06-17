@@ -116,12 +116,15 @@ boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_chan
 {
   auto conn = stateChangedSignal_.connect(subscriber);
   LOG_TRACE("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
+  generalStateConnections_.push_back(conn);
   return conn;
 }
 
 boost::signals2::connection SimpleMapModuleState::connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber)
 {
-  return specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
+  auto c = specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
+  specificStateConnections_.push_back(c);
+  return c;
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
@@ -171,4 +174,12 @@ void SimpleMapModuleState::fireTransientStateChangeSignal()
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
 {
   return new SimpleMapModuleState(name);
+}
+
+void SimpleMapModuleState::disconnectAll()
+{
+  for (auto& c : generalStateConnections_)
+    c.disconnect();
+  for (auto& c : specificStateConnections_)
+    c.disconnect();
 }
