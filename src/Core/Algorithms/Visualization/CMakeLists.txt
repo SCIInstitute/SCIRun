@@ -28,14 +28,12 @@
 
 SET(Algorithms_Visualization_SRCS
   DataConversions.cc
-  OsprayRenderAlgorithm.cc
   OsprayDataAlgorithm.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   DataConversions.h
   RenderFieldState.h
-  OsprayRenderAlgorithm.h
   OsprayDataAlgorithm.h
 )
 

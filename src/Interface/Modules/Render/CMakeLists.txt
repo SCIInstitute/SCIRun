@@ -41,6 +41,7 @@ SET(Interface_Modules_Render_FORMS
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewScene.h
+  ViewSceneManager.h
   ViewSceneUtility.h
   ViewSceneControlsDock.h
   ViewOspraySceneConfig.h
@@ -79,6 +80,7 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
 
 SET(Interface_Modules_Render_SOURCES
   ViewScene.cc
+  ViewSceneManager.cc
   ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc

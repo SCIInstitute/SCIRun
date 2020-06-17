@@ -6,7 +6,6 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_RENDER_TESTS_HELPER_H
-#define INTERFACE_MODULES_RENDER_TESTS_HELPER_H
+#pragma once
 
-#include <Interface/Modules/Render/ES/RendererCollaborators.h>
-#include <Interface/Modules/Render/ES/RendererInterface.h>
-#include <Interface/Modules/Render/ES/SRCamera.h>
+#include <Interface/qt_include.h>
+#include <QOpenGLWidget>
 
-namespace SCIRun
+namespace SCIRun { namespace Render {
+
+class OSPRayRenderer;
+
+class QOSPRayWidget : public QOpenGLWidget
 {
-  namespace RenderTesting
-  {
-    class ScreenParametersTest : public SCIRun::Render::ScreenParameters
-    {
-    public:
-      size_t getScreenWidthPixels() const override;
-      size_t getScreenHeightPixels() const override;
-      void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-      SCIRun::Render::MouseMode getMouseMode() const override;
-    };
+Q_OBJECT
 
-    class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
-    {
-    public:
-      SCIRun::Render::SRCamera& camera() const override;
-      const SCIRun::Render::ScreenParams& screen() const override;
-    };
+public:
+  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
+  virtual ~QOSPRayWidget();
 
-  bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);
-  }
-}
+public Q_SLOTS:
+    void updateRenderer();
 
-#endif
+protected:
+  virtual void initializeGL();
+  virtual void paintGL();
+  virtual void resizeGL(int width, int height);
+
+  OSPRayRenderer* renderer {nullptr};
+
+  QTimer* renderTimer {nullptr};
+
+  //virtual void mousePressEvent(QMouseEvent * event);
+  //virtual void mouseReleaseEvent(QMouseEvent * event);
+  //virtual void mouseMoveEvent(QMouseEvent * event);
+  //virtual void wheelEvent(QWheelEvent* event);
+};
+
+}}

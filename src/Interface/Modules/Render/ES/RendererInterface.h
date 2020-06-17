@@ -48,6 +48,7 @@ namespace SCIRun
 
       virtual size_t getScreenWidthPixels() const = 0;
       virtual size_t getScreenHeightPixels() const = 0;
+      virtual void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) = 0;
       virtual MouseMode getMouseMode() const = 0;
     };
 
@@ -70,10 +71,14 @@ namespace SCIRun
       virtual void setLockPanning(bool lock) = 0;
       virtual void setLockRotation(bool lock) = 0;
       virtual bool hasShaderPromise() const = 0;
-      virtual void inputMouseDown(int x, int y, MouseButton btn) = 0;
-      virtual void inputMouseMove(int x, int y, MouseButton btn) = 0;
+      virtual void widgetMouseDown(MouseButton btn, int x, int y) = 0;
+      virtual void widgetMouseMove(MouseButton btn, int x, int y) = 0;
+      virtual void widgetMouseUp() = 0;
+      virtual void inputMouseDown(MouseButton btn, float x, float y) = 0;
+      virtual void inputMouseMove(MouseButton btn, float x, float y) = 0;
       virtual void inputMouseUp() = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;
+      virtual void setMouseMode(MouseMode mode) = 0;
       virtual void eventResize(size_t width, size_t height) = 0;
       virtual void doFrame(double constantDeltaTime) = 0;
     };
@@ -84,7 +89,6 @@ namespace SCIRun
       virtual ~RendererModuleInterface() {}
 
       virtual void setContext(QOpenGLContext* context) = 0;
-      virtual void setMouseMode(MouseMode mode) = 0;
       virtual void setBackgroundColor(const QColor& color) = 0;
       virtual void setCameraDistance(const float distance) = 0;
       virtual void setCameraLookAt(const glm::vec3& lookAt) = 0;

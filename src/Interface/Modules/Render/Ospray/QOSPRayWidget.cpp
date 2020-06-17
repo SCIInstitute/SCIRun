@@ -6,7 +6,6 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_RENDER_TESTS_HELPER_H
-#define INTERFACE_MODULES_RENDER_TESTS_HELPER_H
+#include "QOSPRayWidget.h"
 
-#include <Interface/Modules/Render/ES/RendererCollaborators.h>
-#include <Interface/Modules/Render/ES/RendererInterface.h>
-#include <Interface/Modules/Render/ES/SRCamera.h>
+#include <iostream>
+#include <string>
 
-namespace SCIRun
+#include "OSPRayRenderer.h"
+
+using namespace SCIRun::Render;
+
+QOSPRayWidget::QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer) :
+  QOpenGLWidget(parent), renderer(renderer)
 {
-  namespace RenderTesting
-  {
-    class ScreenParametersTest : public SCIRun::Render::ScreenParameters
-    {
-    public:
-      size_t getScreenWidthPixels() const override;
-      size_t getScreenHeightPixels() const override;
-      void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-      SCIRun::Render::MouseMode getMouseMode() const override;
-    };
-
-    class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
-    {
-    public:
-      SCIRun::Render::SRCamera& camera() const override;
-      const SCIRun::Render::ScreenParams& screen() const override;
-    };
-
-  bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);
-  }
+  renderTimer = new QTimer(this);
+  connect(renderTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  renderTimer->start(16);
 }
 
-#endif
+QOSPRayWidget::~QOSPRayWidget()
+{
+
+}
+
+void QOSPRayWidget::initializeGL()
+{
+
+}
+
+void QOSPRayWidget::paintGL()
+{
+  renderer->renderFrame();
+}
+
+void QOSPRayWidget::resizeGL(int width, int height)
+{
+  renderer->resize(width, height);
+}
+
+void QOSPRayWidget::updateRenderer()
+{
+  if(isValid()) update();
+}
