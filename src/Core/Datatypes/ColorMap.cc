@@ -308,6 +308,20 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
 {
   opacityList.push_back(0.5);
   opacityList.push_back(0.5);
+
+  const std::vector<ColorRGB>* colorData;
+  auto entry = standardColorMaps.find(name);
+  if (entry != standardColorMaps.end()) colorData = entry->second;
+  else                                  colorData = &rainbowData;
+
+  for(auto &color : *colorData)
+  {
+    colorList.push_back(color.r());
+    colorList.push_back(color.g());
+    colorList.push_back(color.b());
+  }
+
+  /*
   if(name.compare("Rainbow") == 0){
     colorList.push_back(0); colorList.push_back(0);     colorList.push_back(1);
     colorList.push_back(0); colorList.push_back(0.75);  colorList.push_back(0.75);
@@ -343,4 +357,5 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
     colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);
     colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
   }
+  */
 }

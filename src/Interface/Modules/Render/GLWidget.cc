@@ -107,9 +107,11 @@ SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  // Extract appropriate key.
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseMove(event->x(), event->y(), btn);
+  event->ignore();
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+{
   event->ignore();
 }
 
@@ -117,22 +119,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   makeCurrent();
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseDown(event->x(), event->y(), btn);
-  event->ignore();
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-  mGraphics->inputMouseUp();
   event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
-  mGraphics->inputMouseWheel(event->delta());
   event->ignore();
 }
 

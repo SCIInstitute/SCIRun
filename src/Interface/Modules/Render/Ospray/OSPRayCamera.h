@@ -6,7 +6,6 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +25,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_RENDER_TESTS_HELPER_H
-#define INTERFACE_MODULES_RENDER_TESTS_HELPER_H
 
-#include <Interface/Modules/Render/ES/RendererCollaborators.h>
-#include <Interface/Modules/Render/ES/RendererInterface.h>
-#include <Interface/Modules/Render/ES/SRCamera.h>
+#include <arc-look-at/ArcLookAt.hpp>
+#include <glm/glm.hpp>
+#include <ospray/ospray.h>
 
-namespace SCIRun
+namespace SCIRun { namespace Render {
+
+enum class MouseButton
 {
-  namespace RenderTesting
-  {
-    class ScreenParametersTest : public SCIRun::Render::ScreenParameters
-    {
-    public:
-      size_t getScreenWidthPixels() const override;
-      size_t getScreenHeightPixels() const override;
-      void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-      SCIRun::Render::MouseMode getMouseMode() const override;
-    };
+  MOUSE_NONE,
+  MOUSE_LEFT,
+  MOUSE_RIGHT,
+  MOUSE_MIDDLE,
+};
 
-    class BasicRendererObjectProviderStub : public SCIRun::Render::BasicRendererObjectProvider
-    {
-    public:
-      SCIRun::Render::SRCamera& camera() const override;
-      const SCIRun::Render::ScreenParams& screen() const override;
-    };
+class OSPRayCamera
+{
+public:
+  OSPRayCamera();
+  ~OSPRayCamera();
 
-  bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);
-  }
-}
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
+  void mouseRelease();
+  void mouseWheel(int delta);
 
-#endif
+  OSPCamera getOSPCamera();
+
+  void setAspect(float aspect) {aspect_ = aspect;}
+
+private:
+  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
+  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
+  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
+  float aspect_     { 1.0f};
+  float fovy_       {60.0f};
+  float aperture_   {0.0f};
+
+  spire::ArcLookAt lookat_ {       };
+  OSPCamera camera_        {nullptr};
+
+};
+
+} /*Render*/ } /*SCIRun*/
