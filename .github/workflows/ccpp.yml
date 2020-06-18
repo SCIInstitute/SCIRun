@@ -23,8 +23,7 @@ jobs:
     - name: Basic Test
       working-directory: bin/SCIRun
       run: |
-        ./SCIRun --version
-        ./SCIRun --list-modules
+        cat ./SCIRun | head -c 1024
 
   linux-build-headless:
 
