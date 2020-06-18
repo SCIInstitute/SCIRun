@@ -112,6 +112,20 @@ glm::mat4 ArcLookAt::getWorldViewTransform() const
 }
 
 //------------------------------------------------------------------------------
+glm::vec3 ArcLookAt::getUp()
+{
+  return glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f) * glm::mat3(mArcBall->getTransformation()));
+}
+
+//------------------------------------------------------------------------------
+glm::vec3 ArcLookAt::getPos()
+{
+  glm::vec3 relativePos = glm::vec3(0.0f, 0.0f, -1.0f) * glm::mat3(mArcBall->getTransformation());
+  relativePos = glm::normalize(relativePos) * mCamDistance;
+  return relativePos - mCamLookAt;
+}
+
+//------------------------------------------------------------------------------
 void ArcLookAt::autoview(const spire::AABB& bbox, float fov)
 {
   if (bbox.isNull()) return;
