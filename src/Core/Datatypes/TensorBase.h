@@ -38,8 +38,69 @@ namespace Core {
     template <typename T, int Rank>
     class TensorBase : public Eigen::Tensor<T, Rank>
     {
+      typedef Eigen::Tensor<T, Rank> parent;
+
      public:
-      using Eigen::Tensor<T, Rank>::Tensor;
+      using parent::Tensor;  // adding parent constructors
+
+      bool operator==(const TensorBase<T, Rank>& t) { return dimensionsEqual(t) && valuesEqual(t); }
+      bool operator!=(const TensorBase<T, Rank>& t) { return !(*this == t); }
+
+      bool dimensionsEqual(const TensorBase<T, Rank>& t)
+      {
+        if (parent::NumDimensions != t.NumDimensions) return false;
+
+        auto thisDim = parent::dimensions();
+        auto thatDim = t.dimensions();
+
+        for (int i = 0; i < parent::NumDimensions; ++i)
+          if (thisDim[i] != thatDim[i]) return false;
+
+        return true;
+      }
+
+      bool valuesEqual(const TensorBase<T, Rank>& t)
+      {
+        auto dim = parent::dimensions();
+        auto index = std::vector<int>(parent::NumDimensions, 0);
+        return checkForEquals(index, dim, t);
+      }
+
+      bool checkForEquals(
+          std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim, const TensorBase<T, Rank>& t)
+      {
+        if ((*this)(index) != t(index)) return false;
+
+        if (incrementIndex(index, dim))
+          return checkForEquals(index, dim, t);
+        else
+          return true;
+      }
+
+      bool incrementIndex(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim)
+      {
+        int d = index.size() - 1;
+
+        while (d >= 0)
+        {
+          auto dIndex = index[d] + 1;
+          if (dIndex >= dim[d])
+            --d;
+          else
+          {
+            index[d] = dIndex;
+            break;
+          }
+        }
+
+        if (d == 0 && (index[0] + 1 >= dim[0])) return false;
+        if (d != index.size() - 1)
+        {
+          for (int i = d + 1; i < index.size(); ++i)
+            index[i] = 0;
+        }
+        return true;
+      }
     };
   }
 }

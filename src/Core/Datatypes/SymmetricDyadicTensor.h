@@ -57,12 +57,16 @@ namespace Core {
      private:
       void addSymmetryGroups()
       {
+        Eigen::DynamicSGroup d;
         for (int i = 0; i < dim_; ++i)
-          for (int j = 0; j < dim_; ++j)
-            if (i != j) dsym_.addSymmetry(i, j);
+          for (int j = 0; j < i; ++j)
+          {
+            std::cout << "i " << i << " j " << j << "\n";
+            if (i != j) std::cout << "adding sym" << "\n", d.addSymmetry(j, i), std::cout << "added\n";;
+          }
       }
 
-    protected:
+     protected:
       size_t dim_ = 1;
       Eigen::DynamicSGroup dsym_;
     };

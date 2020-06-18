@@ -30,6 +30,7 @@
 #define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
 
 #include <Core/Datatypes/Matrix.h>
+#include "Core/Datatypes/MatrixFwd.h"
 #define register
 #include <Eigen/Dense>
 #undef register
@@ -47,6 +48,12 @@ namespace Datatypes {
     typedef Eigen::Matrix<T, Eigen::Dynamic, 1> EigenBase;
 
     explicit DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
+
+    DenseColumnMatrixGeneric(std::vector<T> vals) : EigenBase(vals.size())
+    {
+      for (int i = 0; i < vals.size(); ++i)
+        (*this)[i] = vals[i];
+    }
 
     /// This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
     template<typename OtherDerived>

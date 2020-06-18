@@ -47,9 +47,7 @@ namespace Core {
       DyadicTensor(size_t dim1, size_t dim2)
           : TensorBase<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
-        for (size_t i = 0; i < dim1; ++i)
-          for (size_t j = 0; j < dim2; ++j)
-            (*this)(i, j) = 0;
+        TensorBase<T, 2>::setZero();
       }
 
       DyadicTensor(size_t dim1, size_t dim2, T val)
@@ -134,6 +132,38 @@ namespace Core {
         return eigvals_;
       }
 
+      SCISHARE friend std::ostream& operator<<(std::ostream& os, const DyadicTensor<T>& t)
+      {
+        os << '[';
+        for (int i = 0; i < t.getDimension1(); ++i)
+          for (int j = 0; j < t.getDimension2(); ++j)
+          {
+            if (i + j != 0) os << ' ';
+            os << t(i, j);
+          }
+        os << ']';
+
+        return os;
+      }
+
+      SCISHARE friend std::istream& operator>>(std::istream& is, DyadicTensor<T>& t)
+      {
+        for (int i = 0; i < t.getDimension1(); ++i)
+          for (int j = 0; j < t.getDimension2(); ++j)
+            is >> t(i, j);
+
+        return is;
+      }
+
+      DyadicTensor<T>& operator=(const T& v)
+      {
+        for (int i = 0; i < getDimension1(); ++i)
+          for (int j = 0; j < getDimension2(); ++j)
+            (*this)(i, j) = v;
+        haveEigens_ = false;
+        return *this;
+      }
+
       size_t getDimension1() const { return dim1_; }
       size_t getDimension2() const { return dim2_; }
 
@@ -165,39 +195,6 @@ namespace Core {
             (*this)(i, j) = eigvecs_[i][j] * eigvals_[i];
       }
     };
-
-    template <typename T>
-    std::ostream& operator<<(std::ostream& os, const DyadicTensor<T>& t)
-    {
-      os << '[';
-      for (int i = 0; i < t.getDimension1(); ++i)
-        for (int j = 0; j < t.getDimension2(); ++j)
-        {
-          if (i + j != 0) os << ' ';
-          os << t(i, j);
-        }
-      os << ']';
-      // os << '[' << t(0, 0) << ' ' << t(0, 1) << ' ' << t(0, 2) << ' ' << t(1, 0) << ' ' << t(1,
-      // 1)
-      // << ' ' << t(1, 2) << ' ' << t(2, 0) << ' ' << t(2, 1) << ' ' << t(2, 2) << ']';
-
-      return os;
-    }
-
-    template <typename T>
-    std::istream& operator>>(std::istream& is, DyadicTensor<T>& t)
-    {
-      // t = DyadicTensor<T>();
-
-      for (int i = 0; i < t.getDimension1(); ++i)
-        for (int j = 0; j < t.getDimension2(); ++j)
-          is >> t(i, j);
-
-      // is >> t(0, 0) >> t(0, 1) >> t(0, 2) >> t(1, 0) >> t(1, 1) >> t(1, 2) >> t(2, 0) >> t(2, 1)
-      // >> t(2, 2);
-
-      return is;
-    }
   }
 }
 }
