@@ -32,6 +32,7 @@
 #include <boost/noncopyable.hpp>
 #include <thread>
 #include <vector>
+#include <functional>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
