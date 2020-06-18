@@ -1010,7 +1010,7 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
         temp = glm::translate(glm::mat4(1.0f), center_bb);
         trans_bb = temp * trans_bb;
         int index = 0;
-        for (auto i : clippingPlanes_)
+        for (const auto& i : clippingPlanes_)
         {
           glm::vec3 n3(i.x, i.y, i.z);
           float d = i.d;
