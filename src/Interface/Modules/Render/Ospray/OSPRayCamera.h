@@ -28,17 +28,10 @@
 
 #include <arc-look-at/ArcLookAt.hpp>
 #include <glm/glm.hpp>
+#include <Interface/Modules/Render/RendererInterfaceCollaborators.h>
 #include <ospray/ospray.h>
 
 namespace SCIRun { namespace Render {
-
-enum class OsprayMouseButton
-{
-  MOUSE_NONE,
-  MOUSE_LEFT,
-  MOUSE_RIGHT,
-  MOUSE_MIDDLE,
-};
 
 class OSPRayCamera
 {
@@ -46,8 +39,8 @@ public:
   OSPRayCamera();
   ~OSPRayCamera();
 
-  void mousePress(float x, float y, OsprayMouseButton btn);
-  void mouseMove(float x, float y, OsprayMouseButton btn);
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
   void mouseWheel(int delta);
 
