@@ -122,18 +122,27 @@ void CreateStandardColorMapDialog::selectCustomColorMax()
 
 void CreateStandardColorMapDialog::pullSpecial()
 {
-  auto pointsVec = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
-  if (pointsVec.empty())
+  auto val = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
+
+  auto pointsVec = AlphaFunctionManager::convertPointsFromState(val);
+  previewColorMap_->updateFromState(pointsVec);
+
+}
+
+void ColormapPreview::updateFromState(const LogicalAlphaPointSet& points)
+{
+  if (points.empty())
   {
-    previewColorMap_->addDefaultLine();
+    addDefaultLine();
   }
   else
   {
-    for (const auto& p : pointsVec)
+    if (alphaManager_.equals(points))
     {
-      auto pVec = p.toVector();
-      previewColorMap_->addPoint(QPointF(pVec[0].toDouble() * colormapPreviewWidth, (1.0f - pVec[1].toDouble()) * colormapPreviewHeight));
+      qDebug() << "ALPHA POINTS SAME, NOT CHANGING GUI FROM PULL";
+      return;
     }
+    addPointsAndLineFromFile(points);
   }
 }
 
@@ -227,17 +236,18 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
 {
+  qDebug() << "\n\n~~~~~~~~~~~~~~~~~~pressed at" << event->pos();
+
   QGraphicsView::mousePressEvent(event);
+
   if (event->buttons() & Qt::LeftButton)
   {
     auto center = mapToScene(event->pos());
-    lastPos = mapToScene(event->pos());
-    if(event->modifiers() == Qt::ShiftModifier)
-      removePoint(center);
-    else
-      addPoint(center);
 
-    std::cout<<"pressed\n";
+    if (event->modifiers() == Qt::ShiftModifier)
+      removePointAndUpdateLine(center);
+    else
+      addPointAndUpdateLine(center);
   }
 
   //TODO: remove point if event & RightMouseButton
@@ -248,12 +258,10 @@ void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
 {
   QGraphicsView::mouseMoveEvent(event);
 
-  if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier) {
+  if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier) 
+  {
     removeDefaultLine();
     auto size = alphaManager_.size();
-    alphaManager_.erase(lastPos);
-    lastPos = mapToScene(event->pos());
-    alphaManager_.insert(lastPos);
     drawAlphaPolyline();
   }
 }
@@ -275,70 +283,129 @@ void ColormapPreview::addDefaultLine()
 
 void ColormapPreview::removeDefaultLine()
 {
+  qDebug() << "alphaPath" << alphaPath_;
+  if (alphaPath_)
+    scene()->removeItem(alphaPath_);
   delete alphaPath_;
   alphaPath_ = nullptr;
 }
 
-void ColormapPreview::addPoint(const QPointF& point)
-{
-  if (alphaManager_.alreadyExists(point)) return;
-
-  removeDefaultLine();
-
-  static QPen pointPen(Qt::white, 1);
-  auto item = scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
-  item->setFlag(QGraphicsItem::ItemIsMovable, true);
-  item->setZValue(1);
-  alphaManager_.insert(point);
-  alphaManager_.pushToState();
-
-  drawAlphaPolyline();
-}
-
-void ColormapPreview::removePoint(const QPointF& point)
-{
-  if (!alphaManager_.alreadyExists(point)) return;
-
-  removeDefaultLine();
-
-  scene()->removeItem(getPoint(point));
-
-  alphaManager_.erase(point);
-  alphaManager_.pushToState();
-  drawAlphaPolyline();
-}
-
-QGraphicsItem* ColormapPreview::getPoint(const QPointF& point)
-{
-  for (auto& item : scene()->items())
+  ColorMapPreviewPoint::ColorMapPreviewPoint(qreal x, qreal y)
+    : QGraphicsEllipseItem(x - 4, y - 4, 8, 8), center_(x, y)
   {
-    if (dynamic_cast<QGraphicsEllipseItem*>(item) &&
-    item->boundingRect().left()<=point.x() && item->boundingRect().right()>=point.x() &&
-    item->boundingRect().bottom()>=point.y() && item->boundingRect().top()<=point.y()) {
-        return item;
+    setPen(QPen(Qt::white, 1));
+    setBrush(QBrush(Qt::black));
+    //setFlag(QGraphicsItem::ItemIsMovable, true);
+    setZValue(1);
+  }
+ 
+void ColormapPreview::addPointAndUpdateLine(const QPointF& point)
+{
+  qDebug() << __FUNCTION__ << point;
+
+  if (alphaManager_.alreadyExists(point)) 
+    return;
+    
+  removeDefaultLine();
+  
+  auto item = justAddPoint(point);
+  
+  
+
+  drawAlphaPolyline();
+}
+
+ColorMapPreviewPoint* ColormapPreview::justAddPoint(const QPointF& point)
+{
+  qDebug() << __FUNCTION__ << point;
+  auto item = new ColorMapPreviewPoint(point.x(), point.y());
+  scene()->addItem(item);
+  alphaManager_.insert(item->center());
+  return item;
+}
+
+void ColormapPreview::updateLine()
+{
+  removeDefaultLine();
+  drawAlphaPolyline();
+}
+
+void ColormapPreview::addPointsAndLineFromFile(const LogicalAlphaPointSet& pointsToLoad)
+{
+  for (const auto& p : pointsToLoad)
+    justAddPoint(p);
+
+  updateLine();
+}
+
+void ColormapPreview::removePointAndUpdateLine(const QPointF& point)
+{
+  qDebug() << __FUNCTION__ << point;
+  removeDefaultLine();
+
+  qDebug() << "need to remove at" << point;
+  auto pts = scene()->items(point);
+  qDebug() << pts;
+
+  ColorMapPreviewPoint* itemToRemove = nullptr;
+  for (auto item : pts) 
+  {
+    if (auto c = dynamic_cast<ColorMapPreviewPoint*>(item))
+    {
+      itemToRemove = c;
+      break;
     }
   }
+  if (itemToRemove) 
+  {
+    scene()->removeItem(itemToRemove);
+    alphaManager_.erase(itemToRemove->center());
+    delete itemToRemove;
+  }
+
+  drawAlphaPolyline();
 }
-
-
 
 bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 {
+  qDebug() << __FUNCTION__ << point;
+  printSet();
+
+  bool ret;
+  if (alphaPoints_.count(point) > 0)
+    ret = true;
+
+  if (ret)
+  {
+    qDebug() << "\t\treturning true";
+    return ret;
+  }
   const double x = point.x();
-  return std::find_if(alphaPoints_.begin(), alphaPoints_.end(), [=](const QPointF& p) { return p.x() == x; }) != alphaPoints_.end();
+  ret = std::find_if(alphaPoints_.begin(), alphaPoints_.end(), [=](const QPointF& p) { return p.x() == x; }) != alphaPoints_.end();
+  qDebug() << "\t\treturning" << ret;
+  return ret;
 }
 
 void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
+  qDebug() << "inserting" << p;
+  printSet();
+}
+
+void AlphaFunctionManager::printSet() const
+{
+  std::for_each(alphaPoints_.begin(), alphaPoints_.end(), [](const QPointF& p) { qDebug() << '\t' << p; });
 }
 
 void AlphaFunctionManager::erase(const QPointF& p)
 {
   alphaPoints_.erase(p);
+  qDebug() << "erasing" << p;
+  printSet();
 }
 
-int AlphaFunctionManager::size()
+size_t AlphaFunctionManager::size() const
 {
   return alphaPoints_.size();
 }
@@ -354,17 +421,29 @@ void AlphaFunctionManager::pushToState()
   {
     if (!alphaPoints_.empty())
     {
-      Variable::List alphaPointsVec;
-      auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
-      std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"),
-        makeAnonymousVariableList(p.x()/colormapPreviewWidth, 1.0f - p.y()/colormapPreviewHeight)); });
-      state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
+      state_->setValue(Parameters::AlphaUserPointsVector, convertPointsToState(alphaPoints_));
     }
     else
     {
       state_->setValue(Parameters::AlphaUserPointsVector, Variable::List());
     }
   }
+}
+
+LogicalAlphaPointSet AlphaFunctionManager::convertPointsFromState(const Variable::List& statePoints)
+{
+  auto toQPointF = [](const Variable& v) { auto v2 = v.toVector(); return QPointF(v2[0].toDouble() * colormapPreviewWidth, (1.0 - v2[1].toDouble()) * colormapPreviewHeight); };
+  auto pairVec = toTypedVector<QPointF>(statePoints, toQPointF);
+  return LogicalAlphaPointSet(pairVec.begin(), pairVec.end());
+}
+
+Variable::List AlphaFunctionManager::convertPointsToState(const LogicalAlphaPointSet& points)
+{
+  Variable::List alphaPointsVec;
+  auto begin = points.begin(), end = points.end();
+  std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"),
+    makeAnonymousVariableList(p.x() / colormapPreviewWidth, 1.0f - p.y() / colormapPreviewHeight)); });
+  return alphaPointsVec;
 }
 
 void ColormapPreview::drawAlphaPolyline()
