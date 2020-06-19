@@ -32,7 +32,7 @@ SET(QWT_CACHE_ARGS
   "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
   )
 
-SET(qwt_GIT_TAG "origin/qt5-static-6.1.4")
+SET(qwt_GIT_TAG "origin/qt5-static-6.1.5")
 LIST(APPEND QWT_CACHE_ARGS
   "-DQt5_PATH:PATH=${Qt5_PATH}"
   "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
