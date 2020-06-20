@@ -225,6 +225,7 @@ namespace SCIRun {
       void wheelEvent(QWheelEvent* event) override;
       void keyPressEvent(QKeyEvent* event) override;
       void keyReleaseEvent(QKeyEvent*event) override;
+      void focusOutEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
 

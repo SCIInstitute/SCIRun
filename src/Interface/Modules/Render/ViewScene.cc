@@ -1224,6 +1224,10 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   }
 }
 
+void ViewSceneDialog::focusOutEvent(QFocusEvent* event)
+{
+  shiftdown_ = false;
+}
 
 
 //--------------------------------------------------------------------------------------------------
