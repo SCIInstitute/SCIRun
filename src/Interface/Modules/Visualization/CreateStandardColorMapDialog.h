@@ -113,7 +113,7 @@ namespace SCIRun {
         QWidget* parent = nullptr);
       void addDefaultLine();
       void addPointAndUpdateLine(const QPointF& point);
-      ColorMapPreviewPoint* justAddPoint(const QPointF& point);
+      void justAddPoint(const QPointF& point);
       void updateLine();
       void addPointsAndLineFromFile(const LogicalAlphaPointSet& pointsToLoad);
       void updateFromState(const LogicalAlphaPointSet& points);

@@ -258,10 +258,9 @@ void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
 {
   QGraphicsView::mouseMoveEvent(event);
 
-  if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier) 
+  if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier)
   {
     removeDefaultLine();
-    auto size = alphaManager_.size();
     drawAlphaPolyline();
   }
 }
@@ -298,30 +297,26 @@ void ColormapPreview::removeDefaultLine()
     //setFlag(QGraphicsItem::ItemIsMovable, true);
     setZValue(1);
   }
- 
+
 void ColormapPreview::addPointAndUpdateLine(const QPointF& point)
 {
   qDebug() << __FUNCTION__ << point;
 
-  if (alphaManager_.alreadyExists(point)) 
+  if (alphaManager_.alreadyExists(point))
     return;
-    
-  removeDefaultLine();
-  
-  auto item = justAddPoint(point);
-  
-  
 
+  removeDefaultLine();
+
+  justAddPoint(point);
   drawAlphaPolyline();
 }
 
-ColorMapPreviewPoint* ColormapPreview::justAddPoint(const QPointF& point)
+void ColormapPreview::justAddPoint(const QPointF& point)
 {
   qDebug() << __FUNCTION__ << point;
   auto item = new ColorMapPreviewPoint(point.x(), point.y());
   scene()->addItem(item);
   alphaManager_.insert(item->center());
-  return item;
 }
 
 void ColormapPreview::updateLine()
@@ -348,7 +343,7 @@ void ColormapPreview::removePointAndUpdateLine(const QPointF& point)
   qDebug() << pts;
 
   ColorMapPreviewPoint* itemToRemove = nullptr;
-  for (auto item : pts) 
+  for (auto item : pts)
   {
     if (auto c = dynamic_cast<ColorMapPreviewPoint*>(item))
     {
@@ -356,7 +351,7 @@ void ColormapPreview::removePointAndUpdateLine(const QPointF& point)
       break;
     }
   }
-  if (itemToRemove) 
+  if (itemToRemove)
   {
     scene()->removeItem(itemToRemove);
     alphaManager_.erase(itemToRemove->center());
@@ -371,7 +366,7 @@ bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
   qDebug() << __FUNCTION__ << point;
   printSet();
 
-  bool ret;
+  bool ret = false;
   if (alphaPoints_.count(point) > 0)
     ret = true;
 
