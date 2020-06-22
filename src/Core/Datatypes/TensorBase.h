@@ -41,10 +41,36 @@ namespace Core {
       typedef Eigen::Tensor<T, Rank> parent;
 
      public:
+      // using parent::Index;
+      // using parent::StorageKind;
       using parent::Tensor;  // adding parent constructors
+      // using parent::operator==;
 
       bool operator==(const TensorBase<T, Rank>& t) { return dimensionsEqual(t) && valuesEqual(t); }
       bool operator!=(const TensorBase<T, Rank>& t) { return !(*this == t); }
+
+      /**
+      template <class OtherDerived>
+      TensorBase<T, Rank> operator+(const OtherDerived& other) const
+      {
+        return parent::operator+(static_cast<parent>(other));
+      }
+
+      template <class OtherDerived>
+      Eigen::TensorCwiseBinaryOp<
+        Eigen::internal::scalar_cmp_op<T, T, Eigen::internal::cmp_EQ>,
+          const OtherDerived, const OtherDerived>
+      operator==(const OtherDerived& other) const
+      {
+        return parent::operator==(static_cast<parent>(other));
+      }
+      **/
+
+      template <class OtherDerived>
+      bool operator!=(const OtherDerived& other) const
+      {
+        return !parent::operator==(static_cast<parent>(other));
+      }
 
       bool dimensionsEqual(const TensorBase<T, Rank>& t)
       {
@@ -55,6 +81,9 @@ namespace Core {
 
         for (int i = 0; i < parent::NumDimensions; ++i)
           if (thisDim[i] != thatDim[i]) return false;
+
+        // TensorBase<double, 2> et(2, 2);
+        // auto b = et + et;
 
         return true;
       }

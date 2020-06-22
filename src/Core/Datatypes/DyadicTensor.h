@@ -41,17 +41,17 @@ namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
     template <typename T>
-    class DyadicTensor : public TensorBase<T, 2>
+    class DyadicTensor : public Eigen::Tensor<T, 2>
     {
      public:
       DyadicTensor(size_t dim1, size_t dim2)
-          : TensorBase<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
+        : Eigen::Tensor<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
-        TensorBase<T, 2>::setZero();
+        Eigen::Tensor<T, 2>::setZero();
       }
 
       DyadicTensor(size_t dim1, size_t dim2, T val)
-          : TensorBase<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
+        : Eigen::Tensor<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
         for (size_t i = 0; i < dim1; ++i)
           for (size_t j = 0; j < dim2; ++j)
@@ -59,12 +59,19 @@ namespace Core {
       }
 
       DyadicTensor(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
-        : TensorBase<T, 2>(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()), dim2_(eigvecs[0].size())
+        : Eigen::Tensor<T, 2>(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()), dim2_(eigvecs[0].size())
       {
         setEigenVectors(eigvecs);
         setTensorValues();
         haveEigens_ = true;
       }
+
+      // template <class OtherDerived>
+      // DyadicTensor<T>& operator==(const OtherDerived& other)
+      // {
+        // TensorBase<T, 2>::operator==(other);
+        // return *this;
+      // }
 
       void setEigenVectors(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
       {
