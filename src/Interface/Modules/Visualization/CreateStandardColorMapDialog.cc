@@ -45,6 +45,8 @@ namespace
   const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
 }
 
+#define DEVLOG 0
+
 CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
@@ -126,7 +128,6 @@ void CreateStandardColorMapDialog::pullSpecial()
 
   auto pointsVec = AlphaFunctionManager::convertPointsFromState(val);
   previewColorMap_->updateFromState(pointsVec);
-
 }
 
 void ColormapPreview::updateFromState(const LogicalAlphaPointSet& points)
@@ -139,7 +140,9 @@ void ColormapPreview::updateFromState(const LogicalAlphaPointSet& points)
   {
     if (alphaManager_.equals(points))
     {
+      #if DEVLOG
       qDebug() << "ALPHA POINTS SAME, NOT CHANGING GUI FROM PULL";
+      #endif
       return;
     }
     addPointsAndLineFromFile(points);
@@ -154,7 +157,7 @@ static ColorRGB toColorRGB(QColor& in)
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 {
   ColorMapHandle cmap;
-  if(s.toStdString() == "Custom" )
+  if (s.toStdString() == "Custom")
   {
     customColorButton0_->setVisible(true);
     customColorButton1_->setVisible(true);
@@ -236,7 +239,9 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
 {
+  #if DEVLOG
   qDebug() << "\n\n~~~~~~~~~~~~~~~~~~pressed at" << event->pos();
+  #endif
 
   QGraphicsView::mousePressEvent(event);
 
@@ -282,7 +287,9 @@ void ColormapPreview::addDefaultLine()
 
 void ColormapPreview::removeDefaultLine()
 {
+  #if DEVLOG
   qDebug() << "alphaPath" << alphaPath_;
+  #endif
   if (alphaPath_)
     scene()->removeItem(alphaPath_);
   delete alphaPath_;
@@ -300,7 +307,9 @@ void ColormapPreview::removeDefaultLine()
 
 void ColormapPreview::addPointAndUpdateLine(const QPointF& point)
 {
+  #if DEVLOG
   qDebug() << __FUNCTION__ << point;
+  #endif
 
   if (alphaManager_.alreadyExists(point))
     return;
@@ -313,7 +322,9 @@ void ColormapPreview::addPointAndUpdateLine(const QPointF& point)
 
 void ColormapPreview::justAddPoint(const QPointF& point)
 {
+  #if DEVLOG
   qDebug() << __FUNCTION__ << point;
+  #endif
   auto item = new ColorMapPreviewPoint(point.x(), point.y());
   scene()->addItem(item);
   alphaManager_.insert(item->center());
@@ -335,12 +346,20 @@ void ColormapPreview::addPointsAndLineFromFile(const LogicalAlphaPointSet& point
 
 void ColormapPreview::removePointAndUpdateLine(const QPointF& point)
 {
+  #if DEVLOG
   qDebug() << __FUNCTION__ << point;
+  #endif
   removeDefaultLine();
 
+  #if DEVLOG
   qDebug() << "need to remove at" << point;
+  #endif
+
   auto pts = scene()->items(point);
+
+  #if DEVLOG
   qDebug() << pts;
+  #endif
 
   ColorMapPreviewPoint* itemToRemove = nullptr;
   for (auto item : pts)
@@ -363,8 +382,10 @@ void ColormapPreview::removePointAndUpdateLine(const QPointF& point)
 
 bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 {
+  #if DEVLOG
   qDebug() << __FUNCTION__ << point;
   printSet();
+  #endif
 
   bool ret = false;
   if (alphaPoints_.count(point) > 0)
@@ -372,20 +393,26 @@ bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 
   if (ret)
   {
+    #if DEVLOG
     qDebug() << "\t\treturning true";
+    #endif
     return ret;
   }
   const double x = point.x();
   ret = std::find_if(alphaPoints_.begin(), alphaPoints_.end(), [=](const QPointF& p) { return p.x() == x; }) != alphaPoints_.end();
+  #if DEVLOG
   qDebug() << "\t\treturning" << ret;
+  #endif
   return ret;
 }
 
 void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
+  #if DEVLOG
   qDebug() << "inserting" << p;
   printSet();
+  #endif
 }
 
 void AlphaFunctionManager::printSet() const
@@ -396,8 +423,10 @@ void AlphaFunctionManager::printSet() const
 void AlphaFunctionManager::erase(const QPointF& p)
 {
   alphaPoints_.erase(p);
+  #if DEVLOG
   qDebug() << "erasing" << p;
   printSet();
+  #endif
 }
 
 size_t AlphaFunctionManager::size() const
