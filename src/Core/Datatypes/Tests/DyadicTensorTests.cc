@@ -200,7 +200,12 @@ TEST(DyadicTensorTest, DifferentDimensionsNotEquivalent)
   DyadicTensor<double> t2({DenseColumnMatrix({1, 0, 0, 0}), DenseColumnMatrix({0, 1, 0, 0}),
       DenseColumnMatrix({0, 0, 1, 0}), DenseColumnMatrix({0, 0, 0, 1})});
 
-  DyadicTensor<double> t3 = t * t2;
+  Eigen::Tensor<double, 2> t3(4,4);
+  t3(1,2) = 6.9;
+  t2 = t3;
+  std::cout << t2 << "\n";
+  // ASSERT_EQ(t2, t3);
+  // DyadicTensor<double> t3 = DyadicTensor<double>(t * t2);
 }
 
 TEST(DyadicTensorTest, Equals)
@@ -234,7 +239,9 @@ TEST(DyadicTensorTest, PlusOperator)
   DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
   DyadicTensor<double> result({DenseColumnMatrix({8, 11}), DenseColumnMatrix({9, 9})});
 
-  // std::cout << "t+t2\n" << t+t2 << "\n";
+  DyadicTensor<double> output = t + t2;
+  std::cout << output << "\n";
+  std::cout << result << "\n";
 
-  // ASSERT_TRUE((t + t2) == result);
+  // ASSERT_TRUE((t * t2) == result);
 }
