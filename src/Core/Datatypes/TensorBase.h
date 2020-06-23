@@ -49,6 +49,24 @@ namespace Core {
       bool operator==(const TensorBase<T, Rank>& t) { return dimensionsEqual(t) && valuesEqual(t); }
       bool operator!=(const TensorBase<T, Rank>& t) { return !(*this == t); }
 
+      TensorBase& operator=(const Eigen::Tensor<T, 2>& other)
+      {
+        this->Eigen::Tensor<T, 2>::operator=(other);
+        return *this;
+      }
+
+      template <typename OtherDerived>
+      Eigen::Tensor<T, 2> operator*(const OtherDerived& other)
+      {
+        return static_cast<Eigen::Tensor<T, 2>>(*this) * static_cast<Eigen::Tensor<T, 2>>(other);
+      }
+
+      template<typename OtherDerived>
+      Eigen::Tensor<T, 2> operator+(const OtherDerived& other)
+      {
+        return static_cast<Eigen::Tensor<T, 2>>(*this) + static_cast<Eigen::Tensor<T, 2>>(other);
+      }
+
       /**
       template <class OtherDerived>
       TensorBase<T, Rank> operator+(const OtherDerived& other) const

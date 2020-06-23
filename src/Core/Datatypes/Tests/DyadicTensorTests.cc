@@ -187,10 +187,10 @@ TEST(DyadicTensorTest, Equivalent)
   Dyadic3DTensor<double> t(nativeEigvecs);
   DyadicTensor<double> t2(vecs);
 
-  // ASSERT_FALSE(t == t2);
-  // ASSERT_TRUE(t != t2);
-  // ASSERT_TRUE(t == t);
-  // ASSERT_TRUE(t2 == t2);
+  ASSERT_FALSE(t == t2);
+  ASSERT_TRUE(t != t2);
+  ASSERT_TRUE(t == t);
+  ASSERT_TRUE(t2 == t2);
 }
 
 TEST(DyadicTensorTest, DifferentDimensionsNotEquivalent)

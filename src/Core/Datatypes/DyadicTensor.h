@@ -41,17 +41,17 @@ namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
     template <typename T>
-    class DyadicTensor : public Eigen::Tensor<T, 2>
+    class DyadicTensor : public TensorBase<T, 2>
     {
      public:
-      DyadicTensor(size_t dim1, size_t dim2)
-          : Eigen::Tensor<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
+      typedef TensorBase<T, 2> parent;
+
+      DyadicTensor(size_t dim1, size_t dim2) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
         Eigen::Tensor<T, 2>::setZero();
       }
 
-      DyadicTensor(size_t dim1, size_t dim2, T val)
-          : Eigen::Tensor<T, 2>(dim1, dim2), dim1_(dim1), dim2_(dim2)
+      DyadicTensor(size_t dim1, size_t dim2, T val) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
         for (size_t i = 0; i < dim1; ++i)
           for (size_t j = 0; j < dim2; ++j)
@@ -59,7 +59,7 @@ namespace Core {
       }
 
       DyadicTensor(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
-          : Eigen::Tensor<T, 2>(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()),
+          : parent(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()),
             dim2_(eigvecs[0].size())
       {
         setEigenVectors(eigvecs);
@@ -67,21 +67,16 @@ namespace Core {
         haveEigens_ = true;
       }
 
-      DyadicTensor& operator=(const Eigen::Tensor<T, 2>& other)
+      DyadicTensor(const Eigen::Tensor<T, 2>& other)
+          : parent(other.dimension(0), other.dimension(1)), dim1_(other.dimension(0)),
+            dim2_(other.dimension(1))
       {
-        this->Eigen::Tensor<T, 2>::operator=(other);
-        return *this;
+        for (int i = 0; i < dim1_; ++i)
+          for (int j = 0; j < dim1_; ++j)
+            (*this)(i, j) = other(i, j);
       }
 
-      Eigen::Tensor<T, 2> operator*(const DyadicTensor<T>& t)
-      {
-        return static_cast<Eigen::Tensor<T, 2>>(*this) * static_cast<Eigen::Tensor<T, 2>>(t);
-      }
-
-      Eigen::Tensor<T, 2> operator+(const DyadicTensor<T>& t)
-      {
-        return static_cast<Eigen::Tensor<T, 2>>(*this) + static_cast<Eigen::Tensor<T, 2>>(t);
-      }
+      using parent::operator=;
 
       void setEigenVectors(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
       {
