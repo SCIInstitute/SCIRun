@@ -77,6 +77,8 @@ namespace Core {
       }
 
       using parent::operator=;
+      using parent::operator!=;
+      using parent::contract;
 
       void setEigenVectors(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
       {
@@ -151,7 +153,7 @@ namespace Core {
           for (int j = 0; j < t.getDimension2(); ++j)
           {
             if (i + j != 0) os << ' ';
-            os << t(i, j);
+            os << t(j, i);
           }
         os << ']';
 
@@ -204,7 +206,7 @@ namespace Core {
       {
         for (int i = 0; i < dim1_; ++i)
           for (int j = 0; j < dim2_; ++j)
-            (*this)(i, j) = eigvecs_[i][j] * eigvals_[i];
+            (*this)(j, i) = eigvecs_[i][j] * eigvals_[i];
       }
     };
   }

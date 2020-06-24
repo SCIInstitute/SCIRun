@@ -200,28 +200,23 @@ TEST(DyadicTensorTest, DifferentDimensionsNotEquivalent)
   DyadicTensor<double> t2({DenseColumnMatrix({1, 0, 0, 0}), DenseColumnMatrix({0, 1, 0, 0}),
       DenseColumnMatrix({0, 0, 1, 0}), DenseColumnMatrix({0, 0, 0, 1})});
 
-  Eigen::Tensor<double, 2> t3(4,4);
-  t3(1,2) = 6.9;
-  t2 = t3;
-  std::cout << t2 << "\n";
-  // ASSERT_EQ(t2, t3);
-  // DyadicTensor<double> t3 = DyadicTensor<double>(t * t2);
+  ASSERT_NE(t, t2);
 }
 
-TEST(DyadicTensorTest, Equals)
+TEST(DyadicTensorTest, EqualsOperatorTensor)
 {
   DyadicTensor<double> t(
       {DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 1, 0}), DenseColumnMatrix({0, 0, 1})});
   DyadicTensor<double> t2 = t;
 
-  // ASSERT_TRUE(t == t2);
+  ASSERT_TRUE(t == t2);
 
   t2(1, 1) = 3;
 
-  // ASSERT_TRUE(t != t2);
+  ASSERT_TRUE(t != t2);
 }
 
-TEST(DyadicTensorTest, EqualsOperator)
+TEST(DyadicTensorTest, EqualsOperatorDouble)
 {
   DyadicTensor<double> t(
       {DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 1, 0}), DenseColumnMatrix({0, 0, 1})});
@@ -230,18 +225,41 @@ TEST(DyadicTensorTest, EqualsOperator)
 
   t = 5;
 
-  // ASSERT_TRUE(t == t2);
+  ASSERT_TRUE(t == t2);
 }
 
 TEST(DyadicTensorTest, PlusOperator)
 {
   DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
   DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
-  DyadicTensor<double> result({DenseColumnMatrix({8, 11}), DenseColumnMatrix({9, 9})});
+  DyadicTensor<double> expected({DenseColumnMatrix({8, 11}), DenseColumnMatrix({9, 9})});
 
-  DyadicTensor<double> output = t + t2;
-  std::cout << output << "\n";
-  std::cout << result << "\n";
+  DyadicTensor<double> result = t + t2;
 
-  // ASSERT_TRUE((t * t2) == result);
+  ASSERT_EQ(expected, result);
 }
+
+TEST(DyadicTensorTest, MultiplyOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
+  DyadicTensor<double> expected({DenseColumnMatrix({27, 57}), DenseColumnMatrix({38, 50})});
+
+  DyadicTensor<double> result = t.contract(t2);
+
+  std::cout << t << "\n";
+  ASSERT_EQ(expected, result);
+}
+
+
+// 2 5   6 4    12+15 8+30
+// 8 3   3 6    48+9  32+18
+
+// 27 38
+// 57 50
+
+// 2 8   6 3    12+32 6+48
+// 5 3   4 6    30+12  15+18
+
+// 44 54
+// 42 33

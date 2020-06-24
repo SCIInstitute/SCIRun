@@ -41,56 +41,41 @@ namespace Core {
       typedef Eigen::Tensor<T, Rank> parent;
 
      public:
-      // using parent::Index;
-      // using parent::StorageKind;
       using parent::Tensor;  // adding parent constructors
-      // using parent::operator==;
+      // using parent::contract;
 
-      bool operator==(const TensorBase<T, Rank>& t) { return dimensionsEqual(t) && valuesEqual(t); }
-      bool operator!=(const TensorBase<T, Rank>& t) { return !(*this == t); }
-
-      TensorBase& operator=(const Eigen::Tensor<T, 2>& other)
+      bool operator==(const TensorBase<T, Rank>& t) const
       {
-        this->Eigen::Tensor<T, 2>::operator=(other);
+        return dimensionsEqual(t) && valuesEqual(t);
+      }
+      bool operator!=(const TensorBase<T, Rank>& t) const { return !(*this == t); }
+
+      TensorBase& operator=(const parent& other)
+      {
+        parent::operator=(other);
         return *this;
       }
 
       template <typename OtherDerived>
-      Eigen::Tensor<T, 2> operator*(const OtherDerived& other)
+      TensorBase contract(const OtherDerived& other) const
       {
-        return static_cast<Eigen::Tensor<T, 2>>(*this) * static_cast<Eigen::Tensor<T, 2>>(other);
+        Eigen::array<Eigen::IndexPair<int>, 1> product_dims = {Eigen::IndexPair<int>(1, 0)};
+        return parent::contract(static_cast<parent>(other), product_dims);
       }
 
-      template<typename OtherDerived>
-      Eigen::Tensor<T, 2> operator+(const OtherDerived& other)
+      template <typename OtherDerived>
+      parent operator*(const OtherDerived& other) const
       {
-        return static_cast<Eigen::Tensor<T, 2>>(*this) + static_cast<Eigen::Tensor<T, 2>>(other);
+        return static_cast<parent>(*this) * static_cast<parent>(other);
       }
 
-      /**
-      template <class OtherDerived>
-      TensorBase<T, Rank> operator+(const OtherDerived& other) const
+      template <typename OtherDerived>
+      parent operator+(const OtherDerived& other) const
       {
-        return parent::operator+(static_cast<parent>(other));
+        return static_cast<parent>(*this) + static_cast<parent>(other);
       }
 
-      template <class OtherDerived>
-      Eigen::TensorCwiseBinaryOp<
-        Eigen::internal::scalar_cmp_op<T, T, Eigen::internal::cmp_EQ>,
-          const OtherDerived, const OtherDerived>
-      operator==(const OtherDerived& other) const
-      {
-        return parent::operator==(static_cast<parent>(other));
-      }
-      **/
-
-      template <class OtherDerived>
-      bool operator!=(const OtherDerived& other) const
-      {
-        return !parent::operator==(static_cast<parent>(other));
-      }
-
-      bool dimensionsEqual(const TensorBase<T, Rank>& t)
+      bool dimensionsEqual(const TensorBase<T, Rank>& t) const
       {
         if (parent::NumDimensions != t.NumDimensions) return false;
 
@@ -106,15 +91,15 @@ namespace Core {
         return true;
       }
 
-      bool valuesEqual(const TensorBase<T, Rank>& t)
+      bool valuesEqual(const TensorBase<T, Rank>& t) const
       {
         auto dim = parent::dimensions();
         auto index = std::vector<int>(parent::NumDimensions, 0);
         return checkForEquals(index, dim, t);
       }
 
-      bool checkForEquals(
-          std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim, const TensorBase<T, Rank>& t)
+      bool checkForEquals(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim,
+          const TensorBase<T, Rank>& t) const
       {
         if ((*this)(index) != t(index)) return false;
 
@@ -124,7 +109,7 @@ namespace Core {
           return true;
       }
 
-      bool incrementIndex(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim)
+      bool incrementIndex(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim) const
       {
         int d = index.size() - 1;
 
