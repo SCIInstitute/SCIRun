@@ -164,7 +164,7 @@ namespace Render {
     {
       Dataflow::Networks::ModuleStateHandle state_;
     public:
-      ScopedExecutionReporter(Dataflow::Networks::ModuleStateHandle state);
+      explicit ScopedExecutionReporter(Dataflow::Networks::ModuleStateHandle state);
       ~ScopedExecutionReporter();
     };
   };

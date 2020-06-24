@@ -55,8 +55,8 @@ MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 Mutex ViewScene::mutex_("ViewScene");
 
 ViewScene::ScopedExecutionReporter::ScopedExecutionReporter(ModuleStateHandle state)
+  : state_(state)
 {
-  state_ = state;
   state_->setValue(IsExecuting, true);
 }
 
