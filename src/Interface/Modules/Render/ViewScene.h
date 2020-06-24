@@ -226,6 +226,7 @@ namespace SCIRun {
       void keyPressEvent(QKeyEvent* event) override;
       void keyReleaseEvent(QKeyEvent*event) override;
       void focusOutEvent(QFocusEvent* event) override;
+      void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
 
@@ -262,6 +263,7 @@ namespace SCIRun {
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
       void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
+      void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();

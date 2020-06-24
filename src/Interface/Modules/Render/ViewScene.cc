@@ -1113,6 +1113,7 @@ bool ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
     widgetSelected = true;
+    updateCursor();
   }
   return widgetSelected;
 }
@@ -1183,6 +1184,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     auto spire = mSpire.lock();
     if(!spire) return;
     spire->widgetMouseUp();
+    updateCursor();
   }
   else if (!shiftdown_)
   {
@@ -1209,6 +1211,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = true;
+    updateCursor();
     break;
   }
 }
@@ -1220,6 +1223,7 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = false;
+    updateCursor();
     break;
   }
 }
@@ -1227,6 +1231,22 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
 void ViewSceneDialog::focusOutEvent(QFocusEvent* event)
 {
   shiftdown_ = false;
+  updateCursor();
+}
+
+void ViewSceneDialog::focusInEvent(QFocusEvent* event)
+{
+  updateCursor();
+}
+
+void ViewSceneDialog::updateCursor()
+{
+  if (selectedWidget_)
+    setCursor(Qt::ClosedHandCursor);
+  else if (shiftdown_)
+    setCursor(Qt::OpenHandCursor);
+  else
+    setCursor(Qt::ArrowCursor);
 }
 
 
