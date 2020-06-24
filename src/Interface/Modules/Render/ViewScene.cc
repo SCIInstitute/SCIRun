@@ -1112,6 +1112,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   {
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
+    updateCursor();
   }
   else
   {
@@ -1163,6 +1164,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
     selectedWidget_.reset();
+    updateCursor();
   }
   else if(!shiftdown_)
   {
@@ -1186,6 +1188,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = true;
+    updateCursor();
     break;
   }
 }
@@ -1197,10 +1200,20 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = false;
+    updateCursor();
     break;
   }
 }
 
+void ViewSceneDialog::updateCursor()
+{
+  if (selectedWidget_)
+    setCursor(Qt::ClosedHandCursor);
+  else if (shiftdown_)
+    setCursor(Qt::OpenHandCursor);
+  else
+    setCursor(Qt::ArrowCursor);
+}
 
 
 //--------------------------------------------------------------------------------------------------

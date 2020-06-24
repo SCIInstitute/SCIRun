@@ -257,6 +257,7 @@ namespace SCIRun {
       void selectObject(const int x, const int y);
       void restoreObjColor();
       void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
+      void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
