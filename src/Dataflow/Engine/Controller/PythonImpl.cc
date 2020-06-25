@@ -450,7 +450,17 @@ namespace
       return boost::python::object();
     }
 
-    virtual void setattr(const std::string& name, boost::python::object object, bool transient) override
+    virtual void setattrObject(const std::string& name, const boost::python::object& object, bool transient) override
+    {
+      setattr(name, convertPythonObjectToVariable(object), transient);
+    }
+
+    virtual void setattrList(const std::string& name, const boost::python::list& pyList, bool transient) override
+    {
+      setattr(name, convertPythonListToVariable(pyList), transient);
+    }
+
+    virtual void setattr(const std::string& name, const Variable& var, bool transient) override
     {
       if (module_)
       {
@@ -462,11 +472,11 @@ namespace
           {
             throw std::invalid_argument("Module state key " + name + " not defined.");
           }
-          state->setValue(apn, convertPythonObjectToVariable(object).value());
+          state->setValue(apn, var.value());
         }
         else
         {
-          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
+          state->setTransientValue(apn, var, false);
         }
       }
     }

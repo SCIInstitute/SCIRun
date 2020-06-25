@@ -609,8 +609,10 @@ void ViewSceneDialog::pullCameraRotation()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
-  glm::quat q = ViewSceneUtility::stringToQuat(rotString);
+  auto rotation = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraRotation).toVector());
+  if (rotation.size() != 4) THROW_INVALID_ARGUMENT("CameraRotation must have 4 values.");
+
+  auto q = glm::normalize(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
   spire->setCameraRotation(q);
 
   pushCameraRotation();
@@ -623,7 +625,9 @@ void ViewSceneDialog::pullCameraLookAt()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
+  auto lookAt = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toVector());
+  if (lookAt.size() != 3) THROW_INVALID_ARGUMENT("CameraLookAt must have 3 values.");
+
   spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
 
   pushCameraLookAt();
@@ -671,8 +675,8 @@ void ViewSceneDialog::pushCameraLookAt()
   if(!spire) return;
 
   auto v = spire->getCameraLookAt();
-  auto lookAt = Point((double)v.x, (double)v.y, (double)v.z);
-  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt.get_string());
+  auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
+  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
   pushingCameraState_ = false;
 }
 
@@ -684,7 +688,7 @@ void ViewSceneDialog::pushCameraRotation()
   if(!spire) return;
 
   auto q = spire->getCameraRotation();
-  state_->setValue(Modules::Render::ViewScene::CameraRotation, ViewSceneUtility::quatToString(q));
+  state_->setValue(Modules::Render::ViewScene::CameraRotation, makeAnonymousVariableList(q[0], q[1], q[2], q[3]));
   pushingCameraState_ = false;
 }
 

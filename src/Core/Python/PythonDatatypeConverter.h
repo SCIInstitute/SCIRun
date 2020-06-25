@@ -97,6 +97,7 @@ namespace SCIRun
         const std::vector<Datatypes::StringHandle>& strings);
 
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE Algorithms::Variable convertPythonListToVariable(const boost::python::list& pyList);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
 
       class SCISHARE DatatypePythonExtractor

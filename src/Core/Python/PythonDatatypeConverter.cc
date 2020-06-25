@@ -451,6 +451,14 @@ namespace
   }
 }
 
+Variable SCIRun::Core::Python::convertPythonListToVariable(const boost::python::list& pyList)
+{
+  Variable::List vars(len(pyList));
+  for (int i = 0; i < len(pyList); ++i)
+    vars[i] = convertPythonObjectToVariable(pyList[i]);
+  return makeVariable("list", vars);
+}
+
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python::object& object)
 {
   /// @todo: yucky
