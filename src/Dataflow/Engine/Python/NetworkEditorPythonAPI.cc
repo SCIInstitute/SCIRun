@@ -284,8 +284,7 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std:
 
 std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
-  boost::python::extract<boost::python::object> extractor(value);
-  std::string classname = boost::python::extract<std::string>(extractor().attr("__class__").attr("__name__"));
+  auto classname = Core::Python::getClassName(value);
   bool isList = classname == "list";
 
   Guard g(pythonLock_.get());
