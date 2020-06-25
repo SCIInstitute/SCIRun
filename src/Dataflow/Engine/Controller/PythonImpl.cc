@@ -452,12 +452,18 @@ namespace
 
     virtual void setattrObject(const std::string& name, const boost::python::object& object, bool transient) override
     {
-      setattr(name, convertPythonObjectToVariable(object), transient);
+      if (module_->get_state()->getValue(AlgorithmParameterName(name)).value().type() != typeid(Variable::List))
+        setattr(name, convertPythonObjectToVariable(object), transient);
+      else
+        THROW_INVALID_ARGUMENT("This state variable only accepts lists.");
     }
 
     virtual void setattrList(const std::string& name, const boost::python::list& pyList, bool transient) override
     {
-      setattr(name, convertPythonListToVariable(pyList), transient);
+      if (module_->get_state()->getValue(AlgorithmParameterName(name)).value().type() == typeid(Variable::List))
+        setattr(name, convertPythonListToVariable(pyList), transient);
+      else
+        THROW_INVALID_ARGUMENT("This state variable does not accept lists. Provide a single value.");
     }
 
     virtual void setattr(const std::string& name, const Variable& var, bool transient) override

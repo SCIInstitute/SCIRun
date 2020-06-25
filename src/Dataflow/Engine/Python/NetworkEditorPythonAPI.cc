@@ -282,26 +282,19 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std:
   return boost::python::object();
 }
 
-std::string NetworkEditorPythonAPI::scirun_set_module_state_list(const std::string& moduleId, const std::string& stateVariable, const boost::python::list& pyList)
-{
-  Guard g(pythonLock_.get());
-  auto module = impl_->findModule(moduleId);
-
-  if (module)
-  {
-    module->setattrList(stateVariable, pyList, false);
-    return "Value set";
-  }
-  return "Module or value not found";
-}
-
 std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
+  boost::python::extract<boost::python::object> extractor(value);
+  std::string classname = boost::python::extract<std::string>(extractor().attr("__class__").attr("__name__"));
+  bool isList = classname == "list";
+
   Guard g(pythonLock_.get());
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    if (stateVariable == "__UI__")
+    if (isList)
+      module->setattrList(stateVariable, static_cast<boost::python::list>(value), false);
+    else if (stateVariable == "__UI__")
     {
       boost::python::extract<bool> e(value);
       if (e.check())
@@ -310,7 +303,8 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
         return "UI adjusted";
       }
     }
-    module->setattrObject(stateVariable, value, false);
+    else
+      module->setattrObject(stateVariable, value, false);
     return "Value set";
   }
   return "Module or value not found";

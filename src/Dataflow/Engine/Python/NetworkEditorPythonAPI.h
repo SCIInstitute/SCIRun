@@ -55,7 +55,6 @@ namespace SCIRun {
     static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
-    static std::string scirun_set_module_state_list(const std::string& moduleId, const std::string& stateVariable, const boost::python::list& value);
     static std::string scirun_dump_module_state(const std::string& moduleId);
     static boost::python::object scirun_get_module_transient_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_transient_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);

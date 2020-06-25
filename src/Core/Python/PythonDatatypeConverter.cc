@@ -462,47 +462,43 @@ Variable SCIRun::Core::Python::convertPythonListToVariable(const boost::python::
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python::object& object)
 {
   /// @todo: yucky
+  boost::python::extract<boost::python::object> extractor(object);
+  std::string classname = boost::python::extract<std::string>(extractor().attr("__class__").attr("__name__"));
+
+  if (classname == "int")
   {
     boost::python::extract<int> e(object);
-    if (e.check())
-    {
-      return makeVariable("int", e());
-    }
+    return makeVariable(classname, e());
   }
+  else if (classname == "float")
+  {
+    boost::python::extract<float> e(object);
+    return makeVariable(classname, e());
+  }
+  else if (classname == "double")
   {
     boost::python::extract<double> e(object);
-    if (e.check())
-    {
-      return makeVariable("double", e());
-    }
+    return makeVariable(classname, e());
   }
+  else if (classname == "str")
   {
     boost::python::extract<std::string> e(object);
-    if (e.check())
-    {
-      return makeVariable("string", e());
-    }
+    return makeVariable(classname, e());
   }
+  else if (classname == "bool")
   {
     boost::python::extract<bool> e(object);
-    if (e.check())
-    {
-      return makeVariable("bool", e());
-    }
+    return makeVariable(classname, e());
   }
+
   {
     DenseMatrixExtractor e(object);
-    if (e.check())
-    {
-      return makeDatatypeVariable(e);
-    }
+    if (e.check()) return makeDatatypeVariable(e);
   }
+
   {
     SparseRowMatrixExtractor e(object);
-    if (e.check())
-    {
-      return makeDatatypeVariable(e);
-    }
+    if (e.check()) return makeDatatypeVariable(e);
   }
   //{
   //  detail::DenseColumnMatrixExtractor e(object);
@@ -513,10 +509,7 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
   //}
   {
     FieldExtractor e(object);
-    if (e.check())
-    {
-      return makeDatatypeVariable(e);
-    }
+    if (e.check()) return makeDatatypeVariable(e);
   }
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
@@ -528,15 +521,15 @@ boost::python::object SCIRun::Core::Python::convertVariableToPythonObject(const 
   {
     return boost::python::object { var.toString() };
   }
-  if (var.name().name() == "int")
+  else if (var.name().name() == "int")
   {
     return boost::python::object { var.toInt() };
   }
-  if (var.name().name() == "double")
+  else if (var.name().name() == "double")
   {
     return boost::python::object { var.toDouble() };
   }
-  if (var.name().name() == "bool")
+  else if (var.name().name() == "bool")
   {
     return boost::python::object { var.toBool() };
   }

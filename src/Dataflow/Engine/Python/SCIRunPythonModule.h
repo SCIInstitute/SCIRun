@@ -84,7 +84,6 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 
   boost::python::def("scirun_get_module_state", &NetworkEditorPythonAPI::scirun_get_module_state);
   boost::python::def("scirun_set_module_state", &NetworkEditorPythonAPI::scirun_set_module_state);
-  boost::python::def("scirun_set_module_state_list", &NetworkEditorPythonAPI::scirun_set_module_state_list);
   boost::python::def("scirun_dump_module_state", &NetworkEditorPythonAPI::scirun_dump_module_state);
 
   boost::python::def("scirun_get_module_transient_state", &NetworkEditorPythonAPI::scirun_get_module_transient_state);
