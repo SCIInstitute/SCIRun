@@ -213,8 +213,6 @@ private:
 		assert(proc_num >= 0);
 
 		int cnt = 0;
-		double current = 1.0;
-		Point modelNode;
 
 		const index_type begins = (modelSize_ * proc_num) / numprocessors_;
 		const index_type ends  = (modelSize_ * (proc_num+1)) / numprocessors_;
@@ -236,16 +234,20 @@ private:
 		{
 			for (index_type iM = begins; iM < ends; iM++)
 			{
-				vmesh_->get_node(modelNode, iM);
+        Point modelNodeP;
+				vmesh_->get_node(modelNodeP, iM);
+        const Vector modelNodeV(modelNodeP);
 
 				// result
 				Vector F;
 
 				for (size_t iC0 = 0, iC1 =1, iCV = 0; iC0 < coilNodes_.size(); iC0+=2, iC1+=2, iCV++)
 				{
-					vcoilField_->get_value(current,iCV);
+          double currentFromField;
+					vcoilField_->get_value(currentFromField,iCV);
 
-					current = current == 0.0 ? 1.0 : current;
+					const double current = currentFromField == 0.0 ? 1.0 : currentFromField;
+          auto absCurrent = std::fabs(current);
 
 					Vector coilNodeThis;
 					Vector coilNodeNext;
@@ -279,7 +281,7 @@ private:
 							prevSegLen = newSegLen;
 
 							//auto adaptive integration step calculation
-							nips =  adjustNumberOfIntegrationPoints(newSegLen);
+							nips = adjustNumberOfIntegrationPoints(newSegLen);
 						}
 					}
 
@@ -293,6 +295,7 @@ private:
 					//! curve segment discretization
 					for (int iip = 0; iip < nips; iip++)
 					{
+            
 						double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
 						Vector v = Interpolate( coilNodeThis, coilNodeNext, interpolant );
 						integrPoints.push_back( v );
@@ -301,30 +304,31 @@ private:
 					//! integration step over line segment
 					for (int iip = 0; iip < nips -1; iip++)
 					{
+            const auto piip = integrPoints[iip];
+            const auto piip1 = integrPoints[iip+1];
 						//! Vector connecting the infinitesimal curve-element
-						Vector Rxyz = (integrPoints[iip] + integrPoints[iip+1] ) / 2  - Vector(modelNode);
+						Vector Rxyz = (piip + piip1) / 2  - modelNodeV;
 
 						//! Infinitesimal curve-element components
-						Vector dLxyz = integrPoints[iip+1] - integrPoints[iip];
+						Vector dLxyz = piip1 - piip;
 
 						double Rn = Rxyz.length();
 
-						//! check for distance between coil and model close to zero
-						//! it might cause numerical stability issues with respect to the cross-product
-						if (Rn < 0.00001)
-						{
-							algo_->warning("coil<->model distance approaching zero!");
-						}
-
 						if (typeOut_ == 1)
 						{
+              //! check for distance between coil and model close to zero
+              //! it might cause numerical stability issues with respect to the cross-product
+              if (Rn < 0.00001)
+              {
+                algo_->warning("coil<->model distance approaching zero!");
+              }
 							//! Biot-Savart Magnetic Field
-							F += 1.0e-7 * Cross( Rxyz, dLxyz ) * ( Abs(current) / (Rn*Rn*Rn) );
+							F += 1.0e-7 * Cross( Rxyz, dLxyz ) * (absCurrent / (Rn*Rn*Rn) );
 						}
-						if (typeOut_ == 2)
+						else if (typeOut_ == 2)
 						{
 							//! Biot-Savart Magnetic Vector Potential Field
-							F += 1.0e-7 * dLxyz * ( Abs(current) / (Rn) );
+							F += 1.0e-7 * dLxyz * (absCurrent / (Rn) );
 						}
 					}
 				}
@@ -340,12 +344,10 @@ private:
 					if (cnt == 200)
 					{
 						cnt = 0;
-						algo_->update_progress(iM/(ends-begins));
-			                  /// The progress bar update does not work ... and it also counts to iM/2 in other classes strange!
+						algo_->update_progress_max(iM, ends-begins);
 					}
 				}
 			}
-
 			success_[proc_num] = true;
 		}
 		catch (...)
@@ -474,7 +476,7 @@ private:
 					if (cnt == 200)
 					{
 						cnt = 0;
-						algo_->update_progress(iM/2*(begins-ends));
+						algo_->update_progress_max(iM, ends - begins);
 					}
 				}
 			}
@@ -582,7 +584,7 @@ private:
 					if (cnt == 200)
 					{
 						cnt = 0;
-						algo_->update_progress(iM/2*(begins-ends));
+						algo_->update_progress_max(iM, ends - begins);;
 					}
 				}
 			}
