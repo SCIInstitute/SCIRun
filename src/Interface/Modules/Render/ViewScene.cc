@@ -609,12 +609,20 @@ void ViewSceneDialog::pullCameraRotation()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto rotation = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraRotation).toVector());
-  if (rotation.size() != 4) THROW_INVALID_ARGUMENT("CameraRotation must have 4 values.");
+  glm::quat q;
+  auto rotVariable = state_->getValue(Modules::Render::ViewScene::CameraRotation);
+  if (rotVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
+    q = ViewSceneUtility::stringToQuat(state_->getValue(Modules::Render::ViewScene::CameraRotation).toString());
+  else
+  {
+    auto rotation = toDoubleVector(rotVariable.toVector());
+    if (rotation.size() == 4)
+      q = glm::normalize(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
+    else
+      THROW_INVALID_ARGUMENT("CameraRotation must have 4 values. " + std::to_string(rotation.size()) + " values were provided.");
+  }
 
-  auto q = glm::normalize(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
   spire->setCameraRotation(q);
-
   pushCameraRotation();
 }
 
@@ -625,10 +633,20 @@ void ViewSceneDialog::pullCameraLookAt()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto lookAt = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toVector());
-  if (lookAt.size() != 3) THROW_INVALID_ARGUMENT("CameraLookAt must have 3 values.");
-
-  spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+  auto lookAtVariable = state_->getValue(Modules::Render::ViewScene::CameraLookAt);
+  if (lookAtVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
+  {
+    auto lookAtPoint = pointFromString(lookAtVariable.toString());
+    spire->setCameraLookAt(glm::vec3(lookAtPoint[0], lookAtPoint[1], lookAtPoint[2]));
+  }
+  else
+  {
+    auto lookAt = toDoubleVector(lookAtVariable.toVector());
+    if (lookAt.size() == 3)
+      spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+    else
+      THROW_INVALID_ARGUMENT("CameraLookAt must have 3 values. " + std::to_string(lookAt.size()) + " values were provided.");
+  }
 
   pushCameraLookAt();
 }
