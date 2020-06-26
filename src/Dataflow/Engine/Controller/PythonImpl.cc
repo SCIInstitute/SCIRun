@@ -418,17 +418,14 @@ namespace
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
-        if (!transient)
-        {
-          if (!state->containsKey(apn))
-          {
-            throw std::invalid_argument("Module state key " + name + " not defined.");
-          }
-          state->setValue(apn, convertPythonObjectToVariable(object).value());
-        }
+        if (transient)
+          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
         else
         {
-          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
+          if (state->containsKey(apn))
+            state->setValue(apn, convertPythonObjectToVariable(object).value());
+          else
+            throw std::invalid_argument("Module state key " + name + " not defined.");
         }
       }
     }
