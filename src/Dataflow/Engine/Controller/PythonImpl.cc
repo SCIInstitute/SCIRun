@@ -398,56 +398,18 @@ namespace
     {
       if (module_)
       {
-        if (!transient)
-        {
-          auto state = module_->get_state();
-          AlgorithmParameterName apn(name);
-          if (!state->containsKey(apn))
-          {
-            throw std::invalid_argument("Module state key " + name + " not defined.");
-          }
-
-          auto v = state->getValue(apn);
-
-  //TODO: extract and use for state get/set
-          /// @todo: extract
-          if ( const int* p = boost::get<int>( &v.value() ) )
-            return boost::python::object(*p);
-          if ( const std::string* p = boost::get<std::string>( &v.value() ) )
-            return boost::python::object(*p);
-          if ( const double* p = boost::get<double>( &v.value() ) )
-            return boost::python::object(*p);
-          if ( const bool* p = boost::get<bool>( &v.value() ) )
-            return boost::python::object(*p);
-
-          return boost::python::object();
-        }
+        auto state = module_->get_state();
+        AlgorithmParameterName apn(name);
+        if (transient)
+          return convertTransientVariableToPythonObject(state->getTransientValue(apn));
         else
-        {
-          auto state = module_->get_state();
-          AlgorithmParameterName apn(name);
-
-          auto v = state->getTransientValue(apn);
-
-          //TODO: extract and use for state get/set
-          /// @todo: extract
-          if (transient_value_check<int>(v))
-            return boost::python::object(transient_value_cast<int>(v));
-          if (transient_value_check<std::string>(v))
-            return boost::python::object(transient_value_cast<std::string>(v));
-          if (transient_value_check<double>(v))
-            return boost::python::object(transient_value_cast<double>(v));
-          if (transient_value_check<bool>(v))
-            return boost::python::object(transient_value_cast<bool>(v));
-          if (transient_value_check<Variable>(v))
-            return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
-          if (transient_value_check<boost::python::object>(v))
-            return transient_value_cast<boost::python::object>(v);
-
-          return boost::python::object();
-        }
+          if (state->containsKey(apn))
+            return convertVariableToPythonObject(state->getValue(apn));
+          else
+            throw std::invalid_argument("Module state key " + name + " not defined.");
       }
-      return boost::python::object();
+      else
+        return boost::python::object();
     }
 
     virtual void setattr(const std::string& name, const boost::python::object& object, bool transient) override

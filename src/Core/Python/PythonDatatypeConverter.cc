@@ -34,19 +34,21 @@
 #pragma warning( disable: 4244 )
 #endif
 
-#include <Core/Python/PythonDatatypeConverter.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/String.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Python/PythonDatatypeConverter.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Python;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Python;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::MatlabIO;
 
 namespace
@@ -521,23 +523,57 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
 
 boost::python::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)
 {
-  if (var.name().name() == "string")
+  auto val = var.value();
+  if (const int* p = boost::get<int>(&val))
+    return boost::python::object(*p);
+  if (const std::string* p = boost::get<std::string>(&val))
+    return boost::python::object(*p);
+  if (const double* p = boost::get<double>(&val))
+    return boost::python::object(*p);
+  if (const bool* p = boost::get<bool>(&val))
+    return boost::python::object(*p);
+  if (const auto l = boost::get<Variable::List>(&val))
   {
-    return boost::python::object { var.toString() };
+    boost::python::list pyList;
+    for (int i = 0; i < l->size(); ++i) pyList.append(convertVariableToPythonObject((*l)[i]));
+    return pyList;
   }
-  else if (var.name().name() == "int")
+
+  return boost::python::object();
+}
+
+template<typename T>
+boost::python::object tryCast(const boost::optional<boost::any>& v)
+{
+  if (transient_value_check<T>(v))
+    return boost::python::object(transient_value_cast<T>(v));
+  return nullptr;
+}
+
+boost::python::object SCIRun::Core::Python::convertTransientVariableToPythonObject(const boost::optional<boost::any>& v)
+{
+  auto intCast = tryCast<int>(v);
+  if (transient_value_check<int>(v))
+    return boost::python::object(transient_value_cast<int>(v));
+  if (transient_value_check<std::string>(v))
+    return boost::python::object(transient_value_cast<std::string>(v));
+  if (transient_value_check<double>(v))
+    return boost::python::object(transient_value_cast<double>(v));
+  if (transient_value_check<bool>(v))
+    return boost::python::object(transient_value_cast<bool>(v));
+  if (transient_value_check<Variable>(v))
+    return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
+  if (transient_value_check<boost::python::object>(v))
+    return transient_value_cast<boost::python::object>(v);
+  if (transient_value_check<Variable::List>(v))
   {
-    return boost::python::object { var.toInt() };
+    auto l = transient_value_cast<Variable::List>(v);
+    boost::python::list pyList;
+    for (int i = 0; i < l.size(); ++i) pyList.append(convertVariableToPythonObject(l[i]));
+    return pyList;
   }
-  else if (var.name().name() == "double")
-  {
-    return boost::python::object { var.toDouble() };
-  }
-  else if (var.name().name() == "bool")
-  {
-    return boost::python::object { var.toBool() };
-  }
-  return {};
+
+  return boost::python::object();
 }
 
 template <class Extractor>
