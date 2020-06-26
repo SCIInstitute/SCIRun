@@ -284,16 +284,11 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std:
 
 std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
-  auto classname = Core::Python::getClassName(value);
-  bool isList = classname == "list";
-
   Guard g(pythonLock_.get());
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    if (isList)
-      module->setattrList(stateVariable, static_cast<boost::python::list>(value), false);
-    else if (stateVariable == "__UI__")
+    if (stateVariable == "__UI__")
     {
       boost::python::extract<bool> e(value);
       if (e.check())
@@ -303,8 +298,10 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
       }
     }
     else
-      module->setattrObject(stateVariable, value, false);
-    return "Value set";
+    {
+      module->setattr(stateVariable, value, false);
+      return "Value set";
+    }
   }
   return "Module or value not found";
 }
@@ -324,7 +321,7 @@ std::string NetworkEditorPythonAPI::scirun_set_module_transient_state(const std:
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    module->setattrObject(stateVariable, value, true);
+    module->setattr(stateVariable, value, true);
     return "Transient value set";
   }
   return "Module or value not found";

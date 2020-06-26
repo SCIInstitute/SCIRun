@@ -60,9 +60,7 @@ namespace SCIRun
 
     //state
     virtual boost::python::object getattr(const std::string& name, bool transient) = 0;
-    virtual void setattrObject(const std::string& name, const boost::python::object& object, bool transient) = 0;
-    virtual void setattrList(const std::string& name, const boost::python::list& object, bool transient) = 0;
-    virtual void setattr(const std::string& name, const Core::Algorithms::Variable& var, bool transient) = 0;
+    virtual void setattr(const std::string& name, const boost::python::object& object, bool transient) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
     virtual std::string stateToString() const = 0;
 

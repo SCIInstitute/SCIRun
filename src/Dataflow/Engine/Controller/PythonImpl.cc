@@ -413,11 +413,11 @@ namespace
           /// @todo: extract
           if ( const int* p = boost::get<int>( &v.value() ) )
             return boost::python::object(*p);
-          else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
+          if ( const std::string* p = boost::get<std::string>( &v.value() ) )
             return boost::python::object(*p);
-          else if ( const double* p = boost::get<double>( &v.value() ) )
+          if ( const double* p = boost::get<double>( &v.value() ) )
             return boost::python::object(*p);
-          else if ( const bool* p = boost::get<bool>( &v.value() ) )
+          if ( const bool* p = boost::get<bool>( &v.value() ) )
             return boost::python::object(*p);
 
           return boost::python::object();
@@ -450,23 +450,7 @@ namespace
       return boost::python::object();
     }
 
-    virtual void setattrObject(const std::string& name, const boost::python::object& object, bool transient) override
-    {
-      if (module_->get_state()->getValue(AlgorithmParameterName(name)).value().type() != typeid(Variable::List))
-        setattr(name, convertPythonObjectToVariable(object), transient);
-      else
-        THROW_INVALID_ARGUMENT("This state variable only accepts lists.");
-    }
-
-    virtual void setattrList(const std::string& name, const boost::python::list& pyList, bool transient) override
-    {
-      if (module_->get_state()->getValue(AlgorithmParameterName(name)).value().type() == typeid(Variable::List))
-        setattr(name, convertPythonListToVariable(pyList), transient);
-      else
-        THROW_INVALID_ARGUMENT("This state variable does not accept lists. Provide a single value.");
-    }
-
-    virtual void setattr(const std::string& name, const Variable& var, bool transient) override
+    virtual void setattr(const std::string& name, const boost::python::object& object, bool transient) override
     {
       if (module_)
       {
@@ -478,11 +462,11 @@ namespace
           {
             throw std::invalid_argument("Module state key " + name + " not defined.");
           }
-          state->setValue(apn, var.value());
+          state->setValue(apn, convertPythonObjectToVariable(object).value());
         }
         else
         {
-          state->setTransientValue(apn, var, false);
+          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
         }
       }
     }

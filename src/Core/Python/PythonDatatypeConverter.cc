@@ -457,14 +457,6 @@ const std::string SCIRun::Core::Python::getClassName(const boost::python::object
   return boost::python::extract<std::string>(extractor().attr("__class__").attr("__name__"));
 }
 
-Variable SCIRun::Core::Python::convertPythonListToVariable(const boost::python::list& pyList)
-{
-  Variable::List vars(len(pyList));
-  for (int i = 0; i < len(pyList); ++i)
-    vars[i] = convertPythonObjectToVariable(pyList[i]);
-  return makeVariable("list", vars);
-}
-
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python::object& object)
 {
   /// @todo: yucky
@@ -494,6 +486,13 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
   {
     boost::python::extract<bool> e(object);
     return makeVariable(classname, e());
+  }
+  else if (classname == "list")
+  {
+    Variable::List vars(len(object));
+    for (int i = 0; i < len(object); ++i)
+      vars[i] = convertPythonObjectToVariable(object[i]);
+    return makeVariable(classname, vars);
   }
 
   {
