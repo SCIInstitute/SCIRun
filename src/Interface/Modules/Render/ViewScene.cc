@@ -616,10 +616,11 @@ void ViewSceneDialog::pullCameraRotation()
   else
   {
     auto rotation = toDoubleVector(rotVariable.toVector());
-    if (rotation.size() == 4)
+    if (rotation.size() == QUATERNION_SIZE_)
       q = glm::normalize(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
     else
-      THROW_INVALID_ARGUMENT("CameraRotation must have 4 values. " + std::to_string(rotation.size()) + " values were provided.");
+      THROW_INVALID_ARGUMENT("CameraRotation must have " + std::to_string(QUATERNION_SIZE_) +
+                             " values. " + std::to_string(rotation.size()) + " values were provided.");
   }
 
   spire->setCameraRotation(q);
@@ -642,10 +643,11 @@ void ViewSceneDialog::pullCameraLookAt()
   else
   {
     auto lookAt = toDoubleVector(lookAtVariable.toVector());
-    if (lookAt.size() == 3)
+    if (lookAt.size() == DIMENSIONS_)
       spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
     else
-      THROW_INVALID_ARGUMENT("CameraLookAt must have 3 values. " + std::to_string(lookAt.size()) + " values were provided.");
+      THROW_INVALID_ARGUMENT("CameraLookAt must have " + std::to_string(DIMENSIONS_) + " values. "
+                             + std::to_string(lookAt.size()) + " values were provided.");
   }
 
   pushCameraLookAt();
