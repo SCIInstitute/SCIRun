@@ -11,13 +11,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.14.2
+        target: desktop
+        host: mac
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $Qt5_DIR
+
     - name: Prepare
       run: |
-        brew install qt@5.14.2
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
-      run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$(brew --prefix qt)
+      run: ./build.sh -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH=$Qt5_DIR
 
     - name: Package
       working-directory: bin/SCIRun
