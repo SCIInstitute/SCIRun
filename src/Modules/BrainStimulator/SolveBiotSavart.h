@@ -46,25 +46,25 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE SolveBiotSavart : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<FieldPortTag, FieldPortTag>,
-  public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
-{
-  public:
-    SolveBiotSavart();
+      class SCISHARE SolveBiotSavart : public SCIRun::Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
+      {
+      public:
+        SolveBiotSavart();
 
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
-    INPUT_PORT(0, Mesh, Field);
-    INPUT_PORT(1, Coil, Field);
-    OUTPUT_PORT(0, VectorBField, Matrix);
-    OUTPUT_PORT(1, VectorAField, Matrix);
+        INPUT_PORT(0, Mesh, Field);
+        INPUT_PORT(1, Coil, Field);
+        OUTPUT_PORT(0, VectorBField, Matrix);
+        OUTPUT_PORT(1, VectorAField, Matrix);
 
-    NEW_BRAIN_STIMULATOR_MODULE
+        NEW_BRAIN_STIMULATOR_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
-};
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
 
 }}}
 

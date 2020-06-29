@@ -27,15 +27,9 @@
 
 
 #include <Modules/BrainStimulator/SolveBiotSavart.h>
-#include <iostream>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/BrainStimulator/BiotSavartSolverAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <vector>
 
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
@@ -45,7 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(SolveBiotSavart, BrainStimulator, SCIRun)
 
-SolveBiotSavart::SolveBiotSavart() : Module(ModuleLookupInfo("SolveBiotSavart", "BrainStimulator", "SCIRun"), false)
+SolveBiotSavart::SolveBiotSavart() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(Coil);
@@ -61,10 +55,6 @@ void SolveBiotSavart::setStateDefaults()
 
 void SolveBiotSavart::execute()
 {
-  auto mesh = getRequiredInput(Mesh);
-  auto coil = getRequiredInput(Coil);
-  AlgorithmOutput output;
-
   if (oport_connected(VectorBField) || oport_connected(VectorAField))
   {
     setAlgoIntFromState(Parameters::OutType);
@@ -80,16 +70,18 @@ void SolveBiotSavart::execute()
 
       if (oport_connected(VectorAField))
         algo().set(Parameters::OutType, 2);
-
     }
   }
 
-  if (needToExecute())  //newStatePresent
+  auto mesh = getRequiredInput(Mesh);
+  auto coil = getRequiredInput(Coil);
+
+  if (needToExecute())
   {
-    auto input = make_input((Mesh, mesh)(Coil, coil));
+    AlgorithmOutput output;
 
     if ((oport_connected(VectorBField) || oport_connected(VectorAField)))
-      output = algo().run(input);
+      output = algo().run(make_input((Mesh, mesh)(Coil, coil)));
 
     if (oport_connected(VectorBField))
       sendOutputFromAlgorithm(VectorBField, output);
@@ -97,5 +89,4 @@ void SolveBiotSavart::execute()
     if (oport_connected(VectorAField))
       sendOutputFromAlgorithm(VectorAField, output);
   }
-
 }
