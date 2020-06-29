@@ -351,6 +351,7 @@ namespace Gui {
     void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void setMouseAsDragMode();
     void setMouseAsSelectMode();
+    void showStateViewer();
     void zoomIn();
     void zoomOut();
     void zoomReset();

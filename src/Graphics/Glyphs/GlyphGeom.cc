@@ -119,7 +119,11 @@ void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int
                             const ColorRGB& color1, const ColorRGB& color2,
                             bool renderBase1, bool renderBase2)
 {
-  addCylinder(p1, p2, radius, radius, color1, color2, renderBase1, renderBase2);
+  VectorGlyphBuilder builder(p1, p2);
+  builder.setResolution(resolution);
+  builder.setColor1(color1);
+  builder.setColor2(color2);
+  builder.generateCylinder(constructor_, radius, radius, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius1, double radius2,

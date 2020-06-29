@@ -29,10 +29,6 @@
 #ifndef CORE_ALGORITHMS_BRAINSTIMULATOR_MODELGENERICCOIL_H
 #define CORE_ALGORITHMS_BRAINSTIMULATOR_MODELGENERICCOIL_H 1
 
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
-
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 
@@ -43,72 +39,54 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
 
-ALGORITHM_PARAMETER_DECL(Type);
-ALGORITHM_PARAMETER_DECL(FigureOf8CoilShape);
-ALGORITHM_PARAMETER_DECL(Rings);
-ALGORITHM_PARAMETER_DECL(WingsAngle);
-ALGORITHM_PARAMETER_DECL(Current);
-ALGORITHM_PARAMETER_DECL(Radius);
-ALGORITHM_PARAMETER_DECL(InnerRadius);
-ALGORITHM_PARAMETER_DECL(OuterRadius);
-ALGORITHM_PARAMETER_DECL(Distance);
-ALGORITHM_PARAMETER_DECL(Layers);
-ALGORITHM_PARAMETER_DECL(LayerStepSize);
-ALGORITHM_PARAMETER_DECL(LevelOfDetail);
-
+  ALGORITHM_PARAMETER_DECL(Type);
+  ALGORITHM_PARAMETER_DECL(FigureOf8CoilShape);
+  ALGORITHM_PARAMETER_DECL(Rings);
+  ALGORITHM_PARAMETER_DECL(WingsAngle);
+  ALGORITHM_PARAMETER_DECL(Current);
+  ALGORITHM_PARAMETER_DECL(Radius);
+  ALGORITHM_PARAMETER_DECL(InnerRadius);
+  ALGORITHM_PARAMETER_DECL(OuterRadius);
+  ALGORITHM_PARAMETER_DECL(Distance);
+  ALGORITHM_PARAMETER_DECL(Layers);
+  ALGORITHM_PARAMETER_DECL(LayerStepSize);
+  ALGORITHM_PARAMETER_DECL(LevelOfDetail);
 
   class SCISHARE ModelTMSCoilAlgorithm : public AlgorithmBase
   {
-      public:
-        ModelTMSCoilAlgorithm()
-	{
-	 addParameter(Parameters::Type,std::string());
-	 addParameter(Parameters::FigureOf8CoilShape,2);
-	 addParameter(Parameters::Current,1);
-	 addParameter(Parameters::Rings,9);
-	 addParameter(Parameters::WingsAngle,0);
-	 addParameter(Parameters::InnerRadius,26);
-	 addParameter(Parameters::OuterRadius,44);
-	 addParameter(Parameters::Distance,2);
-	 addParameter(Parameters::Layers,1);
-	 addParameter(Parameters::LayerStepSize,1);
-	 addParameter(Parameters::LevelOfDetail,6);
-	}
+  public:
+    ModelTMSCoilAlgorithm()
+    {
+      addParameter(Parameters::Type,std::string());
+      addParameter(Parameters::FigureOf8CoilShape,2);
+      addParameter(Parameters::Current,1.0);
+      addParameter(Parameters::Rings,9);
+      addParameter(Parameters::WingsAngle,0.0);
+      addParameter(Parameters::InnerRadius,26.0);
+      addParameter(Parameters::OuterRadius,44.0);
+      addParameter(Parameters::Distance,2.0);
+      addParameter(Parameters::Layers,1);
+      addParameter(Parameters::LayerStepSize,1.0);
+      addParameter(Parameters::LevelOfDetail,6);
+    }
 
-        struct Args
-        {
-        	double current;
-        	double coilRadiusInner;
-        	double coilRadiusOuter;
-            double coilDistance;
-            double wingsAngle;
-        	size_t coilLevelDetails;
-            size_t coilLayers;
-            double coilLayersStep;
-            size_t rings;
-        	int type;
-
-        	inline bool operator==(const Args& rhs)
-        	{
-    			return current == rhs.current &&
-    			coilRadiusInner == rhs.coilRadiusInner &&
-    			coilRadiusOuter == rhs.coilRadiusOuter &&
-    			coilLevelDetails == rhs.coilLevelDetails &&
-                coilDistance == rhs.coilDistance &&
-                coilLayers == rhs.coilLayers &&
-                coilLayersStep == rhs.coilLayersStep &&
-                rings == rhs.rings &&
-    			type == rhs.type;
-        	}
-    		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
-        };
-
-        //! Generate the coil geometry
-        AlgorithmOutput run(const AlgorithmInput& input) const override;
-
+    struct Args
+    {
+      double current;
+      double coilRadiusInner;
+      double coilRadiusOuter;
+      double coilDistance;
+      double wingsAngle;
+      size_t coilLevelDetails;
+      size_t coilLayers;
+      double coilLayersStep;
+      size_t rings;
+      int type;
     };
 
-
+    //! Generate the coil geometry
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+  };
 }}}}
 
 #endif
