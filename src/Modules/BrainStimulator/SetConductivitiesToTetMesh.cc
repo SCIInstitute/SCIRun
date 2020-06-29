@@ -45,8 +45,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(ModuleLookupInfo("SetConductivitiesToMesh", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(InputField);
- INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
 void SetConductivitiesToMesh::setStateDefaults()

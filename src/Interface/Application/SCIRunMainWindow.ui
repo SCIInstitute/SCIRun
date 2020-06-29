@@ -229,6 +229,7 @@
     <addaction name="actionDevConsole_"/>
     <addaction name="actionTriggeredEvents_"/>
     <addaction name="actionMacroEditor_"/>
+    <addaction name="actionStateViewer_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -1394,6 +1395,11 @@
    </property>
    <property name="text">
     <string>Peak Behind Module UIs</string>
+   </property>
+  </action>
+  <action name="actionStateViewer_">
+   <property name="text">
+    <string>State Viewer</string>
    </property>
   </action>
  </widget>
