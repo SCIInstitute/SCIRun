@@ -73,12 +73,12 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual py::object value() const override
+    py::object value() const override
     {
       return str_;
     }
@@ -95,12 +95,12 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual py::object value() const override
+    py::object value() const override
     {
       return pyMat_;
     }
@@ -117,12 +117,12 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual py::object value() const override
+    py::object value() const override
     {
       return pyMat_;
     }
@@ -139,12 +139,12 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual py::object value() const override
+    py::object value() const override
     {
       return matlabStructure_;
     }
@@ -189,34 +189,34 @@ namespace
     PyPortImpl(boost::shared_ptr<PortDescriptionInterface> port, NetworkEditorController& nec) : port_(port), nec_(nec)
     {
     }
-    virtual std::string name() const override
+    std::string name() const override
     {
       return port_ ? port_->get_portname() : "<Null>";
     }
 
-    virtual std::string id() const override
+    std::string id() const override
     {
       return port_ ? port_->id().toString() : "<Null>";
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return port_ ? port_->get_typename() : "<Null>";
     }
 
-    virtual bool isInput() const override
+    bool isInput() const override
     {
       return port_ ? port_->isInput() : false;
     }
 
-    virtual void connect(const PyPort& other) const override
+    void connect(const PyPort& other) const override
     {
       auto otherPort = dynamic_cast<const PyPortImpl*>(&other);
       if (port_ && otherPort)
         nec_.requestConnection(port_.get(), otherPort->port_.get());
     }
 
-    virtual std::string dataTypeName() const override
+    std::string dataTypeName() const override
     {
       auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
       if (output)
@@ -230,7 +230,7 @@ namespace
       return (*data)->dynamic_type_name();
     }
 
-    virtual boost::shared_ptr<PyDatatype> data() const override
+    boost::shared_ptr<PyDatatype> data() const override
     {
       auto dataOpt = getDataImpl();
       if (dataOpt && *dataOpt)
@@ -285,7 +285,7 @@ namespace
       }
     }
 
-    virtual boost::shared_ptr<PyPort> getattr(const std::string& name) override
+    boost::shared_ptr<PyPort> getattr(const std::string& name) override
     {
       auto port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->name(); });
       if (port != ports_.end())
@@ -300,7 +300,7 @@ namespace
       throw py::error_already_set();
     }
 
-    virtual boost::shared_ptr<PyPort> getitem(int index) override
+    boost::shared_ptr<PyPort> getitem(int index) override
     {
       if (index < 0)
         index += size();
@@ -312,7 +312,7 @@ namespace
       return ports_[index];
     }
 
-    virtual size_t size() const override
+    size_t size() const override
     {
       return ports_.size();
     }
@@ -367,26 +367,26 @@ namespace
       creationTime_ = boost::posix_time::second_clock::local_time();
     }
 
-    virtual std::string id() const override
+    std::string id() const override
     {
       if (module_)
         return module_->id();
       return "<Null module>";
     }
 
-    virtual void showUI() override
+    void showUI() override
     {
       if (module_)
         module_->setUiVisible(true);
     }
 
-    virtual void hideUI() override
+    void hideUI() override
     {
       if (module_)
         module_->setUiVisible(false);
     }
 
-    virtual void reset() override
+    void reset() override
     {
       module_.reset();
       input_->reset();
@@ -395,7 +395,7 @@ namespace
       output_.reset();
     }
 
-    virtual py::object getattr(const std::string& name, bool transient) override
+    py::object getattr(const std::string& name, bool transient) override
     {
       if (module_)
       {
@@ -413,7 +413,7 @@ namespace
         return py::object();
     }
 
-    virtual void setattr(const std::string& name, const py::object& object, bool transient) override
+    void setattr(const std::string& name, const py::object& object, bool transient) override
     {
       if (module_)
       {
@@ -431,7 +431,7 @@ namespace
       }
     }
 
-    virtual std::vector<std::string> stateVars() const override
+    std::vector<std::string> stateVars() const override
     {
       if (module_)
       {
@@ -443,7 +443,7 @@ namespace
       return {};
     }
 
-    virtual std::string stateToString() const override
+    std::string stateToString() const override
     {
       if (module_)
       {
@@ -458,17 +458,17 @@ namespace
       return "[null module]";
     }
 
-    virtual boost::shared_ptr<PyPorts> output() override
+    boost::shared_ptr<PyPorts> output() override
     {
       return output_;
     }
 
-    virtual boost::shared_ptr<PyPorts> input() override
+    boost::shared_ptr<PyPorts> input() override
     {
       return input_;
     }
 
-    virtual boost::posix_time::ptime creationTime() const override
+    boost::posix_time::ptime creationTime() const override
     {
       return creationTime_;
     }
