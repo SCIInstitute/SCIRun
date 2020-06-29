@@ -62,6 +62,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
+namespace py = boost::python;
 
 namespace
 {
@@ -77,14 +78,14 @@ namespace
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    virtual py::object value() const override
     {
       return str_;
     }
 
   private:
     StringHandle underlying_;
-    boost::python::object str_;
+    py::object str_;
   };
 
   class PyDatatypeDenseMatrix : public PyDatatype
@@ -99,14 +100,14 @@ namespace
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    virtual py::object value() const override
     {
       return pyMat_;
     }
 
   private:
     DenseMatrixHandle underlying_;
-    boost::python::list pyMat_;
+    py::list pyMat_;
   };
 
   class PyDatatypeSparseRowMatrix : public PyDatatype
@@ -121,14 +122,14 @@ namespace
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    virtual py::object value() const override
     {
       return pyMat_;
     }
 
   private:
     SparseRowMatrixHandle underlying_;
-    boost::python::dict pyMat_;
+    py::dict pyMat_;
   };
 
   class PyDatatypeField : public PyDatatype
@@ -143,14 +144,14 @@ namespace
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    virtual py::object value() const override
     {
       return matlabStructure_;
     }
 
   private:
     FieldHandle underlying_;
-    boost::python::dict matlabStructure_;
+    py::dict matlabStructure_;
   };
 
   class PyDatatypeFactory
@@ -295,8 +296,8 @@ namespace
         return *port;
 
       std::cerr << "Could not find port with name " << name << " on module " << modId_.id_ << std::endl;
-      PyErr_SetObject(PyExc_KeyError, boost::python::object(name).ptr());
-      throw boost::python::error_already_set();
+      PyErr_SetObject(PyExc_KeyError, py::object(name).ptr());
+      throw py::error_already_set();
     }
 
     virtual boost::shared_ptr<PyPort> getitem(int index) override
@@ -305,8 +306,8 @@ namespace
         index += size();
       if (index < 0 || index >= size())
       {
-        PyErr_SetObject(PyExc_KeyError, boost::python::object(index).ptr());
-        throw boost::python::error_already_set();
+        PyErr_SetObject(PyExc_KeyError, py::object(index).ptr());
+        throw py::error_already_set();
       }
       return ports_[index];
     }
@@ -394,7 +395,7 @@ namespace
       output_.reset();
     }
 
-    virtual boost::python::object getattr(const std::string& name, bool transient) override
+    virtual py::object getattr(const std::string& name, bool transient) override
     {
       if (module_)
       {
@@ -409,10 +410,10 @@ namespace
             throw std::invalid_argument("Module state key " + name + " not defined.");
       }
       else
-        return boost::python::object();
+        return py::object();
     }
 
-    virtual void setattr(const std::string& name, const boost::python::object& object, bool transient) override
+    virtual void setattr(const std::string& name, const py::object& object, bool transient) override
     {
       if (module_)
       {
