@@ -62,7 +62,7 @@ public:
   GLWidget(QWidget* parent);
   ~GLWidget();
 
-  Render::RendererPtr getSpire() const {return mGraphics;}
+  Render::RendererPtr getSpire() const {return graphics_;}
   Render::MouseButton getSpireButton(QMouseEvent* event);
 
   /// Required function for single threaded interfaces that have multiple
@@ -71,7 +71,7 @@ public:
   void setLockZoom(bool lock);
   void setLockPanning(bool lock);
   void setLockRotation(bool lock);
-  void requestFrame() {mFrameRequested = true;}
+  void requestFrame() {frameRequested_ = true;}
 
 Q_SIGNALS:
   void fatalError(const QString& message);
@@ -92,10 +92,10 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  Render::RendererPtr                   mGraphics          {};  ///< Interface to spire.
-  QTimer*                               mTimer             {};
-  double                                mFrameTime         {0.0};
-  bool                                  mFrameRequested    {false};
+  Render::RendererPtr                   graphics_          {};  ///< Interface to spire.
+  QTimer*                               timer_             {};
+  bool                                  frameRequested_    {false};
+  double                                frameTime_         {0.0};
 };
 
 } // end of namespace Gui

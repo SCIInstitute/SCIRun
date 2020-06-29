@@ -31,7 +31,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/timer.hpp>
+#include <chrono>
 #include <atomic>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -384,7 +384,7 @@ bool Module::executeWithSignals() NOEXCEPT
   }
 #endif
   impl_->executeBegins_(id());
-  boost::timer executionTimer;
+  auto start = std::chrono::steady_clock::now();
   {
     auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
     impl_->metadata_.setMetadata("Last execution timestamp", isoString);
@@ -448,16 +448,15 @@ bool Module::executeWithSignals() NOEXCEPT
   }
   impl_->threadStopped_ = threadStopValue;
 
-  auto executionTime = executionTimer.elapsed();
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end-start;
   {
-    std::ostringstream ostr;
-    ostr << executionTime;
-    impl_->metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
+    impl_->metadata_.setMetadata("Last execution duration (seconds)", std::to_string(elapsed_seconds.count()));
   }
 
   std::ostringstream finished;
   finished << "MODULE " << id().id_ << " FINISHED " <<
-    (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+    (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << elapsed_seconds.count() << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   if (!LogSettings::Instance().verbose())
@@ -479,7 +478,7 @@ bool Module::executeWithSignals() NOEXCEPT
     impl_->inputsChanged_ = false;
   }
 
-  impl_->executeEnds_(executionTime, id());
+  impl_->executeEnds_(elapsed_seconds.count(), id());
   return impl_->returnCode_;
 }
 

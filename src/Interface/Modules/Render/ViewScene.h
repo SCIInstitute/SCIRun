@@ -32,16 +32,16 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include "Interface/Modules/Render/ui_ViewScene.h"
-#include <Interface/Modules/Render/ViewSceneManager.h>
-#include <atomic>
-
-#include <Modules/Visualization/TextBuilder.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Interface/Modules/Render/ViewSceneManager.h>
+#include <Modules/Render/ViewScene.h>
+#include <Modules/Visualization/TextBuilder.h>
+#include <atomic>
+#include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -68,7 +68,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
-      
+
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
@@ -225,6 +225,8 @@ namespace SCIRun {
       void wheelEvent(QWheelEvent* event) override;
       void keyPressEvent(QKeyEvent* event) override;
       void keyReleaseEvent(QKeyEvent*event) override;
+      void focusOutEvent(QFocusEvent* event) override;
+      void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
 
@@ -254,9 +256,14 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
+      bool canSelectWidget() const;
+      bool tryWidgetSelection(QMouseEvent* event);
       void selectObject(const int x, const int y);
+      Modules::Render::ViewScene::GeomListPtr getGeomData();
+      bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
       void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
+      void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
@@ -313,6 +320,7 @@ namespace SCIRun {
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
+      bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
