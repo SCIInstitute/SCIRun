@@ -552,7 +552,7 @@ py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& v
 py::object SCIRun::Core::Python::convertTransientVariableToPythonObject(const boost::optional<boost::any>& v)
 {
   if (transient_value_check<Variable>(v))
-    return py::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
+    return convertVariableToPythonObject(transient_value_cast<Variable>(v));
   else
     return py::object();
 }
