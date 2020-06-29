@@ -26,49 +26,28 @@
 */
 
 
-#ifndef ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
-#define ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
+#ifndef INTERFACE_APPLICATION_STATE_VIEWER_H
+#define INTERFACE_APPLICATION_STATE_VIEWER_H
 
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include "ui_StateViewer.h"
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
-
-///@file BiotSavartSolverAlgorithm
-///@brief
-///
-///
-///@author
-/// Implementation: Petar Petrov for SCIRun 4.7
-/// Converted to SCIRun5 by Moritz Dannhauer
-///@details
-///
-///
+#include <boost/shared_ptr.hpp>
+#include <QString>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
+namespace Gui {
 
- ALGORITHM_PARAMETER_DECL(Mesh);
- ALGORITHM_PARAMETER_DECL(Coil);
- ALGORITHM_PARAMETER_DECL(VectorBField);
- ALGORITHM_PARAMETER_DECL(VectorAField);
- ALGORITHM_PARAMETER_DECL(OutType);
+  class NetworkEditor;
 
-  class SCISHARE BiotSavartSolverAlgorithm : public AlgorithmBase
+  class StateViewer : public QDialog, public Ui::StateViewer
   {
-  public:
-    BiotSavartSolverAlgorithm()
-    {
-      addParameter(Parameters::OutType, 0);
-    }
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-    bool run(FieldHandle mesh, FieldHandle coil, Datatypes::DenseMatrixHandle& outdata, int outtype) const;
-  };
+  	Q_OBJECT
 
-}}}}
+  public:
+    StateViewer(NetworkEditor* network, QWidget* parent = nullptr);
+  public Q_SLOTS:
+    void prepareMenu(const QPoint& pos);
+  };
+}}
 
 #endif
