@@ -70,8 +70,9 @@ namespace
     {
       auto l = boost::get<VariableList>(v);
       py::list pyList;
-      for (int i = 0; i < l.size(); ++i) pyList.append(convertVariableToPythonObject(l[i]));
-      return pyList;
+      for (int i = 0; i < l.size(); ++i)
+        pyList.append(boost::apply_visitor(PythonObjectVisitor(), l[i].value()));
+      return std::move(pyList);
     }
   };
 
