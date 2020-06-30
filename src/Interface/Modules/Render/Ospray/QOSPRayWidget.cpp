@@ -25,50 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include "QOSPRayWidget.h"
 
-#ifndef ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
-#define ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
+#include <iostream>
+#include <string>
 
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include "OSPRayRenderer.h"
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+using namespace SCIRun::Render;
 
-///@file BiotSavartSolverAlgorithm
-///@brief
-///
-///
-///@author
-/// Implementation: Petar Petrov for SCIRun 4.7
-/// Converted to SCIRun5 by Moritz Dannhauer
-///@details
-///
-///
+QOSPRayWidget::QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer) :
+  QOpenGLWidget(parent), renderer(renderer)
+{
+  renderTimer = new QTimer(this);
+  connect(renderTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  renderTimer->start(16);
+}
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
+QOSPRayWidget::~QOSPRayWidget()
+{
 
- ALGORITHM_PARAMETER_DECL(Mesh);
- ALGORITHM_PARAMETER_DECL(Coil);
- ALGORITHM_PARAMETER_DECL(VectorBField);
- ALGORITHM_PARAMETER_DECL(VectorAField);
- ALGORITHM_PARAMETER_DECL(OutType);
+}
 
-  class SCISHARE BiotSavartSolverAlgorithm : public AlgorithmBase
-  {
-  public:
-    BiotSavartSolverAlgorithm()
-    {
-      addParameter(Parameters::OutType, 0);
-    }
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-    bool run(FieldHandle mesh, FieldHandle coil, Datatypes::DenseMatrixHandle& outdata, int outtype) const;
-  };
+void QOSPRayWidget::initializeGL()
+{
 
-}}}}
+}
 
-#endif
+void QOSPRayWidget::paintGL()
+{
+  renderer->renderFrame();
+}
+
+void QOSPRayWidget::resizeGL(int width, int height)
+{
+  renderer->resize(width, height);
+}
+
+void QOSPRayWidget::updateRenderer()
+{
+  if(isValid()) update();
+}

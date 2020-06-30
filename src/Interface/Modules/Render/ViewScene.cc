@@ -25,26 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <es-log/trace-log.h>
-#include <gl-platform/GLPlatform.hpp>
-
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Thread/Mutex.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Interface/Modules/Render/ES/RendererInterface.h>
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
-#include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewSceneUtility.h>
+#include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <gl-platform/GLPlatform.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -59,6 +57,99 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
 using namespace SCIRun::Render::Gui;
 using namespace SCIRun::Modules::Render;
+
+namespace SCIRun {
+namespace Gui {
+  enum WidgetColor
+  {
+    RED,
+    GREEN,
+    BLUE
+  };
+
+  class SCISHARE ScopedWidgetColorChanger
+  {
+  public:
+  ScopedWidgetColorChanger(WidgetHandle widget, WidgetColor color)
+    : widget_(widget)
+    {
+      backupColorValues();
+      if (widget_)
+      {
+        backupColorValues();
+        switch (color)
+        {
+        case WidgetColor::RED:
+          colorWidgetRed();
+          break;
+        case WidgetColor::GREEN:
+          colorWidgetGreen();
+          break;
+        case WidgetColor::BLUE:
+          colorWidgetBlue();
+          break;
+        }
+      }
+    }
+
+    ~ScopedWidgetColorChanger()
+    {
+      if (widget_)
+        colorWidget(previousAmbientColor_, previousDiffuseColor_, previousSpecularColor_);
+    }
+
+  private:
+    WidgetHandle widget_;
+    glm::vec4                                         previousDiffuseColor_  {0.0};
+    glm::vec4                                         previousSpecularColor_ {0.0};
+    glm::vec4                                         previousAmbientColor_  {0.0};
+
+    void colorWidget(glm::vec4 ambient, glm::vec4 diffuse, glm::vec4 specular)
+    {
+      for (auto& pass : widget_->passes())
+      {
+        pass.addUniform("uAmbientColor", ambient);
+        pass.addUniform("uDiffuseColor", diffuse);
+        pass.addUniform("uSpecularColor", specular);
+      }
+    }
+
+    void colorWidgetRed()
+    {
+      colorWidget(glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
+                  glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+                  glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
+    }
+
+    void colorWidgetGreen()
+    {
+      colorWidget(glm::vec4{0.0f, 0.1f, 0.0f, 1.0f},
+                  glm::vec4{0.0f, 1.0f, 0.0f, 1.0f},
+                  glm::vec4{0.0f, 0.1f, 0.0f, 1.0f});
+    }
+
+    void colorWidgetBlue()
+    {
+      colorWidget(glm::vec4{0.0f, 0.0f, 0.1f, 1.0f},
+                  glm::vec4{0.0f, 0.0f, 1.0f, 1.0f},
+                  glm::vec4{0.0f, 0.0f, 0.1f, 1.0f});
+    }
+
+    void backupColorValues()
+    {
+      for (auto& pass : widget_->passes())
+        for (auto& uniform : pass.mUniforms)
+        {
+          if (uniform.name == "uAmbientColor")
+            previousAmbientColor_ = uniform.data;
+          else if (uniform.name == "uDiffuseColor")
+            previousDiffuseColor_ = uniform.data;
+          else if (uniform.name == "uSpecularColor")
+            previousSpecularColor_ = uniform.data;
+        }
+    }
+  };
+}}
 
 namespace
 {
@@ -963,7 +1054,7 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseDownHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
@@ -972,7 +1063,7 @@ void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, flo
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseMoveHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
@@ -1013,27 +1104,18 @@ void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDi
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+bool ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
 {
-  if (shiftdown_)
+  bool widgetSelected = false;
+  if (canSelectWidget())
   {
+    mouseButtonPressed_ = true;
     selectObject(event->x(), event->y());
     updateModifiedGeometries();
+    widgetSelected = true;
+    updateCursor();
   }
-  else
-  {
-    auto spire = mSpire.lock();
-    if(!spire) return;
-
-    int x_window = event->x() - mGLWidget->pos().x();
-    int y_window = event->y() - mGLWidget->pos().y();
-
-    float x_ss, y_ss;
-    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-    auto btn = mGLWidget->getSpireButton(event);
-
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
-  }
+  return widgetSelected;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1057,6 +1139,34 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
     for(auto vsd : viewScenesToUpdate) vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
+  else
+    tryWidgetSelection(event);
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::canSelectWidget() const
+{
+  return shiftdown_ && !mouseButtonPressed_
+    && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+{
+  if (!tryWidgetSelection(event))
+  {
+    auto spire = mSpire.lock();
+    if (!spire) return;
+
+    int x_window = event->x() - mGLWidget->pos().x();
+    int y_window = event->y() - mGLWidget->pos().y();
+
+    float x_ss, y_ss;
+    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
+    auto btn = mGLWidget->getSpireButton(event);
+
+    for (auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1068,13 +1178,22 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     updateModifiedGeometries();
     unblockExecution();
     Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
+    selectedWidget_->changeID();
     selectedWidget_.reset();
+
+    auto spire = mSpire.lock();
+    if(!spire) return;
+    spire->widgetMouseUp();
+    updateCursor();
   }
-  else if(!shiftdown_)
+  else if (!shiftdown_)
   {
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
+    for (auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
   }
+
+  mouseButtonPressed_ = false;
 }
+
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
@@ -1092,6 +1211,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = true;
+    updateCursor();
     break;
   }
 }
@@ -1103,10 +1223,31 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = false;
+    updateCursor();
     break;
   }
 }
 
+void ViewSceneDialog::focusOutEvent(QFocusEvent* event)
+{
+  shiftdown_ = false;
+  updateCursor();
+}
+
+void ViewSceneDialog::focusInEvent(QFocusEvent* event)
+{
+  updateCursor();
+}
+
+void ViewSceneDialog::updateCursor()
+{
+  if (selectedWidget_)
+    setCursor(Qt::ClosedHandCursor);
+  else if (shiftdown_)
+    setCursor(Qt::OpenHandCursor);
+  else
+    setCursor(Qt::ArrowCursor);
+}
 
 
 //--------------------------------------------------------------------------------------------------
@@ -1336,7 +1477,6 @@ void ViewSceneDialog::autoRotateDown()
 //---------------- Widgets -------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
@@ -1385,32 +1525,18 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
-namespace
+SCIRun::Modules::Render::ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
 {
-  void colorWidget(WidgetHandle widget, const glm::vec4& ambient, const glm::vec4& diffuse, const glm::vec4& specular)
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (geomDataTransient && !geomDataTransient->empty())
   {
-    for (auto& pass : widget->passes())
+    auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    if (!geomData)
     {
-      pass.addUniform("uAmbientColor", ambient);
-      pass.addUniform("uDiffuseColor", diffuse);
-      pass.addUniform("uSpecularColor", specular);
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+      return nullptr;
     }
-  }
-
-  void colorWidgetRed(WidgetHandle widget)
-  {
-    colorWidget(widget,
-      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f},
-      glm::vec4{1.0f, 0.0f, 0.0f, 1.0f},
-      glm::vec4{0.1f, 0.0f, 0.0f, 1.0f});
-  }
-
-  void restoreWidgetColor(WidgetHandle widget)
-  {
-    colorWidget(widget,
-      glm::vec4{0.1f, 0.1f, 0.1f, 1.0f},
-      glm::vec4{1.0f, 1.0f, 1.0f, 1.0f},
-      glm::vec4{0.1f, 1.0f, 1.0f, 1.0f});
+    return geomData;
   }
 }
 
@@ -1427,25 +1553,33 @@ void ViewSceneDialog::selectObject(const int x, const int y)
 
   spire->removeAllGeomObjects();
 
-  // Grab the geomData transient value.
-  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
+  auto geomData = getGeomData();
+  if (geomData)
   {
-    auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-    if (!geomData)
-    {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return;
-    }
-
     auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
     selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
 
     if (selectedWidget_)
+      widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_,
+                                                                         WidgetColor::RED);
+  }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
+{
+  auto geomData = getGeomData();
+  if (geomData)
+  {
+    auto id = widget->uniqueID();
+    for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
-      colorWidgetRed(selectedWidget_);
+      auto obj = *it;
+      if (obj->uniqueID() == id)
+        return true;
     }
   }
+  return false;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1457,10 +1591,7 @@ void ViewSceneDialog::restoreObjColor()
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-  if (selectedWidget_)
-  {
-    restoreWidgetColor(selectedWidget_);
-  }
+  widgetColorChanger_.reset();
 }
 
 //--------------------------------------------------------------------------------------------------

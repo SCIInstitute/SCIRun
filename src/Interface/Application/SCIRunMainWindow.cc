@@ -258,6 +258,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionStateViewer_, &QAction::triggered, [this]() { networkEditor_->showStateViewer(); });
 
   auto dimFunc = [this](const char* type)
   {

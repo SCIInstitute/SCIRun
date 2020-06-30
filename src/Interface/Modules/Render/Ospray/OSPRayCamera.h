@@ -26,49 +26,46 @@
 */
 
 
-#ifndef ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
-#define ALGORITHMS_MATH_BiotSavartSolverAlgorithm_H
+#include <arc-look-at/ArcLookAt.hpp>
+#include <glm/glm.hpp>
+#include <ospray/ospray.h>
 
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+namespace SCIRun { namespace Render {
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+enum class MouseButton
+{
+  MOUSE_NONE,
+  MOUSE_LEFT,
+  MOUSE_RIGHT,
+  MOUSE_MIDDLE,
+};
 
-///@file BiotSavartSolverAlgorithm
-///@brief
-///
-///
-///@author
-/// Implementation: Petar Petrov for SCIRun 4.7
-/// Converted to SCIRun5 by Moritz Dannhauer
-///@details
-///
-///
+class OSPRayCamera
+{
+public:
+  OSPRayCamera();
+  ~OSPRayCamera();
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
+  void mouseRelease();
+  void mouseWheel(int delta);
 
- ALGORITHM_PARAMETER_DECL(Mesh);
- ALGORITHM_PARAMETER_DECL(Coil);
- ALGORITHM_PARAMETER_DECL(VectorBField);
- ALGORITHM_PARAMETER_DECL(VectorAField);
- ALGORITHM_PARAMETER_DECL(OutType);
+  OSPCamera getOSPCamera();
 
-  class SCISHARE BiotSavartSolverAlgorithm : public AlgorithmBase
-  {
-  public:
-    BiotSavartSolverAlgorithm()
-    {
-      addParameter(Parameters::OutType, 0);
-    }
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-    bool run(FieldHandle mesh, FieldHandle coil, Datatypes::DenseMatrixHandle& outdata, int outtype) const;
-  };
+  void setAspect(float aspect) {aspect_ = aspect;}
 
-}}}}
+private:
+  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
+  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
+  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
+  float aspect_     { 1.0f};
+  float fovy_       {60.0f};
+  float aperture_   {0.0f};
 
-#endif
+  spire::ArcLookAt lookat_ {       };
+  OSPCamera camera_        {nullptr};
+
+};
+
+} /*Render*/ } /*SCIRun*/
