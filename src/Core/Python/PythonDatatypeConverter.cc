@@ -58,20 +58,19 @@ namespace
 {
   struct PythonObjectVisitor : boost::static_visitor<py::object>
   {
-    py::object operator()(const int& v) const { return py::object(boost::get<int>(v)); }
-    py::object operator()(const std::string& v) const { return py::object(boost::get<std::string>(v)); }
-    py::object operator()(const double& v) const { return py::object(boost::get<double>(v)); }
-    py::object operator()(const bool& v) const { return py::object(boost::get<bool>(v)); }
+    py::object operator()(const int& v) const { return py::object(v); }
+    py::object operator()(const std::string& v) const { return py::object(v); }
+    py::object operator()(const double& v) const { return py::object(v); }
+    py::object operator()(const bool& v) const { return py::object(v); }
     py::object operator()(const AlgoOption& v) const
     {
       THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
     }
     py::object operator()(const VariableList& v) const
     {
-      auto l = boost::get<VariableList>(v);
       py::list pyList;
-      for (int i = 0; i < l.size(); ++i)
-        pyList.append(boost::apply_visitor(PythonObjectVisitor(), l[i].value()));
+      for (int i = 0; i < v.size(); ++i)
+        pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
       return std::move(pyList);
     }
   };
