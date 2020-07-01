@@ -45,9 +45,9 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(ModelTMSCoil, BrainStimulator, SCIRun)
 
-ModelTMSCoil::ModelTMSCoil() : Module(ModuleLookupInfo("ModelTMSCoil", "BrainStimulator", "SCIRun"),true)
+ModelTMSCoil::ModelTMSCoil() : Module(staticInfo_, true)
 {
- INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(Mesh);
 }
 
 void ModelTMSCoil::setStateDefaults()
