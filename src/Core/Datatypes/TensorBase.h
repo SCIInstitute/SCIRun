@@ -48,6 +48,7 @@ namespace Core {
       {
         return dimensionsEqual(t) && valuesEqual(t);
       }
+
       bool operator!=(const TensorBase<T, Rank>& t) const { return !(*this == t); }
 
       TensorBase& operator=(const parent& other)
@@ -73,6 +74,17 @@ namespace Core {
       parent operator+(const OtherDerived& other) const
       {
         return static_cast<parent>(*this) + static_cast<parent>(other);
+      }
+
+      parent operator*(const T& other) const
+      {
+        return static_cast<parent>(*this) * other;
+      }
+
+      template <typename OtherDerived>
+      parent operator-(const OtherDerived& other) const
+      {
+        return static_cast<parent>(*this) - static_cast<parent>(other);
       }
 
       bool dimensionsEqual(const TensorBase<T, Rank>& t) const
@@ -111,7 +123,7 @@ namespace Core {
 
       bool incrementIndex(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim) const
       {
-        int d = index.size() - 1;
+        long unsigned int d = index.size() - 1;
 
         while (d >= 0)
         {

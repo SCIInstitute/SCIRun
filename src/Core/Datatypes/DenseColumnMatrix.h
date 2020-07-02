@@ -51,7 +51,7 @@ namespace Datatypes {
 
     DenseColumnMatrixGeneric(std::vector<T> vals) : EigenBase(vals.size())
     {
-      for (int i = 0; i < vals.size(); ++i)
+      for (long unsigned int i = 0; i < vals.size(); ++i)
         (*this)[i] = vals[i];
     }
 

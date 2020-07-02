@@ -180,6 +180,19 @@ TEST(Dyadic3DTensorTest, GetEigenvectors)
   ASSERT_EQ(DenseColumnMatrix({0, 0, 1}), eigvecs[2]);
 }
 
+TEST(Dyadic3DTensorTest, GetEigenvector)
+{
+  std::vector<DenseColumnMatrix> vecs = {
+      DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 2, 0}), DenseColumnMatrix({0, 0, 3})};
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      vecs[i][j] = (i == j) ? i + 1 : 0;
+
+  Dyadic3DTensor<double> t(vecs);
+
+  ASSERT_EQ(DenseColumnMatrix({0, 1, 0}), t.getEigenvector(1));
+}
+
 TEST(DyadicTensorTest, Equivalent)
 {
   std::vector<DenseColumnMatrix> vecs = {
@@ -228,18 +241,56 @@ TEST(DyadicTensorTest, EqualsOperatorDouble)
   ASSERT_TRUE(t == t2);
 }
 
-TEST(DyadicTensorTest, PlusOperator)
+TEST(DyadicTensorTest, PlusEqualsTensorOperator)
 {
   DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
   DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
   DyadicTensor<double> expected({DenseColumnMatrix({8, 11}), DenseColumnMatrix({9, 9})});
 
-  DyadicTensor<double> result = t + t2;
+  DyadicTensor<double> result = t;
+  result += t2;
 
   ASSERT_EQ(expected, result);
 }
 
-TEST(DyadicTensorTest, MultiplyOperator)
+// Coefficient wise multiplication
+TEST(DyadicTensorTest, MultiplyTensorOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
+  DyadicTensor<double> expected({DenseColumnMatrix({12, 24}), DenseColumnMatrix({20, 18})});
+
+  DyadicTensor<double> result = t * t2;
+
+  ASSERT_EQ(expected, result);
+}
+
+// Coefficient wise multiplication
+TEST(DyadicTensorTest, MultiplyDoubleOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> expected({DenseColumnMatrix({5, 20}), DenseColumnMatrix({12.5, 10.5})});
+
+  DyadicTensor<double> result = t * 2.5;
+
+  ASSERT_EQ(expected, result);
+}
+
+// Coefficient wise multiplication
+TEST(DyadicTensorTest, MultiplyEqualsTensorOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
+  DyadicTensor<double> expected({DenseColumnMatrix({12, 24}), DenseColumnMatrix({20, 18})});
+
+  DyadicTensor<double> result = t;
+  result *= t2;
+
+  ASSERT_EQ(expected, result);
+}
+
+// Analog Equivalent of matrix multiplication
+TEST(DyadicTensorTest, Contraction)
 {
   DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
   DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
@@ -247,10 +298,31 @@ TEST(DyadicTensorTest, MultiplyOperator)
 
   DyadicTensor<double> result = t.contract(t2);
 
-  std::cout << t << "\n";
   ASSERT_EQ(expected, result);
 }
 
+TEST(DyadicTensorTest, MinusOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
+  DyadicTensor<double> expected({DenseColumnMatrix({-4, 5}), DenseColumnMatrix({1, -3})});
+
+  DyadicTensor<double> result = t - t2;
+
+  ASSERT_EQ(expected, result);
+}
+
+TEST(DyadicTensorTest, MinusEqualsOperator)
+{
+  DyadicTensor<double> t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor<double> t2({DenseColumnMatrix({6, 3}), DenseColumnMatrix({4, 6})});
+  DyadicTensor<double> expected({DenseColumnMatrix({-4, 5}), DenseColumnMatrix({1, -3})});
+
+  DyadicTensor<double> result = t;
+  result -= t2;
+
+  ASSERT_EQ(expected, result);
+}
 
 // 2 5   6 4    12+15 8+30
 // 8 3   3 6    48+9  32+18
