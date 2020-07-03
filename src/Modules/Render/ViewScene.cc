@@ -180,10 +180,12 @@ void ViewScene::updateTransientList()
   }
 
   geoms->clear();
+
   for (const auto& geomPair : activeGeoms_)
   {
     auto geom = geomPair.second;
     geom->addToList(geom, *geoms);
+    logCritical("updateTransientList added geom to state list: {}", geomPair.first.toString());
   }
 
   // Grab geometry inputs and pass them along in a transient value to the GUI
@@ -204,6 +206,7 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  logCritical("asyncExecute called: {}", pid.toString());
   if (!data) return;
   //lock for state modification
   {
@@ -232,6 +235,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     }
 
     activeGeoms_[pid] = geom;
+    logCritical("asyncExecute added active geom to map: {}", pid.toString());
     updateTransientList();
   }
 }
@@ -248,6 +252,13 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
+  {
+    logCritical("\tVS::execute");
+    for (const auto& i : inputPorts())
+    {
+      logCritical("\t\tinput port: {}", i->id().toString());
+    }
+  }
   auto state = get_state();
   auto executionReporter = ScopedExecutionReporter(state);
 
