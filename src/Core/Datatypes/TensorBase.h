@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     template <typename T, int Rank>
-    class TensorBase : public Eigen::Tensor<T, Rank>
+    class TensorBaseGeneric : public Eigen::Tensor<T, Rank>
     {
       typedef Eigen::Tensor<T, Rank> parent;
 
@@ -44,21 +44,21 @@ namespace Core {
       using parent::Tensor;  // adding parent constructors
       // using parent::contract;
 
-      bool operator==(const TensorBase<T, Rank>& t) const
+      bool operator==(const TensorBaseGeneric<T, Rank>& t) const
       {
         return dimensionsEqual(t) && valuesEqual(t);
       }
 
-      bool operator!=(const TensorBase<T, Rank>& t) const { return !(*this == t); }
+      bool operator!=(const TensorBaseGeneric<T, Rank>& t) const { return !(*this == t); }
 
-      TensorBase& operator=(const parent& other)
+      TensorBaseGeneric& operator=(const parent& other)
       {
         parent::operator=(other);
         return *this;
       }
 
       template <typename OtherDerived>
-      TensorBase contract(const OtherDerived& other) const
+      TensorBaseGeneric contract(const OtherDerived& other) const
       {
         Eigen::array<Eigen::IndexPair<int>, 1> product_dims = {Eigen::IndexPair<int>(1, 0)};
         return parent::contract(static_cast<parent>(other), product_dims);
@@ -87,7 +87,7 @@ namespace Core {
         return static_cast<parent>(*this) - static_cast<parent>(other);
       }
 
-      bool dimensionsEqual(const TensorBase<T, Rank>& t) const
+      bool dimensionsEqual(const TensorBaseGeneric<T, Rank>& t) const
       {
         if (parent::NumDimensions != t.NumDimensions) return false;
 
@@ -103,7 +103,7 @@ namespace Core {
         return true;
       }
 
-      bool valuesEqual(const TensorBase<T, Rank>& t) const
+      bool valuesEqual(const TensorBaseGeneric<T, Rank>& t) const
       {
         auto dim = parent::dimensions();
         auto index = std::vector<int>(parent::NumDimensions, 0);
@@ -111,7 +111,7 @@ namespace Core {
       }
 
       bool checkForEquals(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim,
-          const TensorBase<T, Rank>& t) const
+          const TensorBaseGeneric<T, Rank>& t) const
       {
         if ((*this)(index) != t(index)) return false;
 

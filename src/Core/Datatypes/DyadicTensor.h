@@ -29,8 +29,8 @@
 #define CORE_DATATYPES_DYADIC_TENSOR_H
 
 #include <Core/Datatypes/DenseColumnMatrix.h>
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/TensorBase.h>
+#include <Core/Datatypes/TensorFwd.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <iostream>  // TODO DELETE
 #include <unsupported/Eigen/CXX11/TensorSymmetry>
@@ -41,40 +41,55 @@ namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
     template <typename T>
-    class DyadicTensor : public TensorBase<T, 2>
+    class DyadicTensorGeneric : public TensorBaseGeneric<T, 2>
     // TODO need to add operator>>, type_name
     {
      public:
-      typedef TensorBase<T, 2> parent;
+      typedef TensorBaseGeneric<T, 2> parent;
 
-      DyadicTensor(size_t dim1, size_t dim2) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
+      DyadicTensorGeneric(size_t dim1, size_t dim2) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
         parent::setZero();
+        // buildEigens();
       }
 
-      DyadicTensor(size_t dim1, size_t dim2, T val) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
+      DyadicTensorGeneric(size_t dim1, size_t dim2, T val)
+          : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
       {
         for (size_t i = 0; i < dim1; ++i)
           for (size_t j = 0; j < dim2; ++j)
             (*this)(i, j) = (i == j) ? val : 0;
+        // buildEigens();
       }
 
-      DyadicTensor(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
+      DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
           : parent(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()),
             dim2_(eigvecs[0].size())
       {
         setEigenVectors(eigvecs);
-        setTensorValues();
-        haveEigens_ = true;
       }
 
-      DyadicTensor(const Eigen::Tensor<T, 2>& other)
+      DyadicTensorGeneric(DyadicTensorGeneric<T>& other)
           : parent(other.dimension(0), other.dimension(1)), dim1_(other.dimension(0)),
             dim2_(other.dimension(1))
       {
         for (size_t i = 0; i < dim1_; ++i)
           for (size_t j = 0; j < dim1_; ++j)
             (*this)(i, j) = other(i, j);
+        eigvecs_ = other.getEigenvectors();
+        eigvals_ = other.getEigenvalues();
+        haveEigens_ = true;
+        reorderTensorValues();
+      }
+
+      DyadicTensorGeneric(const Eigen::Tensor<T, 2>& other)
+          : parent(other.dimension(0), other.dimension(1)), dim1_(other.dimension(0)),
+            dim2_(other.dimension(1))
+      {
+        for (size_t i = 0; i < dim1_; ++i)
+          for (size_t j = 0; j < dim1_; ++j)
+            (*this)(i, j) = other(i, j);
+        // buildEigens();
       }
 
       using parent::operator=;
@@ -87,6 +102,8 @@ namespace Core {
         setEigenvaluesFromEigenvectors();
         normalizeEigenvectors();
         haveEigens_ = true;
+        setTensorValues();
+        reorderTensorValues();
       }
 
       Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> asMatrix()
@@ -125,12 +142,16 @@ namespace Core {
 
       void reorderTensorValues()
       {
+        typedef std::pair<T, DenseColumnMatrixGeneric<T>> EigPair;
         if (!haveEigens_) return;
-        std::map<T, DenseColumnMatrixGeneric<T>> sorted;
+        std::vector<EigPair> sortList(dim1_);
         for (size_t i = 0; i < dim1_; ++i)
-          sorted[eigvals_[i]] = eigvecs_[i];
+          sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);
 
-        auto sortedEigsIter = sorted.begin();
+        std::sort(sortList.begin(), sortList.end(),
+            [](const EigPair& left, const EigPair& right) { return left.first > right.first; });
+
+        auto sortedEigsIter = sortList.begin();
 
         for (size_t i = 0; i < dim1_; ++i)
           std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
@@ -154,7 +175,7 @@ namespace Core {
         return eigvals_;
       }
 
-      SCISHARE friend std::ostream& operator<<(std::ostream& os, const DyadicTensor<T>& t)
+      SCISHARE friend std::ostream& operator<<(std::ostream& os, const DyadicTensorGeneric<T>& t)
       {
         os << '[';
         for (size_t i = 0; i < t.getDimension1(); ++i)
@@ -168,16 +189,16 @@ namespace Core {
         return os;
       }
 
-      SCISHARE friend std::istream& operator>>(std::istream& is, DyadicTensor<T>& t)
+      SCISHARE friend std::istream& operator>>(std::istream& is, DyadicTensorGeneric<T>& t)
       {
         for (size_t i = 0; i < t.getDimension1(); ++i)
           for (size_t j = 0; j < t.getDimension2(); ++j)
-            is >> t(i, j);
+            is >> t(j, i);
 
         return is;
       }
 
-      DyadicTensor<T>& operator=(const T& v)
+      DyadicTensorGeneric<T>& operator=(const T& v)
       {
         for (size_t i = 0; i < getDimension1(); ++i)
           for (size_t j = 0; j < getDimension2(); ++j)
@@ -188,6 +209,40 @@ namespace Core {
 
       size_t getDimension1() const { return dim1_; }
       size_t getDimension2() const { return dim2_; }
+
+      T frobeniusNorm()
+      {
+        if (!haveEigens_) buildEigens();
+        auto eigvals = DenseColumnMatrix(eigvals_);
+        return eigvals.norm();
+      }
+
+      T maxNorm()
+      {
+        if (!haveEigens_) buildEigens();
+        auto maxVal = std::numeric_limits<T>::min();
+        for (const auto& e : eigvals_)
+          maxVal = std::max(maxVal, e);
+        return maxVal;
+      }
+
+      void setEigens(const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<T>& eigvals)
+      {
+        assert(eigvecs_.size() == eigvecs.size());
+        assert(eigvals_.size() == eigvals.size());
+        eigvecs_ = eigvecs;
+        eigvals_ = eigvals;
+        haveEigens_ = true;
+      }
+
+      T eigenValueSum()
+      {
+        if (!haveEigens_) buildEigens();
+        T sum = 0;
+        for (const auto& e : eigvals_)
+          sum += e;
+        return sum;
+      }
 
      protected:
       const int RANK_ = 2;

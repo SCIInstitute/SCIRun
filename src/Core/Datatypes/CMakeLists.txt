@@ -54,6 +54,7 @@ SET(Core_Datatypes_HEADERS
   DyadicTensor.h
   SymmetricDyadicTensor.h
   Dyadic3DTensor.h
+  TensorFwd.h
   DenseColumnMatrix.h
   Geometry.h
   HasId.h

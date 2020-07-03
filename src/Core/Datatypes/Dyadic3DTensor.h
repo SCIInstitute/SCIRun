@@ -32,51 +32,45 @@
 #include <Core/Datatypes/DyadicTensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <unsupported/Eigen/CXX11/TensorSymmetry>
-#include "Core/Datatypes/MatrixFwd.h"
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     template <typename T>
-    class Dyadic3DTensor : public DyadicTensor<T>
+    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<T>
     {
      public:
-      Dyadic3DTensor() : DyadicTensor<T>(3, 3) {}
+      typedef DyadicTensorGeneric<T> parent;
+      Dyadic3DTensorGeneric() : parent(3, 3) {}
 
-      Dyadic3DTensor(const std::vector<Core::Geometry::Vector>& eigvecs) : DyadicTensor<T>(3, 3)
+      Dyadic3DTensorGeneric(const std::vector<Core::Geometry::Vector>& eigvecs) : parent(3, 3)
       {
         assert(eigvecs.size() == DIM_);
-        DyadicTensor<T>::setEigenVectors(convertNativeVectorsToEigen(eigvecs));
-        DyadicTensor<T>::setTensorValues();
+        parent::setEigenVectors(convertNativeVectorsToEigen(eigvecs));
       }
 
-      Dyadic3DTensor(const Core::Geometry::Vector& eigvec0, const Core::Geometry::Vector& eigvec1,
-          const Core::Geometry::Vector& eigvec2)
-          : DyadicTensor<T>(3, 3)
+      Dyadic3DTensorGeneric(const Core::Geometry::Vector& eigvec0,
+          const Core::Geometry::Vector& eigvec1, const Core::Geometry::Vector& eigvec2)
+          : parent(3, 3)
       {
-        DyadicTensor<T>::setEigenVectors(convertNativeVectorsToEigen({eigvec0, eigvec1, eigvec2}));
-        DyadicTensor<T>::setTensorValues();
+        parent::setEigenVectors(convertNativeVectorsToEigen({eigvec0, eigvec1, eigvec2}));
       }
 
-      Dyadic3DTensor(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs)
-          : DyadicTensor<T>(3, 3)
+      Dyadic3DTensorGeneric(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs) : parent(3, 3)
       {
         assert(eigvecs.size() == DIM_);
-        DyadicTensor<T>::setEigenVectors(eigvecs);
-        DyadicTensor<T>::setTensorValues();
+        parent::setEigenVectors(eigvecs);
       }
 
-      Dyadic3DTensor(const DenseColumnMatrixGeneric<T>& eigvec0,
+      Dyadic3DTensorGeneric(const DenseColumnMatrixGeneric<T>& eigvec0,
           const DenseColumnMatrixGeneric<T>& eigvec1, const DenseColumnMatrixGeneric<T>& eigvec2)
-          : DyadicTensor<T>(3, 3)
+          : parent(3, 3)
       {
-        DyadicTensor<T>::setEigenVectors({eigvec0, eigvec1, eigvec2});
-        DyadicTensor<T>::setTensorValues();
+        parent::setEigenVectors({eigvec0, eigvec1, eigvec2});
       }
 
-      Dyadic3DTensor(double v1, double v2, double v3, double v4, double v5, double v6)
-          : DyadicTensor<T>(3, 3)
+      Dyadic3DTensorGeneric(T v1, T v2, T v3, T v4, T v5, T v6) : parent(3, 3)
       {
         (*this)(0, 0) = v1;
         (*this)(1, 1) = v4;
@@ -84,9 +78,10 @@ namespace Core {
         (*this)(0, 1) = (*this)(1, 0) = v2;
         (*this)(0, 2) = (*this)(2, 0) = v3;
         (*this)(1, 2) = (*this)(2, 1) = v5;
+        parent::buildEigens();
       }
 
-      Dyadic3DTensor(const std::vector<double>& v) : DyadicTensor<T>(3, 3)
+      Dyadic3DTensorGeneric(const std::vector<T>& v) : parent(3, 3)
       {
         assert(v.size() == 6);
         (*this)(0, 0) = v[0];
@@ -95,6 +90,25 @@ namespace Core {
         (*this)(0, 1) = (*this)(1, 0) = v[1];
         (*this)(0, 2) = (*this)(2, 0) = v[2];
         (*this)(1, 2) = (*this)(2, 1) = v[4];
+        parent::buildEigens();
+      }
+
+      T linearCertainty()
+      {
+        auto eigvals = parent::getEigenvalues();
+        return (eigvals[0] - eigvals[1]) / parent::eigenValueSum();
+      }
+
+      T planarCertainty()
+      {
+        auto eigvals = parent::getEigenvalues();
+        return 2.0 * (eigvals[1] - eigvals[2]) / parent::eigenValueSum();
+      }
+
+      T sphericalCertainty()
+      {
+        auto eigvals = parent::getEigenvalues();
+        return 3.0 * eigvals[2] / parent::eigenValueSum();
       }
 
      private:
@@ -113,6 +127,22 @@ namespace Core {
         return outVecs;
       }
     };
+
+    template <typename Indexable>
+    Dyadic3DTensor symmetricTensorFromSixElementArray(const Indexable& array)
+    {
+      return Dyadic3DTensor(array[0], array[1], array[2], array[3], array[4], array[5]);
+    }
+
+    template <typename Indexable>
+    Dyadic3DTensor symmetricTensorFromNineElementArray(const Indexable& array)
+    {
+      static int sixElementTensorMatrixIndices[] = {0, 1, 2, 4, 5, 8};
+      return Dyadic3DTensor(array[sixElementTensorMatrixIndices[0]],
+          array[sixElementTensorMatrixIndices[1]], array[sixElementTensorMatrixIndices[2]],
+          array[sixElementTensorMatrixIndices[3]], array[sixElementTensorMatrixIndices[4]],
+          array[sixElementTensorMatrixIndices[5]]);
+    }
   }
 }
 }
