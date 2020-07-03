@@ -133,6 +133,7 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
     static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
     static const Core::Algorithms::AlgorithmParameterName CameraRotation;
+    static const Core::Algorithms::AlgorithmParameterName IsExecuting;
 
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
@@ -158,6 +159,14 @@ namespace Render {
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
 
     ActiveGeometryMap activeGeoms_;
+
+    class SCISHARE ScopedExecutionReporter
+    {
+      Dataflow::Networks::ModuleStateHandle state_;
+    public:
+      explicit ScopedExecutionReporter(Dataflow::Networks::ModuleStateHandle state);
+      ~ScopedExecutionReporter();
+    };
   };
 }}}
 
