@@ -37,11 +37,11 @@
 namespace SCIRun {
 namespace Core {
   namespace Datatypes {
-    template <typename T>
-    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<T>
+    template <typename Number>
+    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number>
     {
      public:
-      typedef DyadicTensorGeneric<T> parent;
+      typedef DyadicTensorGeneric<Number> parent;
       Dyadic3DTensorGeneric() : parent(3, 3) {}
 
       Dyadic3DTensorGeneric(const std::vector<Core::Geometry::Vector>& eigvecs) : parent(3, 3)
@@ -57,20 +57,20 @@ namespace Core {
         parent::setEigenVectors(convertNativeVectorsToEigen({eigvec0, eigvec1, eigvec2}));
       }
 
-      Dyadic3DTensorGeneric(const std::vector<DenseColumnMatrixGeneric<T>>& eigvecs) : parent(3, 3)
+      Dyadic3DTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent(3, 3)
       {
         assert(eigvecs.size() == DIM_);
         parent::setEigenVectors(eigvecs);
       }
 
-      Dyadic3DTensorGeneric(const DenseColumnMatrixGeneric<T>& eigvec0,
-          const DenseColumnMatrixGeneric<T>& eigvec1, const DenseColumnMatrixGeneric<T>& eigvec2)
+      Dyadic3DTensorGeneric(const DenseColumnMatrixGeneric<Number>& eigvec0,
+          const DenseColumnMatrixGeneric<Number>& eigvec1, const DenseColumnMatrixGeneric<Number>& eigvec2)
           : parent(3, 3)
       {
         parent::setEigenVectors({eigvec0, eigvec1, eigvec2});
       }
 
-      Dyadic3DTensorGeneric(T v1, T v2, T v3, T v4, T v5, T v6) : parent(3, 3)
+      Dyadic3DTensorGeneric(Number v1, Number v2, Number v3, Number v4, Number v5, Number v6) : parent(3, 3)
       {
         (*this)(0, 0) = v1;
         (*this)(1, 1) = v4;
@@ -81,7 +81,7 @@ namespace Core {
         parent::buildEigens();
       }
 
-      Dyadic3DTensorGeneric(const std::vector<T>& v) : parent(3, 3)
+      Dyadic3DTensorGeneric(const std::vector<Number>& v) : parent(3, 3)
       {
         assert(v.size() == 6);
         (*this)(0, 0) = v[0];
@@ -93,19 +93,19 @@ namespace Core {
         parent::buildEigens();
       }
 
-      T linearCertainty()
+      Number linearCertainty()
       {
         auto eigvals = parent::getEigenvalues();
         return (eigvals[0] - eigvals[1]) / parent::eigenValueSum();
       }
 
-      T planarCertainty()
+      Number planarCertainty()
       {
         auto eigvals = parent::getEigenvalues();
         return 2.0 * (eigvals[1] - eigvals[2]) / parent::eigenValueSum();
       }
 
-      T sphericalCertainty()
+      Number sphericalCertainty()
       {
         auto eigvals = parent::getEigenvalues();
         return 3.0 * eigvals[2] / parent::eigenValueSum();
@@ -114,13 +114,13 @@ namespace Core {
      private:
       const int DIM_ = 3;
 
-      std::vector<DenseColumnMatrixGeneric<T>> convertNativeVectorsToEigen(
+      std::vector<DenseColumnMatrixGeneric<Number>> convertNativeVectorsToEigen(
           const std::vector<Core::Geometry::Vector>& vecs)
       {
-        std::vector<DenseColumnMatrixGeneric<T>> outVecs(vecs.size());
+        std::vector<DenseColumnMatrixGeneric<Number>> outVecs(vecs.size());
         for (int i = 0; i < vecs.size(); ++i)
         {
-          outVecs[i] = DenseColumnMatrixGeneric<T>(DIM_);
+          outVecs[i] = DenseColumnMatrixGeneric<Number>(DIM_);
           for (int j = 0; j < DIM_; ++j)
             outVecs[i][j] = vecs[i][j];
         }

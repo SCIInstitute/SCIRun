@@ -35,21 +35,21 @@
 namespace SCIRun {
 namespace Core {
   namespace Datatypes {
-    template <typename T, int Rank>
-    class TensorBaseGeneric : public Eigen::Tensor<T, Rank>
+    template <typename Number, int Rank>
+    class TensorBaseGeneric : public Eigen::Tensor<Number, Rank>
     {
-      typedef Eigen::Tensor<T, Rank> parent;
+      typedef Eigen::Tensor<Number, Rank> parent;
 
      public:
       using parent::Tensor;  // adding parent constructors
       // using parent::contract;
 
-      bool operator==(const TensorBaseGeneric<T, Rank>& t) const
+      bool operator==(const TensorBaseGeneric<Number, Rank>& t) const
       {
         return dimensionsEqual(t) && valuesEqual(t);
       }
 
-      bool operator!=(const TensorBaseGeneric<T, Rank>& t) const { return !(*this == t); }
+      bool operator!=(const TensorBaseGeneric<Number, Rank>& t) const { return !(*this == t); }
 
       TensorBaseGeneric& operator=(const parent& other)
       {
@@ -76,7 +76,7 @@ namespace Core {
         return static_cast<parent>(*this) + static_cast<parent>(other);
       }
 
-      parent operator*(const T& other) const
+      parent operator*(const Number& other) const
       {
         return static_cast<parent>(*this) * other;
       }
@@ -87,7 +87,7 @@ namespace Core {
         return static_cast<parent>(*this) - static_cast<parent>(other);
       }
 
-      bool dimensionsEqual(const TensorBaseGeneric<T, Rank>& t) const
+      bool dimensionsEqual(const TensorBaseGeneric<Number, Rank>& t) const
       {
         if (parent::NumDimensions != t.NumDimensions) return false;
 
@@ -103,7 +103,7 @@ namespace Core {
         return true;
       }
 
-      bool valuesEqual(const TensorBaseGeneric<T, Rank>& t) const
+      bool valuesEqual(const TensorBaseGeneric<Number, Rank>& t) const
       {
         auto dim = parent::dimensions();
         auto index = std::vector<int>(parent::NumDimensions, 0);
@@ -111,7 +111,7 @@ namespace Core {
       }
 
       bool checkForEquals(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim,
-          const TensorBaseGeneric<T, Rank>& t) const
+          const TensorBaseGeneric<Number, Rank>& t) const
       {
         if ((*this)(index) != t(index)) return false;
 
@@ -146,6 +146,12 @@ namespace Core {
         return true;
       }
     };
+
+    template<typename Number, int Rank>
+    inline TensorBaseGeneric<Number, Rank> operator*(Number n, const TensorBaseGeneric<Number, Rank>& t)
+    {
+      return t * n;
+    }
   }
 }
 }

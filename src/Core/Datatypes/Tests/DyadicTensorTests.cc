@@ -295,6 +295,17 @@ TEST(DyadicTensorTest, MultiplyDoubleOperator)
 }
 
 // Coefficient wise multiplication
+TEST(DyadicTensorTest, MultiplyDoubleReverseOperator)
+{
+  DyadicTensor t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
+  DyadicTensor expected({DenseColumnMatrix({5, 20}), DenseColumnMatrix({12.5, 10.5})});
+
+  DyadicTensor result = 2.5 * t;
+
+  ASSERT_EQ(expected, result);
+}
+
+// Coefficient wise multiplication
 TEST(DyadicTensorTest, MultiplyEqualsTensorOperator)
 {
   DyadicTensor t({DenseColumnMatrix({2, 8}), DenseColumnMatrix({5, 3})});
