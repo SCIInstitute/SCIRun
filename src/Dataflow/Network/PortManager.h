@@ -53,6 +53,8 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
+  
+  using ModuleAddFunc = std::function<size_t(PortHandle)>;
 
 template<class T>
 class PortManager : boost::noncopyable
@@ -66,7 +68,7 @@ public:
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
-  void set_module(ModuleInterface* mod) { module_ = mod; }
+  void setModuleDynamicAddFunc(ModuleAddFunc a) { moduleAdd_ = a; }
   std::vector<T> view() const;
 private:
   int checkDynamicPortInvariant(const std::string& name);
@@ -79,14 +81,13 @@ private:
   typedef std::map<std::string, bool> DynamicMap;
   PortMap ports_;
   DynamicMap isDynamic_;
-  ModuleInterface* module_;
+  ModuleAddFunc moduleAdd_;
 };
 
 struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
-PortManager<T>::PortManager() :
-  module_(nullptr)
+PortManager<T>::PortManager()
 {
 }
 
@@ -122,7 +123,6 @@ PortManager<T>::add(const T& item)
         if (portPair.second->getIndex() >= newPortIndex)
           portPair.second->incrementIndex();
       }
-
 
       DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
 
@@ -213,7 +213,7 @@ PortManager<T>::operator[](const PortId& id)
       newPort->setId(id);
       logCritical("PortManager setId on new port: {}", id.toString());
       logCritical("PortManager setIndex on new port: {}", id.toString());
-      newPort->setIndex(add(newPort));
+      newPort->setIndex(moduleAdd_(newPort));
 
       return newPort;
     }

@@ -168,8 +168,9 @@ namespace SCIRun
           metadata_(state_),
           executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
         {
-          iports_.set_module(module_);
-          oports_.set_module(module_);
+          // this captures the virtual call add_input_port, which will ensure dynamic ports have their asyncExecute listener attached (solves #957)
+          iports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_input_port(boost::dynamic_pointer_cast<InputPort>(p)); });
+          oports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_output_port(boost::dynamic_pointer_cast<OutputPort>(p)); });
         }
 
         boost::atomic<bool> inputsChanged_ { false };
@@ -940,7 +941,9 @@ void ModuleWithAsyncDynamicPorts::execute()
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
   logCritical("ModuleWithAsyncDynamicPorts::add_input_port called: {}", h->id().toString());
-  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+
+  if (h->isDynamic())
+    h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
   return Module::add_input_port(h);
 }
 
