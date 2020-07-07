@@ -304,6 +304,7 @@ void ModuleProxyWidget::createStartupNote()
 
 void ModuleProxyWidget::ensureThisVisible()
 {
+  return; //disable for now
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
 #endif

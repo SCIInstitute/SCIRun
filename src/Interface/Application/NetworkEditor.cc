@@ -91,7 +91,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  setSceneRect(QRectF(-1000, -1000, 2000, 2000));
+  setSceneRect(QRectF(0, 0, 200, 200));
   centerOn(100, 100);
 
   setMouseAsDragMode();
@@ -979,9 +979,6 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       }
     }
   }
-  //TODO from jess: check if module drag is creating space, then realign; if not creating space, don't move alignment
-  //qDebug() << __FUNCTION__ << __LINE__;
-  alignViewport();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -1003,8 +1000,6 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 
   logViewerDims("mouseReleaseEvent:");
-
-  alignViewport();
 }
 
 void NetworkEditor::alignViewport()
