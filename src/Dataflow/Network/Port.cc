@@ -90,8 +90,6 @@ boost::optional<ConnectionId> Port::firstConnectionId() const
 
 void Port::setIndex(size_t index)
 {
-  if (portName_.find("GeneralGeom") != std::string::npos)
-    logCritical("Port::setIndex {} oldIndex {} newIndex {}", id().toString(), index_, index);
   index_ = index;
 }
 

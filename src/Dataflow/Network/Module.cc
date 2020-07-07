@@ -488,12 +488,7 @@ void Module::runProgrammablePortInput()
   auto prog = getOptionalInputAtIndex<MetadataObject>(ProgrammablePortId());
   if (prog && *prog)
   {
-    //logCritical("MetadataObject found! {}", id().id_);
     (*prog)->process(id());
-  }
-  else
-  {
-    //logCritical("\tMetadataObject NOT found! {}", id().id_);
   }
 }
 
@@ -536,8 +531,6 @@ AlgorithmBase& Module::algo()
 
 size_t Module::add_input_port(InputPortHandle h)
 {
-  if (h->id().toString().find("GeneralGeom") != std::string::npos)
-    logCritical("Module::add_input_port called: {}", h->id().toString());
   return impl_->iports_.add(h);
 }
 
@@ -940,8 +933,6 @@ void ModuleWithAsyncDynamicPorts::execute()
 
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
-  logCritical("ModuleWithAsyncDynamicPorts::add_input_port called: {}", h->id().toString());
-
   if (h->isDynamic())
     h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
   return Module::add_input_port(h);

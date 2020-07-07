@@ -40,7 +40,7 @@
 #include <Core/Logging/Log.h>
 #include <map>
 
-#define LOG_DYNAMIC_PORT_CREATION
+//#define LOG_DYNAMIC_PORT_CREATION
 #ifdef LOG_DYNAMIC_PORT_CREATION
 #include <iostream>
 #define DYNAMIC_PORT_LOG(x) x
@@ -211,8 +211,6 @@ PortManager<T>::operator[](const PortId& id)
       }
       auto newPort = boost::shared_ptr<typename T::element_type>(byName[0]->clone());
       newPort->setId(id);
-      logCritical("PortManager setId on new port: {}", id.toString());
-      logCritical("PortManager setIndex on new port: {}", id.toString());
       newPort->setIndex(moduleAdd_(newPort));
 
       return newPort;
