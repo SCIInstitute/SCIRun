@@ -58,6 +58,7 @@ public:
   template <typename T>
   inline Point(T x, T y, T z)
   {
+    BOOST_STATIC_ASSERT(std::is_arithmetic<T>::value);
     d_[0] = static_cast<double>(x);
     d_[1] = static_cast<double>(y);
     d_[2] = static_cast<double>(z);
