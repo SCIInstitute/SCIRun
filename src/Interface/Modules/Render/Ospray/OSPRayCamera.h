@@ -28,10 +28,11 @@
 
 #include <arc-look-at/ArcLookAt.hpp>
 #include <glm/glm.hpp>
-#include <Interface/Modules/Render/RendererInterfaceCollaborators.h>
 #include <ospray/ospray.h>
 
 namespace SCIRun { namespace Render {
+
+enum class MouseButton;
 
 class OSPRayCamera
 {

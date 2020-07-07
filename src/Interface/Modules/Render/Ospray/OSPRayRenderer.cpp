@@ -104,12 +104,12 @@ void OSPRayRenderer::resize(uint32_t width, uint32_t height)
   camera_->setAspect(static_cast<float>(width_) / height_);
 }
 
-void OSPRayRenderer::mousePress(float x, float y, OsprayMouseButton btn)
+void OSPRayRenderer::mousePress(float x, float y, MouseButton btn)
 {
   camera_->mousePress(x, y, btn);
 }
 
-void OSPRayRenderer::mouseMove(float x, float y, OsprayMouseButton btn)
+void OSPRayRenderer::mouseMove(float x, float y, MouseButton btn)
 {
   camera_->mouseMove(x, y, btn);
   ospResetAccumulation(frameBuffer_);
@@ -135,33 +135,33 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
 {
   for(auto& geometry : geometries)
   {
-    printf("ID: %d\n", geometry->id);
+    //printf("ID: %d\n", geometry->id);
     switch(geometry->type)
     {
       case GeometryType::TRI_SURFACE:
       {
-        printf("TRI_SURFACE\n");
+        //printf("TRI_SURFACE\n");
         addMeshToGroup(&*geometry, 3);
         addInstaceOfGroup();
         break;
       }
       case GeometryType::QUAD_SURFACE:
       {
-        printf("QUAD_SURFACE\n");
+        //printf("QUAD_SURFACE\n");
         addMeshToGroup(&*geometry, 4);
         addInstaceOfGroup();
         break;
       }
       case GeometryType::STRUCTURED_VOLUME:
       {
-        printf("STRUCTURED_VOLUME\n");
+        //printf("STRUCTURED_VOLUME\n");
         addStructuredVolumeToGroup(&*geometry);
         addInstaceOfGroup();
         break;
       }
       default:
       {
-        printf("NOT_SUPPORTED\n");
+        //printf("NOT_SUPPORTED\n");
         break;
       }
     }
