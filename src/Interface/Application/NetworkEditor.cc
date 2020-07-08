@@ -552,7 +552,9 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
 
+#ifdef __APPLE__
   proxy->setVisible(false);
+#endif
   scene_->addItem(proxy);
   ensureVisible(proxy);
 
