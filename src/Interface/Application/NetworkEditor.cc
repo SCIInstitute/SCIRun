@@ -199,7 +199,6 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   count.increment();
   Q_EMIT modified();
   Q_EMIT newModule(QString::fromStdString(module->id()), module->hasUI());
-  alignViewport();
 
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
@@ -211,6 +210,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
       proxy->setSelected(true);
       proxy->setSelected(false);
       proxy->setSelected(true);
+      proxy->show();
     }
   );
 #endif
@@ -552,6 +552,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
 
+  proxy->setVisible(false);
   scene_->addItem(proxy);
   ensureVisible(proxy);
 
@@ -862,8 +863,6 @@ void NetworkEditor::pasteImpl(const QString& xml)
   {
     QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + xml);
   }
-
-  alignViewport();
 }
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
@@ -905,8 +904,6 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
-
-  alignViewport();
 }
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
