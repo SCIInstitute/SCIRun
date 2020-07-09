@@ -109,6 +109,20 @@ namespace Core {
         return 3.0 * eigvals[2] / parent::eigenValueSum();
       }
 
+      DenseColumnMatrixGeneric<Number> mandel()
+      {
+        auto eigvals = parent::getEigenvalues();
+        auto eigvecs = parent::getEigenvectors();
+
+        for (size_t i = 0; i < DIM_; ++i)
+          eigvecs[i] *= eigvals[i];
+
+        const double sqrt2 = std::sqrt(2);
+        DenseColumnMatrixGeneric<Number> mandel({eigvecs[0][0], eigvecs[1][1], eigvecs[2][2],
+            eigvecs[0][1] * sqrt2, eigvecs[0][2] * sqrt2, eigvecs[1][2] * sqrt2});
+        return mandel;
+      }
+
      private:
       const size_t DIM_ = 3;
 
