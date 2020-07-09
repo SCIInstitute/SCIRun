@@ -30,7 +30,6 @@
 #define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
 
 #include <Core/Datatypes/Matrix.h>
-#include "Core/Datatypes/MatrixFwd.h"
 #define register
 #include <Eigen/Dense>
 #undef register
