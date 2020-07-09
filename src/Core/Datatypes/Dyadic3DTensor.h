@@ -38,13 +38,16 @@ namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     template <typename Number>
-    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number>
+    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number, 3, 3>
     {
      public:
-      typedef DyadicTensorGeneric<Number> parent;
-      Dyadic3DTensorGeneric() : parent(3, 3) {}
+      typedef DyadicTensorGeneric<Number, 3, 3> parent;
+      Dyadic3DTensorGeneric() : parent() {}
+      using parent::DyadicTensorGeneric;
+      using parent::operator=;
+      using parent::operator==;
 
-      Dyadic3DTensorGeneric(const std::vector<Core::Geometry::Vector>& eigvecs) : parent(3, 3)
+      Dyadic3DTensorGeneric(const std::initializer_list<Core::Geometry::Vector>& eigvecs) : parent()
       {
         assert(eigvecs.size() == DIM_);
         parent::setEigenVectors(convertNativeVectorsToEigen(eigvecs));
@@ -52,25 +55,29 @@ namespace Core {
 
       Dyadic3DTensorGeneric(const Core::Geometry::Vector& eigvec0,
           const Core::Geometry::Vector& eigvec1, const Core::Geometry::Vector& eigvec2)
-          : parent(3, 3)
+          : parent()
       {
         parent::setEigenVectors(convertNativeVectorsToEigen({eigvec0, eigvec1, eigvec2}));
       }
 
-      Dyadic3DTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent(3, 3)
+      explicit Dyadic3DTensorGeneric(
+          const std::initializer_list<DenseColumnMatrixGeneric<Number>>& eigvecs)
+          : parent()
       {
         assert(eigvecs.size() == DIM_);
         parent::setEigenVectors(eigvecs);
       }
 
       Dyadic3DTensorGeneric(const DenseColumnMatrixGeneric<Number>& eigvec0,
-          const DenseColumnMatrixGeneric<Number>& eigvec1, const DenseColumnMatrixGeneric<Number>& eigvec2)
-          : parent(3, 3)
+          const DenseColumnMatrixGeneric<Number>& eigvec1,
+          const DenseColumnMatrixGeneric<Number>& eigvec2)
+          : parent()
       {
         parent::setEigenVectors({eigvec0, eigvec1, eigvec2});
       }
 
-      Dyadic3DTensorGeneric(Number v1, Number v2, Number v3, Number v4, Number v5, Number v6) : parent(3, 3)
+      Dyadic3DTensorGeneric(Number v1, Number v2, Number v3, Number v4, Number v5, Number v6)
+          : parent()
       {
         (*this)(0, 0) = v1;
         (*this)(1, 1) = v4;
@@ -78,18 +85,6 @@ namespace Core {
         (*this)(0, 1) = (*this)(1, 0) = v2;
         (*this)(0, 2) = (*this)(2, 0) = v3;
         (*this)(1, 2) = (*this)(2, 1) = v5;
-        parent::buildEigens();
-      }
-
-      Dyadic3DTensorGeneric(const std::vector<Number>& v) : parent(3, 3)
-      {
-        assert(v.size() == 6);
-        (*this)(0, 0) = v[0];
-        (*this)(1, 1) = v[3];
-        (*this)(2, 2) = v[5];
-        (*this)(0, 1) = (*this)(1, 0) = v[1];
-        (*this)(0, 2) = (*this)(2, 0) = v[2];
-        (*this)(1, 2) = (*this)(2, 1) = v[4];
         parent::buildEigens();
       }
 
@@ -131,17 +126,31 @@ namespace Core {
     template <typename Indexable>
     Dyadic3DTensor symmetricTensorFromSixElementArray(const Indexable& array)
     {
+      if (array.size() != 6) THROW_INVALID_ARGUMENT("This function requires 6 values.");
       return Dyadic3DTensor(array[0], array[1], array[2], array[3], array[4], array[5]);
+    }
+
+    template <typename Number>
+    Dyadic3DTensor symmetricTensorFromSixElementArray(const std::initializer_list<Number>& array)
+    {
+      std::vector<Number> vec = array;
+      if (vec.size() != 6) THROW_INVALID_ARGUMENT("This function requires 6 values.");
+      return Dyadic3DTensorGeneric<double>(vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
     }
 
     template <typename Indexable>
     Dyadic3DTensor symmetricTensorFromNineElementArray(const Indexable& array)
     {
-      static int sixElementTensorMatrixIndices[] = {0, 1, 2, 4, 5, 8};
-      return Dyadic3DTensor(array[sixElementTensorMatrixIndices[0]],
-          array[sixElementTensorMatrixIndices[1]], array[sixElementTensorMatrixIndices[2]],
-          array[sixElementTensorMatrixIndices[3]], array[sixElementTensorMatrixIndices[4]],
-          array[sixElementTensorMatrixIndices[5]]);
+      if (array.size() != 9) THROW_INVALID_ARGUMENT("This function requires 9 values.");
+      return Dyadic3DTensor(array[0], array[1], array[2], array[4], array[5], array[8]);
+    }
+
+    template <typename Number>
+    Dyadic3DTensor symmetricTensorFromNineElementArray(const std::initializer_list<Number>& array)
+    {
+      std::vector<Number> vec = array;
+      if (vec.size() != 9) THROW_INVALID_ARGUMENT("This function requires 9 values.");
+      return Dyadic3DTensorGeneric<double>(vec[0], vec[1], vec[2], vec[4], vec[5], vec[8]);
     }
   }
 }

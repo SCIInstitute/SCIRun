@@ -32,21 +32,24 @@
 #define CORE_DATATYPES_TENSOR_FWD_H
 
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <boost/shared_ptr.hpp>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  template <typename T>
+  template <typename Number, size_t Dim0, size_t Dim1>
   class DyadicTensorGeneric;
 
-  typedef DyadicTensorGeneric<double> DyadicTensor;
+  template <size_t Dim0, size_t Dim1>
+  using DyadicTensor = DyadicTensorGeneric<double, Dim0, Dim1>;
 
-  template <typename T>
+  typedef DyadicTensorGeneric<double, 2, 2> Dyadic2DTensor;
+  typedef DyadicTensorGeneric<double, 4, 4> Dyadic4DTensor;
+
+  template <typename Number>
   class Dyadic3DTensorGeneric;
+
   typedef Dyadic3DTensorGeneric<double> Dyadic3DTensor;
 }}}
 

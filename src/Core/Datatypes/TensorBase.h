@@ -35,34 +35,14 @@
 namespace SCIRun {
 namespace Core {
   namespace Datatypes {
-    template <typename Number, int Rank>
-    class TensorBaseGeneric : public Eigen::Tensor<Number, Rank>
+    template <typename Number, typename Sizes>
+    class TensorBaseGeneric : public Eigen::TensorFixedSize<Number, Sizes>
     {
-      typedef Eigen::Tensor<Number, Rank> parent;
+      typedef Eigen::TensorFixedSize<Number, Sizes> parent;
 
      public:
-      using parent::Tensor;  // adding parent constructors
-      // using parent::contract;
-
-      bool operator==(const TensorBaseGeneric<Number, Rank>& t) const
-      {
-        return dimensionsEqual(t) && valuesEqual(t);
-      }
-
-      bool operator!=(const TensorBaseGeneric<Number, Rank>& t) const { return !(*this == t); }
-
-      TensorBaseGeneric& operator=(const parent& other)
-      {
-        parent::operator=(other);
-        return *this;
-      }
-
-      template <typename OtherDerived>
-      TensorBaseGeneric contract(const OtherDerived& other) const
-      {
-        Eigen::array<Eigen::IndexPair<int>, 1> product_dims = {Eigen::IndexPair<int>(1, 0)};
-        return parent::contract(static_cast<parent>(other), product_dims);
-      }
+      using parent::contract;
+      using parent::TensorFixedSize;  // adding parent constructors
 
       template <typename OtherDerived>
       parent operator*(const OtherDerived& other) const
@@ -70,16 +50,7 @@ namespace Core {
         return static_cast<parent>(*this) * static_cast<parent>(other);
       }
 
-      template <typename OtherDerived>
-      parent operator+(const OtherDerived& other) const
-      {
-        return static_cast<parent>(*this) + static_cast<parent>(other);
-      }
-
-      parent operator*(const Number& other) const
-      {
-        return static_cast<parent>(*this) * other;
-      }
+      parent operator*(const Number& other) const { return static_cast<parent>(*this) * other; }
 
       template <typename OtherDerived>
       parent operator-(const OtherDerived& other) const
@@ -87,68 +58,17 @@ namespace Core {
         return static_cast<parent>(*this) - static_cast<parent>(other);
       }
 
-      bool dimensionsEqual(const TensorBaseGeneric<Number, Rank>& t) const
+      template <typename OtherDerived>
+      TensorBaseGeneric contract(const OtherDerived& other)
       {
-        if (parent::NumDimensions != t.NumDimensions) return false;
-
-        auto thisDim = parent::dimensions();
-        auto thatDim = t.dimensions();
-
-        for (int i = 0; i < parent::NumDimensions; ++i)
-          if (thisDim[i] != thatDim[i]) return false;
-
-        // TensorBase<double, 2> et(2, 2);
-        // auto b = et + et;
-
-        return true;
-      }
-
-      bool valuesEqual(const TensorBaseGeneric<Number, Rank>& t) const
-      {
-        auto dim = parent::dimensions();
-        auto index = std::vector<int>(parent::NumDimensions, 0);
-        return checkForEquals(index, dim, t);
-      }
-
-      bool checkForEquals(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim,
-          const TensorBaseGeneric<Number, Rank>& t) const
-      {
-        if ((*this)(index) != t(index)) return false;
-
-        if (incrementIndex(index, dim))
-          return checkForEquals(index, dim, t);
-        else
-          return true;
-      }
-
-      bool incrementIndex(std::vector<int>& index, Eigen::DSizes<long int, Rank>& dim) const
-      {
-        long unsigned int d = index.size() - 1;
-
-        while (d >= 0)
-        {
-          auto dIndex = index[d] + 1;
-          if (dIndex >= dim[d])
-            --d;
-          else
-          {
-            index[d] = dIndex;
-            break;
-          }
-        }
-
-        if (d == 0 && (index[0] + 1 >= dim[0])) return false;
-        if (d != index.size() - 1)
-        {
-          for (int i = d + 1; i < index.size(); ++i)
-            index[i] = 0;
-        }
-        return true;
+        Eigen::array<Eigen::IndexPair<int>, 1> product_dims = {Eigen::IndexPair<int>(1, 0)};
+        return parent::contract(static_cast<parent>(other), product_dims);
       }
     };
 
-    template<typename Number, int Rank>
-    inline TensorBaseGeneric<Number, Rank> operator*(Number n, const TensorBaseGeneric<Number, Rank>& t)
+    template <typename Number, typename Sizes>
+    inline TensorBaseGeneric<Number, Sizes> operator*(
+        Number n, const TensorBaseGeneric<Number, Sizes>& t)
     {
       return t * n;
     }

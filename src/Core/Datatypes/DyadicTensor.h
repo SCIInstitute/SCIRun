@@ -32,49 +32,39 @@
 #include <Core/Datatypes/TensorBase.h>
 #include <Core/Datatypes/TensorFwd.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <iostream>  // TODO DELETE
-#include <unsupported/Eigen/CXX11/TensorSymmetry>
+#include <unsupported/Eigen/CXX11/Tensor>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
-    template <typename Number>
-    class DyadicTensorGeneric : public TensorBaseGeneric<Number, 2>
-    // TODO need to add operator>>, type_name
+    template <typename Number, size_t Dim0, size_t Dim1>
+    class DyadicTensorGeneric : public TensorBaseGeneric<Number, Eigen::Sizes<Dim0, Dim1>>
     {
      public:
-      typedef TensorBaseGeneric<Number, 2> parent;
+      typedef TensorBaseGeneric<Number, Eigen::Sizes<Dim0, Dim1>> parent;
 
-      DyadicTensorGeneric(size_t dim1, size_t dim2) : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
-      {
-        parent::setZero();
-        // buildEigens();
-      }
+      DyadicTensorGeneric() : parent() { parent::setZero(); }
 
-      DyadicTensorGeneric(size_t dim1, size_t dim2, Number val)
-          : parent(dim1, dim2), dim1_(dim1), dim2_(dim2)
+      DyadicTensorGeneric(Number val) : parent()
       {
-        for (size_t i = 0; i < dim1; ++i)
-          for (size_t j = 0; j < dim2; ++j)
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
             (*this)(i, j) = (i == j) ? val : 0;
-        // buildEigens();
       }
 
-      DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs)
-          : parent(eigvecs.size(), eigvecs[0].size()), dim1_(eigvecs.size()),
-            dim2_(eigvecs[0].size())
+      DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent()
       {
+        assert(eigvecs.size() == Dim0);
+        assert(eigvecs[0].size() == Dim1);
         setEigenVectors(eigvecs);
       }
 
-      DyadicTensorGeneric(DyadicTensorGeneric<Number>& other)
-          : parent(other.dimension(0), other.dimension(1)), dim1_(other.dimension(0)),
-            dim2_(other.dimension(1))
+      DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim0, Dim1>& other) : parent()
       {
-        for (size_t i = 0; i < dim1_; ++i)
-          for (size_t j = 0; j < dim1_; ++j)
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
             (*this)(i, j) = other(i, j);
         eigvecs_ = other.getEigenvectors();
         eigvals_ = other.getEigenvalues();
@@ -82,19 +72,42 @@ namespace Core {
         reorderTensorValues();
       }
 
-      DyadicTensorGeneric(const Eigen::Tensor<Number, 2>& other)
-          : parent(other.dimension(0), other.dimension(1)), dim1_(other.dimension(0)),
-            dim2_(other.dimension(1))
+      DyadicTensorGeneric(const Eigen::TensorFixedSize<Number, Eigen::Sizes<Dim0, Dim1>>& other)
+          : parent()
       {
-        for (size_t i = 0; i < dim1_; ++i)
-          for (size_t j = 0; j < dim1_; ++j)
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
             (*this)(i, j) = other(i, j);
-        // buildEigens();
+      }
+
+      DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
+      {
+        assert(mat.nrows() == Dim0);
+        assert(mat.ncols() == Dim1);
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
+            (*this)(i, j) = mat(i, j);
       }
 
       using parent::operator=;
-      using parent::operator!=;
       using parent::contract;
+
+      template <typename OtherDerived>
+      bool operator!=(const OtherDerived& other)
+      {
+        return !operator==(other);
+      }
+
+      template <typename OtherDerived>
+      bool operator==(const OtherDerived& other)
+      {
+        auto otherTensor = static_cast<DyadicTensorGeneric<Number, Dim0, Dim1>>(other);
+        if (Dim0 != otherTensor.dimension(0) || Dim1 != otherTensor.dimension(1)) return false;
+        for (int i = 0; i < Dim0; ++i)
+          for (int j = 0; j < Dim1; ++j)
+            if ((*this)(i, j) != otherTensor(i, j)) return false;
+        return true;
+      }
 
       void setEigenVectors(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs)
       {
@@ -106,55 +119,16 @@ namespace Core {
         reorderTensorValues();
       }
 
-      Eigen::Matrix<Number, Eigen::Dynamic, Eigen::Dynamic> asMatrix()
+      // This function is listed as something that will be added to Eigen::Tensor in the future.
+      // Usage of this function should be replaced with Eigen's asMatrix function when it is
+      // implemented.
+      Eigen::Matrix<Number, Dim0, Dim1> asMatrix()
       {
-        Eigen::Matrix<Number, Eigen::Dynamic, Eigen::Dynamic> mat;
-        mat.resize(dim1_, dim2_);
-        for (size_t i = 0; i < dim1_; ++i)
-          for (size_t j = 0; j < dim2_; ++j)
+        Eigen::Matrix<Number, Dim0, Dim1> mat;
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
             mat(i, j) = (*this)(i, j);
         return mat;
-      }
-
-      void buildEigens()
-      {
-        if (haveEigens_) return;
-        auto mat = this->asMatrix();
-
-        auto es = Eigen::EigenSolver<Eigen::Matrix<Number, Eigen::Dynamic, Eigen::Dynamic>>(mat);
-        auto vecs = es.eigenvectors();
-        auto vals = es.eigenvalues();
-
-        eigvals_.resize(dim1_);
-        eigvecs_.resize(dim1_);
-
-        for (size_t i = 0; i < dim1_; ++i)
-        {
-          eigvals_[i] = real(vals(i));
-          eigvecs_[i] = DenseColumnMatrixGeneric<Number>(dim2_);
-          for (size_t j = 0; j < dim2_; ++j)
-            eigvecs_[i].put(j, 0, real(vecs(i, j)));
-        }
-
-        haveEigens_ = true;
-        reorderTensorValues();
-      }
-
-      void reorderTensorValues()
-      {
-        typedef std::pair<Number, DenseColumnMatrixGeneric<Number>> EigPair;
-        if (!haveEigens_) return;
-        std::vector<EigPair> sortList(dim1_);
-        for (size_t i = 0; i < dim1_; ++i)
-          sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);
-
-        std::sort(sortList.begin(), sortList.end(),
-            [](const EigPair& left, const EigPair& right) { return left.first > right.first; });
-
-        auto sortedEigsIter = sortList.begin();
-
-        for (size_t i = 0; i < dim1_; ++i)
-          std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
       }
 
       DenseColumnMatrixGeneric<Number> getEigenvector(int index)
@@ -175,30 +149,35 @@ namespace Core {
         return eigvals_;
       }
 
-      SCISHARE friend std::ostream& operator<<(std::ostream& os, const DyadicTensorGeneric<Number>& t)
+      SCISHARE friend std::ostream& operator<<(
+          std::ostream& os, const DyadicTensorGeneric<Number, Dim0, Dim1>& other)
       {
         os << '[';
-        for (size_t i = 0; i < t.getDimension1(); ++i)
-          for (size_t j = 0; j < t.getDimension2(); ++j)
+        for (size_t i = 0; i < other.getDimension1(); ++i)
+          for (size_t j = 0; j < other.getDimension2(); ++j)
           {
             if (i + j != 0) os << ' ';
-            os << t(j, i);
+            os << other(j, i);
           }
         os << ']';
 
         return os;
       }
 
-      SCISHARE friend std::istream& operator>>(std::istream& is, DyadicTensorGeneric<Number>& t)
+      SCISHARE friend std::istream& operator>>(
+          std::istream& is, DyadicTensorGeneric<Number, Dim0, Dim1>& other)
       {
-        for (size_t i = 0; i < t.getDimension1(); ++i)
-          for (size_t j = 0; j < t.getDimension2(); ++j)
-            is >> t(j, i);
+        char bracket;
+        is >> bracket;
+        for (size_t i = 0; i < other.getDimension1(); ++i)
+          for (size_t j = 0; j < other.getDimension2(); ++j)
+            is >> other(j, i);
+        is >> bracket;
 
         return is;
       }
 
-      DyadicTensorGeneric<Number>& operator=(const Number& v)
+      DyadicTensorGeneric<Number, Dim0, Dim1>& operator=(const Number& v)
       {
         for (size_t i = 0; i < getDimension1(); ++i)
           for (size_t j = 0; j < getDimension2(); ++j)
@@ -207,8 +186,8 @@ namespace Core {
         return *this;
       }
 
-      size_t getDimension1() const { return dim1_; }
-      size_t getDimension2() const { return dim2_; }
+      size_t getDimension1() const { return Dim0; }
+      size_t getDimension2() const { return Dim1; }
 
       Number frobeniusNorm()
       {
@@ -226,7 +205,8 @@ namespace Core {
         return maxVal;
       }
 
-      void setEigens(const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals)
+      void setEigens(
+          const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals)
       {
         assert(eigvecs_.size() == eigvecs.size());
         assert(eigvals_.size() == eigvals.size());
@@ -246,29 +226,68 @@ namespace Core {
 
      protected:
       const int RANK_ = 2;
-      size_t dim1_ = 0;
-      size_t dim2_ = 0;
       std::vector<DenseColumnMatrixGeneric<Number>> eigvecs_;
       std::vector<Number> eigvals_;
       bool haveEigens_ = false;
 
+      void buildEigens()
+      {
+        if (haveEigens_) return;
+
+        auto es = Eigen::EigenSolver<Eigen::Matrix<Number, Dim0, Dim1>>(this->asMatrix());
+        auto vecs = es.eigenvectors();
+        auto vals = es.eigenvalues();
+
+        eigvals_.resize(Dim0);
+        eigvecs_.resize(Dim0);
+
+        for (size_t i = 0; i < Dim0; ++i)
+        {
+          eigvals_[i] = real(vals(i));
+          eigvecs_[i] = DenseColumnMatrixGeneric<Number>(Dim1);
+          for (size_t j = 0; j < Dim1; ++j)
+            eigvecs_[i].put(j, 0, real(vecs(j, i)));
+        }
+
+        haveEigens_ = true;
+        reorderTensorValues();
+      }
+
+      void reorderTensorValues()
+      {
+        if (!haveEigens_) return;
+        typedef std::pair<Number, DenseColumnMatrixGeneric<Number>> EigPair;
+        std::vector<EigPair> sortList(Dim0);
+        for (size_t i = 0; i < Dim0; ++i)
+          sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);
+
+        // sort by descending order of eigenvalues
+        std::sort(sortList.begin(), sortList.end(),
+            [](const EigPair& left, const EigPair& right) { return left.first > right.first; });
+
+        auto sortedEigsIter = sortList.begin();
+
+        for (size_t i = 0; i < Dim0; ++i)
+          std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
+      }
+
       void setEigenvaluesFromEigenvectors()
       {
         eigvals_ = std::vector<Number>(eigvecs_.size());
-        for (size_t i = 0; i < dim1_; ++i)
+        for (size_t i = 0; i < Dim0; ++i)
           eigvals_[i] = eigvecs_[i].norm();
       }
 
       void normalizeEigenvectors()
       {
-        for (size_t i = 0; i < dim1_; ++i)
+        for (size_t i = 0; i < Dim0; ++i)
           eigvecs_[i] /= eigvals_[i];
       }
 
       void setTensorValues()
       {
-        for (size_t i = 0; i < dim1_; ++i)
-          for (size_t j = 0; j < dim2_; ++j)
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
             (*this)(j, i) = eigvecs_[i][j] * eigvals_[i];
       }
     };
