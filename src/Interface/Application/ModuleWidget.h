@@ -120,7 +120,7 @@ public:
 
   void trackConnections();
 
-  size_t numInputPorts() const;
+  int numDynamicInputPortsForGuiUpdates() const;
   size_t numOutputPorts() const;
 
   const PortWidgetManager& ports() const { return *ports_; }

@@ -546,8 +546,11 @@ void ModuleWidget::resetProgressBar()
   fullWidgetDisplay_->getProgressBar()->setTextVisible(false);
 }
 
-size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
 size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
+int ModuleWidget::numDynamicInputPortsForGuiUpdates() const
+{
+  return std::count_if(ports().inputs().begin(), ports().inputs().end(), [](PortWidget* p) { return p->isDynamic(); });
+}
 
 void ModuleWidget::setupModuleActions()
 {
@@ -1266,7 +1269,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(static_cast<int>(numInputPorts()), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
