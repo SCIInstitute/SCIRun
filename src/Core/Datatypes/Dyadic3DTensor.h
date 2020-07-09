@@ -169,6 +169,14 @@ namespace Core {
       if (vec.size() != 9) THROW_INVALID_ARGUMENT("This function requires 9 values.");
       return Dyadic3DTensorGeneric<double>(vec[0], vec[1], vec[2], vec[4], vec[5], vec[8]);
     }
+
+    template <typename Indexable>
+    Dyadic3DTensor symmetricTensorFromMandel(const Indexable& array)
+    {
+      const double sqrt2 = std::sqrt(2);
+      return Dyadic3DTensor(
+          array[0], array[3] / sqrt2, array[4] / sqrt2, array[1], array[5] / sqrt2, array[2]);
+    }
   }
 }
 }
