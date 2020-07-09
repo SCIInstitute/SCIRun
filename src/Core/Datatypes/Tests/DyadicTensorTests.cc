@@ -111,7 +111,8 @@ TEST(Dyadic3DTensorTest, CanConstructWithColumnMatrixOfNineValuesColumnMatrix)
 
 TEST(Dyadic3DTensorTest, CannotConstructWithColumnMatrixOfEightValues)
 {
-  ASSERT_ANY_THROW(symmetricTensorFromNineElementArray(DenseColumnMatrix({1, 2, 3, 2, 4, 5, 3, 5})));
+  ASSERT_ANY_THROW(
+      symmetricTensorFromNineElementArray(DenseColumnMatrix({1, 2, 3, 2, 4, 5, 3, 5})));
 }
 
 TEST(Dyadic3DTensorTest, CanConstructWithVectorOfNineValues)
@@ -150,26 +151,25 @@ TEST(Dyadic3DTensorTest, CanConstructWithInitializerListOfSixValues)
 
 TEST(Dyadic3DTensorTest, CannotConstructTensorWithLessThanThreeNativeEigenvectors)
 {
-  ASSERT_DEATH(Dyadic3DTensor t({nativeEigvecs[0], nativeEigvecs[1]}), "");
+  ASSERT_ANY_THROW(Dyadic3DTensor t({nativeEigvecs[0], nativeEigvecs[1]}));
 }
 
 TEST(Dyadic3DTensorTest, CannotConstructTensorWithLessThanThreeEigenEigenvectors)
 {
   auto eigvecs = getEigenEigvecs();
-  ASSERT_DEATH(Dyadic3DTensor t({eigvecs[0], eigvecs[1]}), "");
+  ASSERT_ANY_THROW(Dyadic3DTensor t({eigvecs[0], eigvecs[1]}));
 }
 
 TEST(Dyadic3DTensorTest, CannotConstructTensorWithMoreThanThreeEigenvectors)
 {
-  ASSERT_DEATH(
-      Dyadic3DTensor t({nativeEigvecs[0], nativeEigvecs[1], nativeEigvecs[2], nativeEigvecs[0]}),
-      "");
+  ASSERT_ANY_THROW(
+      Dyadic3DTensor t({nativeEigvecs[0], nativeEigvecs[1], nativeEigvecs[2], nativeEigvecs[0]}));
 }
 
 TEST(Dyadic3DTensorTest, CannotConstructTensorWithMoreThanThreeEigenEigenvectors)
 {
   auto eigvecs = getEigenEigvecs();
-  ASSERT_DEATH(Dyadic3DTensor t({eigvecs[0], eigvecs[1], eigvecs[2], eigvecs[0]}), "");
+  ASSERT_ANY_THROW(Dyadic3DTensor t({eigvecs[0], eigvecs[1], eigvecs[2], eigvecs[0]}));
 }
 
 TEST(Dyadic3DTensorTest, LinearCertainty)
@@ -454,16 +454,15 @@ TEST(DyadicTensorTest, SetEigens)
 TEST(DyadicTensorTest, SetEigensFail1)
 {
   Dyadic2DTensor t({DenseColumnMatrix({3, 0}), DenseColumnMatrix({0, 6})});
-  ASSERT_DEATH(t.setEigens({DenseColumnMatrix({0, 1}), DenseColumnMatrix({1, 0})}, {3, 4, 5}), "");
+  ASSERT_ANY_THROW(t.setEigens({DenseColumnMatrix({0, 1}), DenseColumnMatrix({1, 0})}, {3, 4, 5}));
 }
 
 TEST(DyadicTensorTest, SetEigensFail2)
 {
   Dyadic2DTensor t({DenseColumnMatrix({3, 0}), DenseColumnMatrix({0, 6})});
-  ASSERT_DEATH(t.setEigens({DenseColumnMatrix({0, 0, 1}), DenseColumnMatrix({1, 0, 0}),
-                               DenseColumnMatrix({0, 1, 0})},
-                   {3, 4}),
-      "");
+  ASSERT_ANY_THROW(t.setEigens(
+      {DenseColumnMatrix({0, 0, 1}), DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 1, 0})},
+      {3, 4}));
 }
 
 TEST(DyadicTensorTest, EigenSolver)

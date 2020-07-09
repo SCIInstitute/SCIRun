@@ -56,8 +56,10 @@ namespace Core {
 
       DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent()
       {
-        assert(eigvecs.size() == Dim0);
-        assert(eigvecs[0].size() == Dim1);
+        if (eigvecs.size() != Dim0)
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim0);
+        if (eigvecs[0].size() != Dim1)
+          THROW_INVALID_ARGUMENT("The length of input vectors must be " + Dim1);
         setEigenVectors(eigvecs);
       }
 
@@ -65,7 +67,7 @@ namespace Core {
       {
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
-            (*this)(i, j) = other(i, j);
+            (*this)(index(i), index(j)) = other(index(i), index(j));
         eigvecs_ = other.getEigenvectors();
         eigvals_ = other.getEigenvalues();
         haveEigens_ = true;
@@ -77,16 +79,18 @@ namespace Core {
       {
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
-            (*this)(i, j) = other(i, j);
+            (*this)(index(i), index(j)) = other(index(i), index(j));
       }
 
       DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
       {
-        assert(mat.nrows() == Dim0);
-        assert(mat.ncols() == Dim1);
+        if (mat.nrows() != Dim0)
+          THROW_INVALID_ARGUMENT("The number of rows of the input matrix must be " + Dim0);
+        if (mat.ncols() != Dim1)
+          THROW_INVALID_ARGUMENT("The length of rows of the input matrix must be " + Dim1);
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
-            (*this)(i, j) = mat(i, j);
+            (*this)(index(i), index(j)) = mat(index(i), index(j));
       }
 
       using parent::operator=;
@@ -103,9 +107,9 @@ namespace Core {
       {
         auto otherTensor = static_cast<DyadicTensorGeneric<Number, Dim0, Dim1>>(other);
         if (Dim0 != otherTensor.dimension(0) || Dim1 != otherTensor.dimension(1)) return false;
-        for (int i = 0; i < Dim0; ++i)
-          for (int j = 0; j < Dim1; ++j)
-            if ((*this)(i, j) != otherTensor(i, j)) return false;
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
+            if ((*this)(index(i), index(j)) != otherTensor(index(i), index(j))) return false;
         return true;
       }
 
@@ -127,7 +131,7 @@ namespace Core {
         Eigen::Matrix<Number, Dim0, Dim1> mat;
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
-            mat(i, j) = (*this)(i, j);
+            mat(index(i), index(j)) = (*this)(index(i), index(j));
         return mat;
       }
 
@@ -157,7 +161,7 @@ namespace Core {
           for (size_t j = 0; j < other.getDimension2(); ++j)
           {
             if (i + j != 0) os << ' ';
-            os << other(j, i);
+            os << other(other.index(j), other.index(i));
           }
         os << ']';
 
@@ -171,7 +175,7 @@ namespace Core {
         is >> bracket;
         for (size_t i = 0; i < other.getDimension1(); ++i)
           for (size_t j = 0; j < other.getDimension2(); ++j)
-            is >> other(j, i);
+            is >> other(other.index(j), other.index(i));
         is >> bracket;
 
         return is;
@@ -181,7 +185,7 @@ namespace Core {
       {
         for (size_t i = 0; i < getDimension1(); ++i)
           for (size_t j = 0; j < getDimension2(); ++j)
-            (*this)(i, j) = v;
+            (*this)(index(i), index(j)) = v;
         haveEigens_ = false;
         return *this;
       }
@@ -208,8 +212,10 @@ namespace Core {
       void setEigens(
           const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals)
       {
-        assert(eigvecs_.size() == eigvecs.size());
-        assert(eigvals_.size() == eigvals.size());
+        if (eigvecs_.size() != eigvecs.size())
+          THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + eigvecs_.size());
+        if (eigvals_.size() != eigvals.size())
+          THROW_INVALID_ARGUMENT("The number of input eigvals must be " + eigvals_.size());
         eigvecs_ = eigvecs;
         eigvals_ = eigvals;
         haveEigens_ = true;
@@ -288,8 +294,10 @@ namespace Core {
       {
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
-            (*this)(j, i) = eigvecs_[i][j] * eigvals_[i];
+            (*this)(index(j), index(i)) = eigvecs_[i][j] * eigvals_[i];
       }
+
+      long int index(size_t i) const { return static_cast<long int>(i); }
     };
   }
 }

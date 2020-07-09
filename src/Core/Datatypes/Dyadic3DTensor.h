@@ -31,6 +31,7 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DyadicTensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Utils/Exception.h>
 #include <unsupported/Eigen/CXX11/TensorSymmetry>
 #include <Core/Datatypes/share.h>
 
@@ -49,7 +50,8 @@ namespace Core {
 
       Dyadic3DTensorGeneric(const std::initializer_list<Core::Geometry::Vector>& eigvecs) : parent()
       {
-        assert(eigvecs.size() == DIM_);
+        if (eigvecs.size() != DIM_)
+          THROW_INVALID_ARGUMENT("The number of input parameters must be " + DIM_);
         parent::setEigenVectors(convertNativeVectorsToEigen(eigvecs));
       }
 
@@ -64,7 +66,8 @@ namespace Core {
           const std::initializer_list<DenseColumnMatrixGeneric<Number>>& eigvecs)
           : parent()
       {
-        assert(eigvecs.size() == DIM_);
+        if (eigvecs.size() != DIM_)
+          THROW_INVALID_ARGUMENT("The number of input parameters must be " + DIM_);
         parent::setEigenVectors(eigvecs);
       }
 
@@ -107,16 +110,16 @@ namespace Core {
       }
 
      private:
-      const int DIM_ = 3;
+      const size_t DIM_ = 3;
 
       std::vector<DenseColumnMatrixGeneric<Number>> convertNativeVectorsToEigen(
           const std::vector<Core::Geometry::Vector>& vecs)
       {
         std::vector<DenseColumnMatrixGeneric<Number>> outVecs(vecs.size());
-        for (int i = 0; i < vecs.size(); ++i)
+        for (size_t i = 0; i < vecs.size(); ++i)
         {
           outVecs[i] = DenseColumnMatrixGeneric<Number>(DIM_);
-          for (int j = 0; j < DIM_; ++j)
+          for (size_t j = 0; j < DIM_; ++j)
             outVecs[i][j] = vecs[i][j];
         }
         return outVecs;
