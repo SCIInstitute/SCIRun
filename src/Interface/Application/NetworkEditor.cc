@@ -81,6 +81,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 {
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
+  scene_->setItemIndexMethod(QGraphicsScene::NoIndex);
+
   Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
   Preferences::Instance().moduleExecuteDownstreamOnly.connectValueChanged([this](bool value) { updateExecuteButtons(value); });
 
@@ -331,15 +333,14 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   if (widget)
   {
     InEditingContext iec(this);
-
     modulePlacement_.updateLatestFromConnectNew(widget->scenePos(), portToConnect->isInput());
     PortWidget* newConnectionInputPort = nullptr;
-    auto q = dynamic_cast<const PortWidget*>(portToConnect);
-    if (q)
+    auto portWidget = dynamic_cast<const PortWidget*>(portToConnect);
+    if (portWidget)
     {
-      for (size_t i = 0; i < q->nconnections(); ++i)
+      for (size_t i = 0; i < portWidget->nconnections(); ++i)
       {
-        auto cpi = q->connectedPorts()[i];
+        auto cpi = portWidget->connectedPorts()[i];
         if (QString::fromStdString(cpi->id().toString()) == sender->property(insertNewModuleActionTypePropertyName()))
           newConnectionInputPort = cpi;
       }
@@ -347,11 +348,15 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
 
     if (newConnectionInputPort)
     {
+      // grab value before being deleted with removeConnection
+      auto isDynamic = newConnectionInputPort->isDynamic();
       controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
-      newConnectionInputPort->deleteConnectionsLater();
+      if (!isDynamic)
+      {
+        newConnectionInputPort->deleteConnectionsLater();
+        controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+      }
     }
-
-    controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
     return;
   }
 
