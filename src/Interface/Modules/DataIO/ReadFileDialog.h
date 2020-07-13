@@ -26,32 +26,35 @@
 */
 
 
-#ifndef MODULES_DATAIO_READ_FILE_H
-#define MODULES_DATAIO_READ_FILE_H
+#ifndef INTERFACE_MODULES_READ_FILE_H
+#define INTERFACE_MODULES_READ_FILE_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/DataIO/share.h>
+#include "Interface/Modules/DataIO/ui_ReadFile.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/DataIO/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+namespace Gui {
 
-  class SCISHARE AutoReadFile : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has2OutputPorts<MatrixPortTag, FieldPortTag>
-  {
-  public:
-    AutoReadFile();
-    void setStateDefaults() override;
-    void execute() override;
+class SCISHARE ReadFileDialog : public ModuleDialogGeneric,
+  public Ui::ReadFileDialog, public RemembersFileDialogDirectory
+{
+	Q_OBJECT
 
-    OUTPUT_PORT(0, Matrix, Matrix);
-    OUTPUT_PORT(1, Field, Field);
+public:
+  ReadFileDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
-    NEW_HELP_WEBPAGE_ONLY
-  };
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
 
-}}}
+}
+}
 
 #endif
