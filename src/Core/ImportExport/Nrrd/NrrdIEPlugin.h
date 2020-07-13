@@ -42,6 +42,8 @@
 
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun
@@ -54,6 +56,27 @@ namespace SCIRun
   {
 
   };
+
+
+  template <class Data>
+  struct StaticIEPluginGetter
+  {
+    using Manager = void;
+  };
+
+  template <>
+  struct StaticIEPluginGetter<Field>
+  {
+    using Manager = FieldIEPluginManager;
+  };
+
+  template <>
+  struct StaticIEPluginGetter<Core::Datatypes::Matrix>
+  {
+    using Manager = MatrixIEPluginManager;
+  };
+
+
 //
 ////----------------------------------------------------------------------
 //class SCISHARE NrrdIEPlugin {
