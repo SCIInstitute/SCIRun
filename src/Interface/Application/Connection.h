@@ -103,7 +103,6 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-  virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;

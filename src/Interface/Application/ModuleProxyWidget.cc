@@ -675,11 +675,6 @@ QPointF PassThroughPositioner::currentPosition() const
   return widget_->pos();
 }
 
-void ModuleProxyWidget::setNoteGraphicsContext()
-{
-  positioner_ = boost::make_shared<PassThroughPositioner>(this);
-}
-
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);

@@ -73,18 +73,15 @@ namespace Gui {
   class NoteDisplayHelper
   {
   public:
-    virtual ~NoteDisplayHelper();
     Note currentNote() const;
   protected:
     NoteDisplayHelper(NoteDisplayStrategyPtr display, QGraphicsItem* parent);
-    virtual void setNoteGraphicsContext() = 0;
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
     void setDefaultNoteSizeImpl(int size);
     void clearNoteCursor();
     QGraphicsItem* parent_;
-    PositionProviderPtr positioner_;
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;

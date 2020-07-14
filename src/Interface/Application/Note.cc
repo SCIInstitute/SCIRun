@@ -79,15 +79,10 @@ NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display, QGraphicsIt
 {
 }
 
-NoteDisplayHelper::~NoteDisplayHelper()
-{
-}
-
 void NoteDisplayHelper::updateNoteImpl(const Note& note)
 {
   if (!note_)
   {
-    setNoteGraphicsContext();
     note_ = new QGraphicsTextItem("", parent_);
     note_->setDefaultTextColor(Qt::white);
   }
@@ -95,7 +90,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
-  //note_->setZValue(parent_->zValue() - 1);
+  note_->setZValue(parent_->zValue() - 1);
 }
 
 void NoteDisplayHelper::clearNoteCursor()
@@ -134,12 +129,9 @@ void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
 
 void NoteDisplayHelper::updateNotePosition()
 {
-  //qDebug() << __FILE__ << __LINE__;
   if (note_ && parent_)
   {
-    auto position = positioner_->currentPosition() + relativeNotePosition();
-    //qDebug() << __FUNCTION__ << positioner_->currentPosition() << relativeNotePosition() << position;
-    note_->setPos(position);
+    note_->setPos(relativeNotePosition());
   }
 }
 

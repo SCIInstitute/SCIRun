@@ -497,11 +497,6 @@ ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
 }
 
-void ConnectionLine::setNoteGraphicsContext()
-{
-  positioner_ = getPositionObject();
-}
-
 void ConnectionLine::updateNote(const Note& note)
 {
   updateNoteImpl(note);
