@@ -75,8 +75,7 @@ NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display, QGraphicsIt
   parent_(parent), note_(nullptr),
   notePosition_(NotePosition::Default),
   defaultNotePosition_(NotePosition::Top), //TODO
-  displayStrategy_(display),
-  destroyed_(false)
+  displayStrategy_(display)
 {
 }
 

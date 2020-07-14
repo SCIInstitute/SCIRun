@@ -90,7 +90,6 @@ namespace Gui {
     NotePosition notePosition_, defaultNotePosition_;
     int defaultNoteFontSize_{ 20 };
     NoteDisplayStrategyPtr displayStrategy_;
-    bool destroyed_;
 
     QPointF relativeNotePosition();
   };

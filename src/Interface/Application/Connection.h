@@ -73,7 +73,7 @@ class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes
 
 public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
-  ~ConnectionLine();
+  virtual ~ConnectionLine();
   void setColor(const QColor& color);
   void setColorAndWidth(const QColor& color, int width);
   QColor color() const;
