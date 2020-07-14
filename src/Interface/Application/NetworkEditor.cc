@@ -1651,7 +1651,14 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
   setSceneRect(QRectF());
 
 #ifdef __APPLE__
-  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]() { deselectAll(); });
+  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]()
+  {
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    {
+      item->setSelected(true);
+      item->setSelected(false);
+    }
+  });
 #endif
 }
 
