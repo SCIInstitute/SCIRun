@@ -261,7 +261,7 @@ namespace
 
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
-  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
+  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>(), this),
   fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
@@ -320,8 +320,6 @@ void ConnectionLine::destroyConnection()
     drawer_.reset();
     Q_EMIT deleted(id_);
     guiLogDebug("Connection deleted: {}", id_.id_);
-    HasNotes::destroy();
-    NoteDisplayHelper::destroy();
     destroyed_ = true;
   }
 }
@@ -501,8 +499,6 @@ ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 
 void ConnectionLine::setNoteGraphicsContext()
 {
-  scene_ = scene();
-  networkObjectWithNote_ = this;
   positioner_ = getPositionObject();
 }
 

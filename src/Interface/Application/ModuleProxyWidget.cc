@@ -113,7 +113,7 @@ namespace SCIRun
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
-  NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
+  NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>(), this),
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
@@ -677,8 +677,6 @@ QPointF PassThroughPositioner::currentPosition() const
 
 void ModuleProxyWidget::setNoteGraphicsContext()
 {
-  scene_ = scene();
-  networkObjectWithNote_ = this;
   positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
