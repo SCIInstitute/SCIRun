@@ -333,6 +333,7 @@ namespace Gui {
     boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to) override;
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& inputPortId);
     void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
     void executeAll();
     void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool fromButton);
@@ -415,7 +416,7 @@ namespace Gui {
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     void pasteImpl(const QString& xml);
     void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect,
-      const std::string& newModuleName, QObject* sender);
+      const std::string& newModuleName);
     void drawTagGroups();
     void removeTagGroups();
     QString checkForOverriddenTagName(int tag) const;

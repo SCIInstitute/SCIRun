@@ -96,7 +96,7 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
-  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input);
+  void insertNewModule(const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

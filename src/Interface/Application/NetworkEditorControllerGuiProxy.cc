@@ -155,6 +155,11 @@ void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInte
   controller_->connectNewModule(portToConnect, newModuleName);
 }
 
+void NetworkEditorControllerGuiProxy::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  controller_->insertNewModule(portToConnect, newModuleName);
+}
+
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
 {
   return controller_->getAllAvailableModuleDescriptions();

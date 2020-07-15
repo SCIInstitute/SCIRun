@@ -64,7 +64,6 @@ namespace SCIRun {
         [parent](QAction* action)
         {
           QObject::connect(action, &QAction::triggered, parent, &PortWidget::connectModule);
-          action->setProperty(addNewModuleActionTypePropertyName(), QString("addNew"));
         },
         parent);
     }
@@ -738,21 +737,15 @@ void PortWidget::connectModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
-  setProperty(addNewModuleActionTypePropertyName(), action->property(addNewModuleActionTypePropertyName()));
   Q_EMIT connectNewModuleHere(this, moduleToAddName.toStdString());
 }
 
-void PortWidget::insertNewModule(const PortDescriptionInterface* output, const std::string& newModuleName, const PortDescriptionInterface* input)
+void PortWidget::insertNewModule(const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId)
 {
-  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  logCritical("{} (output port id: {})->(new module: {})->({} :: input port id: {})", __FUNCTION__,
+    id().toString(), newModuleName, moduleToConnectTo, inputPortId);
 
-  //TODO: rewrite this slot completely.
-  qDebug() << __FILE__ << __LINE__ << newModuleName.c_str();
-
-  logCritical("{} {} output port: {} {}", __FUNCTION__, __LINE__, output->id().toString(), output->isDynamic());
-  logCritical("{} {} input port: {} {}", __FUNCTION__, __LINE__, input->id().toString(), input->isDynamic());
-  //if (!input->isDynamic())
-  //Q_EMIT connectNewModuleHere(output, newModuleName);
+  Q_EMIT insertNewModuleHere(this, newModuleName, inputPortId);
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,

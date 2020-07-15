@@ -290,9 +290,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-  connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
-    fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
-  setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
+  connect(this, SIGNAL(insertNewModule(const std::string&, const std::string&, const std::string&)),
+    fromPort_, SLOT(insertNewModule(const std::string&, const std::string&, const std::string&)));
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
@@ -485,7 +484,7 @@ void ConnectionLine::insertNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
-  Q_EMIT insertNewModule(fromPort_, moduleToAddName.toStdString(), toPort_);
+  Q_EMIT insertNewModule(moduleToAddName.toStdString(), toPort_->getUnderlyingModuleId().id_, toPort_->id().toString());
   deleteLater();
 }
 

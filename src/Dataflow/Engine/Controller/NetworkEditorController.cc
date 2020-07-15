@@ -343,6 +343,11 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   return newMod;
 }
 
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  return connectNewModule(portToConnect, newModuleName);
+}
+
 void NetworkEditorController::printNetwork() const
 {
   /// @todo: and make this switchable
