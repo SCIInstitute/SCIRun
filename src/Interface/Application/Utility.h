@@ -83,7 +83,6 @@ namespace Gui
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
 
   const char* addNewModuleActionTypePropertyName();
-  const char* insertNewModuleActionTypePropertyName();
 
   const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 

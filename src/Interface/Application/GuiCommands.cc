@@ -175,11 +175,6 @@ const char* SCIRun::Gui::addNewModuleActionTypePropertyName()
   return "connectNewModuleSource";
 }
 
-const char* SCIRun::Gui::insertNewModuleActionTypePropertyName()
-{
-  return "inputPortToConnectPid";
-}
-
 namespace std
 {
 template <typename T1, typename T2>

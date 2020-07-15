@@ -303,7 +303,7 @@ QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem() const
 
 QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 {
-  return {0.0, isInput ? -110.0 : 50.0};
+  return {0.0, isInput ? -110.0 : 80.0};
 }
 
 void ModuleWidgetPlacementManager::updateLatestFromDuplicate(const QPointF& scenePos)
@@ -334,29 +334,7 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   {
     InEditingContext iec(this);
     modulePlacement_.updateLatestFromConnectNew(widget->scenePos(), portToConnect->isInput());
-    PortWidget* newConnectionInputPort = nullptr;
-    auto portWidget = dynamic_cast<const PortWidget*>(portToConnect);
-    if (portWidget)
-    {
-      for (size_t i = 0; i < portWidget->nconnections(); ++i)
-      {
-        auto cpi = portWidget->connectedPorts()[i];
-        if (QString::fromStdString(cpi->id().toString()) == sender->property(insertNewModuleActionTypePropertyName()))
-          newConnectionInputPort = cpi;
-      }
-    }
-
-    if (newConnectionInputPort)
-    {
-      // grab value before being deleted with removeConnection
-      auto isDynamic = newConnectionInputPort->isDynamic();
-      controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
-      if (!isDynamic)
-      {
-        newConnectionInputPort->deleteConnectionsLater();
-        controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
-      }
-    }
+    controller_->connectNewModule(portToConnect, newModuleName, nullptr);
     return;
   }
 

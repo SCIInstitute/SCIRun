@@ -61,7 +61,11 @@ namespace SCIRun {
       auto isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch, isInput](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [parent](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); action->setProperty(addNewModuleActionTypePropertyName(), QString("addNew")); },
+        [parent](QAction* action)
+        {
+          QObject::connect(action, &QAction::triggered, parent, &PortWidget::connectModule);
+          action->setProperty(addNewModuleActionTypePropertyName(), QString("addNew"));
+        },
         parent);
     }
 
@@ -139,7 +143,6 @@ namespace SCIRun {
 
         base_ = new QMenu("Connect Module", parent);
         compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
-
         connectModuleAction_ = addAction("Connect Module...");
         connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
       }
@@ -486,7 +489,7 @@ void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
   //TODO: management of return value?
 }
 
-void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
+void PortWidget::makeConnection(const ConnectionDescription& cd)
 {
   if (matches(cd))
   {
@@ -731,20 +734,25 @@ void PortWidget::portCachingChanged(bool checked)
   std::cout << "Port " << moduleId_.id_ << "::" << name().toStdString() << " Caching turned " << (checked ? "on." : "off.") << std::endl;
 }
 
-void PortWidget::connectNewModule()
+void PortWidget::connectModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
   setProperty(addNewModuleActionTypePropertyName(), action->property(addNewModuleActionTypePropertyName()));
-  Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
+  Q_EMIT connectNewModuleHere(this, moduleToAddName.toStdString());
 }
 
 void PortWidget::insertNewModule(const PortDescriptionInterface* output, const std::string& newModuleName, const PortDescriptionInterface* input)
 {
   setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
-  setProperty(insertNewModuleActionTypePropertyName(), QString::fromStdString(input->id().toString()));
 
-  Q_EMIT connectNewModule(output, newModuleName);
+  //TODO: rewrite this slot completely.
+  qDebug() << __FILE__ << __LINE__ << newModuleName.c_str();
+
+  logCritical("{} {} output port: {} {}", __FUNCTION__, __LINE__, output->id().toString(), output->isDynamic());
+  logCritical("{} {} input port: {} {}", __FUNCTION__, __LINE__, input->id().toString(), input->isDynamic());
+  //if (!input->isDynamic())
+  //Q_EMIT connectNewModuleHere(output, newModuleName);
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,

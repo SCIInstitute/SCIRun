@@ -205,14 +205,13 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        if (!eitherPortDynamic(conn->connectedPorts()))
-        {
-          insertAction_ = addAction(insertModuleAction);
-          addWidgetToExecutionDisableList(insertAction_);
-          auto insertable = new QMenu;
-          fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
-          insertAction_->setMenu(insertable);
-        }
+
+        insertAction_ = addAction(insertModuleAction);
+        addWidgetToExecutionDisableList(insertAction_);
+        auto insertable = new QMenu;
+        fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
+        insertAction_->setMenu(insertable);
+
         disableAction_ = addAction(disableEnableAction);
         addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
@@ -220,8 +219,7 @@ namespace SCIRun
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
-        if (insertAction_)
-          removeWidgetFromExecutionDisableList(insertAction_);
+        removeWidgetFromExecutionDisableList(insertAction_);
         removeWidgetFromExecutionDisableList(disableAction_);
       }
       QAction* notesAction_{ nullptr };
@@ -312,11 +310,10 @@ void ConnectionLine::destroyConnection()
   if (!destroyed_)
   {
     delete menu_;
-    if (fromPort_ && toPort_)
-    {
+    if (fromPort_)
       fromPort_->removeConnection(this);
+    if (toPort_)
       toPort_->removeConnection(this);
-    }
     drawer_.reset();
     Q_EMIT deleted(id_);
     guiLogDebug("Connection deleted: {}", id_.id_);
