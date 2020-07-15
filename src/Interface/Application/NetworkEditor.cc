@@ -303,7 +303,7 @@ QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem() const
 
 QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 {
-  return {0.0, isInput ? -110.0 : 80.0};
+  return {0.0, isInput ? -90.0 : 90.0};
 }
 
 void ModuleWidgetPlacementManager::updateLatestFromDuplicate(const QPointF& scenePos)
@@ -334,7 +334,7 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   {
     InEditingContext iec(this);
     modulePlacement_.updateLatestFromConnectNew(widget->scenePos(), portToConnect->isInput());
-    controller_->connectNewModule(portToConnect, newModuleName, nullptr);
+    controller_->connectNewModule(portToConnect, newModuleName);
     return;
   }
 

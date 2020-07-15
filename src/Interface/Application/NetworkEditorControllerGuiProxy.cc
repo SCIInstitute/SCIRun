@@ -150,9 +150,9 @@ void NetworkEditorControllerGuiProxy::duplicateModule(const ModuleHandle& module
   controller_->duplicateModule(module);
 }
 
-void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
+void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
-  controller_->connectNewModule(portToConnect, newModuleName, portToConnectUponInsertion);
+  controller_->connectNewModule(portToConnect, newModuleName);
 }
 
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const

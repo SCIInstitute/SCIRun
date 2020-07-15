@@ -310,7 +310,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
+ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto newMod = addModule(newModuleName);
 
@@ -336,15 +336,6 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        if (portToConnectUponInsertion)
-        {
-          auto oports = newMod->outputPorts();
-          auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
-          if (fromPort != oports.end())
-          {
-            requestConnection(fromPort->get(), portToConnectUponInsertion);
-          }
-        }
         return newMod;
       }
     }
