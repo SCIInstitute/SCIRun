@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "AutoReadFile",
+    "namespace": "DataIO",
+    "status": "In progress",
+    "description": "This module reads files intelligently.",
+    "header": "Modules/DataIO/ReadFile.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReadFileDialog",
+    "header": "Interface/Modules/DataIO/ReadFileDialog.h"
+  }
+}
