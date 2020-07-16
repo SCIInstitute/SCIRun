@@ -14,30 +14,27 @@ layout: default_toc
 ### Build requirements
 
 #### OS X
-  - Tested on 10.10 - 10.13
-  - Apple clang 7.2 or newer
-  - Qt 4.8 or 5.12
-    + Download [Qt 4.8 DMG](https://download.qt.io/archive/qt/4.8/4.8.4/qt-mac-opensource-4.8.4.dmg).
-    + The above dmg will not work if using OS X 10.11. In this case Qt 4.8 can be acquired through macports using the command 'sudo port install qt4-mac' - more on macports here: https://www.macports.org/install.php
-    + Qt 4.8 can also be installed with homebrew.  The instructions are found [here](https://github.com/cartr/homebrew-qt4).
-    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.12 installer.  Make sure to turn off other versions and system configurations to save space and build time.  Configure CMake for Qt 5.
+  - Tested on 10.12 - 10.15
+  - Apple clang 9.0.0 or newer
+  - Qt 5.13 or later
+    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.  Configure CMake for Qt 5.
 
 #### Windows
   - Tested on Windows 10
   - Visual Studio 2013 & 2017
-  - Qt 5.12 or later
-    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.12 installer.  Make sure to turn off other versions and system configurations to save space and build time.
+  - Qt 5.13 or later
+    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.
 
 
 #### Linux
   - Tested on Ubuntu 14.04 LTS, OpenSUSE Leap 42.1
   - gcc 4.8
-  - Qt 5.12 or later
-    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.12 installer.  Make sure to turn off other versions and system configurations to save space and build time.  Add the Qt 5 path to CMake configuration.
+  - Qt 5.13 or later
+    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.  Add the Qt 5 path to CMake configuration.
 
 #### All Platforms
   - [CMake](https://cmake.org/) (platform independent configuring system that is used for generating Makefiles, Visual Studio project files, or Xcode project files)
-    + Tested with 2.8 - 3.4
+    + Tested with 3.4 and newer
     + Root cmake file is Superbuild/CMakeLists.txt.
     + Building in source directories is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
