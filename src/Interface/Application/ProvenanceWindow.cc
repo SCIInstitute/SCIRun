@@ -317,11 +317,11 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
 
 void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  if (!provenanceManagerModifyingNetwork_)
-  {
-    ProvenanceItemHandle item(boost::make_shared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
-    Q_EMIT provenanceItemCreated(item);
-  }
+  // if (!provenanceManagerModifyingNetwork_)
+  // {
+  //   ProvenanceItemHandle item(boost::make_shared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
+  //   Q_EMIT provenanceItemCreated(item);
+  // }
 }
 
 void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY)

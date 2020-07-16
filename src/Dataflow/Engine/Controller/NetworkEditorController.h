@@ -140,11 +140,11 @@ namespace Engine {
     // headless hack
     void stopExecutionContextLoopWhenExecutionFinishes();
 
-    virtual void enableSignals() override;
-    virtual void disableSignals() override;
+    void enableSignals() override;
+    void disableSignals() override;
 
-    virtual Networks::NetworkHandle getNetwork() const override;
-    virtual void setNetwork(Networks::NetworkHandle nh) override;
+    Networks::NetworkHandle getNetwork() const override;
+    void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();

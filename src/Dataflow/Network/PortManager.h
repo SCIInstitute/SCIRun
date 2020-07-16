@@ -35,6 +35,7 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <Core/Logging/Log.h>
@@ -53,7 +54,7 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-  
+
   using ModuleAddFunc = std::function<size_t(PortHandle)>;
 
 template<class T>
@@ -268,7 +269,11 @@ std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
 
   boost::copy(
     ports_ | boost::adaptors::map_values
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+           | boost::adaptors::filtered([&](const T& port)
+           {
+             return port->get_portname() == name || boost::starts_with(port->id().toString(), name);
+           }),
+      std::back_inserter(portsWithName));
 
   return portsWithName;
 }

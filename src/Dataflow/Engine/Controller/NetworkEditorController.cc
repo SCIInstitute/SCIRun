@@ -343,9 +343,36 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   return newMod;
 }
 
-ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModule, const std::string& inputPortId)
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModuleId, const std::string& inputPortId)
 {
-  return connectNewModule(portToConnect, newModuleName);
+  auto newMod = connectNewModule(portToConnect, newModuleName);
+
+  auto endModule = theNetwork_->lookupModule(ModuleId(endModuleId));
+
+  for (const auto& p : newMod->outputPorts())
+  {
+    if (p->get_typename() == portToConnect->get_typename())
+    {
+      logCritical("found port to connect from: {} need to find port {} on module {}", p->id().toString(), inputPortId, endModuleId);
+      auto results = endModule->findInputPortsWithName(inputPortId);
+      logCritical("have some results by name, size = {}", results.size());
+      if (!results.empty())
+      {
+        auto firstPort = results[0];
+        if (firstPort->nconnections() > 0)
+        {
+          auto conn = firstPort->connection(0);
+          logCritical("trying to remove connection from controller: {}", conn->id());
+          removeConnection(conn->id_);
+          logCritical("done with remove connection from controller: {}", conn->id());
+        }
+        logCritical("trying to add last connection");
+        requestConnection(p.get(), firstPort.get());
+      }
+      return newMod;
+    }
+  }
+  return newMod;
 }
 
 void NetworkEditorController::printNetwork() const
@@ -360,6 +387,8 @@ void NetworkEditorController::printNetwork() const
 
 boost::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
+  logCritical("Attempt connect {} {} {}", from->id().toString(), to->id().toString(), __LINE__);
+
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
 
@@ -370,6 +399,8 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
     IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
+  logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
+
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
@@ -377,6 +408,8 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
       ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);
+
+logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
 
     printNetwork();
     return id;
@@ -389,8 +422,15 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
+  auto idStr = id.id_;
+  logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   if (theNetwork_->disconnect(id))
+  {
+    logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
     connectionRemoved_(id);
+    logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
+  }
+  logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   printNetwork();
 }
 
