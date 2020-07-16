@@ -43,7 +43,7 @@ namespace Core {
     class DyadicTensorGeneric : public TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>>
     {
      public:
-      typedef TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>> parent;
+      using parent = TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>>;
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 

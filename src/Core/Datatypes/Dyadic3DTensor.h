@@ -42,7 +42,7 @@ namespace Core {
     class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number, 3>
     {
      public:
-      typedef DyadicTensorGeneric<Number, 3> parent;
+      using parent = DyadicTensorGeneric<Number, 3>;
       Dyadic3DTensorGeneric() : parent() {}
       using parent::DyadicTensorGeneric;
       using parent::operator=;

@@ -38,7 +38,7 @@ namespace Core {
     template <typename Number, typename Sizes>
     class TensorBaseGeneric : public Eigen::TensorFixedSize<Number, Sizes>
     {
-      typedef Eigen::TensorFixedSize<Number, Sizes> parent;
+      using parent = Eigen::TensorFixedSize<Number, Sizes>;
 
      public:
       using parent::contract;
