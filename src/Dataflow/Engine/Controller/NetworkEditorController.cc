@@ -362,9 +362,9 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
         if (firstPort->nconnections() > 0)
         {
           auto conn = firstPort->connection(0);
-          logCritical("trying to remove connection from controller: {}", conn->id());
+          //logCritical("trying to remove connection from controller: {}", conn->id());
           removeConnection(conn->id_);
-          logCritical("done with remove connection from controller: {}", conn->id());
+          //logCritical("done with remove connection from controller: {}", conn->id());
         }
         logCritical("trying to add last connection");
         requestConnection(p.get(), firstPort.get());
@@ -427,6 +427,7 @@ void NetworkEditorController::removeConnection(const ConnectionId& id)
   if (theNetwork_->disconnect(id))
   {
     logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
+    //TODO: investigate this exception generated here. with this line commented out, insert works. 
     connectionRemoved_(id);
     logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   }
