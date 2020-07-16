@@ -178,7 +178,7 @@ TEST(DyadicTensorTest, CanConstructWithMatrix)
   mat(0, 2) = mat(2, 0) = 3;
   mat(1, 2) = mat(2, 1) = 5;
 
-  DyadicTensorGeneric<double, 3, 3> t(mat);
+  DyadicTensorGeneric<double, 3> t(mat);
   std::stringstream ss;
   ss << t;
   ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
@@ -204,7 +204,7 @@ TEST(DyadicTensorTest, StringConversion)
   std::vector<DenseColumnMatrix> vecs = {
       DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 2, 0}), DenseColumnMatrix({0, 0, 3})};
   Dyadic3DTensor t(nativeEigvecs[0], nativeEigvecs[1], nativeEigvecs[2]);
-  DyadicTensorGeneric<double, 3, 3> t2(vecs);
+  DyadicTensorGeneric<double, 3> t2(vecs);
 
   std::stringstream ss;
   ss << t;
@@ -256,8 +256,8 @@ TEST(DyadicTensorTest, Equivalent)
   std::vector<DenseColumnMatrix> vecs = {
       DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 2, 0}), DenseColumnMatrix({0, 0, 3})};
   Dyadic3DTensor t(nativeEigvecs[0], nativeEigvecs[1], nativeEigvecs[2]);
-  DyadicTensorGeneric<double, 3, 3> t2(vecs);
-  auto t3 = DyadicTensorGeneric<double, 3, 3>();
+  DyadicTensorGeneric<double, 3> t2(vecs);
+  auto t3 = DyadicTensorGeneric<double, 3>();
 
   ASSERT_TRUE(t != t2);
   ASSERT_TRUE(t2 != t);
@@ -447,4 +447,11 @@ TEST(DyadicTensorTest, EigenSolver)
   for (int i = 0; i < 3; ++i)
     for (int j = 0; j < 3; ++j)
       ASSERT_NEAR(expected[i][j], eigvecs[i][j], 0.00001);
+}
+
+TEST(DyadicTensorTest, NonSymmetricTestFail)
+{
+  Eigen::Matrix3d m;
+  m << 3, 0, 0, 0, 2, 0, 0, 0.5, 1;
+  ASSERT_ANY_THROW(auto t = Dyadic3DTensor(m));
 }

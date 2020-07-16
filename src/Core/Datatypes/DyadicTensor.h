@@ -39,66 +39,70 @@ namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
-    template <typename Number, size_t Dim0, size_t Dim1>
-    class DyadicTensorGeneric : public TensorBaseGeneric<Number, Eigen::Sizes<Dim0, Dim1>>
+    template <typename Number, size_t Dim>
+    class DyadicTensorGeneric : public TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>>
     {
      public:
-      typedef TensorBaseGeneric<Number, Eigen::Sizes<Dim0, Dim1>> parent;
+      typedef TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>> parent;
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 
       DyadicTensorGeneric(Number val) : parent()
       {
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(i, j) = (i == j) ? val : 0;
       }
 
       DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent()
       {
-        if (eigvecs.size() != Dim0)
-          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim0);
-        if (eigvecs[0].size() != Dim1)
-          THROW_INVALID_ARGUMENT("The length of input vectors must be " + Dim1);
+        if (eigvecs.size() != Dim)
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
+        if (eigvecs[0].size() != Dim)
+          THROW_INVALID_ARGUMENT("The length of input vectors must be " + Dim);
         setEigenVectors(eigvecs);
       }
 
-      DyadicTensorGeneric(const DyadicTensorGeneric<Number, Dim0, Dim1>& other) : parent()
+      DyadicTensorGeneric(const DyadicTensorGeneric<Number, Dim>& other) : parent()
       {
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(index(i), index(j)) = other(index(i), index(j));
         eigvecs_ = other.getEigenvectors();
         eigvals_ = other.getEigenvalues();
         haveEigens_ = true;
       }
 
-      DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim0, Dim1>&& other) : parent()
+      DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim>&& other) : parent()
       {
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(index(i), index(j)) = std::move(other(index(i), index(j)));
         eigvecs_ = std::move(other.eigvecs_);
         eigvals_ = std::move(other.eigvals_);
         haveEigens_ = true;
       }
 
-      DyadicTensorGeneric(const Eigen::TensorFixedSize<Number, Eigen::Sizes<Dim0, Dim1>>& other)
+      DyadicTensorGeneric(const Eigen::TensorFixedSize<Number, Eigen::Sizes<Dim, Dim>>& other)
           : parent()
       {
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(index(i), index(j)) = other(index(i), index(j));
       }
 
       explicit DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
       {
-        if (mat.nrows() != Dim0)
-          THROW_INVALID_ARGUMENT("The number of rows of the input matrix must be " + Dim0);
-        if (mat.ncols() != Dim1)
-          THROW_INVALID_ARGUMENT("The length of rows of the input matrix must be " + Dim1);
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        if (mat.nrows() != Dim)
+          THROW_INVALID_ARGUMENT("The number of rows of the input matrix must be " + Dim);
+        if (mat.ncols() != Dim)
+          THROW_INVALID_ARGUMENT("The length of rows of the input matrix must be " + Dim);
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
+            if (mat(i, j) != mat(j, i))
+              THROW_INVALID_ARGUMENT("Input matrix must be symmetric.");
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(index(i), index(j)) = mat(index(i), index(j));
       }
 
@@ -114,10 +118,10 @@ namespace Core {
       template <typename OtherDerived>
       bool operator==(const OtherDerived& other) const
       {
-        auto otherTensor = static_cast<DyadicTensorGeneric<Number, Dim0, Dim1>>(other);
-        if (Dim0 != otherTensor.dimension(0) || Dim1 != otherTensor.dimension(1)) return false;
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        auto otherTensor = static_cast<DyadicTensorGeneric<Number, Dim>>(other);
+        if (Dim != otherTensor.dimension(0) || Dim != otherTensor.dimension(1)) return false;
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             if ((*this)(index(i), index(j)) != otherTensor(index(i), index(j))) return false;
         return true;
       }
@@ -135,11 +139,11 @@ namespace Core {
       // This function is listed as something that will be added to Eigen::Tensor in the future.
       // Usage of this function should be replaced with Eigen's asMatrix function when it is
       // implemented.
-      Eigen::Matrix<Number, Dim0, Dim1> asMatrix() const
+      Eigen::Matrix<Number, Dim, Dim> asMatrix() const
       {
-        Eigen::Matrix<Number, Dim0, Dim1> mat;
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        Eigen::Matrix<Number, Dim, Dim> mat;
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             mat(index(i), index(j)) = (*this)(index(i), index(j));
         return mat;
       }
@@ -163,7 +167,7 @@ namespace Core {
       }
 
       SCISHARE friend std::ostream& operator<<(
-          std::ostream& os, const DyadicTensorGeneric<Number, Dim0, Dim1>& other)
+          std::ostream& os, const DyadicTensorGeneric<Number, Dim>& other)
       {
         os << '[';
         for (size_t i = 0; i < other.getDimension1(); ++i)
@@ -178,7 +182,7 @@ namespace Core {
       }
 
       SCISHARE friend std::istream& operator>>(
-          std::istream& is, DyadicTensorGeneric<Number, Dim0, Dim1>& other)
+          std::istream& is, DyadicTensorGeneric<Number, Dim>& other)
       {
         char bracket;
         is >> bracket;
@@ -190,7 +194,7 @@ namespace Core {
         return is;
       }
 
-      DyadicTensorGeneric<Number, Dim0, Dim1>& operator=(const Number& v)
+      DyadicTensorGeneric<Number, Dim>& operator=(const Number& v)
       {
         for (size_t i = 0; i < getDimension1(); ++i)
           for (size_t j = 0; j < getDimension2(); ++j)
@@ -199,8 +203,8 @@ namespace Core {
         return *this;
       }
 
-      size_t getDimension1() const { return Dim0; }
-      size_t getDimension2() const { return Dim1; }
+      size_t getDimension1() const { return Dim; }
+      size_t getDimension2() const { return Dim; }
 
       Number frobeniusNorm() const
       {
@@ -249,18 +253,18 @@ namespace Core {
       {
         if (haveEigens_) return;
 
-        auto es = Eigen::EigenSolver<Eigen::Matrix<Number, Dim0, Dim1>>(this->asMatrix());
+        auto es = Eigen::EigenSolver<Eigen::Matrix<Number, Dim, Dim>>(this->asMatrix());
         auto vecs = es.eigenvectors();
         auto vals = es.eigenvalues();
 
-        eigvals_.resize(Dim0);
-        eigvecs_.resize(Dim0);
+        eigvals_.resize(Dim);
+        eigvecs_.resize(Dim);
 
-        for (size_t i = 0; i < Dim0; ++i)
+        for (size_t i = 0; i < Dim; ++i)
         {
           eigvals_[i] = real(vals(i));
-          eigvecs_[i] = DenseColumnMatrixGeneric<Number>(Dim1);
-          for (size_t j = 0; j < Dim1; ++j)
+          eigvecs_[i] = DenseColumnMatrixGeneric<Number>(Dim);
+          for (size_t j = 0; j < Dim; ++j)
             eigvecs_[i].put(j, 0, real(vecs(j, i)));
         }
 
@@ -272,8 +276,8 @@ namespace Core {
       {
         if (!haveEigens_) return;
         typedef std::pair<Number, DenseColumnMatrixGeneric<Number>> EigPair;
-        std::vector<EigPair> sortList(Dim0);
-        for (size_t i = 0; i < Dim0; ++i)
+        std::vector<EigPair> sortList(Dim);
+        for (size_t i = 0; i < Dim; ++i)
           sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);
 
         // sort by descending order of eigenvalues
@@ -282,27 +286,27 @@ namespace Core {
 
         auto sortedEigsIter = sortList.begin();
 
-        for (size_t i = 0; i < Dim0; ++i)
+        for (size_t i = 0; i < Dim; ++i)
           std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
       }
 
       void setEigenvaluesFromEigenvectors() const
       {
         eigvals_ = std::vector<Number>(eigvecs_.size());
-        for (size_t i = 0; i < Dim0; ++i)
+        for (size_t i = 0; i < Dim; ++i)
           eigvals_[i] = eigvecs_[i].norm();
       }
 
       void normalizeEigenvectors() const
       {
-        for (size_t i = 0; i < Dim0; ++i)
+        for (size_t i = 0; i < Dim; ++i)
           eigvecs_[i] /= eigvals_[i];
       }
 
       void setTensorValues()
       {
-        for (size_t i = 0; i < Dim0; ++i)
-          for (size_t j = 0; j < Dim1; ++j)
+        for (size_t i = 0; i < Dim; ++i)
+          for (size_t j = 0; j < Dim; ++j)
             (*this)(index(j), index(i)) = eigvecs_[i][j] * eigvals_[i];
       }
 

@@ -39,10 +39,10 @@ namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     template <typename Number>
-    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number, 3, 3>
+    class Dyadic3DTensorGeneric : public DyadicTensorGeneric<Number, 3>
     {
      public:
-      typedef DyadicTensorGeneric<Number, 3, 3> parent;
+      typedef DyadicTensorGeneric<Number, 3> parent;
       Dyadic3DTensorGeneric() : parent() {}
       using parent::DyadicTensorGeneric;
       using parent::operator=;

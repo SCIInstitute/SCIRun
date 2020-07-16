@@ -38,14 +38,14 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  template <typename Number, size_t Dim0, size_t Dim1>
+  template <typename Number, size_t Dim>
   class DyadicTensorGeneric;
 
-  template <size_t Dim0, size_t Dim1>
-  using DyadicTensor = DyadicTensorGeneric<double, Dim0, Dim1>;
+  template <size_t Dim>
+  using DyadicTensor = DyadicTensorGeneric<double, Dim>;
 
-  typedef DyadicTensorGeneric<double, 2, 2> Dyadic2DTensor;
-  typedef DyadicTensorGeneric<double, 4, 4> Dyadic4DTensor;
+  typedef DyadicTensorGeneric<double, 2> Dyadic2DTensor;
+  typedef DyadicTensorGeneric<double, 4> Dyadic4DTensor;
 
   template <typename Number>
   class Dyadic3DTensorGeneric;
