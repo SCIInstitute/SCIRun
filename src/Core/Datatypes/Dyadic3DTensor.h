@@ -117,7 +117,7 @@ namespace Core {
         for (size_t i = 0; i < DIM_; ++i)
           eigvecs[i] *= eigvals[i];
 
-        const double sqrt2 = std::sqrt(2);
+        static constexpr double sqrt2 = std::sqrt(2);
         DenseColumnMatrixGeneric<Number> mandel({eigvecs[0][0], eigvecs[1][1], eigvecs[2][2],
             eigvecs[0][1] * sqrt2, eigvecs[0][2] * sqrt2, eigvecs[1][2] * sqrt2});
         return mandel;
@@ -156,24 +156,9 @@ namespace Core {
     }
 
     template <typename Indexable>
-    Dyadic3DTensor symmetricTensorFromNineElementArray(const Indexable& array)
-    {
-      if (array.size() != 9) THROW_INVALID_ARGUMENT("This function requires 9 values.");
-      return Dyadic3DTensor(array[0], array[1], array[2], array[4], array[5], array[8]);
-    }
-
-    template <typename Number>
-    Dyadic3DTensor symmetricTensorFromNineElementArray(const std::initializer_list<Number>& array)
-    {
-      std::vector<Number> vec = array;
-      if (vec.size() != 9) THROW_INVALID_ARGUMENT("This function requires 9 values.");
-      return Dyadic3DTensorGeneric<double>(vec[0], vec[1], vec[2], vec[4], vec[5], vec[8]);
-    }
-
-    template <typename Indexable>
     Dyadic3DTensor symmetricTensorFromMandel(const Indexable& array)
     {
-      const double sqrt2 = std::sqrt(2);
+      static constexpr double sqrt2 = std::sqrt(2);
       return Dyadic3DTensor(
           array[0], array[3] / sqrt2, array[4] / sqrt2, array[1], array[5] / sqrt2, array[2]);
     }

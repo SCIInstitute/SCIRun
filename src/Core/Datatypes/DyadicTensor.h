@@ -63,7 +63,7 @@ namespace Core {
         setEigenVectors(eigvecs);
       }
 
-      DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim0, Dim1>& other) : parent()
+      DyadicTensorGeneric(const DyadicTensorGeneric<Number, Dim0, Dim1>& other) : parent()
       {
         for (size_t i = 0; i < Dim0; ++i)
           for (size_t j = 0; j < Dim1; ++j)
@@ -71,7 +71,16 @@ namespace Core {
         eigvecs_ = other.getEigenvectors();
         eigvals_ = other.getEigenvalues();
         haveEigens_ = true;
-        reorderTensorValues();
+      }
+
+      DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim0, Dim1>&& other) : parent()
+      {
+        for (size_t i = 0; i < Dim0; ++i)
+          for (size_t j = 0; j < Dim1; ++j)
+            (*this)(index(i), index(j)) = std::move(other(index(i), index(j)));
+        eigvecs_ = std::move(other.eigvecs_);
+        eigvals_ = std::move(other.eigvals_);
+        haveEigens_ = true;
       }
 
       DyadicTensorGeneric(const Eigen::TensorFixedSize<Number, Eigen::Sizes<Dim0, Dim1>>& other)
@@ -82,7 +91,7 @@ namespace Core {
             (*this)(index(i), index(j)) = other(index(i), index(j));
       }
 
-      DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
+      explicit DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
       {
         if (mat.nrows() != Dim0)
           THROW_INVALID_ARGUMENT("The number of rows of the input matrix must be " + Dim0);
@@ -97,13 +106,13 @@ namespace Core {
       using parent::contract;
 
       template <typename OtherDerived>
-      bool operator!=(const OtherDerived& other)
+      bool operator!=(const OtherDerived& other) const
       {
         return !operator==(other);
       }
 
       template <typename OtherDerived>
-      bool operator==(const OtherDerived& other)
+      bool operator==(const OtherDerived& other) const
       {
         auto otherTensor = static_cast<DyadicTensorGeneric<Number, Dim0, Dim1>>(other);
         if (Dim0 != otherTensor.dimension(0) || Dim1 != otherTensor.dimension(1)) return false;
@@ -126,7 +135,7 @@ namespace Core {
       // This function is listed as something that will be added to Eigen::Tensor in the future.
       // Usage of this function should be replaced with Eigen's asMatrix function when it is
       // implemented.
-      Eigen::Matrix<Number, Dim0, Dim1> asMatrix()
+      Eigen::Matrix<Number, Dim0, Dim1> asMatrix() const
       {
         Eigen::Matrix<Number, Dim0, Dim1> mat;
         for (size_t i = 0; i < Dim0; ++i)
@@ -135,19 +144,19 @@ namespace Core {
         return mat;
       }
 
-      DenseColumnMatrixGeneric<Number> getEigenvector(int index)
+      DenseColumnMatrixGeneric<Number> getEigenvector(int index) const
       {
         if (!haveEigens_) buildEigens();
         return eigvecs_[index];
       }
 
-      std::vector<DenseColumnMatrixGeneric<Number>> getEigenvectors()
+      std::vector<DenseColumnMatrixGeneric<Number>> getEigenvectors() const
       {
         if (!haveEigens_) buildEigens();
         return eigvecs_;
       }
 
-      std::vector<Number> getEigenvalues()
+      std::vector<Number> getEigenvalues() const
       {
         if (!haveEigens_) buildEigens();
         return eigvals_;
@@ -193,14 +202,14 @@ namespace Core {
       size_t getDimension1() const { return Dim0; }
       size_t getDimension2() const { return Dim1; }
 
-      Number frobeniusNorm()
+      Number frobeniusNorm() const
       {
         if (!haveEigens_) buildEigens();
         auto eigvals = DenseColumnMatrix(eigvals_);
         return eigvals.norm();
       }
 
-      Number maxNorm()
+      Number maxNorm() const
       {
         if (!haveEigens_) buildEigens();
         auto maxVal = std::numeric_limits<Number>::min();
@@ -210,7 +219,7 @@ namespace Core {
       }
 
       void setEigens(
-          const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals)
+          const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals) const
       {
         if (eigvecs_.size() != eigvecs.size())
           THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + eigvecs_.size());
@@ -221,7 +230,7 @@ namespace Core {
         haveEigens_ = true;
       }
 
-      Number eigenValueSum()
+      Number eigenValueSum() const
       {
         if (!haveEigens_) buildEigens();
         Number sum = 0;
@@ -232,11 +241,11 @@ namespace Core {
 
      protected:
       const int RANK_ = 2;
-      std::vector<DenseColumnMatrixGeneric<Number>> eigvecs_;
-      std::vector<Number> eigvals_;
-      bool haveEigens_ = false;
+      mutable std::vector<DenseColumnMatrixGeneric<Number>> eigvecs_;
+      mutable std::vector<Number> eigvals_;
+      mutable bool haveEigens_ = false;
 
-      void buildEigens()
+      void buildEigens() const
       {
         if (haveEigens_) return;
 
@@ -259,7 +268,7 @@ namespace Core {
         reorderTensorValues();
       }
 
-      void reorderTensorValues()
+      void reorderTensorValues() const
       {
         if (!haveEigens_) return;
         typedef std::pair<Number, DenseColumnMatrixGeneric<Number>> EigPair;
@@ -277,14 +286,14 @@ namespace Core {
           std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
       }
 
-      void setEigenvaluesFromEigenvectors()
+      void setEigenvaluesFromEigenvectors() const
       {
         eigvals_ = std::vector<Number>(eigvecs_.size());
         for (size_t i = 0; i < Dim0; ++i)
           eigvals_[i] = eigvecs_[i].norm();
       }
 
-      void normalizeEigenvectors()
+      void normalizeEigenvectors() const
       {
         for (size_t i = 0; i < Dim0; ++i)
           eigvecs_[i] /= eigvals_[i];

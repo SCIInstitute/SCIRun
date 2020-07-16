@@ -100,42 +100,10 @@ TEST(Dyadic3DTensorTest, CannotConstructWithColumnMatrixOfFiveValues)
   ASSERT_ANY_THROW(symmetricTensorFromSixElementArray(DenseColumnMatrix({1, 2, 3, 4, 5})));
 }
 
-TEST(Dyadic3DTensorTest, CanConstructWithColumnMatrixOfNineValuesColumnMatrix)
-{
-  Dyadic3DTensor t =
-      symmetricTensorFromNineElementArray(DenseColumnMatrix({1, 2, 3, 2, 4, 5, 3, 5, 6}));
-  std::stringstream ss;
-  ss << t;
-  ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
-}
-
-TEST(Dyadic3DTensorTest, CannotConstructWithColumnMatrixOfEightValues)
-{
-  ASSERT_ANY_THROW(
-      symmetricTensorFromNineElementArray(DenseColumnMatrix({1, 2, 3, 2, 4, 5, 3, 5})));
-}
-
-TEST(Dyadic3DTensorTest, CanConstructWithVectorOfNineValues)
-{
-  std::vector<double> list = {1, 2, 3, 2, 4, 5, 3, 5, 6};
-  Dyadic3DTensor t = symmetricTensorFromNineElementArray(list);
-  std::stringstream ss;
-  ss << t;
-  ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
-}
-
 TEST(Dyadic3DTensorTest, CanConstructWithVectorOfSixValues)
 {
   std::vector<double> list = {1, 2, 3, 4, 5, 6};
   Dyadic3DTensor t = symmetricTensorFromSixElementArray(list);
-  std::stringstream ss;
-  ss << t;
-  ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
-}
-
-TEST(Dyadic3DTensorTest, CanConstructWithInitializerListOfNineValues)
-{
-  Dyadic3DTensor t = symmetricTensorFromNineElementArray({1, 2, 3, 2, 4, 5, 3, 5, 6});
   std::stringstream ss;
   ss << t;
   ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
@@ -467,12 +435,16 @@ TEST(DyadicTensorTest, SetEigensFail2)
 
 TEST(DyadicTensorTest, EigenSolver)
 {
-  Dyadic3DTensor t =
-      symmetricTensorFromNineElementArray(DenseColumnMatrix({3, 0, 0, 0, 2, 0.0, 0, 0.5, 1}));
+  Eigen::Matrix3d m;
+  m << 3, 0, 0, 0, 2, 0.5, 0, 0.5, 1;
+  auto t = Dyadic3DTensor(m);
 
-  std::vector<DenseColumnMatrix> expected = {
-      DenseColumnMatrix({1, 0, 0}), DenseColumnMatrix({0, 1, 0}), DenseColumnMatrix({0, 0, 1})};
+  std::vector<DenseColumnMatrix> expected = {DenseColumnMatrix({1.0, 0, 0}),
+      DenseColumnMatrix({0, 0.923879, 0.382684}), DenseColumnMatrix({0, -0.382681, 0.923881})};
+
   auto eigvecs = t.getEigenvectors();
 
-  ASSERT_EQ(expected, eigvecs);
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      ASSERT_NEAR(expected[i][j], eigvecs[i][j], 0.00001);
 }
