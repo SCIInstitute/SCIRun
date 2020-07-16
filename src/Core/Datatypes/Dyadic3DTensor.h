@@ -44,7 +44,7 @@ namespace Core {
      public:
       using parent = DyadicTensorGeneric<Number, 3>;
       Dyadic3DTensorGeneric() : parent() {}
-      using parent::DyadicTensorGeneric;
+      using parent::parent;
       using parent::operator=;
       using parent::operator==;
 
@@ -117,7 +117,7 @@ namespace Core {
         for (size_t i = 0; i < DIM_; ++i)
           eigvecs[i] *= eigvals[i];
 
-        static constexpr double sqrt2 = std::sqrt(2);
+        static const double sqrt2 = std::sqrt(2);
         DenseColumnMatrixGeneric<Number> mandel({eigvecs[0][0], eigvecs[1][1], eigvecs[2][2],
             eigvecs[0][1] * sqrt2, eigvecs[0][2] * sqrt2, eigvecs[1][2] * sqrt2});
         return mandel;
@@ -158,7 +158,7 @@ namespace Core {
     template <typename Indexable>
     Dyadic3DTensor symmetricTensorFromMandel(const Indexable& array)
     {
-      static constexpr double sqrt2 = std::sqrt(2);
+      static const double sqrt2 = std::sqrt(2);
       return Dyadic3DTensor(
           array[0], array[3] / sqrt2, array[4] / sqrt2, array[1], array[5] / sqrt2, array[2]);
     }

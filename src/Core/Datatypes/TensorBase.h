@@ -42,7 +42,7 @@ namespace Core {
 
      public:
       using parent::contract;
-      using parent::TensorFixedSize;  // adding parent constructors
+      using parent::parent;  // adding parent constructors
 
       template <typename OtherDerived>
       parent operator*(const OtherDerived& other) const
