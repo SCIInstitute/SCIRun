@@ -174,7 +174,7 @@ Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void connectNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& inputPortId);
+  void insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
   void portMoved();
   void connectionNoteChanged();
   void highlighted(bool highlighted);

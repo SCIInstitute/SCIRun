@@ -745,7 +745,7 @@ void PortWidget::insertNewModule(const std::string& newModuleName, const std::st
   logCritical("{} (output port id: {})->(new module: {})->({} :: input port id: {})", __FUNCTION__,
     id().toString(), newModuleName, moduleToConnectTo, inputPortId);
 
-  Q_EMIT insertNewModuleHere(this, newModuleName, inputPortId);
+  Q_EMIT insertNewModuleHere(this, newModuleName, moduleToConnectTo, inputPortId);
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,

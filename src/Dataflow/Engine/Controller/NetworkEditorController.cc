@@ -343,7 +343,7 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   return newMod;
 }
 
-ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModule, const std::string& inputPortId)
 {
   return connectNewModule(portToConnect, newModuleName);
 }

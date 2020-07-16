@@ -321,10 +321,33 @@ void ModuleWidgetPlacementManager::updateLatestFromReplace(const QPointF& sceneP
   lastModulePosition_ = scenePos + replaceIncr;
 }
 
-void NetworkEditor::insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& inputPortId)
+void NetworkEditor::insertNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModule, const std::string& inputPortId)
 {
-  connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName);
-  logCritical("Still to do: connect to {}", inputPortId);
+  auto startWidget = findById(scene_->items(), moduleToConnectTo->id());
+
+  if (startWidget)
+  {
+    InEditingContext iec(this);
+    modulePlacement_.updateLatestFromConnectNew(startWidget->scenePos(), portToConnect->isInput());
+    controller_->insertNewModule(portToConnect, newModuleName, endModule, inputPortId);
+    //
+    // auto endWidget = findById(scene_->items(), endModule);
+    // if (endWidget)
+    // {
+    //   qDebug() << "found end module to connect to";
+    //
+    //   const auto& endPorts = endWidget->getModuleWidget()->ports();
+    //
+    //   for (const auto& iport : endPorts.inputs())
+    //   {
+    //     if (iport->id().toString() == inputPortId)
+    //     {
+    //       qDebug() << "found input port to connect to";
+    //       //controller_->requestConnection( , iport);
+    //     }
+    //   }
+    // }
+  }
 }
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
@@ -440,8 +463,8 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
-  connect(module, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&)),
-    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&)));
+  connect(module, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&, const std::string&)),
+    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&, const std::string&)));
   connect(module, SIGNAL(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)),
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
