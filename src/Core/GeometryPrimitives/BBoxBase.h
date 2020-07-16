@@ -6,7 +6,6 @@
    Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_GEOMETRY_ORIENTEDBBOX_H
-#define CORE_GEOMETRY_ORIENTEDBBOX_H
+#ifndef CORE_GEOMETRY_BBOXBASE_H
+#define CORE_GEOMETRY_BBOXBASE_H 1
 
-#include <Core/GeometryPrimitives/BBoxBase.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
@@ -37,26 +35,26 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-class SCISHARE OrientedBBox : public Core::Geometry::BBoxBase
+class SCISHARE BBoxBase
 {
+protected:
+  Point cmin_;
+  Point cmax_;
+  bool is_valid_;
 public:
-  OrientedBBox(const Core::Geometry::Vector &e1, const Core::Geometry::Vector &e2, const Core::Geometry::Vector &e3);
-  /// Expand the bounding box to include point p
-
-  Core::Geometry::Point center() const override;
-  Core::Geometry::Point get_max() const override;
-  Core::Geometry::Point get_min() const override;
-  Core::Geometry::Vector diagonal() const override;
-  void extend(double val) override;
-  void extend(const Core::Geometry::Point &p) override;
-
-private:
-  std::vector<Vector> eigvecs_;
+  explicit BBoxBase(bool valid);
+  BBoxBase(bool valid, const Point& cmin, const Point& cmax);
+  virtual ~BBoxBase() {}
+  inline bool valid() const { return is_valid_; }
+  inline void set_valid(bool v) { is_valid_ = v; }
+  inline void reset() { is_valid_ = false; }
+  virtual void extend(const Point& p) = 0;
+  virtual void extend(double val) = 0;
+  virtual Vector diagonal() const = 0;
+  virtual Point get_min() const = 0;
+  virtual Point get_max() const = 0;
+  virtual Point center() const = 0;
 };
-
-SCISHARE std::ostream &operator<<(std::ostream &out, const OrientedBBox &b);
-SCISHARE void Pio(Piostream &, OrientedBBox &);
-
 }}}
 
 #endif

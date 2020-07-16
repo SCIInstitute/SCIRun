@@ -36,6 +36,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <boost/static_assert.hpp>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Persistent/PersistentFwd.h>
 #include <Core/GeometryPrimitives/share.h>
@@ -54,6 +55,16 @@ public:
   inline explicit Point(const Vector& v);
   inline Point(double x, double y, double z)
   { d_[0] = x; d_[1] = y; d_[2] = z; }
+
+  template <typename T>
+  inline Point(T x, T y, T z)
+  {
+    BOOST_STATIC_ASSERT(std::is_arithmetic<T>::value);
+    d_[0] = static_cast<double>(x);
+    d_[1] = static_cast<double>(y);
+    d_[2] = static_cast<double>(z);
+  }
+
   SCISHARE Point(double, double, double, double);
   inline Point(const Point&);
   inline Point();
