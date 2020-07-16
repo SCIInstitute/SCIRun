@@ -25,6 +25,10 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
   line-height: 1;
+  font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #000;
 }
 ol, ul {
   list-style: none;
@@ -38,19 +42,17 @@ q:before, q:after {
   content: none;
 }
 table {
+  border: 1px solid #ebebeb;
   border-spacing: 0;
   border-collapse: collapse;
+  width: 100%;
 }
-body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, serif;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #000;
-}
+
 
 a {
   font-weight: bold;
   color: #d5000d;
+  text-decoration: none;
 }
 
 header {
@@ -104,13 +106,6 @@ ul, ol, dl {
   margin-bottom: 20px;
 }
 
-
-/* COMMON STYLES */
-
-table {
-  width: 100%;
-  border: 1px solid #ebebeb;
-}
 
 th {
   font-weight: 500;
@@ -170,10 +165,6 @@ p {
   font-weight: 300;
 }
 
-a {
-  text-decoration: none;
-}
-
 p a {
   font-weight: 400;
 }
@@ -186,14 +177,14 @@ blockquote {
 }
 
 ul li {
-  list-style-position: inside;
   list-style: disc;
+  list-style-position: inside;
   padding-left: 20px;
 }
 
 ol li {
-  list-style-position: inside;
   list-style: decimal;
+  list-style-position: inside;
   padding-left: 3px;
 }
 

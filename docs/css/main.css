@@ -72,10 +72,10 @@ code {
 }
 
 #content {
+    padding: 60px;
     padding-top: 20px;
     /* padding-left: 50px; */
     margin: auto;
-    padding: 60px;
     float: right;
     allign: center;
 }
