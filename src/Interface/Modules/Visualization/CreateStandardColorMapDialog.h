@@ -45,32 +45,62 @@ namespace SCIRun {
       }
     };
 
+    using LogicalAlphaPointSet = std::set<QPointF, SortedByXCoordinate>;
+
     class AlphaFunctionManager
     {
     public:
       AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state, const boost::atomic<bool>& pulling);
       void clear();
       void insert(const QPointF& p);
+      void erase(const QPointF& p);
+      void pushToState();
+      size_t size() const;
       bool alreadyExists(const QPointF& p) const;
+      static LogicalAlphaPointSet convertPointsFromState(const Core::Algorithms::Variable::List& statePoints);
+      static Core::Algorithms::Variable::List convertPointsToState(const LogicalAlphaPointSet& points);
+      bool equals(const LogicalAlphaPointSet& other) const { return other == alphaPoints_; }
     private:
       void updateAlphaFunction();
-      void pushToState();
       std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       double pointYToAlpha(double y) const;
       QPointF colorToPoint(double color) const;
       double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
 
       Dataflow::Networks::ModuleStateHandle state_;
-      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
+      LogicalAlphaPointSet alphaPoints_;
       static const size_t ALPHA_SAMPLES = 10; //TODO cbright: once alpha values are visible, increase this number
       static const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
       const double DEFAULT_ALPHA = 0.5;
       const QPointF defaultStart_;
       const QPointF defaultEnd_;
       const boost::atomic<bool>& dialogPulling_;
+      void printSet() const;
     public:
       auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
       auto end() const -> decltype(alphaPoints_.end()) { return alphaPoints_.end(); }
+    };
+
+    class ColorMapPreviewPoint : public QGraphicsEllipseItem
+    {
+    public:
+      ColorMapPreviewPoint(qreal x, qreal y);
+      QPointF center() const { return center_; }
+    protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent *event)
+      {
+        //qDebug() << "ColorMapPreviewPoint clicked.";
+        ////if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier)
+        ////{
+        ////  qDebug() << "not shift-left";
+        ////}
+        //if (event->buttons() & Qt::LeftButton && event->modifiers() == Qt::ShiftModifier)
+        //{
+        //  qDebug() << "shift-left";
+        //}
+      }
+    private:
+      QPointF center_;
     };
 
     class ColormapPreview : public QGraphicsView
@@ -81,17 +111,24 @@ namespace SCIRun {
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         const boost::atomic<bool>& pulling,
         QWidget* parent = nullptr);
-    void addDefaultLine();
-    void addPoint(const QPointF& point);
+      void addDefaultLine();
+      void addPointAndUpdateLine(const QPointF& point);
+      void justAddPoint(const QPointF& point);
+      void updateLine();
+      void addPointsAndLineFromFile(const LogicalAlphaPointSet& pointsToLoad);
+      void updateFromState(const LogicalAlphaPointSet& points);
     public Q_SLOTS:
       void clearAlphaPointGraphics();
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
+      virtual void mouseMoveEvent(QMouseEvent* event) override;
+      virtual void mouseReleaseEvent(QMouseEvent* event) override;
     private:
       void removeDefaultLine();
       void drawAlphaPolyline();
+      void removePointAndUpdateLine(const QPointF& point);
 
       QGraphicsItem* alphaPath_;
       const QPointF defaultStart_;
