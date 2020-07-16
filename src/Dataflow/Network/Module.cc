@@ -201,6 +201,8 @@ namespace SCIRun
         AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
         UiToggleFunc uiToggleFunc_;
 
+        std::string description_;
+
         bool returnCode_{ false };
       };
     }
@@ -742,6 +744,26 @@ void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id) const
   {
     m->removeInputPort(id);
   }
+}
+
+ModuleBuilder& ModuleBuilder::setInfoStrings(const ModuleDescription& desc)
+{
+  auto m = dynamic_cast<Module*>(module_.get());
+  if (m)
+  {
+    m->setInfoStrings(desc);
+  }
+  return *this;
+}
+
+std::string Module::description() const
+{
+  return impl_->description_;
+}
+
+void Module::setInfoStrings(const ModuleDescription& desc)
+{
+  impl_->description_ = desc.moduleInfo_;
 }
 
 ModuleHandle ModuleBuilder::build() const
