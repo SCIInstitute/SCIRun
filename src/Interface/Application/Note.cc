@@ -109,7 +109,6 @@ QPointF NoteDisplayHelper::relativeNotePosition()
   {
     auto position = notePosition_ == NotePosition::Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(NotePosition::Tooltip == position || NotePosition::None == position));
-    parent_->setToolTip("");
 
     return displayStrategy_->relativeNotePosition(parent_, note_, position);
   }

@@ -50,8 +50,9 @@ namespace SCIRun
   {
     class ModuleWidgetNoteDisplayStrategy : public NoteDisplayStrategy
     {
+      mutable QString previousTooltip_;
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
+      QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
       {
         const int noteMargin = 2;
         auto noteRect = note->boundingRect();
@@ -70,6 +71,8 @@ namespace SCIRun
             auto moduleTopHalfLength = thisRect.width() / 2;
             noteBottomMidpointShift.rx() += moduleTopHalfLength;
             noteBottomMidpointShift.ry() -= noteMargin;
+            if (!previousTooltip_.isEmpty())
+              item->setToolTip(previousTooltip_);
             return noteBottomMidpointShift;
           }
           case NotePosition::Bottom:
@@ -79,6 +82,8 @@ namespace SCIRun
             auto moduleTopHalfLength = thisRect.width() / 2;
             noteTopMidpointShift.rx() += moduleTopHalfLength;
             noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
+            if (!previousTooltip_.isEmpty())
+              item->setToolTip(previousTooltip_);
             return noteTopMidpointShift;
           }
           case NotePosition::Left:
@@ -88,6 +93,8 @@ namespace SCIRun
             auto moduleSideHalfLength = thisRect.height() / 2;
             noteRightMidpointShift.rx() -= noteMargin;
             noteRightMidpointShift.ry() += moduleSideHalfLength;
+            if (!previousTooltip_.isEmpty())
+              item->setToolTip(previousTooltip_);
             return noteRightMidpointShift;
           }
           case NotePosition::Right:
@@ -97,13 +104,16 @@ namespace SCIRun
             auto moduleSideHalfLength = thisRect.height() / 2;
             noteLeftMidpointShift.rx() += thisRect.width() + noteMargin;
             noteLeftMidpointShift.ry() += moduleSideHalfLength;
+            if (!previousTooltip_.isEmpty())
+              item->setToolTip(previousTooltip_);
             return noteLeftMidpointShift;
           }
           case NotePosition::Tooltip:
-          item->setToolTip(note->toHtml());
-          break;
+            previousTooltip_ = item->toolTip();
+            item->setToolTip(note->toHtml());
+            break;
           case NotePosition::Default:
-          break;
+            break;
         }
         return QPointF();
       }
@@ -152,6 +162,12 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << "ctor" << __FILE__ << __LINE__ << pos() << scenePos();
 #endif
+
+  setToolTip("Description: " +  QString::fromStdString(module_->getModule()->description()));
+
+  auto oldName = module_->getModule()->legacyModuleName();
+  if (module_->getModule()->name() != oldName)
+    setToolTip(toolTip() + "\nConverted version of module " + QString::fromStdString(oldName));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()

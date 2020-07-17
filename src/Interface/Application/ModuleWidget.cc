@@ -391,12 +391,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 
-  setToolTip("Purpose: " +  QString::fromStdString(theModule->description()));
-
-  auto oldName = theModule->legacyModuleName();
-  if (theModule->name() != oldName)
-    setToolTip(toolTip() + "\nConverted version of module " + QString::fromStdString(oldName));
-
   if (theModule->isDeprecated() && !Core::Application::Instance().parameters()->isRegressionMode())
   {
     QMessageBox::warning(nullptr,
