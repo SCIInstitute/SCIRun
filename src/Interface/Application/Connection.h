@@ -96,7 +96,7 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
-  void insertNewModule(const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
+  void insertNewModule(const QMap<QString, std::string>& info);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -113,6 +113,7 @@ private:
   SCIRun::Dataflow::Networks::ConnectionId id_;
   ConnectionDrawStrategyPtr drawer_;
   void destroyConnection();
+  bool toPortDynamic_{ false };
   bool destroyed_;
   class ConnectionMenu* menu_;
   bool menuOpen_;

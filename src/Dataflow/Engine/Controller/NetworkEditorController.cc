@@ -343,7 +343,7 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   return newMod;
 }
 
-ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModuleId, const std::string& inputPortId)
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModuleId, const std::string& inputPortName)
 {
   auto newMod = connectNewModule(portToConnect, newModuleName);
 
@@ -353,21 +353,29 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
   {
     if (p->get_typename() == portToConnect->get_typename())
     {
-      logCritical("found port to connect from: {} need to find port {} on module {}", p->id().toString(), inputPortId, endModuleId);
-      auto results = endModule->findInputPortsWithName(inputPortId);
+      logCritical("found port to connect from: {} need to find port {} on module {}", p->id().toString(), inputPortName, endModuleId);
+      auto results = endModule->findInputPortsWithName(inputPortName);
       logCritical("have some results by name, size = {}", results.size());
       if (!results.empty())
       {
+        //need name and index. should pass port id directly.
         auto firstPort = results[0];
         if (firstPort->nconnections() > 0)
         {
-          auto conn = firstPort->connection(0);
+          auto connId = firstPort->connection(0)->id_;
+
           //logCritical("trying to remove connection from controller: {}", conn->id());
-          removeConnection(conn->id_);
+          removeConnection(connId);
           //logCritical("done with remove connection from controller: {}", conn->id());
         }
         logCritical("trying to add last connection");
-        requestConnection(p.get(), firstPort.get());
+        // retrieve again, old dynamic port not there anymore
+        auto secondResults = endModule->findInputPortsWithName(inputPortName);
+        if (!secondResults.empty())
+        {
+          for (i)
+          requestConnection(p.get(), secondResults[0].get());
+        }
       }
       return newMod;
     }

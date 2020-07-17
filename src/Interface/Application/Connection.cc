@@ -194,7 +194,11 @@ namespace SCIRun
 
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
-        [conn](QAction* action) { QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule())); },
+        [conn](QAction* action) 
+        { 
+          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule())); 
+          action->setProperty("insert", true);
+        },
         menu);
     }
 
@@ -271,6 +275,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   if (toPort_)
   {
     toPort_->addConnection(this);
+    toPortDynamic_ = toPort_->isDynamic();
   }
   else
     LOG_DEBUG("NULL TO PORT: {}", id_.id_);
@@ -290,8 +295,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-  connect(this, SIGNAL(insertNewModule(const std::string&, const std::string&, const std::string&)),
-    fromPort_, SLOT(insertNewModule(const std::string&, const std::string&, const std::string&)));
+  connect(this, SIGNAL(insertNewModule(const QMap<QString, std::string>&)),
+    fromPort_, SLOT(insertNewModule(const QMap<QString, std::string>&)));
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
@@ -311,7 +316,7 @@ void ConnectionLine::destroyConnection()
     delete menu_;
     if (fromPort_)
       fromPort_->removeConnection(this);
-    if (toPort_)
+    if (!toPortDynamic_)
       toPort_->removeConnection(this);
     drawer_.reset();
     Q_EMIT deleted(id_);
@@ -454,10 +459,11 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   {
     scene()->removeItem(this);
     destroyConnection(); //TODO: another place to hook up deleteLater()
+    return;
   }
-  else if (action && action->text() == editNotesAction)
+  else if (action && action->property("insert").toBool())
   {
-    //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
+    return;
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
@@ -484,7 +490,12 @@ void ConnectionLine::insertNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
-  Q_EMIT insertNewModule(moduleToAddName.toStdString(), toPort_->getUnderlyingModuleId().id_, toPort_->id().toString());
+  Q_EMIT insertNewModule({
+    { "moduleToAdd", moduleToAddName.toStdString() },
+    { "endModuleId", toPort_->getUnderlyingModuleId().id_ },
+    { "portName", toPort_->get_portname() },
+    { "portId", toPort_->id().toString() }
+  });
   deleteLater();
 }
 
