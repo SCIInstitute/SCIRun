@@ -27,6 +27,7 @@
 
 
 SET(Core_GeometryPrimitives_SRCS
+  BBoxBase.cc
   BBox.cc
   OrientedBBox.cc
   CompGeom.cc
@@ -39,6 +40,7 @@ SET(Core_GeometryPrimitives_SRCS
 )
 
 SET(Core_GeometryPrimitives_HEADERS
+  BBoxBase.h
   BBox.h
   OrientedBBox.h
   CompGeom.h
