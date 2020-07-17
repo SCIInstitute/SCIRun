@@ -30,10 +30,9 @@ footer, header, hgroup, menu, nav, section {
 
 /*LAYOUT STYLES*/
 body {
-	line-height: 1;
+	line-height: 1.5;
 	font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 	font-size: 1em;
-	line-height: 1.5;
 	color: #6d6d6d;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 	background: #e7e7e7 url(../assets/images/body-bg.png) 0 0 repeat;

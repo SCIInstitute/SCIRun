@@ -24,10 +24,9 @@ footer, header, hgroup, menu, nav, section {
   display: block;
 }
 body {
-  line-height: 1;
+  line-height: 1.5;
   font-family: 'Helvetica Neue', Helvetica, Arial, serif;
   font-size: 13px;
-  line-height: 1.5;
   color: #000;
 }
 ol, ul {
