@@ -168,7 +168,8 @@ public Q_SLOTS:
   void portCachingChanged(bool checked);
   void connectModule();
   void clearPotentialConnections();
-  void insertNewModule(const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
+  void insertNewModule(const QMap<QString, std::string>& info);
+    //const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
   void pickConnectModule();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);

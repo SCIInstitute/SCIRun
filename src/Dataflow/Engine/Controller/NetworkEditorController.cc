@@ -373,7 +373,7 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
         auto secondResults = endModule->findInputPortsWithName(inputPortName);
         if (!secondResults.empty())
         {
-          for (i)
+          //for (i)
           requestConnection(p.get(), secondResults[0].get());
         }
       }
@@ -395,7 +395,7 @@ void NetworkEditorController::printNetwork() const
 
 boost::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
-  logCritical("Attempt connect {} {} {}", from->id().toString(), to->id().toString(), __LINE__);
+  //logCritical("Attempt connect {} {} {}", from->id().toString(), to->id().toString(), __LINE__);
 
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
@@ -407,7 +407,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
     IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
-  logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
+  //logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
@@ -417,7 +417,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     if (!id.id_.empty())
       connectionAdded_(desc);
 
-logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
+    //logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
 
     printNetwork();
     return id;
@@ -431,15 +431,14 @@ logCritical("Attempt connect {} {}", ConnectionId::create(desc).id_, __LINE__);
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
   auto idStr = id.id_;
-  logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
+  //logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   if (theNetwork_->disconnect(id))
   {
-    logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
-    //TODO: investigate this exception generated here. with this line commented out, insert works. 
+    //logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
     connectionRemoved_(id);
-    logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
+    //logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   }
-  logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
+  //logCritical("{} {} {}", __FUNCTION__, __LINE__, idStr);
   printNetwork();
 }
 
