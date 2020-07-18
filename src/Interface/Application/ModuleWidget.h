@@ -194,8 +194,7 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect,
-    const std::string& newModuleName, const std::string& endModule, const std::string& inputPortId);
+  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
   void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void pinUI();
@@ -221,7 +220,7 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo,
     const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect,
-    const std::string& newModuleName, const std::string& endModuleId, const std::string& inputPortId);
+    const QMap<QString, std::string>& info);
   void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged(const std::string& portID, bool adding);

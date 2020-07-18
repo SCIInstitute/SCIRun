@@ -169,13 +169,12 @@ public Q_SLOTS:
   void connectModule();
   void clearPotentialConnections();
   void insertNewModule(const QMap<QString, std::string>& info);
-    //const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
   void pickConnectModule();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void connectNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& moduleToConnectTo, const std::string& inputPortId);
+  void insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
   void portMoved();
   void connectionNoteChanged();
   void highlighted(bool highlighted);

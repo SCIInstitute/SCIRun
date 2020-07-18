@@ -316,7 +316,7 @@ void ConnectionLine::destroyConnection()
     delete menu_;
     if (fromPort_)
       fromPort_->removeConnection(this);
-    if (!toPortDynamic_)
+    if (toPort_)
       toPort_->removeConnection(this);
     drawer_.reset();
     Q_EMIT deleted(id_);
@@ -490,11 +490,13 @@ void ConnectionLine::insertNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
+  toPort_->removeConnection(this);
+
   Q_EMIT insertNewModule({
     { "moduleToAdd", moduleToAddName.toStdString() },
     { "endModuleId", toPort_->getUnderlyingModuleId().id_ },
-    { "portName", toPort_->get_portname() },
-    { "portId", toPort_->id().toString() }
+    { "inputPortName", toPort_->get_portname() },
+    { "inputPortId", toPort_->id().toString() }
   });
   deleteLater();
 }

@@ -777,8 +777,8 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(clearPotentialConnections()));
   connect(port, SIGNAL(connectNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
-  connect(port, SIGNAL(insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&, const std::string&)),
-    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const std::string&, const std::string&)));
+  connect(port, SIGNAL(insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)),
+    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)));
   connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
   connect(port, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
 }
@@ -1396,9 +1396,9 @@ void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnec
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 
-void ModuleWidget::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModule, const std::string& inputPortId)
+void ModuleWidget::insertNewModule(const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
 {
-  Q_EMIT insertNewModule(theModule_, portToConnect, newModuleName, endModule, inputPortId);
+  Q_EMIT insertNewModule(theModule_, portToConnect, info);
 }
 
 bool ModuleWidget::hasDynamicPorts() const

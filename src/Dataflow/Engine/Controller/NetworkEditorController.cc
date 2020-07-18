@@ -343,19 +343,19 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   return newMod;
 }
 
-ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const std::string& endModuleId, const std::string& inputPortName)
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const InsertInfo& info)
 {
-  auto newMod = connectNewModule(portToConnect, newModuleName);
+  auto newMod = connectNewModule(portToConnect, info.newModuleName);
 
-  auto endModule = theNetwork_->lookupModule(ModuleId(endModuleId));
+  auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
 
   for (const auto& p : newMod->outputPorts())
   {
     if (p->get_typename() == portToConnect->get_typename())
     {
-      logCritical("found port to connect from: {} need to find port {} on module {}", p->id().toString(), inputPortName, endModuleId);
-      auto results = endModule->findInputPortsWithName(inputPortName);
-      logCritical("have some results by name, size = {}", results.size());
+      //logCritical("found port to connect from: {} need to find port {} on module {}", p->id().toString(), inputPortName, endModuleId);
+      auto results = endModule->findInputPortsWithName(info.inputPortName);
+      //logCritical("have some results by name, size = {}", results.size());
       if (!results.empty())
       {
         //need name and index. should pass port id directly.
@@ -370,7 +370,7 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
         }
         logCritical("trying to add last connection");
         // retrieve again, old dynamic port not there anymore
-        auto secondResults = endModule->findInputPortsWithName(inputPortName);
+        auto secondResults = endModule->findInputPortsWithName(info.inputPortName);
         if (!secondResults.empty())
         {
           //for (i)
