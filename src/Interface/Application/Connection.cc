@@ -373,8 +373,8 @@ void ConnectionLine::trackNodes()
     updateNotePosition();
     setZValue(defaultZValue());
   }
-  else
-    BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
+  //else
+  //  BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
@@ -491,12 +491,14 @@ void ConnectionLine::insertNewModule()
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
   toPort_->removeConnection(this);
+  auto toPortLocal = toPort_;
+  toPort_ = nullptr;
 
   Q_EMIT insertNewModule({
     { "moduleToAdd", moduleToAddName.toStdString() },
-    { "endModuleId", toPort_->getUnderlyingModuleId().id_ },
-    { "inputPortName", toPort_->get_portname() },
-    { "inputPortId", toPort_->id().toString() }
+    { "endModuleId", toPortLocal->getUnderlyingModuleId().id_ },
+    { "inputPortName", toPortLocal->get_portname() },
+    { "inputPortId", toPortLocal->id().toString() }
   });
   deleteLater();
 }

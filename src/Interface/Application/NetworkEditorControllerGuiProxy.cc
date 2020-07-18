@@ -157,7 +157,7 @@ void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInte
 
 void NetworkEditorControllerGuiProxy::insertNewModule(const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
 {
-  controller_->insertNewModule(portToConnect, { info["moduleToAdd"], info["endModuleId"], info["inputPortName"]});
+  controller_->insertNewModule(portToConnect, { info["moduleToAdd"], info["endModuleId"], info["inputPortName"], info["inputPortId"]});
 }
 
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
