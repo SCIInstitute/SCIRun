@@ -33,6 +33,8 @@
 #include <Core/Datatypes/TensorFwd.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <unsupported/Eigen/CXX11/Tensor>
+#include <limits>
+#include <algorithm>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
