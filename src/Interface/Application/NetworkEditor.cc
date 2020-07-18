@@ -778,8 +778,6 @@ void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
     }
   }
   qDeleteAll(items);
-
-  //alignViewport();
 }
 
 void NetworkEditor::cut()

@@ -432,7 +432,6 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
-  auto idStr = id.id_;
   if (theNetwork_->disconnect(id))
   {
     connectionRemoved_(id);

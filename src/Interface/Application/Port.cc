@@ -742,9 +742,6 @@ void PortWidget::connectModule()
 
 void PortWidget::insertNewModule(const QMap<QString, std::string>& info)
 {
-  //logCritical("{} (output port id: {})->(new module: {})->({} :: input port id: {}/input port name: {})", __FUNCTION__,
-  //  id().toString(), info["moduleToAdd"], info["endModuleId"], info["inputPortId"], info["inputPortName"]);
-
   Q_EMIT insertNewModuleHere(this, info);
 }
 

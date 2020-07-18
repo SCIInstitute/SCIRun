@@ -194,9 +194,9 @@ namespace SCIRun
 
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
-        [conn](QAction* action) 
-        { 
-          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule())); 
+        [conn](QAction* action)
+        {
+          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule()));
           action->setProperty("insert", true);
         },
         menu);
@@ -373,8 +373,6 @@ void ConnectionLine::trackNodes()
     updateNotePosition();
     setZValue(defaultZValue());
   }
-  //else
-  //  BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
