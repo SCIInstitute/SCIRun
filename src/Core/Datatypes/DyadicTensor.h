@@ -264,10 +264,10 @@ namespace Core {
 
         for (size_t i = 0; i < Dim; ++i)
         {
-          eigvals_[i] = real(vals(i));
+          eigvals_[i] = vals(i).real();
           eigvecs_[i] = DenseColumnMatrixGeneric<Number>(Dim);
           for (size_t j = 0; j < Dim; ++j)
-            eigvecs_[i].put(j, 0, real(vecs(j, i)));
+            eigvecs_[i](j, 0) = vecs(j, i).real();
         }
 
         haveEigens_ = true;
