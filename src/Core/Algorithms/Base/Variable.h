@@ -62,8 +62,8 @@ namespace Algorithms {
 
     Variable() {}
     Variable(const Name& name, const Value& value);
-    enum DatatypeVariableDummyEnum { DATATYPE_VARIABLE };
-    Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableDummyEnum) : name_(name), data_(data) {}
+    enum DatatypeVariableEnum { FIELD, DENSE_MATRIX, SPARSE_MATRIX };
+    Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableEnum) : name_(name), data_(data) {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }

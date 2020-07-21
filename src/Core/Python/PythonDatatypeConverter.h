@@ -95,7 +95,8 @@ namespace SCIRun
         const std::vector<FieldHandle>& fields,
         const std::vector<Datatypes::StringHandle>& strings);
       const std::string getClassName(const boost::python::object& object);
-      SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object,
+                                                                  const Algorithms::Variable& var);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
       SCISHARE boost::python::object convertTransientVariableToPythonObject(const boost::optional<boost::any>& v);
 
