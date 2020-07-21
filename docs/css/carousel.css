@@ -1,0 +1,15 @@
+#myCarousel {
+  width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#myCarousel img {
+  object-fit: contain;
+  max-height: 89vh;
+}
+
+#carousel {
+  background-color: #000;
+}
