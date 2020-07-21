@@ -545,7 +545,8 @@ void ModuleWidget::resetProgressBar()
 size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
 int ModuleWidget::numDynamicInputPortsForGuiUpdates() const
 {
-  return std::count_if(ports().inputs().begin(), ports().inputs().end(), [](PortWidget* p) { return p->isDynamic(); });
+  const auto inputs = ports().inputs();
+  return std::count_if(inputs.begin(), inputs.end(), [](PortWidget* p) { return p->isDynamic(); });
 }
 
 void ModuleWidget::setupModuleActions()

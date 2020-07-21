@@ -275,7 +275,6 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   if (toPort_)
   {
     toPort_->addConnection(this);
-    toPortDynamic_ = toPort_->isDynamic();
   }
   else
     LOG_DEBUG("NULL TO PORT: {}", id_.id_);

@@ -113,7 +113,6 @@ private:
   SCIRun::Dataflow::Networks::ConnectionId id_;
   ConnectionDrawStrategyPtr drawer_;
   void destroyConnection();
-  bool toPortDynamic_{ false };
   bool destroyed_;
   class ConnectionMenu* menu_;
   bool menuOpen_;
