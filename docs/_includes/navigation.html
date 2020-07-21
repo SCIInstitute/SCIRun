@@ -1,0 +1,40 @@
+<ul class="nav nav-pills nav-fill">
+    {% for section in site.sections %}
+        {% assign attr = section[0] %}
+        {% assign label = section[1] %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ site.baseurl }}/{{ attr }}">{{ label }}</a>
+        </li>
+    {% endfor %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Version</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">v1.0.0</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">vX.X.X/a>
+        <a class="dropdown-item" href="#">vX.X.X</a>
+      </div>
+    </li>
+</ul>
+
+
+
+<!-- <ul class="nav nav-list">
+    <li><a href="{{ site.baseurl }}/">Home</a></li>
+    {% for section in site.sections %}
+        {% assign attr = section[0] %}
+        {% assign label = section[1] %}
+        <li><a href="{{ site.baseurl }}/{{ attr }}">{{ label }}</a></li>
+
+        <!-- {% for page in site.categories[attr] %}
+            {% if forloop.first %}
+                <li class="nav-header">{{ label }}</li>
+            {% endif %}
+            <li data-order="{{ page.order }}"><a href="{{ site.baseurl }}{{ page.url }}">{{ page.title }}</a></li>
+        {% endfor %} -->
+    <!-- {% endfor %} -->
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class="divider"></li> first to break up the content. -->
+    <!-- <li class="divider"></li>
+    <li>Other Links</li>
+</ul> -->
