@@ -279,6 +279,17 @@ void NetworkEditorController::interruptModule(const ModuleId& id)
   ///*emit*/ networkInterrupted_();
 }
 
+namespace
+{
+  InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)
+  {
+    auto ports = mod->findInputPortsWithName(name);
+    auto firstEmptyDynamicPortWithName = std::find_if(ports.begin(), ports.end(),
+      [](InputPortHandle iport) { return iport->nconnections() == 0; });
+    return firstEmptyDynamicPortWithName != ports.end() ? *firstEmptyDynamicPortWithName : nullptr;
+  }
+}
+
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
@@ -291,14 +302,20 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 
-  for (const auto& input : module->inputPorts())
+  for (const auto& originalInputPort : module->inputPorts())
   {
-    if (input->nconnections() == 1)
+    if (originalInputPort->nconnections() == 1)
     {
-      auto conn = input->connection(0);
+      auto conn = originalInputPort->connection(0);
       auto source = conn->oport_;
-      /// @todo: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
-      requestConnection(source.get(), newModule->getInputPort(input->id()).get());
+      if (!originalInputPort->isDynamic())
+        requestConnection(source.get(), newModule->getInputPort(originalInputPort->id()).get());
+      else
+      {
+        auto toConnect = getFirstAvailableDynamicPortWithName(newModule, originalInputPort->get_portname());
+        if (toConnect)
+          requestConnection(source.get(), toConnect.get());
+      }
     }
   }
 
@@ -377,12 +394,10 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
         {
           auto connId = (*exactMatch)->connection(0)->id_;
           removeConnection(connId);
-          auto secondResults = endModule->findInputPortsWithName(info.inputPortName);
-          auto firstEmptyDynamicPortWithName = std::find_if(secondResults.begin(), secondResults.end(),
-            [](InputPortHandle iport) { return iport->nconnections() == 0; });
-          if (firstEmptyDynamicPortWithName != secondResults.end())
+          auto firstEmptyDynamicPortWithName = getFirstAvailableDynamicPortWithName(endModule, info.inputPortName);
+          if (firstEmptyDynamicPortWithName)
           {
-            requestConnection(newOutputPortToConnectFrom.get(), firstEmptyDynamicPortWithName->get());
+            requestConnection(newOutputPortToConnectFrom.get(), firstEmptyDynamicPortWithName.get());
           }
         }
       }
