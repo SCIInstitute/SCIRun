@@ -118,22 +118,18 @@ namespace
         return false;
       return label.front() == '[' && label.back() == ']';
     }
-    ModuleHandle create(const std::string& label)
+    ModuleHandle createSnippet(const std::string& label)
     {
       auto modsNeeded = parseModules(label);
 
       ModulePositions positions;
       int i = 0;
       const double MODULE_VERTICAL_SPACING = 110;
-      const double MODULE_HORIZONTAL_SPACING = 264;
+      const double MODULE_HORIZONTAL_SPACING = 50;
       const double MODULE_SPACING_OFFSET = 10;
-      const double INITIAL_SNIPPET_LOC = 50;
-      static double snippetSpacer = 50;
+      const std::pair<double,double> initialPosition = {-500, -500};
+      static double snippetSpacer = MODULE_SPACING_OFFSET;
       static int numSnips = 0;
-      if (0 == nec_.getNetwork()->nmodules())
-      {
-        snippetSpacer = INITIAL_SNIPPET_LOC;
-      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -147,8 +143,8 @@ namespace
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->id().id_] =
-          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
-            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
+          { initialPosition.first + numSnips * MODULE_HORIZONTAL_SPACING + snippetSpacer,
+            initialPosition.second + MODULE_VERTICAL_SPACING * i++ + snippetSpacer };
       }
       numSnips = (numSnips + 1) % 3;
       if (0 == numSnips)
@@ -230,7 +226,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    return snippet.create(name);
+    return snippet.createSnippet(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
@@ -586,7 +582,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 namespace
 {
-  const int xMoveIncrement = 300;
+  const int xMoveIncrement = 10;
   int xMoveIndex = 1;
   int yMoveIndex = 0;
   const int moveMod = 4;
