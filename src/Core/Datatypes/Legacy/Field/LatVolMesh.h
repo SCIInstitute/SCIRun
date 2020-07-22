@@ -1301,24 +1301,21 @@ template <class Basis>
 Core::Geometry::BBox
 LatVolMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
-  Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
-  Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p3(min_i_,         min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
-  Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
+  std::vector<Core::Geometry::Point> corners = {
+    {min_i_, min_j_, min_k_},
+    {min_i_ + ni_-1, min_j_,         min_k_},
+    {min_i_ + ni_-1, min_j_ + nj_-1, min_k_},
+    {min_i_,         min_j_ + nj_-1, min_k_},
+    {min_i_,         min_j_,         min_k_ + nk_-1},
+    {min_i_ + ni_-1, min_j_,         min_k_ + nk_-1},
+    {min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1},
+    {min_i_,         min_j_ + nj_-1, min_k_ + nk_-1} };
 
-  Core::Geometry::BBox result;
-  result.extend(transform_.project(p0))
-    .extend(transform_.project(p1))
-    .extend(transform_.project(p2))
-    .extend(transform_.project(p3))
-    .extend(transform_.project(p4))
-    .extend(transform_.project(p5))
-    .extend(transform_.project(p6))
-    .extend(transform_.project(p7));
+
+  for (auto& c : corners)
+    c = transform_.project(c);
+
+  Core::Geometry::BBox result(corners);
   return result;
 }
 
