@@ -169,7 +169,7 @@ namespace Gui {
     void updateLatestFromConnectNew(const QPointF& scenePos, bool isInputPort);
     void updateLatestFromReplace(const QPointF& scenePos);
     QPointF getLast() const { return lastModulePosition_; }
-    QPointF getLastForDoubleClickedItem() const;
+    QPointF getLastForDoubleClickedItem(const QPointF& p) const;
     void setLastFromAddingNew(const QPointF& p) { lastModulePosition_ = p; }
   private:
     QPointF lastModulePosition_{ 30, 30 };

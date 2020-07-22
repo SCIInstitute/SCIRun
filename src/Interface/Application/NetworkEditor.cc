@@ -93,7 +93,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  setSceneRect(QRectF(0, 0, 200, 200));
+  setSceneRect(QRectF());
   centerOn(100, 100);
 
   setMouseAsDragMode();
@@ -113,6 +113,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 #ifdef MODULE_POSITION_LOGGING
   setViewUpdateFunc([](const QString& q) { qDebug() << q; });
 #endif
+
+  connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -292,13 +294,15 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
 namespace
 {
   static const QPointF incr1 {100, 0};
-  static const QPointF incr2 {0, 100};
   static const QPointF replaceIncr {-15, -15};
 }
 
-QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem() const
+QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem(const QPointF& sceneCenter) const
 {
-  return lastModulePosition_ + incr2;
+  static int counter = 0;
+  counter = (counter + 1) % 5;
+  double coord = 10*counter;
+  return sceneCenter + QPointF{coord, coord};
 }
 
 QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
@@ -355,7 +359,6 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
     child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName);
   }
 }
-
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
@@ -929,7 +932,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(modulePlacement_.getLastForDoubleClickedItem());
+    addNewModuleAtPosition(modulePlacement_.getLastForDoubleClickedItem(scene_->itemsBoundingRect().center()));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
