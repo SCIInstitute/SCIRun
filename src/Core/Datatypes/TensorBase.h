@@ -28,8 +28,7 @@
 #ifndef CORE_DATATYPES_TENSOR_BASE_H
 #define CORE_DATATYPES_TENSOR_BASE_H
 
-#include <unsupported/Eigen/CXX11/TensorSymmetry>
-#include "unsupported/Eigen/CXX11/src/TensorSymmetry/Symmetry.h"
+#include <unsupported/Eigen/CXX11/Tensor>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {

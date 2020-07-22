@@ -28,13 +28,13 @@
 #ifndef CORE_DATATYPES_DYADIC_TENSOR_H
 #define CORE_DATATYPES_DYADIC_TENSOR_H
 
-#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/TensorBase.h>
 #include <Core/Datatypes/TensorFwd.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <unsupported/Eigen/CXX11/Tensor>
-#include <limits>
+#include <Core/Utils/Exception.h>
+#include <Eigen/Dense>
 #include <algorithm>
+#include <initializer_list>
+#include <limits>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -46,6 +46,8 @@ namespace Core {
     {
      public:
       using parent = TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>>;
+      using VectorType = Eigen::Matrix<Number, Dim, 1>;
+      using MatrixType = Eigen::Matrix<Number, Dim, Dim>;
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 
@@ -56,12 +58,17 @@ namespace Core {
             (*this)(i, j) = (i == j) ? val : 0;
       }
 
-      DyadicTensorGeneric(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs) : parent()
+      DyadicTensorGeneric(const std::vector<VectorType>& eigvecs) : parent()
       {
         if (eigvecs.size() != Dim)
           THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
-        if (eigvecs[0].size() != Dim)
-          THROW_INVALID_ARGUMENT("The length of input vectors must be " + Dim);
+        setEigenVectors(eigvecs);
+      }
+
+      DyadicTensorGeneric(const std::initializer_list<VectorType>& eigvecs) : parent()
+      {
+        if (eigvecs.size() != Dim)
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
         setEigenVectors(eigvecs);
       }
 
@@ -93,16 +100,11 @@ namespace Core {
             (*this)(index(i), index(j)) = other(index(i), index(j));
       }
 
-      explicit DyadicTensorGeneric(const DenseMatrixGeneric<Number>& mat)
+      explicit DyadicTensorGeneric(const MatrixType& mat)
       {
-        if (mat.nrows() != Dim)
-          THROW_INVALID_ARGUMENT("The number of rows of the input matrix must be " + Dim);
-        if (mat.ncols() != Dim)
-          THROW_INVALID_ARGUMENT("The length of rows of the input matrix must be " + Dim);
         for (size_t i = 0; i < Dim; ++i)
           for (size_t j = 0; j < Dim; ++j)
-            if (mat(i, j) != mat(j, i))
-              THROW_INVALID_ARGUMENT("Input matrix must be symmetric.");
+            if (mat(i, j) != mat(j, i)) THROW_INVALID_ARGUMENT("Input matrix must be symmetric.");
         for (size_t i = 0; i < Dim; ++i)
           for (size_t j = 0; j < Dim; ++j)
             (*this)(index(i), index(j)) = mat(index(i), index(j));
@@ -128,7 +130,7 @@ namespace Core {
         return true;
       }
 
-      void setEigenVectors(const std::vector<DenseColumnMatrixGeneric<Number>>& eigvecs)
+      void setEigenVectors(const std::vector<VectorType>& eigvecs)
       {
         eigvecs_ = eigvecs;
         setEigenvaluesFromEigenvectors();
@@ -141,22 +143,22 @@ namespace Core {
       // This function is listed as something that will be added to Eigen::Tensor in the future.
       // Usage of this function should be replaced with Eigen's asMatrix function when it is
       // implemented.
-      Eigen::Matrix<Number, Dim, Dim> asMatrix() const
+      MatrixType asMatrix() const
       {
-        Eigen::Matrix<Number, Dim, Dim> mat;
+        MatrixType mat;
         for (size_t i = 0; i < Dim; ++i)
           for (size_t j = 0; j < Dim; ++j)
             mat(index(i), index(j)) = (*this)(index(i), index(j));
         return mat;
       }
 
-      DenseColumnMatrixGeneric<Number> getEigenvector(int index) const
+      VectorType getEigenvector(int index) const
       {
         if (!haveEigens_) buildEigens();
         return eigvecs_[index];
       }
 
-      std::vector<DenseColumnMatrixGeneric<Number>> getEigenvectors() const
+      std::vector<VectorType> getEigenvectors() const
       {
         if (!haveEigens_) buildEigens();
         return eigvecs_;
@@ -211,8 +213,7 @@ namespace Core {
       Number frobeniusNorm() const
       {
         if (!haveEigens_) buildEigens();
-        auto eigvals = DenseColumnMatrix(eigvals_);
-        return eigvals.norm();
+        return Eigen::Map<VectorType>(eigvals_.data()).norm();
       }
 
       Number maxNorm() const
@@ -225,7 +226,7 @@ namespace Core {
       }
 
       void setEigens(
-          const std::vector<DenseColumnMatrix>& eigvecs, const std::vector<Number>& eigvals) const
+          const std::vector<VectorType>& eigvecs, const std::vector<Number>& eigvals) const
       {
         if (eigvecs_.size() != eigvecs.size())
           THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + eigvecs_.size());
@@ -247,7 +248,7 @@ namespace Core {
 
      protected:
       const int RANK_ = 2;
-      mutable std::vector<DenseColumnMatrixGeneric<Number>> eigvecs_;
+      mutable std::vector<VectorType> eigvecs_;
       mutable std::vector<Number> eigvals_;
       mutable bool haveEigens_ = false;
 
@@ -255,7 +256,7 @@ namespace Core {
       {
         if (haveEigens_) return;
 
-        auto es = Eigen::EigenSolver<Eigen::Matrix<Number, Dim, Dim>>(this->asMatrix());
+        auto es = Eigen::EigenSolver<MatrixType>(this->asMatrix());
         auto vecs = es.eigenvectors();
         auto vals = es.eigenvalues();
 
@@ -265,7 +266,7 @@ namespace Core {
         for (size_t i = 0; i < Dim; ++i)
         {
           eigvals_[i] = vals(i).real();
-          eigvecs_[i] = DenseColumnMatrixGeneric<Number>(Dim);
+          eigvecs_[i] = VectorType(Dim);
           for (size_t j = 0; j < Dim; ++j)
             eigvecs_[i](j, 0) = vecs(j, i).real();
         }
@@ -277,7 +278,7 @@ namespace Core {
       void reorderTensorValues() const
       {
         if (!haveEigens_) return;
-        typedef std::pair<Number, DenseColumnMatrixGeneric<Number>> EigPair;
+        typedef std::pair<Number, VectorType> EigPair;
         std::vector<EigPair> sortList(Dim);
         for (size_t i = 0; i < Dim; ++i)
           sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);

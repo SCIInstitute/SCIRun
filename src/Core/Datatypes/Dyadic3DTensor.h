@@ -28,9 +28,7 @@
 #ifndef CORE_DATATYPES_DYADIC_3D_TENSOR_H
 #define CORE_DATATYPES_DYADIC_3D_TENSOR_H
 
-#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DyadicTensor.h>
-#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Utils/Exception.h>
 #include <unsupported/Eigen/CXX11/TensorSymmetry>
 #include <Core/Datatypes/share.h>
@@ -43,27 +41,14 @@ namespace Core {
     {
      public:
       using parent = DyadicTensorGeneric<Number, 3>;
+      using VectorType = Eigen::Matrix<Number, 3, 1>;
       Dyadic3DTensorGeneric() : parent() {}
       using parent::parent;
       using parent::operator=;
       using parent::operator==;
 
-      Dyadic3DTensorGeneric(const std::initializer_list<Core::Geometry::Vector>& eigvecs) : parent()
-      {
-        if (eigvecs.size() != DIM_)
-          THROW_INVALID_ARGUMENT("The number of input parameters must be " + DIM_);
-        parent::setEigenVectors(convertNativeVectorsToEigen(eigvecs));
-      }
-
-      Dyadic3DTensorGeneric(const Core::Geometry::Vector& eigvec0,
-          const Core::Geometry::Vector& eigvec1, const Core::Geometry::Vector& eigvec2)
-          : parent()
-      {
-        parent::setEigenVectors(convertNativeVectorsToEigen({eigvec0, eigvec1, eigvec2}));
-      }
-
       explicit Dyadic3DTensorGeneric(
-          const std::initializer_list<DenseColumnMatrixGeneric<Number>>& eigvecs)
+          const std::initializer_list<VectorType>& eigvecs)
           : parent()
       {
         if (eigvecs.size() != DIM_)
@@ -71,9 +56,9 @@ namespace Core {
         parent::setEigenVectors(eigvecs);
       }
 
-      Dyadic3DTensorGeneric(const DenseColumnMatrixGeneric<Number>& eigvec0,
-          const DenseColumnMatrixGeneric<Number>& eigvec1,
-          const DenseColumnMatrixGeneric<Number>& eigvec2)
+      Dyadic3DTensorGeneric(const VectorType& eigvec0,
+          const VectorType& eigvec1,
+          const VectorType& eigvec2)
           : parent()
       {
         parent::setEigenVectors({eigvec0, eigvec1, eigvec2});
@@ -109,7 +94,7 @@ namespace Core {
         return 3.0 * eigvals[2] / parent::eigenValueSum();
       }
 
-      DenseColumnMatrixGeneric<Number> mandel()
+      VectorType mandel()
       {
         auto eigvals = parent::getEigenvalues();
         auto eigvecs = parent::getEigenvectors();
@@ -118,26 +103,13 @@ namespace Core {
           eigvecs[i] *= eigvals[i];
 
         static const double sqrt2 = std::sqrt(2);
-        DenseColumnMatrixGeneric<Number> mandel({eigvecs[0][0], eigvecs[1][1], eigvecs[2][2],
+        VectorType mandel({eigvecs[0][0], eigvecs[1][1], eigvecs[2][2],
             eigvecs[0][1] * sqrt2, eigvecs[0][2] * sqrt2, eigvecs[1][2] * sqrt2});
         return mandel;
       }
 
      private:
       const size_t DIM_ = 3;
-
-      std::vector<DenseColumnMatrixGeneric<Number>> convertNativeVectorsToEigen(
-          const std::vector<Core::Geometry::Vector>& vecs)
-      {
-        std::vector<DenseColumnMatrixGeneric<Number>> outVecs(vecs.size());
-        for (size_t i = 0; i < vecs.size(); ++i)
-        {
-          outVecs[i] = DenseColumnMatrixGeneric<Number>(DIM_);
-          for (size_t j = 0; j < DIM_; ++j)
-            outVecs[i][j] = vecs[i][j];
-        }
-        return outVecs;
-      }
     };
 
     template <typename Indexable>
