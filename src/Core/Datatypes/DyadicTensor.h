@@ -219,9 +219,9 @@ namespace Core {
       Number maxNorm() const
       {
         if (!haveEigens_) buildEigens();
-        auto maxVal = (std::numeric_limits<Number>::min)();
+        auto maxVal = std::numeric_limits<Number>::min();
         for (const auto& e : eigvals_)
-          maxVal = (std::max)(maxVal, e);
+          maxVal = std::max(maxVal, e);
         return maxVal;
       }
 
