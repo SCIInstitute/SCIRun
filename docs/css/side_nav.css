@@ -1,0 +1,32 @@
+#table-of-contents {
+  position: -webkit-sticky;
+  position: sticky;
+  top:40px;
+  height: 98vh;
+  overflow-y: scroll;
+  direction: ltr;
+  z-index: 1;
+  background-color: #424146;
+  -ms-overflow-style: none;
+  width: 20vw;
+  padding-top: 20px;
+}
+
+#table-of-contents::-webkit-scrollbar {
+  display: none;
+}
+
+#table-of-contents .nav-link {
+  flex-wrap: wrap;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+
+.nav-link a {
+    color: #A6E22E;
+}
+.nav-link a:hover {
+    text-decoration: none;
+
+}
