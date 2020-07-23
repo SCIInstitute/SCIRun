@@ -38,9 +38,9 @@ namespace Geometry {
 class SCISHARE BBoxBase
 {
 protected:
-  Point cmin_;
-  Point cmax_;
-  bool is_valid_;
+ bool is_valid_;
+ Point cmin_;
+ Point cmax_;
 public:
   explicit BBoxBase(bool valid);
   BBoxBase(bool valid, const Point& cmin, const Point& cmax);
