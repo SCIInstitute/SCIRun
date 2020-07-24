@@ -48,12 +48,6 @@ namespace Datatypes {
 
     explicit DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
 
-    DenseColumnMatrixGeneric(std::vector<T> vals) : EigenBase(vals.size())
-    {
-      for (long unsigned int i = 0; i < vals.size(); ++i)
-        (*this)[i] = vals[i];
-    }
-
     /// This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseColumnMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
