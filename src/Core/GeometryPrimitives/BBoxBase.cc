@@ -34,5 +34,5 @@ BBoxBase::BBoxBase(bool valid) : is_valid_(valid)
 { }
 
 BBoxBase::BBoxBase(bool valid, const Point& cmin, const Point& cmax)
-  : is_valid_(valid), cmin_(cmin), cmax_(cmax)
+  : cmin_(cmin), cmax_(cmax), is_valid_(valid)
 { }
