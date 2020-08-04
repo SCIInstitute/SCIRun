@@ -73,63 +73,122 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
   }
 };
 
-struct VariableVisitor : boost::static_visitor<Variable>
+struct NumberVisitor : boost::static_visitor<Variable::Value>
 {
-  Variable operator()(const int& v, const py::object& object) const
+  
+};
+
+struct ValueVisitor : boost::static_visitor<Variable::Value>
+{
+private:
+  const py::object& object_;
+public:
+  ValueVisitor(const py::object& object) : object_(object) {}
+
+  enum NumberType
   {
-    auto object_ = py::object();
-    const static std::string type = "int";
-    auto classname = getClassName(object_);
-    Variable var;
-    if (classname == "int")
-    {
-      py::extract<int> e(object_);
-      var = makeVariable(type, e());
-    }
-    else if (classname == "double")
-    {
-      py::extract<double> e(object_);
-      var = makeVariable(type, double(e()));
-    }
-    return var;
+    Int,
+    Double
+  };
+
+  Variable::Value operator()(const int& v) const
+  {
+    return convertNumber(v, NumberType::Int);
   }
 
-  Variable operator()(const double& v, const py::object& object) const
+  Variable::Value operator()(const double& v) const
   {
-    auto object_ = py::object();
-    const static std::string type = "double";
-    auto classname = getClassName(object_);
-    Variable var;
-    if (classname == "int")
-    {
-      py::extract<int> e(object_);
-      var = makeVariable(type, int(e()));
-    }
-    else if (classname == "double")
-    {
-      py::extract<double> e(object_);
-      var = makeVariable(type, e());
-    }
-    return var;
+    return convertNumber(v, NumberType::Double);
   }
 
-  Variable operator()(const bool& v, const py::object& object) const { return makeVariable("blah", v); }
-  Variable operator()(const std::string& v, const py::object& object) const { return makeVariable("blah", v); }
-  Variable operator()(const AlgoOption& v, const py::object& object) const
+  Variable::Value operator()(const bool& v) const
   {
-    // THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
-    return makeVariable("blah", v);
+    if (getClassName(object_) == "bool")
+    {
+      py::extract<bool> e(object_);
+      return e();
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a boolean.");
   }
-  Variable operator()(const VariableList& v, const py::object& object) const
+
+  Variable::Value operator()(const std::string& v) const
   {
+    if (getClassName(object_) == "str")
+    {
+      py::extract<std::string> e(object_);
+      return e();
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a string.");
+  }
+
+  Variable::Value operator()(const AlgoOption& v) const
+  {
+    // All variables using AlgoOption go to the string operator so this is never reached
+    THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
+  }
+
+  Variable::Value operator()(const Variable::List& v) const
+  {
+    if (getClassName(object_) == "list")
+    {
+      Variable firstVal = v[0];
+      py::extract<py::list> e(object_);
+      auto pyList = e();
+      Variable::List newList(py::len(pyList));
+      for (auto i = 0; i < py::len(pyList); ++i)
+        newList[i] = makeVariable(firstVal.name(),
+                                  boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
+      return newList;
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a list.");
     // py::list pyList;
     // for (int i = 0; i < v.size(); ++i)
       // pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
     // return std::move(pyList);
 
-    return makeVariable("blah", v);
+    // return makeVariable("blah", v);
+    // return v;
   }
 
+  Variable::Value convertNumber(const Variable::Value& val, NumberType returnType) const
+  {
+    auto classname = getClassName(object_);
+    if (classname == "int")
+    {
+      py::extract<int> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return objectVal;
+      case Double: return int(objectVal);
+      }
+    }
+    else if (classname == "float")
+    {
+      py::extract<float> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return int(objectVal);
+      case Double: return double(objectVal);
+      }
+    }
+    else if (classname == "double")
+    {
+      py::extract<double> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return double(objectVal);
+      case Double: return objectVal;
+      }
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a number.");
+  }
 };
 
 template <class T>
@@ -532,37 +591,12 @@ const std::string SCIRun::Core::Python::getClassName(const py::object& object)
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(
     const py::object& object, const Variable& var)
 {
-  auto bound_visitor = std::bind(var, object);
-  boost::apply_visitor(VariableVisitor(), bound_visitor);
-
+  std::cout << "class name " << getClassName(object) << "\n";
+  return makeVariable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
+  /*
   /// @todo: yucky
 
   auto classname = getClassName(object);
-  if (classname == "int")
-  {
-    py::extract<int> e(object);
-    return makeVariable(classname, e());
-  }
-  else if (classname == "float")
-  {
-    py::extract<float> e(object);
-    return makeVariable(classname, e());
-  }
-  else if (classname == "double")
-  {
-    py::extract<double> e(object);
-    return makeVariable(classname, e());
-  }
-  else if (classname == "str")
-  {
-    py::extract<std::string> e(object);
-    return makeVariable(classname, e());
-  }
-  else if (classname == "bool")
-  {
-    py::extract<bool> e(object);
-    return makeVariable(classname, e());
-  }
   else if (classname == "list")
   {
     Variable::List vars(len(object));
@@ -593,6 +627,7 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(
   }
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
+  */
 }
 
 py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)

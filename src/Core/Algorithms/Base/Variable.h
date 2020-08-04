@@ -92,6 +92,7 @@ namespace Algorithms {
   SCISHARE bool operator!=(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
+  SCISHARE Variable makeVariable(const Name& name, const Variable::Value& value);
 
   template <typename ... Ts>
   Variable::List makeAnonymousVariableList(Ts&&... params)
