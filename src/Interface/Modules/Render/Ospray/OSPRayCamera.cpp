@@ -26,6 +26,7 @@
 */
 
 #include "OSPRayCamera.h"
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -74,7 +75,7 @@ void OSPRayCamera::mousePress(float x, float y, MouseButton btn)
 
 void OSPRayCamera::mouseMove(float x, float y, MouseButton btn)
 {
-  switch(btn)
+  switch (btn)
   {
   case MouseButton::MOUSE_LEFT:
     lookat_.doRotation(glm::vec2(x, -y));
@@ -88,7 +89,8 @@ void OSPRayCamera::mouseMove(float x, float y, MouseButton btn)
     target_ = lookat_.getTarget();
     break;
 
-  default:break;
+  default:
+    break;
   }
 }
 

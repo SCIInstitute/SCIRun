@@ -1562,6 +1562,7 @@ SCIRun::Modules::Render::ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
     }
     return geomData;
   }
+  return {};
 }
 
 //--------------------------------------------------------------------------------------------------

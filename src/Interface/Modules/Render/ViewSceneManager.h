@@ -59,7 +59,7 @@ namespace SCIRun
       bool getViewSceneGroupNumber(ViewSceneDialog* vsd, uint32_t& group);
       void getViewSceneGroupAsVector(uint32_t group, std::vector<ViewSceneDialog*>& out);
       void getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vector<ViewSceneDialog*>& out);
-      uint32_t getGroupCount() {return viewSceneGroups.size();}
+      uint32_t getGroupCount() const { return static_cast<uint32_t>(viewSceneGroups.size()); }
 
       void getUngroupedViewScenesAsVector(std::vector<ViewSceneDialog*>& viewScenes);
       void groupsUpdated();

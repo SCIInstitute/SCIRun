@@ -40,19 +40,14 @@ namespace Gui {
   {
   public:
     HasNotes(const std::string& name, bool positionAdjustable);
-    virtual ~HasNotes();
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note, bool updateEditor);
     Note getCurrentNote() const { return currentNote_; }
     void setDefaultNoteFontSize(int size);
-  protected:
-    void destroy();
   private:
     NoteEditor noteEditor_;
     Note currentNote_;
-    /// @todo: extract and make atomic
-    bool destroyed_;
   };
 
 }
