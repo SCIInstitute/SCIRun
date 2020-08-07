@@ -33,7 +33,7 @@
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 
-
+#include <Modules/Render/ViewScene.h>
 #include "Modules/Render/OsprayViewer.h"
 #include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
 #include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
