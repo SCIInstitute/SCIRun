@@ -58,7 +58,7 @@ namespace Core {
             (*this)(i, j) = (i == j) ? val : 0;
       }
 
-      DyadicTensorGeneric(const std::vector<VectorType>& eigvecs) : parent()
+      explicit DyadicTensorGeneric(const std::vector<VectorType>& eigvecs) : parent()
       {
         if (eigvecs.size() != Dim)
           THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
