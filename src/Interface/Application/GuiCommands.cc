@@ -170,23 +170,13 @@ QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
   return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
-const char* SCIRun::Gui::addNewModuleActionTypePropertyName()
-{
-  return "connectNewModuleSource";
-}
-
-const char* SCIRun::Gui::insertNewModuleActionTypePropertyName()
-{
-  return "inputPortToConnectPid";
-}
-
 namespace std
 {
-template <typename T1, typename T2>
-std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
-{
-  return o << p.first << "," << p.second;
-}
+  template <typename T1, typename T2>
+  std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
+  {
+    return o << p.first << "," << p.second;
+  }
 }
 
 bool NetworkFileProcessCommand::execute()

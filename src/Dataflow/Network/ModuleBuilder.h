@@ -50,6 +50,7 @@ namespace Networks {
     ModuleBuilder& add_input_port(const Port::ConstructionParams& params);
     ModuleBuilder& add_output_port(const Port::ConstructionParams& params);
     ModuleBuilder& setStateDefaults();
+    ModuleBuilder& setInfoStrings(const ModuleDescription& desc);
     ModuleHandle build() const;
 
     /// @todo: these don't quite belong here, think about extracting

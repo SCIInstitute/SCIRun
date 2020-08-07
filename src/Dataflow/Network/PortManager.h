@@ -35,10 +35,13 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <Core/Logging/Log.h>
 #include <map>
 
+//#define LOG_DYNAMIC_PORT_CREATION
 #ifdef LOG_DYNAMIC_PORT_CREATION
 #include <iostream>
 #define DYNAMIC_PORT_LOG(x) x
@@ -52,6 +55,8 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  using ModuleAddFunc = std::function<size_t(PortHandle)>;
+
 template<class T>
 class PortManager : boost::noncopyable
 {
@@ -64,7 +69,7 @@ public:
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
-  void set_module(ModuleInterface* mod) { module_ = mod; }
+  void setModuleDynamicAddFunc(ModuleAddFunc a) { moduleAdd_ = a; }
   std::vector<T> view() const;
 private:
   int checkDynamicPortInvariant(const std::string& name);
@@ -77,14 +82,13 @@ private:
   typedef std::map<std::string, bool> DynamicMap;
   PortMap ports_;
   DynamicMap isDynamic_;
-  ModuleInterface* module_;
+  ModuleAddFunc moduleAdd_;
 };
 
 struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
-PortManager<T>::PortManager() :
-  module_(nullptr)
+PortManager<T>::PortManager()
 {
 }
 
@@ -120,7 +124,6 @@ PortManager<T>::add(const T& item)
         if (portPair.second->getIndex() >= newPortIndex)
           portPair.second->incrementIndex();
       }
-
 
       DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
 
@@ -209,7 +212,8 @@ PortManager<T>::operator[](const PortId& id)
       }
       auto newPort = boost::shared_ptr<typename T::element_type>(byName[0]->clone());
       newPort->setId(id);
-      newPort->setIndex(add(newPort));
+      newPort->setIndex(moduleAdd_(newPort));
+
       return newPort;
     }
     else
@@ -265,7 +269,11 @@ std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
 
   boost::copy(
     ports_ | boost::adaptors::map_values
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+           | boost::adaptors::filtered([&](const T& port)
+           {
+             return port->get_portname() == name || boost::starts_with(port->id().toString(), name);
+           }),
+      std::back_inserter(portsWithName));
 
   return portsWithName;
 }

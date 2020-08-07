@@ -38,7 +38,6 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
-using namespace boost;
 
 ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -88,25 +87,25 @@ void ElectrodeCoilSetupDialog::updateInvertNormals()
    float NX=std::numeric_limits<float>::quiet_NaN(), NY=std::numeric_limits<float>::quiet_NaN(), NZ=std::numeric_limits<float>::quiet_NaN();
    try
    {
-    NX=lexical_cast<float>((electrode_coil_tableWidget->item(j,6)->text()).toStdString());
+    NX=boost::lexical_cast<float>((electrode_coil_tableWidget->item(j,6)->text()).toStdString());
    }
-   catch(bad_lexical_cast &)
+   catch(boost::bad_lexical_cast &)
    {
    }
 
    try
    {
-    NY=lexical_cast<float>((electrode_coil_tableWidget->item(j,7)->text()).toStdString());
+    NY= boost::lexical_cast<float>((electrode_coil_tableWidget->item(j,7)->text()).toStdString());
    }
-   catch(bad_lexical_cast &)
+   catch(boost::bad_lexical_cast &)
    {
    }
 
    try
    {
-    NZ=lexical_cast<float>((electrode_coil_tableWidget->item(j,8)->text()).toStdString());
+    NZ= boost::lexical_cast<float>((electrode_coil_tableWidget->item(j,8)->text()).toStdString());
    }
-   catch(bad_lexical_cast &)
+   catch(boost::bad_lexical_cast &)
    {
    }
 
@@ -176,10 +175,10 @@ std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
   {
    try
    {
-    lexical_cast<double>((electrode_coil_tableWidget->item(i,j)->text()).toStdString());
+     boost::lexical_cast<double>((electrode_coil_tableWidget->item(i,j)->text()).toStdString());
     values.push_back(Variable(ElectrodeCoilSetupAlgorithm::columnNames[j], electrode_coil_tableWidget->item(i,j)->text().toStdString()));
    }
-   catch(bad_lexical_cast &)
+   catch(boost::bad_lexical_cast &)
    {
     values.push_back(Variable(ElectrodeCoilSetupAlgorithm::columnNames[j], unknown));
    }
@@ -259,8 +258,8 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
     int prototype_from_state=-1;
     try
     {
-     prototype_from_state = lexical_cast<int>(row[0].toString());
-    } catch(bad_lexical_cast &)
+     prototype_from_state = boost::lexical_cast<int>(row[0].toString());
+    } catch(boost::bad_lexical_cast &)
     {
      prototype_from_state=-1;
     }
@@ -271,8 +270,8 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
     int stimtype_from_state=-1;
     try
     {
-     stimtype_from_state = lexical_cast<int>(row[1].toString());
-    } catch(bad_lexical_cast &)
+     stimtype_from_state = boost::lexical_cast<int>(row[1].toString());
+    } catch(boost::bad_lexical_cast &)
     {
      stimtype_from_state=-1;
     }

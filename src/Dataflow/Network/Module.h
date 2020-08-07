@@ -133,6 +133,8 @@ namespace Networks {
     bool isImplementationDisabled() const override { return false; }
     void setProgrammableInputPortEnabled(bool enable) override final;
     bool checkForVirtualConnection(const ModuleInterface& downstream) const override { return false; }
+    std::string description() const override;
+    void setInfoStrings(const ModuleDescription& desc);
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
