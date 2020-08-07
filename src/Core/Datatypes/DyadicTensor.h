@@ -51,7 +51,7 @@ namespace Core {
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 
-      DyadicTensorGeneric(Number val) : parent()
+      explicit DyadicTensorGeneric(Number val) : parent()
       {
         for (size_t i = 0; i < Dim; ++i)
           for (size_t j = 0; j < Dim; ++j)
