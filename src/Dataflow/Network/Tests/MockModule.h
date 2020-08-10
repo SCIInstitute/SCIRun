@@ -100,6 +100,7 @@ namespace SCIRun {
           MOCK_METHOD1(setProgrammableInputPortEnabled, void(bool));
           MOCK_CONST_METHOD1(checkForVirtualConnection, bool(const ModuleInterface&));
           MOCK_METHOD0(disconnectStateListeners, void());
+          MOCK_CONST_METHOD0(description, std::string());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

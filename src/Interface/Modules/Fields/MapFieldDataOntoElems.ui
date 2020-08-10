@@ -79,7 +79,7 @@
         </item>
         <item>
          <property name="text">
-          <string>interpolatedataonly</string>
+          <string>interpolateddataonly</string>
          </property>
         </item>
         <item>
@@ -89,7 +89,7 @@
         </item>
         <item>
          <property name="text">
-          <string>closestinterpolatedata</string>
+          <string>closestinterpolateddata</string>
          </property>
         </item>
        </widget>

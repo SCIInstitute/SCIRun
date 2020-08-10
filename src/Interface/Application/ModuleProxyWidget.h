@@ -91,7 +91,6 @@ namespace SCIRun
       void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
       void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
       QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-      virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void disableModuleGUI(bool disabled);
       void loadAnimate(qreal val);

@@ -168,8 +168,9 @@ namespace SCIRun
           metadata_(state_),
           executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
         {
-          iports_.set_module(module_);
-          oports_.set_module(module_);
+          // this captures the virtual call add_input_port, which will ensure dynamic ports have their asyncExecute listener attached (solves #957)
+          iports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_input_port(boost::dynamic_pointer_cast<InputPort>(p)); });
+          oports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_output_port(boost::dynamic_pointer_cast<OutputPort>(p)); });
         }
 
         boost::atomic<bool> inputsChanged_ { false };
@@ -199,6 +200,8 @@ namespace SCIRun
         LoggerHandle log_;
         AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
         UiToggleFunc uiToggleFunc_;
+
+        std::string description_;
 
         bool returnCode_{ false };
       };
@@ -487,12 +490,7 @@ void Module::runProgrammablePortInput()
   auto prog = getOptionalInputAtIndex<MetadataObject>(ProgrammablePortId());
   if (prog && *prog)
   {
-    //logCritical("MetadataObject found! {}", id().id_);
     (*prog)->process(id());
-  }
-  else
-  {
-    //logCritical("\tMetadataObject NOT found! {}", id().id_);
   }
 }
 
@@ -748,6 +746,26 @@ void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id) const
   }
 }
 
+ModuleBuilder& ModuleBuilder::setInfoStrings(const ModuleDescription& desc)
+{
+  auto m = dynamic_cast<Module*>(module_.get());
+  if (m)
+  {
+    m->setInfoStrings(desc);
+  }
+  return *this;
+}
+
+std::string Module::description() const
+{
+  return impl_->description_;
+}
+
+void Module::setInfoStrings(const ModuleDescription& desc)
+{
+  impl_->description_ = desc.moduleInfo_;
+}
+
 ModuleHandle ModuleBuilder::build() const
 {
   return module_;
@@ -937,7 +955,8 @@ void ModuleWithAsyncDynamicPorts::execute()
 
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
-  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+  if (h->isDynamic())
+    h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
   return Module::add_input_port(h);
 }
 
