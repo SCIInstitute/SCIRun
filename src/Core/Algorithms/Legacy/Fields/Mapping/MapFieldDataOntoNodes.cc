@@ -206,7 +206,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   {
     if (!fi.is_lineardata())
     {
-      error("Closest node data only works for source data located at the nodes.");
+      error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
   }
@@ -372,7 +372,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   {
     if (!fi.is_lineardata())
     {
-      error("Closest node data only works for source data located at the nodes.");
+      error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
   }
