@@ -1,6 +1,8 @@
 name: linux-build
 
 on: [push, pull_request]
+  paths-ignore:
+    - 'docs/**'
 
 jobs:
   linux-build-gui:

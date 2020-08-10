@@ -1,6 +1,8 @@
 name: windows-build
 
 on: [push, pull_request]
+  paths-ignore:
+    - 'docs/**'
 
 jobs:
   windows-build-headless:

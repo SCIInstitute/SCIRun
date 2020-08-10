@@ -1,6 +1,8 @@
 name: mac-build
 
 on: [push, pull_request]
+  paths-ignore:
+    - 'docs/**'
 
 jobs:
   mac-build-gui:
