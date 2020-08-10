@@ -194,7 +194,11 @@ namespace SCIRun
 
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
-        [conn](QAction* action) { QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule())); },
+        [conn](QAction* action)
+        {
+          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule()));
+          action->setProperty("insert", true);
+        },
         menu);
     }
 
@@ -205,14 +209,13 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        if (!eitherPortDynamic(conn->connectedPorts()))
-        {
-          insertAction_ = addAction(insertModuleAction);
-          addWidgetToExecutionDisableList(insertAction_);
-          auto insertable = new QMenu;
-          fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
-          insertAction_->setMenu(insertable);
-        }
+
+        insertAction_ = addAction(insertModuleAction);
+        addWidgetToExecutionDisableList(insertAction_);
+        auto insertable = new QMenu;
+        fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
+        insertAction_->setMenu(insertable);
+
         disableAction_ = addAction(disableEnableAction);
         addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
@@ -220,8 +223,7 @@ namespace SCIRun
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
-        if (insertAction_)
-          removeWidgetFromExecutionDisableList(insertAction_);
+        removeWidgetFromExecutionDisableList(insertAction_);
         removeWidgetFromExecutionDisableList(disableAction_);
       }
       QAction* notesAction_{ nullptr };
@@ -261,7 +263,7 @@ namespace
 
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
-  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
+  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>(), this),
   fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
@@ -292,9 +294,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-  connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
-    fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
-  setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
+  connect(this, SIGNAL(insertNewModule(const QMap<QString, std::string>&)),
+    fromPort_, SLOT(insertNewModule(const QMap<QString, std::string>&)));
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
@@ -312,16 +313,13 @@ void ConnectionLine::destroyConnection()
   if (!destroyed_)
   {
     delete menu_;
-    if (fromPort_ && toPort_)
-    {
+    if (fromPort_)
       fromPort_->removeConnection(this);
+    if (toPort_)
       toPort_->removeConnection(this);
-    }
     drawer_.reset();
     Q_EMIT deleted(id_);
     guiLogDebug("Connection deleted: {}", id_.id_);
-    HasNotes::destroy();
-    NoteDisplayHelper::destroy();
     destroyed_ = true;
   }
 }
@@ -374,8 +372,6 @@ void ConnectionLine::trackNodes()
     updateNotePosition();
     setZValue(defaultZValue());
   }
-  else
-    BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
@@ -460,10 +456,11 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   {
     scene()->removeItem(this);
     destroyConnection(); //TODO: another place to hook up deleteLater()
+    return;
   }
-  else if (action && action->text() == editNotesAction)
+  else if (action && action->property("insert").toBool())
   {
-    //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
+    return;
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
@@ -490,20 +487,22 @@ void ConnectionLine::insertNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
-  Q_EMIT insertNewModule(fromPort_, moduleToAddName.toStdString(), toPort_);
+  toPort_->removeConnection(this);
+  auto toPortLocal = toPort_;
+  toPort_ = nullptr;
+
+  Q_EMIT insertNewModule({
+    { "moduleToAdd", moduleToAddName.toStdString() },
+    { "endModuleId", toPortLocal->getUnderlyingModuleId().id_ },
+    { "inputPortName", toPortLocal->get_portname() },
+    { "inputPortId", toPortLocal->id().toString() }
+  });
   deleteLater();
 }
 
 ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 {
 	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
-}
-
-void ConnectionLine::setNoteGraphicsContext()
-{
-  scene_ = scene();
-  networkObjectWithNote_ = this;
-  positioner_ = getPositionObject();
 }
 
 void ConnectionLine::updateNote(const Note& note)

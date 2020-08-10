@@ -38,6 +38,7 @@
 #include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Subnetworks.h>
+#include <Interface/Application/StateViewer.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -80,6 +81,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 {
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
+  scene_->setItemIndexMethod(QGraphicsScene::NoIndex);
+
   Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
   Preferences::Instance().moduleExecuteDownstreamOnly.connectValueChanged([this](bool value) { updateExecuteButtons(value); });
 
@@ -90,7 +93,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  setSceneRect(QRectF(-1000, -1000, 2000, 2000));
+  setSceneRect(QRectF());
   centerOn(100, 100);
 
   setMouseAsDragMode();
@@ -110,6 +113,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 #ifdef MODULE_POSITION_LOGGING
   setViewUpdateFunc([](const QString& q) { qDebug() << q; });
 #endif
+
+  connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -198,7 +203,6 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   count.increment();
   Q_EMIT modified();
   Q_EMIT newModule(QString::fromStdString(module->id()), module->hasUI());
-  alignViewport();
 
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
@@ -210,6 +214,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
       proxy->setSelected(true);
       proxy->setSelected(false);
       proxy->setSelected(true);
+      proxy->show();
     }
   );
 #endif
@@ -289,18 +294,20 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
 namespace
 {
   static const QPointF incr1 {100, 0};
-  static const QPointF incr2 {0, 100};
   static const QPointF replaceIncr {-15, -15};
 }
 
-QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem() const
+QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem(const QPointF& sceneCenter) const
 {
-  return lastModulePosition_ + incr2;
+  static int counter = 0;
+  counter = (counter + 1) % 5;
+  double coord = 10*counter;
+  return sceneCenter + QPointF{coord, coord};
 }
 
 QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 {
-  return {0.0, isInput ? -110.0 : 50.0};
+  return {0.0, isInput ? -90.0 : 90.0};
 }
 
 void ModuleWidgetPlacementManager::updateLatestFromDuplicate(const QPointF& scenePos)
@@ -318,48 +325,40 @@ void ModuleWidgetPlacementManager::updateLatestFromReplace(const QPointF& sceneP
   lastModulePosition_ = scenePos + replaceIncr;
 }
 
-void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditor::insertNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
 {
-  connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender());
+  auto startWidget = findById(scene_->items(), moduleToConnectTo->id());
+
+  if (startWidget)
+  {
+    InEditingContext iec(this);
+    modulePlacement_.updateLatestFromConnectNew(startWidget->scenePos(), portToConnect->isInput());
+    controller_->insertNewModule(portToConnect, info);
+  }
 }
 
-void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName, QObject* sender)
+void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName);
+}
+
+void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto widget = findById(scene_->items(), moduleToConnectTo->id());
 
   if (widget)
   {
     InEditingContext iec(this);
-
     modulePlacement_.updateLatestFromConnectNew(widget->scenePos(), portToConnect->isInput());
-    PortWidget* newConnectionInputPort = nullptr;
-    auto q = dynamic_cast<const PortWidget*>(portToConnect);
-    if (q)
-    {
-      for (size_t i = 0; i < q->nconnections(); ++i)
-      {
-        auto cpi = q->connectedPorts()[i];
-        if (QString::fromStdString(cpi->id().toString()) == sender->property(insertNewModuleActionTypePropertyName()))
-          newConnectionInputPort = cpi;
-      }
-    }
-
-    if (newConnectionInputPort)
-    {
-      controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
-      newConnectionInputPort->deleteConnectionsLater();
-    }
-
-    controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+    controller_->connectNewModule(portToConnect, newModuleName);
     return;
   }
 
   for (auto& child : childrenNetworks_)
   {
-    child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender);
+    child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName);
   }
 }
-
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
@@ -450,6 +449,8 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+  connect(module, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)),
+    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)));
   connect(module, SIGNAL(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)),
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
@@ -551,6 +552,9 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
 
+#ifdef __APPLE__
+  proxy->setVisible(false);
+#endif
   scene_->addItem(proxy);
   ensureVisible(proxy);
 
@@ -777,8 +781,6 @@ void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
     }
   }
   qDeleteAll(items);
-
-  alignViewport();
 }
 
 void NetworkEditor::cut()
@@ -861,8 +863,6 @@ void NetworkEditor::pasteImpl(const QString& xml)
   {
     QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + xml);
   }
-
-  alignViewport();
 }
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
@@ -904,8 +904,6 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
-
-  alignViewport();
 }
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
@@ -934,7 +932,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(modulePlacement_.getLastForDoubleClickedItem());
+    addNewModuleAtPosition(modulePlacement_.getLastForDoubleClickedItem(scene_->itemsBoundingRect().center()));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
@@ -978,9 +976,6 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       }
     }
   }
-  //TODO from jess: check if module drag is creating space, then realign; if not creating space, don't move alignment
-  //qDebug() << __FUNCTION__ << __LINE__;
-  alignViewport();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -1002,8 +997,6 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 
   logViewerDims("mouseReleaseEvent:");
-
-  alignViewport();
 }
 
 void NetworkEditor::alignViewport()
@@ -1651,7 +1644,14 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
   setSceneRect(QRectF());
 
 #ifdef __APPLE__
-  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]() { deselectAll(); });
+  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]()
+  {
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    {
+      item->setSelected(true);
+      item->setSelected(false);
+    }
+  });
 #endif
 }
 
@@ -2393,6 +2393,13 @@ void NetworkEditor::cleanUpNetwork()
 {
   controller_->cleanUpNetwork();
   centerView();
+}
+
+void NetworkEditor::showStateViewer()
+{
+  //TODO: make non-modal, but needs update slot
+  StateViewer viewer(this);
+  viewer.exec();
 }
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)

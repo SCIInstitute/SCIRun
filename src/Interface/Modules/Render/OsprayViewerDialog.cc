@@ -26,327 +26,55 @@
 */
 
 
-#include <es-log/trace-log.h>
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
-#include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
-#include <Interface/Modules/Render/ViewOspraySceneConfig.h>
-#include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/Color.h>
-#include <Modules/Render/OsprayViewer.h>
-#include <Core/Logging/Log.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <boost/algorithm/string/predicate.hpp>
 
-
 #ifdef WITH_OSPRAY
-#include <Interface/Modules/Render/Ospray/VolumeViewer.h>
-#include <ospray/version.h>
+#include <ospray/ospray.h>
+
+#include <Modules/Render/ViewScene.h>
+#include "Modules/Render/OsprayViewer.h"
+#include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
+#include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
+#include "Interface/Modules/Render/ViewOspraySceneConfig.h"
+
+#include "Core/Datatypes/Color.h"
+#include "Core/Logging/Log.h"
 #endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+  #ifdef WITH_OSPRAY
 using namespace SCIRun::Core::Algorithms::Render;
+#endif
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Render;
 
-#ifdef WITH_OSPRAY
-namespace
-{
-
-
-    //float dt = 0.0f;   //EXPOSE
-    //std::vector<std::string> plyFilenames;
-    //float rotationRate = 0.0f;    //EXPOSE
-    //std::vector<std::string> sliceFilenames;
-    //std::string transferFunctionFilename;
-    //int benchmarkWarmUpFrames = 0;
-    //int benchmarkFrames = 0;
-    //std::string benchmarkFilename;
-    //int viewSizeWidth = 0;    //EXPOSE
-    //int viewSizeHeight = 0;    //EXPOSE
-    //ospcommon::vec3f viewUp(0.f);
-    //ospcommon::vec3f viewAt(0.f), viewFrom(0.f);
-    //std::string writeFramesFilename;     //EXPOSE
-    //bool usePlane = true;
-
-  void setupViewer(VolumeViewer* viewer)
-  {
-    float ambientLightIntensity = 0.1f;
-    float directionalLightIntensity = 1.0f;
-    float directionalLightAzimuth = 80;
-    float directionalLightElevation = 65;
-    float samplingRate = .125f;
-    float maxSamplingRate = 2.f;
-    int spp = 1;
-    bool noshadows = false;
-    int aoSamples = 1;
-    bool preIntegration = true;
-    bool gradientShading = true;
-    bool adaptiveSampling = true;
-
-    viewer->setModel(0);
-
-    viewer->getLightEditor()->setAmbientLightIntensity(ambientLightIntensity);
-    viewer->getLightEditor()->setDirectionalLightIntensity(directionalLightIntensity);
-    viewer->getLightEditor()->setDirectionalLightAzimuth(directionalLightAzimuth);
-    viewer->getLightEditor()->setDirectionalLightElevation(directionalLightElevation);
-
-    viewer->setSamplingRate(samplingRate);
-    viewer->setAdaptiveMaxSamplingRate(maxSamplingRate);
-    viewer->setAdaptiveSampling(adaptiveSampling);
-
-    viewer->setSPP(spp);
-    viewer->setShadows(!noshadows);
-    viewer->setAOSamples(aoSamples);
-    viewer->setPreIntegration(preIntegration);
-    viewer->setGradientShadingEnabled(gradientShading);
-  }
-
-  OSPGeometry duplicatedCodeFromAlgorithm(OsprayGeometryObjectHandle obj)
-  {
-    const auto& fieldData = obj->data;
-    const auto& vertex = fieldData.vertex;
-    const auto& vertex_normal = fieldData.vertex_normal;
-    const auto& color = fieldData.color;
-    const auto& index = fieldData.index;
-    const auto& radius = obj->radius;
-    const auto& geom_type = obj->GeomType;
-
-    SCIRun::LOG_DEBUG("geom_type");
-
-    // create and setup model and mesh
-    if (boost::iequals(geom_type, "TriSurface"))
-    {
-      SCIRun::LOG_DEBUG("adding TriSurface");
-      OSPGeometry mesh = ospNewGeometry("triangles");
-      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-      ospCommit(data);
-      ospSetData(mesh, "vertex", data);
-      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-      ospCommit(data);
-      ospSetData(mesh, "vertex.color", data);
-      data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
-      ospCommit(data);
-      ospSetData(mesh, "index", data);
-      if (vertex_normal.size()==vertex.size())
-      {
-        data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
-        ospCommit(data);
-        ospSetData(mesh, "vertex.normal", data);
-      }
-      return mesh;
-    }
-    else if (boost::iequals(geom_type, "QuadSurface"))
-    {
-        SCIRun::LOG_DEBUG("adding QuadSurface");
-        OSPGeometry mesh = ospNewGeometry("quads");
-        OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-        ospCommit(data);
-        ospSetData(mesh, "vertex", data);
-        data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-        ospCommit(data);
-        ospSetData(mesh, "vertex.color", data);
-        data = ospNewData(index.size() / 4, OSP_INT4, &index[0]);
-        ospCommit(data);
-
-        ospSetData(mesh, "index", data);
-        data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
-        ospCommit(data);
-        ospSetData(mesh, "vertex.normal", data);
-        SCIRun::LOG_DEBUG("finish adding QuadSurface");
-        return mesh;
-    }else if (boost::iequals(geom_type, "Volume"))
-    {
-      SCIRun::LOG_DEBUG("adding Volume wrong place");
-      //OSPVolume vol = ospNewVolume("shared_structured_volume");
-
-      /*OSPTransferFunction tfn =
-      ospTestingNewTransferFunction(test_data.voxelRange, "jet");
-      ospSetObject(test_data.volume, "transferFunction", tfn);
-      ospCommit(test_data.volume);*/
-
-      //return mesh;
-    }
-    else if (boost::iequals(geom_type, "Spheres"))
-    {
-      SCIRun::LOG_DEBUG("adding spheres");
-      OSPGeometry mesh = ospNewGeometry("spheres");
-      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-      ospCommit(data);
-      ospSetData(mesh, "spheres", data);
-      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-      ospCommit(data);
-      ospSetData(mesh, "color", data);
-      ospSet1f(mesh, "radius", radius);
-      return mesh;
-    }
-    else if (boost::iequals(geom_type, "Cylinder"))
-    {
-      SCIRun::LOG_DEBUG("adding Cylinders");
-      OSPGeometry mesh = ospNewGeometry("cylinders");
-      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-      ospCommit(data);
-      ospSetData(mesh, "cylinders", data);
-      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-      ospCommit(data);
-      ospSetData(mesh, "color", data);
-      ospSet1f(mesh, "radius", radius);
-      return mesh;
-    }
-    else if (boost::iequals(geom_type, "Streamlines"))
-    {
-      SCIRun::LOG_DEBUG("adding streamlines");
-      OSPGeometry mesh = ospNewGeometry("streamlines");
-      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-      ospCommit(data);
-      ospSetData(mesh, "vertex", data);
-      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-      ospCommit(data);
-      ospSetData(mesh, "vertex.color", data);
-      data = ospNewData(index.size(), OSP_INT, &index[0]);
-      ospCommit(data);
-      ospSetData(mesh, "index", data);
-      ospSet1f(mesh, "radius", radius);
-      return mesh;
-    }
-    else
-    {
-      SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
-      return {};
-    }
-  }
-
-  OSPVolume duplicatedCodeFromAlgorithm_vol(OsprayGeometryObjectHandle obj, ospcommon::range1f& voxelRange, ospcommon::box3f& bounds){
-    const auto& fieldData = obj->data;
-    const auto& vertex = fieldData.vertex;
-    const auto& vertex_normal = fieldData.vertex_normal;
-    const auto& color = fieldData.color;
-    const auto& index = fieldData.index;
-    const auto& radius = obj->radius;
-    const auto& geom_type = obj->GeomType;
-
-    const auto& func = obj->tfn;
-    OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
-    OSPData cData = ospNewData(func.colors.size()/3, OSP_FLOAT3, func.colors.data());
-    OSPData oData = ospNewData(func.opacities.size(), OSP_FLOAT, func.opacities.data());
-
-    ospSetData(transferFunction, "colors", cData);
-    ospSetData(transferFunction, "opacities", oData);
-
-    if (boost::iequals(geom_type, "structVol"))
-    {
-
-      SCIRun::LOG_DEBUG("adding Volume");
-      OSPVolume vol = ospNewVolume("shared_structured_volume");
-
-      int numVoxels = obj->data.color.size();
-      OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
-      ospSetObject(vol, "voxelData", voxelData);
-      ospRelease(voxelData);
-      SCIRun::LOG_DEBUG(std::to_string(numVoxels));
-
-      ospSetString(vol, "voxelType", "float");
-      ospSet3i(vol, "dimensions", obj->data.dim_x, obj->data.dim_y, obj->data.dim_z);
-      ospSet3f(vol, "gridSpacing", fieldData.spacing_x, fieldData.spacing_y, fieldData.spacing_z);
-      ospSet3f(vol, "gridOrigin", fieldData.origin_x, fieldData.origin_y, fieldData.origin_z);
-
-      std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
-        if (!std::isnan(v))
-          voxelRange.extend(v);
-        //SCIRun::LOG_DEBUG(std::to_string(v));
-      });
-      for(int i=0;i<vertex.size();i+=3){
-        ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
-        bounds.extend(v);
-      }
-
-      ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
-      ospCommit(transferFunction);
-      ospSetObject(vol, "transferFunction", transferFunction);
-      ospRelease(transferFunction);
-      return vol;
-    }else if (boost::iequals(geom_type, "unstructVol")){
-      SCIRun::LOG_DEBUG("adding unstructured Volume");
-      OSPVolume vol = ospNewVolume("unstructured_volume");
-
-      //int numVoxels = obj->data.color.size();
-      OSPData vertexData = ospNewData(vertex.size()/3, OSP_FLOAT3, vertex.data());
-      OSPData fieldsData = ospNewData(color.size(), OSP_FLOAT, color.data());
-      OSPData indicesData = ospNewData(index.size()/4, OSP_INT4, index.data());
-
-
-      ospSetObject(vol, "vertices", vertexData);
-      ospSetData(vol, "field", fieldsData);
-      ospSetData(vol, "indices", indicesData);
-
-
-      ospRelease(vertexData);
-      ospRelease(fieldsData);
-      ospRelease(indicesData);
-
-      std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
-        if (!std::isnan(v))
-          voxelRange.extend(v);
-        //SCIRun::LOG_DEBUG(std::to_string(v));
-      });
-      for(int i=0;i<vertex.size();i+=3){
-        ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
-        bounds.extend(v);
-      }
-
-      ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
-      ospCommit(transferFunction);
-      ospSetObject(vol, "transferFunction", transferFunction);
-      ospRelease(transferFunction);
-      return vol;
-
-    }
-
-  }
-
-  ospcommon::box3f toOsprayBox(const BBox& box)
-  {
-    auto min = box.get_min();
-    auto max = box.get_max();
-    return {
-      { static_cast<float>(min.x()),
-        static_cast<float>(min.y()),
-        static_cast<float>(min.z())},
-      { static_cast<float>(max.x()),
-        static_cast<float>(max.y()),
-        static_cast<float>(max.z())}
-    };
-  }
-}
-
-class OsprayObjectImpl
-{
-public:
-  std::vector<OSPGeometry> geoms_;
-};
-#else
-class OsprayObjectImpl
-{
-};
-#endif
 
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  impl_(new OsprayObjectImpl)
+  QWidget* parent)
+  : ModuleDialogGeneric(state, parent)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
+  #ifdef WITH_OSPRAY
+  statusBar_ = new QStatusBar(this);
 
-  SCIRun::Core::Algorithms::Visualization::OsprayRenderAlgorithm algo; // for ospray init
+  renderer_ = new OSPRayRenderer();
+  viewer_ = new QOSPRayWidget(parent, renderer_);
 
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
   addConfigurationDialog();
   addToolBar();
-
   setMinimumSize(200, 200);
+
+  statusBar_->setMaximumHeight(20);
+  osprayLayout->addWidget(viewer_);
 
   addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
@@ -369,16 +97,12 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
   addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
 
-  //?? these lead to weird camera swings
-  //addSliderManager(configDialog_->directionalLightAzimuthSlider_, Parameters::DirectionalLightAzimuth);
-  //addSliderManager(configDialog_->directionalLightElevationSlider_, Parameters::DirectionalLightElevation);
-
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
 
   connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
-  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(int)));
+  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(igeomDataTransientnt)));
 
   connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
   connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
@@ -397,135 +121,37 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
 
-  statusBar_ = new QStatusBar(this);
-  statusBar_->setMaximumHeight(20);
-  #ifdef WITH_OSPRAY
-  {
-    std::ostringstream ostr;
-    ostr << "Ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
-      << OSPRAY_VERSION_PATCH;
-    auto versionLabel = new QLabel(QString::fromStdString(ostr.str()));
-    versionLabel->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
-    statusBar_->addPermanentWidget(versionLabel);
-  }
+  float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+  float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+  uint32_t ind[3] = { 0, 1, 2};
+
+  //renderer_->addModelToGroup(1, tvp, tvc, NULL, ind, 3, 1);
+  //renderer_->addInstaceOfGroup();
   #endif
+}
+
+OsprayViewerDialog::~OsprayViewerDialog()
+{
+#ifdef WITH_OSPRAY
+  delete viewer_;
+  delete renderer_;
+#endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
 {
 #ifdef WITH_OSPRAY
+
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
-  {
-    auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
-    if (!geom)
-    {
-      logWarning("Logical error: ViewSceneDialog received an empty object.");
-      return;
-    }
-    auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+  if (!geomDataTransient || geomDataTransient->empty()) return;
 
-    //TODO
-    delete viewer_;
-    createViewer(*compGeom);
-  }
-#endif
-}
+  auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
+  if (!geom) return;
 
-void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
-{
-#ifdef WITH_OSPRAY
-  bool showFrameRate = state_->getValue(Parameters::ShowFrameRate).toBool();
-  bool fullScreen = false;
-  bool ownModelPerObject = state_->getValue(Parameters::SeparateModelPerObject).toBool();
-  std::string renderer = state_->getValue(Parameters::RendererChoice).toString();
+  auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
 
-  {
-    OsprayViewerParameters params
-    {
-      showFrameRate,
-      renderer,
-      ownModelPerObject,
-      fullScreen,
-      "",
-    };
-    OsprayGUIParameters guiParams
-    {
-      1024,
-      768,
-      statusBar_,
-      configDialog_->ambientLightIntensityDoubleSpinBox_,
-      configDialog_->directionalLightIntensityDoubleSpinBox_,
-      configDialog_->directionalLightAzimuthSlider_,
-      configDialog_->directionalLightElevationSlider_
-    };
-
-    impl_->geoms_.clear();
-
-
-    // volumes
-    std::vector<OSPVolume> vol_list;
-    std::vector<ospcommon::range1f> voxelRange_list;
-    std::vector<ospcommon::box3f> bounds_list;
-
-    for (const auto& obj : geom.objects()){
-      if((boost::iequals(obj->GeomType, "structVol"))||(boost::iequals(obj->GeomType, "unstructVol")) )   {
-        ospcommon::range1f r;
-        ospcommon::box3f b;
-        vol_list.push_back(duplicatedCodeFromAlgorithm_vol(obj, r, b));
-        voxelRange_list.push_back(r);
-        bounds_list.push_back(b);
-      }else
-        impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
-    }
-    viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
-
-
-    setupViewer(viewer_);
-
-    SCIRun::LOG_DEBUG("num of vol: {}", vol_list.size());
-    // load volume here
-    for(int i=0;i<vol_list.size();i++){
-      viewer_->loadVolume(vol_list[i], voxelRange_list[i].toVec2f(), bounds_list[i]);
-    }
-    SCIRun::LOG_DEBUG("init viewer");
-
-    osprayLayout->addWidget(viewer_);
-    osprayLayout->addWidget(statusBar_);
-    statusBar_->showMessage("Ospray viewer initialized.", 5000);
-
-    {
-      // TODO: need to move this to dialog ctor--create viewer once, and just change state.
-      connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
-        viewer_, SLOT(setAutoRotationRate(double)));
-
-      connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setPlane(bool)));
-      connect(configDialog_->shadowsCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setShadows(bool)));
-      connect(configDialog_->renderAnnotationsCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setRenderAnnotationsEnabled(bool)));
-      connect(configDialog_->subsampleCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setSubsamplingInteractionEnabled(bool)));
-
-      connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
-        viewer_, SLOT(setSPP(int)));
-
-      connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setShowFrameRate(bool)));
-
-      connect(configDialog_->ambientVisibleCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setAmbientLightVisible(bool)));
-
-      connect(configDialog_->directionalVisibleCheckBox_, SIGNAL(toggled(bool)),
-        viewer_, SLOT(setDirectionalLightVisible(bool)));
-
-      connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
-    }
-    setBGColor();
-    setLightColor();
-    viewer_->show();
-  }
+  //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
+  renderer_->updateGeometries(compGeom.get()->objects());
 #endif
 }
 
@@ -538,27 +164,6 @@ void OsprayViewerDialog::setWidth(int w)
 {
   parentWidget()->resize(w, height());
 }
-
-// code from viewer main.cc
-#if 0
-// Default values for the optional command line arguments.
-
-if (dt > 0.0f)
-  volumeViewer->setSamplingRate(dt);
-
-// Load slice(s) from file.
-for(unsigned int i=0; i<sliceFilenames.size(); i++)
-  volumeViewer->addSlice(sliceFilenames[i]);
-
-// Load transfer function from file.
-if(transferFunctionFilename.empty() != true)
-  volumeViewer->getTransferFunctionEditor()->load(transferFunctionFilename);
-
-// Set benchmarking parameters.
-volumeViewer->getWindow()->setBenchmarkParameters(benchmarkWarmUpFrames,
-    benchmarkFrames, benchmarkFilename);
-
-#endif
 
 void OsprayViewerDialog::addToolBar()
 {
@@ -595,14 +200,17 @@ void OsprayViewerDialog::addConfigurationButton()
 
 void OsprayViewerDialog::configButtonClicked()
 {
+#ifdef WITH_OSPRAY
   configDialog_->setVisible(!configDialog_->isVisible());
+#endif
 }
 
 void OsprayViewerDialog::addConfigurationDialog()
 {
+  #ifdef WITH_OSPRAY
   auto name = windowTitle() + " Configuration";
   configDialog_ = new ViewOspraySceneConfigDialog(name, this);
-
+#endif
   // configDialog_->setSampleColor(bgColor_);
   // configDialog_->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
   //   scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
@@ -686,38 +294,6 @@ void OsprayViewerDialog::addControlLockButton()
 
   //TODO
   controlLock_->setDisabled(true);
-
-#if 0
-  controlLock_->setToolTip("Lock specific view controls");
-  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
-  auto menu = new QMenu;
-
-  lockRotation_ = menu->addAction("Lock Rotation");
-  lockRotation_->setCheckable(true);
-  connect(lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
-
-  lockPan_ = menu->addAction("Lock Panning");
-  lockPan_->setCheckable(true);
-  connect(lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
-
-  lockZoom_ = menu->addAction("Lock Zoom");
-  lockZoom_->setCheckable(true);
-  connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
-
-  menu->addSeparator();
-
-  auto lockAll = menu->addAction("Lock All");
-  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
-
-  auto unlockAll = menu->addAction("Unlock All");
-  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
-
-  controlLock_->setMenu(menu);
-
-  addToolbarButton(controlLock_);
-  controlLock_->setFixedWidth(45);
-  toggleLockColor(false);
-  #endif
 }
 
 void OsprayViewerDialog::toggleLockColor(bool locked)
@@ -730,8 +306,7 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
 void OsprayViewerDialog::autoRotateClicked()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-    viewer_->autoRotate(autoRotateButton_->isChecked());
+
 #endif
 }
 
@@ -743,102 +318,28 @@ void OsprayViewerDialog::autoViewClicked()
 void OsprayViewerDialog::screenshotClicked()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-    viewer_->screenshot();
+
 #endif
 }
 
 void OsprayViewerDialog::nextTimestepClicked()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-    viewer_->nextTimeStep();
+
 #endif
 }
 
 void OsprayViewerDialog::playTimestepsClicked()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-    viewer_->playTimeSteps(playTimestepsButton_->isChecked());
+
 #endif
 }
-
-#if 0
-void OsprayViewerDialog::lockRotationToggled()
-{
-  mGLWidget->setLockRotation(lockRotation_->isChecked());
-  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
-}
-
-void OsprayViewerDialog::lockPanningToggled()
-{
-  mGLWidget->setLockPanning(lockPan_->isChecked());
-  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
-}
-
-void OsprayViewerDialog::lockZoomToggled()
-{
-  mGLWidget->setLockZoom(lockZoom_->isChecked());
-  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
-}
-
-void OsprayViewerDialog::lockAllTriggered()
-{
-  lockRotation_->setChecked(true);
-  mGLWidget->setLockRotation(true);
-  lockPan_->setChecked(true);
-  mGLWidget->setLockPanning(true);
-  lockZoom_->setChecked(true);
-  mGLWidget->setLockZoom(true);
-  toggleLockColor(true);
-}
-
-void OsprayViewerDialog::unlockAllTriggered()
-{
-  lockRotation_->setChecked(false);
-  mGLWidget->setLockRotation(false);
-  lockPan_->setChecked(false);
-  mGLWidget->setLockPanning(false);
-  lockZoom_->setChecked(false);
-  mGLWidget->setLockZoom(false);
-  toggleLockColor(false);
-}
-#endif
 
 void OsprayViewerDialog::setViewportCamera()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-  {
-    ospcommon::vec3f viewAt {
-      getFloat(Parameters::CameraViewAtX),
-      getFloat(Parameters::CameraViewAtY),
-      getFloat(Parameters::CameraViewAtZ)
-    };
-    ospcommon::vec3f viewFrom {
-      getFloat(Parameters::CameraViewFromX),
-      getFloat(Parameters::CameraViewFromY),
-      getFloat(Parameters::CameraViewFromZ)
-    };
 
-    if (viewAt != viewFrom)
-    {
-      viewer_->getWindow()->getViewport()->at = viewAt;
-      viewer_->getWindow()->getViewport()->from = viewFrom;
-    }
-
-    ospcommon::vec3f viewUp {
-      getFloat(Parameters::CameraViewUpX),
-      getFloat(Parameters::CameraViewUpY),
-      getFloat(Parameters::CameraViewUpZ)
-    };
-    if (viewUp != ospcommon::vec3f(0.f))
-    {
-      viewer_->getWindow()->getViewport()->setUp(viewUp);
-      viewer_->getWindow()->resetAccumulationBuffer();
-    }
-  }
 #endif
 }
 
@@ -850,75 +351,28 @@ float OsprayViewerDialog::getFloat(const Name& name) const
 void OsprayViewerDialog::setCameraWidgets()
 {
 #ifdef WITH_OSPRAY
-  if (viewer_)
-  {
-    {
-      ScopedWidgetSignalBlocker x(configDialog_->cameraViewAtXDoubleSpinBox_);
-      ScopedWidgetSignalBlocker y(configDialog_->cameraViewAtYDoubleSpinBox_);
-      ScopedWidgetSignalBlocker z(configDialog_->cameraViewAtZDoubleSpinBox_);
 
-      auto viewAt = viewer_->getWindow()->getViewport()->at;
-      configDialog_->cameraViewAtXDoubleSpinBox_->setValue(viewAt.x);
-      configDialog_->cameraViewAtYDoubleSpinBox_->setValue(viewAt.y);
-      configDialog_->cameraViewAtZDoubleSpinBox_->setValue(viewAt.z);
-    }
-    {
-      ScopedWidgetSignalBlocker x(configDialog_->cameraViewFromXDoubleSpinBox_);
-      ScopedWidgetSignalBlocker y(configDialog_->cameraViewFromYDoubleSpinBox_);
-      ScopedWidgetSignalBlocker z(configDialog_->cameraViewFromZDoubleSpinBox_);
-
-      auto viewFrom = viewer_->getWindow()->getViewport()->from;
-      configDialog_->cameraViewFromXDoubleSpinBox_->setValue(viewFrom.x);
-      configDialog_->cameraViewFromYDoubleSpinBox_->setValue(viewFrom.y);
-      configDialog_->cameraViewFromZDoubleSpinBox_->setValue(viewFrom.z);
-    }
-    {
-      ScopedWidgetSignalBlocker x(configDialog_->cameraViewUpXDoubleSpinBox_);
-      ScopedWidgetSignalBlocker y(configDialog_->cameraViewUpYDoubleSpinBox_);
-      ScopedWidgetSignalBlocker z(configDialog_->cameraViewUpZDoubleSpinBox_);
-
-      auto viewUp = viewer_->getWindow()->getViewport()->up;
-      configDialog_->cameraViewUpXDoubleSpinBox_->setValue(viewUp.x);
-      configDialog_->cameraViewUpYDoubleSpinBox_->setValue(viewUp.y);
-      configDialog_->cameraViewUpZDoubleSpinBox_->setValue(viewUp.z);
-    }
-  }
 #endif
 }
 
 void OsprayViewerDialog::setLightColor()
 {
-  #ifdef WITH_OSPRAY
-  if (viewer_)
-  {
-    auto ambR = configDialog_->ambientLightColorRDoubleSpinBox_->value();
-    auto ambG = configDialog_->ambientLightColorGDoubleSpinBox_->value();
-    auto ambB = configDialog_->ambientLightColorBDoubleSpinBox_->value();
-    viewer_->setAmbientLightColor(ambR, ambG, ambB);
-    state_->setValue(Parameters::AmbientLightColor, ColorRGB(ambR, ambG, ambB).toString());
+#ifdef WITH_OSPRAY
 
-    auto dirR = configDialog_->directionalLightColorRDoubleSpinBox_->value();
-    auto dirG = configDialog_->directionalLightColorGDoubleSpinBox_->value();
-    auto dirB = configDialog_->directionalLightColorBDoubleSpinBox_->value();
-    viewer_->setDirectionalLightColor(dirR, dirG, dirB);
-    state_->setValue(Parameters::DirectionalLightColor, ColorRGB(dirR, dirG, dirB).toString());
-  }
-  #endif
+#endif
 }
 
 void OsprayViewerDialog::setBGColor()
 {
-  #ifdef WITH_OSPRAY
-  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+#ifdef WITH_OSPRAY
 
-  ColorRGB color(colorStr);
-  viewer_->setBackgroundColor(color.r(), color.g(), color.b());
-  #endif
+#endif
 }
 
 
 void OsprayViewerDialog::pullSpecial()
 {
+  #ifdef WITH_OSPRAY
   auto ambient = colorFromState(Parameters::AmbientLightColor);
   configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
   configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
@@ -928,4 +382,59 @@ void OsprayViewerDialog::pullSpecial()
   configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
   configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
   configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());
+  #endif
+}
+
+void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
+{
+#ifdef WITH_OSPRAY
+  int xWindow = xIn - viewer_->pos().x();
+  int yWindow = yIn - viewer_->pos().y();
+
+  xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
+  yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+#endif
+}
+
+SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
+{
+  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
+  if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
+  return btn;
+}
+
+void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
+{
+  #ifdef WITH_OSPRAY
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  renderer_->mousePress(xSS, ySS, getRenderButton(event));
+  #endif
+}
+
+void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
+{
+  #ifdef WITH_OSPRAY
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  renderer_->mouseMove(xSS, ySS, getRenderButton(event));
+  #endif
+}
+
+void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+#ifdef WITH_OSPRAY
+  renderer_->mouseRelease();
+  #endif
+}
+
+void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
+{
+  #ifdef WITH_OSPRAY
+  renderer_->mouseWheel(event->delta());
+  #endif
 }

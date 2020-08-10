@@ -1151,7 +1151,8 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // the isosurface create a map between the clipped boundary nodes
   // and the new nodes to help us create hexes with the correct
   // connectivity later.
-  tri_mesh->synchronize( Mesh::FIND_CLOSEST_ELEM_E );
+  if (!tri_mesh->is_empty())
+    tri_mesh->synchronize( Mesh::FIND_CLOSEST_ELEM_E );
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> new_map;
 
   int cnt = 0;

@@ -50,6 +50,8 @@ namespace SCIRun {
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
 
+        uint32_t id;
+
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
     }
