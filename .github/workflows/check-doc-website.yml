@@ -9,7 +9,7 @@ on:
       - 'docs/**'
 
 jobs:
-  test:
+  docs-check:
 
     runs-on: ubuntu-latest
 
