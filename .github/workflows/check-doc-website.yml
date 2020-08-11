@@ -1,0 +1,29 @@
+name: Ruby
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+  pull_request:
+    paths:
+      - 'docs/**'
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+    - name: Install dependencies
+      run: |
+        bundle install
+        gem install html-proofer
+    - name: Run tests
+      run: |
+        bundle exec jekyll build
+        bundle exec htmlproofer ./_site --allow-hash-href --url_swap \/scirun.pages:
