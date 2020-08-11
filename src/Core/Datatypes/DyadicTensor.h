@@ -84,9 +84,9 @@ namespace Core {
 
       DyadicTensorGeneric(DyadicTensorGeneric<Number, Dim>&& other) : parent()
       {
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
-            (*this)(index(i), index(j)) = std::move(other(index(i), index(j)));
+        auto otherData = other.data();
+        std::move(otherData, otherData + other.size(), this->data());
+
         eigvecs_ = std::move(other.eigvecs_);
         eigvals_ = std::move(other.eigvals_);
         haveEigens_ = true;

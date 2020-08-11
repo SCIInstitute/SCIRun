@@ -118,6 +118,15 @@ TEST(Dyadic3DTensorTest, CannotConstructTensorWithMoreThanThreeEigenEigenvectors
   ASSERT_ANY_THROW(Dyadic3DTensor t({eigvecs[0], eigvecs[1], eigvecs[2], eigvecs[0]}));
 }
 
+TEST(DyadicTensorTest, MoveConstructor)
+{
+  Dyadic3DTensor t(getEigvecs());
+  Dyadic3DTensor t2(std::move(t));
+  std::stringstream ss;
+  ss << t2;
+  ASSERT_EQ(eigvecsString, ss.str());
+}
+
 TEST(Dyadic3DTensorTest, LinearCertainty)
 {
   Dyadic3DTensor t(
