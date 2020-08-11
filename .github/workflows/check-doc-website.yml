@@ -1,4 +1,4 @@
-name: Ruby
+name: Check doc website
 
 on:
   push:
