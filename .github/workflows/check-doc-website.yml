@@ -28,4 +28,4 @@ jobs:
       working-directory: docs
       run: |
         bundle exec jekyll build
-        bundle exec htmlproofer ./_site --allow-hash-href --url_swap \/SCIRun:
+        bundle exec htmlproofer ./_site --allow-hash-href --url_swap \/scirun.pages:
