@@ -142,7 +142,7 @@ protected:
 	}
 };
 
-namespace 
+namespace
 {
   template<class T>
   std::string formatWithCommas(const T& value)
@@ -315,14 +315,14 @@ private:
           {
             auto problemSize = (ends - begins) * coilNodes_.size() * nips;
             algo_->remark("Per core load: " + formatWithCommas(problemSize) + " field computations.");
-            algo_->remark("To speed up this module, reduce the number of nodes in either input mesh, or pick a simpler algorithm.");
+            algo_->remark("To speed up this module, reduce the number of nodes in either the input mesh or the coil, or pick a simpler algorithm.");
             remarkedOnProblemSize = true;
           }
 
 					//! curve segment discretization
 					for (int iip = 0; iip < nips; iip++)
 					{
-            
+
 						double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
 						Vector v = Interpolate( coilNodeThis, coilNodeNext, interpolant );
 						integrPoints.push_back( v );
