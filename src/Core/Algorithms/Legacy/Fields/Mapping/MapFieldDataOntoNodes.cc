@@ -200,15 +200,20 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   fo.make_lineardata();
 
   std::string quantity = getOption(Parameters::Quantity);
-  std::string value = getOption(Parameters::InterpolationModel);
+  std::string mappingModel = getOption(Parameters::InterpolationModel);
 
-  if (value == "closestnodedata")
+  if (mappingModel == "closestnodedata")
   {
-    if (!fi.is_lineardata())
+    if (!fi.is_lineardata() && !fi.is_pointcloud())
     {
       error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
+  }
+
+  if (fi.is_pointcloud() && (mappingModel == "interpolateddata" || mappingModel == "closestinterpolateddata"))
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2155");
   }
 
   if (fi.is_nodata())
@@ -220,7 +225,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   if (weights)
   {
     FieldInformation wfi(weights);
-    if (value == "closestnodedata")
+    if (mappingModel == "closestnodedata")
     {
       if (!wfi.is_lineardata())
       {
@@ -366,15 +371,20 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   fo.make_lineardata();
 
   std::string quantity = getOption(Parameters::Quantity);
-  std::string value = getOption(Parameters::InterpolationModel);
+  std::string mappingModel = getOption(Parameters::InterpolationModel);
 
-  if (value == "closestnodedata")
+  if (mappingModel == "closestnodedata")
   {
-    if (!fi.is_lineardata())
+    if (!fi.is_lineardata() && !fi.is_pointcloud())
     {
       error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
+  }
+  
+  if (fi.is_pointcloud() && (mappingModel == "interpolateddata" || mappingModel == "closestinterpolateddata"))
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2155");
   }
 
   if (fi.is_nodata())

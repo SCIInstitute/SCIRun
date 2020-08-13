@@ -539,6 +539,11 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
     }
   }
 
+  if (fis.is_pointcloud() && method != "closestdata")
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2154");
+  }
+
   double maxdist = get(MaxDistance).toDouble();
 
   boost::scoped_ptr<detail::MapFieldDataFromSourceToDestinationPAlgoBase> algoP;
