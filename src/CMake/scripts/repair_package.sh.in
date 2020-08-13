@@ -10,6 +10,7 @@ if [[ ! -e $productroot_dir ]]; then
 fi
 
 @PKGBUILD_EXE@ --analyze --root $productroot_dir $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
+plutil -replace BundleIsRelocatable -bool NO $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
 @PKGBUILD_EXE@ --identifier edu.utah.sci.@CPACK_PACKAGE_NAME@ --root $productroot_dir \
     --component-plist $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist \
     --install-location /Applications $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg
