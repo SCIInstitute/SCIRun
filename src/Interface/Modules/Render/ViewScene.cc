@@ -1131,6 +1131,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 
   if(selectedWidget_)
   {
+    widgetMoved_ = true;
     spire->widgetMouseMove(btn, x_window, y_window);
   }
   else if(!shiftdown_)
@@ -1174,15 +1175,20 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selectedWidget_)
   {
-    restoreObjColor();
-    updateModifiedGeometries();
+    if (!widgetMoved_)
+    {
+      restoreObjColor();
+      selectedWidget_->changeID();
+      updateModifiedGeometries();
+    }
     unblockExecution();
-    Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
-    selectedWidget_->changeID();
-    selectedWidget_.reset();
+    if (widgetMoved_)
+      Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(),
+                                                       selectedWidget_->uniqueID());
 
+    selectedWidget_.reset();
     auto spire = mSpire.lock();
-    if(!spire) return;
+    if (!spire) return;
     spire->widgetMouseUp();
     updateCursor();
   }
@@ -1192,6 +1198,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   }
 
   mouseButtonPressed_ = false;
+  widgetMoved_ = false;
 }
 
 
