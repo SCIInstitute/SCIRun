@@ -50,6 +50,10 @@ SET(Core_Datatypes_HEADERS
   Datatype.h
   DatatypeFwd.h
   DenseMatrix.h
+  TensorBase.h
+  DyadicTensor.h
+  Dyadic3DTensor.h
+  TensorFwd.h
   DenseColumnMatrix.h
   Geometry.h
   HasId.h
