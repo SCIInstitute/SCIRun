@@ -1181,11 +1181,11 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
       selectedWidget_->changeID();
       updateModifiedGeometries();
     }
-    unblockExecution();
-    if (widgetMoved_)
-      Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(),
-                                                       selectedWidget_->uniqueID());
+    else
+      Q_EMIT mousePressSignalForGeometryObjectFeedback(
+          event->x(), event->y(), selectedWidget_->uniqueID());
 
+    unblockExecution();
     selectedWidget_.reset();
     auto spire = mSpire.lock();
     if (!spire) return;
