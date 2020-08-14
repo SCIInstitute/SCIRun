@@ -1174,5 +1174,5 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://sciinstitute.github.io/scirun.pages/modules.html#" + name();
+  return "https://sciinstitute.github.io/SCIRun/modules.html#" + name();
 }
