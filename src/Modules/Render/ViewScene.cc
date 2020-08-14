@@ -180,10 +180,12 @@ void ViewScene::updateTransientList()
   }
 
   geoms->clear();
+
   for (const auto& geomPair : activeGeoms_)
   {
     auto geom = geomPair.second;
     geom->addToList(geom, *geoms);
+    LOG_DEBUG("updateTransientList added geom to state list: {}", geomPair.first.toString());
   }
 
   // Grab geometry inputs and pass them along in a transient value to the GUI
@@ -232,6 +234,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     }
 
     activeGeoms_[pid] = geom;
+    LOG_DEBUG("asyncExecute added active geom to map: {}", pid.toString());
     updateTransientList();
   }
 }

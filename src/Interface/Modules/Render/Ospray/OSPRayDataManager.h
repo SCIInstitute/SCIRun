@@ -79,7 +79,7 @@ private:
     {
       if(object)
       {
-        printf("Delete Version: %d\n", version);
+        //printf("Delete Version: %d\n", version);
         ospRelease(object);
       }
     }
