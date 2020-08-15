@@ -18,7 +18,7 @@ tags: module
 
 ### Summary
 
-Choose one of any number of inputs (of any type) to send to the ouput.  
+Choose one of any number of inputs (of any type) to send to the output.  
 
 **Detailed Description**
 

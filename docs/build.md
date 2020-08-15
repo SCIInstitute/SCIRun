@@ -21,14 +21,15 @@ layout: default_toc
 
 #### Windows
   - Tested on Windows 10
-  - Visual Studio 2013 & 2017
+  - Visual Studio 2017 or 2019
+    + Using 2017, be sure to change the CMake platform to x64.
   - Qt 5.13 or later
     + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.
 
 
 #### Linux
-  - Tested on Ubuntu 14.04 LTS, OpenSUSE Leap 42.1
-  - gcc 4.8
+  - Tested on Ubuntu 16.04 LTS, 18.04 LTS, OpenSUSE Leap 42.1
+  - gcc 7+
   - Qt 5.13 or later
     + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.  Add the Qt 5 path to CMake configuration.
 
@@ -41,7 +42,7 @@ layout: default_toc
 
 ### CMake Build Generators
 * Windows
-  - Visual Studio 2013 & 2017
+  - Visual Studio 2017 & 2019
 * OS X
   - Unix Makefiles
   - Xcode

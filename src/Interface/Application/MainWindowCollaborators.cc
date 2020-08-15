@@ -251,7 +251,7 @@ QWizardPage* NewUserWizard::createDocPage()
   page->setSubTitle("For more information on SCIRun 5 functionality, documentation can be found at: ");
   auto layout = new QVBoxLayout;
   auto docLabel = new QLabel(
-    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
+    "<p><a href = \"http://sciinstitute.github.io/SCIRun/\">SCIRun Doc Home Page</a>"
     "<p><a href = \"https://github.com/SCIInstitute/SCIRun/wiki\">New SCIRun Wiki</a>"
     "<p><a href = \"http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php5/CIBC:Documentation:SCIRun:Reference\">Old SCIRun Wiki</a>"
     "<p><a href = \"https://lists.sci.utah.edu/sympa/arc/scirun-users\">SCIRun Users mailing list</a>"
@@ -413,7 +413,7 @@ QWizardPage* PythonWizard::createIntroPage()
 
   page->textArea->setText("This wizard will help you implement Python in SCIRun for the first time.");
   auto docLabel = new QLabel(
-    "<p><a href = \"https://github.com/SCIInstitute/scirun.pages/blob/gh-pages/python.md\">Python Documentation</a>"
+    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/blob/gh-pages/python.md\">Python Documentation</a>"
   );
   docLabel->setStyleSheet("QLabel {background-color : darkGray; color : blue; }");
   docLabel->setAlignment(Qt::AlignLeft);
@@ -497,7 +497,7 @@ QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
   page->infoText->setText("     Create EditMeshBoundingBox module, and edit its parameters using the same commands."
     "\n\n"
     "**For more information about a module, click on the Question Mark icon on the module in the network, "
-    "or visit https://sciinstitute.github.io/scirun.pages/modules.html**");
+    "or visit https://sciinstitute.github.io/SCIRun/modules.html**");
 
   page->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
     "\n\n\n"

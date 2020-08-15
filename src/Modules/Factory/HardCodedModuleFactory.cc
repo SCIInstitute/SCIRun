@@ -132,6 +132,8 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
 
+  builder.setInfoStrings(desc);
+
   return builder.setStateDefaults().build();
 }
 

@@ -1,6 +1,9 @@
 name: mac-build
 
-on: [push, pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
 
 jobs:
   mac-build-gui:
@@ -9,7 +12,9 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Install Qt
       uses: ouuan/install-qt-action@ouuan
@@ -50,7 +55,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Prepare
       run: |

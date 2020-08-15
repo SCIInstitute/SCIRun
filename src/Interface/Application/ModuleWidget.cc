@@ -391,10 +391,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 
-  auto oldName = theModule->legacyModuleName();
-  if (theModule->name() != oldName)
-    setToolTip("Converted version of module " + QString::fromStdString(oldName));
-
   if (theModule->isDeprecated() && !Core::Application::Instance().parameters()->isRegressionMode())
   {
     QMessageBox::warning(nullptr,
@@ -546,8 +542,12 @@ void ModuleWidget::resetProgressBar()
   fullWidgetDisplay_->getProgressBar()->setTextVisible(false);
 }
 
-size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
 size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
+int ModuleWidget::numDynamicInputPortsForGuiUpdates() const
+{
+  const auto inputs = ports().inputs();
+  return std::count_if(inputs.begin(), inputs.end(), [](PortWidget* p) { return p->isDynamic(); });
+}
 
 void ModuleWidget::setupModuleActions()
 {
@@ -561,9 +561,7 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
   connect(actionsMenu_->getAction("Toggle Programmable Input Port"), &QAction::triggered, this, &ModuleWidget::toggleProgrammableInputPort);
-  if (isViewScene_
-    || theModule_->hasDynamicPorts()  //TODO: buggy combination, will disable for now. Fix is #1035
-    || theModule_->id().name_ == "Subnet")
+  if (theModule_->id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
   if (theModule_->id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With..."));
@@ -679,7 +677,7 @@ public:
         {},
         widget);
       widget->hookUpGeneralPortSignals(w);
-      widget->connect(widget, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+      widget->connect(widget, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
       widget->connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), widget, SLOT(incomingConnectionStateChanged(bool, int)));
       widget->ports_->addPort(w);
       ++i;
@@ -776,8 +774,10 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(clearPotentialConnections()));
-  connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
+  connect(port, SIGNAL(connectNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+  connect(port, SIGNAL(insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)),
+    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)));
   connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
   connect(port, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
 }
@@ -946,7 +946,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
       [this]() { return closestPortFinder_; },
       PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
-    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
     const auto newPortIndex = static_cast<int>(port->getIndex());
 
@@ -1266,7 +1266,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(static_cast<int>(numInputPorts()), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1392,10 +1392,12 @@ void ModuleWidget::duplicate()
 
 void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
-  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
-  setProperty(insertNewModuleActionTypePropertyName(), sender()->property(insertNewModuleActionTypePropertyName()));
-
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
+}
+
+void ModuleWidget::insertNewModule(const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
+{
+  Q_EMIT insertNewModule(theModule_, portToConnect, info);
 }
 
 bool ModuleWidget::hasDynamicPorts() const
