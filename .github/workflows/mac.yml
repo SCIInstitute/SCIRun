@@ -44,10 +44,10 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: SCIRunMacInstaller
-        path: bin/SCIRun/SCIRun-5.0.beta.X-Darwin.pkg
+        path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
 
   mac-build-headless:
 
