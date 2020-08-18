@@ -50,4 +50,17 @@ void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)
 ParserHelpDialog::ParserHelpDialog(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
+  // connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(searchText(const QString&)));
+  connect(searchLineEdit_, SIGNAL(returnPressed()), this, SLOT(searchText()));
+  connect(searchButton_, SIGNAL(clicked()), this, SLOT(searchText()));
+}
+
+void ParserHelpDialog::searchText(const QString& text)
+{
+  textBrowser_->find(text);
+}
+
+void ParserHelpDialog::searchText()
+{
+  textBrowser_->find(searchLineEdit_->text());
 }

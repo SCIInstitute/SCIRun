@@ -51,8 +51,12 @@ namespace Gui {
 
   class SCISHARE ParserHelpDialog : public QDialog, public Ui::ParserHelp
   {
+    Q_OBJECT
   public:
     ParserHelpDialog(QWidget* parent = 0);
+  private Q_SLOTS:
+    void searchText(const QString& text);
+    void searchText();
   };
 
 }}
