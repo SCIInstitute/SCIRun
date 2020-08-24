@@ -134,7 +134,8 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
     static const Core::Algorithms::AlgorithmParameterName CameraRotation;
     static const Core::Algorithms::AlgorithmParameterName IsExecuting;
-
+    static const Core::Algorithms::AlgorithmParameterName TimeExecutionFinished;
+    static const Core::Algorithms::AlgorithmParameterName HasNewGeometry;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
     OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);

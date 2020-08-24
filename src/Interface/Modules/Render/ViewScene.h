@@ -256,8 +256,10 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      bool canSelectWidget() const;
-      bool tryWidgetSelection(QMouseEvent* event);
+      long timeSinceEpoch(const std::chrono::_V2::system_clock::time_point& time);
+      bool needToWaitForWidgetSelection();
+      bool canSelectWidget();
+      bool tryWidgetSelection(int x, int y);
       void selectObject(const int x, const int y);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
@@ -321,8 +323,18 @@ namespace SCIRun {
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
+      bool                                  frameIsFinished_              {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
+      Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
+      glm::mat4                             previousCameraTransform_      {0.0};
+      std::chrono::_V2::system_clock::time_point timeWidgetColorRestored_ {};
+      std::chrono::_V2::system_clock::time_point timeOfLastSelectionAttempt_ {};
       int                                   clippingPlaneIndex_           {0};
+      int                                   lastMousePressEventX_         {0};
+      int                                   lastMousePressEventY_         {0};
+      const static int                      delayAfterModuleExecution_    {200};
+      const static int                      delayAfterWidgetColorRestored_ {50};
+      int                                   delayAfterLastSelection_      {50};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                            {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
@@ -341,6 +353,7 @@ namespace SCIRun {
       Modules::Visualization::TextBuilder               textBuilder_        {};
       Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
       std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
+      std::vector<Graphics::Datatypes::WidgetHandle>    widgetHandles_      {};
       QAction*                                          lockRotation_       {nullptr};
       QAction*                                          lockPan_            {nullptr};
       QAction*                                          lockZoom_           {nullptr};
