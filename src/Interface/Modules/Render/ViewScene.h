@@ -256,7 +256,7 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      long timeSinceEpoch(const std::chrono::_V2::system_clock::time_point& time);
+      long timeSinceEpoch(const std::chrono::system_clock::time_point& time);
       bool needToWaitForWidgetSelection();
       bool canSelectWidget();
       bool tryWidgetSelection(int x, int y);
@@ -327,8 +327,8 @@ namespace SCIRun {
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
       glm::mat4                             previousCameraTransform_      {0.0};
-      std::chrono::_V2::system_clock::time_point timeWidgetColorRestored_ {};
-      std::chrono::_V2::system_clock::time_point timeOfLastSelectionAttempt_ {};
+      std::chrono::system_clock::time_point timeWidgetColorRestored_      {};
+      std::chrono::system_clock::time_point timeOfLastSelectionAttempt_   {};
       int                                   clippingPlaneIndex_           {0};
       int                                   lastMousePressEventX_         {0};
       int                                   lastMousePressEventY_         {0};

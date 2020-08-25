@@ -1144,7 +1144,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 }
 
 //--------------------------------------------------------------------------------------------------
-long ViewSceneDialog::timeSinceEpoch(const std::chrono::_V2::system_clock::time_point& time)
+long ViewSceneDialog::timeSinceEpoch(const std::chrono::system_clock::time_point& time)
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
