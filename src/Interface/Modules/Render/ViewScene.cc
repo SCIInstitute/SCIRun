@@ -170,7 +170,7 @@ namespace Gui {
     void setPreviousWidget(WidgetHandle widget);
     WidgetHandle getPreviousWidget() const;
     bool hasPreviousWidget() const;
-    bool deletePreviousWidget();
+    void deletePreviousWidget();
     int getPreviousMouseX() const;
     int getPreviousMouseY() const;
   private:
@@ -292,7 +292,7 @@ bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
 }
 
 //--------------------------------------------------------------------------------------------------
-bool PreviousWidgetSelectionInfo::deletePreviousWidget()
+void PreviousWidgetSelectionInfo::deletePreviousWidget()
 {
   previousSelectedWidget_.reset();
 }
