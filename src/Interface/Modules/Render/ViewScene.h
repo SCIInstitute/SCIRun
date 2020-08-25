@@ -56,6 +56,7 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
+    class PreviousWidgetSelectionInfo;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -256,7 +257,6 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      long timeSinceEpoch(const std::chrono::system_clock::time_point& time);
       bool needToWaitForWidgetSelection();
       bool canSelectWidget();
       bool tryWidgetSelection(int x, int y);
@@ -315,6 +315,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
+      PreviousWidgetSelectionInfo*          previousWidgetInfo_           {nullptr};
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};
@@ -323,15 +324,8 @@ namespace SCIRun {
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
-      bool                                  frameIsFinished_              {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
-      Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
-      glm::mat4                             previousCameraTransform_      {0.0};
-      std::chrono::system_clock::time_point timeWidgetColorRestored_      {};
-      std::chrono::system_clock::time_point timeOfLastSelectionAttempt_   {};
       int                                   clippingPlaneIndex_           {0};
-      int                                   lastMousePressEventX_         {0};
-      int                                   lastMousePressEventY_         {0};
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
       int                                   delayAfterLastSelection_      {50};
