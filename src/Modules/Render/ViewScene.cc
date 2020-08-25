@@ -276,8 +276,13 @@ void ViewScene::execute()
   }
 #endif
   state->setValue(HasNewGeometry, true);
-  state->setValue(TimeExecutionFinished, int(std::chrono::duration_cast<std::chrono::milliseconds>(
-      std::chrono::system_clock::now().time_since_epoch()).count()));
+  state->setValue(TimeExecutionFinished, int(getCurrentTimeSinceEpoch()));
+}
+
+long ViewScene::getCurrentTimeSinceEpoch()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void ViewScene::processViewSceneObjectFeedback()
