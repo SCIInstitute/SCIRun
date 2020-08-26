@@ -356,7 +356,7 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
   auto converterObj = legacyState_.getStateConverter(moduleName, var);
-  if (converterObj)
+  if (converterObj && converterObj->valueConverter)
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
     simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
