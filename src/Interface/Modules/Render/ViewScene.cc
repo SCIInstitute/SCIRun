@@ -1766,6 +1766,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
       }
       else
       {
+        spire->removeAllGeomObjects();
         selectedWidget_ = spire->select(adjustedX, adjustedY, widgetHandles_);
         previousWidgetInfo_->setCameraTransform(currentCameraTransform);
         delayAfterLastSelection_ = 200;
@@ -1782,12 +1783,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     previousWidgetInfo_->selectionAttempt();
   }
   if (geomDataPresent)
-  {
-    if(reuseWidget)
       updateModifiedGeometries();
-    else
-      updateAllGeometries();
-  }
 }
 
 //--------------------------------------------------------------------------------------------------
