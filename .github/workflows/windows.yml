@@ -119,3 +119,14 @@ jobs:
       with:
         name: SCIRunWindowsPythonInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+
+    - name: Deploy
+      #if: github.ref == 'refs/heads/master'
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "dev-windows"
+        prerelease: true
+        title: "Development Build for Windows"
+        files: |
+             bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
