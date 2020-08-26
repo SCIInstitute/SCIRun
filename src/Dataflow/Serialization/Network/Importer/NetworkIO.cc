@@ -360,7 +360,7 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
     simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
-      << (converterObj->valueConverter ? "<func>" : "null func") << std::endl;
+      << (converterObj->valueConverter ? "<func>" : "null func") << " from " << stripBraces << " to " << converterObj->valueConverter(stripBraces) << std::endl;
     stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
   else
