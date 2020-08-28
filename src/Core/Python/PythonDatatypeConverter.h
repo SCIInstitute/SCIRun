@@ -32,6 +32,7 @@
 
 #include <Core/Algorithms/Base/Variable.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <boost/any.hpp>
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
@@ -96,6 +97,8 @@ namespace SCIRun
         const std::vector<Datatypes::StringHandle>& strings);
       const std::string getClassName(const boost::python::object& object);
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE Algorithms::Variable convertPythonObjectToVariableWithTypeInference(
+        const boost::python::object& object, const Algorithms::Variable& var);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
       SCISHARE boost::python::object convertTransientVariableToPythonObject(const boost::optional<boost::any>& v);
 

@@ -25,13 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 /// @todo Documentation Core/Python/PythonInterpreter.cc
 
 #ifdef BUILD_WITH_PYTHON
 #ifdef _MSC_VER
 //#pragma warning( push )
-#pragma warning( disable: 4244 )
+#pragma warning(disable : 4244)
 #endif
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -42,7 +41,6 @@
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Python/PythonDatatypeConverter.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <boost/variant/apply_visitor.hpp>
 
 using namespace SCIRun;
@@ -54,72 +52,190 @@ using namespace SCIRun::MatlabIO;
 
 namespace py = boost::python;
 
-namespace
+namespace {
+struct PythonObjectVisitor : boost::static_visitor<py::object>
 {
-  struct PythonObjectVisitor : boost::static_visitor<py::object>
+  py::object operator()(const int& v) const { return py::object(v); }
+  py::object operator()(const std::string& v) const { return py::object(v); }
+  py::object operator()(const double& v) const { return py::object(v); }
+  py::object operator()(const bool& v) const { return py::object(v); }
+  py::object operator()(const AlgoOption& v) const
   {
-    py::object operator()(const int& v) const { return py::object(v); }
-    py::object operator()(const std::string& v) const { return py::object(v); }
-    py::object operator()(const double& v) const { return py::object(v); }
-    py::object operator()(const bool& v) const { return py::object(v); }
-    py::object operator()(const AlgoOption& v) const
-    {
-      THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
-    }
-    py::object operator()(const VariableList& v) const
-    {
-      py::list pyList;
-      for (int i = 0; i < v.size(); ++i)
-        pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
-      return std::move(pyList);
-    }
+    THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
+  }
+  py::object operator()(const VariableList& v) const
+  {
+    py::list pyList;
+    for (int i = 0; i < v.size(); ++i)
+      pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
+    return std::move(pyList);
+  }
+};
+
+struct NumberVisitor : boost::static_visitor<Variable::Value>
+{
+  
+};
+
+struct ValueVisitor : boost::static_visitor<Variable::Value>
+{
+private:
+  const py::object& object_;
+public:
+  ValueVisitor(const py::object& object) : object_(object) {}
+
+  enum NumberType
+  {
+    Int,
+    Double
   };
 
-  template <class T>
-  py::list toPythonList(const DenseMatrixGeneric<T>& dense)
+  Variable::Value operator()(const int& v) const
   {
-    py::list list;
-    for (int i = 0; i < dense.nrows(); ++i)
-    {
-      py::list row;
-      for (int j = 0; j < dense.ncols(); ++j)
-        row.append(dense(i, j));
-      list.append(row);
-    }
-    return list;
+    return convertNumber(v, NumberType::Int);
   }
 
-  template <class T>
-  py::dict toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+  Variable::Value operator()(const double& v) const
   {
-    py::list rows, columns, values;
-
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      values.append(sparse.valuePtr()[i]);
-    }
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      columns.append(sparse.innerIndexPtr()[i]);
-    }
-    for (int i = 0; i < sparse.outerSize(); ++i)
-    {
-      rows.append(sparse.outerIndexPtr()[i]);
-    }
-    rows.append(sparse.nonZeros());
-
-    py::dict list;
-    list["nrows"] = sparse.nrows();
-    list["ncols"] = sparse.ncols();
-    list["rows"] = rows;
-    list["columns"] = columns;
-    list["values"] = values;
-    return list;
+    return convertNumber(v, NumberType::Double);
   }
+
+  Variable::Value operator()(const bool& v) const
+  {
+    if (getClassName(object_) == "bool")
+    {
+      py::extract<bool> e(object_);
+      return e();
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a boolean.");
+  }
+
+  Variable::Value operator()(const std::string& v) const
+  {
+    if (getClassName(object_) == "str")
+    {
+      py::extract<std::string> e(object_);
+      return e();
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a string.");
+  }
+
+  Variable::Value operator()(const AlgoOption& v) const
+  {
+    // All variables using AlgoOption go to the string operator so this is never reached
+    THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
+  }
+
+  Variable::Value operator()(const Variable::List& v) const
+  {
+    if (getClassName(object_) == "list")
+    {
+      Variable firstVal = v[0];
+      py::extract<py::list> e(object_);
+      auto pyList = e();
+      Variable::List newList(py::len(pyList));
+      for (auto i = 0; i < py::len(pyList); ++i)
+        newList[i] = makeVariable(firstVal.name(),
+                                  boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
+      return newList;
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a list.");
+    // py::list pyList;
+    // for (int i = 0; i < v.size(); ++i)
+      // pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
+    // return std::move(pyList);
+
+    // return makeVariable("blah", v);
+    // return v;
+  }
+
+  Variable::Value convertNumber(const Variable::Value& val, NumberType returnType) const
+  {
+    auto classname = getClassName(object_);
+    if (classname == "int")
+    {
+      py::extract<int> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return objectVal;
+      case Double: return int(objectVal);
+      }
+    }
+    else if (classname == "float")
+    {
+      py::extract<float> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return int(objectVal);
+      case Double: return double(objectVal);
+      }
+    }
+    else if (classname == "double")
+    {
+      py::extract<double> e(object_);
+      auto objectVal = e();
+      switch (returnType)
+      {
+      case Int: return double(objectVal);
+      case Double: return objectVal;
+      }
+    }
+    else
+      THROW_INVALID_ARGUMENT("The input python object is not a number.");
+  }
+};
+
+template <class T>
+py::list toPythonList(const DenseMatrixGeneric<T>& dense)
+{
+  py::list list;
+  for (int i = 0; i < dense.nrows(); ++i)
+  {
+    py::list row;
+    for (int j = 0; j < dense.ncols(); ++j)
+      row.append(dense(i, j));
+    list.append(row);
+  }
+  return list;
 }
 
-py::dict SCIRun::Core::Python::wrapDatatypesInMap(const std::vector<Datatypes::MatrixHandle>& matrices,
-  const std::vector<FieldHandle>& fields, const std::vector<Datatypes::StringHandle>& strings)
+template <class T>
+py::dict toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+{
+  py::list rows, columns, values;
+
+  for (int i = 0; i < sparse.nonZeros(); ++i)
+  {
+    values.append(sparse.valuePtr()[i]);
+  }
+  for (int i = 0; i < sparse.nonZeros(); ++i)
+  {
+    columns.append(sparse.innerIndexPtr()[i]);
+  }
+  for (int i = 0; i < sparse.outerSize(); ++i)
+  {
+    rows.append(sparse.outerIndexPtr()[i]);
+  }
+  rows.append(sparse.nonZeros());
+
+  py::dict list;
+  list["nrows"] = sparse.nrows();
+  list["ncols"] = sparse.ncols();
+  list["rows"] = rows;
+  list["columns"] = columns;
+  list["values"] = values;
+  return list;
+}
+}
+
+py::dict SCIRun::Core::Python::wrapDatatypesInMap(
+    const std::vector<Datatypes::MatrixHandle>& matrices, const std::vector<FieldHandle>& fields,
+    const std::vector<Datatypes::StringHandle>& strings)
 {
   py::dict d;
   int i = 0;
@@ -181,7 +297,8 @@ py::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
       break;
     }
     default:
-      std::cout << "some other array: " << fieldName << " of type " << subField.gettype() << std::endl;
+      std::cout << "some other array: " << fieldName << " of type " << subField.gettype()
+                << std::endl;
       break;
     }
   }
@@ -190,15 +307,13 @@ py::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 
 py::list SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
 {
-  if (matrix)
-    return ::toPythonList(*matrix);
+  if (matrix) return ::toPythonList(*matrix);
   return {};
 }
 
 py::dict SCIRun::Core::Python::convertMatrixToPython(SparseRowMatrixHandle matrix)
 {
-  if (matrix)
-    return ::toPythonList(*matrix);
+  if (matrix) return ::toPythonList(*matrix);
   return {};
 }
 
@@ -215,8 +330,7 @@ py::object SCIRun::Core::Python::convertStringToPython(StringHandle str)
 bool DenseMatrixExtractor::check() const
 {
   py::extract<py::list> e(object_);
-  if (!e.check())
-    return false;
+  if (!e.check()) return false;
 
   auto list = e();
   auto length = len(list);
@@ -260,7 +374,8 @@ DatatypeHandle DenseMatrixExtractor::operator()() const
         {
           auto row = rowList();
           if (len(row) != dense->ncols())
-            throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
+            throw std::invalid_argument(
+                "Attempted to convert into dense matrix but row lengths are not all equal.");
           for (int j = 0; j < len(row); ++j)
           {
             (*dense)(i, j) = py::extract<double>(row[j]);
@@ -272,18 +387,17 @@ DatatypeHandle DenseMatrixExtractor::operator()() const
   return dense;
 }
 
-std::set<std::string> SparseRowMatrixExtractor::validKeys_ = {"rows", "columns", "values", "nrows", "ncols"};
+std::set<std::string> SparseRowMatrixExtractor::validKeys_ = {
+    "rows", "columns", "values", "nrows", "ncols"};
 
 bool SparseRowMatrixExtractor::check() const
 {
   py::extract<py::dict> e(object_);
-  if (!e.check())
-    return false;
+  if (!e.check()) return false;
 
   auto dict = e();
   auto length = len(dict);
-  if (validKeys_.size() != length)
-    return false;
+  if (validKeys_.size() != length) return false;
 
   auto keys = dict.keys();
   auto values = dict.values();
@@ -291,16 +405,13 @@ bool SparseRowMatrixExtractor::check() const
   for (int i = 0; i < length; ++i)
   {
     py::extract<std::string> key_i(keys[i]);
-    if (!key_i.check())
-      return false;
+    if (!key_i.check()) return false;
 
-    if (validKeys_.find(key_i()) == validKeys_.end())
-      return false;
+    if (validKeys_.find(key_i()) == validKeys_.end()) return false;
 
     py::extract<py::list> value_i_list(values[i]);
     py::extract<size_t> value_i_int(values[i]);
-    if (!value_i_int.check() && !value_i_list.check())
-      return false;
+    if (!value_i_int.check() && !value_i_list.check()) return false;
   }
 
   return true;
@@ -327,10 +438,7 @@ DatatypeHandle SparseRowMatrixExtractor::operator()() const
 
     py::extract<py::list> value_i_list(values[i]);
     auto fieldName = key_i();
-    if (fieldName == "rows")
-    {
-      rows = to_std_vector<index_type>(value_i_list());
-    }
+    if (fieldName == "rows") { rows = to_std_vector<index_type>(value_i_list()); }
     else if (fieldName == "columns")
     {
       columns = to_std_vector<index_type>(value_i_list());
@@ -354,7 +462,8 @@ DatatypeHandle SparseRowMatrixExtractor::operator()() const
   if (!rows.empty() && !columns.empty() && !matrixValues.empty())
   {
     auto nnz = matrixValues.size();
-    return boost::make_shared<SparseRowMatrix>(nrows, ncols, &rows[0], &columns[0], &matrixValues[0], nnz);
+    return boost::make_shared<SparseRowMatrix>(
+        nrows, ncols, &rows[0], &columns[0], &matrixValues[0], nnz);
   }
 
   return nullptr;
@@ -363,13 +472,11 @@ DatatypeHandle SparseRowMatrixExtractor::operator()() const
 bool FieldExtractor::check() const
 {
   py::extract<py::dict> e(object_);
-  if (!e.check())
-    return false;
+  if (!e.check()) return false;
 
   auto dict = e();
   auto length = len(dict);
-  if (0 == length)
-    return false;
+  if (0 == length) return false;
 
   auto keys = dict.keys();
   auto values = dict.values();
@@ -377,63 +484,62 @@ bool FieldExtractor::check() const
   for (int i = 0; i < length; ++i)
   {
     py::extract<std::string> key_i(keys[i]);
-    if (!key_i.check())
-      return false;
+    if (!key_i.check()) return false;
 
     py::extract<std::string> value_i_string(values[i]);
     py::extract<py::list> value_i_list(values[i]);
-    if (!value_i_string.check() && !value_i_list.check())
-      return false;
+    if (!value_i_string.check() && !value_i_list.check()) return false;
   }
 
   return true;
 }
 
-namespace
+namespace {
+matlabarray getPythonFieldDictionaryValue(
+    const py::extract<std::string>& strExtract, const py::extract<py::list>& listExtract)
 {
-  matlabarray getPythonFieldDictionaryValue(const py::extract<std::string>& strExtract, const py::extract<py::list>& listExtract)
+  matlabarray value;
+  if (strExtract.check())
   {
-    matlabarray value;
-    if (strExtract.check())
-    {
-      value.createstringarray();
-      auto strData = strExtract();
-      //std::cout << "\tsetting string field: " << strData << std::endl;
-      value.setstring(strData);
-    }
-    else if (listExtract.check())
-    {
-      auto list = listExtract();
-      //std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
-      if (1 == len(list))
-      {
-        py::extract<double> e(list[0]);
-        if (e.check())
-          value.createdoublescalar(e());
-        else
-          std::cerr << "scalar value not readable as double" << std::endl;
-      }
-      else if (len(list) > 1)
-      {
-        py::extract<py::list> twoDlistExtract(list[0]);
-        if (twoDlistExtract.check())
-        {
-          std::vector<int> dims = { static_cast<int>(len(list[0])), static_cast<int>(len(list)) };
-          auto vectorOfLists = to_std_vector<py::list>(list);
-          std::vector<std::vector<double>> vv;
-          std::transform(vectorOfLists.begin(), vectorOfLists.end(), std::back_inserter(vv), [](const py::list& inner) { return to_std_vector<double>(inner); });
-          std::vector<double> flattenedValues(dims[0] * dims[1]);  //TODO: fill from py list-of-lists
-          flatten(vv.begin(), vv.end(), flattenedValues.begin());
-          value.createdoublematrix(flattenedValues, dims);
-        }
-        else // 1-D list
-        {
-          value.createdoublevector(to_std_vector<double>(list));
-        }
-      }
-    }
-    return value;
+    value.createstringarray();
+    auto strData = strExtract();
+    // std::cout << "\tsetting string field: " << strData << std::endl;
+    value.setstring(strData);
   }
+  else if (listExtract.check())
+  {
+    auto list = listExtract();
+    // std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
+    if (1 == len(list))
+    {
+      py::extract<double> e(list[0]);
+      if (e.check())
+        value.createdoublescalar(e());
+      else
+        std::cerr << "scalar value not readable as double" << std::endl;
+    }
+    else if (len(list) > 1)
+    {
+      py::extract<py::list> twoDlistExtract(list[0]);
+      if (twoDlistExtract.check())
+      {
+        std::vector<int> dims = {static_cast<int>(len(list[0])), static_cast<int>(len(list))};
+        auto vectorOfLists = to_std_vector<py::list>(list);
+        std::vector<std::vector<double>> vv;
+        std::transform(vectorOfLists.begin(), vectorOfLists.end(), std::back_inserter(vv),
+            [](const py::list& inner) { return to_std_vector<double>(inner); });
+        std::vector<double> flattenedValues(dims[0] * dims[1]);  // TODO: fill from py list-of-lists
+        flatten(vv.begin(), vv.end(), flattenedValues.begin());
+        value.createdoublematrix(flattenedValues, dims);
+      }
+      else  // 1-D list
+      {
+        value.createdoublevector(to_std_vector<double>(list));
+      }
+    }
+  }
+  return value;
+}
 }
 
 DatatypeHandle FieldExtractor::operator()() const
@@ -458,7 +564,7 @@ DatatypeHandle FieldExtractor::operator()() const
     py::extract<std::string> value_i_string(values[i]);
     py::extract<py::list> value_i_list(values[i]);
     auto fieldName = key_i();
-    //std::cout << "setting field " << fieldName << std::endl;
+    // std::cout << "setting field " << fieldName << std::endl;
     ma.setfield(0, fieldName, getPythonFieldDictionaryValue(value_i_string, value_i_list));
   }
 
@@ -467,12 +573,11 @@ DatatypeHandle FieldExtractor::operator()() const
   return field;
 }
 
-namespace
-{
+namespace {
   Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
-  {
-    return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
-  }
+{
+  return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
+}
 }
 
 const std::string SCIRun::Core::Python::getClassName(const py::object& object)
@@ -483,64 +588,55 @@ const std::string SCIRun::Core::Python::getClassName(const py::object& object)
 
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(const py::object& object)
 {
-  /// @todo: yucky
-
-  auto classname = getClassName(object);
-  if (classname == "int")
   {
     py::extract<int> e(object);
-    return makeVariable(classname, e());
+    if (e.check())
+      return makeVariable("int", e());
   }
-  else if (classname == "float")
-  {
-    py::extract<float> e(object);
-    return makeVariable(classname, e());
-  }
-  else if (classname == "double")
   {
     py::extract<double> e(object);
-    return makeVariable(classname, e());
+    if (e.check())
+      return makeVariable("double", e());
   }
-  else if (classname == "str")
   {
     py::extract<std::string> e(object);
-    return makeVariable(classname, e());
+    if (e.check())
+      return makeVariable("string", e());
   }
-  else if (classname == "bool")
   {
     py::extract<bool> e(object);
-    return makeVariable(classname, e());
+    if (e.check())
+      return makeVariable("bool", e());
   }
-  else if (classname == "list")
   {
-    Variable::List vars(len(object));
-    for (int i = 0; i < len(object); ++i)
-      vars[i] = convertPythonObjectToVariable(object[i]);
-    return makeVariable(classname, vars);
+    py::extract<py::list> e(object);
+    if (e.check())
+    {
+      auto pyList = e();
+      Variable::List newList(py::len(pyList));
+      for (auto i = 0; i < py::len(pyList); ++i)
+        newList[i] = convertPythonObjectToVariable(pyList[i]);
+      return makeVariable("list", newList);
+    }
   }
-
-  {
-    DenseMatrixExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e);
-  }
-
   {
     SparseRowMatrixExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e);
+    if (e.check())
+      return makeDatatypeVariable(e);
   }
-  //{
-  //  detail::DenseColumnMatrixExtractor e(object);
-  //  if (e.check())
-  //  {
-  //    return makeDatatypeVariable(e);
-  //  }
-  //}
   {
     FieldExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e);
+    if (e.check())
+      return makeDatatypeVariable(e);
   }
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
+}
+
+Variable SCIRun::Core::Python::convertPythonObjectToVariableWithTypeInference(
+    const py::object& object, const Variable& var)
+{
+  return makeVariable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
 }
 
 py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)
@@ -548,7 +644,8 @@ py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& v
   return boost::apply_visitor(PythonObjectVisitor(), var.value());
 }
 
-py::object SCIRun::Core::Python::convertTransientVariableToPythonObject(const boost::optional<boost::any>& v)
+py::object SCIRun::Core::Python::convertTransientVariableToPythonObject(
+    const boost::optional<boost::any>& v)
 {
   if (transient_value_check<Variable>(v))
     return convertVariableToPythonObject(transient_value_cast<Variable>(v));

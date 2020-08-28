@@ -424,7 +424,8 @@ namespace
         else
         {
           if (state->containsKey(apn))
-            state->setValue(apn, convertPythonObjectToVariable(object).value());
+            state->setValue(apn, convertPythonObjectToVariableWithTypeInference(
+                              object, state->getValue(apn)).value());
           else
             throw std::invalid_argument("Module state key " + name + " not defined.");
         }
