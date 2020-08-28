@@ -420,11 +420,12 @@ namespace
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
         if (transient)
-          state->setTransientValue(apn, convertPythonObjectToVariable(object, state->getValue(apn)), false);
+          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
         else
         {
           if (state->containsKey(apn))
-            state->setValue(apn, convertPythonObjectToVariable(object, state->getValue(apn)).value());
+            state->setValue(apn, convertPythonObjectToVariableWithTypeInference(
+                              object, state->getValue(apn)).value());
           else
             throw std::invalid_argument("Module state key " + name + " not defined.");
         }

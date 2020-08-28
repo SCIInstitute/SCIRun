@@ -41,7 +41,6 @@
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Python/PythonDatatypeConverter.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <boost/variant/apply_visitor.hpp>
 
 using namespace SCIRun;
@@ -575,10 +574,9 @@ DatatypeHandle FieldExtractor::operator()() const
 }
 
 namespace {
-  Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor,
-                                const Variable::DatatypeVariableEnum& type)
+  Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
 {
-  return Variable(Name(extractor.label()), extractor(), type);
+  return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
 }
 }
 
@@ -588,46 +586,57 @@ const std::string SCIRun::Core::Python::getClassName(const py::object& object)
   return py::extract<std::string>(extractor().attr("__class__").attr("__name__"));
 }
 
-Variable SCIRun::Core::Python::convertPythonObjectToVariable(
-    const py::object& object, const Variable& var)
+Variable SCIRun::Core::Python::convertPythonObjectToVariable(const py::object& object)
 {
-  std::cout << "class name " << getClassName(object) << "\n";
-  return makeVariable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
-  /*
-  /// @todo: yucky
-
-  auto classname = getClassName(object);
-  else if (classname == "list")
   {
-    Variable::List vars(len(object));
-    for (int i = 0; i < len(object); ++i)
-      vars[i] = convertPythonObjectToVariable(object[i], vars[i]);
-    return makeVariable(classname, vars);
+    py::extract<int> e(object);
+    if (e.check())
+      return makeVariable("int", e());
   }
-
   {
-    DenseMatrixExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e, Variable::DENSE_MATRIX);
+    py::extract<double> e(object);
+    if (e.check())
+      return makeVariable("double", e());
   }
-
+  {
+    py::extract<std::string> e(object);
+    if (e.check())
+      return makeVariable("string", e());
+  }
+  {
+    py::extract<bool> e(object);
+    if (e.check())
+      return makeVariable("bool", e());
+  }
+  {
+    py::extract<py::list> e(object);
+    if (e.check())
+    {
+      auto pyList = e();
+      Variable::List newList(py::len(pyList));
+      for (auto i = 0; i < py::len(pyList); ++i)
+        newList[i] = convertPythonObjectToVariable(pyList[i]);
+      return makeVariable("list", newList);
+    }
+  }
   {
     SparseRowMatrixExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e, Variable::SPARSE_MATRIX);
+    if (e.check())
+      return makeDatatypeVariable(e);
   }
-  //{
-  //  detail::DenseColumnMatrixExtractor e(object);
-  //  if (e.check())
-  //  {
-  //    return makeDatatypeVariable(e);
-  //  }
-  //}
   {
     FieldExtractor e(object);
-    if (e.check()) return makeDatatypeVariable(e, Variable::FIELD);
+    if (e.check())
+      return makeDatatypeVariable(e);
   }
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
-  */
+}
+
+Variable SCIRun::Core::Python::convertPythonObjectToVariableWithTypeInference(
+    const py::object& object, const Variable& var)
+{
+  return makeVariable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
 }
 
 py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)
