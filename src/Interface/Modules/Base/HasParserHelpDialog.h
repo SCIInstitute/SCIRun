@@ -55,7 +55,6 @@ namespace Gui {
   public:
     ParserHelpDialog(QWidget* parent = 0);
   private Q_SLOTS:
-    void searchText(const QString& text);
     void searchText();
   };
 
