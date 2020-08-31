@@ -39,23 +39,9 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
 HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
-  noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
-  destroyed_(false)
+  noteEditor_(QString::fromStdString(name), positionAdjustable, 0)
 {
   noteEditor_.setStyleSheet(scirunStylesheet());
-}
-
-HasNotes::~HasNotes()
-{
-  destroy();
-}
-
-void HasNotes::destroy()
-{
-  if (!destroyed_)
-  {
-    destroyed_ = true;
-  }
 }
 
 void HasNotes::connectNoteEditorToAction(QAction* action)
@@ -85,51 +71,26 @@ void HasNotes::setDefaultNoteFontSize(int size)
   noteEditor_.setDefaultNoteFontSize(size);
 }
 
-NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
-  networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
+NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display, QGraphicsItem* parent) :
+  parent_(parent), note_(nullptr),
   notePosition_(NotePosition::Default),
   defaultNotePosition_(NotePosition::Top), //TODO
-  displayStrategy_(display),
-  destroyed_(false)
+  displayStrategy_(display)
 {
-}
-
-NoteDisplayHelper::~NoteDisplayHelper()
-{
-  destroy();
-}
-
-void NoteDisplayHelper::destroy()
-{
-  if (!destroyed_)
-  {
-    if (note_ && scene_)
-    {
-      scene_->removeItem(note_);
-    }
-    delete note_;
-    destroyed_ = true;
-  }
 }
 
 void NoteDisplayHelper::updateNoteImpl(const Note& note)
 {
   if (!note_)
   {
-    setNoteGraphicsContext();
-    if (!scene_)
-      logWarning("Scene not set, network notes will not be displayed.");
-
-    note_ = new QGraphicsTextItem("");
-    scene_->addItem(note_);
-
+    note_ = new QGraphicsTextItem("", parent_);
     note_->setDefaultTextColor(Qt::white);
   }
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
-  note_->setZValue(networkObjectWithNote_->zValue() - 1);
+  note_->setZValue(parent_->zValue() - 1);
 }
 
 void NoteDisplayHelper::clearNoteCursor()
@@ -144,13 +105,12 @@ void NoteDisplayHelper::clearNoteCursor()
 
 QPointF NoteDisplayHelper::relativeNotePosition()
 {
-  if (note_ && networkObjectWithNote_)
+  if (note_ && parent_)
   {
     auto position = notePosition_ == NotePosition::Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(NotePosition::Tooltip == position || NotePosition::None == position));
-    networkObjectWithNote_->setToolTip("");
 
-    return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);
+    return displayStrategy_->relativeNotePosition(parent_, note_, position);
   }
   return QPointF();
 }
@@ -168,10 +128,9 @@ void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
 
 void NoteDisplayHelper::updateNotePosition()
 {
-  if (note_ && networkObjectWithNote_)
+  if (note_ && parent_)
   {
-    auto position = positioner_->currentPosition() + relativeNotePosition();
-    note_->setPos(position);
+    note_->setPos(relativeNotePosition());
   }
 }
 

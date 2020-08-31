@@ -127,8 +127,7 @@ void ViewSceneManager::getViewSceneGroupAsVector(ViewSceneDialog* vsd, std::vect
 
 void ViewSceneManager::getUngroupedViewScenesAsVector(std::vector<ViewSceneDialog*>& viewScenes)
 {
-  uint32_t size = viewSceneGroups.size();
-  for(auto vsd : ungroupedViewScenes)
+  for (auto vsd : ungroupedViewScenes)
     viewScenes.push_back(vsd);
 }
 

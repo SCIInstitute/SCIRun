@@ -39,6 +39,8 @@
 #include <string>
 #include <cassert>
 #include <memory>
+#include <iomanip>
+#include <locale>
 #include <Core/Logging/Log.h>
 #include <boost/lexical_cast.hpp>
 
@@ -113,8 +115,6 @@ protected:
 			numprocessors_ = 1;
 		#endif
 
-		algo_->remark("number of processors:  " + boost::lexical_cast<std::string>(numprocessors_));
-
 		success_.resize(numprocessors_, true);
 
 		//! get number of nodes for the model
@@ -122,6 +122,10 @@ protected:
 		assert(modelSize_ > 0);
 
 		matOut_.reset(new DenseMatrix(static_cast<int>(modelSize_), 3));
+
+    algo_->remark("Output matrix size: " + std::to_string(modelSize_) + "x3");
+    algo_->remark("Number of processors:  " + boost::lexical_cast<std::string>(numprocessors_));
+    algo_->remark("[Important] CPU usage will be very high while running this module. \r\nTo limit the number of cores used, adjust the maximum core setting in Preferences->Advanced");
 
 		return true;
 	}
@@ -138,6 +142,17 @@ protected:
 	}
 };
 
+namespace
+{
+  template<class T>
+  std::string formatWithCommas(const T& value)
+  {
+    std::stringstream ss;
+    ss.imbue(std::locale(""));
+    ss << std::fixed << value;
+    return ss.str();
+  }
+}
 
 class PieceWiseKernel : public KernelBase
 {
@@ -158,6 +173,8 @@ public:
 		{
 			return (false);
 		}
+
+    algo_->remark("Launching PieceWiseKernel. Size of computation remark coming soon..");
 
 		vmesh_->synchronize(Mesh::NODES_E | Mesh::EDGES_E);
 
@@ -230,6 +247,8 @@ private:
 		//! number of integration points
 		int nips = 0;
 
+    bool remarkedOnProblemSize = false;
+
 		try
 		{
 			for (index_type iM = begins; iM < ends; iM++)
@@ -292,10 +311,18 @@ private:
 
 					integrPoints.clear();
 
+          if (!remarkedOnProblemSize && proc_num == 0)
+          {
+            auto problemSize = (ends - begins) * coilNodes_.size() * nips;
+            algo_->remark("Per core load: " + formatWithCommas(problemSize) + " field computations.");
+            algo_->remark("To speed up this module, reduce the number of nodes in either the input mesh or the coil, or pick a simpler algorithm.");
+            remarkedOnProblemSize = true;
+          }
+
 					//! curve segment discretization
 					for (int iip = 0; iip < nips; iip++)
 					{
-            
+
 						double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
 						Vector v = Interpolate( coilNodeThis, coilNodeNext, interpolant );
 						integrPoints.push_back( v );
@@ -401,6 +428,8 @@ public:
 		{
 			return (false);
 		}
+
+    algo_->remark("Launching VolumetricKernel");
 
 		//! get numbder of nodes for the coil
 		coilSize_ = vcoil_->num_elems();
@@ -512,6 +541,8 @@ public:
 		{
 			return false;
 		}
+
+    algo_->remark("Launching DipolesKernel");
 
 		//! get number of nodes for the coil
 		coilSize_ = vcoil_->num_elems();

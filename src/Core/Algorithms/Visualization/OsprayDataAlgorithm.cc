@@ -575,7 +575,6 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   auto& vertex = fieldData.vertex;
   auto& color = fieldData.color;
   auto& normal = fieldData.normal;
-  auto& texCoord = fieldData.texCoord;
 
   FieldInformation info(field);
   auto facade(field->mesh()->getFacade());

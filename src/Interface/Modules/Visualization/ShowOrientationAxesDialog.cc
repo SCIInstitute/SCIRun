@@ -72,6 +72,14 @@ void ShowOrientationAxesDialog::adjustScale(float scaleFactor) const
   state_->setValue(SOA::Scale, scale);
 }
 
+namespace
+{
+  const float upScale_ = 1.25f;
+  const float doubleUpScale_ = upScale_ * upScale_;
+  const float downScale_ = 0.8f;
+  const float doubleDownScale_ = downScale_ * downScale_;
+}
+
 void ShowOrientationAxesDialog::scaleUpPush() const
 {
   adjustScale(upScale_);

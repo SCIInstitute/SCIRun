@@ -38,9 +38,9 @@
 #include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun {
+namespace SCIRun 
+{
 
-//----------------------------------------------------------------------
 template <class Data>
 class GenericIEPluginInterface
 {

@@ -31,6 +31,7 @@ SET(Interface_Modules_DataIO_FORMS
   ReadBundleDialog.ui
   ReadMatrixClassic.ui
   ReadNrrd.ui
+  ReadFile.ui
   WriteFieldDialog.ui
   WriteMatrix.ui
 )
@@ -40,6 +41,7 @@ SET(Interface_Modules_DataIO_HEADERS
   ReadBundleDialog.h
   ReadMatrixClassicDialog.h
   ReadNrrdDialog.h
+  ReadFileDialog.h
   WriteFieldDialog.h
   WriteMatrixDialog.h
   share.h
@@ -49,6 +51,7 @@ SET(Interface_Modules_DataIO_SOURCES
   ReadFieldDialog.cc
   ReadBundleDialog.cc
   ReadNrrdDialog.cc
+  ReadFileDialog.cc
   ReadMatrixClassicDialog.cc
   WriteFieldDialog.cc
   WriteMatrixDialog.cc
