@@ -497,6 +497,7 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox->setMinimumWidth(60);
   mUpVectorBox->setToolTip("Vector pointing up");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
+  mUpVectorBox->setEnabled(false);
   mViewBar->addWidget(mUpVectorBox);
   mViewBar->setMinimumHeight(35);
   initAxisViewParams();
@@ -1029,6 +1030,7 @@ void ViewSceneDialog::viewBarButtonClicked()
   QString color = hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
   viewBarBtn_->setStyleSheet("QPushButton { background-color: " + color + "; }");
   mDownViewBox->setCurrentIndex(0);
+  mUpVectorBox->setDisabled(hideViewBar_);
   mUpVectorBox->clear();
 }
 
@@ -1274,11 +1276,15 @@ void ViewSceneDialog::viewAxisSelected(const QString& name)
     mUpVectorBox->addItem("+Z");
     mUpVectorBox->addItem("-Z");
   }
+  mUpVectorBox->setEnabled(true);
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(const QString& name)
 {
+  if (name.isEmpty())
+    return;
+    
   glm::vec3 up, view;
   std::tie(view, up) = axisViewParams[mDownViewBox->currentText()][name];
 
