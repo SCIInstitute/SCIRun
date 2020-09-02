@@ -33,8 +33,7 @@ using namespace SCIRun::Gui;
 
 void ModuleDialogWithParserHelp::popUpParserHelp()
 {
-  if (!help_)
-    help_ = new ParserHelpDialog(this);
+  help_ = new ParserHelpDialog(this);
 
   help_->show();
   help_->activateWindow();
