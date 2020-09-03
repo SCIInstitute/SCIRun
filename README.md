@@ -30,13 +30,13 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 efficient middle layer, with support for Python scripting.
 
 ### Documentation
-For documentation, please see: http://sciinstitute.github.io/scirun.pages
+For documentation, please see: http://sciinstitute.github.io/SCIRun
 
 #### Build
-Please see http://sciinstitute.github.io/scirun.pages/build.html
+Please see http://sciinstitute.github.io/SCIRun/build.html
 
 #### Python API
-Please see http://sciinstitute.github.io/scirun.pages/python.html
+Please see http://sciinstitute.github.io/SCIRun/python.html
 
 ### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.

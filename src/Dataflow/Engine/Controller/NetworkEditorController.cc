@@ -118,22 +118,18 @@ namespace
         return false;
       return label.front() == '[' && label.back() == ']';
     }
-    ModuleHandle create(const std::string& label)
+    ModuleHandle createSnippet(const std::string& label)
     {
       auto modsNeeded = parseModules(label);
 
       ModulePositions positions;
       int i = 0;
       const double MODULE_VERTICAL_SPACING = 110;
-      const double MODULE_HORIZONTAL_SPACING = 264;
+      const double MODULE_HORIZONTAL_SPACING = 50;
       const double MODULE_SPACING_OFFSET = 10;
-      const double INITIAL_SNIPPET_LOC = 50;
-      static double snippetSpacer = 50;
+      const std::pair<double,double> initialPosition = {-500, -500};
+      static double snippetSpacer = MODULE_SPACING_OFFSET;
       static int numSnips = 0;
-      if (0 == nec_.getNetwork()->nmodules())
-      {
-        snippetSpacer = INITIAL_SNIPPET_LOC;
-      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -147,8 +143,8 @@ namespace
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->id().id_] =
-          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
-            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
+          { initialPosition.first + numSnips * MODULE_HORIZONTAL_SPACING + snippetSpacer,
+            initialPosition.second + MODULE_VERTICAL_SPACING * i++ + snippetSpacer };
       }
       numSnips = (numSnips + 1) % 3;
       if (0 == numSnips)
@@ -230,7 +226,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    return snippet.create(name);
+    return snippet.createSnippet(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
@@ -279,6 +275,17 @@ void NetworkEditorController::interruptModule(const ModuleId& id)
   ///*emit*/ networkInterrupted_();
 }
 
+namespace
+{
+  InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)
+  {
+    auto ports = mod->findInputPortsWithName(name);
+    auto firstEmptyDynamicPortWithName = std::find_if(ports.begin(), ports.end(),
+      [](InputPortHandle iport) { return iport->nconnections() == 0; });
+    return firstEmptyDynamicPortWithName != ports.end() ? *firstEmptyDynamicPortWithName : nullptr;
+  }
+}
+
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
@@ -291,14 +298,20 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 
-  for (const auto& input : module->inputPorts())
+  for (const auto& originalInputPort : module->inputPorts())
   {
-    if (input->nconnections() == 1)
+    if (originalInputPort->nconnections() == 1)
     {
-      auto conn = input->connection(0);
+      auto conn = originalInputPort->connection(0);
       auto source = conn->oport_;
-      /// @todo: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
-      requestConnection(source.get(), newModule->getInputPort(input->id()).get());
+      if (!originalInputPort->isDynamic())
+        requestConnection(source.get(), newModule->getInputPort(originalInputPort->id()).get());
+      else
+      {
+        auto toConnect = getFirstAvailableDynamicPortWithName(newModule, originalInputPort->get_portname());
+        if (toConnect)
+          requestConnection(source.get(), toConnect.get());
+      }
     }
   }
 
@@ -310,7 +323,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
+ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto newMod = addModule(newModuleName);
 
@@ -336,16 +349,53 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        if (portToConnectUponInsertion)
+        return newMod;
+      }
+    }
+  }
+  return newMod;
+}
+
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const InsertInfo& info)
+{
+  auto newMod = connectNewModule(portToConnect, info.newModuleName);
+
+  auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
+
+  auto newModOutputPorts = newMod->outputPorts();
+  auto firstMatchingOutputPort = std::find_if(newModOutputPorts.begin(), newModOutputPorts.end(),
+    [&](OutputPortHandle oport) { return oport->get_typename() == portToConnect->get_typename(); }
+    );
+
+  if (firstMatchingOutputPort != newModOutputPorts.end())
+  {
+    auto newOutputPortToConnectFrom = *firstMatchingOutputPort;
+
+    auto endModuleInputPortOptions = endModule->findInputPortsWithName(info.inputPortName);
+    if (!endModuleInputPortOptions.empty())
+    {
+      auto firstPort = endModuleInputPortOptions[0];
+
+      if (!firstPort->isDynamic())  // easy case
+      {
+        auto connId = firstPort->connection(0)->id_;
+        removeConnection(connId);
+        requestConnection(newOutputPortToConnectFrom.get(), firstPort.get());
+      }
+      else //dynamic: match portId exactly, remove, then retrieve list again to find first empty dynamic port of same name.
+      {
+        auto exactMatch = std::find_if(endModuleInputPortOptions.begin(), endModuleInputPortOptions.end(),
+          [&](InputPortHandle iport) { return iport->id().toString() == info.inputPortId; });
+        if (exactMatch != endModuleInputPortOptions.end())
         {
-          auto oports = newMod->outputPorts();
-          auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
-          if (fromPort != oports.end())
+          auto connId = (*exactMatch)->connection(0)->id_;
+          removeConnection(connId);
+          auto firstEmptyDynamicPortWithName = getFirstAvailableDynamicPortWithName(endModule, info.inputPortName);
+          if (firstEmptyDynamicPortWithName)
           {
-            requestConnection(fromPort->get(), portToConnectUponInsertion);
+            requestConnection(newOutputPortToConnectFrom.get(), firstEmptyDynamicPortWithName.get());
           }
         }
-        return newMod;
       }
     }
   }
@@ -394,7 +444,9 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
   if (theNetwork_->disconnect(id))
+  {
     connectionRemoved_(id);
+  }
   printNetwork();
 }
 
@@ -530,7 +582,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 namespace
 {
-  const int xMoveIncrement = 300;
+  const int xMoveIncrement = 10;
   int xMoveIndex = 1;
   int yMoveIndex = 0;
   const int moveMod = 4;

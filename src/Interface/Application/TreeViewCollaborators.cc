@@ -103,16 +103,19 @@ bool HideItemsNotMatchingString::fuzzySearchAllPatterns(const QString& text, con
                [](char c){return c == ' ';});
 
   // Remove empty vectors
-  for(int i = pattern_split.size()-1; i >= 0; i--)
+  if (!pattern_split.empty())
   {
-    if(pattern_split[i].empty())
-      pattern_split.erase(pattern_split.begin() + i);
+    for (int i = static_cast<int>(pattern_split.size()) - 1; i >= 0; i--)
+    {
+      if (pattern_split[i].empty())
+        pattern_split.erase(pattern_split.begin() + i);
+    }
   }
 
   // Every word in the pattern must match
-  for(std::string str : pattern_split)
+  for (std::string str : pattern_split)
   {
-    if(!fuzzySearch(text.toStdString(), str))
+    if (!fuzzySearch(text.toStdString(), str))
     {
       return false;
     }

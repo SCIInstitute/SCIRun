@@ -60,6 +60,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Ospray
   Modules_Render
   ${LIBS}
   ospray::ospray
+  ${SCI_SPIRE_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

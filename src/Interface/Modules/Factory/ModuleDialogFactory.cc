@@ -103,6 +103,7 @@
 #include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
+#include <Core/Application/Application.h>
 #include <boost/assign.hpp>
 
 using namespace SCIRun::Gui;
@@ -132,7 +133,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
-    //ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
@@ -173,7 +173,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
-    //ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
@@ -212,7 +211,10 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("Subnet") != std::string::npos)
     return new SubnetDialog(moduleId, state, parentToUse_);
 
-  QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
-    QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");
+  if (!SCIRun::Core::Application::Instance().parameters()->isRegressionMode())
+  {
+    QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
+      QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");
+  }
   return new ModuleDialogBasic(moduleId, parentToUse_);
 }

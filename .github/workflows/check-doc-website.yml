@@ -1,0 +1,32 @@
+name: Check doc website
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - '.github/**'
+  pull_request:
+    paths:
+      - 'docs/**'
+
+jobs:
+  docs-check:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+    - name: Install dependencies
+      working-directory: docs
+      run: |
+        bundle install
+        gem install html-proofer
+    - name: Run tests
+      working-directory: docs
+      run: |
+        bundle exec jekyll build
+        bundle exec htmlproofer ./_site --allow-hash-href --url_swap \/scirun.pages:

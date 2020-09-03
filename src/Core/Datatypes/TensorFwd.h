@@ -25,36 +25,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_GEOMETRY_BBOXBASE_H
-#define CORE_GEOMETRY_BBOXBASE_H 1
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/share.h>
+/// @todo Documentation Core/Datatypes/MatrixFwd.h
+
+#ifndef CORE_DATATYPES_TENSOR_FWD_H
+#define CORE_DATATYPES_TENSOR_FWD_H
+
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace SCIRun {
 namespace Core {
-namespace Geometry {
-class SCISHARE BBoxBase
-{
-protected:
- Point cmin_;
- Point cmax_;
- bool is_valid_;
-public:
-  explicit BBoxBase(bool valid);
-  BBoxBase(bool valid, const Point& cmin, const Point& cmax);
-  virtual ~BBoxBase() {}
-  inline bool valid() const { return is_valid_; }
-  inline void set_valid(bool v) { is_valid_ = v; }
-  inline void reset() { is_valid_ = false; }
-  virtual void extend(const Point& p) = 0;
-  virtual void extend(double val) = 0;
-  virtual Vector diagonal() const = 0;
-  virtual Point get_min() const = 0;
-  virtual Point get_max() const = 0;
-  virtual Point center() const = 0;
-};
+namespace Datatypes {
+
+  template <typename Number, size_t Dim>
+  class DyadicTensorGeneric;
+
+  template <size_t Dim>
+  using DyadicTensor = DyadicTensorGeneric<double, Dim>;
+
+  typedef DyadicTensorGeneric<double, 2> Dyadic2DTensor;
+  typedef DyadicTensorGeneric<double, 4> Dyadic4DTensor;
+
+  template <typename Number>
+  class Dyadic3DTensorGeneric;
+
+  typedef Dyadic3DTensorGeneric<double> Dyadic3DTensor;
 }}}
+
 
 #endif
