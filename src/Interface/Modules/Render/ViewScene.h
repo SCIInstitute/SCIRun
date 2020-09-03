@@ -254,6 +254,7 @@ namespace SCIRun {
       void pushCameraLookAt();
       void pushCameraRotation();
       void pushCameraState();
+      bool clickedInViewer(QMouseEvent* e) const;
 
       //---------------- Widgets -------------------------------------------------------------------
       bool canSelectWidget() const;

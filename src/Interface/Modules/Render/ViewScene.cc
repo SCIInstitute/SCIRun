@@ -1123,6 +1123,9 @@ bool ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
+  if (!clickedInViewer(event))
+    return;
+  
   auto spire = mSpire.lock();
   if(!spire) return;
 
@@ -1152,9 +1155,16 @@ bool ViewSceneDialog::canSelectWidget() const
     && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
 }
 
-//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
+{
+  return childAt(e->x(), e->y()) == mGLWidget;
+}
+
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  if (!clickedInViewer(event))
+    return;
+
   if (!tryWidgetSelection(event))
   {
     auto spire = mSpire.lock();
