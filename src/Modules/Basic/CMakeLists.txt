@@ -35,6 +35,7 @@ SET(Modules_Basic_SRCS
   SendComplexScalar.cc
   ChooseInput.cc
   PortFeedbackTestModules.cc
+  PlaceholderModule.cc
   LoggingTester.cc
 )
 
@@ -48,6 +49,7 @@ SET(Modules_Basic_HEADERS
   ChooseInput.h
   PortFeedbackTestModules.h
   LoggingTester.h
+  PlaceholderModule.h
   share.h
 )
 
