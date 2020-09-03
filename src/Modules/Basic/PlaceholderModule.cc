@@ -41,10 +41,11 @@ PlaceholderModule::PlaceholderModule() : Module(staticInfo_)
 
 void PlaceholderModule::setStateDefaults()
 {
-  get_state()->setValue(Variables::Filename, std::string());
+  get_state()->setValue(Variables::Filename, std::string("<unknown>"));
 }
 
 void PlaceholderModule::execute()
 {
-  error("This is a placeholder module for the missing module " + get_state()->getValue(Variables::Filename).toString() + ".");
+  auto name = get_state()->getValue(Variables::Filename).toString();
+  error("This is a placeholder module for the missing module " + name + ".");
 }

@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/String/PlaceholderModuleDialog.h>
 #include <Modules/Basic/PlaceholderModule.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
