@@ -163,6 +163,10 @@ const std::string &y)
     return;
 
   const std::string cmodule = checkForModuleRename(moduleNameOrig);
+  if (cmodule == "PlaceholderModule")
+  {
+    //TODO: add state to placeholder module with original name
+  }
 
   std::vector<int> existingIdsWithThisModuleName;
   boost::copy(moduleIdMap_
@@ -182,6 +186,7 @@ const std::string &y)
 
     std::ostringstream ostr;
     ostr << "Error: Undefined module \"" << cmodule << "\"";
+    logCritical("LegacyNetworkIO error: Undefined module \"{}\"", cmodule);
     THROW_INVALID_ARGUMENT(ostr.str());
   }
 
@@ -208,7 +213,45 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData2", "CalculateFieldData" },
     { "CalculateFieldData3", "CalculateFieldData" },
     { "CalculateFieldData4", "CalculateFieldData" },
-    { "CalculateFieldData5", "CalculateFieldData" }
+    { "CalculateFieldData5", "CalculateFieldData" },
+    { "InterfaceWithNeuroFEMForward", "PlaceholderModule" },
+    { "ViewLeadSignals", "PlaceholderModule" },
+    { "ShowMatrix", "PlaceholderModule" },
+    { "ConvertFieldDataFromIndicesToTensors", "PlaceholderModule" },
+    { "CalculateMisfitField", "PlaceholderModule" },
+    { "SwapNodeLocationsWithMatrixEntries", "PlaceholderModule" },
+    { "BuildElemLeadField", "PlaceholderModule" },
+    { "OptimizeDipole", "PlaceholderModule" },
+    { "OptimizeConductivities", "PlaceholderModule" },
+    { "CalculateNodeNormals", "PlaceholderModule" },
+    { "SynchronizeGeometry", "PlaceholderModule" },
+    { "TransformData", "PlaceholderModule" },
+    { "SetFieldOrMeshStringProperty", "PlaceholderModule" },
+    { "Viewer", "PlaceholderModule" },
+    { "HDF5DataReader", "PlaceholderModule" },
+    { "MapDataToMeshCoord", "PlaceholderModule" },
+    { "ShowFieldV1", "PlaceholderModule" },
+    { "InterfaceWithMatlab", "PlaceholderModule" },
+    { "ShowTextureSlices", "PlaceholderModule" },
+    { "ApplyFilterToFieldData", "PlaceholderModule" },
+    { "CalculateLatVolGradientsAtNodes", "PlaceholderModule" },
+    { "ConvertLatVolDataFromElemToNode", "PlaceholderModule" },
+    { "CreateStructHex", "PlaceholderModule" },
+    { "ConvertLatVolDataFromNodeToElem", "PlaceholderModule" },
+    { "ConvertMeshToIrregularMesh", "PlaceholderModule" },
+    { "ConvertBundleToField", "PlaceholderModule" },
+    { "RemoveZerosFromMatrix", "PlaceholderModule" },
+    { "ReportScalarFieldStats", "PlaceholderModule" },
+    { "ClipFieldToFieldOrWidget", "PlaceholderModule" },
+    { "ClipLatVolByIndicesOrWidget", "PlaceholderModule" },
+    { "ExtractIsosurfaceByFunction", "PlaceholderModule" },
+    { "ConvertRegularMeshToStructuredMesh", "PlaceholderModule" },
+    { "GetDomainStructure", "PlaceholderModule" },
+    { "ConvertFieldToNrrd", "PlaceholderModule" },
+    { "MergeFields", "PlaceholderModule" },
+    { "InsertHexVolSheetAlongSurface", "PlaceholderModule" },
+    { "SubsampleStructuredFieldByIndices", "PlaceholderModule" },
+    { "EvaluateLinAlgGeneral", "PlaceholderModule" }
   };
 
 #if 0
@@ -229,6 +272,9 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
+
+  if (fromId.name_ == "PlaceholderModule" || toId.name_ == "PlaceholderModule")
+    return;
 
   if (!xmlData_)
     return;
@@ -1100,15 +1146,16 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
+  logCritical("^^^^^ Importing network: {}", net);
   net_file_ = net;
   if (!load_network())
   {
-    logCritical("Network import unsuccessful: {}", net);  
+    logCritical("!!!!!!! Network import unsuccessful: {}", net);  
 
     return nullptr;
   }
 
-  logCritical("Network import successful: {}", net);
+  logCritical("~~~ ~~~ ~~~ Network import successful: {}", net);
   return xmlData_;
 }
 
