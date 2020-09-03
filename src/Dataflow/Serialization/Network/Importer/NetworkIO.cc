@@ -1102,9 +1102,13 @@ LegacyNetworkIO::load_net(const std::string &net)
 {
   net_file_ = net;
   if (!load_network())
-    return nullptr;
+  {
+    logCritical("Network import unsuccessful: {}", net);  
 
-  std::cout << "Network import successful." << std::endl;
+    return nullptr;
+  }
+
+  logCritical("Network import successful: {}", net);
   return xmlData_;
 }
 
