@@ -51,7 +51,7 @@ namespace spire {
 //------------------------------------------------------------------------------
 glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 {
-  glm::vec3 ballMouse((tscMouse - mCenter) / mRadius);
+  glm::vec3 ballMouse(xy(tscMouse - mCenter) / mRadius, 0.0);
 
   float mag_sq = glm::dot(ballMouse, ballMouse);
   if (mag_sq > 1.0)
