@@ -301,7 +301,14 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "NIMRODConverter", "PlaceholderModule" },
     { "StreamLines", "PlaceholderModule" },
     { "FieldSubSample", "PlaceholderModule" },
-    { "SampleLattice", "PlaceholderModule" }
+    { "SampleLattice", "PlaceholderModule" },
+    { "NrrdSelectTime", "PlaceholderModule" },
+    { "NrrdSetProperty", "PlaceholderModule" },
+    { "FieldInfo", "PlaceholderModule" },
+    { "SampleField", "PlaceholderModule" },
+    { "TextureBuilder", "PlaceholderModule" },
+    { "ShowTextureSurface", "PlaceholderModule" },
+    { "UnuProject", "PlaceholderModule" }
   };
 
 #if 0
