@@ -139,10 +139,12 @@ void ViewScene::setStateDefaults()
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
+  state->setValue(TimeExecutionFinished, 0);
   state->setValue(CameraDistanceMinimum, 1e-10);
   state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
-
+  state->setValue(HasNewGeometry, false);
+  
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
@@ -273,6 +275,14 @@ void ViewScene::execute()
     }
   }
 #endif
+  state->setValue(HasNewGeometry, true);
+  state->setValue(TimeExecutionFinished, int(getCurrentTimeSinceEpoch()));
+}
+
+long ViewScene::getCurrentTimeSinceEpoch()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void ViewScene::processViewSceneObjectFeedback()
@@ -351,3 +361,5 @@ const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMin
 const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
 const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
 const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");
+const AlgorithmParameterName ViewScene::TimeExecutionFinished("TimeExecutionFinished");
+const AlgorithmParameterName ViewScene::HasNewGeometry("HasNewGeometry");

@@ -381,6 +381,13 @@ void SRInterface::runGCOnNextExecution()
       std::function<void()> func_;
     };
 
+void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
+    {
+      widgetUpdater_.reset();
+      widgetUpdater_.setCurrentWidget(widget);
+      widgetUpdater_.doInitialUpdate(x, y, mLastSelectionDepth);
+    }
+
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
       if (!mContext || !mContext->isValid())
@@ -620,6 +627,7 @@ void SRInterface::runGCOnNextExecution()
           widgetUpdater_.doInitialUpdate(x, y, depth);
         }
       }
+      mLastSelectionDepth = depth;
 
       return widgetUpdater_.currentWidget();
     }
@@ -629,6 +637,11 @@ void SRInterface::runGCOnNextExecution()
       // TODO: move this matrix to SRCamera?
       auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       return cam->data.viewProjection;
+    }
+
+    glm::mat4 SRInterface::getWorldToProjection() const
+    {
+      return mCamera->getWorldToProjection();
     }
 
     template <class P>
