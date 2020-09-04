@@ -198,16 +198,16 @@ inline static double mix(double a, double b, double c)
   return a * ( 1.0 - c) + b * c;
 }
 
-const static double cmap_gamma = 2.2;
-inline static ColorRGB gammaCorrect(const ColorRGB& in)
-{
-    return ColorRGB(pow(in.r(), 1.0/cmap_gamma), pow(in.g(), 1.0/cmap_gamma), pow(in.b(), 1.0/cmap_gamma));
-}
-
-inline static ColorRGB reverseGammaCorrect(const ColorRGB& in)
-{
-    return ColorRGB(pow(in.r(), cmap_gamma), pow(in.g(), cmap_gamma), pow(in.b(), cmap_gamma));
-}
+//const static double cmap_gamma = 2.2;
+//inline static ColorRGB gammaCorrect(const ColorRGB& in)
+//{
+//    return ColorRGB(pow(in.r(), 1.0/cmap_gamma), pow(in.g(), 1.0/cmap_gamma), pow(in.b(), 1.0/cmap_gamma));
+//}
+//
+//inline static ColorRGB reverseGammaCorrect(const ColorRGB& in)
+//{
+//    return ColorRGB(pow(in.r(), cmap_gamma), pow(in.g(), cmap_gamma), pow(in.b(), cmap_gamma));
+//}
 
 inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
 {

@@ -135,6 +135,7 @@ namespace SCIRun
       void setClippingPlaneZ(double value) override;
       void setClippingPlaneD(double value) override;
       void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
+      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle& widget, int x, int y) override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.
@@ -172,6 +173,7 @@ namespace SCIRun
       glm::mat4 getStaticCameraViewProjection() override;
 
       void modifyObject(const std::string& id, const gen::Transform& trans) override;
+      glm::mat4 getWorldToProjection() const override;
 
     private:
       void setupCore();
@@ -253,6 +255,7 @@ namespace SCIRun
       double                              mMatDiffuse         {};
       double                              mMatSpecular        {};
       double                              mMatShine           {};
+      GLfloat                             mLastSelectionDepth {0.0};
 
       //fog settings
       double                              mFogIntensity       {};

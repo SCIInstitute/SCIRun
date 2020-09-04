@@ -85,7 +85,7 @@ This will allow the same matlab engine instance to be called with `eng`.  *Note:
 
 ### Installing Python to maintain Python packages.
 
-The main advantage of doing this step is that a seperate Python will likely have pip or multiple packages already installed, unlike the SCIRun Python distribution (we are working on it).  Most distributions will likely work; some operating systems come with a python distribution that may work, yet it may be an outdated version. [Anaconda](https://www.anaconda.com/distribution/#download-section) is a good choice because most of the commonly used packages will be installed when it is installed.  However, the cleanest option will likely be installing [Python's own distribution](https://www.python.org/downloads/), then to install the packages that you want to use.  Both of these distributions should come with pip installed, which makes it easy to install most common packages.
+The main advantage of doing this step is that a separate Python will likely have pip or multiple packages already installed, unlike the SCIRun Python distribution (we are working on it).  Most distributions will likely work; some operating systems come with a python distribution that may work, yet it may be an outdated version. [Anaconda](https://www.anaconda.com/distribution/#download-section) is a good choice because most of the commonly used packages will be installed when it is installed.  However, the cleanest option will likely be installing [Python's own distribution](https://www.python.org/downloads/), then to install the packages that you want to use.  Both of these distributions should come with pip installed, which makes it easy to install most common packages.
 
 **Make sure the python versions of the separate Python installation matches the version that SCIRun is using.** To check the Python version in SCIRun, simply open the Python Console, it will print the version upon initialization.  You can also get the version when running on the command line by using the `-v` flag.
 
@@ -93,19 +93,19 @@ The main advantage of doing this step is that a seperate Python will likely have
 
 ### Installing numpy, scipy, and other major packages with pip
 
-Once you have a seperate Python with pip installed, installing packages is usually farily straightforward.  The basic command to install numpy is:
+Once you have a separate Python with pip installed, installing packages is usually fairly straightforward.  The basic command to install numpy is:
 `pip install numpy`
 However, if you have multiple python installations, it may be necessary to specify which pip to use.  The pip version will need to match the python version you intend to use.  Often the version name is appended to the function call:
 `pip3.6 install numpy`
 Yet it may be necessary to point to the specific installation:
 `/Library/Frameworks/Python.framework/Versions/3.6/bin/pip3.6 install numpy`
-for instance. If ther is an error installing the package, try upgrading pip first:
+for instance. If there is an error installing the package, try upgrading pip first:
 `pip3.6 install --upgrade pip`
 
 
 ### Installing Matlab engine for python in SCIRun
 
-Full installation instructions for installing the Matlab engine in Python are found [on the mathworks site](http://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).  Keep in mind that each Matlab version will only support a few Python versions, and the Python version much match what is running in SCIRun (see above).  Also, it would probably help if Python Matlab engine installation was in the same location as the other packages to be used in SCIRun.  It is helpful to have numpy and scipy installed aswell.
+Full installation instructions for installing the Matlab engine in Python are found [on the mathworks site](http://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html).  Keep in mind that each Matlab version will only support a few Python versions, and the Python version much match what is running in SCIRun (see above).  Also, it would probably help if Python Matlab engine installation was in the same location as the other packages to be used in SCIRun.  It is helpful to have numpy and scipy installed as well.
 
 To install the Matlab engine in Python run in the terminal:
 
@@ -124,9 +124,9 @@ import sys
 sys.path.append('/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/')
 ```
 
-There can be many directories or many `sys.path.append(...)` calls as needed.  This script is saved and will run everytime SCIRun starts, and therefore it will update the path.
+There can be many directories or many `sys.path.append(...)` calls as needed.  This script is saved and will run every time SCIRun starts, and therefore it will update the path.
 
-If there are module or package paths that need to be set on a network basis (rather than for every network), the InterfaceWithPython module can acheive this with the ["Top-Level Script" Tab](#interfacewithpython-top-level-script).  This tab will execute the code in this tab on a global scale (until SCIRun is closed), so a script similar to the triggered events example will be saved and executed only for the network.
+If there are module or package paths that need to be set on a network basis (rather than for every network), the InterfaceWithPython module can achieve this with the ["Top-Level Script" Tab](#interfacewithpython-top-level-script).  This tab will execute the code in this tab on a global scale (until SCIRun is closed), so a script similar to the triggered events example will be saved and executed only for the network.
 
 
 ## Matlab engine in SCIRun 5 (through python)
@@ -136,14 +136,14 @@ Full documentation can be found [here](http://www.mathworks.com/help/matlab/matl
 
 ### Matlab code block
 
-In the InterfaceWithPython module, there is a Matlab code block option.  This is a series of Matlab functions that are serparated by `%%`.  The InterfaceWithPython module will attempt to convert the native Matlab code in the block as Python code.  The commands cannot be complex in that they must only contain one function per line.  For example:
+In the InterfaceWithPython module, there is a Matlab code block option.  This is a series of Matlab functions that are separated by `%%`.  The InterfaceWithPython module will attempt to convert the native Matlab code in the block as Python code.  The commands cannot be complex in that they must only contain one function per line.  For example:
 ```
 %%
 A = magic(3);
 [evec, eval] = eig(A);
 %%
 ```
-Users can insert a Matlab code block with the button in the InterfaceWithPython UI, or bby typing `%%`.  To use the Matlab code block, make sure:
+Users can insert a Matlab code block with the button in the InterfaceWithPython UI, or by typing `%%`.  To use the Matlab code block, make sure:
 - Matlab and the Python Matlab engine are installed
 - The Matlab Python module is in the Python Path in SCIRun
 - The ["MatlabConversion.py"](https://github.com/SCIInstitute/SCIRun/blob/master/src/Modules/Python/MatlabConversion.py) file is in the Python Path.  This is found in the source code: "SCIRun/src/Modules/Python".
@@ -153,14 +153,14 @@ The Matlab Code Block is experimental code, so it will likely not work with comp
 
 ## Triggered Events
 
-Triggered events in SCIRun execute a python script upon certain SCIRun events.  Possible events include: application start,  network load, and adding a module.  The scripts and settings can be modified in the triggered events window.  The triggered event scripts allow for increased customization such as: modifying the Python path, changing the module default settings, and others.  Instructions on how to use triggered events to modify the Python path are [describe previously](#adding-packages-to-the-python-path-in-scirun).
+Triggered events in SCIRun execute a python script upon certain SCIRun events.  Possible events include: application start,  network load, and adding a module.  The scripts and settings can be modified in the triggered events window.  The triggered event scripts allow for increased customization such as: modifying the Python path, changing the module default settings, and others.  Instructions on how to use triggered events to modify the Python path are [described previously](#adding-packages-to-the-python-path-in-scirun).
 
 To change the default settings of a module, use the 'post module add' trigger.  Make sure it is enabled and use `scirun_set_module_state()` function.  For example, to change the default matrix type for the ReadMatrix module to matlab type, use the following function:
 ```
 scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None
 ```
 
-As another example, to always open all the viewscene windows when a network is loaded, use the 'on network load' trigger.  With this trigger enabled, use the following command in the script:
+As another example, to always open all the ViewScene windows when a network is loaded, use the 'on network load' trigger.  With this trigger enabled, use the following command in the script:
 ```
 [scirun_set_module_state(id, '__UI__', True) for id in scirun_module_ids() if id.startswith('ViewScene')]
 ```
