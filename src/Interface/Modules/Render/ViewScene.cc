@@ -149,7 +149,165 @@ namespace Gui {
         }
     }
   };
+
+  class PreviousWidgetSelectionInfo
+  {
+  public:
+    PreviousWidgetSelectionInfo() {}
+    long timeSince(const std::chrono::system_clock::time_point& time) const;
+    long timeSince(int time) const;
+    long timeSinceWidgetColorRestored() const;
+    long timeSinceLastSelectionAttempt() const;
+    bool hasSameMousePosition(int x, int y) const;
+    bool hasSameCameraTansform(const glm::mat4& mat) const;
+    bool hasSameWidget(WidgetHandle widget) const;
+    void widgetColorRestored();
+    void selectionAttempt();
+    void setCameraTransform(glm::mat4 mat);
+    void setMousePosition(int x, int y);
+    void setFrameIsFinished(bool finished);
+    bool getFrameIsFinished() const;
+    void setPreviousWidget(WidgetHandle widget);
+    WidgetHandle getPreviousWidget() const;
+    bool hasPreviousWidget() const;
+    void deletePreviousWidget();
+    int getPreviousMouseX() const;
+    int getPreviousMouseY() const;
+  private:
+    long timeSinceEpoch(const std::chrono::system_clock::time_point& time) const;
+    std::chrono::system_clock::time_point timeWidgetColorRestored_      {};
+    std::chrono::system_clock::time_point timeOfLastSelectionAttempt_   {};
+    Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
+    glm::mat4                             previousCameraTransform_      {0.0};
+    int                                   lastMousePressEventX_         {0};
+    int                                   lastMousePressEventY_         {0};
+    bool                                  frameIsFinished_              {false};
+  };
 }}
+
+//--------------------------------------------------------------------------------------------------
+long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
+{
+  return timeSinceEpoch(std::chrono::system_clock::now()) - timeSinceEpoch(time);
+}
+
+//--------------------------------------------------------------------------------------------------
+long PreviousWidgetSelectionInfo::timeSince(int time) const
+{
+  return long(int(timeSinceEpoch(std::chrono::system_clock::now())) -time);
+}
+
+//--------------------------------------------------------------------------------------------------
+long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameMousePosition(int x, int y) const
+{
+  return lastMousePressEventX_ == x && lastMousePressEventY_ == y;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameCameraTansform(const glm::mat4& mat) const
+{
+  return previousCameraTransform_ == mat;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::widgetColorRestored()
+{
+  timeWidgetColorRestored_ = std::chrono::system_clock::now();
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::selectionAttempt()
+{
+  timeOfLastSelectionAttempt_ = std::chrono::system_clock::now();
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setCameraTransform(glm::mat4 mat)
+{
+  previousCameraTransform_ = mat;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setMousePosition(int x, int y)
+{
+  lastMousePressEventX_ = x;
+  lastMousePressEventY_ = y;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setFrameIsFinished(bool finished)
+{
+  frameIsFinished_ = finished;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::getFrameIsFinished() const
+{
+  return frameIsFinished_;
+}
+
+//--------------------------------------------------------------------------------------------------
+long PreviousWidgetSelectionInfo::timeSinceWidgetColorRestored() const
+{
+  return timeSince(timeWidgetColorRestored_);
+}
+
+//--------------------------------------------------------------------------------------------------
+long PreviousWidgetSelectionInfo::timeSinceLastSelectionAttempt() const
+{
+  return timeSince(timeOfLastSelectionAttempt_);
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setPreviousWidget(const WidgetHandle widget)
+{
+  previousSelectedWidget_ = widget;
+}
+
+//--------------------------------------------------------------------------------------------------
+WidgetHandle PreviousWidgetSelectionInfo::getPreviousWidget() const
+{
+  return previousSelectedWidget_;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameWidget(const WidgetHandle widget) const
+{
+  return previousSelectedWidget_ == widget;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
+{
+  if (previousSelectedWidget_)
+    return true;
+  else
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::deletePreviousWidget()
+{
+  previousSelectedWidget_.reset();
+}
+
+//--------------------------------------------------------------------------------------------------
+int PreviousWidgetSelectionInfo::getPreviousMouseX() const
+{
+  return lastMousePressEventX_;
+}
+
+//--------------------------------------------------------------------------------------------------
+int PreviousWidgetSelectionInfo::getPreviousMouseY() const
+{
+  return lastMousePressEventY_;
+}
 
 namespace
 {
@@ -198,6 +356,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   format.setProfile(QSurfaceFormat::CoreProfile);
   format.setVersion(2, 1);
   mGLWidget->setFormat(format);
+  previousWidgetInfo_ = new PreviousWidgetSelectionInfo();
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
@@ -938,6 +1097,7 @@ void ViewSceneDialog::frameFinished()
 {
   sendScreenshotDownstreamForTesting();
   unblockExecution();
+  previousWidgetInfo_->setFrameIsFinished(true);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1104,14 +1264,13 @@ void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDi
 }
 
 //--------------------------------------------------------------------------------------------------
-bool ViewSceneDialog::tryWidgetSelection(QMouseEvent* event)
+bool ViewSceneDialog::tryWidgetSelection(int x, int y)
 {
   bool widgetSelected = false;
   if (canSelectWidget())
   {
     mouseButtonPressed_ = true;
-    selectObject(event->x(), event->y());
-    updateModifiedGeometries();
+    selectObject(x, y);
     widgetSelected = true;
     updateCursor();
   }
@@ -1140,20 +1299,31 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
     for(auto vsd : viewScenesToUpdate) vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
   else
-    tryWidgetSelection(event);
+    tryWidgetSelection(previousWidgetInfo_->getPreviousMouseX(),
+                       previousWidgetInfo_->getPreviousMouseY());
 }
 
 //--------------------------------------------------------------------------------------------------
-bool ViewSceneDialog::canSelectWidget() const
+bool ViewSceneDialog::needToWaitForWidgetSelection()
 {
-  return shiftdown_ && !mouseButtonPressed_
-    && !state_->getValue(Modules::Render::ViewScene::IsExecuting).toBool();
+  auto lastExec = state_->getValue(Modules::Render::ViewScene::TimeExecutionFinished).toInt();
+
+  return previousWidgetInfo_->timeSince(lastExec) < delayAfterModuleExecution_
+    || previousWidgetInfo_->timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_
+    || previousWidgetInfo_->timeSinceLastSelectionAttempt() < delayAfterLastSelection_;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::canSelectWidget()
+{
+  return shiftdown_ && previousWidgetInfo_->getFrameIsFinished()
+    && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  if (!tryWidgetSelection(event))
+  if (!tryWidgetSelection(event->x(), event->y()))
   {
     auto spire = mSpire.lock();
     if (!spire) return;
@@ -1167,22 +1337,35 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
     for (auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
   }
+  previousWidgetInfo_->setMousePosition(event->x(), event->y());
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
+  auto spire = mSpire.lock();
+  bool widgetMoved = spire->getWidgetTransform() != glm::mat4(1.0f);
   if (selectedWidget_)
   {
-    restoreObjColor();
-    updateModifiedGeometries();
-    unblockExecution();
-    Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
-    selectedWidget_->changeID();
-    selectedWidget_.reset();
+    if (widgetMoved)
+    {
+      Q_EMIT mousePressSignalForGeometryObjectFeedback(
+               event->x(), event->y(), selectedWidget_->uniqueID());
+      previousWidgetInfo_->setFrameIsFinished(false);
+    }
+    else
+    {
+      restoreObjColor();
+      selectedWidget_->changeID();
+      updateModifiedGeometries();
+      previousWidgetInfo_->widgetColorRestored();
+    }
 
+    unblockExecution();
+    previousWidgetInfo_->setPreviousWidget(selectedWidget_);
+    selectedWidget_.reset();
     auto spire = mSpire.lock();
-    if(!spire) return;
+    if (!spire) return;
     spire->widgetMouseUp();
     updateCursor();
   }
@@ -1544,26 +1727,63 @@ SCIRun::Modules::Render::ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::selectObject(const int x, const int y)
 {
-  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
-  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
-
-  auto spire = mSpire.lock();
-  if (!spire)
-    return;
-
-  spire->removeAllGeomObjects();
-
-  auto geomData = getGeomData();
-  if (geomData)
+  bool geomDataPresent = false;
+  bool reuseWidget;
   {
-    auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
-    selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
+    LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+    Guard lock(Modules::Render::ViewScene::mutex_.get());
+    LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-    if (selectedWidget_)
-      widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_,
-                                                                         WidgetColor::RED);
+    auto spire = mSpire.lock();
+    if (!spire) return;
+
+    auto geomData = getGeomData();
+    if (geomData)
+    {
+      geomDataPresent = true;
+      // Search for new widgets if geometry has changed
+      bool newGeometry = state_->getValue(Modules::Render::ViewScene::HasNewGeometry).toBool();
+      if (newGeometry)
+      {
+        widgetHandles_ = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+        state_->setValue(Modules::Render::ViewScene::HasNewGeometry, false);
+      }
+
+      // Search for new widget unless mouse and camera wasn't moved
+      auto adjustedX = x - mGLWidget->pos().x();
+      auto adjustedY = y - mGLWidget->pos().y();
+      auto currentCameraTransform = spire->getWorldToProjection();
+      reuseWidget = !newGeometry && previousWidgetInfo_->hasSameMousePosition(x, y)
+        && previousWidgetInfo_->hasSameCameraTansform(currentCameraTransform);
+      if (reuseWidget)
+      {
+        if (previousWidgetInfo_->hasPreviousWidget())
+        {
+          selectedWidget_ = previousWidgetInfo_->getPreviousWidget();
+          spire->doInitialWidgetUpdate(selectedWidget_, adjustedX, adjustedY);
+        }
+        delayAfterLastSelection_ = 50;
+      }
+      else
+      {
+        spire->removeAllGeomObjects();
+        selectedWidget_ = spire->select(adjustedX, adjustedY, widgetHandles_);
+        previousWidgetInfo_->setCameraTransform(currentCameraTransform);
+        delayAfterLastSelection_ = 200;
+      }
+
+      if (selectedWidget_)
+      {
+        widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_,
+                                                                           WidgetColor::RED);
+        selectedWidget_->changeID();
+      }
+      previousWidgetInfo_->deletePreviousWidget();
+    }
+    previousWidgetInfo_->selectionAttempt();
   }
+  if (geomDataPresent)
+      updateModifiedGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1773,10 +1993,8 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& pla
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
-  static const BBox invalidDefaultConstructedBoundingBoxRequiredForClippingPlanes; // bug #2167
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES,
-    invalidDefaultConstructedBoundingBoxRequiredForClippingPlanes, false, nullptr);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1791,8 +2009,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& pla
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES,
-    invalidDefaultConstructedBoundingBoxRequiredForClippingPlanes, false, nullptr);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
