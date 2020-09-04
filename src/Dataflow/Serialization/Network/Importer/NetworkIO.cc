@@ -287,7 +287,21 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "UnuShuffle", "PlaceholderModule" },
     { "UnuSlice", "PlaceholderModule" },
     { "UnuHeq", "PlaceholderModule" },
-    { "ConvertNrrdsToTexture", "PlaceholderModule" }
+    { "ConvertNrrdsToTexture", "PlaceholderModule" },
+    { "GetAllSegmentationBoundaries", "PlaceholderModule" },
+    { "ShowPointPath", "PlaceholderModule" },
+    { "BuildNrrdGradientAndMagnitude", "PlaceholderModule" },
+    { "ConvertFieldsToTexture", "PlaceholderModule" },
+    { "CreateViewerClockIcon", "PlaceholderModule" },
+    { "UnuJhisto", "PlaceholderModule" },
+    { "NrrdToField", "PlaceholderModule" },
+    { "MDSPlusDataReader", "PlaceholderModule" },
+    { "VectorMagnitude", "PlaceholderModule" },
+    { "FieldSubSample", "PlaceholderModule" },
+    { "NIMRODConverter", "PlaceholderModule" },
+    { "StreamLines", "PlaceholderModule" },
+    { "FieldSubSample", "PlaceholderModule" },
+    { "SampleLattice", "PlaceholderModule" }
   };
 
 #if 0
