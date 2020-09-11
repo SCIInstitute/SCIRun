@@ -29,12 +29,13 @@
 
 #include <Interface/qt_include.h>
 #include <QOpenGLWidget>
+#include <Interface/Modules/Render/Ospray/share.h>
 
 namespace SCIRun { namespace Render {
 
 class OSPRayRenderer;
 
-class QOSPRayWidget : public QOpenGLWidget
+class SCISHARE QOSPRayWidget : public QOpenGLWidget
 {
 Q_OBJECT
 
