@@ -70,7 +70,6 @@ void ParserHelpDialog::searchText()
 void ParserHelpDialog::resetFormatting(const QString& text)
 {
   searchLineEdit_->setStyleSheet(styleSheet());
-  prevResult = false;
   if(text.size() == 0)
     textBrowser_->find("");
 }
