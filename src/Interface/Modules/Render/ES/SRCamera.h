@@ -82,7 +82,7 @@ namespace SCIRun{
       // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
       const glm::mat4 getWorldToView() const { return mArcLookAt->getWorldViewTransform(); }
       const glm::mat4& getViewToProjection() const   {return mP;}
-      const glm::mat4 getWorldToProjection() const   {return mP * mV;}
+      const glm::mat4 getWorldToProjection() const   {return getViewToProjection() * getWorldToView();}
 
       /// Default camera settings
       static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
