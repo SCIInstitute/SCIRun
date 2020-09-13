@@ -213,17 +213,13 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::widgetMouseUp()
     {
-      //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
       widgetUpdater_.reset();
       {
         std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
         std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
         if (fboMan)
         {
-          //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
-          //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
           fboMan->removeInMemoryFBO(widgetSelectFboId_);
-          //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
         }
       }
     }
@@ -402,7 +398,6 @@ void SRInterface::runGCOnNextExecution()
 
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
-      //logCritical("SRInterface::select {} {}", x, y);
       if (!mContext || !mContext->isValid())
         return nullptr;
       // Ensure our rendering context is current on our thread.
@@ -423,10 +418,8 @@ void SRInterface::runGCOnNextExecution()
       std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
       if (!fboMan)
         return nullptr;
-      const std::string fboName = "Selection:FBO:0";
-      //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
-      widgetSelectFboId_ = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, fboName);
-      //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
+      static const std::string widgetSelectFboName = "Selection:FBO:0";
+      widgetSelectFboId_ = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, widgetSelectFboName);
       fboMan->bindFBO(widgetSelectFboId_);
 
       //a map from selection id to name
@@ -457,7 +450,7 @@ void SRInterface::runGCOnNextExecution()
         {
           ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
           GLuint value;
-          if (fboMan->readFBO(mCore, fboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
+          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
           {
             auto it = selMap.find(value);
             if (it != selMap.end())

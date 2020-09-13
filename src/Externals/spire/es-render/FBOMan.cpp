@@ -41,9 +41,6 @@
 #include "comp/StaticFBOMan.hpp"
 #include "comp/FBO.hpp"
 
-//#include <Core/Logging/Log.h>
-//using namespace SCIRun;
-
 namespace es = spire;
 namespace shaders = spire;
 
@@ -67,11 +64,9 @@ namespace ren {
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
     const std::string& assetName)
   {
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
     ren::FBO fbo;
     GLuint glid;
     GL(glGenFramebuffers(1, &glid));
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
     bindFBO(glid);
     fbo.glid = glid;
     fbo.textureType = ttype;
@@ -80,7 +75,6 @@ namespace ren {
     std::weak_ptr<TextureMan> tm = core.getStaticComponent<StaticTextureMan>()->instance_;
     if (std::shared_ptr<TextureMan> textureMan = tm.lock())
     {
-      //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
       //integer
       ren::FBO::TextureData texData;
       texData.att = GL_COLOR_ATTACHMENT0;
@@ -106,7 +100,6 @@ namespace ren {
       for (auto i = fbo.textures.begin();
         i != fbo.textures.end(); ++i)
       {
-        //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
         texid = textureMan->getIDForAsset((i->texName).c_str());
         //just assume 2D texture here
         GL(glFramebufferTexture2D(GL_FRAMEBUFFER,
@@ -114,7 +107,6 @@ namespace ren {
       }
     }
 
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
     uint64_t entityID = getEntityIDForName(assetName);
     fbo.initialized = true;
     core.addComponent(entityID, fbo);
@@ -131,7 +123,6 @@ namespace ren {
     const std::string& assetName,
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz)
   {
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
     FBOData fboData = getFBOData(assetName);
     if (fboData.numPixelsX == npixelx &&
       fboData.numPixelsY == npixely)
@@ -192,12 +183,10 @@ namespace ren {
     auto component = contFBO->getComponent(getEntityIDForName(assetName));
     if (!component.first || hasFBO(assetName) == 0)
     {
-      //logCritical("{} {}", __FILE__, __LINE__);
       return createFBO(core, ttype, npixelx, npixely, npixelz, assetName);
     }
     else
     {
-      //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
       FBOData fboData = getFBOData(assetName);
       if (fboData.numPixelsX == npixelx && fboData.numPixelsY == npixely)
         return component.first->glid;
@@ -300,8 +289,6 @@ namespace ren {
         return it->second;
       }
     }
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
-    //logCritical("assetName: {}", assetName);
     throw std::runtime_error("FBOMan: Unable to find FBO data");
   }
 
@@ -319,7 +306,6 @@ namespace ren {
       }
     }
 
-    //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
     throw std::runtime_error("FBOMan: Unable to find FBO data");
   }
 
