@@ -234,7 +234,8 @@ namespace SCIRun
       ScreenParams screen_;
       WidgetUpdateService widgetUpdater_;
 
-      GLuint                              mFontTexture        {};       // 2D texture for fonts
+      GLuint                              mFontTexture        {0};       // 2D texture for fonts
+      GLuint widgetSelectFboId_ {0};
 
       int                                 axesFailCount_      {0};
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.

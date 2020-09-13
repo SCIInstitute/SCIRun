@@ -213,7 +213,19 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::widgetMouseUp()
     {
+      //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
       widgetUpdater_.reset();
+      {
+        std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
+        std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
+        if (fboMan)
+        {
+          //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
+          //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
+          fboMan->removeInMemoryFBO(widgetSelectFboId_);
+          //logCritical("{} {} {}", __FILE__, __FUNCTION__, __LINE__);
+        }
+      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -381,7 +393,7 @@ void SRInterface::runGCOnNextExecution()
       std::function<void()> func_;
     };
 
-void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
+    void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
     {
       widgetUpdater_.reset();
       widgetUpdater_.setCurrentWidget(widget);
@@ -390,6 +402,7 @@ void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
 
     WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
     {
+      //logCritical("SRInterface::select {} {}", x, y);
       if (!mContext || !mContext->isValid())
         return nullptr;
       // Ensure our rendering context is current on our thread.
@@ -411,8 +424,10 @@ void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
       if (!fboMan)
         return nullptr;
       const std::string fboName = "Selection:FBO:0";
-      GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, fboName);
-      fboMan->bindFBO(fboId);
+      //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
+      widgetSelectFboId_ = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, fboName);
+      //logCritical("widgetSelectFboId_ {}", widgetSelectFboId_);
+      fboMan->bindFBO(widgetSelectFboId_);
 
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
@@ -423,7 +438,7 @@ void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
       {
         addSelectVertexBufferObjects(widget, vboMan);
         addSelectIndexBufferObjects(widget, iboMan);
-        
+
         auto passInfo = addSelectPasses(widget);
         selMap.insert({ std::get<0>(passInfo), std::get<1>(passInfo) });
         auto newEntities = std::get<2>(passInfo);
