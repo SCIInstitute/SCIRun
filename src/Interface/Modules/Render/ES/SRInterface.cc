@@ -563,7 +563,7 @@ void SRInterface::runGCOnNextExecution()
         mCore.addComponent(entityID, pass);
         entityIds.push_back(entityID);
       }
-      return { selid, objectName, entityIds };
+      return std::make_tuple(selid, objectName, entityIds);
     }
 
     void SCIRun::Render::SRInterface::addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan)
