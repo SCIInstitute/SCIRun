@@ -1,5 +1,5 @@
 source:       .
-destination:  ./_site
+destination:  ./_site/SCIRun
 
 # Site title and subtitle. This is used in _includes/header.html
 title: 'SCIRun 5'
