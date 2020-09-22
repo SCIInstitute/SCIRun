@@ -276,7 +276,8 @@ void ViewScene::execute()
   }
 #endif
   state->setValue(HasNewGeometry, true);
-  state->setTransientValue(TimeExecutionFinished, time, unsigned int(getCurrentTimeSinceEpoch()));
+  unsigned int time = getCurrentTimeSinceEpoch();
+  state->setTransientValue(TimeExecutionFinished, time, false);
 }
 
 long ViewScene::getCurrentTimeSinceEpoch()

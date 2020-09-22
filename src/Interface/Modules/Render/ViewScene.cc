@@ -194,7 +194,8 @@ unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_c
 //--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned int time) const
 {
-  return unsigned long(int(timeSinceEpoch(std::chrono::system_clock::now())) -time);
+  unsigned int now = timeSinceEpoch(std::chrono::system_clock::now());
+  return  now - time;
 }
 
 //--------------------------------------------------------------------------------------------------
