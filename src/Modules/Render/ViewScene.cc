@@ -139,7 +139,7 @@ void ViewScene::setStateDefaults()
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
-  state->setValue(TimeExecutionFinished, 0);
+  state->setTransientValue(TimeExecutionFinished, 0, false);
   state->setValue(CameraDistanceMinimum, 1e-10);
   state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
   state->setValue(CameraRotation, std::string("Quaternion(1.0,0.0,0.0,0.0)"));
@@ -276,7 +276,7 @@ void ViewScene::execute()
   }
 #endif
   state->setValue(HasNewGeometry, true);
-  state->setValue(TimeExecutionFinished, int(getCurrentTimeSinceEpoch()));
+  state->setTransientValue(TimeExecutionFinished, time, unsigned int(getCurrentTimeSinceEpoch()));
 }
 
 long ViewScene::getCurrentTimeSinceEpoch()

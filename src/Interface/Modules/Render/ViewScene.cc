@@ -154,10 +154,10 @@ namespace Gui {
   {
   public:
     PreviousWidgetSelectionInfo() {}
-    long timeSince(const std::chrono::system_clock::time_point& time) const;
-    long timeSince(int time) const;
-    long timeSinceWidgetColorRestored() const;
-    long timeSinceLastSelectionAttempt() const;
+    unsigned long timeSince(const std::chrono::system_clock::time_point& time) const;
+    unsigned long timeSince(unsigned int time) const;
+    unsigned long timeSinceWidgetColorRestored() const;
+    unsigned long timeSinceLastSelectionAttempt() const;
     bool hasSameMousePosition(int x, int y) const;
     bool hasSameCameraTansform(const glm::mat4& mat) const;
     bool hasSameWidget(WidgetHandle widget) const;
@@ -174,7 +174,7 @@ namespace Gui {
     int getPreviousMouseX() const;
     int getPreviousMouseY() const;
   private:
-    long timeSinceEpoch(const std::chrono::system_clock::time_point& time) const;
+    unsigned long timeSinceEpoch(const std::chrono::system_clock::time_point& time) const;
     std::chrono::system_clock::time_point timeWidgetColorRestored_      {};
     std::chrono::system_clock::time_point timeOfLastSelectionAttempt_   {};
     Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
@@ -186,19 +186,19 @@ namespace Gui {
 }}
 
 //--------------------------------------------------------------------------------------------------
-long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
+unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
 {
   return timeSinceEpoch(std::chrono::system_clock::now()) - timeSinceEpoch(time);
 }
 
 //--------------------------------------------------------------------------------------------------
-long PreviousWidgetSelectionInfo::timeSince(int time) const
+unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned int time) const
 {
-  return long(int(timeSinceEpoch(std::chrono::system_clock::now())) -time);
+  return unsigned long(int(timeSinceEpoch(std::chrono::system_clock::now())) -time);
 }
 
 //--------------------------------------------------------------------------------------------------
-long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
+unsigned long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
@@ -253,13 +253,13 @@ bool PreviousWidgetSelectionInfo::getFrameIsFinished() const
 }
 
 //--------------------------------------------------------------------------------------------------
-long PreviousWidgetSelectionInfo::timeSinceWidgetColorRestored() const
+unsigned long PreviousWidgetSelectionInfo::timeSinceWidgetColorRestored() const
 {
   return timeSince(timeWidgetColorRestored_);
 }
 
 //--------------------------------------------------------------------------------------------------
-long PreviousWidgetSelectionInfo::timeSinceLastSelectionAttempt() const
+unsigned long PreviousWidgetSelectionInfo::timeSinceLastSelectionAttempt() const
 {
   return timeSince(timeOfLastSelectionAttempt_);
 }
@@ -1306,7 +1306,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::needToWaitForWidgetSelection()
 {
-  auto lastExec = state_->getValue(Modules::Render::ViewScene::TimeExecutionFinished).toInt();
+  auto lastExec = transient_value_cast<unsigned int>(state_->getTransientValue(Modules::Render::ViewScene::TimeExecutionFinished));
 
   return previousWidgetInfo_->timeSince(lastExec) < delayAfterModuleExecution_
     || previousWidgetInfo_->timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_
