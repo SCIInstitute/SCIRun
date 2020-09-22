@@ -50,4 +50,27 @@ void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)
 ParserHelpDialog::ParserHelpDialog(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
+  connect(searchLineEdit_, SIGNAL(returnPressed()), this, SLOT(searchText()));
+  connect(searchButton_, SIGNAL(clicked()), this, SLOT(searchText()));
+  connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(resetFormatting(const QString&)));
+}
+
+void ParserHelpDialog::searchText()
+{
+  if(!textBrowser_->find(searchLineEdit_->text()))
+  {
+    auto cursor = textBrowser_->textCursor();
+    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+    textBrowser_->setTextCursor(cursor);
+    if(!textBrowser_->find(searchLineEdit_->text()))
+      searchLineEdit_->setStyleSheet("QLineEdit#searchLineEdit_{color:red}");
+  }
+  return;
+}
+
+void ParserHelpDialog::resetFormatting(const QString& text)
+{
+  searchLineEdit_->setStyleSheet(styleSheet());
+  if(text.size() == 0)
+    textBrowser_->find("");
 }
