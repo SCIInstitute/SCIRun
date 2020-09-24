@@ -1,11 +1,11 @@
 ---
-title: GetNetworkFileName
+title: GetNetworkFilename
 category: moduledocs
 module:
   category: String
   package: SCIRun
 tags: module
-layout: null
+
 ---
 
 # {{ page.title }}
@@ -18,7 +18,7 @@ layout: null
 
 ### Summary
 
-Retrieves the name of the current network.
+This module retrieves the name of the current network.
 
 **Detailed Description**
 
