@@ -5,7 +5,7 @@ module:
   category: ChangeFieldData
   package: SCIRun
 tags: module
-layout: null
+
 ---
 
 # {{ page.title }}
@@ -22,14 +22,11 @@ This module allows you to morph using a thin plate spline algorithm one point se
 
 **Detailed Description**
 
-*InputField*
-  - This will read the node locations from an input mesh that is to be transformed.
+  * InputField: This will read the node locations from an input mesh that is to be transformed.
 
-*Correspondences1*
-  - This reads the node locations from a field of the correspondence points in the new coordinate system
+  * Correspondences1: This reads the node locations from a field of the correspondence points in the new coordinate system
 
-*Correspondences2*
-  - This reads the node locations from a field in the same coordinate system as the InputField 
+  * Correspondences2: This reads the node locations from a field in the same coordinate system as the InputField
 
 {% capture url %}{% include url.md %}{% endcapture %}
 {{ url }}
