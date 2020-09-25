@@ -276,11 +276,10 @@ void ViewScene::execute()
   }
 #endif
   state->setValue(HasNewGeometry, true);
-  unsigned int time = getCurrentTimeSinceEpoch();
-  state->setTransientValue(TimeExecutionFinished, time, false);
+  state->setTransientValue(TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
 }
 
-long ViewScene::getCurrentTimeSinceEpoch()
+unsigned long ViewScene::getCurrentTimeSinceEpoch()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
     std::chrono::system_clock::now().time_since_epoch()).count();

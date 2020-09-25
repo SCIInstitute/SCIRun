@@ -155,7 +155,7 @@ namespace Gui {
   public:
     PreviousWidgetSelectionInfo() {}
     unsigned long timeSince(const std::chrono::system_clock::time_point& time) const;
-    unsigned long timeSince(unsigned int time) const;
+    unsigned long timeSince(unsigned long time) const;
     unsigned long timeSinceWidgetColorRestored() const;
     unsigned long timeSinceLastSelectionAttempt() const;
     bool hasSameMousePosition(int x, int y) const;
@@ -192,10 +192,9 @@ unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_c
 }
 
 //--------------------------------------------------------------------------------------------------
-unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned int time) const
+unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned long time) const
 {
-  unsigned int now = timeSinceEpoch(std::chrono::system_clock::now());
-  return  now - time;
+  return timeSinceEpoch(std::chrono::system_clock::now()) - time;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1307,7 +1306,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::needToWaitForWidgetSelection()
 {
-  auto lastExec = transient_value_cast<unsigned int>(state_->getTransientValue(Modules::Render::ViewScene::TimeExecutionFinished));
+  auto lastExec = transient_value_cast<unsigned long>(state_->getTransientValue(Modules::Render::ViewScene::TimeExecutionFinished));
 
   return previousWidgetInfo_->timeSince(lastExec) < delayAfterModuleExecution_
     || previousWidgetInfo_->timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_
