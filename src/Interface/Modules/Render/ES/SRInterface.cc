@@ -94,6 +94,8 @@ namespace
   {
     return glm::pow(in, glm::vec3(2.2));
   }
+
+  const std::string widgetSelectFboName = "Selection:FBO:0";
 }
 
 SRInterface::SRInterface(int frameInitLimit) :
@@ -217,9 +219,10 @@ void SRInterface::runGCOnNextExecution()
       {
         std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
         std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
-        if (fboMan)
+        if (fboMan && widgetSelectFboId_)
         {
-          fboMan->removeInMemoryFBO(widgetSelectFboId_);
+          fboMan->removeInMemoryFBO(*widgetSelectFboId_);
+          widgetSelectFboId_ = boost::none;
         }
       }
     }
@@ -418,9 +421,8 @@ void SRInterface::runGCOnNextExecution()
       std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
       if (!fboMan)
         return nullptr;
-      static const std::string widgetSelectFboName = "Selection:FBO:0";
       widgetSelectFboId_ = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, widgetSelectFboName);
-      fboMan->bindFBO(widgetSelectFboId_);
+      fboMan->bindFBO(*widgetSelectFboId_);
 
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
