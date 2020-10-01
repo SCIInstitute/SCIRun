@@ -81,6 +81,7 @@ namespace SCIRun
       virtual void setMouseMode(MouseMode mode) = 0;
       virtual void eventResize(size_t width, size_t height) = 0;
       virtual void doFrame(double constantDeltaTime) = 0;
+      virtual void cleanupSelect() = 0;
     };
 
     class SCISHARE RendererModuleInterface

@@ -146,6 +146,7 @@ namespace SCIRun
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects) override;
       Core::Geometry::BBox getSceneBox() override {return mSceneBBox;}
+      void cleanupSelect() override;
 
       bool hasShaderPromise() const override;
       void runGCOnNextExecution() override;

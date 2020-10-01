@@ -181,7 +181,7 @@ namespace ren {
   {
     auto contFBO = core.getOrCreateComponentContainer<ren::FBO>();
     auto component = contFBO->getComponent(getEntityIDForName(assetName));
-    if (!component.first || hasFBO(assetName) == 0)
+    if (!component.first)
     {
       return createFBO(core, ttype, npixelx, npixely, npixelz, assetName);
     }
@@ -189,9 +189,13 @@ namespace ren {
     {
       FBOData fboData = getFBOData(assetName);
       if (fboData.numPixelsX == npixelx && fboData.numPixelsY == npixely)
+      {
         return component.first->glid;
+      }
       else
+      {
         return resizeFBO(core, assetName, npixelx, npixely, npixelz);
+      }
     }
   }
 

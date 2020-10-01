@@ -216,15 +216,6 @@ void SRInterface::runGCOnNextExecution()
     void SRInterface::widgetMouseUp()
     {
       widgetUpdater_.reset();
-      {
-        std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
-        std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
-        if (fboMan && widgetSelectFboId_)
-        {
-          fboMan->removeInMemoryFBO(*widgetSelectFboId_);
-          widgetSelectFboId_ = boost::none;
-        }
-      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -268,6 +259,20 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     //---------------- Camera ----------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
+
+    void SRInterface::cleanupSelect()
+    {
+      if (widgetSelectFboId_)
+      {
+        std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
+        std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
+        if (fboMan)
+        {
+          fboMan->removeInMemoryFBO(*widgetSelectFboId_);
+          widgetSelectFboId_ = boost::none;
+        }
+      }
+    }
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::eventResize(size_t width, size_t height)
