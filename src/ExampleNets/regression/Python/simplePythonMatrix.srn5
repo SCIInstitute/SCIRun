@@ -64,7 +64,7 @@
 										<which>2</which>
 										<value># Insert your Python code here. The SCIRun API package is automatically imported.
 
-x = [[1,2],[3,4]]
+x = [[1,2,3],[4,5,6]]
 
 matrixOutput1 = x</value>
 									</value>

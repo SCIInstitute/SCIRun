@@ -144,16 +144,16 @@ namespace SCIRun
             if (rowSize > 0)
             {
               auto firstRow = list[0].toVector();
-              auto colSize = firstRow.size();
-              if (colSize > 0)
+              auto firstColSize = firstRow.size();
+              if (firstColSize > 0)
               {
-                Datatypes::DenseMatrix dense(rowSize, colSize);
+                Datatypes::DenseMatrix dense(rowSize, firstColSize);
                 for (int r = 0; r < rowSize; ++r)
                 {
                   auto row = list[r].toVector();
-                  if (row.size() != rowSize)
+                  if (row.size() != firstColSize)
                     THROW_INVALID_ARGUMENT("The rows of the input matrix must be of equal size.");
-                  for (int c = 0; c < colSize; ++c)
+                  for (int c = 0; c < firstColSize; ++c)
                     dense(r, c) = row[c].toDouble();
                 }
                 return dense;
