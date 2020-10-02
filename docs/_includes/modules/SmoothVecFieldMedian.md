@@ -1,5 +1,5 @@
 ---
-title: SmoothVecFieldMediam
+title: SmoothVecFieldMedian
 category: moduledocs
 module:
   category: ChangeFieldData

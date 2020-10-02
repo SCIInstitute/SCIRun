@@ -1,5 +1,5 @@
 ---
-title: RegisterWithCorrespondences
+title: RemoveUnusedNodes
 category: moduledocs
 module:
   category: ChangeFieldData
