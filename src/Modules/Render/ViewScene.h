@@ -158,7 +158,7 @@ namespace Render {
     void fireTransientStateChangeSignalForGeomData();
     void updateTransientList();
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
-    long getCurrentTimeSinceEpoch();
+    unsigned long getCurrentTimeSinceEpoch();
 
     ActiveGeometryMap activeGeoms_;
 
