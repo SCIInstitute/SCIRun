@@ -56,6 +56,7 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
+    class PreviousWidgetSelectionInfo;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -257,8 +258,9 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
 
       //---------------- Widgets -------------------------------------------------------------------
-      bool canSelectWidget() const;
-      bool tryWidgetSelection(QMouseEvent* event);
+      bool needToWaitForWidgetSelection();
+      bool canSelectWidget();
+      bool tryWidgetSelection(int x, int y);
       void selectObject(const int x, const int y);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
@@ -314,6 +316,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
+      PreviousWidgetSelectionInfo*          previousWidgetInfo_           {nullptr};
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};
@@ -324,6 +327,9 @@ namespace SCIRun {
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
+      const static int                      delayAfterModuleExecution_    {200};
+      const static int                      delayAfterWidgetColorRestored_ {50};
+      int                                   delayAfterLastSelection_      {50};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                            {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
@@ -342,6 +348,7 @@ namespace SCIRun {
       Modules::Visualization::TextBuilder               textBuilder_        {};
       Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
       std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
+      std::vector<Graphics::Datatypes::WidgetHandle>    widgetHandles_      {};
       QAction*                                          lockRotation_       {nullptr};
       QAction*                                          lockPan_            {nullptr};
       QAction*                                          lockZoom_           {nullptr};
