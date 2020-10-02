@@ -46,10 +46,6 @@ This module allows the computation of a new position for each node in the input 
 
 A list of available functions is available in the GUI of the module. The ***Parser Help*** button brings up a list of available functions to do scalar/vector/tensor algebra.
 
-#### Implementation
-
-<!-- The user defined function is currently being translated in a chunk of code that is compiled using the dynamic compiler, however the current plan is to replace the dynamic compiler with a simple parser. In the latter case not every C++ functionality will be available, and hence it is recommended to stay within the functions defined in the help of the module. -->
-
 #### Input Ports
 
 The first input is the Field whose node positions need to be recalculated using a function. The second port is an optional port that allows the user to script the module with a user defined input function. This function will override the function given in the GUI of the module. The third and next ports are used to import a matrix. The first port corresponds to matrix A, the next to matrix B and so on. These ports can be used to do algebra with values stored as a matrix or can be used to enter scriptable scalar/vector/tensor values that can be defined elsewhere.
