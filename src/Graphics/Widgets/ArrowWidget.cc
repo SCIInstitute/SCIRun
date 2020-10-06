@@ -162,8 +162,8 @@ bool ArrowWidget::isVector() const
   return isVector_;
 }
 
-std::string ArrowWidget::widgetName(size_t i, size_t id, size_t iter)
+std::string ArrowWidget::widgetName(ArrowWidgetSection s, size_t id, size_t iter)
 {
-  return "ArrowWidget(" + std::to_string(i) + ")" + "(" + std::to_string(id) + ")" +
+  return "ArrowWidget(" + std::to_string(static_cast<int>(s)) + ")" + "(" + std::to_string(id) + ")" +
          "(" + std::to_string(iter) + ")";
 }
