@@ -51,7 +51,7 @@ TEST(ArrowWidgetTest, CanCreateSingleArrowReal)
   });
 
   EXPECT_EQ(Point(16,16,0), arrow.position());
-  EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
+  EXPECT_EQ("<dummyGeomId>testArrow10widget[1 1 0][2 2 0]0", arrow.name());
 }
 
 TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
@@ -68,7 +68,7 @@ TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
 
   EXPECT_EQ(Point(16,16,0), arrow.position());
   //arrow does not get name from factory--generates it in constructor.
-  EXPECT_EQ("<dummyGeomId>testArrow1widget[1 1 0][2 2 0]0", arrow.name());
+  EXPECT_EQ("<dummyGeomId>testArrow10widget[1 1 0][2 2 0]0", arrow.name());
 }
 
 TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)

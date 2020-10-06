@@ -44,7 +44,7 @@ TEST(DiskWidgetTest, CanCreateSingleDiskReal)
   });
 
   EXPECT_EQ(Point(1.5,1.5,0), disk.position());
-  EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk1widget10100", disk.name());
+  EXPECT_EQ("<dummyGeomId>DiskWidget::testDisk10widget10100", disk.name());
 }
 
 TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
