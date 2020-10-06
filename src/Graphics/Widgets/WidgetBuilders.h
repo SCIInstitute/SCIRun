@@ -50,10 +50,11 @@ namespace SCIRun
         Derived& origin(const Core::Geometry::Point& p) { origin_ = p; return static_cast<Derived&>(*this); }
         Derived& boundingBox(const Core::Geometry::BBox& b) { bbox_ = b; return static_cast<Derived&>(*this); }
         Derived& resolution(int r) { resolution_ = r; return static_cast<Derived&>(*this); }
+        Derived& transformMapping(const TransformMappingParams& tmp) { mapping_ = tmp; return static_cast<Derived&>(*this); }
       protected:
         const Core::GeometryIDGenerator& idGenerator_;
         std::string tag_;
-        TransformMappingParams mapping_; //later
+        TransformMappingParams mapping_;
         double scale_ {0};
         std::string defaultColor_;
         Core::Geometry::Point origin_;
@@ -69,6 +70,19 @@ namespace SCIRun
         WidgetHandle build() const;
       private:
         Core::Geometry::Point point_;
+      };
+
+      class SCISHARE DiskWidgetBuilder : public CommonWidgetBuilder<DiskWidgetBuilder>
+      {
+      public:
+        using CommonWidgetBuilder::CommonWidgetBuilder;
+        DiskWidgetBuilder& diameterPoints(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2)
+        {
+          p1_ = p1; p2_ = p2; return *this;
+        }
+        WidgetHandle build() const;
+      private:
+        Core::Geometry::Point p1_, p2_;
       };
     }
   }

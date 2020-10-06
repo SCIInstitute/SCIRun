@@ -40,16 +40,16 @@ using namespace SCIRun::Core::Geometry;
 
 namespace detail
 {
-  static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
-  static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
-  static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
+  static const ColorRGB deflPointColor = ColorRGB(0.54, 0.6, 1.0);
+  static const ColorRGB deflColor = ColorRGB(0.5, 0.5, 0.5);
+  static const ColorRGB resizeColor = ColorRGB(0.54, 1.0, 0.60);
 
-  static const double sphereRadius_ = 0.25;
-  static const double cylinderRadius_ = 0.12;
-  static const double coneRadius_ = 0.25;
-  static const double diskRadius_ = 0.25;
-  static const double diskDistFromCenter_ = 0.85;
-  static const double diskWidth_ = 0.05;
+  static const double sphereRadius = 0.25;
+  static const double cylinderRadius = 0.12;
+  static const double coneRadius = 0.25;
+  static const double diskRadius = 0.25;
+  static const double diskDistFromCenter = 0.85;
+  static const double diskWidth = 0.05;
 }
 
 namespace
@@ -79,30 +79,26 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     : CompositeWidget(gen.base)
 {
   using namespace detail;
-  ColorRGB sphereCol = (params.show_as_vector) ? deflPointCol_ : resizeCol_;
+  ColorRGB sphereCol = (params.show_as_vector) ? deflPointColor : resizeColor;
 
-  if (params.common.resolution < 3) params.common.resolution = 10;
+  if (params.common.resolution < 3)
+    params.common.resolution = 10;
 
   isVector_ = params.show_as_vector;
-  auto colorScheme = ColorScheme::COLOR_UNIFORM;
+
   std::stringstream ss;
-  ss << params.pos << params.dir << static_cast<int>(colorScheme);
+  ss << params.pos << params.dir << static_cast<int>(ColorScheme::COLOR_UNIFORM);
 
   name_ = uniqueID() + "widget" + ss.str();
-
-  ColorRGB node_color;
 
   Point bmin = params.pos;
   Point bmax = params.pos + params.dir * params.common.scale;
 
   fixDegenerateBoxes(bmin, bmax);
 
-  Point center = bmin + params.dir/2.0 * params.common.scale;
-
-  // Create glyphs
   auto sphere = SphereWidgetBuilder(gen.base.idGenerator)
                       .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
-                      .scale(sphereRadius_ * params.common.scale)
+                      .scale(sphereRadius * params.common.scale)
                       .defaultColor(sphereCol.toString())
                       .origin(bmin)
                       .boundingBox(params.common.bbox)
@@ -114,14 +110,15 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   if (params.show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius_);
+    Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius);
+    Point center = bmin + params.dir/2.0 * params.common.scale;
 
     auto cylinder = WidgetFactory::createCylinder(
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
                                   {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}},
-                                  {{cylinderRadius_ * params.common.scale,
-                                  deflCol_.toString(),
+                                  {{cylinderRadius * params.common.scale,
+                                  deflColor.toString(),
                                   bmin,
                                   params.common.bbox,
                                   params.common.resolution}, cylinderStart,
@@ -132,8 +129,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
                                   {{WidgetInteraction::CLICK, WidgetMovement::ROTATE}}},
-                                  {{{coneRadius_ * params.common.scale,
-                                  deflCol_.toString(),
+                                  {{{coneRadius * params.common.scale,
+                                  deflColor.toString(),
                                   bmin,
                                   params.common.bbox,
                                   params.common.resolution}, center,
@@ -142,18 +139,21 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
     setPosition(cone->position());
 
-    Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter_;
-    Point dp1 = diskPos - diskWidth_ * params.dir * params.common.scale;
-    Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
-    auto disk = WidgetFactory::createDisk(
-                                  {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},  //TODO: concern #1--how user interaction maps to transform type
-                                  {{diskRadius_ * params.common.scale,
-                                  resizeCol_.toString(),
-                                  bmin,
-                                  params.common.bbox,
-                                  params.common.resolution}, dp1, dp2 });
+    Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter;
+    Point dp1 = diskPos - diskWidth * params.dir * params.common.scale;
+    Point dp2 = diskPos + diskWidth * params.dir * params.common.scale;
+
+    auto disk = DiskWidgetBuilder(gen.base.idGenerator)
+                        .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
+                        .transformMapping({{WidgetInteraction::CLICK, WidgetMovement::SCALE}})
+                        .scale(diskRadius * params.common.scale)
+                        .defaultColor(resizeColor.toString())
+                        .origin(bmin)
+                        .boundingBox(params.common.bbox)
+                        .resolution(params.common.resolution)
+                        .diameterPoints(dp1, dp2)
+                        .build();
+
     widgets_.push_back(disk);
 
     //TODO: create cool operator syntax for wiring these up.
@@ -167,7 +167,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     Vector flipVec = params.dir.getArbitraryTangent().normal();
     disk->setTransformParameters<Scaling>(bmin, flipVec);
   }
-  
+
   registerAllSiblingWidgetsForEvent(sphere, WidgetMovement::TRANSLATE);
 }
 
