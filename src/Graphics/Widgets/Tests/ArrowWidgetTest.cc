@@ -103,19 +103,19 @@ TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
   auto sphere = boost::dynamic_pointer_cast<SphereWidget>(internals[0]);
   ASSERT_TRUE(sphere != nullptr);
   EXPECT_EQ("__sphere__4", sphere->name());
-  EXPECT_EQ("<dummyGeomId>SphereWidget::ArrowWidget(0)(2)(4)", sphere->uniqueID());
+  EXPECT_EQ("<dummyGeomId>SphereWidget::ArrowWidget(0)(2)(4)0", sphere->uniqueID());
   auto shaft = boost::dynamic_pointer_cast<CylinderWidget>(internals[1]);
   ASSERT_TRUE(shaft != nullptr);
   EXPECT_EQ("__cylinder__5", shaft->name());
-  EXPECT_EQ("<dummyGeomId>CylinderWidget::ArrowWidget(1)(2)(4)", shaft->uniqueID());
+  EXPECT_EQ("<dummyGeomId>CylinderWidget::ArrowWidget(1)(2)(4)0", shaft->uniqueID());
   auto cone = boost::dynamic_pointer_cast<ConeWidget>(internals[2]);
   ASSERT_TRUE(cone != nullptr);
   EXPECT_EQ("__cone__6", cone->name());
-  EXPECT_EQ("<dummyGeomId>ConeWidget::ArrowWidget(2)(2)(4)", cone->uniqueID());
+  EXPECT_EQ("<dummyGeomId>ConeWidget::ArrowWidget(2)(2)(4)0", cone->uniqueID());
   auto disk = boost::dynamic_pointer_cast<DiskWidget>(internals[3]);
   ASSERT_TRUE(disk != nullptr);
   EXPECT_EQ("__disk__7", disk->name());
-  EXPECT_EQ("<dummyGeomId>DiskWidget::ArrowWidget(3)(2)(4)", disk->uniqueID());
+  EXPECT_EQ("<dummyGeomId>DiskWidget::ArrowWidget(3)(2)(4)0", disk->uniqueID());
 
   int eventCounter = 0;
   auto eventFunc = [&eventCounter](const std::string& id) { std::cout << "Translating: " << id << std::endl; eventCounter++; };
