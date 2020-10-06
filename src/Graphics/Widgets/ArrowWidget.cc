@@ -100,7 +100,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   Point center = bmin + params.dir/2.0 * params.common.scale;
 
   // Create glyphs
-  widgets_.push_back(SphereWidgetBuilder(gen.base.idGenerator)
+  auto sphere = SphereWidgetBuilder(gen.base.idGenerator)
                       .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
                       .scale(sphereRadius_ * params.common.scale)
                       .defaultColor(sphereCol.toString())
@@ -108,14 +108,15 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                       .boundingBox(params.common.bbox)
                       .resolution(params.common.resolution)
                       .centerPoint(bmin)
-                      .build());
+                      .build();
+  widgets_.push_back(sphere);
 
   if (params.show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius_);
 
-    widgets_.push_back(WidgetFactory::createCylinder(
+    auto cylinder = WidgetFactory::createCylinder(
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
                                   {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}},
@@ -124,9 +125,10 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   bmin,
                                   params.common.bbox,
                                   params.common.resolution}, cylinderStart,
-                                  center}));
+                                  center});
+    widgets_.push_back(cylinder);
 
-    widgets_.push_back(WidgetFactory::createCone(
+    auto cone = WidgetFactory::createCone(
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
                                   {{WidgetInteraction::CLICK, WidgetMovement::ROTATE}}},
@@ -135,14 +137,15 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   bmin,
                                   params.common.bbox,
                                   params.common.resolution}, center,
-                                  bmax}, true}));
+                                  bmax}, true});
+    widgets_.push_back(cone);
 
-    setPosition(widgets_.back()->position());
+    setPosition(cone->position());
 
     Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * params.dir * params.common.scale;
     Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
-    widgets_.push_back(WidgetFactory::createDisk(
+    auto disk = WidgetFactory::createDisk(
                                   {gen.base.idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
                                   {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},  //TODO: concern #1--how user interaction maps to transform type
@@ -150,20 +153,22 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                                   resizeCol_.toString(),
                                   bmin,
                                   params.common.bbox,
-                                  params.common.resolution}, dp1, dp2 }));
+                                  params.common.resolution}, dp1, dp2 });
+    widgets_.push_back(disk);
 
     //TODO: create cool operator syntax for wiring these up.
-    registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
-    registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
+    registerAllSiblingWidgetsForEvent(cylinder, WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
+    registerAllSiblingWidgetsForEvent(cone, WidgetMovement::ROTATE);
 
-    widgets_[2]->setTransformParameters<Rotation>(bmin);                        //TODO: concern #3--what data transform of "root" requires
+    cone->setTransformParameters<Rotation>(bmin);                        //TODO: concern #3--what data transform of "root" requires
 
-    registerAllSiblingWidgetsForEvent(widgets_[3], WidgetMovement::SCALE);
+    registerAllSiblingWidgetsForEvent(disk, WidgetMovement::SCALE);
 
     Vector flipVec = params.dir.getArbitraryTangent().normal();
-    widgets_[3]->setTransformParameters<Scaling>(bmin, flipVec);
+    disk->setTransformParameters<Scaling>(bmin, flipVec);
   }
-  registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
+  
+  registerAllSiblingWidgetsForEvent(sphere, WidgetMovement::TRANSLATE);
 }
 
 bool ArrowWidget::isVector() const
