@@ -30,6 +30,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -49,6 +50,29 @@ namespace detail
   static const double diskRadius_ = 0.25;
   static const double diskDistFromCenter_ = 0.85;
   static const double diskWidth_ = 0.05;
+}
+
+namespace
+{
+  void fixDegenerateBoxes(Point& bmin, Point& bmax)
+  {
+    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
+    if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
+    {
+      bmin.x(bmin.x() - size_estimate);
+      bmax.x(bmax.x() + size_estimate);
+    }
+    if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
+    {
+      bmin.y(bmin.y() - size_estimate);
+      bmax.y(bmax.y() + size_estimate);
+    }
+    if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
+    {
+      bmin.z(bmin.z() - size_estimate);
+      bmax.z(bmax.z() + size_estimate);
+    }
+  }
 }
 
 ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
@@ -71,38 +95,20 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
   Point bmin = params.pos;
   Point bmax = params.pos + params.dir * params.common.scale;
 
-  // Fix degenerate boxes.
-  const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
-  {
-    bmin.x(bmin.x() - size_estimate);
-    bmax.x(bmax.x() + size_estimate);
-  }
-  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
-  {
-    bmin.y(bmin.y() - size_estimate);
-    bmax.y(bmax.y() + size_estimate);
-  }
-  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
-  {
-    bmin.z(bmin.z() - size_estimate);
-    bmax.z(bmax.z() + size_estimate);
-  }
+  fixDegenerateBoxes(bmin, bmax);
 
   Point center = bmin + params.dir/2.0 * params.common.scale;
 
   // Create glyphs
-  widgets_.push_back(WidgetFactory::createSphere(
-                                {gen.base.idGenerator,
-                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter),
-                                {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}
-                                },
-                                {{
-                                sphereRadius_ * params.common.scale,
-                                sphereCol.toString(),
-                                bmin,
-                                params.common.bbox,
-                                params.common.resolution}, bmin}));
+  widgets_.push_back(SphereWidgetBuilder(gen.base.idGenerator)
+                      .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
+                      .scale(sphereRadius_ * params.common.scale)
+                      .defaultColor(sphereCol.toString())
+                      .origin(bmin)
+                      .boundingBox(params.common.bbox)
+                      .resolution(params.common.resolution)
+                      .centerPoint(bmin)
+                      .build());
 
   if (params.show_as_vector)
   {
@@ -149,8 +155,11 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     //TODO: create cool operator syntax for wiring these up.
     registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
     registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
+
     widgets_[2]->setTransformParameters<Rotation>(bmin);                        //TODO: concern #3--what data transform of "root" requires
+
     registerAllSiblingWidgetsForEvent(widgets_[3], WidgetMovement::SCALE);
+
     Vector flipVec = params.dir.getArbitraryTangent().normal();
     widgets_[3]->setTransformParameters<Scaling>(bmin, flipVec);
   }
