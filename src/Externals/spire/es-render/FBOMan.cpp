@@ -179,26 +179,23 @@ namespace ren {
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
     const std::string& assetName)
   {
-    //get fbo
-    //uint64_t containerID = spire::getESTypeID<ren::FBO>();
-    //spire::BaseComponentContainer* container =
-    //	core.getComponentContainer(containerID);
-    //spire::CerealHeap<ren::FBO>* contFBO =
-    //	dynamic_cast<spire::CerealHeap<ren::FBO>*>(container);
-    spire::CerealHeap<ren::FBO>* contFBO =
-      core.getOrCreateComponentContainer<ren::FBO>();
-    std::pair<const ren::FBO*, size_t> component =
-      contFBO->getComponent(getEntityIDForName(assetName));
-    if (component.first == nullptr)
+    auto contFBO = core.getOrCreateComponentContainer<ren::FBO>();
+    auto component = contFBO->getComponent(getEntityIDForName(assetName));
+    if (!component.first)
+    {
       return createFBO(core, ttype, npixelx, npixely, npixelz, assetName);
+    }
     else
     {
       FBOData fboData = getFBOData(assetName);
-      if (fboData.numPixelsX == npixelx &&
-        fboData.numPixelsY == npixely)
+      if (fboData.numPixelsX == npixelx && fboData.numPixelsY == npixely)
+      {
         return component.first->glid;
+      }
       else
+      {
         return resizeFBO(core, assetName, npixelx, npixely, npixelz);
+      }
     }
   }
 
@@ -296,7 +293,6 @@ namespace ren {
         return it->second;
       }
     }
-
     throw std::runtime_error("FBOMan: Unable to find FBO data");
   }
 
@@ -352,7 +348,7 @@ namespace ren {
   // GARBAGE COLLECTION
   //------------------------------------------------------------------------------
 
-  void FBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
+  void FBOMan::runGCAgainstValidIDs(const std::set<GLuint>& validKeys)
   {
     // Every GLuint in validKeys should be in our map. If there is not, then
     // there is an error in the system, and it should be reported.
@@ -374,7 +370,7 @@ namespace ren {
 
       if (it == mFBOData.end())
       {
-        std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
+        std::cerr << "runGCAgainstValidIDs: terminating early, validKeys contains "
           << "elements not in FBO map." << std::endl;
         break;
       }
@@ -384,7 +380,7 @@ namespace ren {
       // component, this is not an error.
       if (it->first > id)
       {
-        std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the FBO map." << std::endl;
+        std::cerr << "runGCAgainstValidIDs: validKeys contains elements not in the FBO map." << std::endl;
       }
 
       // Increment passed current validKey id.
@@ -414,8 +410,9 @@ namespace ren {
     void postWalkComponents(spire::ESCoreBase& core) override
     {
       std::weak_ptr<FBOMan> im = core.getStaticComponent<StaticFBOMan>()->instance_;
-      if (std::shared_ptr<FBOMan> man = im.lock()) {
-        man->runGCAgainstVaidIDs(mValidKeys);
+      if (std::shared_ptr<FBOMan> man = im.lock())
+      {
+        man->runGCAgainstValidIDs(mValidKeys);
         mValidKeys.clear();
       }
       else
