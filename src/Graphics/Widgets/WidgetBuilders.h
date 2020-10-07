@@ -72,17 +72,41 @@ namespace SCIRun
         Core::Geometry::Point point_;
       };
 
-      class SCISHARE DiskWidgetBuilder : public CommonWidgetBuilder<DiskWidgetBuilder>
+      template <class Derived>
+      class SCISHARE CylindricalWidgetBuilder : public CommonWidgetBuilder<Derived>
       {
       public:
-        using CommonWidgetBuilder::CommonWidgetBuilder;
-        DiskWidgetBuilder& diameterPoints(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2)
+        explicit CylindricalWidgetBuilder(const Core::GeometryIDGenerator& g) : CommonWidgetBuilder<Derived>(g) {}
+        Derived& diameterPoints(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2)
         {
-          p1_ = p1; p2_ = p2; return *this;
+          p1_ = p1; p2_ = p2; return static_cast<Derived&>(*this);
         }
+      protected:
+        Core::Geometry::Point p1_, p2_;
+      };
+
+      class SCISHARE DiskWidgetBuilder : public CylindricalWidgetBuilder<DiskWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        WidgetHandle build() const;
+      };
+
+      class SCISHARE CylinderWidgetBuilder : public CylindricalWidgetBuilder<CylinderWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        WidgetHandle build() const;
+      };
+
+      class SCISHARE ConeWidgetBuilder : public CylindricalWidgetBuilder<ConeWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        ConeWidgetBuilder& renderBase(bool b) { renderBase_ = b; return *this; }
         WidgetHandle build() const;
       private:
-        Core::Geometry::Point p1_, p2_;
+        bool renderBase_;
       };
     }
   }

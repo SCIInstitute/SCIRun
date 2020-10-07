@@ -97,3 +97,15 @@ WidgetHandle DiskWidgetBuilder::build() const
   return WidgetFactory::createDisk({ idGenerator_, tag_, mapping_ },
     { { scale_, defaultColor_, origin_, bbox_, resolution_ }, p1_, p2_ });
 }
+
+WidgetHandle CylinderWidgetBuilder::build() const
+{
+  return WidgetFactory::createCylinder({ idGenerator_, tag_, mapping_ },
+    { { scale_, defaultColor_, origin_, bbox_, resolution_ }, p1_, p2_ });
+}
+
+WidgetHandle ConeWidgetBuilder::build() const
+{
+  return WidgetFactory::createCone({ idGenerator_, tag_, mapping_ },
+    { { { scale_, defaultColor_, origin_, bbox_, resolution_ }, p1_, p2_}, renderBase_ });
+}
