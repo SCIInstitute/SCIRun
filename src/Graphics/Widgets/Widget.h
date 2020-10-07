@@ -95,6 +95,20 @@ namespace SCIRun
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
+
+      template <int MovementEventType>
+      struct propagatesEvent
+      {
+        static const WidgetMovement to = static_cast<WidgetMovement>(MovementEventType);
+      };
+
+      struct TransformPropagationProxy
+      {
+        std::function<void(WidgetHandle)> registrationApplier;
+      };
+
+      SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, WidgetMovement movement);
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget);
     }
   }
 }

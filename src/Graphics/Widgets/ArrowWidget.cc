@@ -201,25 +201,21 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     widgets_.push_back(disk);
 
     //TODO: concern #1--how user interaction maps to transform type
+    //TODO: concern #2--how transform of "root" maps to siblings
 
     //TODO: create cool operator syntax for wiring these up.
-    registerAllSiblingWidgetsForEvent(cylinder, WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
 
-    // cylinder << propagatesEvent<WidgetMovement::TRANSLATE> << sphere, disk, cone;
-    // cone << propagatesEvent<WidgetMovement::ROTATE> << sphere, disk, cylinder;
-    // disk << propagatesEvent<WidgetMovement::SCALE> << sphere, disk, cone;
+    cylinder << propagatesEvent<WidgetMovement::TRANSLATE>::to << sphere << disk << cone;
+    sphere << propagatesEvent<WidgetMovement::TRANSLATE>::to << cylinder << disk << cone;
+    cone << propagatesEvent<WidgetMovement::ROTATE>::to << sphere << disk << cylinder;
+    disk << propagatesEvent<WidgetMovement::SCALE>::to << sphere << cylinder << cone;
 
-    registerAllSiblingWidgetsForEvent(cone, WidgetMovement::ROTATE);
-
-    cone->setTransformParameters<Rotation>(origin);                        //TODO: concern #3--what data transform of "root" requires
-
-    registerAllSiblingWidgetsForEvent(disk, WidgetMovement::SCALE);
+    //TODO: concern #3--what data transform of "root" requires
+    cone->setTransformParameters<Rotation>(origin);
 
     Vector flipVec = params.dir.getArbitraryTangent().normal();
     disk->setTransformParameters<Scaling>(origin, flipVec);
   }
-
-  registerAllSiblingWidgetsForEvent(sphere, WidgetMovement::TRANSLATE);
 }
 
 bool ArrowWidget::isVector() const

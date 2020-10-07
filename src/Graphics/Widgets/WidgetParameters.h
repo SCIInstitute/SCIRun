@@ -99,7 +99,7 @@ namespace SCIRun
 
       // These will give different types of widget movement through ViewScene.
       // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
+      enum WidgetMovement
       {
         NONE,
         TRANSLATE,

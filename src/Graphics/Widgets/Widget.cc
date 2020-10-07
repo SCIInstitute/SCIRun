@@ -100,3 +100,14 @@ Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(Transform
   auto sc = std::dynamic_pointer_cast<Scaling>(t);
   return sc ? sc->flip : Vector();
 }
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(WidgetHandle widget, WidgetMovement movement)
+{
+  return { [=](WidgetHandle other) { widget->registerObserver(movement, other.get()); } };
+}
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget)
+{
+  proxy.registrationApplier(widget);
+  return proxy;
+}
