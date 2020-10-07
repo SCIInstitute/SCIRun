@@ -117,7 +117,7 @@ namespace SCIRun
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
+      Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) override;
       std::tuple<uint32_t, std::string, std::vector<uint64_t>> addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget);
       void addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan);
       void addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan);
@@ -135,7 +135,7 @@ namespace SCIRun
       void setClippingPlaneZ(double value) override;
       void setClippingPlaneD(double value) override;
       void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
-      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle& widget, int x, int y) override;
+      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.

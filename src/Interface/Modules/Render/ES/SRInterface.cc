@@ -397,14 +397,14 @@ void SRInterface::runGCOnNextExecution()
       std::function<void()> func_;
     };
 
-    void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
+    void SRInterface::doInitialWidgetUpdate(WidgetHandle widget, int x, int y)
     {
       widgetUpdater_.reset();
       widgetUpdater_.setCurrentWidget(widget);
       widgetUpdater_.doInitialUpdate(x, y, mLastSelectionDepth);
     }
 
-    WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
+    WidgetHandle SRInterface::select(int x, int y, const WidgetList& widgets)
     {
       if (!mContext || !mContext->isValid())
         return nullptr;
@@ -773,41 +773,38 @@ uint32_t SRInterface::getSelectIDForName(const std::string& name)
   return static_cast<uint32_t>(std::hash<std::string>()(name));
 }
 
-    //----------------------------------------------------------------------------------------------
-    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
-    {
-      float a = ((id >> 24) & 0xff) / 255.0f;
-      float b = ((id >> 16) & 0xff) / 255.0f;
-      float g = ((id >> 8)  & 0xff) / 255.0f;
-      float r = ((id)       & 0xff) / 255.0f;
-      return glm::vec4(r, g, b, a);
-    }
+glm::vec4 SRInterface::getVectorForID(const uint32_t id)
+{
+  float a = ((id >> 24) & 0xff) / 255.0f;
+  float b = ((id >> 16) & 0xff) / 255.0f;
+  float g = ((id >> 8)  & 0xff) / 255.0f;
+  float r = ((id)       & 0xff) / 255.0f;
+  return glm::vec4(r, g, b, a);
+}
 
-    //----------------------------------------------------------------------------------------------
-    uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
-    {
-      uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
-      uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
-      uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
-      uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
-      return (a << 24) | (b << 16) | (g << 8) | (r);
-    }
+uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
+{
+  uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
+  uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
+  uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
+  uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
+  return (a << 24) | (b << 16) | (g << 8) | (r);
+}
 
-    //----------------------------------------------------------------------------------------------
-    void WidgetUpdateService::updateWidget(int x, int y)
-    {
-      WidgetEventPtr event(new WidgetEventBase(objectTransformCalculator_->computeTransform(x, y)));
-      modifyWidget(event);
-    }
+void WidgetUpdateService::updateWidget(int x, int y)
+{
+  WidgetEventPtr event(new WidgetEventBase(objectTransformCalculator_->computeTransform(x, y)));
+  modifyWidget(event);
+}
 
-    void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
-    {
-      auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
+void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
+{
+  auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
 
-      auto component = contTrans->getComponent(mEntityIdMap[id]);
-      if (component.first != nullptr)
-        contTrans->modifyIndex(trans, component.second, 0);
-    }
+  auto component = contTrans->getComponent(mEntityIdMap[id]);
+  if (component.first != nullptr)
+    contTrans->modifyIndex(trans, component.second, 0);
+}
 
     void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
     {

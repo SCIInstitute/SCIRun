@@ -112,8 +112,8 @@ namespace SCIRun
       virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
-      virtual void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle& widget, int x, int y) = 0;
-      virtual Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) = 0;
+      virtual void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) = 0;
+      virtual Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;
       virtual void reverseClippingPlaneNormal(bool value) = 0;
