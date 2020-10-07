@@ -58,10 +58,7 @@ namespace detail
     Point dp2 = diskPos + diskWidth * params.dir * params.common.scale;
     return { dp1, dp2 };
   }
-}
 
-namespace
-{
   void fixDegenerateBoxes(Point& bmin, Point& bmax)
   {
     const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -81,61 +78,48 @@ namespace
       bmax.z(bmax.z() + size_estimate);
     }
   }
-}
 
-ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
-    : CompositeWidget(gen.base)
-{
-  using namespace detail;
-  ColorRGB sphereCol = (params.show_as_vector) ? deflPointColor : resizeColor;
-
-  if (params.common.resolution < 3)
-    params.common.resolution = 10;
-
-  isVector_ = params.show_as_vector;
-
-  std::stringstream ss;
-  ss << params.pos << params.dir << static_cast<int>(ColorScheme::COLOR_UNIFORM);
-
-  name_ = uniqueID() + "widget" + ss.str();
-
-  Point bmin = params.pos;
-  Point bmax = params.pos + params.dir * params.common.scale;
-
-  fixDegenerateBoxes(bmin, bmax);
-
-  const Point origin = bmin;
-
-  auto sphere = SphereWidgetBuilder(gen.base.idGenerator)
-                      .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
-                      .scale(sphereRadius * params.common.scale)
-                      .defaultColor(sphereCol.toString())
-                      .origin(origin)
-                      .boundingBox(params.common.bbox)
-                      .resolution(params.common.resolution)
-                      .centerPoint(bmin)
-                      .build();
-  widgets_.push_back(sphere);
-
-  if (params.show_as_vector)
+  std::tuple<Point, Point> adjustedBoundingBoxPoints(const ArrowParameters& params)
   {
-    // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = origin + 0.75 * (params.dir * params.common.scale * sphereRadius);
+    Point bmin = params.pos;
+    Point bmax = params.pos + params.dir * params.common.scale;
+
+    fixDegenerateBoxes(bmin, bmax);
+    return {bmin, bmax};
+  }
+
+  std::string makeName(const ArrowParameters& params)
+  {
+    std::stringstream ss;
+    ss << params.pos << params.dir << static_cast<int>(ColorScheme::COLOR_UNIFORM);
+
+    return "widget" + ss.str();
+  }
+
+  std::string widgetName(ArrowWidgetSection s, size_t id, size_t iter)
+  {
+    return "ArrowWidget(" + std::to_string(static_cast<int>(s)) + ")" + "(" + std::to_string(id) + ")" +
+           "(" + std::to_string(iter) + ")";
+  }
+
+  WidgetHandle makeSphere(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
+    ColorRGB sphereCol = (params.show_as_vector) ? deflPointColor : resizeColor;
+    return SphereWidgetBuilder(gen.base.idGenerator)
+                        .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
+                        .scale(sphereRadius * params.common.scale)
+                        .defaultColor(sphereCol.toString())
+                        .origin(origin)
+                        .boundingBox(params.common.bbox)
+                        .resolution(params.common.resolution)
+                        .centerPoint(origin)
+                        .build();
+  }
+
+  WidgetHandle makeCone(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin, const Point& bmax)
+  {
     Point center = origin + params.dir/2.0 * params.common.scale;
-
-    auto cylinder = WidgetFactory::createCylinder(
-                                  {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}},
-                                  {{cylinderRadius * params.common.scale,
-                                  deflColor.toString(),
-                                  origin,
-                                  params.common.bbox,
-                                  params.common.resolution}, cylinderStart,
-                                  center});
-    widgets_.push_back(cylinder);
-
-    auto cone = ConeWidgetBuilder(gen.base.idGenerator)
+    return ConeWidgetBuilder(gen.base.idGenerator)
                   .tag(widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter))
                   .transformMapping({{WidgetInteraction::CLICK, WidgetMovement::ROTATE}})
                   .scale(coneRadius * params.common.scale)
@@ -146,14 +130,12 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                   .diameterPoints(center, bmax)
                   .renderBase(true)
                   .build();
-                  
-    widgets_.push_back(cone);
+  }
 
-    setPosition(cone->position());
-
+  WidgetHandle makeDisk(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
     auto diskDiameterPoints = diskPoints(origin, params);
-
-    auto disk = DiskWidgetBuilder(gen.base.idGenerator)
+    return DiskWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
                         .transformMapping({{WidgetInteraction::CLICK, WidgetMovement::SCALE}})
                         .scale(diskRadius * params.common.scale)
@@ -163,11 +145,70 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
                         .resolution(params.common.resolution)
                         .diameterPoints(diskDiameterPoints.first, diskDiameterPoints.second)
                         .build();
+  }
 
+  WidgetHandle makeCylinder(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
+    // Starts the cylinder position closer to the surface of the sphere
+    Point center = origin + params.dir/2.0 * params.common.scale;
+    Point cylinderStart = origin + 0.75 * (params.dir * params.common.scale * sphereRadius);
+
+    return CylinderWidgetBuilder(gen.base.idGenerator)
+                      .tag(widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter))
+                      .transformMapping({{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}})
+                      .scale(cylinderRadius * params.common.scale)
+                      .defaultColor(deflColor.toString())
+                      .origin(origin)
+                      .boundingBox(params.common.bbox)
+                      .resolution(params.common.resolution)
+                      .diameterPoints(cylinderStart, center)
+                      .build();
+  }
+}
+
+ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
+    : CompositeWidget(gen.base)
+{
+  using namespace detail;
+
+  if (params.common.resolution < 3)
+    params.common.resolution = 10;
+
+  isVector_ = params.show_as_vector;
+
+  name_ = uniqueID() + makeName(params);
+
+  Point bmin, bmax;
+  std::tie(bmin, bmax) = adjustedBoundingBoxPoints(params);
+
+  const Point origin = bmin;
+
+  auto sphere = makeSphere(gen, params, origin);
+  widgets_.push_back(sphere);
+  setPosition(sphere->position());
+
+  if (isVector_)
+  {
+    auto cylinder = makeCylinder(gen, params, origin);
+    widgets_.push_back(cylinder);
+
+    auto cone = makeCone(gen, params, origin, bmax);
+    widgets_.push_back(cone);
+
+    setPosition(cone->position());
+
+    auto disk = makeDisk(gen, params, origin);
     widgets_.push_back(disk);
+
+    //TODO: concern #1--how user interaction maps to transform type
 
     //TODO: create cool operator syntax for wiring these up.
     registerAllSiblingWidgetsForEvent(cylinder, WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
+
+    // cylinder << propagatesEvent<WidgetMovement::TRANSLATE> << sphere, disk, cone;
+    // cone << propagatesEvent<WidgetMovement::ROTATE> << sphere, disk, cylinder;
+    // disk << propagatesEvent<WidgetMovement::SCALE> << sphere, disk, cone;
+
     registerAllSiblingWidgetsForEvent(cone, WidgetMovement::ROTATE);
 
     cone->setTransformParameters<Rotation>(origin);                        //TODO: concern #3--what data transform of "root" requires
@@ -184,10 +225,4 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 bool ArrowWidget::isVector() const
 {
   return isVector_;
-}
-
-std::string ArrowWidget::widgetName(ArrowWidgetSection s, size_t id, size_t iter)
-{
-  return "ArrowWidget(" + std::to_string(static_cast<int>(s)) + ")" + "(" + std::to_string(id) + ")" +
-         "(" + std::to_string(iter) + ")";
 }

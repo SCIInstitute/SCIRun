@@ -49,7 +49,6 @@ namespace SCIRun {
 
       private:
         bool isVector_;
-        static std::string widgetName(ArrowWidgetSection s, size_t id, size_t iter);
       };
 
       using ArrowWidgetHandle = SharedPointer<ArrowWidget>;
