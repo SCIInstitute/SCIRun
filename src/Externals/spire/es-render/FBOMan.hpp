@@ -143,7 +143,7 @@ namespace ren {
 
     /// Runs garbage collection against a set of valid keys. All OpenGL ids not
     /// in validKeys will be removed from the system.
-    void runGCAgainstVaidIDs(const std::set<GLuint>& validKeys);
+    void runGCAgainstValidIDs(const std::set<GLuint>& validKeys);
 
     std::map<GLuint, FBOData>      mFBOData;
     /// Map from asset name to GL id.
