@@ -138,8 +138,8 @@ namespace detail
     return DiskWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
                         .transformMapping({
-                          {WidgetInteraction::CLICK, WidgetMovement::SCALE},
-                          {WidgetInteraction::RIGHT_CLICK, WidgetMovement::TRANSLATE}
+                          {WidgetInteraction::CLICK, WidgetMovement::SCALE}
+                          //,{WidgetInteraction::RIGHT_CLICK, WidgetMovement::TRANSLATE}
                         })
                         .scale(diskRadius * params.common.scale)
                         .defaultColor(resizeColor.toString())
@@ -212,6 +212,8 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     sphere << propagatesEvent<WidgetMovement::TRANSLATE>::to << cylinder << disk << cone;
     cone << propagatesEvent<WidgetMovement::ROTATE>::to << sphere << disk << cylinder;
     disk << propagatesEvent<WidgetMovement::SCALE>::to << sphere << cylinder << cone;
+
+    //disk << propagatesEvent<WidgetMovement::TRANSLATE>::to << sphere << cylinder << cone;
 
     //TODO: concern #3--what data transform of "root" requires
     cone->setTransformParameters<Rotation>(origin);
