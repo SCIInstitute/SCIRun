@@ -216,10 +216,10 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     //disk << propagatesEvent<WidgetMovement::TRANSLATE>::to << sphere << cylinder << cone;
 
     //TODO: concern #3--what data transform of "root" requires
-    cone->setTransformParameters<Rotation>(origin);
+    cone->addTransformParameters<Rotation>(origin);
 
     Vector flipVec = params.dir.getArbitraryTangent().normal();
-    disk->setTransformParameters<Scaling>(origin, flipVec);
+    disk->addTransformParameters<Scaling>(origin, flipVec);
   }
 }
 

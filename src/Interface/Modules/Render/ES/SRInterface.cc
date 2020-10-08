@@ -802,9 +802,15 @@ uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
   return (a << 24) | (b << 16) | (g << 8) | (r);
 }
 
+gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
+{
+  auto t = transforms_.find(move);
+  return t != transforms_.end() ? t->second : gen::Transform {};
+}
+
 void WidgetUpdateService::updateWidget(int x, int y)
 {
-  WidgetEventPtr event(new WidgetEventBase(objectTransformCalculator_->computeTransform(x, y)));
+  WidgetEventPtr event(new WidgetTransformMapping({{ movement_, objectTransformCalculator_->computeTransform(x, y) }}));
   modifyWidget(event);
 }
 
@@ -817,120 +823,120 @@ void SRInterface::modifyObject(const std::string& id, const gen::Transform& tran
     contTrans->modifyIndex(trans, component.second, 0);
 }
 
-    void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
-    {
-      auto boundEvent = [&](const std::string& id)
-      {
-        transformer_->modifyObject(id, event->transform);
-      };
-      widget_->propagateEvent({movement_, boundEvent});
-      widgetTransform_ = event->transform.transform;
-    }
+void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
+{
+  auto boundEvent = [&](const std::string& id)
+  {
+    transformer_->modifyObject(id, event->transformFor(movement_));
+  };
+  widget_->propagateEvent({movement_, boundEvent});
+  widgetTransform_ = event->transformFor(movement_).transform;
+}
 
-    ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
-      ObjectTransformCalculatorBase(s),
-      initialPosition_(t.initialPosition_),
-      w_(t.w_),
-      invViewProj_(glm::inverse(t.viewProj))
-    {}
+ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
+  ObjectTransformCalculatorBase(s),
+  initialPosition_(t.initialPosition_),
+  w_(t.w_),
+  invViewProj_(glm::inverse(t.viewProj))
+{}
 
-    gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
-    {
-      auto screenPos = service_->screen().positionFromClick(x, y);
-      glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
-      auto trans = gen::Transform();
-      trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
-      return trans;
-    }
+gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
+{
+  auto screenPos = service_->screen().positionFromClick(x, y);
+  glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
+  auto trans = gen::Transform();
+  trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+  return trans;
+}
 
-    ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
-      flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
-    {
-      originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
-      glm::vec4 projectedOrigin = service_->camera().getViewToProjection() * glm::vec4(originView_, 1.0);
-      projectedW_ = projectedOrigin.w;
-      auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
-      sposView.z = -projectedW_;
-      originToSpos_ = sposView - originView_;
-    }
+ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
+  flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
+{
+  originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
+  glm::vec4 projectedOrigin = service_->camera().getViewToProjection() * glm::vec4(originView_, 1.0);
+  projectedW_ = projectedOrigin.w;
+  auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
+  sposView.z = -projectedW_;
+  originToSpos_ = sposView - originView_;
+}
 
-    gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
-    {
-      auto spos = service_->screen().positionFromClick(x, y);
+gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
+{
+  auto spos = service_->screen().positionFromClick(x, y);
 
-      glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
-      currentSposView.z = -projectedW_;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
+  glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
+  currentSposView.z = -projectedW_;
+  glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
 
-      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
-        * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));
+  float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
+    * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));
 
-      // Flip if negative to avoid inverted normals
-      glm::mat4 flip;
-      bool negativeScale = scaling_factor < 0.0;
-      if (negativeScale)
-      {
-        //TODO: use more precise pi? or actual constant value?
-        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, flipAxisWorld_);
-        scaling_factor = -scaling_factor;
-      }
+  // Flip if negative to avoid inverted normals
+  glm::mat4 flip;
+  bool negativeScale = scaling_factor < 0.0;
+  if (negativeScale)
+  {
+    //TODO: use more precise pi? or actual constant value?
+    flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, flipAxisWorld_);
+    scaling_factor = -scaling_factor;
+  }
 
-      auto trans = gen::Transform();
-      glm::mat4 translation = glm::translate(-originWorld_);
-      glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
-      glm::mat4 reverse_translation = glm::translate(originWorld_);
+  auto trans = gen::Transform();
+  glm::mat4 translation = glm::translate(-originWorld_);
+  glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
+  glm::mat4 reverse_translation = glm::translate(originWorld_);
 
-      trans.transform = scale * translation;
+  trans.transform = scale * translation;
 
-      if (negativeScale)
-        trans.transform = flip * trans.transform;
+  if (negativeScale)
+    trans.transform = flip * trans.transform;
 
-      trans.transform = reverse_translation * trans.transform;
-      return trans;
-    }
+  trans.transform = reverse_translation * trans.transform;
+  return trans;
+}
 
-    ObjectRotationCalculator::ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
-      originWorld_(p.originWorld_), initialW_(p.w_)
-    {
-      auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
-      sposView.z = -p.w_;
-      auto originView = glm::vec3(service_->camera().getWorldToView() * glm::vec4(p.originWorld_, 1.0));
-      auto originToSpos = sposView - originView;
-      auto radius = glm::length(originToSpos);
-      bool negativeZ = (originToSpos.z < 0.0);
-      widgetBall_.reset(new spire::ArcBall(originView, radius, negativeZ));
-      widgetBall_->beginDrag(glm::vec2(sposView));
-    }
+ObjectRotationCalculator::ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
+  originWorld_(p.originWorld_), initialW_(p.w_)
+{
+  auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
+  sposView.z = -p.w_;
+  auto originView = glm::vec3(service_->camera().getWorldToView() * glm::vec4(p.originWorld_, 1.0));
+  auto originToSpos = sposView - originView;
+  auto radius = glm::length(originToSpos);
+  bool negativeZ = (originToSpos.z < 0.0);
+  widgetBall_.reset(new spire::ArcBall(originView, radius, negativeZ));
+  widgetBall_->beginDrag(glm::vec2(sposView));
+}
 
-    gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
-    {
-      if (!widgetBall_)
-        return {};
+gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
+{
+  if (!widgetBall_)
+    return {};
 
-      auto spos = service_->screen().positionFromClick(x, y);
+  auto spos = service_->screen().positionFromClick(x, y);
 
-      glm::vec2 sposView = glm::vec2(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * initialW_, 0.0, 1.0));
-      widgetBall_->drag(sposView);
+  glm::vec2 sposView = glm::vec2(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * initialW_, 0.0, 1.0));
+  widgetBall_->drag(sposView);
 
-      glm::quat rotationView = widgetBall_->getQuat();
-      glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
-      axis = glm::vec3(glm::inverse(service_->camera().getWorldToView()) * glm::vec4(axis, 0.0));
-      glm::quat rotationWorld = glm::quat(rotationView.w, axis);
+  glm::quat rotationView = widgetBall_->getQuat();
+  glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
+  axis = glm::vec3(glm::inverse(service_->camera().getWorldToView()) * glm::vec4(axis, 0.0));
+  glm::quat rotationWorld = glm::quat(rotationView.w, axis);
 
-      glm::mat4 translation = glm::translate(-originWorld_);
-      glm::mat4 reverse_translation = glm::translate(originWorld_);
-      glm::mat4 rotation = glm::mat4_cast(rotationWorld);
+  glm::mat4 translation = glm::translate(-originWorld_);
+  glm::mat4 reverse_translation = glm::translate(originWorld_);
+  glm::mat4 rotation = glm::mat4_cast(rotationWorld);
 
-      auto trans = gen::Transform();
-      trans.transform = reverse_translation * rotation * translation;
-      return trans;
-    }
+  auto trans = gen::Transform();
+  trans.transform = reverse_translation * rotation * translation;
+  return trans;
+}
 
-    glm::vec2 ScreenParams::positionFromClick(int x, int y) const
-    {
-      return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
-                   -(float(y) / float(height) * 2.0 - 1.0));
-    }
+glm::vec2 ScreenParams::positionFromClick(int x, int y) const
+{
+  return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
+               -(float(y) / float(height) * 2.0 - 1.0));
+}
 
     //----------------------------------------------------------------------------------------------
     //---------------- Clipping Planes -------------------------------------------------------------

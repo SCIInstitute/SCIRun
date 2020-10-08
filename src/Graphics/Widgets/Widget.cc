@@ -89,16 +89,26 @@ WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction)
   return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
 }
 
-Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(TransformParametersPtr t)
+Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(const MultiTransformParameters& ts)
 {
-  auto rot = std::dynamic_pointer_cast<Rotation>(t);
-  return rot ? rot->origin : Point();
+  auto rotIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Rotation>(t) != nullptr; });
+  if (rotIter != ts.end())
+  {
+    auto rot = std::dynamic_pointer_cast<Rotation>(*rotIter);
+    return rot->origin;
+  }
+  return {};
 }
 
-Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(TransformParametersPtr t)
+Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParameters& ts)
 {
-  auto sc = std::dynamic_pointer_cast<Scaling>(t);
-  return sc ? sc->flip : Vector();
+  auto scIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Scaling>(t) != nullptr; });
+  if (scIter != ts.end())
+  {
+    auto sc = std::dynamic_pointer_cast<Scaling>(*scIter);
+    return sc->flip;
+  }
+  return {};
 }
 
 TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(WidgetHandle widget, WidgetMovement movement)

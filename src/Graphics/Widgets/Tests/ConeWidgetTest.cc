@@ -71,7 +71,7 @@ TEST(ConeWidgetTest, CanSetupConeForRotation)
 
   ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<RealGlyphFactory>()}, params);
 
-  cone.setTransformParameters<Rotation>(params.cylinder.common.origin);
+  cone.addTransformParameters<Rotation>(params.cylinder.common.origin);
 
   auto rotationOrigin = getRotationOrigin(cone.transformParameters());
 

@@ -147,33 +147,19 @@ namespace SCIRun
     };
 
     using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
+    using WidgetMovementTransformMap = std::map<Graphics::Datatypes::WidgetMovement, gen::Transform>;
 
-    class SCISHARE WidgetEventBase
+    class SCISHARE WidgetTransformMapping
     {
     public:
-      explicit WidgetEventBase(const gen::Transform& t) : transform(t) {}
-      gen::Transform transform;
+      explicit WidgetTransformMapping(std::initializer_list<WidgetMovementTransformMap::value_type> ts)
+        : transforms_(ts) {}
+      gen::Transform transformFor(Graphics::Datatypes::WidgetMovement move) const;
+    private:
+      WidgetMovementTransformMap transforms_;
     };
 
-    using WidgetEventPtr = SharedPointer<WidgetEventBase>;
-
-    // class SCISHARE WidgetTranslateEvent : public WidgetEventBase
-    // {
-    // public:
-    //   using WidgetEventBase::WidgetEventBase;
-    // };
-    //
-    // class SCISHARE WidgetRotateEvent : public WidgetEventBase
-    // {
-    // public:
-    //   using WidgetEventBase::WidgetEventBase;
-    // };
-    //
-    // class SCISHARE WidgetScaleEvent : public WidgetEventBase
-    // {
-    // public:
-    //   using WidgetEventBase::WidgetEventBase;
-    // };
+    using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
 
     class SCISHARE BasicRendererObjectProvider
     {

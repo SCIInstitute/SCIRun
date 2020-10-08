@@ -193,6 +193,7 @@ namespace SCIRun
       };
 
       using TransformParametersPtr = std::shared_ptr<TransformParameters>;
+      using MultiTransformParameters = std::vector<TransformParametersPtr>;
 
       struct SCISHARE Rotation : TransformParameters
       {
@@ -206,17 +207,17 @@ namespace SCIRun
         const Core::Geometry::Vector flip;
       };
 
-      SCISHARE Core::Geometry::Point getRotationOrigin(TransformParametersPtr t);
-      SCISHARE Core::Geometry::Vector getScaleFlipVector(TransformParametersPtr t);
+      SCISHARE Core::Geometry::Point getRotationOrigin(const MultiTransformParameters& t);
+      SCISHARE Core::Geometry::Vector getScaleFlipVector(const MultiTransformParameters& t);
 
       class SCISHARE Transformable
       {
       public:
-        TransformParametersPtr transformParameters() const { return transformParameters_; }
+        const MultiTransformParameters& transformParameters() const { return transformParameters_; }
         template <class TransformType, class ... Params>
-        void setTransformParameters(Params&&... t) { transformParameters_ = std::make_shared<TransformType>(t...); }
+        void addTransformParameters(Params&&... t) { transformParameters_.push_back(std::make_shared<TransformType>(t...)); }
       private:
-        TransformParametersPtr transformParameters_;
+        MultiTransformParameters transformParameters_;
       };
     }
   }
