@@ -159,8 +159,8 @@ namespace detail
     return CylinderWidgetBuilder(gen.base.idGenerator)
                       .tag(widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter))
                       .transformMapping({
-                        {WidgetInteraction::CLICK, WidgetMovement::TRANSLATE},
-                        {WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
+                        {WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}
+                        //,{WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
                       })
                       .scale(cylinderRadius * params.common.scale)
                       .defaultColor(deflColor.toString())
@@ -217,7 +217,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     disk << propagatesEvent<WidgetMovement::SCALE>::to << sphere << cylinder << cone;
 
     // toy example of more complicated interactions
-    cylinder << propagatesEvent<WidgetMovement::AXIS_TRANSLATE>::to << sphere << disk;
+    //cylinder << propagatesEvent<WidgetMovement::AXIS_TRANSLATE>::to << sphere << disk;
     cylinder << propagatesEvent<WidgetMovement::SCALE>::to << cone;
 
     //TODO: concern #3--what data transform of "root" requires
