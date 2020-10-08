@@ -111,3 +111,10 @@ TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const Transfor
   proxy.registrationApplier(widget);
   return proxy;
 }
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const TransformPropagationProxy& proxy, const std::vector<WidgetHandle>& widgets)
+{
+  for (auto& widget : widgets)
+    proxy.registrationApplier(widget);
+  return proxy;
+}

@@ -109,6 +109,8 @@ namespace SCIRun
 
       SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, WidgetMovement movement);
       SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget);
+      using TheseWidgets = std::vector<WidgetHandle>;
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, const TheseWidgets& widgets);
     }
   }
 }

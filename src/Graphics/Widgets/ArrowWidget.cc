@@ -137,7 +137,10 @@ namespace detail
     auto diskDiameterPoints = diskPoints(origin, params);
     return DiskWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
-                        .transformMapping({{WidgetInteraction::CLICK, WidgetMovement::SCALE}})
+                        .transformMapping({
+                          {WidgetInteraction::CLICK, WidgetMovement::SCALE},
+                          {WidgetInteraction::RIGHT_CLICK, WidgetMovement::TRANSLATE}
+                        })
                         .scale(diskRadius * params.common.scale)
                         .defaultColor(resizeColor.toString())
                         .origin(origin)
@@ -205,7 +208,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
 
     //TODO: create cool operator syntax for wiring these up.
 
-    cylinder << propagatesEvent<WidgetMovement::TRANSLATE>::to << sphere << disk << cone;
+    cylinder << propagatesEvent<WidgetMovement::TRANSLATE>::to << TheseWidgets { sphere, disk, cone };
     sphere << propagatesEvent<WidgetMovement::TRANSLATE>::to << cylinder << disk << cone;
     cone << propagatesEvent<WidgetMovement::ROTATE>::to << sphere << disk << cylinder;
     disk << propagatesEvent<WidgetMovement::SCALE>::to << sphere << cylinder << cone;

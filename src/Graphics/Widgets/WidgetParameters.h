@@ -110,6 +110,7 @@ namespace SCIRun
       enum class WidgetInteraction
       {
         CLICK,
+        RIGHT_CLICK,
         OTHER_TYPE_OF_CLICK //TODO
       };
 
