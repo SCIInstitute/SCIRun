@@ -191,20 +191,10 @@ void SRInterface::runGCOnNextExecution()
       return output;
     }
 
-
-
     //----------------------------------------------------------------------------------------------
     //---------------- Input -----------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::widgetMouseDown(MouseButton btn, int x, int y)
-    {
-      if (widgetUpdater_.currentWidget())
-      {
-        widgetUpdater_.updateWidget(x, y);
-      }
-    }
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::widgetMouseMove(MouseButton btn, int x, int y)
@@ -402,6 +392,11 @@ void SRInterface::runGCOnNextExecution()
       widgetUpdater_.reset();
       widgetUpdater_.setCurrentWidget(widget);
       widgetUpdater_.doInitialUpdate(x, y, mLastSelectionDepth);
+    }
+
+    void SRInterface::setWidgetInteractionMode(MouseButton btn)
+    {
+      widgetUpdater_.setButtonPushed(btn);
     }
 
     WidgetHandle SRInterface::select(int x, int y, const WidgetList& widgets)
@@ -761,10 +756,26 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
   objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
 }
 
+namespace
+{
+  WidgetInteraction yetAnotherEnumConversion(MouseButton btn)
+  {
+    switch (btn)
+    {
+      case MouseButton::MOUSE_LEFT:
+        return WidgetInteraction::CLICK;
+      case MouseButton::MOUSE_RIGHT:
+        return WidgetInteraction::RIGHT_CLICK;
+      default:
+        return WidgetInteraction::CLICK;
+    }
+  }
+}
+
 void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
 {
   widget_ = w;
-  movement_ = w->movementType(WidgetInteraction::CLICK);
+  movement_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
 
 //----------------------------------------------------------------------------------------------

@@ -81,7 +81,6 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void widgetMouseDown(MouseButton btn, int x, int y) override;
       void widgetMouseMove(MouseButton btn, int x, int y) override;
       void widgetMouseUp() override;
       void inputMouseDown(MouseButton btn, float x, float y) override;
@@ -91,7 +90,6 @@ namespace SCIRun
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
       MouseMode getMouseMode() const override    {return mMouseMode;}
       void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-
 
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
@@ -124,6 +122,7 @@ namespace SCIRun
       GLenum computePrimitiveType(size_t indexSize);
       GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
+      void setWidgetInteractionMode(MouseButton btn) override;
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;

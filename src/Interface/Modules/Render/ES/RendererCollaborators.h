@@ -205,6 +205,7 @@ namespace SCIRun
       void modifyWidget(WidgetEventPtr event);
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
+      void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; };
@@ -225,6 +226,7 @@ namespace SCIRun
 
       Graphics::Datatypes::WidgetHandle widget_;
       Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
+      Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       ObjectTransformCalculatorPtr objectTransformCalculator_;
