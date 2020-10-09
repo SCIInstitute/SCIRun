@@ -40,18 +40,8 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      class WidgetBase;
-
-      struct SCISHARE GeometryIdGetter
-      {
-        std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
-      };
-
-      using WidgetObservable = WidgetMovementMediator<WidgetBase*, SimpleWidgetEvent,
-        SimpleWidgetEventKey, SimpleWidgetEventValue>;
-
       class SCISHARE WidgetBase : public GeometryObjectSpire,
-        public WidgetObservable,
+        public WidgetMovementMediator,
         public InputTransformMapper,
         public Transformable
       {

@@ -51,16 +51,16 @@ void WidgetBase::setPosition(const Point& p)
 
 void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
 {
-  e.func(uniqueID());
+  e.executeForMovement(e.baseMovement())(uniqueID());
   notify(e);
 }
 
-void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement)
+void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement totalMovement)
 {
   for (auto& subwidget : widgets_)
   {
     if (selected.get() != subwidget.get())
-      selected->registerObserver(movement, subwidget.get());
+      selected->registerObserver(totalMovement, subwidget.get(), totalMovement);
   }
 }
 
@@ -76,6 +76,17 @@ void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
 {
   for (auto& w : widgets_)
     w->propagateEvent(e);
+}
+
+void WidgetMovementMediator::notify(const WidgetEventData& event) const
+{
+  auto eventObservers = observers_.find(event.baseMovement());
+  if (eventObservers != observers_.cend())
+  {
+    for (const auto& obsPair : eventObservers->second)
+      for (auto& subwidget : obsPair.second)
+        event.executeForMovement(obsPair.first)(subwidget->uniqueID());
+  }
 }
 
 InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
@@ -115,7 +126,7 @@ Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParam
 
 TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(WidgetHandle widget, WidgetMovement movement)
 {
-  return { [=](WidgetHandle other) { widget->registerObserver(movement, other.get()); } };
+  return { [=](WidgetHandle other) { widget->registerObserver(movement, other.get(), movement); } };
 }
 
 TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget)
@@ -130,3 +141,12 @@ TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const Transfor
     proxy.registrationApplier(widget);
   return proxy;
 }
+
+
+SimpleWidgetEvent::SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func)
+  : moveType_(moveType), func_(func)
+{}
+
+WidgetMovement SimpleWidgetEvent::baseMovement() const { return moveType_; }
+
+WidgetEventFunc SimpleWidgetEvent::executeForMovement(WidgetMovement moveType) const  { return func_; }

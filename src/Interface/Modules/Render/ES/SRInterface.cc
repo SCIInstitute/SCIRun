@@ -375,6 +375,7 @@ void SRInterface::runGCOnNextExecution()
     void WidgetUpdateService::reset()
     {
       currentWidget_.reset();
+      currentTransformationCalculators_.clear();
     }
 
     class ScopedLambdaExecutor
@@ -832,9 +833,9 @@ void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
 {
   auto boundEvent = [&](const std::string& id)
   {
-    transformer_->modifyObject(id, event->transformFor(movement_));
+    transformer_->modifyObject(id, event->transformFor(movements_.front()));
   };
-  currentWidget_->propagateEvent({movement_, boundEvent});
+  currentWidget_->propagateEvent({movements_.front(), boundEvent});
   widgetTransform_ = event->transformFor(movements_.front()).transform;
 }
 

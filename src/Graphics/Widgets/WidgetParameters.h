@@ -141,6 +141,7 @@ namespace SCIRun
       {
       public:
         virtual ~WidgetEventData() {}
+        virtual WidgetMovement baseMovement() const = 0;
         virtual WidgetEventFunc executeForMovement(WidgetMovement moveType) const = 0;
       };
 
@@ -148,6 +149,7 @@ namespace SCIRun
       {
       public:
         SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func);
+        WidgetMovement baseMovement() const override;
         WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
       private:
         WidgetMovement moveType_;
@@ -158,37 +160,28 @@ namespace SCIRun
       {
       public:
         CompositeWidgetEvent(std::initializer_list<SimpleWidgetEvent> es);
+        WidgetMovement baseMovement() const override;
         WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
       private:
         std::vector<SimpleWidgetEvent> events_;
       };
 
-      template <class Subwidget, class Event, class KeyFunc, class ObserveFunc>
+      class WidgetBase;
+
       class WidgetMovementMediator
       {
       public:
         WidgetMovementMediator() {}
 
-        void registerObserver(WidgetMovement clickedMovement, const Subwidget& observer, WidgetMovement observerMovement)
+        void registerObserver(WidgetMovement clickedMovement, WidgetBase* observer, WidgetMovement observerMovement)
         {
-          observers_[event][observerMovement].push_back(observer);
+          observers_[clickedMovement][observerMovement].push_back(observer);
         }
 
-        void notify(const WidgetEventData& event) const
-        {
-          auto eventObservers = observers_.find(keyFunc_(event));
-          if (eventObservers != observers_.cend())
-          {
-            for (const auto& obs : eventObservers.second)
-              observeFunc_(event)(obs->uniqueID());
-          }
-        }
+        void notify(const WidgetEventData& event) const;
 
       private:
-        KeyFunc keyFunc_;
-        ObserveFunc observeFunc_;
-        IdFunc idFunc_;
-        using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<Subwidget>>;
+        using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<WidgetBase*>>;
         std::map<WidgetMovement, SubwidgetMovementMap> observers_;
       };
 
