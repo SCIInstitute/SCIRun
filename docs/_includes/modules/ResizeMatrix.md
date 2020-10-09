@@ -2,8 +2,8 @@
 title: ResizeMatrix
 category: moduledocs
 module:
-category: Math
-package: SCIRun
+  category: Math
+  package: SCIRun
 tags: module
 
 ---
@@ -26,4 +26,3 @@ This module lets the user resize their matrix to the desired size. In the GUI, o
 
 {% capture url %}{% include url.md %}{% endcapture %}
 {{ url }}
-

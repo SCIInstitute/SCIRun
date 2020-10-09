@@ -41,7 +41,7 @@ For example, this matrix can be computed by solving the forward problem e.g. usi
 with specific properties (expressed as a solution covariance e.g. to achieve maximally smooth solutions). If no input is given the identity matrix will be used.
 
 3. Data vector, $$y$$: These are the measurement data which have to be provided as matrix which should only contain one column.  
-In case of having a time series (multiple columns), it is recommended to use the module {% include moduleLink.md moduleName='SelectSubmatrix' %} to iterate over the different time instances (columns). In more detail, for each time instance, {% include moduleLink.md moduleName='SelectSubmatrix' %} would provide the data of the current time instance for SolveInverseProblemWithTikhonov to perform an estimation of the inverse solution.
+In case of having a time series (multiple columns), it is recommended to use the module {% include moduleLink.md moduleName='SelectSubMatrix' %} to iterate over the different time instances (columns). In more detail, for each time instance, {% include moduleLink.md moduleName='SelectSubMatrix' %} would provide the data of the current time instance for SolveInverseProblemWithTikhonov to perform an estimation of the inverse solution.
 
 4. Residual constraint matrix, $$L$$: This matrix is used to weight the measurements (e.g. by an inverse covariance matrix of the measurement channels).
 If no input is given, the identity matrix will be used.
