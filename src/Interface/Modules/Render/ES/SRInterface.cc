@@ -671,35 +671,35 @@ void SRInterface::runGCOnNextExecution()
       return -z;
     }
 
-    template <class Params>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const Params& p)
-    {
-      return nullptr;
-    }
-
-namespace SCIRun
-{
-  namespace Render
-  {
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const TranslateParameters& p)
-    {
-      return boost::make_shared<ObjectTranslationCalculator>(brop_, p);
-    }
-
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ScaleParameters& p)
-    {
-      return boost::make_shared<ObjectScaleCalculator>(brop_, p);
-    }
-
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const RotateParameters& p)
-    {
-      return boost::make_shared<ObjectRotationCalculator>(brop_, p);
-    }
-  }
-}
+//     template <class T>
+//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const typename T::Params& p)
+//     {
+//       return boost::make_shared<T>(brop_, p);
+//     }
+//
+// namespace SCIRun
+// {
+//   namespace Render
+//   {
+//     template <>
+//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectTranslationCalculator::Params& p)
+//     {
+//       return boost::make_shared<ObjectTranslationCalculator>(brop_, p);
+//     }
+//
+//     template <>
+//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectScaleCalculator::Params& p)
+//     {
+//       return boost::make_shared<ObjectScaleCalculator>(brop_, p);
+//     }
+//
+//     template <>
+//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectRotationCalculator::Params& p)
+//     {
+//       return boost::make_shared<ObjectRotationCalculator>(brop_, p);
+//     }
+//   }
+// }
     void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
     {
       doPostSelectSetup(x, y, depth);
@@ -707,18 +707,18 @@ namespace SCIRun
     }
 
 //TODO: these need to be delay-built, on a per subwidget basis (I think)
-TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
+ObjectTranslationCalculator::Params WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
   p.viewProj = transformer_->getStaticCameraViewProjection();
   return p;
 }
 
-ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
+ObjectScaleCalculator::Params WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
   auto widgetTransformParameters = currentWidget_->transformParameters();
@@ -727,9 +727,9 @@ ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float 
   return p;
 }
 
-RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
+ObjectRotationCalculator::Params WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
   p.originWorld_ = toVec3(getRotationOrigin(currentWidget_->transformParameters()));
@@ -742,11 +742,14 @@ RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, fl
 WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
   transformer_(transformer), screen_(screen), transformFactory_(this)
 {
+  // std::function<ObjectTranslationCalculator::Params(const glm::vec2&, float)> qqq =
+  //     [this](const glm::vec2& v, float f) { return buildTranslation(v, f); };
   transformCalcMakerMapping_ =
   {
-    {WidgetMovement::TRANSLATE, makeCalcFunc(buildTranslation)},
-    {WidgetMovement::ROTATE, makeCalcFunc(buildRotation)},
-    {WidgetMovement::SCALE, makeCalcFunc(buildScale)}
+    {WidgetMovement::TRANSLATE, makeCalcFunc(buildTranslation)}
+    //,
+    //{WidgetMovement::ROTATE, makeCalcFunc<ObjectRotationCalculator>(&WidgetUpdateService::buildRotation)},
+    //{WidgetMovement::SCALE, makeCalcFunc<ObjectScaleCalculator>(&WidgetUpdateService::buildScale)}
   };
 }
 
@@ -837,105 +840,6 @@ void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
   };
   currentWidget_->propagateEvent({movements_.front(), boundEvent});
   widgetTransform_ = event->transformFor(movements_.front()).transform;
-}
-
-ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
-  ObjectTransformCalculatorBase(s),
-  initialPosition_(t.initialPosition_),
-  w_(t.w_),
-  invViewProj_(glm::inverse(t.viewProj))
-{}
-
-gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
-{
-  auto screenPos = service_->screen().positionFromClick(x, y);
-  glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
-  auto trans = gen::Transform();
-  trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
-  return trans;
-}
-
-ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
-  flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
-{
-  originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
-  glm::vec4 projectedOrigin = service_->camera().getViewToProjection() * glm::vec4(originView_, 1.0);
-  projectedW_ = projectedOrigin.w;
-  auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
-  sposView.z = -projectedW_;
-  originToSpos_ = sposView - originView_;
-}
-
-gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
-{
-  auto spos = service_->screen().positionFromClick(x, y);
-
-  glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
-  currentSposView.z = -projectedW_;
-  glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
-
-  float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
-    * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));
-
-  // Flip if negative to avoid inverted normals
-  glm::mat4 flip;
-  bool negativeScale = scaling_factor < 0.0;
-  if (negativeScale)
-  {
-    //TODO: use more precise pi? or actual constant value?
-    flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, flipAxisWorld_);
-    scaling_factor = -scaling_factor;
-  }
-
-  auto trans = gen::Transform();
-  glm::mat4 translation = glm::translate(-originWorld_);
-  glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
-  glm::mat4 reverse_translation = glm::translate(originWorld_);
-
-  trans.transform = scale * translation;
-
-  if (negativeScale)
-    trans.transform = flip * trans.transform;
-
-  trans.transform = reverse_translation * trans.transform;
-  return trans;
-}
-
-ObjectRotationCalculator::ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
-  originWorld_(p.originWorld_), initialW_(p.w_)
-{
-  auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
-  sposView.z = -p.w_;
-  auto originView = glm::vec3(service_->camera().getWorldToView() * glm::vec4(p.originWorld_, 1.0));
-  auto originToSpos = sposView - originView;
-  auto radius = glm::length(originToSpos);
-  bool negativeZ = (originToSpos.z < 0.0);
-  widgetBall_.reset(new spire::ArcBall(originView, radius, negativeZ));
-  widgetBall_->beginDrag(glm::vec2(sposView));
-}
-
-gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
-{
-  if (!widgetBall_)
-    return {};
-
-  auto spos = service_->screen().positionFromClick(x, y);
-
-  glm::vec2 sposView = glm::vec2(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * initialW_, 0.0, 1.0));
-  widgetBall_->drag(sposView);
-
-  glm::quat rotationView = widgetBall_->getQuat();
-  glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
-  axis = glm::vec3(glm::inverse(service_->camera().getWorldToView()) * glm::vec4(axis, 0.0));
-  glm::quat rotationWorld = glm::quat(rotationView.w, axis);
-
-  glm::mat4 translation = glm::translate(-originWorld_);
-  glm::mat4 reverse_translation = glm::translate(originWorld_);
-  glm::mat4 rotation = glm::mat4_cast(rotationWorld);
-
-  auto trans = gen::Transform();
-  trans.transform = reverse_translation * rotation * translation;
-  return trans;
 }
 
 glm::vec2 ScreenParams::positionFromClick(int x, int y) const

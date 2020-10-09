@@ -33,6 +33,7 @@
 #include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
+#include <Interface/Modules/Render/ES/ObjectTransformCalculators.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun
@@ -111,61 +112,6 @@ namespace SCIRun
       int	mPort;
     };
 
-    struct SCISHARE TranslateParameters
-    {
-      glm::vec2 initialPosition_;
-      float w_;
-      glm::mat4 viewProj;
-    };
-
-    struct SCISHARE RotateParameters
-    {
-      glm::vec2 initialPosition_;
-      float w_;
-      glm::vec3 originWorld_;
-    };
-
-    struct SCISHARE ScaleParameters
-    {
-      glm::vec2 initialPosition_;
-      float w_;
-      glm::vec3 flipAxisWorld_;
-      glm::vec3 originWorld_;
-    };
-
-    struct SCISHARE ScreenParams
-    {
-      size_t width {640}, height {480};
-      glm::vec2 positionFromClick(int x, int y) const;
-    };
-
-    class SCISHARE ObjectTransformCalculator
-    {
-    public:
-      virtual ~ObjectTransformCalculator() {}
-      virtual gen::Transform computeTransform(int x, int y) const = 0;
-    };
-
-    using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
-
-    class SCISHARE BasicRendererObjectProvider
-    {
-    public:
-      virtual ~BasicRendererObjectProvider() {}
-      virtual SRCamera& camera() const = 0;
-      virtual const ScreenParams& screen() const = 0;
-    };
-
-    class ObjectTransformCalculatorFactory
-    {
-    public:
-      explicit ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop) : brop_(brop) {}
-      template <class Params>
-      ObjectTransformCalculatorPtr create(const Params& p);
-    private:
-      const BasicRendererObjectProvider* brop_;
-    };
-
     using TransformCalcMaker = std::function<ObjectTransformCalculatorPtr(const glm::vec2&, float)>;
     using TransformCalcMakerMapping = std::map<Graphics::Datatypes::WidgetMovement, TransformCalcMaker>;
     using TransformCalcMap = std::map<Graphics::Datatypes::WidgetMovement, ObjectTransformCalculatorPtr>;
@@ -207,9 +153,19 @@ namespace SCIRun
     private:
       void doPostSelectSetup(int x, int y, float depth);
       float getInitialW(float depth) const;
-      TranslateParameters buildTranslation(const glm::vec2& initPos, float initW);
-      ScaleParameters buildScale(const glm::vec2& initPos, float initW);
-      RotateParameters buildRotation(const glm::vec2& initPos, float initW);
+
+      // template <class T, class P = typename T::Params>
+      // TransformCalcMaker makeCalcFunc(std::function<P(const glm::vec2&, float)> memFn)
+      // {
+      //   return [this, memFn](const glm::vec2& initPos, float initW)
+      //   {
+      //     return transformFactory_.create<T>(memFn(initPos, initW));
+      //   };
+      // }
+
+      ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW);
+      ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW);
+      ObjectRotationCalculator::Params buildRotation(const glm::vec2& initPos, float initW);
 
       Graphics::Datatypes::WidgetHandle currentWidget_;
       Graphics::Datatypes::WidgetMovementFamily movements_;
@@ -221,50 +177,6 @@ namespace SCIRun
       TransformCalcMap currentTransformationCalculators_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
-    };
-
-    class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable
-    {
-    public:
-      explicit ObjectTransformCalculatorBase(const BasicRendererObjectProvider* s) :
-        service_(s) {}
-    protected:
-      const BasicRendererObjectProvider* service_;
-    };
-
-    class SCISHARE ObjectTranslationCalculator : public ObjectTransformCalculatorBase
-    {
-    public:
-      ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t);
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      glm::vec2 initialPosition_;
-      float w_;
-      glm::mat4 invViewProj_;
-    };
-
-    class SCISHARE ObjectScaleCalculator : public ObjectTransformCalculatorBase
-    {
-    public:
-      explicit ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p);
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      glm::vec3 originView_;
-      float projectedW_;
-      glm::vec3 flipAxisWorld_;
-      glm::vec3 originToSpos_;
-      glm::vec3 originWorld_;
-    };
-
-    class SCISHARE ObjectRotationCalculator : public ObjectTransformCalculatorBase
-    {
-    public:
-      explicit ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p);
-      gen::Transform computeTransform(int x, int y) const override;
-    private:
-      glm::vec3 originWorld_;
-      float initialW_;
-      std::shared_ptr<spire::ArcBall>	widgetBall_;
     };
 
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);

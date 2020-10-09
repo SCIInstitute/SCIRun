@@ -104,7 +104,14 @@ namespace SCIRun
         NONE,
         TRANSLATE,
         ROTATE,
-        SCALE
+        SCALE,
+        TRANSLATE_AXIS,
+        TRANSLATE_AXIS_HALF,
+        TRANSLATE_AXIS_REVERSE,
+        SCALE_UNIDIRECTIONAL,
+        SCALE_AXIS,
+        SCALE_AXIS_HALF,
+        SCALE_AXIS_UNIDIRECTIONAL
       };
 
       using WidgetMovementFamily = std::vector<WidgetMovement>;
@@ -137,7 +144,7 @@ namespace SCIRun
 
       using WidgetEventFunc = std::function<void(const std::string&)>;
 
-      class WidgetEventData
+      class SCISHARE WidgetEventData
       {
       public:
         virtual ~WidgetEventData() {}
@@ -145,7 +152,7 @@ namespace SCIRun
         virtual WidgetEventFunc executeForMovement(WidgetMovement moveType) const = 0;
       };
 
-      class SimpleWidgetEvent : public WidgetEventData
+      class SCISHARE SimpleWidgetEvent : public WidgetEventData
       {
       public:
         SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func);
@@ -156,7 +163,7 @@ namespace SCIRun
         WidgetEventFunc func_;
       };
 
-      class CompositeWidgetEvent : public WidgetEventData
+      class SCISHARE CompositeWidgetEvent : public WidgetEventData
       {
       public:
         CompositeWidgetEvent(std::initializer_list<SimpleWidgetEvent> es);
@@ -168,7 +175,7 @@ namespace SCIRun
 
       class WidgetBase;
 
-      class WidgetMovementMediator
+      class SCISHARE WidgetMovementMediator
       {
       public:
         WidgetMovementMediator() {}
