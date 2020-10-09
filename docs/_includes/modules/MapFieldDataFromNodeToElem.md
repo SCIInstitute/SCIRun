@@ -1,5 +1,5 @@
 ---
-title: MapDataFieldFromNodeToElem
+title: MapFieldDataFromNodeToElem
 category: moduledocs
 module:
   category: ChangeFieldData
@@ -22,9 +22,9 @@ This module computes the value of the elements based on the data from the adjoin
 
 **Detailed Description**
 
-Supported methods are: 
+Supported methods are:
 
-  * AVERAGE - Compute the average of adjoining nodes 
+  * AVERAGE - Compute the average of adjoining nodes
   * MIN - Compute the minimum value of adjoining nodes
   * MAX - Compute the maximum value of adjoining nodes
   * SUM - Compute the sum of the adjoining nodes

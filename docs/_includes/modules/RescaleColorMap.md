@@ -1,5 +1,5 @@
 ---
-title: RescaleColorMaps
+title: RescaleColorMap
 category: moduledocs
 module:
   category: Visualization
