@@ -85,13 +85,13 @@ InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
     interactionMap_[WidgetInteraction::RIGHT_CLICK] = interactionMap_[WidgetInteraction::CLICK];
 }
 
-WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
+WidgetMovementFamily InputTransformMapper::movementType(WidgetInteraction interaction) const
 {
   auto i = interactionMap_.find(interaction);
-  return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
+  return i != interactionMap_.cend() ? i->second : WidgetMovementFamily();
 }
 
-Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(const MultiTransformParameters& ts)
+Point SCIRun::Graphics::Datatypes::getRotationOrigin(const MultiTransformParameters& ts)
 {
   auto rotIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Rotation>(t) != nullptr; });
   if (rotIter != ts.end())
@@ -102,7 +102,7 @@ Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(const Multi
   return {};
 }
 
-Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParameters& ts)
+Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParameters& ts)
 {
   auto scIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Scaling>(t) != nullptr; });
   if (scIter != ts.end())

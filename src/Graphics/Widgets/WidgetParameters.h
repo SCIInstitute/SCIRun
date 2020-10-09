@@ -107,6 +107,8 @@ namespace SCIRun
         SCALE
       };
 
+      using WidgetMovementFamily = std::vector<WidgetMovement>;
+
       enum class WidgetInteraction
       {
         CLICK,
@@ -114,7 +116,7 @@ namespace SCIRun
         OTHER_TYPE_OF_CLICK //TODO
       };
 
-      using TransformMapping = std::map<WidgetInteraction, WidgetMovement>;
+      using TransformMapping = std::map<WidgetInteraction, WidgetMovementFamily>;
       using TransformMappingParams = std::initializer_list<TransformMapping::value_type>;
 
       struct SCISHARE WidgetBaseParameters
@@ -133,42 +135,52 @@ namespace SCIRun
         AbstractGlyphFactoryPtr glyphMaker;
       };
 
-      using SimpleWidgetEventFunc = std::function<void(const std::string&)>;
-      struct SimpleWidgetEvent
-      {
-        WidgetMovement moveType;
-        SimpleWidgetEventFunc func;
-      };
+      using WidgetEventFunc = std::function<void(const std::string&)>;
 
-      //TODO: generify
-      struct SimpleWidgetEventKey
-      {
-        WidgetMovement operator()(const SimpleWidgetEvent& e) const { return e.moveType; }
-      };
-
-      struct SimpleWidgetEventValue
-      {
-        SimpleWidgetEventFunc operator()(const SimpleWidgetEvent& e) const { return e.func; }
-      };
-
-      template <class Observer, class EventKey, class Event, class KeyFunc, class ObserveFunc, class IdFunc>
-      class Observable
+      class WidgetEventData
       {
       public:
-        Observable() {}
-        void registerObserver(const EventKey& event, const Observer& observer)
+        virtual ~WidgetEventData() {}
+        virtual WidgetEventFunc executeForMovement(WidgetMovement moveType) const = 0;
+      };
+
+      class SimpleWidgetEvent : public WidgetEventData
+      {
+      public:
+        SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func);
+        WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
+      private:
+        WidgetMovement moveType_;
+        WidgetEventFunc func_;
+      };
+
+      class CompositeWidgetEvent : public WidgetEventData
+      {
+      public:
+        CompositeWidgetEvent(std::initializer_list<SimpleWidgetEvent> es);
+        WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
+      private:
+        std::vector<SimpleWidgetEvent> events_;
+      };
+
+      template <class Subwidget, class Event, class KeyFunc, class ObserveFunc>
+      class WidgetMovementMediator
+      {
+      public:
+        WidgetMovementMediator() {}
+
+        void registerObserver(WidgetMovement clickedMovement, const Subwidget& observer, WidgetMovement observerMovement)
         {
-          observers_[event][event].push_back(observer);
+          observers_[event][observerMovement].push_back(observer);
         }
 
-        void notify(const Event& event) const
+        void notify(const WidgetEventData& event) const
         {
           auto eventObservers = observers_.find(keyFunc_(event));
           if (eventObservers != observers_.cend())
           {
-            for (const auto& obsPair : eventObservers->second)
-              for (const auto& obs : obsPair.second)
-                observeFunc_(event)(idFunc_(obs));
+            for (const auto& obs : eventObservers.second)
+              observeFunc_(event)(obs->uniqueID());
           }
         }
 
@@ -176,14 +188,15 @@ namespace SCIRun
         KeyFunc keyFunc_;
         ObserveFunc observeFunc_;
         IdFunc idFunc_;
-        std::map<EventKey, std::map<EventKey, std::vector<Observer>>> observers_;
+        using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<Subwidget>>;
+        std::map<WidgetMovement, SubwidgetMovementMap> observers_;
       };
 
       class SCISHARE InputTransformMapper
       {
       public:
         explicit InputTransformMapper(TransformMappingParams pairs);
-        WidgetMovement movementType(WidgetInteraction interaction) const;
+        WidgetMovementFamily movementType(WidgetInteraction interaction) const;
       private:
         TransformMapping interactionMap_;
       };

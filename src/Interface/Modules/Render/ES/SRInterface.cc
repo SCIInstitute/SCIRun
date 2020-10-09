@@ -374,8 +374,7 @@ void SRInterface::runGCOnNextExecution()
 
     void WidgetUpdateService::reset()
     {
-      widget_.reset();
-      objectTransformCalculator_.reset();
+      currentWidget_.reset();
     }
 
     class ScopedLambdaExecutor
@@ -706,6 +705,7 @@ namespace SCIRun
       updateWidget(x, y);
     }
 
+//TODO: these need to be delay-built, on a per subwidget basis (I think)
 TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
 {
   TranslateParameters p;
@@ -720,7 +720,7 @@ ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float 
   ScaleParameters p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
-  auto widgetTransformParameters = widget_->transformParameters();
+  auto widgetTransformParameters = currentWidget_->transformParameters();
   p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
   p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
   return p;
@@ -731,7 +731,7 @@ RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, fl
   RotateParameters p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
-  p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
+  p.originWorld_ = toVec3(getRotationOrigin(currentWidget_->transformParameters()));
   return p;
 }
 
@@ -753,8 +753,9 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
   auto initialW = getInitialW(depth);
   auto initialPosition = screen_.positionFromClick(x, y);
-  if (transformCalcMakerMapping_.find(movement_) != transformCalcMakerMapping_.end())
-    objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
+
+  for (const auto& movement : movements_)
+    currentTransformationCalculators_.emplace(movement, transformCalcMakerMapping_[movement](initialPosition, initialW));
 }
 
 namespace
@@ -775,8 +776,8 @@ namespace
 
 void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
 {
-  widget_ = w;
-  movement_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
+  currentWidget_ = w;
+  movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
 
 //----------------------------------------------------------------------------------------------
@@ -805,15 +806,15 @@ uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
 
 gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
 {
-  auto t = transforms_.find(move);
-  return t != transforms_.end() ? t->second : gen::Transform {};
+  auto t = transformsCalcs_.find(move);
+  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform {};
 }
 
 void WidgetUpdateService::updateWidget(int x, int y)
 {
-  if (objectTransformCalculator_)
+  if (!currentTransformationCalculators_.empty())
   {
-    WidgetEventPtr event(new WidgetTransformMapping({ { movement_, objectTransformCalculator_->computeTransform(x, y) } }));
+    auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
     modifyWidget(event);
   }
 }
@@ -833,8 +834,8 @@ void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
   {
     transformer_->modifyObject(id, event->transformFor(movement_));
   };
-  widget_->propagateEvent({movement_, boundEvent});
-  widgetTransform_ = event->transformFor(movement_).transform;
+  currentWidget_->propagateEvent({movement_, boundEvent});
+  widgetTransform_ = event->transformFor(movements_.front()).transform;
 }
 
 ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :

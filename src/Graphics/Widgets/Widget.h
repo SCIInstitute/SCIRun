@@ -47,8 +47,8 @@ namespace SCIRun
         std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
       };
 
-      using WidgetObservable = Observable<WidgetBase*, WidgetMovement, SimpleWidgetEvent,
-        SimpleWidgetEventKey, SimpleWidgetEventValue, GeometryIdGetter>;
+      using WidgetObservable = WidgetMovementMediator<WidgetBase*, SimpleWidgetEvent,
+        SimpleWidgetEventKey, SimpleWidgetEventValue>;
 
       class SCISHARE WidgetBase : public GeometryObjectSpire,
         public WidgetObservable,

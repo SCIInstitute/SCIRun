@@ -147,19 +147,6 @@ namespace SCIRun
     };
 
     using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
-    using WidgetMovementTransformMap = std::map<Graphics::Datatypes::WidgetMovement, gen::Transform>;
-
-    class SCISHARE WidgetTransformMapping
-    {
-    public:
-      explicit WidgetTransformMapping(std::initializer_list<WidgetMovementTransformMap::value_type> ts)
-        : transforms_(ts) {}
-      gen::Transform transformFor(Graphics::Datatypes::WidgetMovement move) const;
-    private:
-      WidgetMovementTransformMap transforms_;
-    };
-
-    using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
 
     class SCISHARE BasicRendererObjectProvider
     {
@@ -181,6 +168,20 @@ namespace SCIRun
 
     using TransformCalcMaker = std::function<ObjectTransformCalculatorPtr(const glm::vec2&, float)>;
     using TransformCalcMakerMapping = std::map<Graphics::Datatypes::WidgetMovement, TransformCalcMaker>;
+    using TransformCalcMap = std::map<Graphics::Datatypes::WidgetMovement, ObjectTransformCalculatorPtr>;
+
+    class SCISHARE WidgetTransformMapping
+    {
+    public:
+      WidgetTransformMapping(const TransformCalcMap& ts, int x, int y)
+        : transformsCalcs_(ts), x_(x), y_(y) {}
+      gen::Transform transformFor(Graphics::Datatypes::WidgetMovement move) const;
+    private:
+      TransformCalcMap transformsCalcs_;
+      int x_, y_;
+    };
+
+    using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
 
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider, boost::noncopyable
     {
@@ -199,7 +200,7 @@ namespace SCIRun
       void reset();
 
       void setCurrentWidget(Graphics::Datatypes::WidgetHandle w);
-      Graphics::Datatypes::WidgetHandle currentWidget() const { return widget_; }
+      Graphics::Datatypes::WidgetHandle currentWidget() const { return currentWidget_; }
 
       glm::mat4 widgetTransform() const { return widgetTransform_; }
 
@@ -210,14 +211,14 @@ namespace SCIRun
       ScaleParameters buildScale(const glm::vec2& initPos, float initW);
       RotateParameters buildRotation(const glm::vec2& initPos, float initW);
 
-      Graphics::Datatypes::WidgetHandle widget_;
-      Graphics::Datatypes::WidgetMovement movement_ {Graphics::Datatypes::WidgetMovement::NONE};
+      Graphics::Datatypes::WidgetHandle currentWidget_;
+      Graphics::Datatypes::WidgetMovementFamily movements_;
       Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
-      ObjectTransformCalculatorPtr objectTransformCalculator_;
       ObjectTransformCalculatorFactory transformFactory_;
       TransformCalcMakerMapping transformCalcMakerMapping_;
+      TransformCalcMap currentTransformationCalculators_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
     };
