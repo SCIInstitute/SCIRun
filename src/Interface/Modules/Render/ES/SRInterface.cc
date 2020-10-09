@@ -753,7 +753,8 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
   auto initialW = getInitialW(depth);
   auto initialPosition = screen_.positionFromClick(x, y);
-  objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
+  if (transformCalcMakerMapping_.find(movement_) != transformCalcMakerMapping_.end())
+    objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
 }
 
 namespace
@@ -810,8 +811,11 @@ gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
 
 void WidgetUpdateService::updateWidget(int x, int y)
 {
-  WidgetEventPtr event(new WidgetTransformMapping({{ movement_, objectTransformCalculator_->computeTransform(x, y) }}));
-  modifyWidget(event);
+  if (objectTransformCalculator_)
+  {
+    WidgetEventPtr event(new WidgetTransformMapping({ { movement_, objectTransformCalculator_->computeTransform(x, y) } }));
+    modifyWidget(event);
+  }
 }
 
 void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)

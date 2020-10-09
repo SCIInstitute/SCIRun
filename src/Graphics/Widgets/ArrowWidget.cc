@@ -219,6 +219,7 @@ ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters par
     // toy example of more complicated interactions
     //cylinder << propagatesEvent<WidgetMovement::AXIS_TRANSLATE>::to << sphere << disk;
     cylinder << propagatesEvent<WidgetMovement::SCALE>::to << cone;
+    //cylinder << havingReceivedEvent<WidgetMovement::TRANSLATE>::then << propagatesEvent<WidgetMovement::SCALE>::to << cone;
 
     //TODO: concern #3--what data transform of "root" requires
     cone->addTransformParameters<Rotation>(origin);

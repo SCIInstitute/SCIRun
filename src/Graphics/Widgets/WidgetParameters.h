@@ -158,7 +158,7 @@ namespace SCIRun
         Observable() {}
         void registerObserver(const EventKey& event, const Observer& observer)
         {
-          observers_[event].push_back(observer);
+          observers_[event][event].push_back(observer);
         }
 
         void notify(const Event& event) const
@@ -166,8 +166,9 @@ namespace SCIRun
           auto eventObservers = observers_.find(keyFunc_(event));
           if (eventObservers != observers_.cend())
           {
-            for (const auto& obs : eventObservers->second)
-              observeFunc_(event)(idFunc_(obs));
+            for (const auto& obsPair : eventObservers->second)
+              for (const auto& obs : obsPair.second)
+                observeFunc_(event)(idFunc_(obs));
           }
         }
 
@@ -175,7 +176,7 @@ namespace SCIRun
         KeyFunc keyFunc_;
         ObserveFunc observeFunc_;
         IdFunc idFunc_;
-        std::map<EventKey, std::vector<Observer>> observers_;
+        std::map<EventKey, std::map<EventKey, std::vector<Observer>>> observers_;
       };
 
       class SCISHARE InputTransformMapper

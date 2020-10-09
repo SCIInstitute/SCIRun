@@ -81,6 +81,8 @@ void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
 InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
   : interactionMap_(pairs)
 {
+  if (interactionMap_.find(WidgetInteraction::RIGHT_CLICK) == interactionMap_.end())
+    interactionMap_[WidgetInteraction::RIGHT_CLICK] = interactionMap_[WidgetInteraction::CLICK];
 }
 
 WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
