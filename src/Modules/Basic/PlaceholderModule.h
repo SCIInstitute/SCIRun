@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         PlaceholderModule();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
