@@ -1,5 +1,5 @@
 ---
-title: GetNetworkFilename
+title: GetNetworkFileName
 category: moduledocs
 module:
   category: String

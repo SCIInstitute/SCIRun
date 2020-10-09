@@ -1,5 +1,5 @@
 ---
-title: RegisterWithCorrespondances
+title: RegisterWithCorrespondences
 category: moduledocs
 module:
   category: ChangeFieldData
