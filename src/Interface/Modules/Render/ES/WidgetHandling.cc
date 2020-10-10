@@ -48,6 +48,13 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Render;
+
 ObjectTransformCalculatorFactory::ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW)
   : brop_(brop), initPos_(initPos), initW_(initW)
 {
@@ -57,6 +64,8 @@ WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const S
   transformer_(transformer), screen_(screen)
 {
 }
+
+//glm::mat4 WidgetUpdateService::getStaticCameraViewProjection() { return transformer_->getStaticCameraViewProjection(); }
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
@@ -89,4 +98,29 @@ void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
 {
   currentWidget_ = w;
   movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
+}
+
+gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
+{
+  auto t = transformsCalcs_.find(move);
+  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform{};
+}
+
+void WidgetUpdateService::updateWidget(int x, int y)
+{
+  if (!currentTransformationCalculators_.empty())
+  {
+    auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
+    modifyWidget(event);
+  }
+}
+
+void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
+{
+  auto boundEvent = [&](const std::string& id)
+  {
+    transformer_->modifyObject(id, event->transformFor(movements_.front()));
+  };
+  currentWidget_->mediate(currentWidget_.get(), event);
+  widgetTransform_ = event->transformFor(movements_.front()).transform;
 }

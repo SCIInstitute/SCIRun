@@ -738,20 +738,6 @@ uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
   return (a << 24) | (b << 16) | (g << 8) | (r);
 }
 
-gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
-{
-  auto t = transformsCalcs_.find(move);
-  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform {};
-}
-
-void WidgetUpdateService::updateWidget(int x, int y)
-{
-  if (!currentTransformationCalculators_.empty())
-  {
-    auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
-    modifyWidget(event);
-  }
-}
 
 void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
 {
@@ -760,16 +746,6 @@ void SRInterface::modifyObject(const std::string& id, const gen::Transform& tran
   auto component = contTrans->getComponent(mEntityIdMap[id]);
   if (component.first != nullptr)
     contTrans->modifyIndex(trans, component.second, 0);
-}
-
-void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
-{
-  auto boundEvent = [&](const std::string& id)
-  {
-    transformer_->modifyObject(id, event->transformFor(movements_.front()));
-  };
-  currentWidget_->mediate(currentWidget_.get(), event);
-  widgetTransform_ = event->transformFor(movements_.front()).transform;
 }
 
 glm::vec2 ScreenParams::positionFromClick(int x, int y) const

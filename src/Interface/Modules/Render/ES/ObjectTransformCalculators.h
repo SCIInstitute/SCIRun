@@ -60,7 +60,7 @@ namespace SCIRun
       virtual ~BasicRendererObjectProvider() {}
       virtual SRCamera& camera() const = 0;
       virtual const ScreenParams& screen() const = 0;
-      virtual glm::mat4 getStaticCameraViewProjection() = 0;
+      //virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
     class LazyObjectTransformCalculator;
@@ -102,7 +102,7 @@ namespace SCIRun
       ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget);
     private:
       ObjectTransformCalculatorFactoryPtr factory_;
-      std::map<WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
+      std::map<Graphics::Datatypes::WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
     };
 
     class SCISHARE WidgetEventImpl : public Graphics::Datatypes::WidgetEvent

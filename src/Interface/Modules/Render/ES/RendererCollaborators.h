@@ -138,7 +138,7 @@ namespace SCIRun
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; }
-      glm::mat4 getStaticCameraViewProjection() override { return transformer_->getStaticCameraViewProjection(); }
+      //glm::mat4 getStaticCameraViewProjection() override;
 
       void reset();
 
