@@ -85,7 +85,7 @@ namespace detail
     Point bmax = params.pos + params.dir * params.common.scale;
 
     fixDegenerateBoxes(bmin, bmax);
-    return {bmin, bmax};
+    return std::make_tuple(bmin, bmax);
   }
 
   std::string makeName(const ArrowParameters& params)
