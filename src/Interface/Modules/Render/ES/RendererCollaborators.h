@@ -125,15 +125,13 @@ namespace SCIRun
       int x_, y_;
     };
 
-    using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
-
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider, boost::noncopyable
     {
     public:
       WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen);
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
-      void modifyWidget(WidgetEventPtr event);
+      void modifyWidget(Graphics::Datatypes::WidgetEventPtr event);
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
       void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
@@ -158,7 +156,6 @@ namespace SCIRun
       Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
-      TransformCalcMap currentTransformationCalculators_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};
     };

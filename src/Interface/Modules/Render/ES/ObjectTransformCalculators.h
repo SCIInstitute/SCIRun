@@ -48,8 +48,6 @@ namespace SCIRun
 
     using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
 
-  
-
     struct SCISHARE ScreenParams
     {
       size_t width {640}, height {480};
@@ -65,21 +63,22 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
+    class LazyObjectTransformCalculator;
+    using LazyObjectTransformCalculatorPtr = std::shared_ptr<LazyObjectTransformCalculator>;
+
     class SCISHARE ObjectTransformCalculatorFactory
     {
     public:
       ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
 
-
-
-
-
+      ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetHandle baseWidget) const;
+      LazyObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement);
+    private:
       template <class T>
-      ObjectTransformCalculatorPtr create(const typename T::Params& p)
+      ObjectTransformCalculatorPtr construct(const typename T::Params& p) const
       {
         return boost::make_shared<T>(brop_, p);
       }
-    private:
       const BasicRendererObjectProvider* brop_;
       glm::vec2 initPos_;
       float initW_;
@@ -91,9 +90,26 @@ namespace SCIRun
     {
     public:
       explicit LazyObjectTransformCalculator(ObjectTransformCalculatorFactoryPtr factory);
-      void provideWidget(WidgetBase* widget);
+      void provideWidget(Graphics::Datatypes::WidgetBase* widget);
     private:
       ObjectTransformCalculatorPtr lazyImpl_;
+    };
+
+    class SCISHARE LazyTransformCalculatorFamily
+    {
+    public:
+      LazyTransformCalculatorFamily(Graphics::Datatypes::WidgetMovementFamily movements, ObjectTransformCalculatorFactoryPtr factory);
+      ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget);
+    private:
+      ObjectTransformCalculatorFactoryPtr factory_;
+      std::map<WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
+    };
+
+    class SCISHARE WidgetEventImpl : public Graphics::Datatypes::WidgetEvent
+    {
+    public:
+      Graphics::Datatypes::WidgetMovement baseMovement() const override;
+      void move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const override;
     };
 
     class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable

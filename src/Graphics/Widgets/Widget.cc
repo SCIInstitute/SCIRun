@@ -68,14 +68,14 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 
 void WidgetMovementMediator::mediate(WidgetBase* sender, WidgetEventPtr event) const
 {
-  event->move(event->baseMovement(), sender->uniqueID());
+  event->move(sender, event->baseMovement());
 
   auto eventObservers = observers_.find(event->baseMovement());
   if (eventObservers != observers_.cend())
   {
     for (const auto& obsPair : eventObservers->second)
       for (auto& subwidget : obsPair.second)
-        event->move(obsPair.first, subwidget->uniqueID());
+        event->move(subwidget, obsPair.first);
   }
 }
 

@@ -142,19 +142,17 @@ namespace SCIRun
         AbstractGlyphFactoryPtr glyphMaker;
       };
 
-      using WidgetEventFunc = std::function<void(const std::string&)>;
+      class WidgetBase;
 
       class SCISHARE WidgetEvent
       {
       public:
         virtual ~WidgetEvent() {}
         virtual WidgetMovement baseMovement() const = 0;
-        virtual void move(WidgetMovement moveType, const std::string& widgetId) const = 0;
+        virtual void move(WidgetBase* widget, WidgetMovement moveType) const = 0;
       };
 
       using WidgetEventPtr = SharedPointer<WidgetEvent>;
-
-      class WidgetBase;
 
       class SCISHARE WidgetMovementMediator
       {

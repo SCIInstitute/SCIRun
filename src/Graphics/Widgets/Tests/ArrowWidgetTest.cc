@@ -145,8 +145,8 @@ TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
 }
 
 
-void StubWidgetEvent::move(WidgetMovement moveType, const std::string& widgetId) const
+void StubWidgetEvent::move(WidgetBase* widget, WidgetMovement moveType) const
 {
-  std::cout << __FUNCTION__ << " applying " << moveType << "(" << label_ << ") for widget " << widgetId << std::endl;
+  std::cout << __FUNCTION__ << " applying " << moveType << " (" << label_ << ") for widget " << widget->uniqueID() << std::endl;
   numMoves_++;
 }

@@ -98,6 +98,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/Registration.cc
   ES/AssetBootstrap.cc
   ES/ObjectTransformCalculators.cc
+  ES/WidgetHandling.cc
   ES/comp/LightingUniforms.cc
   ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc

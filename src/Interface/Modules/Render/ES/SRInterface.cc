@@ -375,7 +375,7 @@ void SRInterface::runGCOnNextExecution()
     void WidgetUpdateService::reset()
     {
       currentWidget_.reset();
-      currentTransformationCalculators_.clear();
+      //currentTransformationCalculators_.clear();
     }
 
     class ScopedLambdaExecutor
@@ -671,35 +671,6 @@ void SRInterface::runGCOnNextExecution()
       return -z;
     }
 
-//     template <class T>
-//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const typename T::Params& p)
-//     {
-//       return boost::make_shared<T>(brop_, p);
-//     }
-//
-// namespace SCIRun
-// {
-//   namespace Render
-//   {
-//     template <>
-//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectTranslationCalculator::Params& p)
-//     {
-//       return boost::make_shared<ObjectTranslationCalculator>(brop_, p);
-//     }
-//
-//     template <>
-//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectScaleCalculator::Params& p)
-//     {
-//       return boost::make_shared<ObjectScaleCalculator>(brop_, p);
-//     }
-//
-//     template <>
-//     ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ObjectRotationCalculator::Params& p)
-//     {
-//       return boost::make_shared<ObjectRotationCalculator>(brop_, p);
-//     }
-//   }
-// }
 void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
 {
   doPostSelectSetup(x, y, depth);
@@ -741,49 +712,6 @@ struct RotationMaker
     return p;
   }
 };
-}
-
-ObjectTransformCalculatorFactory::ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW)
-  : brop_(brop), initPos_(initPos), initW_(initW)
-{
-}
-
-WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
-  transformer_(transformer), screen_(screen), transformFactory_(this)
-{
-}
-
-void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
-{
-  auto initialW = getInitialW(depth);
-  auto initialPosition = screen_.positionFromClick(x, y);
-
-  XYZ xyz(initialPosition, initialW, transformFactory_);
-
-  for (const auto& movement : movements_)
-    currentTransformationCalculators_.emplace(movement, xyz.make(movement)(currentWidget_));
-}
-
-namespace
-{
-  WidgetInteraction yetAnotherEnumConversion(MouseButton btn)
-  {
-    switch (btn)
-    {
-      case MouseButton::MOUSE_LEFT:
-        return WidgetInteraction::CLICK;
-      case MouseButton::MOUSE_RIGHT:
-        return WidgetInteraction::RIGHT_CLICK;
-      default:
-        return WidgetInteraction::CLICK;
-    }
-  }
-}
-
-void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
-{
-  currentWidget_ = w;
-  movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
 
 //----------------------------------------------------------------------------------------------
@@ -840,7 +768,7 @@ void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
   {
     transformer_->modifyObject(id, event->transformFor(movements_.front()));
   };
-  currentWidget_->propagateEvent({movements_.front(), boundEvent});
+  currentWidget_->mediate(currentWidget_.get(), event);
   widgetTransform_ = event->transformFor(movements_.front()).transform;
 }
 

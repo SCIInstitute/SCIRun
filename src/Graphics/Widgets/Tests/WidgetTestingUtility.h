@@ -59,7 +59,7 @@ namespace SCIRun
         {
           return movement_;
         }
-        void move(WidgetMovement moveType, const std::string& widgetId) const override;
+        void move(WidgetBase* widget, WidgetMovement moveType) const override;
         int numMoves() const { return numMoves_; }
       private:
         WidgetMovement movement_;
