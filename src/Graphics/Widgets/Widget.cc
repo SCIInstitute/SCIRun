@@ -49,12 +49,6 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
-{
-  e.executeForMovement(e.baseMovement())(uniqueID());
-  notify(e);
-}
-
 void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement totalMovement)
 {
   for (auto& subwidget : widgets_)
@@ -72,20 +66,16 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   }
 }
 
-void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
+void WidgetMovementMediator::mediate(WidgetBase* sender, WidgetEventPtr event) const
 {
-  for (auto& w : widgets_)
-    w->propagateEvent(e);
-}
+  event->move(event->baseMovement(), sender->uniqueID());
 
-void WidgetMovementMediator::notify(const WidgetEventData& event) const
-{
-  auto eventObservers = observers_.find(event.baseMovement());
+  auto eventObservers = observers_.find(event->baseMovement());
   if (eventObservers != observers_.cend())
   {
     for (const auto& obsPair : eventObservers->second)
       for (auto& subwidget : obsPair.second)
-        event.executeForMovement(obsPair.first)(subwidget->uniqueID());
+        event->move(obsPair.first, subwidget->uniqueID());
   }
 }
 
@@ -141,12 +131,3 @@ TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const Transfor
     proxy.registrationApplier(widget);
   return proxy;
 }
-
-
-SimpleWidgetEvent::SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func)
-  : moveType_(moveType), func_(func)
-{}
-
-WidgetMovement SimpleWidgetEvent::baseMovement() const { return moveType_; }
-
-WidgetEventFunc SimpleWidgetEvent::executeForMovement(WidgetMovement moveType) const  { return func_; }

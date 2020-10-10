@@ -48,6 +48,25 @@ namespace SCIRun
         }
       };
 
+      class SCISHARE StubWidgetEvent : public WidgetEvent
+      {
+      public:
+        StubWidgetEvent(WidgetMovement movement, const std::string& label)
+        {
+          movement_ = movement; label_ = label;
+        }
+        WidgetMovement baseMovement() const override
+        {
+          return movement_;
+        }
+        void move(WidgetMovement moveType, const std::string& widgetId) const override;
+        int numMoves() const { return numMoves_; }
+      private:
+        WidgetMovement movement_;
+        std::string label_;
+        mutable int numMoves_{ 0 };
+      };
+
       class SCISHARE StubGlyphFactory : public AbstractGlyphFactory
       {
       public:

@@ -743,14 +743,9 @@ struct RotationMaker
 };
 }
 
-XYZ::XYZ(const glm::vec2& initPos, float initW, const ObjectTransformCalculatorFactory& factory)
-  : initPos_(initPos), initW_(initW), factory_(factory)
+ObjectTransformCalculatorFactory::ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW)
+  : brop_(brop), initPos_(initPos), initW_(initW)
 {
-}
-
-std::function<ObjectTransformCalculatorPtr(WidgetHandle)> XYZ::make(WidgetMovement movement) const
-{
-  return [&factory_](WidgetHandle w) { return factory_.create(RotationMaker()(w, initPos_, initW_)); }
 }
 
 WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :

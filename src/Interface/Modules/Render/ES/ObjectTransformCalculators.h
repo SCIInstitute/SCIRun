@@ -48,6 +48,8 @@ namespace SCIRun
 
     using ObjectTransformCalculatorPtr = SharedPointer<ObjectTransformCalculator>;
 
+  
+
     struct SCISHARE ScreenParams
     {
       size_t width {640}, height {480};
@@ -63,10 +65,15 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    class ObjectTransformCalculatorFactory
+    class SCISHARE ObjectTransformCalculatorFactory
     {
     public:
-      explicit ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop) : brop_(brop) {}
+      ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
+
+
+
+
+
       template <class T>
       ObjectTransformCalculatorPtr create(const typename T::Params& p)
       {
@@ -74,6 +81,19 @@ namespace SCIRun
       }
     private:
       const BasicRendererObjectProvider* brop_;
+      glm::vec2 initPos_;
+      float initW_;
+    };
+
+    using ObjectTransformCalculatorFactoryPtr = SharedPointer<ObjectTransformCalculatorFactory>;
+
+    class SCISHARE LazyObjectTransformCalculator : public ObjectTransformCalculator
+    {
+    public:
+      explicit LazyObjectTransformCalculator(ObjectTransformCalculatorFactoryPtr factory);
+      void provideWidget(WidgetBase* widget);
+    private:
+      ObjectTransformCalculatorPtr lazyImpl_;
     };
 
     class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable

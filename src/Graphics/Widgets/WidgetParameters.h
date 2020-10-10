@@ -144,34 +144,15 @@ namespace SCIRun
 
       using WidgetEventFunc = std::function<void(const std::string&)>;
 
-      class SCISHARE WidgetEventData
+      class SCISHARE WidgetEvent
       {
       public:
-        virtual ~WidgetEventData() {}
+        virtual ~WidgetEvent() {}
         virtual WidgetMovement baseMovement() const = 0;
-        virtual WidgetEventFunc executeForMovement(WidgetMovement moveType) const = 0;
+        virtual void move(WidgetMovement moveType, const std::string& widgetId) const = 0;
       };
 
-      class SCISHARE SimpleWidgetEvent : public WidgetEventData
-      {
-      public:
-        SimpleWidgetEvent(WidgetMovement moveType, WidgetEventFunc func);
-        WidgetMovement baseMovement() const override;
-        WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
-      private:
-        WidgetMovement moveType_;
-        WidgetEventFunc func_;
-      };
-
-      class SCISHARE CompositeWidgetEvent : public WidgetEventData
-      {
-      public:
-        CompositeWidgetEvent(std::initializer_list<SimpleWidgetEvent> es);
-        WidgetMovement baseMovement() const override;
-        WidgetEventFunc executeForMovement(WidgetMovement moveType) const override;
-      private:
-        std::vector<SimpleWidgetEvent> events_;
-      };
+      using WidgetEventPtr = SharedPointer<WidgetEvent>;
 
       class WidgetBase;
 
@@ -185,7 +166,7 @@ namespace SCIRun
           observers_[clickedMovement][observerMovement].push_back(observer);
         }
 
-        void notify(const WidgetEventData& event) const;
+        void mediate(WidgetBase* sender, WidgetEventPtr event) const;
 
       private:
         using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<WidgetBase*>>;

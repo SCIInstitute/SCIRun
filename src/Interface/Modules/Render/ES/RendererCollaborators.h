@@ -125,17 +125,6 @@ namespace SCIRun
       int x_, y_;
     };
 
-    class SCISHARE XYZ
-    {
-    public:
-      XYZ(const glm::vec2& initPos, float initW, const ObjectTransformCalculatorFactory& factory);
-      std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetHandle)> make(Graphics::Datatypes::WidgetMovement movement) const;
-    private:
-      glm::vec2 initPos_;
-      float initW_;
-      const ObjectTransformCalculatorFactory& factory_;
-    };
-
     using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
 
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider, boost::noncopyable
@@ -169,7 +158,6 @@ namespace SCIRun
       Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
-      ObjectTransformCalculatorFactory transformFactory_;
       TransformCalcMap currentTransformationCalculators_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};

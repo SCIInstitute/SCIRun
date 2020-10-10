@@ -117,26 +117,36 @@ TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
   EXPECT_EQ("__disk__7", disk->name());
   EXPECT_EQ("<dummyGeomId>DiskWidget::ArrowWidget(3)(2)(4)0", disk->uniqueID());
 
-  int eventCounter = 0;
-  auto eventFunc = [&eventCounter](const std::string& id) { std::cout << "Translating: " << id << std::endl; eventCounter++; };
-  SimpleWidgetEvent transEvent{WidgetMovement::TRANSLATE, eventFunc};
+  auto transEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
   // sphere takes translate events
-  sphere->propagateEvent(transEvent);
+  sphere->mediate(sphere.get(), transEvent);
 
-  EXPECT_EQ(eventCounter, internals.size());
+  EXPECT_EQ(transEvent->numMoves(), internals.size());
 
-  eventCounter = 0;
   // shaft takes translate events too
-  shaft->propagateEvent(transEvent);
-  EXPECT_EQ(eventCounter, internals.size());
+  auto transEvent2 = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
+  shaft->mediate(shaft.get(), transEvent2);
+  EXPECT_EQ(transEvent2->numMoves(), internals.size());
 
-  eventCounter = 0;
   // cone takes rotate events
-  cone->propagateEvent({WidgetMovement::ROTATE, [&eventCounter](const std::string& id) { std::cout << "Rotating: " << id << std::endl; eventCounter++; }});
-  EXPECT_EQ(eventCounter, internals.size());
+  auto rotateEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::ROTATE, "rotate");
+  cone->mediate(cone.get(), rotateEvent);
+  EXPECT_EQ(rotateEvent->numMoves(), internals.size());
 
-  eventCounter = 0;
   // disk takes scale events
-  disk->propagateEvent({WidgetMovement::SCALE, [&eventCounter](const std::string& id) { std::cout << "Scaling: " << id << std::endl; eventCounter++; }});
-  EXPECT_EQ(eventCounter, internals.size());
+  auto scaleEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::SCALE, "scale");
+  disk->mediate(disk.get(), scaleEvent);
+  EXPECT_EQ(scaleEvent->numMoves(), internals.size());
+
+  // disk does NOT propagate any other type of events
+  auto transEvent3 = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "illicit translate");
+  disk->mediate(disk.get(), transEvent3);
+  EXPECT_EQ(transEvent3->numMoves(), 1);
+}
+
+
+void StubWidgetEvent::move(WidgetMovement moveType, const std::string& widgetId) const
+{
+  std::cout << __FUNCTION__ << " applying " << moveType << "(" << label_ << ") for widget " << widgetId << std::endl;
+  numMoves_++;
 }

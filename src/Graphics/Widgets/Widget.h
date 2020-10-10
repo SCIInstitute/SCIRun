@@ -54,7 +54,6 @@ namespace SCIRun
 
         const std::string& name() const { return name_; }
 
-        virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
         std::string name_;
@@ -75,7 +74,6 @@ namespace SCIRun
         {}
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
-        void propagateEvent(const SimpleWidgetEvent& e) override;
         WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
         WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
 
