@@ -112,8 +112,6 @@ namespace SCIRun
       int	mPort;
     };
 
-    using TransformCalcMaker = std::function<ObjectTransformCalculatorPtr(const glm::vec2&, float)>;
-    using TransformCalcMakerMapping = std::map<Graphics::Datatypes::WidgetMovement, TransformCalcMaker>;
     using TransformCalcMap = std::map<Graphics::Datatypes::WidgetMovement, ObjectTransformCalculatorPtr>;
 
     class SCISHARE WidgetTransformMapping
@@ -125,6 +123,17 @@ namespace SCIRun
     private:
       TransformCalcMap transformsCalcs_;
       int x_, y_;
+    };
+
+    class SCISHARE XYZ
+    {
+    public:
+      XYZ(const glm::vec2& initPos, float initW, const ObjectTransformCalculatorFactory& factory);
+      std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetHandle)> make(Graphics::Datatypes::WidgetMovement movement) const;
+    private:
+      glm::vec2 initPos_;
+      float initW_;
+      const ObjectTransformCalculatorFactory& factory_;
     };
 
     using WidgetEventPtr = SharedPointer<WidgetTransformMapping>;
@@ -141,7 +150,8 @@ namespace SCIRun
       void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
 
       SRCamera& camera() const override { return *camera_; }
-      const ScreenParams& screen() const override { return screen_; };
+      const ScreenParams& screen() const override { return screen_; }
+      glm::mat4 getStaticCameraViewProjection() override { return transformer_->getStaticCameraViewProjection(); }
 
       void reset();
 
@@ -154,26 +164,12 @@ namespace SCIRun
       void doPostSelectSetup(int x, int y, float depth);
       float getInitialW(float depth) const;
 
-      // template <class T, class P = typename T::Params>
-      // TransformCalcMaker makeCalcFunc(std::function<P(const glm::vec2&, float)> memFn)
-      // {
-      //   return [this, memFn](const glm::vec2& initPos, float initW)
-      //   {
-      //     return transformFactory_.create<T>(memFn(initPos, initW));
-      //   };
-      // }
-
-      ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW);
-      ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW);
-      ObjectRotationCalculator::Params buildRotation(const glm::vec2& initPos, float initW);
-
       Graphics::Datatypes::WidgetHandle currentWidget_;
       Graphics::Datatypes::WidgetMovementFamily movements_;
       Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       ObjectTransformCalculatorFactory transformFactory_;
-      TransformCalcMakerMapping transformCalcMakerMapping_;
       TransformCalcMap currentTransformationCalculators_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {};

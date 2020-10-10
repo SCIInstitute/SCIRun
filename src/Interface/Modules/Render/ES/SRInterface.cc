@@ -700,23 +700,26 @@ void SRInterface::runGCOnNextExecution()
 //     }
 //   }
 // }
-    void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
-    {
-      doPostSelectSetup(x, y, depth);
-      updateWidget(x, y);
-    }
+void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
+{
+  doPostSelectSetup(x, y, depth);
+  updateWidget(x, y);
+}
 
 //TODO: these need to be delay-built, on a per subwidget basis (I think)
-ObjectTranslationCalculator::Params WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
+namespace
+{
+  #if 0
+ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW)
 {
   ObjectTranslationCalculator::Params p;
   p.initialPosition_ = initPos;
   p.w_ = initW;
-  p.viewProj = transformer_->getStaticCameraViewProjection();
+  p.viewProj = brop->getStaticCameraViewProjection();
   return p;
 }
 
-ObjectScaleCalculator::Params WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
+ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW)
 {
   ObjectScaleCalculator::Params p;
   p.initialPosition_ = initPos;
@@ -726,31 +729,33 @@ ObjectScaleCalculator::Params WidgetUpdateService::buildScale(const glm::vec2& i
   p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
   return p;
 }
-
-ObjectRotationCalculator::Params WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
+#endif
+struct RotationMaker
 {
-  ObjectRotationCalculator::Params p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  p.originWorld_ = toVec3(getRotationOrigin(currentWidget_->transformParameters()));
-  return p;
+  ObjectRotationCalculator::Params operator()(WidgetHandle widget, const glm::vec2& initPos, float initW)
+  {
+    ObjectRotationCalculator::Params p;
+    p.initialPosition_ = initPos;
+    p.w_ = initW;
+    p.originWorld_ = toVec3(getRotationOrigin(widget->transformParameters()));
+    return p;
+  }
+};
 }
 
-#define makeCalcFunc(memFn) [this](const glm::vec2& initPos, float initW) \
-                              { return transformFactory_.create(memFn(initPos, initW)); }
+XYZ::XYZ(const glm::vec2& initPos, float initW, const ObjectTransformCalculatorFactory& factory)
+  : initPos_(initPos), initW_(initW), factory_(factory)
+{
+}
+
+std::function<ObjectTransformCalculatorPtr(WidgetHandle)> XYZ::make(WidgetMovement movement) const
+{
+  return [&factory_](WidgetHandle w) { return factory_.create(RotationMaker()(w, initPos_, initW_)); }
+}
 
 WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
   transformer_(transformer), screen_(screen), transformFactory_(this)
 {
-  // std::function<ObjectTranslationCalculator::Params(const glm::vec2&, float)> qqq =
-  //     [this](const glm::vec2& v, float f) { return buildTranslation(v, f); };
-  transformCalcMakerMapping_ =
-  {
-    {WidgetMovement::TRANSLATE, makeCalcFunc(buildTranslation)}
-    //,
-    //{WidgetMovement::ROTATE, makeCalcFunc<ObjectRotationCalculator>(&WidgetUpdateService::buildRotation)},
-    //{WidgetMovement::SCALE, makeCalcFunc<ObjectScaleCalculator>(&WidgetUpdateService::buildScale)}
-  };
 }
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
@@ -758,8 +763,10 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
   auto initialW = getInitialW(depth);
   auto initialPosition = screen_.positionFromClick(x, y);
 
+  XYZ xyz(initialPosition, initialW, transformFactory_);
+
   for (const auto& movement : movements_)
-    currentTransformationCalculators_.emplace(movement, transformCalcMakerMapping_[movement](initialPosition, initialW));
+    currentTransformationCalculators_.emplace(movement, xyz.make(movement)(currentWidget_));
 }
 
 namespace

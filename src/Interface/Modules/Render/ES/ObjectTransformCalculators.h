@@ -60,6 +60,7 @@ namespace SCIRun
       virtual ~BasicRendererObjectProvider() {}
       virtual SRCamera& camera() const = 0;
       virtual const ScreenParams& screen() const = 0;
+      virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
     class ObjectTransformCalculatorFactory
