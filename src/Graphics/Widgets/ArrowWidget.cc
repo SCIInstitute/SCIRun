@@ -121,7 +121,7 @@ namespace detail
     Point center = origin + params.dir/2.0 * params.common.scale;
     return ConeWidgetBuilder(gen.base.idGenerator)
                   .tag(widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter))
-                  .transformMapping({{WidgetInteraction::CLICK, {WidgetMovement::ROTATE}}})
+                  .transformMapping({{WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::ROTATE}).build()}})
                   .scale(coneRadius * params.common.scale)
                   .defaultColor(deflColor.toString())
                   .origin(origin)
@@ -138,8 +138,8 @@ namespace detail
     return DiskWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
                         .transformMapping({
-                          {WidgetInteraction::CLICK, {WidgetMovement::SCALE}}
-                          ,{WidgetInteraction::RIGHT_CLICK, {WidgetMovement::TRANSLATE}}
+                          {WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::SCALE}).build()}
+                          //,{WidgetInteraction::RIGHT_CLICK, {WidgetMovement::TRANSLATE}}
                         })
                         .scale(diskRadius * params.common.scale)
                         .defaultColor(resizeColor.toString())
@@ -159,7 +159,7 @@ namespace detail
     return CylinderWidgetBuilder(gen.base.idGenerator)
                       .tag(widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter))
                       .transformMapping({
-                        {WidgetInteraction::CLICK, {WidgetMovement::TRANSLATE}}
+                        {WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::TRANSLATE}).build()}
                         //,{WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
                       })
                       .scale(cylinderRadius * params.common.scale)

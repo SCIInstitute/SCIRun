@@ -51,7 +51,11 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
 
 BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& gen,
   BasicBoundingBoxParameters params)
-  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox", {{WidgetInteraction::CLICK, {WidgetMovement::TRANSLATE}}}})
+  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox", 
+      {
+        { WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::TRANSLATE}).build() }
+      }
+    })
 {
   name_ = gen.glyphMaker->basicBox(params, *this);
   setPosition(params.pos.center_);

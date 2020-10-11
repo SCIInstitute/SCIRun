@@ -114,7 +114,15 @@ namespace SCIRun
         SCALE_AXIS_UNIDIRECTIONAL
       };
 
-      using WidgetMovementFamily = std::vector<WidgetMovement>;
+      // Whether a widget's movement can be propagated using a shared transform calculator.
+      enum class WidgetMovementSharing
+      {
+        SHARED,
+        UNIQUE
+      };
+
+      using WidgetMovements = std::vector<WidgetMovement>;
+      using WidgetMovementFamily = std::map<WidgetMovementSharing, WidgetMovements>;
 
       enum class WidgetInteraction
       {
@@ -124,13 +132,22 @@ namespace SCIRun
       };
 
       using TransformMapping = std::map<WidgetInteraction, WidgetMovementFamily>;
-      using TransformMappingParams = std::initializer_list<TransformMapping::value_type>;
+
+      class SCISHARE WidgetMovementFamilyBuilder
+      {
+      public:
+        WidgetMovementFamilyBuilder& sharedMovements(const WidgetMovements& moves);
+        WidgetMovementFamilyBuilder& uniqueMovements(const WidgetMovements& moves);
+        WidgetMovementFamily build() const { return wmf_; }
+      private:
+        WidgetMovementFamily wmf_;
+      };
 
       struct SCISHARE WidgetBaseParameters
       {
         const Core::GeometryIDGenerator& idGenerator;
         std::string tag;
-        TransformMappingParams mapping;
+        TransformMapping mapping;
       };
 
       class AbstractGlyphFactory;
@@ -174,7 +191,7 @@ namespace SCIRun
       class SCISHARE InputTransformMapper
       {
       public:
-        explicit InputTransformMapper(TransformMappingParams pairs);
+        explicit InputTransformMapper(const TransformMapping& tm);
         WidgetMovementFamily movementType(WidgetInteraction interaction) const;
       private:
         TransformMapping interactionMap_;

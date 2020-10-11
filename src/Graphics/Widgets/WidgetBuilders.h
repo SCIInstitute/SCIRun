@@ -50,11 +50,11 @@ namespace SCIRun
         Derived& origin(const Core::Geometry::Point& p) { origin_ = p; return static_cast<Derived&>(*this); }
         Derived& boundingBox(const Core::Geometry::BBox& b) { bbox_ = b; return static_cast<Derived&>(*this); }
         Derived& resolution(int r) { resolution_ = r; return static_cast<Derived&>(*this); }
-        Derived& transformMapping(const TransformMappingParams& tmp) { mapping_ = tmp; return static_cast<Derived&>(*this); }
+        Derived& transformMapping(const TransformMapping& tmp) { mapping_ = tmp; return static_cast<Derived&>(*this); }
       protected:
         const Core::GeometryIDGenerator& idGenerator_;
         std::string tag_;
-        TransformMappingParams mapping_;
+        TransformMapping mapping_;
         double scale_ {0};
         std::string defaultColor_;
         Core::Geometry::Point origin_;

@@ -79,8 +79,8 @@ void WidgetMovementMediator::mediate(WidgetBase* sender, WidgetEventPtr event) c
   }
 }
 
-InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
-  : interactionMap_(pairs)
+InputTransformMapper::InputTransformMapper(const TransformMapping& tm)
+  : interactionMap_(tm)
 {
   if (interactionMap_.find(WidgetInteraction::RIGHT_CLICK) == interactionMap_.end())
     interactionMap_[WidgetInteraction::RIGHT_CLICK] = interactionMap_[WidgetInteraction::CLICK];
@@ -130,4 +130,17 @@ TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const Transfor
   for (auto& widget : widgets)
     proxy.registrationApplier(widget);
   return proxy;
+}
+
+
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::sharedMovements(const WidgetMovements& moves)
+{
+  wmf_[WidgetMovementSharing::SHARED] = moves;
+  return *this;
+}
+
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::uniqueMovements(const WidgetMovements& moves)
+{
+  wmf_[WidgetMovementSharing::UNIQUE] = moves;
+  return *this;
 }
