@@ -391,7 +391,7 @@ void SRInterface::runGCOnNextExecution()
     {
       widgetUpdater_.reset();
       widgetUpdater_.setCurrentWidget(widget);
-      widgetUpdater_.doInitialUpdate(x, y, mLastSelectionDepth);
+      widgetUpdater_.doInitialUpdate(x, y, selectionDepth_);
     }
 
     void SRInterface::setWidgetInteractionMode(MouseButton btn)
@@ -445,14 +445,12 @@ void SRInterface::runGCOnNextExecution()
 
       mCore.executeWithoutAdvancingClock();
 
-      GLfloat depth;
-
       {
         ScopedLambdaExecutor removeEntities([this, &entityList]() { for (auto& it : entityList) mCore.removeEntity(it); });
         {
           ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
           GLuint value;
-          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
+          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&selectionDepth_))
           {
             auto it = selMap.find(value);
             if (it != selMap.end())
@@ -473,10 +471,9 @@ void SRInterface::runGCOnNextExecution()
 
         if (widgetUpdater_.currentWidget())
         {
-          widgetUpdater_.doInitialUpdate(x, y, depth);
+          widgetUpdater_.doInitialUpdate(x, y, selectionDepth_);
         }
       }
-      mLastSelectionDepth = depth;
 
       return widgetUpdater_.currentWidget();
     }
@@ -656,63 +653,6 @@ void SRInterface::runGCOnNextExecution()
     {
       return mCamera->getWorldToProjection();
     }
-
-    template <class P>
-    static glm::vec3 toVec3(const P& p)
-    {
-      return glm::vec3{p.x(), p.y(), p.z()};
-    }
-
-    float WidgetUpdateService::getInitialW(float depth) const
-    {
-      float zFar = camera_->getZFar();
-      float zNear = camera_->getZNear();
-      float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
-      return -z;
-    }
-
-void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
-{
-  doPostSelectSetup(x, y, depth);
-  updateWidget(x, y);
-}
-
-//TODO: these need to be delay-built, on a per subwidget basis (I think)
-namespace
-{
-  #if 0
-ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW)
-{
-  ObjectTranslationCalculator::Params p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  p.viewProj = brop->getStaticCameraViewProjection();
-  return p;
-}
-
-ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW)
-{
-  ObjectScaleCalculator::Params p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  auto widgetTransformParameters = currentWidget_->transformParameters();
-  p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
-  p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-  return p;
-}
-#endif
-struct RotationMaker
-{
-  ObjectRotationCalculator::Params operator()(WidgetHandle widget, const glm::vec2& initPos, float initW)
-  {
-    ObjectRotationCalculator::Params p;
-    p.initialPosition_ = initPos;
-    p.w_ = initW;
-    p.originWorld_ = toVec3(getRotationOrigin(widget->transformParameters()));
-    return p;
-  }
-};
-}
 
 //----------------------------------------------------------------------------------------------
 uint32_t SRInterface::getSelectIDForName(const std::string& name)

@@ -55,7 +55,7 @@ using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Render;
 
-ObjectTransformCalculatorFactory::ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW)
+ObjectTransformCalculatorFactory::ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW)
   : brop_(brop), initPos_(initPos), initW_(initW)
 {
 }
@@ -65,18 +65,7 @@ WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const S
 {
 }
 
-//glm::mat4 WidgetUpdateService::getStaticCameraViewProjection() { return transformer_->getStaticCameraViewProjection(); }
-
-void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
-{
-  auto initialW = getInitialW(depth);
-  auto initialPosition = screen_.positionFromClick(x, y);
-
-  XYZ xyz(initialPosition, initialW, transformFactory_);
-
-  for (const auto& movement : movements_)
-    currentTransformationCalculators_.emplace(movement, xyz.make(movement)(currentWidget_));
-}
+glm::mat4 WidgetUpdateService::getStaticCameraViewProjection() { return transformer_->getStaticCameraViewProjection(); }
 
 namespace
 {
@@ -106,21 +95,174 @@ gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
   return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform{};
 }
 
+void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
+{
+  logCritical("{} {} {} {}", __FUNCTION__, x, y, depth);
+  auto initialW = getInitialW(depth);
+  auto initialPosition = screen_.positionFromClick(x, y);
+
+  auto factory = boost::make_shared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
+
+  //XYZ xyz(initialPosition, initialW, transformFactory_);
+
+  //for (const auto& movement : movements_)
+  //  currentTransformationCalculators_.emplace(movement, xyz.make(movement)(currentWidget_));
+}
+
 void WidgetUpdateService::updateWidget(int x, int y)
 {
-  if (!currentTransformationCalculators_.empty())
+  logCritical("{} {} {}", __FUNCTION__, x, y);
+  //if ()
+  //if (!currentTransformationCalculators_.empty())
+  //{
+  //  auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
+
+  //  auto boundEvent = [&](const std::string& id)
+  //  {
+  //    transformer_->modifyObject(id, event->transformFor(movements_.front()));
+  //  };
+  //  currentWidget_->mediate(currentWidget_.get(), event);
+  //  widgetTransform_ = event->transformFor(movements_.front()).transform;
+  //}
+}
+
+class WidgetTransformEvent::WidgetTransformEventImpl
+{
+public:
+  WidgetMovement baseMovement_;
+  int x_, y_;
+  ObjectTransformer* transformer_{ nullptr };
+  //LazyTransformCalculatorFamily calcFamily_;
+};
+
+WidgetTransformEvent::WidgetTransformEvent() //: impl_(new WidgetTransformEventImpl)
+{
+
+}
+
+Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
+{
+  return impl_->baseMovement_;
+}
+
+void WidgetTransformEvent::move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const
+{
+  logCritical("{}", __FUNCTION__);
+  //if (widget)
+  //  impl_->transformer_->modifyObject(widget->uniqueID(), impl_->calcFamily_.calcFor(widget)->computeTransform(impl_->x_, impl_->y_));
+}
+
+void WidgetTransformEvent::transformAt(int x, int y)
+{
+  impl_->x_ = x;
+  impl_->y_ = y;
+}
+
+WidgetTransformEvent::~WidgetTransformEvent() = default;
+
+void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
+{
+  doPostSelectSetup(x, y, depth);
+  updateWidget(x, y);
+}
+
+template <class P>
+static glm::vec3 toVec3(const P& p)
+{
+  return glm::vec3{ p.x(), p.y(), p.z() };
+}
+
+float WidgetUpdateService::getInitialW(float depth) const
+{
+  float zFar = camera_->getZFar();
+  float zNear = camera_->getZNear();
+  float z = -1.0 / (depth * (1.0 / zFar - 1.0 / zNear) + 1.0 / zNear);
+  return -z;
+}
+
+//TODO: these need to be delay-built, on a per subwidget basis (I think)
+#if 0
+namespace
+{
+  ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW)
   {
-    auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
-    modifyWidget(event);
+    ObjectTranslationCalculator::Params p;
+    p.initialPosition_ = initPos;
+    p.w_ = initW;
+    p.viewProj = brop->getStaticCameraViewProjection();
+    return p;
+  }
+
+  ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW)
+  {
+    ObjectScaleCalculator::Params p;
+    p.initialPosition_ = initPos;
+    p.w_ = initW;
+    auto widgetTransformParameters = currentWidget_->transformParameters();
+    p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
+    p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
+    return p;
+  }
+  struct RotationMaker
+  {
+    ObjectRotationCalculator::Params operator()(WidgetHandle widget, const glm::vec2& initPos, float initW)
+    {
+      ObjectRotationCalculator::Params p;
+      p.initialPosition_ = initPos;
+      p.w_ = initW;
+      p.originWorld_ = toVec3(getRotationOrigin(widget->transformParameters()));
+      return p;
+    }
+  };
+}
+#endif
+
+ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMovement movement, WidgetHandle baseWidget) const
+{
+  switch (movement)
+  {
+  case WidgetMovement::TRANSLATE:
+    return boost::make_shared<ObjectTranslationCalculator>(brop_, ObjectTranslationCalculator::Params({ initPos_, initW_, brop_->getStaticCameraViewProjection() }));
+  case WidgetMovement::ROTATE:
+    return boost::make_shared<ObjectRotationCalculator>(brop_, ObjectRotationCalculator::Params({ initPos_, initW_, toVec3(getRotationOrigin(baseWidget->transformParameters())) }));
+  case WidgetMovement::SCALE:
+  {
+    ObjectScaleCalculator::Params p;
+    p.initialPosition_ = initPos_;
+    p.w_ = initW_;
+    auto widgetTransformParameters = baseWidget->transformParameters();
+    p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
+    p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
+    return boost::make_shared<ObjectScaleCalculator>(brop_, p);
+  }
+  default:
+    return nullptr;
   }
 }
 
-void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
+LazyObjectTransformCalculator ObjectTransformCalculatorFactory::create(WidgetMovement movement)
 {
-  auto boundEvent = [&](const std::string& id)
-  {
-    transformer_->modifyObject(id, event->transformFor(movements_.front()));
-  };
-  currentWidget_->mediate(currentWidget_.get(), event);
-  widgetTransform_ = event->transformFor(movements_.front()).transform;
+  return [movement, this](WidgetHandle widget) { return create(movement, widget); };
 }
+
+LazyTransformCalculatorFamily::LazyTransformCalculatorFamily(WidgetMovementFamily movements, ObjectTransformCalculatorFactoryPtr factory)
+{
+}
+
+ObjectTransformCalculatorPtr LazyTransformCalculatorFamily::calcFor(WidgetBase* widget)
+{
+  throw 1;
+}
+
+//void LazyObjectTransformCalculator::provideWidget(WidgetBase* widget)
+//{
+//  if (widget)
+//    lazyImpl_ = factory->create
+//}
+
+//gen::Transform LazyObjectTransformCalculator::computeTransform(int x, int y) const override
+//{
+//  if (lazyImpl_)
+//    return lazyImpl_->computeTransform(x, y);
+//  throw "no widget provided";
+//}

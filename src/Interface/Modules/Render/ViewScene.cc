@@ -1809,8 +1809,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
 
       if (selectedWidget_)
       {
-        widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_,
-                                                                           WidgetColor::RED);
+        widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_, WidgetColor::RED);
         selectedWidget_->changeID();
       }
       previousWidgetInfo_->deletePreviousWidget();

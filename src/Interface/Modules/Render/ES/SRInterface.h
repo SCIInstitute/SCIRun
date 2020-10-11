@@ -256,7 +256,7 @@ namespace SCIRun
       double                              mMatDiffuse         {};
       double                              mMatSpecular        {};
       double                              mMatShine           {};
-      GLfloat                             mLastSelectionDepth {0.0};
+      float                               selectionDepth_ {0.0};
 
       //fog settings
       double                              mFogIntensity       {};

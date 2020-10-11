@@ -131,14 +131,13 @@ namespace SCIRun
       WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen);
       void setCamera(SRCamera* cam) { camera_ = cam; }
 
-      void modifyWidget(Graphics::Datatypes::WidgetEventPtr event);
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
       void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; }
-      //glm::mat4 getStaticCameraViewProjection() override;
+      glm::mat4 getStaticCameraViewProjection() override;
 
       void reset();
 

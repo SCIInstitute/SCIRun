@@ -31,6 +31,7 @@
 
 #include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/share.h>
@@ -60,40 +61,36 @@ namespace SCIRun
       virtual ~BasicRendererObjectProvider() {}
       virtual SRCamera& camera() const = 0;
       virtual const ScreenParams& screen() const = 0;
-      //virtual glm::mat4 getStaticCameraViewProjection() = 0;
+      virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    class LazyObjectTransformCalculator;
-    using LazyObjectTransformCalculatorPtr = std::shared_ptr<LazyObjectTransformCalculator>;
+    using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetHandle)>;
 
-    class SCISHARE ObjectTransformCalculatorFactory
+    class SCISHARE ObjectTransformCalculatorFactory : public boost::enable_shared_from_this<ObjectTransformCalculatorFactory>
     {
     public:
-      ObjectTransformCalculatorFactory(const BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
+      ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
 
       ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetHandle baseWidget) const;
-      LazyObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement);
+      LazyObjectTransformCalculator create(Graphics::Datatypes::WidgetMovement movement);
     private:
-      template <class T>
-      ObjectTransformCalculatorPtr construct(const typename T::Params& p) const
-      {
-        return boost::make_shared<T>(brop_, p);
-      }
-      const BasicRendererObjectProvider* brop_;
+      BasicRendererObjectProvider* brop_;
       glm::vec2 initPos_;
       float initW_;
     };
 
     using ObjectTransformCalculatorFactoryPtr = SharedPointer<ObjectTransformCalculatorFactory>;
 
-    class SCISHARE LazyObjectTransformCalculator : public ObjectTransformCalculator
-    {
-    public:
-      explicit LazyObjectTransformCalculator(ObjectTransformCalculatorFactoryPtr factory);
-      void provideWidget(Graphics::Datatypes::WidgetBase* widget);
-    private:
-      ObjectTransformCalculatorPtr lazyImpl_;
-    };
+    //class SCISHARE LazyObjectTransformCalculator : public ObjectTransformCalculator
+    //{
+    //public:
+    //  explicit LazyObjectTransformCalculator(ObjectTransformCalculatorFactoryPtr factory);
+    //  void provideWidget(Graphics::Datatypes::WidgetBase* widget);
+    //  gen::Transform computeTransform(int x, int y) const override;
+    //private:
+    //  ObjectTransformCalculatorFactoryPtr factory_;
+    //  ObjectTransformCalculatorPtr lazyImpl_;
+    //};
 
     class SCISHARE LazyTransformCalculatorFamily
     {
@@ -105,11 +102,17 @@ namespace SCIRun
       std::map<Graphics::Datatypes::WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
     };
 
-    class SCISHARE WidgetEventImpl : public Graphics::Datatypes::WidgetEvent
+    class SCISHARE WidgetTransformEvent : public Graphics::Datatypes::WidgetEvent
     {
     public:
+      WidgetTransformEvent();
+      ~WidgetTransformEvent();
       Graphics::Datatypes::WidgetMovement baseMovement() const override;
       void move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const override;
+      void transformAt(int x, int y);
+    private:
+      class WidgetTransformEventImpl;
+      std::unique_ptr<WidgetTransformEventImpl> impl_;
     };
 
     class SCISHARE ObjectTransformCalculatorBase : public ObjectTransformCalculator, boost::noncopyable
