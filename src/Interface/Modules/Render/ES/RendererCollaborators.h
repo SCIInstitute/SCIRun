@@ -112,19 +112,6 @@ namespace SCIRun
       int	mPort;
     };
 
-    using TransformCalcMap = std::map<Graphics::Datatypes::WidgetMovement, ObjectTransformCalculatorPtr>;
-
-    class SCISHARE WidgetTransformMapping
-    {
-    public:
-      WidgetTransformMapping(const TransformCalcMap& ts, int x, int y)
-        : transformsCalcs_(ts), x_(x), y_(y) {}
-      gen::Transform transformFor(Graphics::Datatypes::WidgetMovement move) const;
-    private:
-      TransformCalcMap transformsCalcs_;
-      int x_, y_;
-    };
-
     class SCISHARE WidgetUpdateService : public BasicRendererObjectProvider, boost::noncopyable
     {
     public:

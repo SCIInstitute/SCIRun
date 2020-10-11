@@ -89,11 +89,11 @@ void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
   movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
 
-gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
-{
-  auto t = transformsCalcs_.find(move);
-  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform{};
-}
+//gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
+//{
+//  auto t = transformsCalcs_.find(move);
+//  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform{};
+//}
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
@@ -115,13 +115,13 @@ void WidgetUpdateService::updateWidget(int x, int y)
   //if ()
   //if (!currentTransformationCalculators_.empty())
   //{
-  //  auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
+  //auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
 
   //  auto boundEvent = [&](const std::string& id)
   //  {
   //    transformer_->modifyObject(id, event->transformFor(movements_.front()));
   //  };
-  //  currentWidget_->mediate(currentWidget_.get(), event);
+  //currentWidget_->mediate(currentWidget_.get(), event);
   //  widgetTransform_ = event->transformFor(movements_.front()).transform;
   //}
 }
@@ -132,10 +132,24 @@ public:
   WidgetMovement baseMovement_;
   int x_, y_;
   ObjectTransformer* transformer_{ nullptr };
-  //LazyTransformCalculatorFamily calcFamily_;
+  std::shared_ptr<LazyTransformCalculatorFamily> calcFamily_;
 };
 
-WidgetTransformEvent::WidgetTransformEvent() //: impl_(new WidgetTransformEventImpl)
+LazyTransformCalculatorFamily::LazyTransformCalculatorFamily(ObjectTransformCalculatorFactoryPtr factory) : factory_(factory)
+{
+
+}
+
+ObjectTransformCalculatorPtr LazyTransformCalculatorFamily::calcFor(WidgetBase* widget, WidgetMovement movement)
+{
+  if (calcs_.find(widget) == calcs_.end())
+  {
+    calcs_[widget] = factory_->create(movement, widget);
+  }
+  return calcs_[widget];
+}
+
+WidgetTransformEvent::WidgetTransformEvent() : impl_(new WidgetTransformEventImpl)
 {
 
 }
@@ -145,11 +159,14 @@ Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
   return impl_->baseMovement_;
 }
 
-void WidgetTransformEvent::move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const
+void WidgetTransformEvent::move(WidgetBase* widget, WidgetMovement moveType) const
 {
   logCritical("{}", __FUNCTION__);
-  //if (widget)
-  //  impl_->transformer_->modifyObject(widget->uniqueID(), impl_->calcFamily_.calcFor(widget)->computeTransform(impl_->x_, impl_->y_));
+  if (widget)
+  {
+    auto calc = impl_->calcFamily_->calcFor(widget, moveType);
+    impl_->transformer_->modifyObject(widget->uniqueID(), calc->computeTransform(impl_->x_, impl_->y_));
+  }
 }
 
 void WidgetTransformEvent::transformAt(int x, int y)
@@ -181,43 +198,8 @@ float WidgetUpdateService::getInitialW(float depth) const
 }
 
 //TODO: these need to be delay-built, on a per subwidget basis (I think)
-#if 0
-namespace
-{
-  ObjectTranslationCalculator::Params buildTranslation(const glm::vec2& initPos, float initW)
-  {
-    ObjectTranslationCalculator::Params p;
-    p.initialPosition_ = initPos;
-    p.w_ = initW;
-    p.viewProj = brop->getStaticCameraViewProjection();
-    return p;
-  }
 
-  ObjectScaleCalculator::Params buildScale(const glm::vec2& initPos, float initW)
-  {
-    ObjectScaleCalculator::Params p;
-    p.initialPosition_ = initPos;
-    p.w_ = initW;
-    auto widgetTransformParameters = currentWidget_->transformParameters();
-    p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
-    p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-    return p;
-  }
-  struct RotationMaker
-  {
-    ObjectRotationCalculator::Params operator()(WidgetHandle widget, const glm::vec2& initPos, float initW)
-    {
-      ObjectRotationCalculator::Params p;
-      p.initialPosition_ = initPos;
-      p.w_ = initW;
-      p.originWorld_ = toVec3(getRotationOrigin(widget->transformParameters()));
-      return p;
-    }
-  };
-}
-#endif
-
-ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMovement movement, WidgetHandle baseWidget) const
+ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMovement movement, WidgetBase* baseWidget) const
 {
   switch (movement)
   {
@@ -242,17 +224,9 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
 
 LazyObjectTransformCalculator ObjectTransformCalculatorFactory::create(WidgetMovement movement)
 {
-  return [movement, this](WidgetHandle widget) { return create(movement, widget); };
+  return [movement, this](WidgetBase* widget) { return create(movement, widget); };
 }
 
-LazyTransformCalculatorFamily::LazyTransformCalculatorFamily(WidgetMovementFamily movements, ObjectTransformCalculatorFactoryPtr factory)
-{
-}
-
-ObjectTransformCalculatorPtr LazyTransformCalculatorFamily::calcFor(WidgetBase* widget)
-{
-  throw 1;
-}
 
 //void LazyObjectTransformCalculator::provideWidget(WidgetBase* widget)
 //{

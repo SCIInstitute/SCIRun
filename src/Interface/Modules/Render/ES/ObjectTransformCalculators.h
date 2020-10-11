@@ -64,14 +64,14 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetHandle)>;
+    using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetBase*)>;
 
     class SCISHARE ObjectTransformCalculatorFactory : public boost::enable_shared_from_this<ObjectTransformCalculatorFactory>
     {
     public:
       ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
 
-      ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetHandle baseWidget) const;
+      ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetBase* baseWidget) const;
       LazyObjectTransformCalculator create(Graphics::Datatypes::WidgetMovement movement);
     private:
       BasicRendererObjectProvider* brop_;
@@ -81,22 +81,11 @@ namespace SCIRun
 
     using ObjectTransformCalculatorFactoryPtr = SharedPointer<ObjectTransformCalculatorFactory>;
 
-    //class SCISHARE LazyObjectTransformCalculator : public ObjectTransformCalculator
-    //{
-    //public:
-    //  explicit LazyObjectTransformCalculator(ObjectTransformCalculatorFactoryPtr factory);
-    //  void provideWidget(Graphics::Datatypes::WidgetBase* widget);
-    //  gen::Transform computeTransform(int x, int y) const override;
-    //private:
-    //  ObjectTransformCalculatorFactoryPtr factory_;
-    //  ObjectTransformCalculatorPtr lazyImpl_;
-    //};
-
     class SCISHARE LazyTransformCalculatorFamily
     {
     public:
-      LazyTransformCalculatorFamily(Graphics::Datatypes::WidgetMovementFamily movements, ObjectTransformCalculatorFactoryPtr factory);
-      ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget);
+      explicit LazyTransformCalculatorFamily(ObjectTransformCalculatorFactoryPtr factory);
+      ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement movement);
     private:
       ObjectTransformCalculatorFactoryPtr factory_;
       std::map<Graphics::Datatypes::WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
