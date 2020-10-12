@@ -86,7 +86,6 @@ namespace
 void WidgetUpdateService::setCurrentWidget(WidgetHandle w)
 {
   currentWidget_ = w;
-  movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
@@ -95,7 +94,7 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
   auto initialPosition = screen_.positionFromClick(x, y);
 
   auto factory = boost::make_shared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
-  auto tcf = std::make_shared<TransformCalculatorFamily>(movements_, factory);
+  auto tcf = std::make_shared<TransformCalculatorFamily>(currentWidget_->movementType(yetAnotherEnumConversion(buttonPushed_)), factory);
   event_ = boost::make_shared<WidgetTransformEvent>(transformer_, tcf);
 }
 

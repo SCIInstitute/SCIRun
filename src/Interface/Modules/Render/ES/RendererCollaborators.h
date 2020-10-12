@@ -138,7 +138,6 @@ namespace SCIRun
       float getInitialW(float depth) const;
 
       Graphics::Datatypes::WidgetHandle currentWidget_;
-      Graphics::Datatypes::WidgetMovementFamily movements_;
       SharedPointer<WidgetTransformEvent> event_;
       Render::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
