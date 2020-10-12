@@ -140,10 +140,8 @@ ObjectTransformCalculatorPtr TransformCalculatorFamily::calcFor(WidgetBase* widg
       if (reuse != calcs_.end())
         calc = reuse->second;
     }
-
     if (!calc)
       calc = factory_->create(movement, widget);
-
     calcs_[widget] = calc;
   }
   return calcs_[widget];

@@ -51,7 +51,7 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
 
 BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& gen,
   BasicBoundingBoxParameters params)
-  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox", 
+  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox",
       {
         { WidgetInteraction::CLICK,
             singleMovementWidget(WidgetMovement::TRANSLATE) }
@@ -85,19 +85,14 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   ...
   auto edges = std::vector<WidgetHandle>{e0,e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11};
 
-
   // faces part 1--disks
   // left-click: translate/bidirectional scale
   // right-click: translate/unidirectional scale
   WidgetHandle fd0, fd1, fd2, fd3, fd4, fd5;
 
-
-
   //TODO:
   // face spheres
   WidgetHandle fs0, fs1, fs2, fs3, fs4, fs5;
-
-
 
   for (auto& e : edges)
   {
@@ -146,8 +141,5 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
     ? id/left alone={v4,v5,v6,v7},{e4,e5,e6,e7},{fd5,fs5}, //depends on testability
     uniscaledParallelEdges = {e8,e9,e10,e11}
   );
-
-
-
 }
 #endif
