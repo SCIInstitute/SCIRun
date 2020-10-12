@@ -128,8 +128,7 @@ ObjectTransformCalculatorPtr TransformCalculatorFamily::calcFor(WidgetBase* widg
 {
   auto shareIter = movements_.propagated.find(movement);
   if (shareIter == movements_.propagated.end())
-    throw "that movement is not set up for this widget";
-
+    THROW_INVALID_ARGUMENT("That movement is not set up for this widget");
   if (calcs_.find(widget) == calcs_.end())
   {
     ObjectTransformCalculatorPtr calc;
