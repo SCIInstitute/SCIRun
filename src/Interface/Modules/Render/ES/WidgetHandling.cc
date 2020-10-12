@@ -91,20 +91,16 @@ void WidgetUpdateService::setCurrentWidget(WidgetHandle w)
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
-  logCritical("{} {} {} {}", __FUNCTION__, x, y, depth);
   auto initialW = getInitialW(depth);
   auto initialPosition = screen_.positionFromClick(x, y);
 
   auto factory = boost::make_shared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
   auto tcf = std::make_shared<TransformCalculatorFamily>(movements_, factory);
-
-
+  event_ = boost::make_shared<WidgetTransformEvent>(transformer_, tcf);
 }
 
 void WidgetUpdateService::updateWidget(int x, int y)
 {
-  logCritical("{} {} {}", __FUNCTION__, x, y);
-
   if (event_)
   {
     event_->transformAt(x, y);
@@ -116,7 +112,6 @@ void WidgetUpdateService::updateWidget(int x, int y)
 class WidgetTransformEvent::WidgetTransformEventImpl
 {
 public:
-  WidgetMovement baseMovement_;
   int x_ {0}, y_ {0};
   ObjectTransformer* transformer_{ nullptr };
   std::shared_ptr<TransformCalculatorFamily> calcFamily_;
@@ -154,19 +149,20 @@ ObjectTransformCalculatorPtr TransformCalculatorFamily::calcFor(WidgetBase* widg
   return calcs_[widget];
 }
 
-WidgetTransformEvent::WidgetTransformEvent() : impl_(new WidgetTransformEventImpl)
+WidgetTransformEvent::WidgetTransformEvent(ObjectTransformer* transformer,
+  std::shared_ptr<TransformCalculatorFamily> calcFamily) : impl_(new WidgetTransformEventImpl)
 {
-
+  impl_->transformer_ = transformer;
+  impl_->calcFamily_ = calcFamily;
 }
 
 Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
 {
-  return impl_->baseMovement_;
+  return impl_->calcFamily_->baseMovement();
 }
 
 void WidgetTransformEvent::move(WidgetBase* widget, WidgetMovement moveType) const
 {
-  logCritical("{}", __FUNCTION__);
   if (widget)
   {
     auto calc = impl_->calcFamily_->calcFor(widget, moveType);

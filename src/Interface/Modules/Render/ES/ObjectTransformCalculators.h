@@ -83,6 +83,7 @@ namespace SCIRun
     {
     public:
       explicit TransformCalculatorFamily(const Graphics::Datatypes::WidgetMovementFamily& movements, ObjectTransformCalculatorFactoryPtr factory);
+      Graphics::Datatypes::WidgetMovement baseMovement() const { return movements_.base; }
       ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement movement);
     private:
       Graphics::Datatypes::WidgetMovementFamily movements_;
@@ -93,7 +94,7 @@ namespace SCIRun
     class SCISHARE WidgetTransformEvent : public Graphics::Datatypes::WidgetEvent
     {
     public:
-      WidgetTransformEvent();
+      WidgetTransformEvent(ObjectTransformer* transformer, std::shared_ptr<TransformCalculatorFamily> calcFamily);
       ~WidgetTransformEvent();
       Graphics::Datatypes::WidgetMovement baseMovement() const override;
       void move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const override;

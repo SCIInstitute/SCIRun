@@ -375,7 +375,7 @@ void SRInterface::runGCOnNextExecution()
     void WidgetUpdateService::reset()
     {
       currentWidget_.reset();
-      //currentTransformationCalculators_.clear();
+      event_.reset();
     }
 
     class ScopedLambdaExecutor
