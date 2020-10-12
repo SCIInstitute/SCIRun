@@ -133,14 +133,16 @@ TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const Transfor
 }
 
 
-WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::sharedMovements(const WidgetMovements& moves)
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::sharedMovements(std::initializer_list<WidgetMovement> moves)
 {
-  wmf_[WidgetMovementSharing::SHARED] = moves;
+  for (const auto& move : moves)
+    wmf_.emplace(move, WidgetMovementSharing::SHARED);
   return *this;
 }
 
-WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::uniqueMovements(const WidgetMovements& moves)
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::uniqueMovements(std::initializer_list<WidgetMovement> moves)
 {
-  wmf_[WidgetMovementSharing::UNIQUE] = moves;
+  for (const auto& move : moves)
+    wmf_.emplace(move, WidgetMovementSharing::UNIQUE);
   return *this;
 }

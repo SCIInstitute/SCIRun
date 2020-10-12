@@ -132,19 +132,36 @@ public:
   WidgetMovement baseMovement_;
   int x_, y_;
   ObjectTransformer* transformer_{ nullptr };
-  std::shared_ptr<LazyTransformCalculatorFamily> calcFamily_;
+  std::shared_ptr<TransformCalculatorFamily> calcFamily_;
 };
 
-LazyTransformCalculatorFamily::LazyTransformCalculatorFamily(ObjectTransformCalculatorFactoryPtr factory) : factory_(factory)
+TransformCalculatorFamily::TransformCalculatorFamily(const WidgetMovementFamily& movements, ObjectTransformCalculatorFactoryPtr factory) :
+  movements_(movements), factory_(factory)
 {
 
 }
 
-ObjectTransformCalculatorPtr LazyTransformCalculatorFamily::calcFor(WidgetBase* widget, WidgetMovement movement)
+ObjectTransformCalculatorPtr TransformCalculatorFamily::calcFor(WidgetBase* widget, WidgetMovement movement)
 {
+  auto shareIter = movements_.find(movement);
+  if (shareIter == movements_.end())
+    throw "that movement is not set up for this widget";
+
   if (calcs_.find(widget) == calcs_.end())
   {
-    calcs_[widget] = factory_->create(movement, widget);
+    ObjectTransformCalculatorPtr calc;
+    if (shareIter->second == WidgetMovementSharing::SHARED)
+    {
+      auto reuse = std::find_if(calcs_.begin(), calcs_.end(),
+        [movement](const CalcMap::value_type& p) { return p.second->movementType() == movement; });
+      if (reuse != calcs_.end())
+        calc = reuse->second;
+    }
+
+    if (!calc)
+      calc = factory_->create(movement, widget);
+
+    calcs_[widget] = calc;
   }
   return calcs_[widget];
 }
@@ -221,11 +238,11 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     return nullptr;
   }
 }
-
-LazyObjectTransformCalculator ObjectTransformCalculatorFactory::create(WidgetMovement movement)
-{
-  return [movement, this](WidgetBase* widget) { return create(movement, widget); };
-}
+//
+// LazyObjectTransformCalculator ObjectTransformCalculatorFactory::create(WidgetMovement movement)
+// {
+//   return [movement, this](WidgetBase* widget) { return create(movement, widget); };
+// }
 
 
 //void LazyObjectTransformCalculator::provideWidget(WidgetBase* widget)

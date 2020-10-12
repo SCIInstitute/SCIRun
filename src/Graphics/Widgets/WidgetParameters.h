@@ -121,8 +121,7 @@ namespace SCIRun
         UNIQUE
       };
 
-      using WidgetMovements = std::vector<WidgetMovement>;
-      using WidgetMovementFamily = std::map<WidgetMovementSharing, WidgetMovements>;
+      using WidgetMovementFamily = std::map<WidgetMovement, WidgetMovementSharing>;
 
       enum class WidgetInteraction
       {
@@ -136,8 +135,8 @@ namespace SCIRun
       class SCISHARE WidgetMovementFamilyBuilder
       {
       public:
-        WidgetMovementFamilyBuilder& sharedMovements(const WidgetMovements& moves);
-        WidgetMovementFamilyBuilder& uniqueMovements(const WidgetMovements& moves);
+        WidgetMovementFamilyBuilder& sharedMovements(std::initializer_list<WidgetMovement> moves);
+        WidgetMovementFamilyBuilder& uniqueMovements(std::initializer_list<WidgetMovement> moves);
         WidgetMovementFamily build() const { return wmf_; }
       private:
         WidgetMovementFamily wmf_;

@@ -44,6 +44,7 @@ namespace SCIRun
     {
     public:
       virtual ~ObjectTransformCalculator() {}
+      virtual Graphics::Datatypes::WidgetMovement movementType() const = 0;
       virtual gen::Transform computeTransform(int x, int y) const = 0;
     };
 
@@ -64,15 +65,13 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetBase*)>;
+    //using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetBase*)>;
 
     class SCISHARE ObjectTransformCalculatorFactory : public boost::enable_shared_from_this<ObjectTransformCalculatorFactory>
     {
     public:
       ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
-
       ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetBase* baseWidget) const;
-      LazyObjectTransformCalculator create(Graphics::Datatypes::WidgetMovement movement);
     private:
       BasicRendererObjectProvider* brop_;
       glm::vec2 initPos_;
@@ -80,15 +79,17 @@ namespace SCIRun
     };
 
     using ObjectTransformCalculatorFactoryPtr = SharedPointer<ObjectTransformCalculatorFactory>;
+    using CalcMap = std::map<Graphics::Datatypes::WidgetBase*, ObjectTransformCalculatorPtr>;
 
-    class SCISHARE LazyTransformCalculatorFamily
+    class SCISHARE TransformCalculatorFamily
     {
     public:
-      explicit LazyTransformCalculatorFamily(ObjectTransformCalculatorFactoryPtr factory);
+      explicit TransformCalculatorFamily(const Graphics::Datatypes::WidgetMovementFamily& movements, ObjectTransformCalculatorFactoryPtr factory);
       ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement movement);
     private:
+      Graphics::Datatypes::WidgetMovementFamily movements_;
       ObjectTransformCalculatorFactoryPtr factory_;
-      std::map<Graphics::Datatypes::WidgetBase*, ObjectTransformCalculatorPtr> calcs_;
+      CalcMap calcs_;
     };
 
     class SCISHARE WidgetTransformEvent : public Graphics::Datatypes::WidgetEvent
@@ -124,6 +125,7 @@ namespace SCIRun
       };
       ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const Params& t);
       gen::Transform computeTransform(int x, int y) const override;
+      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::TRANSLATE; }
     private:
       glm::vec2 initialPosition_;
       float w_;
@@ -142,6 +144,7 @@ namespace SCIRun
       };
       explicit ObjectScaleCalculator(const BasicRendererObjectProvider* s, const Params& p);
       gen::Transform computeTransform(int x, int y) const override;
+      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::SCALE; }
     private:
       glm::vec3 originView_;
       float projectedW_;
@@ -161,6 +164,7 @@ namespace SCIRun
       };
       explicit ObjectRotationCalculator(const BasicRendererObjectProvider* s, const Params& p);
       gen::Transform computeTransform(int x, int y) const override;
+      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::ROTATE; }
     private:
       glm::vec3 originWorld_;
       float initialW_;

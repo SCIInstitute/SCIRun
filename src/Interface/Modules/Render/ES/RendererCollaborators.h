@@ -83,7 +83,7 @@ namespace SCIRun
       // Different types of uniform transformations that are associated
       // with the object (based off of the unsatisfied uniforms detected
       // by the Spire object).
-      enum ObjectTransforms
+      enum class ObjectTransforms
       {
         OBJECT_TO_WORLD,
         OBJECT_TO_CAMERA,
