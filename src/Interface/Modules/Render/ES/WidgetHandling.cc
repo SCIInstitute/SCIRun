@@ -83,17 +83,11 @@ namespace
   }
 }
 
-void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
+void WidgetUpdateService::setCurrentWidget(WidgetHandle w)
 {
   currentWidget_ = w;
   movements_ = w->movementType(yetAnotherEnumConversion(buttonPushed_));
 }
-
-//gen::Transform WidgetTransformMapping::transformFor(WidgetMovement move) const
-//{
-//  auto t = transformsCalcs_.find(move);
-//  return t != transformsCalcs_.end() ? t->second->computeTransform(x_, y_) : gen::Transform{};
-//}
 
 void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
 {
@@ -102,37 +96,31 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
   auto initialPosition = screen_.positionFromClick(x, y);
 
   auto factory = boost::make_shared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
+  auto tcf = std::make_shared<TransformCalculatorFamily>(movements_, factory);
 
-  //XYZ xyz(initialPosition, initialW, transformFactory_);
 
-  //for (const auto& movement : movements_)
-  //  currentTransformationCalculators_.emplace(movement, xyz.make(movement)(currentWidget_));
 }
 
 void WidgetUpdateService::updateWidget(int x, int y)
 {
   logCritical("{} {} {}", __FUNCTION__, x, y);
-  //if ()
-  //if (!currentTransformationCalculators_.empty())
-  //{
-  //auto event = boost::make_shared<WidgetTransformMapping>(currentTransformationCalculators_, x, y);
 
-  //  auto boundEvent = [&](const std::string& id)
-  //  {
-  //    transformer_->modifyObject(id, event->transformFor(movements_.front()));
-  //  };
-  //currentWidget_->mediate(currentWidget_.get(), event);
-  //  widgetTransform_ = event->transformFor(movements_.front()).transform;
-  //}
+  if (event_)
+  {
+    event_->transformAt(x, y);
+    currentWidget_->mediate(currentWidget_.get(), event_);
+    widgetTransform_ = event_->getTransformFor(currentWidget_);
+  }
 }
 
 class WidgetTransformEvent::WidgetTransformEventImpl
 {
 public:
   WidgetMovement baseMovement_;
-  int x_, y_;
+  int x_ {0}, y_ {0};
   ObjectTransformer* transformer_{ nullptr };
   std::shared_ptr<TransformCalculatorFamily> calcFamily_;
+  std::map<WidgetBase*, glm::mat4> transformsUsed_;
 };
 
 TransformCalculatorFamily::TransformCalculatorFamily(const WidgetMovementFamily& movements, ObjectTransformCalculatorFactoryPtr factory) :
@@ -143,8 +131,8 @@ TransformCalculatorFamily::TransformCalculatorFamily(const WidgetMovementFamily&
 
 ObjectTransformCalculatorPtr TransformCalculatorFamily::calcFor(WidgetBase* widget, WidgetMovement movement)
 {
-  auto shareIter = movements_.find(movement);
-  if (shareIter == movements_.end())
+  auto shareIter = movements_.propagated.find(movement);
+  if (shareIter == movements_.propagated.end())
     throw "that movement is not set up for this widget";
 
   if (calcs_.find(widget) == calcs_.end())
@@ -182,7 +170,9 @@ void WidgetTransformEvent::move(WidgetBase* widget, WidgetMovement moveType) con
   if (widget)
   {
     auto calc = impl_->calcFamily_->calcFor(widget, moveType);
-    impl_->transformer_->modifyObject(widget->uniqueID(), calc->computeTransform(impl_->x_, impl_->y_));
+    auto transform = calc->computeTransform(impl_->x_, impl_->y_);
+    impl_->transformsUsed_[widget] = transform.transform;
+    impl_->transformer_->modifyObject(widget->uniqueID(), transform);
   }
 }
 
@@ -190,6 +180,12 @@ void WidgetTransformEvent::transformAt(int x, int y)
 {
   impl_->x_ = x;
   impl_->y_ = y;
+}
+
+glm::mat4 WidgetTransformEvent::getTransformFor(WidgetHandle w) const
+{
+  auto tIter = impl_->transformsUsed_.find(w.get());
+  return tIter != impl_->transformsUsed_.end() ? tIter->second : glm::mat4{1.0};
 }
 
 WidgetTransformEvent::~WidgetTransformEvent() = default;
@@ -238,22 +234,3 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     return nullptr;
   }
 }
-//
-// LazyObjectTransformCalculator ObjectTransformCalculatorFactory::create(WidgetMovement movement)
-// {
-//   return [movement, this](WidgetBase* widget) { return create(movement, widget); };
-// }
-
-
-//void LazyObjectTransformCalculator::provideWidget(WidgetBase* widget)
-//{
-//  if (widget)
-//    lazyImpl_ = factory->create
-//}
-
-//gen::Transform LazyObjectTransformCalculator::computeTransform(int x, int y) const override
-//{
-//  if (lazyImpl_)
-//    return lazyImpl_->computeTransform(x, y);
-//  throw "no widget provided";
-//}

@@ -121,7 +121,7 @@ namespace detail
     Point center = origin + params.dir/2.0 * params.common.scale;
     return ConeWidgetBuilder(gen.base.idGenerator)
                   .tag(widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter))
-                  .transformMapping({{WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::ROTATE}).build()}})
+                  .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::ROTATE)}})
                   .scale(coneRadius * params.common.scale)
                   .defaultColor(deflColor.toString())
                   .origin(origin)
@@ -138,7 +138,7 @@ namespace detail
     return DiskWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
                         .transformMapping({
-                          {WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::SCALE}).build()}
+                          {WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}
                           //,{WidgetInteraction::RIGHT_CLICK, {WidgetMovement::TRANSLATE}}
                         })
                         .scale(diskRadius * params.common.scale)
@@ -159,7 +159,7 @@ namespace detail
     return CylinderWidgetBuilder(gen.base.idGenerator)
                       .tag(widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter))
                       .transformMapping({
-                        {WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::TRANSLATE}).build()}
+                        {WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}
                         //,{WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
                       })
                       .scale(cylinderRadius * params.common.scale)

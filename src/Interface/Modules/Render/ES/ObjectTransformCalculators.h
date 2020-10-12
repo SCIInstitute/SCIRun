@@ -65,8 +65,6 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    //using LazyObjectTransformCalculator = std::function<ObjectTransformCalculatorPtr(Graphics::Datatypes::WidgetBase*)>;
-
     class SCISHARE ObjectTransformCalculatorFactory : public boost::enable_shared_from_this<ObjectTransformCalculatorFactory>
     {
     public:
@@ -100,6 +98,7 @@ namespace SCIRun
       Graphics::Datatypes::WidgetMovement baseMovement() const override;
       void move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const override;
       void transformAt(int x, int y);
+      glm::mat4 getTransformFor(Graphics::Datatypes::WidgetHandle w) const;
     private:
       class WidgetTransformEventImpl;
       std::unique_ptr<WidgetTransformEventImpl> impl_;

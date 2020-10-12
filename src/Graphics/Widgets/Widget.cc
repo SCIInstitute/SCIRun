@@ -146,3 +146,8 @@ WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::uniqueMovements(std::i
     wmf_.emplace(move, WidgetMovementSharing::UNIQUE);
   return *this;
 }
+
+WidgetMovementFamily SCIRun::Graphics::Datatypes::singleMovementWidget(WidgetMovement base)
+{
+  return WidgetMovementFamilyBuilder(base).sharedMovements({base}).build();
+}

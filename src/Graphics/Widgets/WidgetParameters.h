@@ -121,7 +121,13 @@ namespace SCIRun
         UNIQUE
       };
 
-      using WidgetMovementFamily = std::map<WidgetMovement, WidgetMovementSharing>;
+      using WidgetMovementFamilyMap = std::map<WidgetMovement, WidgetMovementSharing>;
+
+      struct SCISHARE WidgetMovementFamily
+      {
+        WidgetMovement base;
+        WidgetMovementFamilyMap propagated;
+      };
 
       enum class WidgetInteraction
       {
@@ -135,12 +141,16 @@ namespace SCIRun
       class SCISHARE WidgetMovementFamilyBuilder
       {
       public:
+        explicit WidgetMovementFamilyBuilder(WidgetMovement base) : base_(base) {}
         WidgetMovementFamilyBuilder& sharedMovements(std::initializer_list<WidgetMovement> moves);
         WidgetMovementFamilyBuilder& uniqueMovements(std::initializer_list<WidgetMovement> moves);
-        WidgetMovementFamily build() const { return wmf_; }
+        WidgetMovementFamily build() const { return { base_, wmf_ }; }
       private:
-        WidgetMovementFamily wmf_;
+        WidgetMovement base_;
+        WidgetMovementFamilyMap wmf_;
       };
+
+      SCISHARE WidgetMovementFamily singleMovementWidget(WidgetMovement base);
 
       struct SCISHARE WidgetBaseParameters
       {
@@ -181,6 +191,8 @@ namespace SCIRun
         }
 
         void mediate(WidgetBase* sender, WidgetEventPtr event) const;
+
+        glm::mat4 latestTransform() const;
 
       private:
         using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<WidgetBase*>>;
@@ -227,6 +239,7 @@ namespace SCIRun
         void addTransformParameters(Params&&... t) { transformParameters_.push_back(std::make_shared<TransformType>(t...)); }
       private:
         MultiTransformParameters transformParameters_;
+        glm::mat4 latestTransform_;
       };
     }
   }

@@ -53,7 +53,8 @@ BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& ge
   BasicBoundingBoxParameters params)
   : WidgetBase({gen.base.idGenerator, "BasicBoundingBox", 
       {
-        { WidgetInteraction::CLICK, WidgetMovementFamilyBuilder().sharedMovements({WidgetMovement::TRANSLATE}).build() }
+        { WidgetInteraction::CLICK,
+            singleMovementWidget(WidgetMovement::TRANSLATE) }
       }
     })
 {
