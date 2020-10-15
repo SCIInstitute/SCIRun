@@ -64,7 +64,7 @@ protected:
 
 TEST_F(TranslationTest, CanConstruct)
 {
-  TranslateParameters p {};
+  ObjectTranslationCalculator::Params p {};
   ObjectTranslationCalculator translator(&brop, p);
 }
 
@@ -75,7 +75,7 @@ bool SCIRun::RenderTesting::operator==(const glm::mat4& lhs, const glm::mat4& rh
 
 TEST_F(TranslationTest, CanTranslateHorizontalFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -97,7 +97,7 @@ TEST_F(TranslationTest, CanTranslateHorizontalFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateVerticalFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -119,7 +119,7 @@ TEST_F(TranslationTest, CanTranslateVerticalFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateArbitraryFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -141,7 +141,7 @@ TEST_F(TranslationTest, CanTranslateArbitraryFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateArbitraryFromArbitrary)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{15,30};
   p.w_ = 1.0;
   p.viewProj = viewProj_;

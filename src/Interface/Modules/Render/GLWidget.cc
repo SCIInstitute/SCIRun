@@ -91,20 +91,6 @@ void GLWidget::paintGL()
 }
 
 //------------------------------------------------------------------------------
-SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
-{
-  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
-  if (event->buttons() & Qt::LeftButton)
-    btn = Render::MouseButton::MOUSE_LEFT;
-  else if (event->buttons() & Qt::RightButton)
-    btn = Render::MouseButton::MOUSE_RIGHT;
-  else if (event->buttons() & Qt::MidButton)
-    btn = Render::MouseButton::MOUSE_MIDDLE;
-
-  return btn;
-}
-
-//------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   event->ignore();
@@ -134,14 +120,14 @@ void GLWidget::resizeGL(int width, int height)
   makeCurrent();
   graphics_->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
-  //updateRenderer();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
-  if (graphics_ != nullptr)
+  if (graphics_)
   {
+    graphics_->cleanupSelect();
     graphics_.reset();
   }
   QOpenGLWidget::closeEvent(evt);
@@ -150,7 +136,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  if(isValid())
+  if (isValid())
   {
     update();
   }

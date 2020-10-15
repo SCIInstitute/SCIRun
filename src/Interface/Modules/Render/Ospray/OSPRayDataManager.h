@@ -31,10 +31,11 @@
 
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
+#include <Interface/Modules/Render/Ospray/share.h>
 
 namespace SCIRun { namespace Render {
 
-class OSPRayDataManager
+class SCISHARE OSPRayDataManager
 {
 public:
   OSPRayDataManager();

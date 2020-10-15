@@ -45,13 +45,13 @@ protected:
 
 TEST_F(RotationTest, CanConstruct)
 {
-  RotateParameters p {};
+  ObjectRotationCalculator::Params p {};
   ObjectRotationCalculator rotator(&brop, p);
 }
 
 TEST_F(RotationTest, CanRotateHorizontalFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -73,7 +73,7 @@ TEST_F(RotationTest, CanRotateHorizontalFromOrigin)
 
 TEST_F(RotationTest, CanRotateVerticalFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -95,7 +95,7 @@ TEST_F(RotationTest, CanRotateVerticalFromOrigin)
 
 TEST_F(RotationTest, CanRotateArbitraryFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -117,7 +117,7 @@ TEST_F(RotationTest, CanRotateArbitraryFromOrigin)
 
 TEST_F(RotationTest, CanRotateArbitraryFromArbitrary)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{-1,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{1,2,3};

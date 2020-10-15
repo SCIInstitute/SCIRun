@@ -426,7 +426,8 @@ void ShowAndEditDipolesImpl::adjustPositionFromTransform(const Transform& transf
   auto bbox = fieldInput_->vmesh()->get_bounding_box();
   bool is_vector = boost::dynamic_pointer_cast<ArrowWidget>(arrows_[id])->isVector();
 
-  if (state_()->getValue(Parameters::MoveDipolesTogether).toBool() && (type == ArrowWidgetSection::CYLINDER || type == ArrowWidgetSection::SPHERE))
+  auto stype = static_cast<ArrowWidgetSection>(type);
+  if (state_()->getValue(Parameters::MoveDipolesTogether).toBool() && (stype == ArrowWidgetSection::CYLINDER || stype == ArrowWidgetSection::SPHERE))
   {
     moveDipolesTogether(transformMatrix);
   }

@@ -30,6 +30,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -39,131 +40,196 @@ using namespace SCIRun::Core::Geometry;
 
 namespace detail
 {
-  static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
-  static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
-  static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
+  static const ColorRGB deflPointColor = ColorRGB(0.54, 0.6, 1.0);
+  static const ColorRGB deflColor = ColorRGB(0.5, 0.5, 0.5);
+  static const ColorRGB resizeColor = ColorRGB(0.54, 1.0, 0.60);
 
-  static const double sphereRadius_ = 0.25;
-  static const double cylinderRadius_ = 0.12;
-  static const double coneRadius_ = 0.25;
-  static const double diskRadius_ = 0.25;
-  static const double diskDistFromCenter_ = 0.85;
-  static const double diskWidth_ = 0.05;
+  static const double sphereRadius = 0.25;
+  static const double cylinderRadius = 0.12;
+  static const double coneRadius = 0.25;
+  static const double diskRadius = 0.25;
+  static const double diskDistFromCenter = 0.85;
+  static const double diskWidth = 0.05;
+
+  std::pair<Point, Point> diskPoints(const Point& bmin, const ArrowParameters& params)
+  {
+    Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter;
+    Point dp1 = diskPos - diskWidth * params.dir * params.common.scale;
+    Point dp2 = diskPos + diskWidth * params.dir * params.common.scale;
+    return { dp1, dp2 };
+  }
+
+  void fixDegenerateBoxes(Point& bmin, Point& bmax)
+  {
+    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
+    if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
+    {
+      bmin.x(bmin.x() - size_estimate);
+      bmax.x(bmax.x() + size_estimate);
+    }
+    if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
+    {
+      bmin.y(bmin.y() - size_estimate);
+      bmax.y(bmax.y() + size_estimate);
+    }
+    if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
+    {
+      bmin.z(bmin.z() - size_estimate);
+      bmax.z(bmax.z() + size_estimate);
+    }
+  }
+
+  std::tuple<Point, Point> adjustedBoundingBoxPoints(const ArrowParameters& params)
+  {
+    Point bmin = params.pos;
+    Point bmax = params.pos + params.dir * params.common.scale;
+
+    fixDegenerateBoxes(bmin, bmax);
+    return std::make_tuple(bmin, bmax);
+  }
+
+  std::string makeName(const ArrowParameters& params)
+  {
+    std::stringstream ss;
+    ss << params.pos << params.dir << static_cast<int>(ColorScheme::COLOR_UNIFORM);
+
+    return "widget" + ss.str();
+  }
+
+  std::string widgetName(ArrowWidgetSection s, size_t id, size_t iter)
+  {
+    return "ArrowWidget(" + std::to_string(static_cast<int>(s)) + ")" + "(" + std::to_string(id) + ")" +
+           "(" + std::to_string(iter) + ")";
+  }
+
+  WidgetHandle makeSphere(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
+    ColorRGB sphereCol = (params.show_as_vector) ? deflPointColor : resizeColor;
+    return SphereWidgetBuilder(gen.base.idGenerator)
+                        .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
+                        .scale(sphereRadius * params.common.scale)
+                        .defaultColor(sphereCol.toString())
+                        .origin(origin)
+                        .boundingBox(params.common.bbox)
+                        .resolution(params.common.resolution)
+                        .centerPoint(origin)
+                        .build();
+  }
+
+  WidgetHandle makeCone(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin, const Point& bmax)
+  {
+    Point center = origin + params.dir/2.0 * params.common.scale;
+    return ConeWidgetBuilder(gen.base.idGenerator)
+                  .tag(widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter))
+                  .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::ROTATE)}})
+                  .scale(coneRadius * params.common.scale)
+                  .defaultColor(deflColor.toString())
+                  .origin(origin)
+                  .boundingBox(params.common.bbox)
+                  .resolution(params.common.resolution)
+                  .diameterPoints(center, bmax)
+                  .renderBase(true)
+                  .build();
+  }
+
+  WidgetHandle makeDisk(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
+    auto diskDiameterPoints = diskPoints(origin, params);
+    return DiskWidgetBuilder(gen.base.idGenerator)
+                        .tag(widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter))
+                        .transformMapping({
+                          {WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}
+                          //,{WidgetInteraction::RIGHT_CLICK, {WidgetMovement::TRANSLATE}}
+                        })
+                        .scale(diskRadius * params.common.scale)
+                        .defaultColor(resizeColor.toString())
+                        .origin(origin)
+                        .boundingBox(params.common.bbox)
+                        .resolution(params.common.resolution)
+                        .diameterPoints(diskDiameterPoints.first, diskDiameterPoints.second)
+                        .build();
+  }
+
+  WidgetHandle makeCylinder(const GeneralWidgetParameters& gen, const ArrowParameters& params, const Point& origin)
+  {
+    // Starts the cylinder position closer to the surface of the sphere
+    Point center = origin + params.dir/2.0 * params.common.scale;
+    Point cylinderStart = origin + 0.75 * (params.dir * params.common.scale * sphereRadius);
+
+    return CylinderWidgetBuilder(gen.base.idGenerator)
+                      .tag(widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter))
+                      .transformMapping({
+                        {WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}
+                        //,{WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
+                      })
+                      .scale(cylinderRadius * params.common.scale)
+                      .defaultColor(deflColor.toString())
+                      .origin(origin)
+                      .boundingBox(params.common.bbox)
+                      .resolution(params.common.resolution)
+                      .diameterPoints(cylinderStart, center)
+                      .build();
+  }
 }
 
 ArrowWidget::ArrowWidget(const GeneralWidgetParameters& gen, ArrowParameters params)
     : CompositeWidget(gen.base)
 {
   using namespace detail;
-  ColorRGB sphereCol = (params.show_as_vector) ? deflPointCol_ : resizeCol_;
 
-  if (params.common.resolution < 3) params.common.resolution = 10;
+  if (params.common.resolution < 3)
+    params.common.resolution = 10;
 
   isVector_ = params.show_as_vector;
-  auto colorScheme = ColorScheme::COLOR_UNIFORM;
-  std::stringstream ss;
-  ss << params.pos << params.dir << static_cast<int>(colorScheme);
 
-  name_ = uniqueID() + "widget" + ss.str();
+  name_ = uniqueID() + makeName(params);
 
-  ColorRGB node_color;
+  Point bmin, bmax;
+  std::tie(bmin, bmax) = adjustedBoundingBoxPoints(params);
 
-  Point bmin = params.pos;
-  Point bmax = params.pos + params.dir * params.common.scale;
+  const Point origin = bmin;
 
-  // Fix degenerate boxes.
-  const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
+  auto sphere = makeSphere(gen, params, origin);
+  widgets_.push_back(sphere);
+  setPosition(sphere->position());
+
+  if (isVector_)
   {
-    bmin.x(bmin.x() - size_estimate);
-    bmax.x(bmax.x() + size_estimate);
-  }
-  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
-  {
-    bmin.y(bmin.y() - size_estimate);
-    bmax.y(bmax.y() + size_estimate);
-  }
-  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
-  {
-    bmin.z(bmin.z() - size_estimate);
-    bmax.z(bmax.z() + size_estimate);
-  }
+    auto cylinder = makeCylinder(gen, params, origin);
+    widgets_.push_back(cylinder);
 
-  Point center = bmin + params.dir/2.0 * params.common.scale;
+    auto cone = makeCone(gen, params, origin, bmax);
+    widgets_.push_back(cone);
 
-  // Create glyphs
-  widgets_.push_back(WidgetFactory::createSphere(
-                                {gen.base.idGenerator,
-                                widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter),
-                                {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}
-                                },
-                                {{
-                                sphereRadius_ * params.common.scale,
-                                sphereCol.toString(),
-                                bmin,
-                                params.common.bbox,
-                                params.common.resolution}, bmin}));
+    setPosition(cone->position());
 
-  if (params.show_as_vector)
-  {
-    // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = bmin + 0.75 * (params.dir * params.common.scale * sphereRadius_);
+    auto disk = makeDisk(gen, params, origin);
+    widgets_.push_back(disk);
 
-    widgets_.push_back(WidgetFactory::createCylinder(
-                                  {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::CYLINDER, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::TRANSLATE}}},
-                                  {{cylinderRadius_ * params.common.scale,
-                                  deflCol_.toString(),
-                                  bmin,
-                                  params.common.bbox,
-                                  params.common.resolution}, cylinderStart,
-                                  center}));
-
-    widgets_.push_back(WidgetFactory::createCone(
-                                  {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::CONE, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::ROTATE}}},
-                                  {{{coneRadius_ * params.common.scale,
-                                  deflCol_.toString(),
-                                  bmin,
-                                  params.common.bbox,
-                                  params.common.resolution}, center,
-                                  bmax}, true}));
-
-    setPosition(widgets_.back()->position());
-
-    Point diskPos = bmin + params.dir * params.common.scale * diskDistFromCenter_;
-    Point dp1 = diskPos - diskWidth_ * params.dir * params.common.scale;
-    Point dp2 = diskPos + diskWidth_ * params.dir * params.common.scale;
-    widgets_.push_back(WidgetFactory::createDisk(
-                                  {gen.base.idGenerator,
-                                  widgetName(ArrowWidgetSection::DISK, params.widget_num, params.widget_iter),
-                                  {{WidgetInteraction::CLICK, WidgetMovement::SCALE}}},  //TODO: concern #1--how user interaction maps to transform type
-                                  {{diskRadius_ * params.common.scale,
-                                  resizeCol_.toString(),
-                                  bmin,
-                                  params.common.bbox,
-                                  params.common.resolution}, dp1, dp2 }));
+    //TODO: concern #1--how user interaction maps to transform type
+    //TODO: concern #2--how transform of "root" maps to siblings
 
     //TODO: create cool operator syntax for wiring these up.
-    registerAllSiblingWidgetsForEvent(widgets_[1], WidgetMovement::TRANSLATE);  //TODO: concern #2--how transform of "root" maps to siblings
-    registerAllSiblingWidgetsForEvent(widgets_[2], WidgetMovement::ROTATE);
-    widgets_[2]->setTransformParameters<Rotation>(bmin);                        //TODO: concern #3--what data transform of "root" requires
-    registerAllSiblingWidgetsForEvent(widgets_[3], WidgetMovement::SCALE);
+
+    cylinder << propagatesEvent<WidgetMovement::TRANSLATE>::to << TheseWidgets { sphere, disk, cone };
+    sphere << propagatesEvent<WidgetMovement::TRANSLATE>::to << cylinder << disk << cone;
+    cone << propagatesEvent<WidgetMovement::ROTATE>::to << sphere << disk << cylinder;
+    disk << propagatesEvent<WidgetMovement::SCALE>::to << sphere << cylinder << cone;
+
+    // toy example of more complicated interactions
+    //cylinder << propagatesEvent<WidgetMovement::AXIS_TRANSLATE>::to << sphere << disk;
+    cylinder << propagatesEvent<WidgetMovement::SCALE>::to << cone;
+    //cylinder << havingReceivedEvent<WidgetMovement::TRANSLATE>::then << propagatesEvent<WidgetMovement::SCALE>::to << cone;
+
+    //TODO: concern #3--what data transform of "root" requires
+    cone->addTransformParameters<Rotation>(origin);
+
     Vector flipVec = params.dir.getArbitraryTangent().normal();
-    widgets_[3]->setTransformParameters<Scaling>(bmin, flipVec);
+    disk->addTransformParameters<Scaling>(origin, flipVec);
   }
-  registerAllSiblingWidgetsForEvent(widgets_[0], WidgetMovement::TRANSLATE);
 }
 
 bool ArrowWidget::isVector() const
 {
   return isVector_;
-}
-
-std::string ArrowWidget::widgetName(size_t i, size_t id, size_t iter)
-{
-  return "ArrowWidget(" + std::to_string(i) + ")" + "(" + std::to_string(id) + ")" +
-         "(" + std::to_string(iter) + ")";
 }

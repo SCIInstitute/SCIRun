@@ -163,6 +163,10 @@ const std::string &y)
     return;
 
   const std::string cmodule = checkForModuleRename(moduleNameOrig);
+  if (cmodule == "PlaceholderModule")
+  {
+    //TODO: add state to placeholder module with original name
+  }
 
   std::vector<int> existingIdsWithThisModuleName;
   boost::copy(moduleIdMap_
@@ -182,6 +186,7 @@ const std::string &y)
 
     std::ostringstream ostr;
     ostr << "Error: Undefined module \"" << cmodule << "\"";
+    logCritical("LegacyNetworkIO error: Undefined module \"{}\"", cmodule);
     THROW_INVALID_ARGUMENT(ostr.str());
   }
 
@@ -208,7 +213,103 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData2", "CalculateFieldData" },
     { "CalculateFieldData3", "CalculateFieldData" },
     { "CalculateFieldData4", "CalculateFieldData" },
-    { "CalculateFieldData5", "CalculateFieldData" }
+    { "CalculateFieldData5", "CalculateFieldData" },
+    { "InterfaceWithCleaver", "InterfaceWithCleaver2" },
+    { "InterfaceWithNeuroFEMForward", "PlaceholderModule" },
+    { "ViewLeadSignals", "PlaceholderModule" },
+    { "ShowMatrix", "PlaceholderModule" },
+    { "ConvertFieldDataFromIndicesToTensors", "PlaceholderModule" },
+    { "CalculateMisfitField", "PlaceholderModule" },
+    { "SwapNodeLocationsWithMatrixEntries", "PlaceholderModule" },
+    { "BuildElemLeadField", "PlaceholderModule" },
+    { "OptimizeDipole", "PlaceholderModule" },
+    { "OptimizeConductivities", "PlaceholderModule" },
+    { "CalculateNodeNormals", "PlaceholderModule" },
+    { "SynchronizeGeometry", "PlaceholderModule" },
+    { "TransformData", "PlaceholderModule" },
+    { "SetFieldOrMeshStringProperty", "PlaceholderModule" },
+    { "Viewer", "PlaceholderModule" },
+    { "HDF5DataReader", "PlaceholderModule" },
+    { "MapDataToMeshCoord", "PlaceholderModule" },
+    { "ShowFieldV1", "PlaceholderModule" },
+    { "InterfaceWithMatlab", "PlaceholderModule" },
+    { "ShowTextureSlices", "PlaceholderModule" },
+    { "ApplyFilterToFieldData", "PlaceholderModule" },
+    { "CalculateLatVolGradientsAtNodes", "PlaceholderModule" },
+    { "ConvertLatVolDataFromElemToNode", "PlaceholderModule" },
+    { "CreateStructHex", "PlaceholderModule" },
+    { "ConvertLatVolDataFromNodeToElem", "PlaceholderModule" },
+    { "ConvertMeshToIrregularMesh", "PlaceholderModule" },
+    { "ConvertBundleToField", "PlaceholderModule" },
+    { "RemoveZerosFromMatrix", "PlaceholderModule" },
+    { "ReportScalarFieldStats", "PlaceholderModule" },
+    { "ClipFieldToFieldOrWidget", "PlaceholderModule" },
+    { "ClipLatVolByIndicesOrWidget", "PlaceholderModule" },
+    { "ExtractIsosurfaceByFunction", "PlaceholderModule" },
+    { "ConvertRegularMeshToStructuredMesh", "PlaceholderModule" },
+    { "GetDomainStructure", "PlaceholderModule" },
+    { "ConvertFieldToNrrd", "PlaceholderModule" },
+    { "MergeFields", "PlaceholderModule" },
+    { "InsertHexVolSheetAlongSurface", "PlaceholderModule" },
+    { "SubsampleStructuredFieldByIndices", "PlaceholderModule" },
+    { "EvaluateLinAlgGeneral", "PlaceholderModule" },
+    { "ShowTextureVolume", "PlaceholderModule" },
+    { "CreateAndEditColorMap2D", "PlaceholderModule" },
+    { "ShowLinePath", "PlaceholderModule" },
+    { "ShowFieldMesh", "PlaceholderModule" },
+    { "CreateMeshFromNrrd", "PlaceholderModule" },
+    { "JoinBundles", "PlaceholderModule" },
+    { "WriteBundle", "PlaceholderModule" },
+    { "SplitVectorArrayInXYZ", "PlaceholderModule" },
+    { "ManageFieldData", "PlaceholderModule" },
+    { "UnuCrop", "PlaceholderModule" },
+    { "Isosurface", "PlaceholderModule" },
+    { "FieldSlicer", "PlaceholderModule" },
+    { "GenStandardColorMaps", "PlaceholderModule" },
+    { "GetSubmatrix", "PlaceholderModule" },
+    { "CalculateDataArray", "PlaceholderModule" },
+    { "InterfaceWithMatlabViaBundles", "PlaceholderModule" },
+    { "TendAnvol", "PlaceholderModule" },
+    { "TendBmat", "PlaceholderModule" },
+    { "Unu1op", "PlaceholderModule" },
+    { "Unu2op", "PlaceholderModule" },
+    { "Unu3op", "PlaceholderModule" },
+    { "UnuCmedian", "PlaceholderModule" },
+    { "UnuConvert", "PlaceholderModule" },
+    { "UnuJoin", "PlaceholderModule" },
+    { "UnuCrop", "PlaceholderModule" },
+    { "UnuFlip", "PlaceholderModule" },
+    { "UnuGamma", "PlaceholderModule" },
+    { "UnuPad", "PlaceholderModule" },
+    { "UnuPermute", "PlaceholderModule" },
+    { "UnuQuantize", "PlaceholderModule" },
+    { "UnuResample", "PlaceholderModule" },
+    { "UnuReshape", "PlaceholderModule" },
+    { "UnuShuffle", "PlaceholderModule" },
+    { "UnuSlice", "PlaceholderModule" },
+    { "UnuHeq", "PlaceholderModule" },
+    { "ConvertNrrdsToTexture", "PlaceholderModule" },
+    { "GetAllSegmentationBoundaries", "PlaceholderModule" },
+    { "ShowPointPath", "PlaceholderModule" },
+    { "BuildNrrdGradientAndMagnitude", "PlaceholderModule" },
+    { "ConvertFieldsToTexture", "PlaceholderModule" },
+    { "CreateViewerClockIcon", "PlaceholderModule" },
+    { "UnuJhisto", "PlaceholderModule" },
+    { "NrrdToField", "PlaceholderModule" },
+    { "MDSPlusDataReader", "PlaceholderModule" },
+    { "VectorMagnitude", "PlaceholderModule" },
+    { "FieldSubSample", "PlaceholderModule" },
+    { "NIMRODConverter", "PlaceholderModule" },
+    { "StreamLines", "PlaceholderModule" },
+    { "FieldSubSample", "PlaceholderModule" },
+    { "SampleLattice", "PlaceholderModule" },
+    { "NrrdSelectTime", "PlaceholderModule" },
+    { "NrrdSetProperty", "PlaceholderModule" },
+    { "FieldInfo", "PlaceholderModule" },
+    { "SampleField", "PlaceholderModule" },
+    { "TextureBuilder", "PlaceholderModule" },
+    { "ShowTextureSurface", "PlaceholderModule" },
+    { "UnuProject", "PlaceholderModule" }
   };
 
 #if 0
@@ -229,6 +330,9 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
+
+  if (fromId.name_ == "PlaceholderModule" || toId.name_ == "PlaceholderModule")
+    return;
 
   if (!xmlData_)
     return;
@@ -356,11 +460,11 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
   auto converterObj = legacyState_.getStateConverter(moduleName, var);
-  if (converterObj)
+  if (converterObj && converterObj->valueConverter)
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
     simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
-      << (converterObj->valueConverter ? "<func>" : "null func") << std::endl;
+      << (converterObj->valueConverter ? "<func>" : "null func") << " from " << stripBraces << " to " << converterObj->valueConverter(stripBraces) << std::endl;
     stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
   else
@@ -1100,11 +1204,16 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
+  logCritical("^^^^^ Importing network: {}", net);
   net_file_ = net;
   if (!load_network())
-    return nullptr;
+  {
+    logCritical("!!!!!!! Network import unsuccessful: {}", net);  
 
-  std::cout << "Network import successful." << std::endl;
+    return nullptr;
+  }
+
+  logCritical("~~~ ~~~ ~~~ Network import successful: {}", net);
   return xmlData_;
 }
 

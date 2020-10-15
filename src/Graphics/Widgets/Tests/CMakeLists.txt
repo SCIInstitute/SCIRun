@@ -35,8 +35,13 @@ SET(Graphics_Widgets_Tests_SRCS
   ArrowWidgetTest.cc
 )
 
+SET(Graphics_Widgets_Tests_HEADERS
+  WidgetTestingUtility.h
+)
+
 SCIRUN_ADD_UNIT_TEST(Graphics_Widgets_Tests
   ${Graphics_Widgets_Tests_SRCS}
+  ${Graphics_Widgets_Tests_HEADERS}
 )
 
 TARGET_LINK_LIBRARIES(Graphics_Widgets_Tests

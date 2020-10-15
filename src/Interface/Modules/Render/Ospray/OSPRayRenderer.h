@@ -36,10 +36,11 @@
 #include "OSPRayDataManager.h"
 #include "OSPRayCamera.h"
 #include "Core/Datatypes/Geometry.h"
+#include <Interface/Modules/Render/Ospray/share.h>
 
 namespace SCIRun { namespace Render {
 
-class OSPRayRenderer
+class SCISHARE OSPRayRenderer
 {
 public:
   OSPRayRenderer();
