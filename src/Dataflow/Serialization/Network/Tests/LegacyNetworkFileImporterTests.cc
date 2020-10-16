@@ -71,7 +71,7 @@ public:
   }
   NetworkFileHandle load(const std::string& file)
   {
-    auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / file;
+    auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "testing" / file;
     return lnio.load_net(v4file1.string());
   }
   static void SetUpTestCase()

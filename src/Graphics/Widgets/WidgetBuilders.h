@@ -50,10 +50,11 @@ namespace SCIRun
         Derived& origin(const Core::Geometry::Point& p) { origin_ = p; return static_cast<Derived&>(*this); }
         Derived& boundingBox(const Core::Geometry::BBox& b) { bbox_ = b; return static_cast<Derived&>(*this); }
         Derived& resolution(int r) { resolution_ = r; return static_cast<Derived&>(*this); }
+        Derived& transformMapping(const TransformMapping& tmp) { mapping_ = tmp; return static_cast<Derived&>(*this); }
       protected:
         const Core::GeometryIDGenerator& idGenerator_;
         std::string tag_;
-        TransformMappingParams mapping_; //later
+        TransformMapping mapping_;
         double scale_ {0};
         std::string defaultColor_;
         Core::Geometry::Point origin_;
@@ -69,6 +70,43 @@ namespace SCIRun
         WidgetHandle build() const;
       private:
         Core::Geometry::Point point_;
+      };
+
+      template <class Derived>
+      class SCISHARE CylindricalWidgetBuilder : public CommonWidgetBuilder<Derived>
+      {
+      public:
+        explicit CylindricalWidgetBuilder(const Core::GeometryIDGenerator& g) : CommonWidgetBuilder<Derived>(g) {}
+        Derived& diameterPoints(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2)
+        {
+          p1_ = p1; p2_ = p2; return static_cast<Derived&>(*this);
+        }
+      protected:
+        Core::Geometry::Point p1_, p2_;
+      };
+
+      class SCISHARE DiskWidgetBuilder : public CylindricalWidgetBuilder<DiskWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        WidgetHandle build() const;
+      };
+
+      class SCISHARE CylinderWidgetBuilder : public CylindricalWidgetBuilder<CylinderWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        WidgetHandle build() const;
+      };
+
+      class SCISHARE ConeWidgetBuilder : public CylindricalWidgetBuilder<ConeWidgetBuilder>
+      {
+      public:
+        using CylindricalWidgetBuilder::CylindricalWidgetBuilder;
+        ConeWidgetBuilder& renderBase(bool b) { renderBase_ = b; return *this; }
+        WidgetHandle build() const;
+      private:
+        bool renderBase_;
       };
     }
   }

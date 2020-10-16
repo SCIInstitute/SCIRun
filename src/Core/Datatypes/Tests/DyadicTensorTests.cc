@@ -256,14 +256,14 @@ TEST(DyadicTensorTest, Equivalent)
   ASSERT_TRUE(t2 != t3);
 }
 
-TEST(DyadicTensorTest, DifferentDimensionsNotEquivalent)
+TEST(DyadicTensorTest, DISABLED_DifferentDimensionsNotEquivalent)
 {
   Dyadic3DTensor t(
       {Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 1, 0}), Eigen::Vector3d({0, 0, 1})});
   Dyadic4DTensor t2({Eigen::Vector4d({1, 0, 0, 0}), Eigen::Vector4d({0, 1, 0, 0}),
       Eigen::Vector4d({0, 0, 1, 0}), Eigen::Vector4d({0, 0, 0, 1})});
 
-  ASSERT_DEATH(t != t2, "");
+  ASSERT_TRUE(t != t2);
 }
 
 TEST(DyadicTensorTest, EqualsOperatorTensor)

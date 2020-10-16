@@ -75,6 +75,7 @@ ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupI
     /// @todo: log
     std::ostringstream ostr;
     ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+    logCritical("ModuleDescriptionLookup error: Undefined module \"{}\"", info.module_name_);
     THROW_INVALID_ARGUMENT(ostr.str());
   }
   return iter->second;
