@@ -2450,7 +2450,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::NORMALS_E)
@@ -2464,7 +2464,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NORMALS_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -2478,7 +2478,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::ELEM_NEIGHBORS_E)
@@ -2492,7 +2492,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -2506,7 +2506,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -2520,7 +2520,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -2534,7 +2534,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    std::async(syncclass);
+    std::thread(syncclass).detach();
   }
 
   // Wait until threads are done
