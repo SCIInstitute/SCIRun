@@ -17,7 +17,7 @@ The SCIRun parser is designed to give the user the ability to evaluate almost an
 
 ### Using the parser
 
-Each parser has several preloaded variables available to the user. These preloaded variables in SCIRun are always denoted with an upper case variable name. For example for the {% include moduleLink.md moduleName='CalculateFieldData' %} has the following variables available:
+Each parser has several preloaded variables available to the user. These preloaded variables in SCIRun are always denoted with an upper case variable name. For example for the [CalculateFieldData](modules.html#CalculateFieldData) has the following variables available:
 
   `DATA, X,Y,Z, POS`
 
@@ -31,7 +31,7 @@ This will assign the value of `sin(X) + cos(Y)` to `MYDATA`, where `X` and `Y` a
 
 As the output of the expression is a vector `MYDATA` will now be an array of vectors instead of an array of scalars as in the previous example.
 
-To assign any data to the output of a module, certain variables need to be assigned. For example in case of the {% include moduleLink.md moduleName='CalculateFieldData' %}, the output variable is called `RESULT` and hence a second expression can be added to assign the newly created vector to the output:
+To assign any data to the output of a module, certain variables need to be assigned. For example in case of the [CalculateFieldData](modules.html#CalculateFieldData), the output variable is called `RESULT` and hence a second expression can be added to assign the newly created vector to the output:
 
   `MYDATA = vector(Y,X,2*Z); RESULT = MYDATA;`
 
