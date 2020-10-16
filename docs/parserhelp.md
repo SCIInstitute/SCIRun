@@ -17,7 +17,7 @@ The SCIRun parser is designed to give the user the ability to evaluate almost an
 
 ### Using the parser
 
-Each parser has several preloaded variables available to the user. These preloaded varaibles in SCIRun are always denoted with an upper case variable name. For example for the {% include moduleLink.md moduleName='CalculateFieldData' %} has the following variables available:
+Each parser has several preloaded variables available to the user. These preloaded variables in SCIRun are always denoted with an upper case variable name. For example for the {% include moduleLink.md moduleName='CalculateFieldData' %} has the following variables available:
 
   `DATA, X,Y,Z, POS`
 
@@ -31,7 +31,7 @@ This will assign the value of `sin(X) + cos(Y)` to `MYDATA`, where `X` and `Y` a
 
 As the output of the expression is a vector `MYDATA` will now be an array of vectors instead of an array of scalars as in the previous example.
 
-To assign any data to the output of a module, certain variables need to be assigned. For example in case of the CalculateFieldData, the output variable is called RESULT and hence a second expression can be added to assign the newly created vector to the output:
+To assign any data to the output of a module, certain variables need to be assigned. For example in case of the {% include moduleLink.md moduleName='CalculateFieldData' %}, the output variable is called `RESULT` and hence a second expression can be added to assign the newly created vector to the output:
 
   `MYDATA = vector(Y,X,2*Z); RESULT = MYDATA;`
 
@@ -39,7 +39,7 @@ Now this expression could have been simplified to one expression, which would re
 
   `RESULT = vector(Y,X,2*Z);`
 
-From a performance perspective both would be evaluated equally fast as, copying operations are generally removed by the internal optimizer. However to increase user readability one can split an expression in as many pieces as one wants. For example, the following expression is perfectlt valid expression:
+From a performance perspective both would be evaluated equally fast as, copying operations are generally removed by the internal optimizer. However to increase user readability one can split an expression in as many pieces as one wants. For example, the following expression is a perfectly valid expression:
 
   `DX = X-3; DY = Y-4; DZ = Z - 2; RESULT = norm(vector(DX,DY,DZ));`
 
@@ -47,7 +47,7 @@ Hence the general grammar of the expression is:
 
  `VAR1 = function(...);` `VAR2 = function(...);` `VAR3 = function(...);` ... etc
 
-The array parser generally allows two types of input, an array with one element, or an array with many elements. When combining multiple fields or matrices, the arrays with many elements are required to have the same number of elements and the math operations are done by taking correspondeing elements from each array. However an array with one element is treated special, and its value is used for every element for the arrays that have many arrays. For example, assume matrix `A = [1]`, and `B = [1,2,3,4]`. We can now evaluate the following expression:
+The array parser generally allows two types of input, an array with one element, or an array with many elements. When combining multiple fields or matrices, the arrays with many elements are required to have the same number of elements and the math operations are done by taking corresponding elements from each array. However an array with one element is treated special, and its value is used for every element for the arrays that have many arrays. For example, assume matrix `A = [1]`, and `B = [1,2,3,4]`. We can now evaluate the following expression:
 
   `RESULT = A+B;`
 
@@ -154,7 +154,7 @@ For converting any Scalar, Vector or Tensor in to a boolean, e.g. whether all co
 
   `RESULT = boolean(vector(X,0,Z)) || boolean(tensor(4)*0);`
 
-The `select()` function works like the C/C++ ternary ?: operator:
+The `select()` function works like the C/C++ ternary `?:` operator:
 
   `RESULT = select(X>2,1,0);`
 
