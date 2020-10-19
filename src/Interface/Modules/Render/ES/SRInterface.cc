@@ -366,8 +366,8 @@ void SRInterface::runGCOnNextExecution()
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
     void SRInterface::setLockRotation(bool lock)  {mCamera->setLockRotation(lock);}
-    const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
-    const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
+    glm::mat4 SRInterface::getWorldToView() const       {return mCamera->getWorldToView(); }
+    glm::mat4 SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection(); }
 
     //----------------------------------------------------------------------------------------------
     //---------------- Widgets ---------------------------------------------------------------------
