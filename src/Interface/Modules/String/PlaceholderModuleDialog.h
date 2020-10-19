@@ -25,40 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
 
-#include <Interface/qt_include.h>
-#include <QOpenGLWidget>
-#include <Interface/Modules/Render/Ospray/share.h>
+#ifndef INTERFACE_MODULES_PLACEHOLDERMODULE_H
+#define INTERFACE_MODULES_PLACEHOLDERMODULE_H
 
-namespace SCIRun { namespace Render {
+#include "Interface/Modules/String/ui_PlaceholderModule.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/share.h>
 
-class OSPRayRenderer;
+namespace SCIRun {
+namespace Gui {
 
-class SCISHARE QOSPRayWidget : public QOpenGLWidget
+class SCISHARE PlaceholderModuleDialog : public ModuleDialogGeneric,
+  public Ui::PlaceholderModule
 {
-Q_OBJECT
+	Q_OBJECT
 
 public:
-  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
-  virtual ~QOSPRayWidget();
-
-public Q_SLOTS:
-    void updateRenderer();
-
-protected:
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-
-  OSPRayRenderer* renderer {nullptr};
-
-  QTimer* renderTimer {nullptr};
-
-  //virtual void mousePressEvent(QMouseEvent * event);
-  //virtual void mouseReleaseEvent(QMouseEvent * event);
-  //virtual void mouseMoveEvent(QMouseEvent * event);
-  //virtual void wheelEvent(QWheelEvent* event);
+  PlaceholderModuleDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
 };
 
-}}
+}
+}
+
+#endif

@@ -63,7 +63,6 @@ public:
   ~GLWidget();
 
   Render::RendererPtr getSpire() const {return graphics_;}
-  Render::MouseButton getSpireButton(QMouseEvent* event);
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.

@@ -45,13 +45,13 @@ protected:
 
 TEST_F(ScalingTest, CanConstruct)
 {
-  ScaleParameters p {};
+  ObjectScaleCalculator::Params p {};
   ObjectScaleCalculator scaler(&brop, p);
 }
 
 TEST_F(ScalingTest, CanScaleHorizontalFromOrigin)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.flipAxisWorld_ = glm::vec3{1,1,1};
@@ -74,7 +74,7 @@ TEST_F(ScalingTest, CanScaleHorizontalFromOrigin)
 
 TEST_F(ScalingTest, CanScaleVerticalFromOrigin)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.flipAxisWorld_ = glm::vec3{1,1,1};
@@ -98,7 +98,7 @@ TEST_F(ScalingTest, CanScaleVerticalFromOrigin)
 
 TEST_F(ScalingTest, CanScaleThroughFlipAxis)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.flipAxisWorld_ = glm::vec3{1,1,1};
@@ -121,7 +121,7 @@ TEST_F(ScalingTest, CanScaleThroughFlipAxis)
 
 TEST_F(ScalingTest, CanScaleArbitraryFromOrigin)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.flipAxisWorld_ = glm::vec3{1,1,1};
@@ -144,7 +144,7 @@ TEST_F(ScalingTest, CanScaleArbitraryFromOrigin)
 
 TEST_F(ScalingTest, CanScaleArbitraryFromArbitrary)
 {
-  ScaleParameters p;
+  ObjectScaleCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.flipAxisWorld_ = glm::vec3{1,1,1};

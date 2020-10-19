@@ -51,6 +51,7 @@ namespace SCIRun
     public:
       SCIRun::Render::SRCamera& camera() const override;
       const SCIRun::Render::ScreenParams& screen() const override;
+      glm::mat4 getStaticCameraViewProjection() override { return {}; }
     };
 
   bool operator==(const glm::mat4& lhs, const glm::mat4& rhs);

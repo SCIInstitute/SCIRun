@@ -40,18 +40,8 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      class WidgetBase;
-
-      struct SCISHARE GeometryIdGetter
-      {
-        std::string operator()(const GeometryObjectSpire* w) const { return w->uniqueID(); }
-      };
-
-      using WidgetObservable = Observable<WidgetBase*, WidgetMovement, SimpleWidgetEvent,
-        SimpleWidgetEventKey, SimpleWidgetEventValue, GeometryIdGetter>;
-
       class SCISHARE WidgetBase : public GeometryObjectSpire,
-        public WidgetObservable,
+        public WidgetMovementMediator,
         public InputTransformMapper,
         public Transformable
       {
@@ -64,7 +54,6 @@ namespace SCIRun
 
         const std::string& name() const { return name_; }
 
-        virtual void propagateEvent(const SimpleWidgetEvent& e);
       protected:
         Core::Geometry::Point position_;
         std::string name_;
@@ -85,7 +74,6 @@ namespace SCIRun
         {}
 
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
-        void propagateEvent(const SimpleWidgetEvent& e) override;
         WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
         WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
 
@@ -95,6 +83,22 @@ namespace SCIRun
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
+
+      template <int MovementEventType>
+      struct propagatesEvent
+      {
+        static const WidgetMovement to = static_cast<WidgetMovement>(MovementEventType);
+      };
+
+      struct TransformPropagationProxy
+      {
+        std::function<void(WidgetHandle)> registrationApplier;
+      };
+
+      SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, WidgetMovement movement);
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget);
+      using TheseWidgets = std::vector<WidgetHandle>;
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, const TheseWidgets& widgets);
     }
   }
 }

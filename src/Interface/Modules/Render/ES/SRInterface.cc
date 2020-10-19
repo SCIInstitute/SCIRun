@@ -192,20 +192,10 @@ void SRInterface::runGCOnNextExecution()
       return output;
     }
 
-
-
     //----------------------------------------------------------------------------------------------
     //---------------- Input -----------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::widgetMouseDown(MouseButton btn, int x, int y)
-    {
-      if (widgetUpdater_.currentWidget())
-      {
-        widgetUpdater_.updateWidget(x, y);
-      }
-    }
 
     //----------------------------------------------------------------------------------------------
     void SRInterface::widgetMouseMove(MouseButton btn, int x, int y)
@@ -385,8 +375,8 @@ void SRInterface::runGCOnNextExecution()
 
     void WidgetUpdateService::reset()
     {
-      widget_.reset();
-      objectTransformCalculator_.reset();
+      currentWidget_.reset();
+      event_.reset();
     }
 
     class ScopedLambdaExecutor
@@ -398,14 +388,19 @@ void SRInterface::runGCOnNextExecution()
       std::function<void()> func_;
     };
 
-    void SRInterface::doInitialWidgetUpdate(WidgetHandle& widget, int x, int y)
+    void SRInterface::doInitialWidgetUpdate(WidgetHandle widget, int x, int y)
     {
       widgetUpdater_.reset();
       widgetUpdater_.setCurrentWidget(widget);
-      widgetUpdater_.doInitialUpdate(x, y, mLastSelectionDepth);
+      widgetUpdater_.doInitialUpdate(x, y, selectionDepth_);
     }
 
-    WidgetHandle SRInterface::select(int x, int y, WidgetList& widgets)
+    void SRInterface::setWidgetInteractionMode(MouseButton btn)
+    {
+      widgetUpdater_.setButtonPushed(btn);
+    }
+
+    WidgetHandle SRInterface::select(int x, int y, const WidgetList& widgets)
     {
       if (!mContext || !mContext->isValid())
         return nullptr;
@@ -451,14 +446,12 @@ void SRInterface::runGCOnNextExecution()
 
       mCore.executeWithoutAdvancingClock();
 
-      GLfloat depth;
-
       {
         ScopedLambdaExecutor removeEntities([this, &entityList]() { for (auto& it : entityList) mCore.removeEntity(it); });
         {
           ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
           GLuint value;
-          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
+          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&selectionDepth_))
           {
             auto it = selMap.find(value);
             if (it != selMap.end())
@@ -479,10 +472,9 @@ void SRInterface::runGCOnNextExecution()
 
         if (widgetUpdater_.currentWidget())
         {
-          widgetUpdater_.doInitialUpdate(x, y, depth);
+          widgetUpdater_.doInitialUpdate(x, y, selectionDepth_);
         }
       }
-      mLastSelectionDepth = depth;
 
       return widgetUpdater_.currentWidget();
     }
@@ -663,270 +655,47 @@ void SRInterface::runGCOnNextExecution()
       return mCamera->getWorldToProjection();
     }
 
-    template <class P>
-    static glm::vec3 toVec3(const P& p)
-    {
-      return glm::vec3{p.x(), p.y(), p.z()};
-    }
-
-    float WidgetUpdateService::getInitialW(float depth) const
-    {
-      float zFar = camera_->getZFar();
-      float zNear = camera_->getZNear();
-      float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
-      return -z;
-    }
-
-    template <class Params>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const Params& p)
-    {
-      return nullptr;
-    }
-
-namespace SCIRun
-{
-  namespace Render
-  {
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const TranslateParameters& p)
-    {
-      return boost::make_shared<ObjectTranslationCalculator>(brop_, p);
-    }
-
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const ScaleParameters& p)
-    {
-      return boost::make_shared<ObjectScaleCalculator>(brop_, p);
-    }
-
-    template <>
-    ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(const RotateParameters& p)
-    {
-      return boost::make_shared<ObjectRotationCalculator>(brop_, p);
-    }
-  }
-}
-    void WidgetUpdateService::doInitialUpdate(int x, int y, float depth)
-    {
-      doPostSelectSetup(x, y, depth);
-      updateWidget(x, y);
-    }
-
-TranslateParameters WidgetUpdateService::buildTranslation(const glm::vec2& initPos, float initW)
-{
-  TranslateParameters p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  p.viewProj = transformer_->getStaticCameraViewProjection();
-  return p;
-}
-
-ScaleParameters WidgetUpdateService::buildScale(const glm::vec2& initPos, float initW)
-{
-  ScaleParameters p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  auto widgetTransformParameters = widget_->transformParameters();
-  p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
-  p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-  return p;
-}
-
-RotateParameters WidgetUpdateService::buildRotation(const glm::vec2& initPos, float initW)
-{
-  RotateParameters p;
-  p.initialPosition_ = initPos;
-  p.w_ = initW;
-  p.originWorld_ = toVec3(getRotationOrigin(widget_->transformParameters()));
-  return p;
-}
-
-#define makeCalcFunc(memFn) [this](const glm::vec2& initPos, float initW) \
-                              { return transformFactory_.create(memFn(initPos, initW)); }
-
-WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const ScreenParams& screen) :
-  transformer_(transformer), screen_(screen), transformFactory_(this)
-{
-  transformCalcMakerMapping_ =
-  {
-    {WidgetMovement::TRANSLATE, makeCalcFunc(buildTranslation)},
-    {WidgetMovement::ROTATE, makeCalcFunc(buildRotation)},
-    {WidgetMovement::SCALE, makeCalcFunc(buildScale)}
-  };
-}
-
-void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
-{
-  auto initialW = getInitialW(depth);
-  auto initialPosition = screen_.positionFromClick(x, y);
-  objectTransformCalculator_ = transformCalcMakerMapping_[movement_](initialPosition, initialW);
-}
-
-void WidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle w)
-{
-  widget_ = w;
-  movement_ = w->movementType(WidgetInteraction::CLICK);
-}
-
 //----------------------------------------------------------------------------------------------
 uint32_t SRInterface::getSelectIDForName(const std::string& name)
 {
   return static_cast<uint32_t>(std::hash<std::string>()(name));
 }
 
-    //----------------------------------------------------------------------------------------------
-    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
-    {
-      float a = ((id >> 24) & 0xff) / 255.0f;
-      float b = ((id >> 16) & 0xff) / 255.0f;
-      float g = ((id >> 8)  & 0xff) / 255.0f;
-      float r = ((id)       & 0xff) / 255.0f;
-      return glm::vec4(r, g, b, a);
-    }
+glm::vec4 SRInterface::getVectorForID(const uint32_t id)
+{
+  float a = ((id >> 24) & 0xff) / 255.0f;
+  float b = ((id >> 16) & 0xff) / 255.0f;
+  float g = ((id >> 8)  & 0xff) / 255.0f;
+  float r = ((id)       & 0xff) / 255.0f;
+  return glm::vec4(r, g, b, a);
+}
 
-    //----------------------------------------------------------------------------------------------
-    uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
-    {
-      uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
-      uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
-      uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
-      uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
-      return (a << 24) | (b << 16) | (g << 8) | (r);
-    }
+uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
+{
+  uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
+  uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
+  uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
+  uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
+  return (a << 24) | (b << 16) | (g << 8) | (r);
+}
 
-    //----------------------------------------------------------------------------------------------
-    void WidgetUpdateService::updateWidget(int x, int y)
-    {
-      WidgetEventPtr event(new WidgetEventBase(objectTransformCalculator_->computeTransform(x, y)));
-      modifyWidget(event);
-    }
 
-    void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
-    {
-      auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
+void SRInterface::modifyObject(const std::string& id, const gen::Transform& trans)
+{
+  auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
 
-      auto component = contTrans->getComponent(mEntityIdMap[id]);
-      if (component.first != nullptr)
-        contTrans->modifyIndex(trans, component.second, 0);
-    }
+  auto component = contTrans->getComponent(mEntityIdMap[id]);
+  if (component.first != nullptr)
+    contTrans->modifyIndex(trans, component.second, 0);
+}
 
-    void WidgetUpdateService::modifyWidget(WidgetEventPtr event)
-    {
-      auto boundEvent = [&](const std::string& id)
-      {
-        transformer_->modifyObject(id, event->transform);
-      };
-      widget_->propagateEvent({movement_, boundEvent});
-      widgetTransform_ = event->transform.transform;
-    }
+glm::vec2 ScreenParams::positionFromClick(int x, int y) const
+{
+  return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
+               -(float(y) / float(height) * 2.0 - 1.0));
+}
 
-    ObjectTranslationCalculator::ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const TranslateParameters& t) :
-      ObjectTransformCalculatorBase(s),
-      initialPosition_(t.initialPosition_),
-      w_(t.w_),
-      invViewProj_(glm::inverse(t.viewProj))
-    {}
-
-    gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
-    {
-      auto screenPos = service_->screen().positionFromClick(x, y);
-      glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
-      auto trans = gen::Transform();
-      trans.setPosition(xyz(invViewProj_ * glm::vec4(transVec, 0.0, 0.0)));
-      return trans;
-    }
-
-    ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const ScaleParameters& p) : ObjectTransformCalculatorBase(s),
-      flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
-    {
-      originView_ = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
-      glm::vec4 projectedOrigin = service_->camera().getViewToProjection() * glm::vec4(originView_, 1.0);
-      projectedW_ = projectedOrigin.w;
-      auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
-      sposView.z = -projectedW_;
-      originToSpos_ = sposView - originView_;
-    }
-
-    gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
-    {
-      auto spos = service_->screen().positionFromClick(x, y);
-
-      glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
-      currentSposView.z = -projectedW_;
-      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(xy(originView_), originView_.z);
-
-      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
-        * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));
-
-      // Flip if negative to avoid inverted normals
-      glm::mat4 flip;
-      bool negativeScale = scaling_factor < 0.0;
-      if (negativeScale)
-      {
-        //TODO: use more precise pi? or actual constant value?
-        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, flipAxisWorld_);
-        scaling_factor = -scaling_factor;
-      }
-
-      auto trans = gen::Transform();
-      glm::mat4 translation = glm::translate(-originWorld_);
-      glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
-      glm::mat4 reverse_translation = glm::translate(originWorld_);
-
-      trans.transform = scale * translation;
-
-      if (negativeScale)
-        trans.transform = flip * trans.transform;
-
-      trans.transform = reverse_translation * trans.transform;
-      return trans;
-    }
-
-    ObjectRotationCalculator::ObjectRotationCalculator(const BasicRendererObjectProvider* s, const RotateParameters& p) : ObjectTransformCalculatorBase(s),
-      originWorld_(p.originWorld_), initialW_(p.w_)
-    {
-      auto sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(p.initialPosition_ * p.w_, 0.0, 1.0));
-      sposView.z = -p.w_;
-      auto originView = glm::vec3(service_->camera().getWorldToView() * glm::vec4(p.originWorld_, 1.0));
-      auto originToSpos = sposView - originView;
-      auto radius = glm::length(originToSpos);
-      bool negativeZ = (originToSpos.z < 0.0);
-      widgetBall_.reset(new spire::ArcBall(originView, radius, negativeZ));
-      widgetBall_->beginDrag(glm::vec2(sposView));
-    }
-
-    gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
-    {
-      if (!widgetBall_)
-        return {};
-
-      auto spos = service_->screen().positionFromClick(x, y);
-
-      glm::vec2 sposView = glm::vec2(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * initialW_, 0.0, 1.0));
-      widgetBall_->drag(sposView);
-
-      glm::quat rotationView = widgetBall_->getQuat();
-      glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
-      axis = glm::vec3(glm::inverse(service_->camera().getWorldToView()) * glm::vec4(axis, 0.0));
-      glm::quat rotationWorld = glm::quat(rotationView.w, axis);
-
-      glm::mat4 translation = glm::translate(-originWorld_);
-      glm::mat4 reverse_translation = glm::translate(originWorld_);
-      glm::mat4 rotation = glm::mat4_cast(rotationWorld);
-
-      auto trans = gen::Transform();
-      trans.transform = reverse_translation * rotation * translation;
-      return trans;
-    }
-
-    glm::vec2 ScreenParams::positionFromClick(int x, int y) const
-    {
-      return glm::vec2(float(x) / float(width) * 2.0 - 1.0,
-                   -(float(y) / float(height) * 2.0 - 1.0));
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //---------------- Clipping Planes -------------------------------------------------------------
+//---------------- Clipping Planes -------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------

@@ -25,40 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
+#include <Modules/Basic/PlaceholderModule.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Interface/qt_include.h>
-#include <QOpenGLWidget>
-#include <Interface/Modules/Render/Ospray/share.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun { namespace Render {
+MODULE_INFO_DEF(PlaceholderModule, Flow Control, SCIRun)
 
-class OSPRayRenderer;
-
-class SCISHARE QOSPRayWidget : public QOpenGLWidget
+PlaceholderModule::PlaceholderModule() : Module(staticInfo_)
 {
-Q_OBJECT
+}
 
-public:
-  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
-  virtual ~QOSPRayWidget();
+void PlaceholderModule::setStateDefaults()
+{
+  get_state()->setValue(Variables::Filename, std::string("<unknown>"));
+}
 
-public Q_SLOTS:
-    void updateRenderer();
-
-protected:
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-
-  OSPRayRenderer* renderer {nullptr};
-
-  QTimer* renderTimer {nullptr};
-
-  //virtual void mousePressEvent(QMouseEvent * event);
-  //virtual void mouseReleaseEvent(QMouseEvent * event);
-  //virtual void mouseMoveEvent(QMouseEvent * event);
-  //virtual void wheelEvent(QWheelEvent* event);
-};
-
-}}
+void PlaceholderModule::execute()
+{
+  auto name = get_state()->getValue(Variables::Filename).toString();
+  error("This is a placeholder module for the missing module " + name + ".");
+}

@@ -101,9 +101,17 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
-    ADD_TEST(".Test.Samples.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    ADD_TEST(".Test.ExampleNetwork.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
   ENDFOREACH()
 
+ENDIF()
+
+IF(RUN_IMPORT_TESTS)
+  FILE(GLOB_RECURSE scirun_legacy_srns "${SCIRUN_TEST_RESOURCE_DIR}/**/*.srn")
+  FOREACH(srn ${scirun_legacy_srns})
+    GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
+    ADD_TEST(".Test.ImportNetwork.${srn_name}_srn" ${EXE_LOC} -x --no_splash --regression 30 --import ${srn})
+  ENDFOREACH()
 ENDIF()
 
 ENDIF()
