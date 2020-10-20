@@ -576,6 +576,12 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       theNetwork_->clear();
       throw;
     }
+    catch (std::exception& ex)
+    {
+      logError("File load failed: exception while processing xml network data: {}", ex.what());
+      theNetwork_->clear();
+      throw;
+    }
     eventCmdFactory_->create(NetworkEventCommands::OnNetworkLoad)->execute();
   }
 }

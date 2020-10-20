@@ -229,9 +229,9 @@ namespace Core {
           const std::vector<VectorType>& eigvecs, const std::vector<Number>& eigvals) const
       {
         if (eigvecs_.size() != eigvecs.size())
-          THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + eigvecs_.size());
+          THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + std::to_string(eigvecs_.size()));
         if (eigvals_.size() != eigvals.size())
-          THROW_INVALID_ARGUMENT("The number of input eigvals must be " + eigvals_.size());
+          THROW_INVALID_ARGUMENT("The number of input eigvals must be " + std::to_string(eigvals_.size()));
         eigvecs_ = eigvecs;
         eigvals_ = eigvals;
         haveEigens_ = true;

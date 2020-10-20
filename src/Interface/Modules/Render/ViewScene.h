@@ -255,12 +255,13 @@ namespace SCIRun {
       void pushCameraLookAt();
       void pushCameraRotation();
       void pushCameraState();
+      bool clickedInViewer(QMouseEvent* e) const;
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
       bool canSelectWidget();
-      bool tryWidgetSelection(int x, int y);
-      void selectObject(const int x, const int y);
+      bool tryWidgetSelection(int x, int y, Render::MouseButton button);
+      void selectObject(const int x, const int y, Render::MouseButton button);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
@@ -365,6 +366,8 @@ namespace SCIRun {
       const int DIMENSIONS_ = 3;
       const int QUATERNION_SIZE_ = 4;
     };
+
+    Render::MouseButton getSpireButton(QMouseEvent* event);
 
   } // namespace Gui
 } // namespace SCIRun

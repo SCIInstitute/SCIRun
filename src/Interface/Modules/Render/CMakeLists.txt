@@ -66,6 +66,7 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/RendererInterfaceFwd.h
   ES/RendererCollaborators.h
   ES/RendererInterfaceCollaborators.h
+  ES/ObjectTransformCalculators.h
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
@@ -96,6 +97,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/CoreBootstrap.cc
   ES/Registration.cc
   ES/AssetBootstrap.cc
+  ES/ObjectTransformCalculators.cc
+  ES/WidgetHandling.cc
   ES/comp/LightingUniforms.cc
   ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc

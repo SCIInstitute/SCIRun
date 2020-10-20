@@ -37,7 +37,8 @@
 namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
-      enum ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
+
+      enum class ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
 
       class SCISHARE ArrowWidget : public CompositeWidget
       {
@@ -48,7 +49,6 @@ namespace SCIRun {
 
       private:
         bool isVector_;
-        static std::string widgetName(size_t i, size_t id, size_t iter);
       };
 
       using ArrowWidgetHandle = SharedPointer<ArrowWidget>;

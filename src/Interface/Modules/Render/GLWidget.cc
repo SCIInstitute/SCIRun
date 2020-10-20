@@ -91,20 +91,6 @@ void GLWidget::paintGL()
 }
 
 //------------------------------------------------------------------------------
-SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
-{
-  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
-  if (event->buttons() & Qt::LeftButton)
-    btn = Render::MouseButton::MOUSE_LEFT;
-  else if (event->buttons() & Qt::RightButton)
-    btn = Render::MouseButton::MOUSE_RIGHT;
-  else if (event->buttons() & Qt::MidButton)
-    btn = Render::MouseButton::MOUSE_MIDDLE;
-
-  return btn;
-}
-
-//------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   event->ignore();

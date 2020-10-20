@@ -30,7 +30,11 @@
 #ifdef __APPLE__
   #include <OpenGL/glu.h>
 #else
+#ifdef _WIN32
+  #include <gl-platform/GLPlatform.hpp>
+#else
   #include <GL/glu.h>
+#endif
 #endif
 
 #include <cstdio>
@@ -269,7 +273,7 @@ void OSPRayRenderer::addMeshToGroup(OsprayGeometryObject* geometryObject, uint32
   ospRelease(model);
 }
 
-void OSPRayRenderer::addStructuredVolumeToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject)
+void OSPRayRenderer::addStructuredVolumeToGroup(OsprayGeometryObject* geometryObject)
 {
   if(!group_) addGroup();
 

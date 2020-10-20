@@ -25,40 +25,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
 
-#include <Interface/qt_include.h>
-#include <QOpenGLWidget>
-#include <Interface/Modules/Render/Ospray/share.h>
+#ifndef MODULES_BASIC_PLACEHOLDER_H
+#define MODULES_BASIC_PLACEHOLDER_H
 
-namespace SCIRun { namespace Render {
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
-class OSPRayRenderer;
+namespace SCIRun {
+  namespace Modules {
+    namespace Basic {
 
-class SCISHARE QOSPRayWidget : public QOpenGLWidget
-{
-Q_OBJECT
+      class SCISHARE PlaceholderModule : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public HasNoOutputPorts
+      {
+      public:
+        PlaceholderModule();
+        void execute() override;
+        void setStateDefaults() override;
 
-public:
-  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
-  virtual ~QOSPRayWidget();
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+      };
+ }}}
 
-public Q_SLOTS:
-    void updateRenderer();
-
-protected:
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-
-  OSPRayRenderer* renderer {nullptr};
-
-  QTimer* renderTimer {nullptr};
-
-  //virtual void mousePressEvent(QMouseEvent * event);
-  //virtual void mouseReleaseEvent(QMouseEvent * event);
-  //virtual void mouseMoveEvent(QMouseEvent * event);
-  //virtual void wheelEvent(QWheelEvent* event);
-};
-
-}}
+#endif

@@ -99,28 +99,64 @@ namespace SCIRun
 
       // These will give different types of widget movement through ViewScene.
       // To use rotation and scaling, an origin point must be given.
-      enum class WidgetMovement
+      enum WidgetMovement
       {
         NONE,
         TRANSLATE,
         ROTATE,
-        SCALE
+        SCALE,
+        TRANSLATE_AXIS,
+        TRANSLATE_AXIS_HALF,
+        TRANSLATE_AXIS_REVERSE,
+        SCALE_UNIDIRECTIONAL,
+        SCALE_AXIS,
+        SCALE_AXIS_HALF,
+        SCALE_AXIS_UNIDIRECTIONAL
+      };
+
+      // Whether a widget's movement can be propagated using a shared transform calculator.
+      enum class WidgetMovementSharing
+      {
+        SHARED,
+        UNIQUE
+      };
+
+      using WidgetMovementFamilyMap = std::map<WidgetMovement, WidgetMovementSharing>;
+
+      struct SCISHARE WidgetMovementFamily
+      {
+        WidgetMovement base;
+        WidgetMovementFamilyMap propagated;
       };
 
       enum class WidgetInteraction
       {
         CLICK,
+        RIGHT_CLICK,
         OTHER_TYPE_OF_CLICK //TODO
       };
 
-      using TransformMapping = std::map<WidgetInteraction, WidgetMovement>;
-      using TransformMappingParams = std::initializer_list<TransformMapping::value_type>;
+      using TransformMapping = std::map<WidgetInteraction, WidgetMovementFamily>;
+
+      class SCISHARE WidgetMovementFamilyBuilder
+      {
+      public:
+        explicit WidgetMovementFamilyBuilder(WidgetMovement base) : base_(base) {}
+        WidgetMovementFamilyBuilder& sharedMovements(std::initializer_list<WidgetMovement> moves);
+        WidgetMovementFamilyBuilder& uniqueMovements(std::initializer_list<WidgetMovement> moves);
+        WidgetMovementFamily build() const { return { base_, wmf_ }; }
+      private:
+        WidgetMovement base_;
+        WidgetMovementFamilyMap wmf_;
+      };
+
+      SCISHARE WidgetMovementFamily singleMovementWidget(WidgetMovement base);
 
       struct SCISHARE WidgetBaseParameters
       {
         const Core::GeometryIDGenerator& idGenerator;
         std::string tag;
-        TransformMappingParams mapping;
+        TransformMapping mapping;
       };
 
       class AbstractGlyphFactory;
@@ -132,56 +168,42 @@ namespace SCIRun
         AbstractGlyphFactoryPtr glyphMaker;
       };
 
-      using SimpleWidgetEventFunc = std::function<void(const std::string&)>;
-      struct SimpleWidgetEvent
-      {
-        WidgetMovement moveType;
-        SimpleWidgetEventFunc func;
-      };
+      class WidgetBase;
 
-      //TODO: generify
-      struct SimpleWidgetEventKey
-      {
-        WidgetMovement operator()(const SimpleWidgetEvent& e) const { return e.moveType; }
-      };
-
-      struct SimpleWidgetEventValue
-      {
-        SimpleWidgetEventFunc operator()(const SimpleWidgetEvent& e) const { return e.func; }
-      };
-
-      template <class Observer, class EventKey, class Event, class KeyFunc, class ObserveFunc, class IdFunc>
-      class Observable
+      class SCISHARE WidgetEvent
       {
       public:
-        Observable() {}
-        void registerObserver(const EventKey& event, const Observer& observer)
+        virtual ~WidgetEvent() {}
+        virtual WidgetMovement baseMovement() const = 0;
+        virtual void move(WidgetBase* widget, WidgetMovement moveType) const = 0;
+      };
+
+      using WidgetEventPtr = SharedPointer<WidgetEvent>;
+
+      class SCISHARE WidgetMovementMediator
+      {
+      public:
+        WidgetMovementMediator() {}
+
+        void registerObserver(WidgetMovement clickedMovement, WidgetBase* observer, WidgetMovement observerMovement)
         {
-          observers_[event].push_back(observer);
+          observers_[clickedMovement][observerMovement].push_back(observer);
         }
 
-        void notify(const Event& event) const
-        {
-          auto eventObservers = observers_.find(keyFunc_(event));
-          if (eventObservers != observers_.cend())
-          {
-            for (const auto& obs : eventObservers->second)
-              observeFunc_(event)(idFunc_(obs));
-          }
-        }
+        void mediate(WidgetBase* sender, WidgetEventPtr event) const;
+
+        glm::mat4 latestTransform() const;
 
       private:
-        KeyFunc keyFunc_;
-        ObserveFunc observeFunc_;
-        IdFunc idFunc_;
-        std::map<EventKey, std::vector<Observer>> observers_;
+        using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<WidgetBase*>>;
+        std::map<WidgetMovement, SubwidgetMovementMap> observers_;
       };
 
       class SCISHARE InputTransformMapper
       {
       public:
-        explicit InputTransformMapper(TransformMappingParams pairs);
-        WidgetMovement movementType(WidgetInteraction interaction) const;
+        explicit InputTransformMapper(const TransformMapping& tm);
+        WidgetMovementFamily movementType(WidgetInteraction interaction) const;
       private:
         TransformMapping interactionMap_;
       };
@@ -192,6 +214,7 @@ namespace SCIRun
       };
 
       using TransformParametersPtr = std::shared_ptr<TransformParameters>;
+      using MultiTransformParameters = std::vector<TransformParametersPtr>;
 
       struct SCISHARE Rotation : TransformParameters
       {
@@ -205,17 +228,18 @@ namespace SCIRun
         const Core::Geometry::Vector flip;
       };
 
-      SCISHARE Core::Geometry::Point getRotationOrigin(TransformParametersPtr t);
-      SCISHARE Core::Geometry::Vector getScaleFlipVector(TransformParametersPtr t);
+      SCISHARE Core::Geometry::Point getRotationOrigin(const MultiTransformParameters& t);
+      SCISHARE Core::Geometry::Vector getScaleFlipVector(const MultiTransformParameters& t);
 
       class SCISHARE Transformable
       {
       public:
-        TransformParametersPtr transformParameters() const { return transformParameters_; }
+        const MultiTransformParameters& transformParameters() const { return transformParameters_; }
         template <class TransformType, class ... Params>
-        void setTransformParameters(Params&&... t) { transformParameters_ = std::make_shared<TransformType>(t...); }
+        void addTransformParameters(Params&&... t) { transformParameters_.push_back(std::make_shared<TransformType>(t...)); }
       private:
-        TransformParametersPtr transformParameters_;
+        MultiTransformParameters transformParameters_;
+        glm::mat4 latestTransform_;
       };
     }
   }
