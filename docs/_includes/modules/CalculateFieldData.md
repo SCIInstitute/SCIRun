@@ -45,7 +45,7 @@ The output needs to be stored in the variable ```RESULT```.
 
 #### Available Functions
 
-A list of available functions is available in the GUI of the module. The ***Parser Help*** button brings up a list of available functions to do scalar/vector/tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
+A list of available functions is available in the GUI of the module. The [Parser Help](/SCIRun/parserhelp.html)button brings up a list of available functions to do scalar/vector/tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
 
 #### Input Ports
 
@@ -63,7 +63,7 @@ Suppose one wants to set the data values to a certain value:
 RESULT = 2;
 ```
 
-This will set every data value inside the Field equal to the value 2. 
+This will set every data value inside the Field equal to the value 2.
 
 Similarly one can set the data value to a value specified inside the first Matrix on the input ports:
 

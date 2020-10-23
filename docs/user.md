@@ -8,6 +8,7 @@ layout: default
 ### User Guide
 
 - [Python API 0.2](python.html)
+- [Parser Help](parserhelp.html)
 
 ### Tutorials
 - [Basic Tutorial](BasicTutorial.html)
