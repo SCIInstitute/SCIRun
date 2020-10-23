@@ -45,7 +45,7 @@ The output needs to be stored in the variable ```RESULT```.
 
 #### Available Functions
 
-A list of available functions is available in the GUI of the module. The [Parser Help](parserhelp.html) button brings up a list of available functions to do scalar/vector/tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
+A list of available functions is available in the GUI of the module. The [Parser Help](/SCIRun/parserhelp.html)button brings up a list of available functions to do scalar/vector/tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
 
 #### Input Ports
 
