@@ -27,7 +27,6 @@
 
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Fields/InterfaceWithCleaver.h>
 #include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
@@ -79,7 +78,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<InterfaceWithCleaver>("InterfaceWithCleaver", "NewField", "SCIRun", "New module", "...");
   addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");

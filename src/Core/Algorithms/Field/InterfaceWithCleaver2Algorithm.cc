@@ -27,7 +27,6 @@
 
 
 #include <Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h>
-#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <cleaver2/vec3.h>
