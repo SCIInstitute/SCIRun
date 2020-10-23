@@ -52,7 +52,7 @@ namespace Core {
           : parent()
       {
         if (eigvecs.size() != DIM_)
-          THROW_INVALID_ARGUMENT("The number of input parameters must be " + DIM_);
+          THROW_INVALID_ARGUMENT("The number of input parameters must be " + std::to_string(DIM_));
         parent::setEigenVectors(eigvecs);
       }
 

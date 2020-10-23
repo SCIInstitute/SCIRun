@@ -81,7 +81,6 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void widgetMouseDown(MouseButton btn, int x, int y) override;
       void widgetMouseMove(MouseButton btn, int x, int y) override;
       void widgetMouseUp() override;
       void inputMouseDown(MouseButton btn, float x, float y) override;
@@ -91,7 +90,6 @@ namespace SCIRun
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
       MouseMode getMouseMode() const override    {return mMouseMode;}
       void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-
 
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
@@ -117,13 +115,14 @@ namespace SCIRun
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
+      Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) override;
       std::tuple<uint32_t, std::string, std::vector<uint64_t>> addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget);
       void addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan);
       void addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan);
       GLenum computePrimitiveType(size_t indexSize);
       GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
+      void setWidgetInteractionMode(MouseButton btn) override;
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;
@@ -135,7 +134,7 @@ namespace SCIRun
       void setClippingPlaneZ(double value) override;
       void setClippingPlaneD(double value) override;
       void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
-      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle& widget, int x, int y) override;
+      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.
@@ -257,7 +256,7 @@ namespace SCIRun
       double                              mMatDiffuse         {};
       double                              mMatSpecular        {};
       double                              mMatShine           {};
-      GLfloat                             mLastSelectionDepth {0.0};
+      float                               selectionDepth_ {0.0};
 
       //fog settings
       double                              mFogIntensity       {};

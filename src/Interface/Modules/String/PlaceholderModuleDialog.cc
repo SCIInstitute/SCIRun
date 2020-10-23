@@ -25,40 +25,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
 
-#include <Interface/qt_include.h>
-#include <QOpenGLWidget>
-#include <Interface/Modules/Render/Ospray/share.h>
+#include <Interface/Modules/String/PlaceholderModuleDialog.h>
+#include <Modules/Basic/PlaceholderModule.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-namespace SCIRun { namespace Render {
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
-class OSPRayRenderer;
-
-class SCISHARE QOSPRayWidget : public QOpenGLWidget
+PlaceholderModuleDialog::PlaceholderModuleDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-Q_OBJECT
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-public:
-  QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer);
-  virtual ~QOSPRayWidget();
-
-public Q_SLOTS:
-    void updateRenderer();
-
-protected:
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-
-  OSPRayRenderer* renderer {nullptr};
-
-  QTimer* renderTimer {nullptr};
-
-  //virtual void mousePressEvent(QMouseEvent * event);
-  //virtual void mouseReleaseEvent(QMouseEvent * event);
-  //virtual void mouseMoveEvent(QMouseEvent * event);
-  //virtual void wheelEvent(QWheelEvent* event);
-};
-
-}}
+  addLineEditManager(moduleName_, Core::Algorithms::Variables::Filename);
+}

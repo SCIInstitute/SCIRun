@@ -44,7 +44,7 @@ TEST(CylinderWidgetTest, CanCreateSingleCylinderReal)
   });
 
   EXPECT_EQ(Point(1.5,1.5,0), cylinder.position());
-  EXPECT_EQ("<dummyGeomId>CylinderWidget::testCylinder1widget10100", cylinder.name());
+  EXPECT_EQ("<dummyGeomId>CylinderWidget::testCylinder10widget10100", cylinder.name());
 
 
   //FAIL() << "todo";

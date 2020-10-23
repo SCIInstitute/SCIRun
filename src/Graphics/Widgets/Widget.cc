@@ -49,18 +49,12 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-void WidgetBase::propagateEvent(const SimpleWidgetEvent& e)
-{
-  e.func(uniqueID());
-  notify(e);
-}
-
-void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement)
+void CompositeWidget::registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement totalMovement)
 {
   for (auto& subwidget : widgets_)
   {
     if (selected.get() != subwidget.get())
-      selected->registerObserver(movement, subwidget.get());
+      selected->registerObserver(totalMovement, subwidget.get(), totalMovement);
   }
 }
 
@@ -72,31 +66,88 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   }
 }
 
-void CompositeWidget::propagateEvent(const SimpleWidgetEvent& e)
+void WidgetMovementMediator::mediate(WidgetBase* sender, WidgetEventPtr event) const
 {
-  for (auto& w : widgets_)
-    w->propagateEvent(e);
+  event->move(sender, event->baseMovement());
+
+  auto eventObservers = observers_.find(event->baseMovement());
+  if (eventObservers != observers_.cend())
+  {
+    for (const auto& obsPair : eventObservers->second)
+      for (auto& subwidget : obsPair.second)
+        event->move(subwidget, obsPair.first);
+  }
 }
 
-InputTransformMapper::InputTransformMapper(TransformMappingParams pairs)
-  : interactionMap_(pairs)
+InputTransformMapper::InputTransformMapper(const TransformMapping& tm)
+  : interactionMap_(tm)
 {
+  if (interactionMap_.find(WidgetInteraction::RIGHT_CLICK) == interactionMap_.end())
+    interactionMap_[WidgetInteraction::RIGHT_CLICK] = interactionMap_[WidgetInteraction::CLICK];
 }
 
-WidgetMovement InputTransformMapper::movementType(WidgetInteraction interaction) const
+WidgetMovementFamily InputTransformMapper::movementType(WidgetInteraction interaction) const
 {
   auto i = interactionMap_.find(interaction);
-  return i != interactionMap_.cend() ? i->second : WidgetMovement::NONE;
+  return i != interactionMap_.cend() ? i->second : WidgetMovementFamily();
 }
 
-Core::Geometry::Point SCIRun::Graphics::Datatypes::getRotationOrigin(TransformParametersPtr t)
+Point SCIRun::Graphics::Datatypes::getRotationOrigin(const MultiTransformParameters& ts)
 {
-  auto rot = std::dynamic_pointer_cast<Rotation>(t);
-  return rot ? rot->origin : Point();
+  auto rotIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Rotation>(t) != nullptr; });
+  if (rotIter != ts.end())
+  {
+    auto rot = std::dynamic_pointer_cast<Rotation>(*rotIter);
+    return rot->origin;
+  }
+  return {};
 }
 
-Core::Geometry::Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(TransformParametersPtr t)
+Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParameters& ts)
 {
-  auto sc = std::dynamic_pointer_cast<Scaling>(t);
-  return sc ? sc->flip : Vector();
+  auto scIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<Scaling>(t) != nullptr; });
+  if (scIter != ts.end())
+  {
+    auto sc = std::dynamic_pointer_cast<Scaling>(*scIter);
+    return sc->flip;
+  }
+  return {};
+}
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(WidgetHandle widget, WidgetMovement movement)
+{
+  return { [=](WidgetHandle other) { widget->registerObserver(movement, other.get(), movement); } };
+}
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget)
+{
+  proxy.registrationApplier(widget);
+  return proxy;
+}
+
+TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(const TransformPropagationProxy& proxy, const std::vector<WidgetHandle>& widgets)
+{
+  for (auto& widget : widgets)
+    proxy.registrationApplier(widget);
+  return proxy;
+}
+
+
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::sharedMovements(std::initializer_list<WidgetMovement> moves)
+{
+  for (const auto& move : moves)
+    wmf_.emplace(move, WidgetMovementSharing::SHARED);
+  return *this;
+}
+
+WidgetMovementFamilyBuilder& WidgetMovementFamilyBuilder::uniqueMovements(std::initializer_list<WidgetMovement> moves)
+{
+  for (const auto& move : moves)
+    wmf_.emplace(move, WidgetMovementSharing::UNIQUE);
+  return *this;
+}
+
+WidgetMovementFamily SCIRun::Graphics::Datatypes::singleMovementWidget(WidgetMovement base)
+{
+  return WidgetMovementFamilyBuilder(base).sharedMovements({base}).build();
 }
