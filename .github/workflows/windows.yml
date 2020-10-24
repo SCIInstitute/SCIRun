@@ -96,8 +96,56 @@ jobs:
         arch: win64_msvc2017_64
         install-deps: true
 
-    - name: Print out Qt directory
-      run: echo $Env:Qt5_Dir
+    - name: Configure
+      working-directory: bin
+      run: |
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$env:Qt5_Dir"
+
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
+
+    - name: Package
+      working-directory: bin/SCIRun
+      shell: cmd
+      run: cmake --build . --config Release --target package
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: SCIRunWindowsPythonInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+
+    # - name: Deploy
+    #   if: github.ref == 'refs/heads/master'
+    #   uses: marvinpinto/action-automatic-releases@latest
+    #   with:
+    #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+    #     automatic_release_tag: "dev-windows"
+    #     prerelease: true
+    #     title: "Development Build for Windows"
+    #     files: |
+    #          bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+
+  windows-build-gui-python-2:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.15.1
+        target: desktop
+        host: windows
+        arch: win64_msvc2017_64
+        install-deps: true
 
     - name: Configure
       working-directory: bin
@@ -118,6 +166,57 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: SCIRunWindowsPythonInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+
+    # - name: Deploy
+    #   if: github.ref == 'refs/heads/master'
+    #   uses: marvinpinto/action-automatic-releases@latest
+    #   with:
+    #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+    #     automatic_release_tag: "dev-windows"
+    #     prerelease: true
+    #     title: "Development Build for Windows"
+    #     files: |
+    #          bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+
+  windows-build-gui-python-ospray:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.15.1
+        target: desktop
+        host: windows
+        arch: win64_msvc2017_64
+        install-deps: true
+
+    - name: Configure
+      working-directory: bin
+      run: |
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt5_PATH:PATH="$env:Qt5_Dir" -DWITH_OSPRAY:BOOL=ON
+
+    - name: Compile
+      working-directory: bin
+      shell: cmd
+      run: cmake --build . --config Release -j 3
+
+    - name: Package
+      working-directory: bin/SCIRun
+      shell: cmd
+      run: cmake --build . --config Release --target package
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: SCIRunWindowsOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
 
     # - name: Deploy
