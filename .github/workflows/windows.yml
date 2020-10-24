@@ -141,7 +141,7 @@ jobs:
     - name: Install Qt
       uses: ouuan/install-qt-action@ouuan
       with:
-        version: 5.15.1
+        version: 5.14.2
         target: desktop
         host: windows
         arch: win64_msvc2017_64
@@ -192,7 +192,7 @@ jobs:
     - name: Install Qt
       uses: ouuan/install-qt-action@ouuan
       with:
-        version: 5.15.1
+        version: 5.14.2
         target: desktop
         host: windows
         arch: win64_msvc2017_64
