@@ -128,8 +128,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  std::thread execution(runner);
-  execution.detach();
+  Core::Thread::Util::launchAsyncThread(runner);
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const

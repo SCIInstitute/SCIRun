@@ -81,6 +81,21 @@ namespace Core
 #else
     typedef NamedGuard Guard;
 #endif
+
+    // Boost threads can be created on the stack and automatically detach in the destructor.
+    // std::threads halt in the destructor, or throw if still active. This function mimics
+    // boost thread creation using std::threads. In the future we can figure out how to use
+    // std::async as a nicer replacement.
+    class SCISHARE Util : public boost::noncopyable
+    {
+    public:
+      template <typename ...Args>
+      static void launchAsyncThread(Args&&... args)
+      {
+        std::thread t(args...);
+        t.detach();
+      }
+    };
   }
 }
 }
