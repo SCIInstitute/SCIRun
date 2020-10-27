@@ -75,7 +75,7 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::start()
 {
-  executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
+  executionLaunchThread_.reset(new SpecialInterruptibleThread([this]() { executeTopContext(); }));
 }
 
 SpecialInterruptibleThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)

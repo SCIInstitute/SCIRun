@@ -67,7 +67,8 @@ namespace Engine {
   };
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-  using SpecialInterruptibleThreadPtr = SharedPointer<boost::thread>;
+  using SpecialInterruptibleThread = boost::thread;
+  using SpecialInterruptibleThreadPtr = SharedPointer<SpecialInterruptibleThread>;
 
   class SCISHARE ExecutionQueueManager
   {

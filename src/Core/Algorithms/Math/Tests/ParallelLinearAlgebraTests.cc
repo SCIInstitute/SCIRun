@@ -38,11 +38,12 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
-#include <boost/thread/thread.hpp>
+#include <Core/Thread/Parallel.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
@@ -217,8 +218,8 @@ TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVectorMulti)
 	  Copy c0(data, v1, v2, 0, vec2copy);
 	  Copy c1(data, v1, v2, 1, vec2copy);
 
-	  boost::thread t1 = boost::thread(boost::ref(c0));
-	  boost::thread t2 = boost::thread(boost::ref(c1));
+	  std::thread t1(std::ref(c0));
+	  std::thread t2(std::ref(c1));
 	  t1.join();
 	  t2.join();
   }
@@ -316,8 +317,8 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 	  absdiag diag0(data, m1, v2, 0, vec2, mat1);
 	  absdiag diag1(data, m1, v2, 1, vec2, mat1);
 
-	  boost::thread t1 = boost::thread(boost::ref(diag0));
-	  boost::thread t2 = boost::thread(boost::ref(diag1));
+	  std::thread t1(std::ref(diag0));
+	  std::thread t2(std::ref(diag1));
 	  t1.join();
 	  t2.join();
   }
@@ -363,8 +364,8 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 	  max max0(data, v1, 0, vec2);
 	  max max1(data, v1, 1, vec2);
 
-	  boost::thread t1 = boost::thread(boost::ref(max0));
-	  boost::thread t2 = boost::thread(boost::ref(max1));
+	  std::thread t1(std::ref(max0));
+	  std::thread t2(std::ref(max1));
 	  t1.join();
 	  t2.join();
     maxDouble_ = max0.maxResult_;
@@ -458,8 +459,8 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 	  absthreshold_inv absthreshold_inv0(data, v1, v2, 0, vec2);
 	  absthreshold_inv absthreshold_inv1(data, v1, v2, 1, vec2);
 
-	  boost::thread t1 = boost::thread(boost::ref(absthreshold_inv0));
-	  boost::thread t2 = boost::thread(boost::ref(absthreshold_inv1));
+	  std::thread t1(std::ref(absthreshold_inv0));
+	  std::thread t2(std::ref(absthreshold_inv1));
 	  t1.join();
 	  t2.join();
   }
@@ -486,13 +487,13 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 
   auto vec2 = vector1();
   std::vector<boost::shared_ptr<absthreshold_inv>> workers;
-  boost::thread_group threads;
+  ThreadGroup threads;
   {
     for (int i = 0; i < NUM_THREADS; ++i)
       workers.push_back(boost::make_shared<absthreshold_inv>(data, v1, v2, i, vec2));
 
     for (int i = 0; i < NUM_THREADS; ++i)
-      threads.create_thread(boost::ref(*workers[i]));
+      threads.create_thread(std::ref(*workers[i]));
 
     threads.join_all();
   }
@@ -596,8 +597,8 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
 	  mv_Multiply mult_0(data, m1, v2, vR, 0, vecR, mat1);
 	  mv_Multiply mult_1(data, m1, v2, vR, 1, vecR, mat1);
 
-	  boost::thread t1 = boost::thread(boost::ref(mult_0));
-	  boost::thread t2 = boost::thread(boost::ref(mult_1));
+	  std::thread t1(std::ref(mult_0));
+	  std::thread t2(std::ref(mult_1));
 	  t1.join();
 	  t2.join();
   }
@@ -681,8 +682,8 @@ TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
 	    subtract sub_0(data, v1, v2, vR, 0, vec1, vec2);
 	    subtract sub_1(data, v1, v2, vR, 1, vec1, vec2);
 
-	    boost::thread t1 = boost::thread(boost::ref(sub_0));
-	    boost::thread t2 = boost::thread(boost::ref(sub_1));
+	    std::thread t1(std::ref(sub_0));
+	    std::thread t2(std::ref(sub_1));
 	    t1.join();
 	    t2.join();
     }
@@ -775,8 +776,8 @@ TEST(ParallelArithmeticTests, CanCompute2NormMulti)
 	  norm norm_0(data, v1, v2, v3, 0, vec1, vec2, vec3);
 	  norm norm_1(data, v1, v2, v3, 1, vec1, vec2, vec3);
 
-	  boost::thread t1 = boost::thread(boost::ref(norm_0));
-	  boost::thread t2 = boost::thread(boost::ref(norm_1));
+	  std::thread t1(std::ref(norm_0));
+	  std::thread t2(std::ref(norm_1));
 	  t1.join();
 	  t2.join();
 
@@ -870,8 +871,8 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
 	  multVectors mult_0(data, v1, v2, v3, 0, vec1, vec2);
 	  multVectors mult_1(data, v1, v2, v3, 1, vec1, vec2);
 
-	  boost::thread t1 = boost::thread(boost::ref(mult_0));
-	  boost::thread t2 = boost::thread(boost::ref(mult_1));
+	  std::thread t1(std::ref(mult_0));
+	  std::thread t2(std::ref(mult_1));
 	  t1.join();
 	  t2.join();
   }
@@ -963,8 +964,8 @@ TEST(ParallelArithmeticTests, CanComputeDotProductMulti)
 	  dotMult dotMult_0(data, v1, v2, v3, 0, vec1, vec2, vec3);
 	  dotMult dotMult_1(data, v1, v2, v3, 1, vec1, vec2, vec3);
 
-	  boost::thread t1 = boost::thread(boost::ref(dotMult_0));
-	  boost::thread t2 = boost::thread(boost::ref(dotMult_1));
+	  std::thread t1(std::ref(dotMult_0));
+	  std::thread t2(std::ref(dotMult_1));
 	  t1.join();
 	  t2.join();
     v12 = dotMult_0.v12_;
