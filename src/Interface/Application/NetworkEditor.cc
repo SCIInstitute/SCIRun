@@ -114,7 +114,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setViewUpdateFunc([](const QString& q) { qDebug() << q; });
 #endif
 
-  connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
+  if (allowModificationSignalConnection())
+    connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -2495,4 +2496,12 @@ ZLevelManager::ZLevelManager(QGraphicsScene* scene)
   : scene_(scene), minZ_(INITIAL_Z), maxZ_(INITIAL_Z)
 {
 
+}
+
+bool SCIRun::Gui::allowModificationSignalConnection()
+{
+  auto cmd = Application::Instance().parameters();
+  return !cmd->executeNetwork() &&
+    !cmd->executeNetworkAndQuit() &&
+    !cmd->isRegressionMode();
 }
