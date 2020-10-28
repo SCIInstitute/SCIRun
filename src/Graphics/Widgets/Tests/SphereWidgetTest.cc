@@ -81,7 +81,8 @@ TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
   EXPECT_EQ("__sphere__0", sphere.name());
 }
 
-TEST(WidgetMovementTreeTest, CanCreate)
+//TODO: might not need this idea
+TEST(WidgetMovementTreeTest, DISABLED_CanCreate)
 {
   StubGeometryIDGenerator idGen;
 
