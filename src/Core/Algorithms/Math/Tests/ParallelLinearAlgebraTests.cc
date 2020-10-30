@@ -64,7 +64,6 @@ namespace
   {
     DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
 	  v->setZero();
-//    *v << 1, 2, 4;
 	  (*v)[0] = 1;
   	(*v)[1] = 2;
 	  (*v)[2] = 4;
