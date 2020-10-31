@@ -203,11 +203,6 @@ Variable SCIRun::Core::Algorithms::makeVariable(const std::string& name, const V
   return Variable(Name(name), value);
 }
 
-Variable SCIRun::Core::Algorithms::makeVariable(const Name& name, const Variable::Value& value)
-{
-  return Variable(name, value);
-}
-
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
 {
   dataDir_ = path;

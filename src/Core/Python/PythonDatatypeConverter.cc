@@ -143,13 +143,6 @@ public:
     }
     else
       THROW_INVALID_ARGUMENT("The input python object is not a list.");
-    // py::list pyList;
-    // for (int i = 0; i < v.size(); ++i)
-      // pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
-    // return std::move(pyList);
-
-    // return makeVariable("blah", v);
-    // return v;
   }
 
   Variable::Value convertNumber(const Variable::Value& val, NumberType returnType) const
@@ -162,7 +155,7 @@ public:
       switch (returnType)
       {
       case Int: return objectVal;
-      case Double: return int(objectVal);
+      case Double: return static_cast<int>(objectVal);
       }
     }
     else if (classname == "float")
@@ -171,8 +164,8 @@ public:
       auto objectVal = e();
       switch (returnType)
       {
-      case Int: return int(objectVal);
-      case Double: return double(objectVal);
+      case Int: return static_cast<int>(objectVal);
+      case Double: return static_cast<double>(objectVal);
       }
     }
     else if (classname == "double")
@@ -181,7 +174,7 @@ public:
       auto objectVal = e();
       switch (returnType)
       {
-      case Int: return double(objectVal);
+      case Int: return static_cast<double>(objectVal);
       case Double: return objectVal;
       }
     }
