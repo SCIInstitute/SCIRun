@@ -137,8 +137,8 @@ public:
       auto pyList = e();
       Variable::List newList(py::len(pyList));
       for (auto i = 0; i < py::len(pyList); ++i)
-        newList[i] = makeVariable(firstVal.name(),
-                                  boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
+        newList[i] = Variable(firstVal.name(),
+                              boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
       return newList;
     }
     else
@@ -629,7 +629,7 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const py::object& o
 Variable SCIRun::Core::Python::convertPythonObjectToVariableWithTypeInference(
     const py::object& object, const Variable& var)
 {
-  return makeVariable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
+  return Variable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
 }
 
 py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)
