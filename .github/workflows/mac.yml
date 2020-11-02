@@ -61,6 +61,61 @@ jobs:
     #     files: |
     #          bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
 
+  mac-build-gui-ospray:
+
+    runs-on: macOS-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: ouuan/install-qt-action@ouuan
+      with:
+        version: 5.14.2
+        target: desktop
+        host: mac
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $Qt5_DIR; echo $Qt5_Dir
+
+    - name: Prepare
+      run: |
+        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
+
+    - name: make
+      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DUSER_PYTHON_VERSION="3.6.7" -DQt5_PATH="${Qt5_Dir}"
+
+    - name: Package
+      working-directory: bin/SCIRun
+      run: |
+        cmake -DBUILD_BUNDLE:BOOL=ON ../../src
+        make -j3
+        make package
+        chmod +x repair_package.sh
+        ./repair_package.sh
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v2
+      with:
+        name: SCIRunMacOsprayInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
+
+    # - name: Deploy
+    #   id: deploy
+    #   if: github.ref == 'refs/heads/master'
+    #   uses: marvinpinto/action-automatic-releases@latest
+    #   with:
+    #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+    #     automatic_release_tag: "dev-mac"
+    #     prerelease: true
+    #     title: "Development Build for Mac"
+    #     files: |
+    #          bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
+
   mac-build-headless:
 
     runs-on: macOS-latest
