@@ -26,6 +26,10 @@
 */
 
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <gl-shaders/GLShader.hpp>
 
 #include <es-general/util/Math.hpp>
