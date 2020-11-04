@@ -102,7 +102,6 @@ namespace Engine {
     virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
     Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
-    void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     Networks::ModuleHandle connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);

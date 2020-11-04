@@ -1497,7 +1497,8 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  Q_EMIT interrupt(theModule_->id());
+  //theModule_->stop();
+  qDebug() << "TODO: theModule_->stop();";
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)

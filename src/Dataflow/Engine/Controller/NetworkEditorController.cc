@@ -268,12 +268,6 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
-void NetworkEditorController::interruptModule(const ModuleId& id)
-{
-  theNetwork_->interruptModuleRequest(id);
-  ///*emit*/ networkInterrupted_();
-}
-
 namespace
 {
   InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)

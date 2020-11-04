@@ -256,16 +256,6 @@ bool Network::containsViewScene() const
   return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->name() == "ViewScene"; }) != modules_.end();
 }
 
-boost::signals2::connection Network::connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const
-{
-  return interruptModule_.connect(subscriber);
-}
-
-void Network::interruptModuleRequest(const ModuleId& id)
-{
-  interruptModule_(id.id_);
-}
-
 ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
 {
 }
