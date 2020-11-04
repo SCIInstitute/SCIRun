@@ -28,6 +28,7 @@
 
 SET(Core_Thread_Tests_SRCS
   ParallelTests.cc
+  StoppableTaskTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Thread_Tests
