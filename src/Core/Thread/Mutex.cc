@@ -26,6 +26,9 @@
 */
 
 
+#include <thread>
+#include <iostream>
+#include <chrono>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
 
@@ -54,4 +57,44 @@ void Interruptible::checkForInterruption()
   //std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
   //std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
   //#endif
+}
+
+Stoppable::Stoppable() :
+        futureObj(exitSignal.get_future())
+{
+}
+Stoppable::Stoppable(Stoppable && obj) : exitSignal(std::move(obj.exitSignal)), futureObj(std::move(obj.futureObj))
+{
+    std::cout << "Move Constructor is called" << std::endl;
+}
+Stoppable& Stoppable::operator=(Stoppable && obj)
+{
+    std::cout << "Move Assignment is called" << std::endl;
+    exitSignal = std::move(obj.exitSignal);
+    futureObj = std::move(obj.futureObj);
+    return *this;
+}
+// Thread function to be executed by thread
+void Stoppable::operator()()
+{
+  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+    run();
+}
+//Checks if thread is requested to stop
+bool Stoppable::stopRequested() const
+{
+  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << "?";
+
+  auto timedout = futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout;
+  std::cout << "\t" << std::boolalpha << !timedout << std::endl;
+    // checks if value in future object is available
+    if (timedout)
+        return false;
+    return true;
+}
+// Request the thread to stop by setting value in promise object
+void Stoppable::stop()
+{
+  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+  exitSignal.set_value();
 }

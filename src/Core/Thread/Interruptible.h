@@ -29,6 +29,7 @@
 #ifndef CORE_THREAD_INTERRUPTIBLE_H
 #define CORE_THREAD_INTERRUPTIBLE_H
 
+#include <future>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
@@ -41,6 +42,27 @@ namespace Core
     {
     public:
       static void checkForInterruption();
+    };
+
+
+    /*
+     * Class that encapsulates promise and future object and
+     * provides API to set exit signal for the thread
+     */
+    class SCISHARE Stoppable
+    {
+    public:
+      Stoppable();
+      Stoppable(Stoppable && obj);
+      Stoppable & operator=(Stoppable && obj);
+      virtual void run() = 0;
+      void operator()();
+      bool stopRequested() const;
+      void stop();
+    private:
+      std::promise<void> exitSignal;
+      std::future<void> futureObj;
+      Stoppable(const Stoppable&) = delete;
     };
   }
 }
