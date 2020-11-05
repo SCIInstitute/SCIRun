@@ -38,11 +38,11 @@ namespace Core
 {
   namespace Thread
   {
-    class SCISHARE Interruptible
-    {
-    public:
-      static void checkForInterruption();
-    };
+    // class SCISHARE Interruptible
+    // {
+    // public:
+    //   static void checkForInterruption();
+    // };
 
 
     /*
@@ -65,6 +65,10 @@ namespace Core
       std::future<void> futureObj;
       Stoppable(const Stoppable&) = delete;
     };
+
+    using Interruptible = Stoppable;
+
+    SCISHARE void checkForInterruption(Stoppable* stoppable = nullptr);
   }
 }
 }

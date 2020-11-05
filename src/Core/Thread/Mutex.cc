@@ -48,8 +48,8 @@ void Mutex::unlock()
   impl_.unlock();
 }
 
-void Interruptible::checkForInterruption()
-{
+// void Interruptible::checkForInterruption()
+// {
   //TODO: rewrite
   //boost::this_thread::interruption_point();
   //#ifdef WIN32 // this is working on Mac, but not Windows.
@@ -57,7 +57,7 @@ void Interruptible::checkForInterruption()
   //std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
   //std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
   //#endif
-}
+// }
 
 Stoppable::Stoppable() :
   exitSignal(new std::promise<void>),
@@ -104,4 +104,12 @@ void Stoppable::stop()
 {
   //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
   exitSignal->set_value();
+}
+
+void SCIRun::Core::Thread::checkForInterruption(Stoppable* stoppable)
+{
+  if (stoppable && stoppable->stopRequested())
+  {
+    throw "stopped";
+  }
 }
