@@ -27,7 +27,7 @@
 
 
 #include <thread>
-#include <iostream>
+//#include <iostream>
 #include <chrono>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
@@ -60,33 +60,40 @@ void Interruptible::checkForInterruption()
 }
 
 Stoppable::Stoppable() :
-        futureObj(exitSignal.get_future())
+  exitSignal(new std::promise<void>),
+        futureObj(exitSignal->get_future())
 {
 }
 Stoppable::Stoppable(Stoppable && obj) : exitSignal(std::move(obj.exitSignal)), futureObj(std::move(obj.futureObj))
 {
-    std::cout << "Move Constructor is called" << std::endl;
+    //std::cout << "Move Constructor is called" << std::endl;
 }
 Stoppable& Stoppable::operator=(Stoppable && obj)
 {
-    std::cout << "Move Assignment is called" << std::endl;
+    //std::cout << "Move Assignment is called" << std::endl;
     exitSignal = std::move(obj.exitSignal);
     futureObj = std::move(obj.futureObj);
     return *this;
 }
-// Thread function to be executed by thread
-void Stoppable::operator()()
+
+void Stoppable::reset()
 {
-  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
-    run();
+  exitSignal.reset(new std::promise<void>);
+  futureObj = exitSignal->get_future();
 }
+// Thread function to be executed by thread
+// void Stoppable::operator()()
+// {
+//   std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+//     run();
+// }
 //Checks if thread is requested to stop
 bool Stoppable::stopRequested() const
 {
-  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << "?";
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << "?";
 
   auto timedout = futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout;
-  std::cout << "\t" << std::boolalpha << !timedout << std::endl;
+  //std::cout << "\t" << std::boolalpha << !timedout << std::endl;
     // checks if value in future object is available
     if (timedout)
         return false;
@@ -95,6 +102,6 @@ bool Stoppable::stopRequested() const
 // Request the thread to stop by setting value in promise object
 void Stoppable::stop()
 {
-  std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
-  exitSignal.set_value();
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+  exitSignal->set_value();
 }

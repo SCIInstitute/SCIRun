@@ -55,12 +55,13 @@ namespace Core
       Stoppable();
       Stoppable(Stoppable && obj);
       Stoppable & operator=(Stoppable && obj);
-      virtual void run() = 0;
-      void operator()();
+      //virtual void run() = 0;
+      //void operator()();
+      void reset();
       bool stopRequested() const;
       void stop();
     private:
-      std::promise<void> exitSignal;
+      std::unique_ptr<std::promise<void>> exitSignal;
       std::future<void> futureObj;
       Stoppable(const Stoppable&) = delete;
     };

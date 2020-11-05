@@ -31,6 +31,7 @@
 #include <QtConcurrent>
 #include "ui_Module.h"
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Application/Application.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
@@ -1497,7 +1498,9 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  //theModule_->stop();
+  auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
+  if (stoppable)
+    stoppable->stop();
   qDebug() << "TODO: theModule_->stop();";
 }
 

@@ -376,6 +376,11 @@ bool Module::executeWithSignals() NOEXCEPT
 {
   auto starting = "STARTING MODULE: " + id().id_;
 
+  if (isStoppable())
+  {
+    dynamic_cast<Stoppable*>(this)->reset();
+  }
+
   runProgrammablePortInput();
 
 #ifdef BUILD_HEADLESS //TODO: better headless logging
@@ -1144,7 +1149,7 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Stoppable*>(this) != nullptr;
 }
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const

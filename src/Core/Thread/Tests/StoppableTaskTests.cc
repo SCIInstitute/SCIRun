@@ -38,7 +38,7 @@ class MyTask : public Stoppable
 {
 public:
     // Function to be executed by thread function
-    void run() override
+    void operator()()
     {
         std::cout << std::this_thread::get_id() << " Task Start" << std::endl;
         // Check if thread is requested to stop ?
