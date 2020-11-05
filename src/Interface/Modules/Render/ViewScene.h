@@ -48,7 +48,6 @@
 class QToolBar;
 class QStandardItemModel;
 class QStandardItem;
-class QGLWidget;
 
 namespace SCIRun {
   namespace Gui {

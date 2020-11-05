@@ -34,7 +34,7 @@
 
 using namespace SCIRun;
 using namespace Render;
-using namespace Gui;
+
 #ifdef WIN32
 //TODO: these tests crash on OSX
 #define TEST_NAME(name) name
@@ -47,20 +47,6 @@ TEST(SRInterfaceTest, TEST_NAME(CanInstantiateSRInterface))
 {
   SRInterface srinterface;
 }
-
-class DummyGLContext : public GLContext
-{
-public:
-  DummyGLContext() : GLContext(nullptr) {}
-  virtual void makeCurrent() override
-  {
-    std::cout << "DummyGLContext::makeCurrent called" << std::endl;
-  }
-  virtual void swapBuffers() override
-  {
-    std::cout << "DummyGLContext::swapBuffers called" << std::endl;
-  }
-};
 
 //TODO: this one crashes on windows now too.
 TEST(SRInterfaceTest,
