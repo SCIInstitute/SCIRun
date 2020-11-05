@@ -68,7 +68,7 @@ namespace Core
 
     using Interruptible = Stoppable;
 
-    SCISHARE void checkForInterruption(Stoppable* stoppable = nullptr);
+    SCISHARE void checkForInterruption(const Stoppable* stoppable = nullptr);
   }
 }
 }

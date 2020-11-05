@@ -106,7 +106,7 @@ void Stoppable::stop()
   exitSignal->set_value();
 }
 
-void SCIRun::Core::Thread::checkForInterruption(Stoppable* stoppable)
+void SCIRun::Core::Thread::checkForInterruption(const Stoppable* stoppable)
 {
   if (stoppable && stoppable->stopRequested())
   {

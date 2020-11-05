@@ -85,7 +85,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+      checkForInterruption(algo);
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -110,7 +110,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+      checkForInterruption(algo);
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -139,7 +139,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+      checkForInterruption(algo);
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -167,7 +167,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+      checkForInterruption(algo);
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -191,7 +191,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     std::vector<DATA> valarray;
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+      checkForInterruption(algo);
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       valarray.resize(nsize);
