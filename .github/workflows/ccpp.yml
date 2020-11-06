@@ -72,7 +72,7 @@ jobs:
 
     - name: Test
       working-directory: bin/SCIRun
-      continue-on-error: true
+      #continue-on-error: true
       run: make test
 
   linux-build-gui-ospray:
