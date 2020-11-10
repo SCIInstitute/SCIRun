@@ -61,11 +61,40 @@ TEST(StoppableTaskTests, Example)
   std::this_thread::sleep_for(std::chrono::seconds(5));
   std::cout << std::this_thread::get_id() << " Asking Task to Stop" << std::endl;
   std::cout << std::this_thread::get_id() << " Stop the Task" << std::endl;
-  task.stop();
+  task.sendStopRequest();
   std::cout << std::this_thread::get_id() << " Waiting for thread to join" << std::endl;
   th.join();
   std::cout << std::this_thread::get_id() << " Thread Joined" << std::endl;
   std::cout << std::this_thread::get_id() << " Exiting Main Function" << std::endl;
+}
 
-  //FAIL() << "todo";
+TEST(StoppableTaskTests, CanResetTaskToRunAgain)
+{
+  std::cout << std::this_thread::get_id() << " Creating our Task" << std::endl;
+  MyTask task;
+  std::cout << std::this_thread::get_id() << " Creating a thread to execute our task" << std::endl;
+  std::thread th1(std::ref(task));
+  std::cout << std::this_thread::get_id() << " sleeping on main thread" << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+  std::cout << std::this_thread::get_id() << " Asking Task to Stop" << std::endl;
+  std::cout << std::this_thread::get_id() << " Stop the Task" << std::endl;
+  task.sendStopRequest();
+  std::cout << std::this_thread::get_id() << " Waiting for thread to join" << std::endl;
+  th1.join();
+  std::cout << std::this_thread::get_id() << " Thread Joined" << std::endl;
+  std::cout << std::this_thread::get_id() << " Exiting Main Function" << std::endl;
+
+  task.resetStoppability();
+
+  std::thread th2(std::ref(task));
+  std::cout << std::this_thread::get_id() << " sleeping on main thread" << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+  std::cout << std::this_thread::get_id() << " Asking Task to Stop" << std::endl;
+  std::cout << std::this_thread::get_id() << " Stop the Task" << std::endl;
+  task.sendStopRequest();
+  std::cout << std::this_thread::get_id() << " Waiting for thread to join" << std::endl;
+  th2.join();
+  std::cout << std::this_thread::get_id() << " Thread Joined" << std::endl;
+  std::cout << std::this_thread::get_id() << " Exiting Main Function" << std::endl;
+
 }

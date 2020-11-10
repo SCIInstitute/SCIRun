@@ -77,8 +77,8 @@ namespace Engine {
     void initExecutor(ExecutionStrategyFactoryHandle factory);
     void setExecutionStrategy(ExecutionStrategyHandle exec);
     SpecialInterruptibleThreadPtr enqueueContext(ExecutionContextHandle context);
-    void start();
-    void stop();
+    void startExecution();
+    void stopExecution();
   private:
     void executeImpl(ExecutionContextHandle context);
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;

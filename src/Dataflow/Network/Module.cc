@@ -378,7 +378,7 @@ bool Module::executeWithSignals() NOEXCEPT
 
   if (isStoppable())
   {
-    dynamic_cast<Stoppable*>(this)->reset();
+    dynamic_cast<Stoppable*>(this)->resetStoppability();
   }
 
   runProgrammablePortInput();
@@ -430,6 +430,11 @@ bool Module::executeWithSignals() NOEXCEPT
     ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
+  catch (const ThreadStopped&)
+  {
+    error("MODULE ERROR: execution thread interrupted by user.");
+    threadStopValue = true;
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
@@ -445,11 +450,6 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
-  //catch (const std::thread_interrupted&)
-  //{
-  //  error("MODULE ERROR: execution thread interrupted by user.");
-  //  threadStopValue = true;
-  //}
   catch (...)
   {
     error("MODULE ERROR: unhandled exception caught");

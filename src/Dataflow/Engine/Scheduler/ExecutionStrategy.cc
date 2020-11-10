@@ -73,7 +73,7 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
     currentExecutor_ = factory->createDefault();
 }
 
-void ExecutionQueueManager::start()
+void ExecutionQueueManager::startExecution()
 {
   executionLaunchThread_.reset(new SpecialInterruptibleThread([this]() { executeTopContext(); }));
 }
@@ -90,7 +90,7 @@ SpecialInterruptibleThreadPtr ExecutionQueueManager::enqueueContext(ExecutionCon
   if (contextReady)
   {
     if (!executionLaunchThread_)
-      start();
+      startExecution();
     somethingToExecute_.conditionBroadcast();
   }
   return executionLaunchThread_;
@@ -121,7 +121,7 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
   }
 }
 
-void ExecutionQueueManager::stop()
+void ExecutionQueueManager::stopExecution()
 {
   if (executionLaunchThread_)
   {

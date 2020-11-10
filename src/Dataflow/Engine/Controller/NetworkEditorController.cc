@@ -102,7 +102,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
-  executionManager_.stop();
+  executionManager_.stopExecution();
 }
 
 namespace
@@ -708,8 +708,8 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 {
   connectNetworkExecutionFinished([this](int)
   {
-    std::cout << "Execution manager thread stopped." << std::endl;
-    executionManager_.stop();
+    //std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stopExecution();
   });
 }
 
