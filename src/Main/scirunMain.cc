@@ -105,12 +105,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   freopen("CONOUT$", "w", stderr);
 #endif
 
-  const char *argv[100] = { 0 };
+  const char *argv[100] = { nullptr };
   int argc;
   {
-    LPWSTR *szArglist;
-
-    szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
+    const auto szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
     if (!szArglist)
     {
       std::cout << "CommandLineToArgvW failed" << std::endl;
@@ -132,7 +130,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     int prev = 0;
     for (int i = 0;; i++) {
       if (a[i] == '\0') {
-        env_strings.push_back(std::string(a + prev, a + i));
+        env_strings.emplace_back(a + prev, a + i);
         prev = i + 1;
         if (a[i + 1] == '\0') {
           break;
@@ -141,7 +139,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
   }
   winEnvironmentArray = new char*[env_strings.size() + 1];
-  auto winEnvironmentArrayPtr = winEnvironmentArray;
+  auto* winEnvironmentArrayPtr = winEnvironmentArray;
   for (const auto& env : env_strings)
   {
     *winEnvironmentArrayPtr++ = toCString(env);

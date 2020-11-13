@@ -29,14 +29,9 @@
 #ifndef SPIRE_ARC_BALL_H
 #define SPIRE_ARC_BALL_H
 
-#include <es-log/trace-log.h>
-#include <cstdint>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <spire/scishare.h>
 
 namespace spire {
@@ -75,7 +70,7 @@ public:
   void drag(const glm::vec2& mouseScreenCoords);
 
   /// Sets the camera to a specific location and up
-  void setLocationOnSphere(glm::vec3 location, glm::vec3 up);
+  void setLocationOnSphere(const glm::vec3& location, const glm::vec3& up);
 
   /// Retrieves the current transformation in TCS.
   /// Obtains full transformation of object in question. If the arc ball is

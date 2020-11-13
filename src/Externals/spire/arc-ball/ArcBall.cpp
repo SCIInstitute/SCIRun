@@ -26,8 +26,9 @@
 */
 
 
-#include "ArcBall.hpp"
+#include <arc-ball/ArcBall.hpp>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace spire {
 
@@ -76,10 +77,10 @@ glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 }
 
 //------------------------------------------------------------------------------
-void ArcBall::beginDrag(const glm::vec2& msc)
+void ArcBall::beginDrag(const glm::vec2& mouseScreenCoords)
 {
   mQDown       = mQNow;
-  mVSphereDown = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0f, 1.0)).xyz());
+  mVSphereDown = mouseOnSphere((mScreenToTCS * glm::vec4(mouseScreenCoords, 0.0f, 1.0)).xyz());
 }
 
 //------------------------------------------------------------------------------
@@ -95,7 +96,7 @@ void ArcBall::drag(const glm::vec2& msc)
 }
 
 //------------------------------------------------------------------------------
-void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
+void ArcBall::setLocationOnSphere(const glm::vec3& location, const glm::vec3& up)
 {
   glm::mat4 mMatNow = glm::lookAt(location, glm::vec3(0.0f), up);
   mQNow   = glm::quat_cast(mMatNow);
