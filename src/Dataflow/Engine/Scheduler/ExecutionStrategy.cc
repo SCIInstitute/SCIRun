@@ -75,10 +75,11 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::startExecution()
 {
-  executionLaunchThread_.reset(new SpecialInterruptibleThread([this]() { executeTopContext(); }));
+  resetStoppability();
+  executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
 
-SpecialInterruptibleThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -104,6 +105,10 @@ void ExecutionQueueManager::executeTopContext()
     while (0 == contextCount_)
     {
       somethingToExecute_.wait(lock);
+      if (stopRequested())
+      {
+        return;
+      }
     }
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
     {
@@ -125,7 +130,9 @@ void ExecutionQueueManager::stopExecution()
 {
   if (executionLaunchThread_)
   {
-    executionLaunchThread_->interrupt();
+    sendStopRequest();
+    somethingToExecute_.conditionBroadcast();
+    executionLaunchThread_->join();
     executionLaunchThread_.reset();
   }
 }
