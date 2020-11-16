@@ -30,13 +30,13 @@
 #ifndef CORE_PYTHON_PYTHONDATATYPECONVERTER_H
 #define CORE_PYTHON_PYTHONDATATYPECONVERTER_H
 
+#include <Core/Algorithms/Base/Variable.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <boost/any.hpp>
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
 #include <vector>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/Variable.h>
-
-
 #include <Core/Python/share.h>
 
 namespace SCIRun
@@ -92,12 +92,15 @@ namespace SCIRun
       SCISHARE boost::python::dict convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
       SCISHARE boost::python::dict wrapDatatypesInMap(
-        const std::vector<Datatypes::MatrixHandle>& matrices, 
+        const std::vector<Datatypes::MatrixHandle>& matrices,
         const std::vector<FieldHandle>& fields,
         const std::vector<Datatypes::StringHandle>& strings);
-
+      const std::string getClassName(const boost::python::object& object);
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE Algorithms::Variable convertPythonObjectToVariableWithTypeInference(
+        const boost::python::object& object, const Algorithms::Variable& var);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
+      SCISHARE boost::python::object convertTransientVariableToPythonObject(const boost::optional<boost::any>& v);
 
       class SCISHARE DatatypePythonExtractor
       {

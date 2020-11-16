@@ -62,8 +62,8 @@ namespace Algorithms {
 
     Variable() {}
     Variable(const Name& name, const Value& value);
-    enum DatatypeVariableDummyEnum { DATATYPE_VARIABLE };
-    Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableDummyEnum) : name_(name), data_(data) {}
+    enum DatatypeVariableEnum { DATATYPE_VARIABLE };
+    Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableEnum) : name_(name), data_(data) {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
@@ -92,6 +92,7 @@ namespace Algorithms {
   SCISHARE bool operator!=(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
+  SCISHARE Variable makeVariable(const Name& name, const Variable::Value& value);
 
   template <typename ... Ts>
   Variable::List makeAnonymousVariableList(Ts&&... params)
