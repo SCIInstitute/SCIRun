@@ -89,27 +89,28 @@ namespace SCIRun
             {
               auto var = Dataflow::Networks::transient_value_cast<Variable>(valueOption);
               //logCritical("ValueOption found, typename is {}", var.name().name());
-              if (var.name().name() == "string")
+              auto name = var.name().name();
+              if (name == "string")
               {
                 auto valueStr = var.toString();
                 auto strObj = boost::make_shared<Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received");
                 output = strObj;
                 module_.sendOutput(stringPort, strObj);
               }
-              else if (var.name().name() == "int")
+              else if (name == "int")
               {
                 auto valueInt = var.toInt();
                 output = boost::make_shared<Datatypes::DenseMatrix>(1, 1, valueInt);
                 // special case, don't send, just return value
                 //module_.sendOutput(matrixPort, output);
               }
-              else if (var.name().name() == Core::Python::pyDenseMatrixLabel())
+              else if (name == "list")
               {
-                auto dense = boost::dynamic_pointer_cast<Core::Datatypes::DenseMatrix>(var.getDatatype());
-                if (dense)
+                auto list = var.toVector();
+                if (list[0].name().name() == "list")
                 {
-                  output = dense;
-                  module_.sendOutput(matrixPort, dense);
+                  auto mat = convertToDenseMatrix(list);
+                  module_.sendOutput(matrixPort, boost::make_shared<Datatypes::DenseMatrix>(mat));
                 }
               }
               else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
@@ -136,6 +137,30 @@ namespace SCIRun
         private:
           PythonModule& module_;
           int maxTries_, waitTime_;
+
+          Datatypes::DenseMatrix convertToDenseMatrix(const Variable::List& list) const
+          {
+            auto rowSize = list.size();
+            if (rowSize > 0)
+            {
+              auto firstRow = list[0].toVector();
+              auto firstColSize = firstRow.size();
+              if (firstColSize > 0)
+              {
+                Datatypes::DenseMatrix dense(rowSize, firstColSize);
+                for (int r = 0; r < rowSize; ++r)
+                {
+                  auto row = list[r].toVector();
+                  if (row.size() != firstColSize)
+                    THROW_INVALID_ARGUMENT("The rows of the input matrix must be of equal size.");
+                  for (int c = 0; c < firstColSize; ++c)
+                    dense(r, c) = row[c].toDouble();
+                }
+                return dense;
+              }
+            }
+            return Datatypes::DenseMatrix();
+          }
         };
         #endif
       }

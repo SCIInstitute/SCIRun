@@ -141,10 +141,10 @@ void ViewScene::setStateDefaults()
   state->setValue(IsExecuting, false);
   state->setTransientValue(TimeExecutionFinished, 0, false);
   state->setValue(CameraDistanceMinimum, 1e-10);
-  state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
-  state->setValue(CameraRotation, std::string("Quaternion(1.0,0.0,0.0,0.0)"));
+  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(HasNewGeometry, false);
-
+  
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
