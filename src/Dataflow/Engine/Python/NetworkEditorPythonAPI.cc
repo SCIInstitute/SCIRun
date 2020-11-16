@@ -297,8 +297,11 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
         return "UI adjusted";
       }
     }
-    module->setattr(stateVariable, value, false);
-    return "Value set";
+    else
+    {
+      module->setattr(stateVariable, value, false);
+      return "Value set";
+    }
   }
   return "Module or value not found";
 }
