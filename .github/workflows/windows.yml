@@ -46,6 +46,8 @@ jobs:
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2.9.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.14.2
         target: desktop
