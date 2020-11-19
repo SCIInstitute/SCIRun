@@ -104,12 +104,12 @@ IF(TRAVIS_BUILD)
   IF(APPLE)
     # build everything; qt flag is in travis.yml
   ELSE()
-    IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-      SET(BUILD_HEADLESS ON)
-      SET(BUILD_WITH_PYTHON OFF)
-    ELSE()
+    #IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
+    #  SET(BUILD_HEADLESS ON)
+    #  SET(BUILD_WITH_PYTHON OFF)
+    #ELSE()
       # try building everything with clang!
-    ENDIF()
+    #ENDIF()
   ENDIF()
 ENDIF()
 
