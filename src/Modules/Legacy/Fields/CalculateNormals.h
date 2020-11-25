@@ -47,18 +47,17 @@ namespace Fields {
   class SCISHARE CalculateNormals : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<FieldPortTag>,
     public Has2InputPorts<FieldPortTag, FieldPortTag>
-    //public Has1OutputPort<FieldPortTag>
   {
   public:
     // these functions are required for all modules
     CalculateNormals();
+
     virtual void execute();
     virtual void setStateDefaults(){}
 
     //name the ports and datatype.
     INPUT_PORT(0, InputField, Field);
-    INPUT_PORT(1, InputField2, Field);
-    // OUTPUT_PORT(0, OutputField, Field);
+    INPUT_PORT(1, InputPoint, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
     // this is needed for the module factory
