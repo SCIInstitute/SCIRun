@@ -1531,11 +1531,11 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
 //   LatVolMesh
 //   any suggestions for other types that need support ??
 
-int matlabconverter::sciFieldCompatible(const matlabarray& mlarray,std::string &infostring, bool postremark)
+int matlabconverter::sciFieldCompatible(const matlabarray& mlarray, std::string& infostring, bool postremark)
 {
   MatlabToFieldAlgo algo;
   algo.setreporter(pr_);
-  return(algo.analyze_iscompatible(mlarray,infostring,postremark));
+  return (algo.analyze_iscompatible(mlarray, infostring, postremark));
 }
 
 void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray, FieldHandle &scifield)
@@ -1708,18 +1708,18 @@ int matlabconverter::sciBundleCompatible(matlabarray &mlarray, std::string &info
   for (int p = 0; p < nfields; p++)
   {
     subarray = mlarray.getfield(0,p);
-    if (sciStringCompatible(subarray,dummyinfo,false)) { numstrings++; continue; }
+    if (sciStringCompatible(subarray, dummyinfo, false)) { numstrings++; continue; }
     if (prefer_bundles)  {if (sciBundleCompatible(subarray,dummyinfo,false)) { numbundles++; continue; } }
-    int score = sciFieldCompatible(subarray,dummyinfo,false);
+    int score = sciFieldCompatible(subarray, dummyinfo, false);
     if (prefer_fields)
       if (score > 0)  { numfields++; continue; }
     else
       if (score > 1)  { numfields++; continue; }
-    if (prefer_nrrds) { if (sciNrrdDataCompatible(subarray,dummyinfo,false))   { numnrrds++; continue; } }
+    if (prefer_nrrds) { if (sciNrrdDataCompatible(subarray, dummyinfo, false))   { numnrrds++; continue; } }
     if (sciMatrixCompatible(subarray,dummyinfo,false)) { nummatrices++; continue; }
-    if (!prefer_nrrds) { if (sciNrrdDataCompatible(subarray,dummyinfo,false))   { numnrrds++; continue; } }
+    if (!prefer_nrrds) { if (sciNrrdDataCompatible(subarray, dummyinfo, false))   { numnrrds++; continue; } }
     if (score) { numfields++; continue; }
-    if (sciBundleCompatible(subarray,dummyinfo,false)) { numbundles++; continue; }
+    if (sciBundleCompatible(subarray, dummyinfo, false)) { numbundles++; continue; }
   }
 
   if (numfields+nummatrices+numnrrds+numbundles+numstrings == 0)
@@ -1795,7 +1795,7 @@ void matlabconverter::mlArrayTOsciBundle(matlabarray &mlarray,BundleHandle &scib
       }
     }
 
-    int score = sciFieldCompatible(subarray,dummyinfo,false);
+    int score = sciFieldCompatible(subarray, dummyinfo, false);
     if (score > 1)
     {
       FieldHandle field;

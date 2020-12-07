@@ -225,7 +225,7 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
       // Get the header of the object
       matlabarray ma = mf.getmatlabarrayinfo(p);
       // Is this object compatible?
-      if (mc.sciFieldCompatible(ma,dummytext))
+      if (mc.sciFieldCompatible(ma, dummytext, false))
       {
         // If so get the full object
         ma = mf.getmatlabarray(p);
