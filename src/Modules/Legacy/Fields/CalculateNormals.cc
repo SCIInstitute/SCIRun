@@ -27,9 +27,13 @@
 
 
 #include <Modules/Legacy/Fields/CalculateNormals.h>
-#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -52,9 +56,9 @@ CalculateNormals::execute()
   auto ifieldhandle = getRequiredInput(InputField);
   auto ipointhandle = getRequiredInput(InputPoint);
 
-  if ( inputs_changed_ || !oport_cached("Output Field"))
+  if ( needToExecute())
   {
-    update_state(Executing);
+    auto state = get_state();
 
     VField* point_field = ipointhandle->vfield();
     VMesh*  point_mesh  = ipointhandle->vmesh();
@@ -69,14 +73,15 @@ CalculateNormals::execute()
     Vector dir;
     bool has_vector = false;
     point_mesh->get_center(attract_point,VMesh::Node::index_type(0));
+    FieldInformation pointfi(ipointhandle);
 
-    if (!(point_field->is_pointcloudmesh()))
+    if (!(pointfi.is_pointcloudmesh()))
     {
       error("Input field was not a valid point cloud.");
       return;
     }
 
-    if (point_field->is_vector())
+    if (pointfi.is_vector())
     {
       has_vector = true;
       point_field->get_value(dir,0);
@@ -86,16 +91,15 @@ CalculateNormals::execute()
 
     VField::size_type num_values = field->num_values();
 
-    FieldInformation fi(ifieldhandle);
-    if (fi.field_basis_order() < 1)
+    FieldInformation fieldfi(ifieldhandle);
+    if (fieldfi.field_basis_order() < 1)
     {
-      fi.make_lineardata();
-      fi.make_vector();
+      fieldfi.make_lineardata();
     }
 
-    fi.make_vector();
+    fieldfi.make_vector();
 
-    auto ofieldhandle = CreateField(fi,ifieldhandle->mesh());
+    auto ofieldhandle = CreateField(fieldfi,ifieldhandle->mesh());
     VField* ofield = ofieldhandle->vfield();
     ofield->resize_values();
 
@@ -123,7 +127,7 @@ CalculateNormals::execute()
         if (val == 0.0) val = 1e-3;
         vec = vec*val;
         ofield->set_value(vec,idx);
-        cnt++; if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
+        cnt++; //if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
       }
     }
     else
@@ -144,10 +148,10 @@ CalculateNormals::execute()
           vec.safe_normalize();
         }
         ofield->set_value(vec,idx);
-        cnt++; if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
+        cnt++; //if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
       }
     }
 
-    sendOutput(OutputField, ofield);
+    sendOutput(OutputField, ofieldhandle);
   }
 }
