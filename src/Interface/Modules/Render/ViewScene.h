@@ -362,6 +362,9 @@ namespace SCIRun {
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
       std::string                                       name_               {""};
+
+      const int DIMENSIONS_ = 3;
+      const int QUATERNION_SIZE_ = 4;
     };
 
     Render::MouseButton getSpireButton(QMouseEvent* event);

@@ -31,11 +31,12 @@
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 
-#include <vector>
-#include <boost/python.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/python.hpp>
+#include <vector>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun
@@ -59,7 +60,7 @@ namespace SCIRun
 
     //state
     virtual boost::python::object getattr(const std::string& name, bool transient) = 0;
-    virtual void setattr(const std::string& name, boost::python::object object, bool transient) = 0;
+    virtual void setattr(const std::string& name, const boost::python::object& object, bool transient) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
     virtual std::string stateToString() const = 0;
 

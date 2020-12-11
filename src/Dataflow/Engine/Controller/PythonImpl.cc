@@ -62,6 +62,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
+namespace py = boost::python;
 
 namespace
 {
@@ -72,19 +73,19 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    py::object value() const override
     {
       return str_;
     }
 
   private:
     StringHandle underlying_;
-    boost::python::object str_;
+    py::object str_;
   };
 
   class PyDatatypeDenseMatrix : public PyDatatype
@@ -94,19 +95,19 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    py::object value() const override
     {
       return pyMat_;
     }
 
   private:
     DenseMatrixHandle underlying_;
-    boost::python::list pyMat_;
+    py::list pyMat_;
   };
 
   class PyDatatypeSparseRowMatrix : public PyDatatype
@@ -116,19 +117,19 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    py::object value() const override
     {
       return pyMat_;
     }
 
   private:
     SparseRowMatrixHandle underlying_;
-    boost::python::dict pyMat_;
+    py::dict pyMat_;
   };
 
   class PyDatatypeField : public PyDatatype
@@ -138,19 +139,19 @@ namespace
     {
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return underlying_->dynamic_type_name();
     }
 
-    virtual boost::python::object value() const override
+    py::object value() const override
     {
       return matlabStructure_;
     }
 
   private:
     FieldHandle underlying_;
-    boost::python::dict matlabStructure_;
+    py::dict matlabStructure_;
   };
 
   class PyDatatypeFactory
@@ -188,34 +189,34 @@ namespace
     PyPortImpl(boost::shared_ptr<PortDescriptionInterface> port, NetworkEditorController& nec) : port_(port), nec_(nec)
     {
     }
-    virtual std::string name() const override
+    std::string name() const override
     {
       return port_ ? port_->get_portname() : "<Null>";
     }
 
-    virtual std::string id() const override
+    std::string id() const override
     {
       return port_ ? port_->id().toString() : "<Null>";
     }
 
-    virtual std::string type() const override
+    std::string type() const override
     {
       return port_ ? port_->get_typename() : "<Null>";
     }
 
-    virtual bool isInput() const override
+    bool isInput() const override
     {
       return port_ ? port_->isInput() : false;
     }
 
-    virtual void connect(const PyPort& other) const override
+    void connect(const PyPort& other) const override
     {
       auto otherPort = dynamic_cast<const PyPortImpl*>(&other);
       if (port_ && otherPort)
         nec_.requestConnection(port_.get(), otherPort->port_.get());
     }
 
-    virtual std::string dataTypeName() const override
+    std::string dataTypeName() const override
     {
       auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
       if (output)
@@ -229,7 +230,7 @@ namespace
       return (*data)->dynamic_type_name();
     }
 
-    virtual boost::shared_ptr<PyDatatype> data() const override
+    boost::shared_ptr<PyDatatype> data() const override
     {
       auto dataOpt = getDataImpl();
       if (dataOpt && *dataOpt)
@@ -284,7 +285,7 @@ namespace
       }
     }
 
-    virtual boost::shared_ptr<PyPort> getattr(const std::string& name) override
+    boost::shared_ptr<PyPort> getattr(const std::string& name) override
     {
       auto port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->name(); });
       if (port != ports_.end())
@@ -295,23 +296,23 @@ namespace
         return *port;
 
       std::cerr << "Could not find port with name " << name << " on module " << modId_.id_ << std::endl;
-      PyErr_SetObject(PyExc_KeyError, boost::python::object(name).ptr());
-      throw boost::python::error_already_set();
+      PyErr_SetObject(PyExc_KeyError, py::object(name).ptr());
+      throw py::error_already_set();
     }
 
-    virtual boost::shared_ptr<PyPort> getitem(int index) override
+    boost::shared_ptr<PyPort> getitem(int index) override
     {
       if (index < 0)
         index += size();
       if (index < 0 || index >= size())
       {
-        PyErr_SetObject(PyExc_KeyError, boost::python::object(index).ptr());
-        throw boost::python::error_already_set();
+        PyErr_SetObject(PyExc_KeyError, py::object(index).ptr());
+        throw py::error_already_set();
       }
       return ports_[index];
     }
 
-    virtual size_t size() const override
+    size_t size() const override
     {
       return ports_.size();
     }
@@ -366,26 +367,26 @@ namespace
       creationTime_ = boost::posix_time::second_clock::local_time();
     }
 
-    virtual std::string id() const override
+    std::string id() const override
     {
       if (module_)
         return module_->id();
       return "<Null module>";
     }
 
-    virtual void showUI() override
+    void showUI() override
     {
       if (module_)
         module_->setUiVisible(true);
     }
 
-    virtual void hideUI() override
+    void hideUI() override
     {
       if (module_)
         module_->setUiVisible(false);
     }
 
-    virtual void reset() override
+    void reset() override
     {
       module_.reset();
       input_->reset();
@@ -394,84 +395,44 @@ namespace
       output_.reset();
     }
 
-    virtual boost::python::object getattr(const std::string& name, bool transient) override
-    {
-      if (module_)
-      {
-        if (!transient)
-        {
-          auto state = module_->get_state();
-          AlgorithmParameterName apn(name);
-          if (!state->containsKey(apn))
-          {
-            throw std::invalid_argument("Module state key " + name + " not defined.");
-          }
-
-          auto v = state->getValue(apn);
-
-  //TODO: extract and use for state get/set
-          /// @todo: extract
-          if ( const int* p = boost::get<int>( &v.value() ) )
-            return boost::python::object(*p);
-          else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
-            return boost::python::object(*p);
-          else if ( const double* p = boost::get<double>( &v.value() ) )
-            return boost::python::object(*p);
-          else if ( const bool* p = boost::get<bool>( &v.value() ) )
-            return boost::python::object(*p);
-
-          return boost::python::object();
-        }
-        else
-        {
-          auto state = module_->get_state();
-          AlgorithmParameterName apn(name);
-
-          auto v = state->getTransientValue(apn);
-
-          //TODO: extract and use for state get/set
-          /// @todo: extract
-          if (transient_value_check<int>(v))
-            return boost::python::object(transient_value_cast<int>(v));
-          if (transient_value_check<std::string>(v))
-            return boost::python::object(transient_value_cast<std::string>(v));
-          if (transient_value_check<double>(v))
-            return boost::python::object(transient_value_cast<double>(v));
-          if (transient_value_check<bool>(v))
-            return boost::python::object(transient_value_cast<bool>(v));
-          if (transient_value_check<Variable>(v))
-            return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
-          if (transient_value_check<boost::python::object>(v))
-            return transient_value_cast<boost::python::object>(v);
-
-          return boost::python::object();
-        }
-      }
-      return boost::python::object();
-    }
-
-    virtual void setattr(const std::string& name, boost::python::object object, bool transient) override
+    py::object getattr(const std::string& name, bool transient) override
     {
       if (module_)
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
-        if (!transient)
-        {
-          if (!state->containsKey(apn))
-          {
+        if (transient)
+          return convertTransientVariableToPythonObject(state->getTransientValue(apn));
+        else
+          if (state->containsKey(apn))
+            return convertVariableToPythonObject(state->getValue(apn));
+          else
             throw std::invalid_argument("Module state key " + name + " not defined.");
-          }
-          state->setValue(apn, convertPythonObjectToVariable(object).value());
-        }
+      }
+      else
+        return py::object();
+    }
+
+    void setattr(const std::string& name, const py::object& object, bool transient) override
+    {
+      if (module_)
+      {
+        auto state = module_->get_state();
+        AlgorithmParameterName apn(name);
+        if (transient)
+          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
         else
         {
-          state->setTransientValue(apn, convertPythonObjectToVariable(object), false);
+          if (state->containsKey(apn))
+            state->setValue(apn, convertPythonObjectToVariableWithTypeInference(
+                              object, state->getValue(apn)).value());
+          else
+            throw std::invalid_argument("Module state key " + name + " not defined.");
         }
       }
     }
 
-    virtual std::vector<std::string> stateVars() const override
+    std::vector<std::string> stateVars() const override
     {
       if (module_)
       {
@@ -483,7 +444,7 @@ namespace
       return {};
     }
 
-    virtual std::string stateToString() const override
+    std::string stateToString() const override
     {
       if (module_)
       {
@@ -498,17 +459,17 @@ namespace
       return "[null module]";
     }
 
-    virtual boost::shared_ptr<PyPorts> output() override
+    boost::shared_ptr<PyPorts> output() override
     {
       return output_;
     }
 
-    virtual boost::shared_ptr<PyPorts> input() override
+    boost::shared_ptr<PyPorts> input() override
     {
       return input_;
     }
 
-    virtual boost::posix_time::ptime creationTime() const override
+    boost::posix_time::ptime creationTime() const override
     {
       return creationTime_;
     }
