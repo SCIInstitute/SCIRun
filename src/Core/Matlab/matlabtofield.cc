@@ -393,7 +393,7 @@ int MatlabToFieldAlgo::analyze_iscompatible(const matlabarray& mlarray, std::str
   catch (matlabconverter::error_type& e)
   {
     if (postremark || Core::Logging::LogSettings::Instance().verbose())
-      SCIRun::logError("analyze_fieldtype error: {}", e.what());
+      SCIRun::logWarning("analyze_fieldtype error: {}", e.what());
     return 0;
   }
 

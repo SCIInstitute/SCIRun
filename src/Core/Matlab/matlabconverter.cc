@@ -44,13 +44,12 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <boost/assign/std/vector.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
-using namespace boost::assign;
 
 // Currently the property converter only manages strings
 // all other data is ignored both on Matlab side as well
@@ -161,8 +160,8 @@ matlabarray::mitype matlabconverter::convertnrrdtype(int type)
 
 bool matlabconverter::isvalidmatrixname(const std::string& name)
 {
-  const std::string validchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
-  const std::string validstartchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  static const std::string validchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
+  static const std::string validstartchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
   bool valid = true;
   bool foundchar = false;
@@ -186,167 +185,12 @@ bool matlabconverter::isvalidmatrixname(const std::string& name)
         if (name[p] == validchar[q]) { foundchar = true; break; }
       }
     }
-    if (foundchar == false) { valid = false; break; }
+    if (!foundchar) { valid = false; break; }
   }
   return(valid);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-void matlabconverter::mlPropertyTOsciProperty(matlabarray &ma,PropertyManager *handle)
-{
-  int numfields;
-  matlabarray::mlclass mclass;
-  matlabarray subarray;
-  std::string propname;
-  std::string propval;
-  matlabarray proparray;
-
-  std::string dummyinfo;
-  int matrixscore;
-  int fieldscore;
-
-  NrrdDataHandle  nrrd;
-  MatrixHandle    matrix;
-  FieldHandle     field;
-
-  // properties are stored in field property
-  int propindex = ma.getfieldnameindexCI("property");
-
-  if (propindex > -1)
-  { // field property exists
-
-    proparray = ma.getfield(0,propindex);
-    if (proparray.isempty()) return;
-
-    numfields = proparray.getnumfields();
-
-    for (int p=0; p<numfields; p++)
-    {
-      subarray = proparray.getfield(0,p);
-      mclass = subarray.getclass();
-
-      // Check whether property is string
-      // In the property manager string are STL strings
-      if (mclass == matlabarray::mlSTRING)
-      {   // only string arrays are converted
-        propname = proparray.getfieldname(p);
-        propval = subarray.getstring();
-        handle->set_property(propname,propval,false);
-        continue;
-      }
-
-      if ((fieldscore = sciFieldCompatible(subarray,dummyinfo)))
-      {
-        if (fieldscore > 1)
-        {
-           propname = proparray.getfieldname(p);
-           mlArrayTOsciField(subarray,field);
-           handle->set_property(propname,field,false);
-           continue;
-        }
-      }
-
-      if ((matrixscore = sciMatrixCompatible(subarray,dummyinfo)))
-      {
-        if (matrixscore > 1)
-        {
-           propname = proparray.getfieldname(p);
-           mlArrayTOsciMatrix(subarray,matrix);
-           handle->set_property(propname,matrix,false);
-           continue;
-        }
-        else
-        {
-          if (sciNrrdDataCompatible(subarray,dummyinfo))
-          {
-            propname = proparray.getfieldname(p);
-            mlArrayTOsciNrrdData(subarray,nrrd);
-            handle->set_property(propname,nrrd,false);
-            continue;
-          }
-          propname = proparray.getfieldname(p);
-          mlArrayTOsciMatrix(subarray,matrix);
-          handle->set_property(propname,matrix,false);
-          continue;
-        }
-      }
-
-      if (sciNrrdDataCompatible(subarray,dummyinfo))
-      {
-        propname = proparray.getfieldname(p);
-        mlArrayTOsciNrrdData(subarray,nrrd);
-        handle->set_property(propname,nrrd,false);
-        continue;
-      }
-      if (fieldscore > 0)
-      {
-        propname = proparray.getfieldname(p);
-        mlArrayTOsciField(subarray,field);
-        handle->set_property(propname,field,false);
-        continue;
-      }
-    }
-  }
-}
-
-void matlabconverter::sciPropertyTOmlProperty(PropertyManager *handle,matlabarray &ma)
-{
-  size_t numfields;
-  matlabarray proparray;
-  std::string propname;
-  std::string propvalue;
-  matlabarray subarray;
-
-  StringHandle    str;
-  MatrixHandle    matrix;
-  NrrdDataHandle  nrrd;
-  FieldHandle     field;
-
-  proparray.createstructarray();
-  numfields = handle->nproperties();
-
-  for (size_t p=0;p<numfields;p++)
-  {
-    propname = handle->get_property_name(p);
-    if (handle->get_property(propname,propvalue))
-    {
-      subarray.createstringarray(propvalue);
-      proparray.setfield(0,propname,subarray);
-    }
-    if (handle->get_property(propname,nrrd))
-    {
-      subarray.clear();
-      bool oldnumericarray_ = numericarray_;
-      numericarray_ = true;
-      sciNrrdDataTOmlArray(nrrd,subarray);
-      numericarray_ = oldnumericarray_;
-      proparray.setfield(0,propname,subarray);
-    }
-    if (handle->get_property(propname,matrix))
-    {
-      subarray.clear();
-      bool oldnumericarray_ = numericarray_;
-      numericarray_ = true;
-      sciMatrixTOmlArray(matrix,subarray);
-      numericarray_ = oldnumericarray_;
-      proparray.setfield(0,propname,subarray);
-    }
-    if (handle->get_property(propname,field))
-    {
-      subarray.clear();
-      sciFieldTOmlArray(field,subarray);
-      proparray.setfield(0,propname,subarray);
-    }
-    if (handle->get_property(propname,str))
-    {
-      subarray.clear();
-      sciStringTOmlArray(str,subarray);
-      proparray.setfield(0,propname,subarray);
-    }
-  }
-  ma.setfield(0,"property",proparray);
-}
-
 int matlabconverter::sciColorMapCompatible(matlabarray &ma, std::string &infotext, bool postremark)
 {
   infotext = "";
@@ -465,7 +309,8 @@ int matlabconverter::sciMatrixCompatible(const matlabarray &ma, std::string &inf
       if (index == -1) index = ma.getfieldnameindexCI("tensorfield");
       if (index == -1)
       {
-        if (postremark) remark(std::string("Matrix '" + ma.getname() + "' cannot be translated into a SCIRun Matrix (cannot find a field with data: create a .data field)."));
+        if (postremark)
+          SCIRun::logWarning("Matlab object '{}' cannot be translated into a SCIRun Field (cannot find a field with data: create a .data field).", ma.getname());
         return(0); // incompatible
       }
 
@@ -473,7 +318,8 @@ int matlabconverter::sciMatrixCompatible(const matlabarray &ma, std::string &inf
       numel = ma.getnumelements();
       if (numel > 1)
       {
-        if (postremark) remark(std::string("Matrix '" + ma.getname() + "' cannot be translated into a SCIRun Matrix (the struct matrix is not 1x1: do not define more than one matrix)."));
+        if (postremark)
+          remark(std::string("Matrix '" + ma.getname() + "' cannot be translated into a SCIRun Matrix (the struct matrix is not 1x1: do not define more than one matrix)."));
         return(0); // incompatible
       }
 
@@ -1442,8 +1288,8 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
   mlarray.setfield(0,"data",matrix);
 
   // Set the properties of the axis
-  std::vector<std::string> axisfieldnames;
-  axisfieldnames += "size", "spacing", "min", "max", "center", "label", "unit";
+  const std::vector<std::string> axisfieldnames =
+    {"size", "spacing", "min", "max", "center", "label", "unit"};
 
   Nrrd  *nrrdptr;
   nrrdptr = scinrrd->getNrrd();
@@ -1453,7 +1299,7 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
   dims[0] = nrrdptr->dim;
   dims[1] = 1;
 
-  axisma.createstructarray(dims,axisfieldnames);
+  axisma.createstructarray(dims, axisfieldnames);
 
   for (int p=0; p<static_cast<int>(nrrdptr->dim); p++ )
   {
@@ -1535,7 +1381,7 @@ int matlabconverter::sciFieldCompatible(const matlabarray& mlarray, std::string&
 {
   MatlabToFieldAlgo algo;
   algo.setreporter(pr_);
-  return (algo.analyze_iscompatible(mlarray, infostring, postremark));
+  return algo.analyze_iscompatible(mlarray, infostring, postremark);
 }
 
 void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray, FieldHandle &scifield)
