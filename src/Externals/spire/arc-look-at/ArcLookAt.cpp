@@ -32,6 +32,7 @@
 #include "ArcLookAt.hpp"
 #include <arc-ball/ArcBall.hpp>
 #include <glm/gtx/vec_swizzle.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace spire {
 
@@ -104,13 +105,8 @@ void ArcLookAt::doZoom(const glm::vec2& ssPos)
 //------------------------------------------------------------------------------
 glm::mat4 ArcLookAt::getWorldViewTransform() const
 {
-  glm::mat4 finalTrafo(1.0);
-  for (int i = 0; i < mCamLookAt.length(); ++i)
-    finalTrafo[3][i] = -mCamLookAt[i];
-
-  finalTrafo = mArcBall->getTransformation() * finalTrafo;
+  auto finalTrafo = mArcBall->getTransformation() * glm::translate(glm::mat4(1.0f), -mCamLookAt);
   finalTrafo[3][2] -= mCamDistance;
-
   return finalTrafo;
 }
 
