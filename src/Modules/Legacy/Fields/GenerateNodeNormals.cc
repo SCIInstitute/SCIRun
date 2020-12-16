@@ -26,7 +26,7 @@
 */
 
 
-#include <Modules/Legacy/Fields/CalculateNormals.h>
+#include <Modules/Legacy/Fields/GenerateNodeNormals.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -38,12 +38,12 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-/// @class CalculateNormals
+/// @class GenerateNodeeNormals
 /// @brief Make a new vector field that points to the input point.
 
-MODULE_INFO_DEF(CalculateNormals, ChangeFieldData, SCIRun) ;
+MODULE_INFO_DEF(GenerateNodeNormals, ChangeFieldData, SCIRun) ;
 
-CalculateNormals::CalculateNormals() : Module(staticInfo_, false)
+GenerateNodeNormals::GenerateNodeNormals() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputPoint);
@@ -51,7 +51,7 @@ CalculateNormals::CalculateNormals() : Module(staticInfo_, false)
 }
 
 void
-CalculateNormals::execute()
+GenerateNodeNormals::execute()
 {
   auto ifieldhandle = getRequiredInput(InputField);
   auto ipointhandle = getRequiredInput(InputPoint);

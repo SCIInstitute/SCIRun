@@ -29,8 +29,8 @@
 // makes sure that headers aren't loaded multiple times.
 // This requires the string to be unique to this file.
 // standard convention incorporates the file path and filename.
- #ifndef MODULES_FIELDS_CalculateNormals_H
- #define MODULES_FIELDS_CalculateNormals_H
+ #ifndef MODULES_FIELDS_GenerateNodeNormals_H
+ #define MODULES_FIELDS_GenerateNodeNormals_H
 
  #include <Dataflow/Network/Module.h>
  #include <Modules/Legacy/Fields/share.h>
@@ -44,13 +44,13 @@ namespace Fields {
 
   // define module ports.
   // Can have any number of ports (including none), and dynamic ports.
-  class SCISHARE CalculateNormals : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE GenerateNodeNormals : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<FieldPortTag>,
     public Has2InputPorts<FieldPortTag, FieldPortTag>
   {
   public:
     // these functions are required for all modules
-    CalculateNormals();
+    GenerateNodeNormals();
 
     virtual void execute();
     virtual void setStateDefaults(){}

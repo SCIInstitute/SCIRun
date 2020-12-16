@@ -1,10 +1,10 @@
 {
   "module": {
-    "name": "CalculateNormals",
+    "name": "GenerateNodeNormals",
     "namespace": "Fields",
     "status": "new module",
     "description": "Make a new vector field that points to the input point.",
-    "header": "Modules/Legacy/Fields/CalculateNormals.h"
+    "header": "Modules/Legacy/Fields/GenerateNodeNormals.h"
   },
   "algorithm": {
     "name": "N/A",

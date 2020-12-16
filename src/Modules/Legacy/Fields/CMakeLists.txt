@@ -98,7 +98,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateMeshNodes.h
   GenerateElectrode.h
   InterfaceWithTetGen.h
-  CalculateNormals.h
+  GenerateNodeNormals.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -212,7 +212,7 @@ SET(Modules_Legacy_Fields_SRCS
   ExtractSimpleIsosurface.cc
   ReorderNormalCoherently.cc
   InterfaceWithTetGen.cc
-  CalculateNormals.cc
+  GenerateNodeNormals.cc
 )
 
 IF(WITH_TETGEN)
