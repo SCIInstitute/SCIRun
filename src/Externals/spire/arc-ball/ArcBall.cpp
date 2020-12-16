@@ -86,8 +86,6 @@ void ArcBall::drag(const glm::vec2& msc)
   // Construct a quaternion from two points on the unit sphere.
   glm::quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);
   mQNow = mQDrag * mQDown;
-  if(glm::dot(mVSphereDown, mVSphereNow) < 0.0)
-    beginDrag(msc);
 }
 
 //------------------------------------------------------------------------------
