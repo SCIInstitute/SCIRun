@@ -127,7 +127,7 @@ GenerateNodeNormals::execute()
         if (val == 0.0) val = 1e-3;
         vec = vec*val;
         ofield->set_value(vec,idx);
-        cnt++; //if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
+        cnt++; if (cnt == 400) { cnt=0; }//update_progress(idx,num_values); }
       }
     }
     else
@@ -148,7 +148,7 @@ GenerateNodeNormals::execute()
           vec.safe_normalize();
         }
         ofield->set_value(vec,idx);
-        cnt++; //if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
+        cnt++; if (cnt == 400) { cnt=0; }//update_progress(idx,num_values); }
       }
     }
 
