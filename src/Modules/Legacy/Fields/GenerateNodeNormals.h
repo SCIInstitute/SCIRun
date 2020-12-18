@@ -26,42 +26,30 @@
 */
 
 
-// makes sure that headers aren't loaded multiple times.
-// This requires the string to be unique to this file.
-// standard convention incorporates the file path and filename.
  #ifndef MODULES_FIELDS_GenerateNodeNormals_H
  #define MODULES_FIELDS_GenerateNodeNormals_H
 
  #include <Dataflow/Network/Module.h>
  #include <Modules/Legacy/Fields/share.h>
-// share.h must be the last include, or it will not build on windows systems.
 
 namespace SCIRun {
 namespace Modules {
 namespace Fields {
-// this final namespace needs to match the .module file
-// in src/Modules/Factory/Config/
 
-  // define module ports.
-  // Can have any number of ports (including none), and dynamic ports.
   class SCISHARE GenerateNodeNormals : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<FieldPortTag>,
     public Has2InputPorts<FieldPortTag, FieldPortTag>
   {
   public:
-    // these functions are required for all modules
     GenerateNodeNormals();
 
     virtual void execute();
     virtual void setStateDefaults(){}
 
-    //name the ports and datatype.
     INPUT_PORT(0, InputField, Field);
     INPUT_PORT(1, InputPoint, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
-    // this is needed for the module factory
-    // the arguments of this function could vary as NoAlgoOrUI or ModuleHasUIAndAlgorithm
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 }}}
