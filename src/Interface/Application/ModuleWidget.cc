@@ -1501,7 +1501,6 @@ void ModuleWidget::stopButtonPushed()
   auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
   if (stoppable)
     stoppable->sendStopRequest();
-  qDebug() << "TODO: theModule_->stop();";
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
