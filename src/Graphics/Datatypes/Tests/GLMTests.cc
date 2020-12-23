@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <cmath>
 #include <Core/Utils/Exception.h>
 #include <gtest/gtest.h>
 #include <glm/gtc/matrix_transform.hpp>
