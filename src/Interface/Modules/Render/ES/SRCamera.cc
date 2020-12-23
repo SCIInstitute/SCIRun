@@ -205,9 +205,13 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::tryAutoRotate()
     {
-      mArcLookAt->doReferenceDown(lastMousePos);
-      mArcLookAt->doRotation(lastMousePos + autoRotateVec);
-      setClippingPlanes();
+      const static double epsilon = 0.02e-12;
+      if (glm::length(autoRotateVec) > epsilon)
+      {
+        mArcLookAt->doReferenceDown(lastMousePos);
+        mArcLookAt->doRotation(lastMousePos + autoRotateVec);
+        setClippingPlanes();
+      }
     }
 
     //----------------------------------------------------------------------------------------------
