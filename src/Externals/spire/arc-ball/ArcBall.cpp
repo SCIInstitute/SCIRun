@@ -101,7 +101,7 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
   //TODO: check if cross is 0 before normalize. Crashes on Windows
   auto c = glm::cross(from, to);
   if (c == glm::vec3(0, 0, 0))
-    return {};
+    return glm::quat(1.0, 0.0, 0.0, 0.0);
 
   glm::vec3 axis = glm::normalize(c);
 
