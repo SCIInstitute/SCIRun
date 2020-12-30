@@ -1354,49 +1354,47 @@ With the module fully completed, we can now submit it to be included in the main
 
 #### 6.3 Common Build Errors
 1.
-> ConvertMeshToPointCloudDialog.h:32:10: fatal error:
+```
+ConvertMeshToPointCloudDialog.h:32:10: fatal error:
       Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
+```
 
 
-In this instance, the path to the header is misspelled.  Check for the correct path and filename.  Make sure the file you want to include exists.  If the code was converted from SCIRun4, some of the dependent header files are renamed, combined with other files, or deprecated.  
+In this instance, the path to the header is misspelled. Check for the correct path and filename. Make sure the file you want to include exists. If the code was converted from SCIRun 4, some of the dependent header files are renamed, combined with other files, or deprecated.  
 
 2.
-> /Users/jess/software/SCIRun_mine/bin/SCIRun/Core/AlgorithmsFactoryAlgorithmFactoryImpl_Generated.cc:4:10: error: empty filename
-
-
 ```
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/AlgorithmsFactoryAlgorithmFactoryImpl_Generated.cc:4:10: error: empty filename
 #include <>
          ^
 ```
-> /Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc: 21:43: error: expected namespace name
-
 ```
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc: 21:43: error: expected namespace name
 using namespace SCIRun::Core::Algorithms::;
                                           ^
 ```
 
+```
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc: 39:3: error: expected expression
+ ADD_MODULE_ALGORITHM_GENERATED(, );
+```
 
-> /Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc:
-
->39:3: error: expected expression
-
-`ADD_MODULE_ALGORITHM_GENERATED(, );`
-
-This is a result of something wrong with the module configuration file.  Check the spelling and syntax of the new file.  Specifically, check the quotation characters used, as they may be different (for instance on mac TextEdit).  This may also be caused if the Algorithm and other files have not been added to the `CMakeList.txt` file.
+This is a result of something wrong with the module configuration file. Check the spelling and syntax of the new file. Specifically, check the quotation characters used, as they may be different (for instance on Mac TextEdit). This may also be caused if the Algorithm and other files have not been added to the `CMakeList.txt` file.
 
 3.
->/Users/jess/software/SCIRun_mine/src/Interface/Modules/Base/ModuleDialogGeneric.h:71:5: warning: 'metaObject' overrides a member function but is not marked 'override'
->[-Winconsistent-missing-override]
-
  ```
+/Users/jess/software/SCIRun_mine/src/Interface/Modules/Base/ModuleDialogGeneric.h:71:5: warning: 'metaObject' overrides a member function but is not marked
+      'override' [-Winconsistent-missing-override]
     Q_OBJECT
     ^   
  ```  
-> /usr/local/Cellar/qt/4.8.7_3/lib/QtCore.framework/Headers/qobjectdefs.h:162:32:
- note: expanded from macro 'Q_OBJECT'
-virtual const QMetaObject *metaObject() const;*
 
- Errors that involve qt and qt objects deal with the GUI code.  Make sure that the GUI name is spelled correctly.  Also make sure that the Qobject name is set properly.  
+ ```
+/usr/local/Cellar/qt/4.8.7_3/lib/QtCore.framework/Headers/qobjectdefs.h:162:32: note: expanded from macro 'Q_OBJECT'
+ virtual const QMetaObject *metaObject() const;
+```
+
+Errors that involve Qt and Qt objects deal with the GUI code. Make sure that the GUI name is spelled correctly. Also make sure that the QObject name is set properly.  
 
 ### Chapter 7
 
