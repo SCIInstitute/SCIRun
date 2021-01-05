@@ -29,6 +29,7 @@
 SET(Graphics_Widgets_SRCS
   Widget.cc
   WidgetFactory.cc
+  BasicBoundingBoxWidget.cc
   BoundingBoxWidget.cc
   SphereWidget.cc
   CylinderWidget.cc
@@ -41,6 +42,7 @@ SET(Graphics_Widgets_SRCS
 SET(Graphics_Widgets_HEADERS
   Widget.h
   WidgetFactory.h
+  BasicBoundingBoxWidget.h
   BoundingBoxWidget.h
   SphereWidget.h
   CylinderWidget.h

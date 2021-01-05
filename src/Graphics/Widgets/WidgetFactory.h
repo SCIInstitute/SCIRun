@@ -46,8 +46,11 @@ namespace SCIRun
 
         static WidgetHandle createArrowWidget(const WidgetBaseParameters& gen, ArrowParameters params);
 
-        static WidgetHandle createBox(const WidgetBaseParameters& gen,
-                                      BasicBoundingBoxParameters params);
+        static WidgetHandle createBasicBoundingBox(const WidgetBaseParameters& gen,
+                                                   BasicBoundingBoxParameters params);
+
+        static WidgetHandle createBoundingBox(const WidgetBaseParameters& gen,
+                                              BoundingBoxParameters params);
 
         static WidgetHandle createSphere(const WidgetBaseParameters& gen, SphereParameters params);
 

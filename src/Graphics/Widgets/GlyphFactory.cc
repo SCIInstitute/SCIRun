@@ -154,24 +154,85 @@ std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, Widget
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   //get all the bbox edges
-  Point c,r,d,b;
-  params.pos.getPosition(c,r,d,b);
-  auto x = r - c, y = d - c, z = b - c;
+  auto c = params.pos.center_;
+  auto eigvecs = params.pos.scaledEigvecs_;
   std::vector<Point> points = {
-    c + x + y + z,
-    c + x + y - z,
-    c + x - y + z,
-    c + x - y - z,
-    c - x + y + z,
-    c - x + y - z,
-    c - x - y + z,
-    c - x - y - z };
+      c + eigvecs[0] + eigvecs[1] + eigvecs[2],
+      c + eigvecs[0] + eigvecs[1] - eigvecs[2],
+      c + eigvecs[0] - eigvecs[1] + eigvecs[2],
+      c + eigvecs[0] - eigvecs[1] - eigvecs[2],
+      c - eigvecs[0] + eigvecs[1] + eigvecs[2],
+      c - eigvecs[0] + eigvecs[1] - eigvecs[2],
+      c - eigvecs[0] - eigvecs[1] + eigvecs[2],
+      c - eigvecs[0] - eigvecs[1] - eigvecs[2]
+  };
+
   uint32_t point_indicies[] = {
     0, 1, 0, 2, 0, 4,
     7, 6, 7, 5, 3, 7,
     4, 5, 4, 6, 1, 5,
     3, 2, 3, 1, 2, 6
   };
+  const auto num_strips = 50;
+  std::vector<Vector> tri_points;
+  std::vector<Vector> tri_normals;
+  std::vector<uint32_t> tri_indices;
+  std::vector<ColorRGB> colors;
+  GlyphGeom glyphs;
+  //generate triangles for the cylinders.
+  for (auto edge = 0; edge < 24; edge += 2)
+  {
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.common.scale, num_strips, ColorRGB(), ColorRGB());
+  }
+  //generate triangles for the spheres
+  for (const auto& a : points)
+  {
+    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0));
+  }
+
+  std::stringstream ss;
+  ss << params.common.scale;
+  for (const auto& a : points) ss << a.x() << a.y() << a.z();
+
+  auto name = "bounding_box_cylinders" + ss.str();
+
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+
+  renState.defaultColor = ColorRGB(1, 1, 1);
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+
+  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+
+  return name;
+}
+
+std::string RealGlyphFactory::box(BoundingBoxParameters params, WidgetBase& widget) const
+{
+  auto colorScheme(ColorScheme::COLOR_UNIFORM);
+  //get all the bbox edges
+  auto c = params.pos.center_;
+  auto eigvecs = params.pos.scaledEigvecs_;
+  std::vector<Point> points = {
+    c + eigvecs[0] + eigvecs[1] + eigvecs[2],
+      c + eigvecs[0] + eigvecs[1] - eigvecs[2],
+      c + eigvecs[0] - eigvecs[1] + eigvecs[2],
+      c + eigvecs[0] - eigvecs[1] - eigvecs[2],
+      c - eigvecs[0] + eigvecs[1] + eigvecs[2],
+      c - eigvecs[0] + eigvecs[1] - eigvecs[2],
+      c - eigvecs[0] - eigvecs[1] + eigvecs[2],
+      c - eigvecs[0] - eigvecs[1] - eigvecs[2]};
+
+  uint32_t point_indicies[] = {
+      0, 1, 0, 2, 0, 4,
+      7, 6, 7, 5, 3, 7,
+      4, 5, 4, 6, 1, 5,
+      3, 2, 3, 1, 2, 6};
   const auto num_strips = 50;
   std::vector<Vector> tri_points;
   std::vector<Vector> tri_normals;

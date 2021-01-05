@@ -26,16 +26,24 @@
 */
 
 
-#include <Graphics/Widgets/SphereWidget.h>
-#include <Graphics/Widgets/GlyphFactory.h>
+#ifndef Graphics_Widgets_BasicBoundingBoxWidget_H
+#define Graphics_Widgets_BasicBoundingBoxWidget_H
 
-using namespace SCIRun;
-using namespace SCIRun::Graphics::Datatypes;
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/share.h>
 
-SphereWidget::SphereWidget(const GeneralWidgetParameters& gen,
-                           SphereParameters params)
-  : WidgetBase({gen.base.idGenerator, "SphereWidget::" + gen.base.tag, gen.base.mapping})
-{
-  name_ = gen.glyphMaker->sphere(params, *this);
-  setPosition(params.point);
+namespace SCIRun {
+  namespace Graphics {
+    namespace Datatypes {
+
+      class SCISHARE BasicBoundingBoxWidget : public WidgetBase
+      {
+      public:
+        BasicBoundingBoxWidget(const GeneralWidgetParameters& gen, BasicBoundingBoxParameters params);
+      };
+    }
+  }
 }
+#endif

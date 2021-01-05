@@ -25,16 +25,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <Graphics/Widgets/WidgetFactory.h>
 #include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/BasicBoundingBoxWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/ConeWidget.h>
 #include <Graphics/Widgets/CylinderWidget.h>
 #include <Graphics/Widgets/DiskWidget.h>
-#include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
+#include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -56,10 +56,16 @@ WidgetHandle WidgetFactory::createArrowWidget(const WidgetBaseParameters& gen,
   return boost::make_shared<ArrowWidget>(packageWithGlyph(gen), params);
 }
 
-WidgetHandle WidgetFactory::createBox(const WidgetBaseParameters& gen,
-                                               BasicBoundingBoxParameters params)
+WidgetHandle WidgetFactory::createBasicBoundingBox(const WidgetBaseParameters& gen,
+                                                   BasicBoundingBoxParameters params)
 {
   return boost::make_shared<BasicBoundingBoxWidget>(packageWithGlyph(gen), params);
+}
+
+WidgetHandle WidgetFactory::createBoundingBox(const WidgetBaseParameters& gen,
+                                              BoundingBoxParameters params)
+{
+  return boost::make_shared<BoundingBoxWidget>(packageWithGlyph(gen), params);
 }
 
 WidgetHandle WidgetFactory::createSphere(const WidgetBaseParameters& gen,

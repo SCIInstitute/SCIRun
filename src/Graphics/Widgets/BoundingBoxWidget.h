@@ -26,8 +26,8 @@
 */
 
 
-#ifndef Graphics_Widgets_BasicBoundingBoxWidget_H
-#define Graphics_Widgets_BasicBoundingBoxWidget_H
+#ifndef Graphics_Widgets_BoundingBoxWidget_H
+#define Graphics_Widgets_BoundingBoxWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -38,11 +38,54 @@ namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
 
-      class SCISHARE BasicBoundingBoxWidget : public WidgetBase
+      class SCISHARE BoundingBoxWidget : public CompositeWidget
       {
       public:
-        BasicBoundingBoxWidget(const GeneralWidgetParameters& gen, BasicBoundingBoxParameters params);
+        BoundingBoxWidget(const GeneralWidgetParameters& gen, BoundingBoxParameters params);
       };
+
+      class SCISHARE BBoxDataHandler
+      {
+      public:
+      BBoxDataHandler(const Core::Geometry::Point& center,
+                      const std::vector<Core::Geometry::Vector>& scaledEigvecs);
+      void makeCylinders(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
+                         WidgetBase& widget);
+      void makeCornerSpheres(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
+                             WidgetBase& widget);
+      void makeFaceSpheres(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
+                           WidgetBase& widget);
+      void makeFaceDisks(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
+                         WidgetBase& widget);
+      Core::Geometry::Vector getDirectionOfFace(int f) const;
+      std::vector<WidgetHandle> getEdges() const;
+      std::vector<WidgetHandle> getCorners() const;
+      std::vector<WidgetHandle> getFaceSpheres() const;
+      std::vector<WidgetHandle> getFaceDisks() const;
+      std::vector<WidgetHandle> getCornersOfFace(int f);
+      std::vector<WidgetHandle> getEdgesOfFace(int f);
+      int getOppositeFaceIndex(int f);
+      std::vector<WidgetHandle> getWidgetsOnFace(int f);
+      std::vector<WidgetHandle> getWidgetsOnOppositeFace(int f);
+      std::vector<WidgetHandle> getFaceWidgetsParrallelToFace(int f);
+      std::vector<WidgetHandle> getEdgesParrallelToFace(int f);
+
+     private:
+      std::vector<Core::Geometry::Vector> scaledEigvecs_;
+      std::vector<Core::Geometry::Point> cornerPoints_;
+      std::vector<Core::Geometry::Point> facePoints_;
+      std::vector<WidgetHandle> corners_;
+      std::vector<WidgetHandle> edges_;
+      std::vector<WidgetHandle> faceDisks_;
+      std::vector<WidgetHandle> faceSpheres_;
+
+     public:
+      const static int CORNER_COUNT_ = 8;
+      const static int EDGE_COUNT_ = 12;
+      const static int FACE_COUNT_ = 6;
+      };
+
+      using BoundingBoxWidgetHandle = SharedPointer<BoundingBoxWidget>;
     }
   }
 }

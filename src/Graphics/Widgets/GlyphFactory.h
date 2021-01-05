@@ -48,6 +48,7 @@ namespace SCIRun
         virtual std::string disk(DiskParameters params, WidgetBase& widget) const = 0;
         virtual std::string cone(ConeParameters params, WidgetBase& widget) const = 0;
         virtual std::string cylinder(CylinderParameters params, WidgetBase& widget) const = 0;
+        virtual std::string box(BoundingBoxParameters params, WidgetBase& widget) const = 0;
         virtual std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const = 0;
       };
 
@@ -58,6 +59,7 @@ namespace SCIRun
         std::string disk(DiskParameters params, WidgetBase& widget) const override;
         std::string cone(ConeParameters params, WidgetBase& widget) const override;
         std::string cylinder(CylinderParameters params, WidgetBase& widget) const override;
+        std::string box(BoundingBoxParameters params, WidgetBase& widget) const override;
         std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const override;
       private:
         RenderState getSphereRenderState(const std::string& defaultColor) const;

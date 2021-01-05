@@ -149,7 +149,8 @@ namespace SCIRun
       glm::vec3 originView_;
       float projectedW_;
       glm::vec3 flipAxisWorld_;
-      glm::vec3 originToSpos_;
+      glm::vec3 originToInitialSpos_;
+      float originToInitialSposLength_;
       glm::vec3 originWorld_;
     };
 
@@ -169,6 +170,34 @@ namespace SCIRun
       glm::vec3 originWorld_;
       float initialW_;
       std::shared_ptr<spire::ArcBall>	widgetBall_;
+    };
+
+    class SCISHARE ObjectScaleAxisCalculator : public ObjectTransformCalculatorBase
+    {
+    public:
+      struct SCISHARE Params
+      {
+        glm::vec2 initialPosition_;
+        float w_;
+        glm::vec3 flipAxisWorld_;
+        glm::vec3 originWorld_;
+        glm::vec3 scaleAxis_;
+        size_t scaleAxisIndex_;
+      };
+      explicit ObjectScaleAxisCalculator(const BasicRendererObjectProvider* s, const Params &p);
+      gen::Transform computeTransform(int x, int y) const override;
+      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::ROTATE; }
+      void setMultiplier(double multiplier);
+    private:
+      glm::vec3 originView_;
+      float projectedW_;
+      double multiplier_;
+      glm::vec3 flipAxisWorld_;
+      glm::vec3 originToInitialSpos_;
+      float originToInitialSposLength_;
+      glm::vec3 originWorld_;
+      glm::vec3 scaleAxis_;
+      size_t scaleAxisIndex_;
     };
   }
 }

@@ -70,19 +70,22 @@ namespace SCIRun
 
       struct SCISHARE BoxPosition
       {
-        Core::Geometry::Point center_, right_, down_, in_;
+        Core::Geometry::Point center_;
+        std::vector<Core::Geometry::Vector> scaledEigvecs_;
 
-        void setPosition(const Core::Geometry::Point &center,
-                         const Core::Geometry::Point &right,
-                         const Core::Geometry::Point &down,
-                         const Core::Geometry::Point &in);
-        void getPosition(Core::Geometry::Point &center,
-                         Core::Geometry::Point &right,
-                         Core::Geometry::Point &down,
-                         Core::Geometry::Point &in) const;
+        // void setPosition(const Core::Geometry::Point &center,
+                         // const std::vector<Core::Geometry::Vector>& scaledEigvecs);
+        // Core::Geometry::Point getCenter() const;
+        // const std::vector<Core::Geometry::Vector>& getScaledEigvecs() const;
       };
 
       struct SCISHARE BasicBoundingBoxParameters
+      {
+        CommonWidgetParameters common;
+        BoxPosition pos;
+      };
+
+      struct SCISHARE BoundingBoxParameters
       {
         CommonWidgetParameters common;
         BoxPosition pos;
@@ -222,14 +225,24 @@ namespace SCIRun
         const Core::Geometry::Point origin;
       };
 
-      struct SCISHARE Scaling : Rotation
+      struct SCISHARE Scaling : Rotation //TODO change inheritance
       {
         explicit Scaling(const Core::Geometry::Point& p, const Core::Geometry::Vector& v) : Rotation(p), flip(v) {}
         const Core::Geometry::Vector flip;
       };
 
+      struct SCISHARE AxisScaling : TransformParameters
+      {
+        explicit AxisScaling(const Core::Geometry::Point& p, const Core::Geometry::Vector& sa)
+          : origin(p), scaleAxis(sa) {}
+        const Core::Geometry::Point origin;
+        const Core::Geometry::Vector scaleAxis;
+      };
+
+
       SCISHARE Core::Geometry::Point getRotationOrigin(const MultiTransformParameters& t);
       SCISHARE Core::Geometry::Vector getScaleFlipVector(const MultiTransformParameters& t);
+      SCISHARE Core::Geometry::Vector getScaleAxisVector(const MultiTransformParameters& t);
 
       class SCISHARE Transformable
       {
