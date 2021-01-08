@@ -1421,4 +1421,48 @@ You will at least need a testing network.
 ### Chapter 8
 
 ## Documenting the New Module
-You should totally document the modules you add.  
+
+**This chapter will describe how to document the modules you add.**
+
+#### 8.1 Documentation Requirements
+
+You should totally document the modules you add. There is only one required file for a properly documented module. A *ModuleName.md* file is needed along with a symbolic link pointing to this file.
+
+#### 8.2 Creating the Markdown File
+
+Create a file in `docs/_includes/modules/` with the name *ModuleName.md*
+
+A template for the contents is provided here with annotated comments:
+```
+---
+title: MODULE_NAME
+category: moduledocs
+module:
+  category: MODULE_CATEGORY
+  package: SCIRun
+tags: module
+---
+<!--- Note: the title must exactly match the module name in the file name -->
+
+# {{ page.title }}
+
+## Category
+
+**{{ page.module.category }}**
+
+## Description
+
+### Summary
+
+<!--- module summary goes here -->
+
+**Detailed Description**
+
+<!-- a more in-depth description goes here -->
+
+{% capture url %}{% include url.md %}{% endcapture %}
+{{ url }}
+```
+
+#### 8.3 Creating the Symbolic Link
+Create a symbolic link in `docs/modules` with the same name that points to this new file you created.
