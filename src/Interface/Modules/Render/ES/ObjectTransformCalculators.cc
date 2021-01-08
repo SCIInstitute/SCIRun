@@ -29,6 +29,7 @@
 #include <Interface/Modules/Render/ES/ObjectTransformCalculators.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 
 using namespace SCIRun::Render;
 
@@ -44,7 +45,7 @@ gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
   auto screenPos = service_->screen().positionFromClick(x, y);
   glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
   auto trans = gen::Transform();
-  trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+  trans.setPosition(xyz(invViewProj_ * glm::vec4(transVec, 0.0, 0.0)));
   return trans;
 }
 
@@ -65,7 +66,7 @@ gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
 
   glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
   currentSposView.z = -projectedW_;
-  glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
+  glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(xy(originView_), originView_.z);
 
   float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(originToSpos_))
     * (glm::length(originToCurrentSpos) / glm::length(originToSpos_));

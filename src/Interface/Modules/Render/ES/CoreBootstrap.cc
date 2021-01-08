@@ -168,7 +168,7 @@ public:
     float perspZFar = 2000.0f;
     glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
     cam.data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
-    cam.data.setView(glm::mat4());
+    cam.data.setView(glm::mat4(1.0f));
 
     // float desZ = std::get<0>(cam.data.getPPDesWidth(6.0f));
     // std::cout << "Desired Z: " << desZ << std::endl;
@@ -203,7 +203,7 @@ public:
                    /*bottom*/ -1.0f,      /*top*/   1.0f,
                    /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
     orthoCam.data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
-    orthoCam.data.setView(glm::mat4());
+    orthoCam.data.setView(glm::mat4(1.0f));
     core.addStaticComponent(orthoCam);
     core.addExemptComponent<gen::StaticOrthoCamera>();
 
