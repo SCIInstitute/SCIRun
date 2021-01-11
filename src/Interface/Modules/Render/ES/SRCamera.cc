@@ -48,8 +48,7 @@ namespace SCIRun {
     void SRCamera::buildTransform()
     {
       // todo fix this method to return mV instead of mIV
-      mV  = mArcLookAt->getWorldViewTransform();
-      mVP = mP * mV;
+      mVP = mP * mArcLookAt->getWorldViewTransform();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -177,7 +176,7 @@ namespace SCIRun {
         buildTransform();  // make sure matricies are up to date
         Core::Geometry::Point c =  Core::Geometry::Point(mSceneBBox.get_max() + mSceneBBox.get_min());
         glm::vec4 center(c.x()/2.0,c.y()/2.0,c.z()/2.0, 1.0);
-        center = mV * center;
+        center = mArcLookAt->getWorldViewTransform() * center;
 
         mZFar = -center.z + mRadius;
         mZNear = std::max(mZFar/1000.0f, -center.z - mRadius);

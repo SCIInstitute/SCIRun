@@ -74,7 +74,6 @@ namespace SCIRun
       SRObject(const std::string& name, const glm::mat4& objToWorld,
         const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
         mName(name),
-        mObjectToWorld(objToWorld),
         mBBox(bbox),
         mColorMap(colorMap),
         mPort(port)
@@ -103,7 +102,6 @@ namespace SCIRun
       };
 
       std::string mName;
-      glm::mat4 mObjectToWorld;
       std::list<SRPass> mPasses;
       Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
 
@@ -143,7 +141,7 @@ namespace SCIRun
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       SRCamera* camera_ {nullptr};
-      glm::mat4 widgetTransform_ {};
+      glm::mat4 widgetTransform_ {1.0f};
     };
 
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
