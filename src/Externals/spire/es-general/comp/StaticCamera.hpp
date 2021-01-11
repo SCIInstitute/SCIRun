@@ -43,9 +43,9 @@ namespace gen {
 // care anything about the camera itself.
 struct StaticCameraData
 {
-  glm::mat4 view;
-  glm::mat4 projection;
-  glm::mat4 viewProjection;
+  glm::mat4 view {1.0f};
+  glm::mat4 projection {1.0f};
+  glm::mat4 viewProjection {1.0f};
 
   // Misc variables. fovy only applies to perspective matrices.
   float fovy;
