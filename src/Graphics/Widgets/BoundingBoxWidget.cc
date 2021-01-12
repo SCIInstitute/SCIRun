@@ -30,6 +30,7 @@
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <glm/gtx/matrix_operation.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Graphics::Datatypes;
@@ -97,6 +98,24 @@ BBoxDataHandler::BBoxDataHandler(const Point& center, const std::vector<Vector>&
     center + getDirectionOfFace(2) + getDirectionOfFace(5) + getDirectionOfFace(3)};
 }
 
+size_t BBoxDataHandler::getIndexOfDirectionOfFace(int f) const
+{
+  switch (f)
+  {
+  case 0:
+  case 2:
+    return 0;
+  case 4:
+  case 5:
+    return 1;
+  case 1:
+  case 3:
+    return 2;
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
+  }
+}
+
 Vector BBoxDataHandler::getDirectionOfFace(int f) const
 {
   switch (f)
@@ -116,6 +135,15 @@ Vector BBoxDataHandler::getDirectionOfFace(int f) const
   default:
     THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
+}
+
+glm::mat4 BBoxDataHandler::getScaleTrans() const
+{
+  auto scaleVec = glm::vec4(static_cast<float>(scaledEigvecs_[0].length()),
+          static_cast<float>(scaledEigvecs_[1].length()),
+          static_cast<float>(scaledEigvecs_[2].length()), 1.0f);
+
+  return glm::diagonal4x4(scaleVec);
 }
 
 std::vector<WidgetHandle> BBoxDataHandler::getEdges() const
@@ -270,7 +298,8 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
   const static double cylinderRadius = 1;
 
   auto builder = CylinderWidgetBuilder(gen.base.idGenerator)
-    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)},
+                       {WidgetInteraction::RIGHT_CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(cylinderRadius * params.scale)
     .defaultColor(params.defaultColor)
     .boundingBox(params.bbox)
@@ -289,6 +318,13 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
     builder.tag("Edge9").diameterPoints(cornerPoints_[1], cornerPoints_[5]).build(),
     builder.tag("Edge10").diameterPoints(cornerPoints_[2], cornerPoints_[6]).build(),
     builder.tag("Edge11").diameterPoints(cornerPoints_[3], cornerPoints_[7]).build()};
+
+  for (auto edge : getEdgesParrallelToFace(0))
+    edge->addTransformParameters<AxisTranslation>(getDirectionOfFace(0));
+  for (auto edge : getEdgesParrallelToFace(3))
+    edge->addTransformParameters<AxisTranslation>(getDirectionOfFace(3));
+  for (auto edge : getEdgesParrallelToFace(4))
+    edge->addTransformParameters<AxisTranslation>(getDirectionOfFace(4));
 }
 
 void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
@@ -325,7 +361,10 @@ void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
     .resolution(params.resolution);
 
   for (int f = 0; f < FACE_COUNT_; ++f)
+  {
     faceSpheres_[f] = builder.tag("FaceSphere" + std::to_string(f)).centerPoint(facePoints_[f]).build();
+    faceSpheres_[f]->addTransformParameters<Rotation>(params.origin);
+  }
 }
 
 void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
@@ -337,19 +376,22 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
 
   auto builder = DiskWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
-    // .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::ROTATE)}})
+    //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(diskDiameterScale * params.scale)
     .defaultColor(params.defaultColor)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
+  auto scaleTrans = getScaleTrans();
   for (int f = 0; f < FACE_COUNT_; ++f)
   {
-    auto scaleAxis = getDirectionOfFace(f);
+    auto axis = getDirectionOfFace(f);
+    auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
     faceDisks_[f] = builder.tag("FaceDisk" + std::to_string(f))
-      .diameterPoints(facePoints_[f], facePoints_[f] + scaleAxis * params.scale * diskLengthScale)
+      .diameterPoints(facePoints_[f], facePoints_[f] + axis * params.scale * diskLengthScale)
       .build();
-    faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, scaleAxis);
+    faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
+    //faceDisks_[f]->addTransformParameters<AxisTranslation>(axis);
   }
 }
 
@@ -373,19 +415,31 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   widgets_.insert(widgets_.end(), faceDisks.begin(), faceDisks.end());
 
   for (auto& edge : edges)
+  {
     edge << propagatesEvent<WidgetMovement::TRANSLATE>::to << TheseWidgets{widgets_};
+    edge << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
+  }
   for (auto& corner : corners)
     corner << propagatesEvent<WidgetMovement::SCALE>::to << TheseWidgets{widgets_};
   for (auto& faceSphere : faceSpheres)
-  {
     faceSphere << propagatesEvent<WidgetMovement::ROTATE>::to << TheseWidgets{widgets_};
-    faceSphere->addTransformParameters<Rotation>(params.common.origin);
-  }
-  for (auto& faceDisk : faceDisks)
+  for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
   {
-    // faceDisk << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{widgets_};
-    // faceDisk->addTransformParameters<Rotation>(params.common.origin);
+    auto dir = boxData.getDirectionOfFace(i);
+    auto edgesParallel = boxData.getEdgesParrallelToFace(i);
+    auto face = boxData.getWidgetsOnFace(i);
+    auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
+
+    //faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{edgesParallel};
+    //faceDisks[i] << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{face};
+    faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{widgets_};
   }
+  //for (auto& faceDisk : faceDisks)
+  //{
+    //faceDisk << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
+    //faceDisk << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{widgets_};
+    // faceDisk->addTransformParameters<Rotation>(params.common.origin);
+  //}
     // registerAllSiblingWidgetsForEvent(corner, WidgetMovement::SCALE);
 
   // gen.glyphMaker->cylinder({params.common, Point(-2,0,0), Point(3,0,0)}, *this);

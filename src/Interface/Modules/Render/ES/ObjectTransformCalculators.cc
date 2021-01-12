@@ -165,7 +165,7 @@ gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
 
 ObjectScaleAxisCalculator::ObjectScaleAxisCalculator(const BasicRendererObjectProvider* s, const Params& p)
   : ObjectTransformCalculatorBase(s), flipAxisWorld_(p.flipAxisWorld_),
-    originWorld_(p.originWorld_), scaleAxis_(p.scaleAxis_)
+    originWorld_(p.originWorld_), axis_(p.axis_), scaleAxisIndex_(p.scaleAxisIndex_)
 {
   // Get transforms
   auto view = service_->camera().getWorldToView();
@@ -195,14 +195,13 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   // Apply transformations to vectors
   glm::vec3 sposView = glm::vec3(inverseProjection * glm::vec4(spos * projectedW_, 0.0, 1.0));
   sposView.z = -projectedW_;
-  glm::vec3 scaleAxisView = (view * glm::vec4(scaleAxis_, 0.0)).xyz();
+  glm::vec3 scaleAxisView = (view * glm::vec4(axis_, 0.0)).xyz();
   glm::vec3 originToSposView = sposView - originView_;
   glm::vec3 shiftedOriginToCurrentSpos = originToSposView - (originToInitialSpos_ - scaleAxisView);
 
   float initLen = glm::length(scaleAxisView);
   float scaling_factor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
-  scaling_factor = (multiplier_ * scaling_factor) + (1.0-multiplier_);
-
+  //scaling_factor = (multiplier_ * scaling_factor) + (1.0-multiplier_;
   // Flip if negative to avoid inverted normals
   glm::mat4 flip;
   bool negativeScale = scaling_factor < 0.0;
@@ -213,23 +212,14 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   }
 
   // Generate new transforms
-  glm::vec3 scaleVec = glm::vec3(1.0);
-  // TODO pass index variabe from widget
+  auto scaleVec = glm::vec3(1.0);
   scaleVec[scaleAxisIndex_] = scaling_factor;
 
   glm::mat4 translation = glm::translate(-originWorld_);
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scaleVec);
   glm::mat4 reverse_translation = glm::translate(originWorld_);
 
-  // TODO figure out what scaleTrans does
-  glm::mat4 trans = info.scaleTrans * scale * glm::transpose(info.scaleTrans) * translation;
-  trans = flipTrans * trans;
-  trans = reverse_translation * trans;
-
-  glm::mat4 translation = glm::translate(-originWorld_);
-  glm::mat4 scale = glm::scale(glm::mat4(1.0), glm::vec3(scaling_factor));
-  glm::mat4 reverse_translation = glm::translate(originWorld_);
-
+  // TODO delete scaleTrans
   auto trans = gen::Transform();
   trans.transform = scale * translation;
 
@@ -237,6 +227,28 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
     trans.transform = flip * trans.transform;
 
   trans.transform = reverse_translation * trans.transform;
+  return trans;
+}
+
+ObjectAxisTranslationCalculator::ObjectAxisTranslationCalculator(const BasicRendererObjectProvider* s, const Params& p)
+  : ObjectTransformCalculatorBase(s), axis_(p.axis_), initialPosition_(p.initialPosition_), w_(p.w_)
+{}
+
+gen::Transform ObjectAxisTranslationCalculator::computeTransform(int x, int y) const
+{
+  std::cout << "init pos: " << glm::to_string(initialPosition_) << std::endl;
+  auto inverseProjection = glm::inverse(service_->camera().getViewToProjection());
+
+  auto spos = service_->screen().positionFromClick(x, y);
+  glm::vec2 transVec = (spos - initialPosition_) * glm::vec2(w_, w_);
+  std::cout << "trans vec: " << glm::to_string(transVec) << std::endl;
+  auto trans = gen::Transform();
+
+  glm::vec3 worldPos = (inverseProjection * glm::vec4(transVec, 0.0, 0.0)).xyz();
+//  if(reverse)
+ //   worldPos = -worldPos;
+
+  glm::vec3 newPos = glm::dot(worldPos, axis_) * axis_; trans.transform[3] = glm::vec4(newPos, 1.0);
   return trans;
 }
 

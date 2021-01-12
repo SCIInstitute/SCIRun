@@ -231,18 +231,33 @@ namespace SCIRun
         const Core::Geometry::Vector flip;
       };
 
-      struct SCISHARE AxisScaling : TransformParameters
+      struct SCISHARE AxisTransformParameters : TransformParameters
       {
-        explicit AxisScaling(const Core::Geometry::Point& p, const Core::Geometry::Vector& sa)
-          : origin(p), scaleAxis(sa) {}
-        const Core::Geometry::Point origin;
+        explicit AxisTransformParameters(const Core::Geometry::Vector& sa)
+          : scaleAxis(sa) {}
         const Core::Geometry::Vector scaleAxis;
       };
 
+      struct SCISHARE AxisScaling : AxisTransformParameters
+      {
+        explicit AxisScaling(const Core::Geometry::Point& p, const Core::Geometry::Vector& sa,
+                             const size_t scaleAxisIndex)
+          : AxisTransformParameters(sa), origin(p), scaleAxisIndex(scaleAxisIndex) {}
+        const Core::Geometry::Point origin;
+        const size_t scaleAxisIndex;
+      };
+
+     struct SCISHARE AxisTranslation : AxisTransformParameters
+     {
+        explicit AxisTranslation(const Core::Geometry::Vector& sa)
+          : AxisTransformParameters(sa) {}
+     };
 
       SCISHARE Core::Geometry::Point getRotationOrigin(const MultiTransformParameters& t);
       SCISHARE Core::Geometry::Vector getScaleFlipVector(const MultiTransformParameters& t);
-      SCISHARE Core::Geometry::Vector getScaleAxisVector(const MultiTransformParameters& t);
+      SCISHARE Core::Geometry::Vector getAxisVector(const MultiTransformParameters& t);
+      SCISHARE size_t getAxisIndex(const MultiTransformParameters& t);
+      SCISHARE glm::mat4 getScaleAxisTrans(const MultiTransformParameters& t);
 
       class SCISHARE Transformable
       {

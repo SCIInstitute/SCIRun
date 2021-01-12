@@ -230,9 +230,18 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     auto widgetTransformParameters = baseWidget->transformParameters();
     p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
     p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-    p.scaleAxis_ = toVec3(getScaleAxisVector(widgetTransformParameters));
-    p.scaleAxisIndex_ = getScaleAxisIndex(widgetTransformParameters);
+    p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
+    p.scaleAxisIndex_ = getAxisIndex(widgetTransformParameters);
     return boost::make_shared<ObjectScaleAxisCalculator>(brop_, p);
+  }
+  case WidgetMovement::TRANSLATE_AXIS:
+  {
+    ObjectAxisTranslationCalculator::Params p;
+    p.initialPosition_ = initPos_;
+    p.w_ = initW_;
+    auto widgetTransformParameters = baseWidget->transformParameters();
+    p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
+    return boost::make_shared<ObjectAxisTranslationCalculator>(brop_, p);
   }
   default:
     return nullptr;

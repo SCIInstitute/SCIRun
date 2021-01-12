@@ -57,6 +57,8 @@ namespace SCIRun {
                            WidgetBase& widget);
       void makeFaceDisks(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
                          WidgetBase& widget);
+      glm::mat4 getScaleTrans() const;
+      size_t getIndexOfDirectionOfFace(int f) const;
       Core::Geometry::Vector getDirectionOfFace(int f) const;
       std::vector<WidgetHandle> getEdges() const;
       std::vector<WidgetHandle> getCorners() const;

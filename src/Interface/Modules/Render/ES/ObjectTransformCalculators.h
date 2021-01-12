@@ -181,23 +181,45 @@ namespace SCIRun
         float w_;
         glm::vec3 flipAxisWorld_;
         glm::vec3 originWorld_;
-        glm::vec3 scaleAxis_;
+        glm::vec3 axis_;
         size_t scaleAxisIndex_;
+        glm::mat4 scaleTrans_;
       };
       explicit ObjectScaleAxisCalculator(const BasicRendererObjectProvider* s, const Params &p);
       gen::Transform computeTransform(int x, int y) const override;
       Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::ROTATE; }
       void setMultiplier(double multiplier);
     private:
+      glm::mat4 scaleTrans_;
+      glm::vec3 axis_;
       glm::vec3 originView_;
-      float projectedW_;
-      double multiplier_;
+      glm::vec3 originWorld_;
       glm::vec3 flipAxisWorld_;
       glm::vec3 originToInitialSpos_;
+      double multiplier_;
+      float projectedW_;
       float originToInitialSposLength_;
-      glm::vec3 originWorld_;
-      glm::vec3 scaleAxis_;
       size_t scaleAxisIndex_;
+    };
+
+class SCISHARE ObjectAxisTranslationCalculator : public ObjectTransformCalculatorBase
+    {
+    public:
+      struct SCISHARE Params
+      {
+        glm::mat4 viewProj;
+        glm::vec2 initialPosition_;
+        glm::vec3 axis_;
+        float w_;
+      };
+      ObjectAxisTranslationCalculator(const BasicRendererObjectProvider* s, const Params& t);
+      gen::Transform computeTransform(int x, int y) const override;
+      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::TRANSLATE; }
+    private:
+      glm::mat4 invViewProj_;
+      glm::vec2 initialPosition_;
+      glm::vec3 axis_;
+      float w_;
     };
   }
 }
