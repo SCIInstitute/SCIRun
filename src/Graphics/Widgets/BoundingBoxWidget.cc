@@ -184,6 +184,8 @@ std::vector<WidgetHandle> BBoxDataHandler::getCornersOfFace(int f)
     return {corners_[0], corners_[1], corners_[4], corners_[5]};
   case 5:
     return {corners_[2], corners_[3], corners_[6], corners_[7]};
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
 }
 
@@ -205,6 +207,8 @@ std::vector<WidgetHandle> BBoxDataHandler::getEdgesOfFace(int f)
     return {edges_[1], edges_[5], edges_[8], edges_[9]};
   case 5:
     return {edges_[3], edges_[7], edges_[10], edges_[11]};
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
 }
 
@@ -226,6 +230,8 @@ int BBoxDataHandler::getOppositeFaceIndex(int f)
     return 5;
   case 5:
     return 4;
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
 }
 
@@ -272,6 +278,8 @@ std::vector<WidgetHandle> BBoxDataHandler::getFaceWidgetsParrallelToFace(int f)
   case 5:
     return { faceDisks_[0], faceDisks_[1], faceDisks_[2], faceDisks_[3],
       faceSpheres_[0], faceSpheres_[1], faceSpheres_[2], faceSpheres_[3]};
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
 }
 
@@ -288,6 +296,8 @@ std::vector<WidgetHandle> BBoxDataHandler::getEdgesParrallelToFace(int f)
   case 4:
   case 5:
     return {edges_[0], edges_[2], edges_[4], edges_[6]};
+  default:
+    THROW_INVALID_ARGUMENT("The argument is not in a valid range of face indices.");
   }
 }
 
@@ -382,7 +392,6 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
-  auto scaleTrans = getScaleTrans();
   for (int f = 0; f < FACE_COUNT_; ++f)
   {
     auto axis = getDirectionOfFace(f);
@@ -425,7 +434,6 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
     faceSphere << propagatesEvent<WidgetMovement::ROTATE>::to << TheseWidgets{widgets_};
   for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
   {
-    auto dir = boxData.getDirectionOfFace(i);
     auto edgesParallel = boxData.getEdgesParrallelToFace(i);
     auto face = boxData.getWidgetsOnFace(i);
     auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
