@@ -31,6 +31,28 @@ jobs:
       run: |
         cat ./SCIRun | head -c 1024
 
+  linux-build-gui-nonpython:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-latest]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Prepare
+      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
+
+    - name: Build
+      run: ./build.sh -DQt5_PATH=$(dpkg -L qtbase5-dev) -DBUILD_WITH_PYTHON=OFF -j3
+
+    - name: Basic Test
+      working-directory: bin/SCIRun
+      run: |
+        cat ./SCIRun | head -c 1024
+
   linux-build-headless:
 
     runs-on: ${{ matrix.os }}
