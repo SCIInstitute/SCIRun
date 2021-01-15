@@ -27,12 +27,12 @@
 
 
 #include "ArcBall.hpp"
-#include <iostream>
+#include <glm/gtx/vec_swizzle.hpp>
 
 namespace spire {
 
 //------------------------------------------------------------------------------
-  ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted, const glm::mat4& screenToTCS) :
+  ArcBall::ArcBall(const glm::vec3& center, float radius, bool inverted, const glm::mat4& screenToTCS) :
     mScreenToTCS(screenToTCS),
     mCenter(center),
     mRadius(radius),
@@ -51,13 +51,9 @@ namespace spire {
 //------------------------------------------------------------------------------
 glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 {
-  glm::vec3 ballMouse;
+  glm::vec3 ballMouse(xy(tscMouse - mCenter) / mRadius, 0.0);
 
-  // (m - C) / R
-  ballMouse.x = (tscMouse.x - mCenter.x) / mRadius;
-  ballMouse.y = (tscMouse.y - mCenter.y) / mRadius;
-
-  glm::float_t mag_sq = glm::dot(ballMouse, ballMouse);
+  float mag_sq = glm::dot(ballMouse, ballMouse);
   if (mag_sq > 1.0)
   {
     // Since we are outside of the sphere, map to the visible boundary of the sphere.
@@ -79,26 +75,24 @@ glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 void ArcBall::beginDrag(const glm::vec2& msc)
 {
   mQDown       = mQNow;
-  mVSphereDown = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0f, 1.0)).xyz());
+  mVSphereDown = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0f, 1.0f)));
 }
 
 //------------------------------------------------------------------------------
 void ArcBall::drag(const glm::vec2& msc)
 {
-  glm::vec3 mVSphereNow = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0, 1.0)).xyz());
+  glm::vec3 mVSphereNow = mouseOnSphere(xyz(mScreenToTCS * glm::vec4(msc, 0.0f, 1.0f)));
 
   // Construct a quaternion from two points on the unit sphere.
   glm::quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);
   mQNow = mQDrag * mQDown;
-  if(glm::dot(mVSphereDown, mVSphereNow) < 0.0)
-    beginDrag(msc);
 }
 
 //------------------------------------------------------------------------------
 void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 {
   glm::mat4 mMatNow = glm::lookAt(location, glm::vec3(0.0f), up);
-  mQNow   = glm::quat_cast(mMatNow);
+  mQNow = glm::quat_cast(mMatNow);
 }
 
 //------------------------------------------------------------------------------
@@ -107,7 +101,7 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
   //TODO: check if cross is 0 before normalize. Crashes on Windows
   auto c = glm::cross(from, to);
   if (c == glm::vec3(0, 0, 0))
-    return {};
+    return glm::quat(1.0, 0.0, 0.0, 0.0);
 
   glm::vec3 axis = glm::normalize(c);
 

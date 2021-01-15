@@ -37,6 +37,7 @@
 #include <QOpenGLWidget>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -365,8 +366,8 @@ void SRInterface::runGCOnNextExecution()
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
     void SRInterface::setLockRotation(bool lock)  {mCamera->setLockRotation(lock);}
-    const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
-    const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
+    glm::mat4 SRInterface::getWorldToView() const       {return mCamera->getWorldToView(); }
+    glm::mat4 SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection(); }
 
     //----------------------------------------------------------------------------------------------
     //---------------- Widgets ---------------------------------------------------------------------
@@ -694,8 +695,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
                -(float(y) / float(height) * 2.0 - 1.0));
 }
 
-    //----------------------------------------------------------------------------------------------
-    //---------------- Clipping Planes -------------------------------------------------------------
+//---------------- Clipping Planes -------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
@@ -802,18 +802,18 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
         //boundbox transformation
-        glm::mat4 trans_bb = glm::mat4();
+        glm::mat4 trans_bb = glm::mat4(1.0f);
         glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
         glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
-        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
+        glm::mat4 temp = glm::scale(glm::mat4(1.0f), scale_bb);
         trans_bb = temp * trans_bb;
-        temp = glm::translate(glm::mat4(), center_bb);
+        temp = glm::translate(glm::mat4(1.0f), center_bb);
         trans_bb = temp * trans_bb;
         int index = 0;
-        for (auto i : clippingPlanes_)
+        for (const auto& i : clippingPlanes_)
         {
           glm::vec3 n3(i.x, i.y, i.z);
-          double d = i.d;
+          float d = i.d;
           glm::vec4 n(0.0);
           if (glm::length(n3) > 0.0)
           {

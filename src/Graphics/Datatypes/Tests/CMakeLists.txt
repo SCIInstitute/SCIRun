@@ -26,28 +26,16 @@
 #
 
 
-SET(Graphics_Datatypes_SRCS
-  GeometryImpl.cc
+SET(Graphics_Datatypes_Tests_SRCS
+  GLMTests.cc
 )
 
-SET(Graphics_Datatypes_HEADERS
-  GeometryImpl.h
-  share.h
+SCIRUN_ADD_UNIT_TEST(Graphics_Datatypes_Tests
+  ${Graphics_Datatypes_Tests_SRCS}
 )
 
-SCIRUN_ADD_LIBRARY(Graphics_Datatypes
-  ${Graphics_Datatypes_HEADERS}
-  ${Graphics_Datatypes_SRCS}
+TARGET_LINK_LIBRARIES(Graphics_Datatypes_Tests
+  gtest_main
+  gtest
+  gmock
 )
-
-TARGET_LINK_LIBRARIES(Graphics_Datatypes
-  Core_Datatypes
-  Core_Geometry_Primitives
-  Core_Algorithms_Visualization
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Graphics_Datatypes)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)

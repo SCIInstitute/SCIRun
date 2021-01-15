@@ -30,13 +30,12 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(GLM_external
   GIT_REPOSITORY "https://github.com/g-truc/glm.git"
-  GIT_TAG "0.9.4.6"
+  GIT_TAG "0.9.9.8"
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-	-DGLM_SWIZZLE:BOOL=ON
 	-DGLM_FORCE_CXX03:BOOL=ON
 	-DGLM_FORCE_RADIANS:BOOL=ON
 )
