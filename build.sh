@@ -79,6 +79,7 @@ try() {
   echo $*
   $*
   if [[ $? != "0" ]]; then
+      set_powersave_mode
       echo -e "\n***ERROR in build script\nThe failed command was:\n$*\n"
       exit 1
   fi
@@ -109,6 +110,14 @@ ensure() {
 get_cmake_version() {
     local version=`$cmakebin --version | cut -d ' ' -f 3 | sed -e "s/[^[:digit:].]//g"`
     echo "$version"
+}
+
+set_performance_mode() {
+    for i in $(seq 0 $((`nproc`-1))); do sudo bash -c "echo performance > /sys/devices/system/cpu/cpu$i/cpufreq/scaling_governor"; done
+}
+
+set_powersave_mode() {
+    for i in $(seq 0 $((`nproc`-1))); do sudo bash -c "echo powersave > /sys/devices/system/cpu/cpu$i/cpufreq/scaling_governor"; done
 }
 
 # Try to find a version of cmake
@@ -345,8 +354,12 @@ else
     echo "Generating Xcode project"
 fi
 
+set_performance_mode
+
 find_cmake
 
 configure_scirun
 
 build_scirun
+
+set_powersave_mode
