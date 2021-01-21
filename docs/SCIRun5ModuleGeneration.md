@@ -1433,6 +1433,7 @@ You should totally document the modules you add. There is only one required file
 Create a file in `docs/_includes/modules/` with the name *ModuleName.md*
 
 A template for the contents is provided here with annotated comments:
+{% raw %}
 ```
 ---
 title: MODULE_NAME
@@ -1463,6 +1464,7 @@ tags: module
 {% capture url %}{% include url.md %}{% endcapture %}
 {{ url }}
 ```
+{% endraw %}
 
 #### 8.3 Creating the Symbolic Link
 Create a symbolic link in `docs/modules` with the same name that points to this new file you created.
