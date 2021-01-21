@@ -1468,3 +1468,23 @@ tags: module
 
 #### 8.3 Creating the Symbolic Link
 Create a symbolic link in `docs/modules` with the same name that points to this new file you created.
+
+##### OS X/Linux
+Execute `ln` command
+```
+ln -s path/to/original path/to/link
+```
+For example, if you are in the SCIRun directory, this is what the command might look like:
+```
+ln -s docs/_includes/modules/ModuleName.md /docs/modules/ModuleName.md
+```
+
+##### Windows
+Run Command Prompt as administrator (Right-click on application and click *Run as Administrator*). Execute `mklink` command
+```
+mklink /path/to/original /path/to/link
+```
+For example, if you are in the SCIRun directory, this is what the command might look like:
+```
+mklink docs/_includes/modules/ModuleName.md /docs/modules/ModuleName.md
+```
