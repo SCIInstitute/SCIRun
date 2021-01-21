@@ -37,9 +37,11 @@ namespace shaders = spire;
 
 namespace ren {
 
+static std::map<int, std::map<std::string, bool>> textureUniformLogged;
+
 void Texture::checkUniform(GLuint shaderID)
 {
-  if (isSetUp() == false)
+  if (!isSetUp())
   {
     bool boundUniform = false;
     std::vector<shaders::ShaderUniform> uniforms =
@@ -55,10 +57,11 @@ void Texture::checkUniform(GLuint shaderID)
       }
     }
 
-    if (boundUniform == false)
+    if (!boundUniform && textureUniformLogged[shaderID].find(uniformName) == textureUniformLogged[shaderID].end())
     {
       std::cerr << "Unable to find uniform with name: " << uniformName <<
           " in shader with ID: " << shaderID << std::endl;
+      textureUniformLogged[shaderID][uniformName] = true;
     }
   }
 }
