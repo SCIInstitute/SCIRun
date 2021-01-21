@@ -92,5 +92,5 @@ DatatypeHandle ImportMatricesFromMatlab::processMatlabData(const matlabarray& ma
 
 int ImportMatricesFromMatlab::indexMatlabFile(matlabconverter& converter, const matlabarray& mlarray, std::string& infostring) const
 {
-  return converter.sciMatrixCompatible(mlarray, infostring);
+  return converter.sciMatrixCompatible(mlarray, infostring, Core::Logging::LogSettings::Instance().verbose());
 }

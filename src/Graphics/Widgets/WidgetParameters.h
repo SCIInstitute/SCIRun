@@ -239,7 +239,6 @@ namespace SCIRun
         void addTransformParameters(Params&&... t) { transformParameters_.push_back(std::make_shared<TransformType>(t...)); }
       private:
         MultiTransformParameters transformParameters_;
-        glm::mat4 latestTransform_;
       };
     }
   }

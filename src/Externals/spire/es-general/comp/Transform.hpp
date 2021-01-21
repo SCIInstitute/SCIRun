@@ -39,7 +39,7 @@ namespace gen {
 struct Transform
 {
   // -- Data --
-  glm::mat4 transform;
+  glm::mat4 transform {1.0f};
 
   // -- Functions --
   void setPosition(const glm::vec3& pos)
