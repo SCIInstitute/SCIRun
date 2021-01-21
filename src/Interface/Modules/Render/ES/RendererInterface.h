@@ -126,7 +126,7 @@ namespace SCIRun
       virtual void setLightInclination(int index, float inclination) = 0;
       virtual void setMaterialFactor(MatFactor factor, double value) = 0;
       virtual void setFog(FogFactor factor, double value) = 0;
-      virtual const glm::mat4& getViewToProjection() const = 0;
+      virtual glm::mat4 getViewToProjection() const = 0;
       virtual void setOrientSize(int size) = 0;
       virtual void setOrientPosX(int pos) = 0;
       virtual void setOrientPosY(int pos) = 0;
@@ -135,7 +135,7 @@ namespace SCIRun
       virtual StaticClippingPlanes* getClippingPlanes() = 0;
       virtual void setClippingPlaneVisible(bool value) = 0;
       virtual Core::Geometry::BBox getSceneBox() = 0;
-      virtual const glm::mat4& getWorldToView() const = 0;
+      virtual glm::mat4 getWorldToView() const = 0;
       virtual glm::mat4 getWorldToProjection() const = 0;
     };
 

@@ -45,7 +45,7 @@ public:
   /// Builds an AABB that encompasses a sphere.
   /// \param[in]  center Center of the sphere.
   /// \param[in]  radius Radius of the sphere.
-  AABB(const glm::vec3& center, glm::float_t radius);
+  AABB(const glm::vec3& center, float radius);
 
   /// Builds an AABB that contains the two points.
   AABB(const glm::vec3& p1, const glm::vec3& p2);
@@ -60,7 +60,7 @@ public:
   bool isNull() const {return mMin.x > mMax.x || mMin.y > mMax.y || mMin.z > mMax.z;}
 
   /// Extend the bounding box on all sides by \p val.
-  void extend(glm::float_t val);
+  void extend(float val);
 
   /// Expand the AABB to include point \p p.
   void extend(const glm::vec3& p);
@@ -69,7 +69,7 @@ public:
   /// radius.
   /// \param[in]  center Center of sphere.
   /// \param[in]  radius Radius of sphere.
-  void extend(const glm::vec3& center, glm::float_t radius);
+  void extend(const glm::vec3& center, float radius);
 
   /// Expand the AABB to encompass the given \p aabb.
   void extend(const AABB& aabb);
@@ -78,7 +78,7 @@ public:
   /// normal, and radius \p radius.
   /// \xxx Untested -- This function is not represented in our unit tests.
   void extendDisk(const glm::vec3& center, const glm::vec3& normal,
-                  glm::float_t radius);
+                  float radius);
 
   /// Translates AABB by vector \p v.
   void translate(const glm::vec3& v);
@@ -98,11 +98,11 @@ public:
 
   /// Retrieves the longest edge.
   /// If the AABB is NULL, then 0 is returned.
-  glm::float_t getLongestEdge() const;
+  float getLongestEdge() const;
 
   /// Retrieves the shortest edge.
   /// If the AABB is NULL, then 0 is returned.
-  glm::float_t getShortestEdge() const;
+  float getShortestEdge() const;
 
   /// Retrieves the AABB's minimum point.
   glm::vec3 getMin() const {return mMin;}
@@ -126,7 +126,7 @@ public:
   /// they have to have 100% overlap.
   /// If either of the two AABBs is NULL, then false is returned.
   /// \xxx Untested -- This function is not represented in our unit tests.
-  bool isSimilarTo(const AABB& b, glm::float_t diff = 0.5) const;
+  bool isSimilarTo(const AABB& b, float diff = 0.5) const;
 
 private:
 

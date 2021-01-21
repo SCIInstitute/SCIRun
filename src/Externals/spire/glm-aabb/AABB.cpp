@@ -36,7 +36,7 @@ AABB::AABB()
   setNull();
 }
 
-AABB::AABB(const glm::vec3& center, glm::float_t radius)
+AABB::AABB(const glm::vec3& center, float radius)
 {
   setNull();
   extend(center, radius);
@@ -59,7 +59,7 @@ AABB::~AABB()
 {
 }
 
-void AABB::extend(glm::float_t val)
+void AABB::extend(float val)
 {
   if (!isNull())
   {
@@ -82,7 +82,7 @@ void AABB::extend(const glm::vec3& p)
   }
 }
 
-void AABB::extend(const glm::vec3& p, glm::float_t radius)
+void AABB::extend(const glm::vec3& p, float radius)
 {
   glm::vec3 r(radius);
   if (!isNull())
@@ -106,13 +106,13 @@ void AABB::extend(const AABB& aabb)
   }
 }
 
-void AABB::extendDisk(const glm::vec3& c, const glm::vec3& n, glm::float_t r)
+void AABB::extendDisk(const glm::vec3& c, const glm::vec3& n, float r)
 {
   if (glm::length(n) < 1.e-12) { extend(c); return; }
   glm::vec3 norm = glm::normalize(n);
-  glm::float_t x = sqrt(1 - norm.x) * r;
-  glm::float_t y = sqrt(1 - norm.y) * r;
-  glm::float_t z = sqrt(1 - norm.z) * r;
+  float x = sqrt(1 - norm.x) * r;
+  float y = sqrt(1 - norm.y) * r;
+  float z = sqrt(1 - norm.z) * r;
   extend(c + glm::vec3(x,y,z));
   extend(c - glm::vec3(x,y,z));
 }
@@ -125,12 +125,12 @@ glm::vec3 AABB::getDiagonal() const
     return glm::vec3(0);
 }
 
-glm::float_t AABB::getLongestEdge() const
+float AABB::getLongestEdge() const
 {
   return glm::compMax(getDiagonal());
 }
 
-glm::float_t AABB::getShortestEdge() const
+float AABB::getShortestEdge() const
 {
   return glm::compMin(getDiagonal());
 }
@@ -140,7 +140,7 @@ glm::vec3 AABB::getCenter() const
   if (!isNull())
   {
     glm::vec3 d = getDiagonal();
-    return mMin + (d * glm::float_t(0.5));
+    return mMin + (0.5f * d);
   }
   else
   {
@@ -210,11 +210,11 @@ AABB::INTERSECTION_TYPE AABB::intersect(const AABB& b) const
 }
 
 
-bool AABB::isSimilarTo(const AABB& b, glm::float_t diff) const
+bool AABB::isSimilarTo(const AABB& b, float diff) const
 {
   if (isNull() || b.isNull()) return false;
 
-  glm::vec3 acceptable_diff=( (getDiagonal()+b.getDiagonal()) / glm::float_t(2.0))*diff;
+  glm::vec3 acceptable_diff = ((getDiagonal()+b.getDiagonal()) * 0.5f) * diff;
   glm::vec3 min_diff(mMin-b.mMin);
   min_diff = glm::vec3(fabs(min_diff.x),fabs(min_diff.y),fabs(min_diff.z));
   if (min_diff.x > acceptable_diff.x) return false;

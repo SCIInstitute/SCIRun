@@ -38,6 +38,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Logging/Log.h>
 #include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
@@ -391,7 +392,8 @@ int MatlabToFieldAlgo::analyze_iscompatible(const matlabarray& mlarray, std::str
   }
   catch (matlabconverter::error_type& e)
   {
-    std::cerr << "analyze_fieldtype error: " << e.what() << std::endl;
+    if (postremark || Core::Logging::LogSettings::Instance().verbose())
+      SCIRun::logWarning("analyze_fieldtype error: {}", e.what());
     return 0;
   }
 
@@ -442,7 +444,8 @@ int MatlabToFieldAlgo::analyze_fieldtype(const matlabarray& mlarray, std::string
   }
   catch (matlabconverter::error_type& e)
   {
-    std::cerr << "analyze_fieldtype error: " << e.what() << std::endl;
+    if (Core::Logging::LogSettings::Instance().verbose())
+      logError("analyze_fieldtype error: {}", e.what());
     return 0;
   }
 
