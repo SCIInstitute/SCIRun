@@ -1428,6 +1428,8 @@ You will at least need a testing network.
 
 You should totally document the modules you add. There is only one required file for a properly documented module. A *ModuleName.md* file is needed along with a symbolic link pointing to this file.
 
+We suggest creating a second branch for the module documentation so that a separate pull request can be made. Instructions to create a new branch can be found in [Section 1.1.3](#113-creating-your-scirun-fork), and be sure to commit your changes frequently.
+
 #### 8.2 Creating the Markdown File
 
 Create a file in `docs/_includes/modules/` with the name *ModuleName.md*
@@ -1488,3 +1490,14 @@ For example, if you are in the SCIRun directory, this is what the command might 
 ```
 mklink docs/_includes/modules/ModuleName.md /docs/modules/ModuleName.md
 ```
+
+#### 8.4 Build Website Locally
+To make sure everything is working properly and the module documentation looks right, you can build the website locally.
+You will need to have [Jekyll](https://jekyllrb.com/docs/installation/) installed. Once you have confirmed Jekyll is installed, execute the following command in the `/docs` directory.
+
+```
+bundle exec jekyll serve
+```
+This will build the site as well as make it available on a local server on the server address provided on the command line. If everything was done correctly, the documentation for your new module should be available under Modules and the category provided in *ModuleName.md*. (`/SCIRun/modules.html/#ModuleName`)  
+
+Once you have confirmed everything is correct. Be sure to push your changes to GitHub and make a pull request using the same instructions from [Section 6.1.10](#6110-github-pull-request) .
