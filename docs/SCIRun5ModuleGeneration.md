@@ -89,7 +89,7 @@ Make sure to update to the most up-to-date version of the source code available,
 Alternatively, use Git to clone the SCIRun repository (https://github.com/SCIInstitute/SCIRun.git). We suggest creating a fork of the repository so that you can track your changes and create pull requests to the SCIRun repository [Section 1.1.3](#113-creating-your-scirun-fork).
 
 ##### 1.1.2 Compilers, Dependencies Development Tools
-SCIRun will need to be built from the source code in order to test and use any modules written. Make sure that Qt 4.8, Git, CMake, and the latest C++ compilers for the operating system are installed.
+SCIRun will need to be built from the source code in order to test and use any modules written. Make sure that Qt, Git, CMake, and the latest C++ compilers for the operating system are installed. More detailed build instructions are available, [Building SCIRun](build.html)
 
 ##### 1.1.3 Creating Your SCIRun Fork
 With your own GitHub account, go to the [SCIRun GitHub page](https://github.com/SCIInstitute/SCIRun). Click the fork button on the upper right side of the page. It will ask you where to move the fork to, chose your own account. Once the repository is forked, clone it to your local machine with the following command.  
