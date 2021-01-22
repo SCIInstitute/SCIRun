@@ -351,10 +351,10 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
     .resolution(params.resolution);
 
   for (int c = 0; c < CORNER_COUNT_; ++c)
-    // {
+  {
     corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c]).build();
       // corners_[c]->addTransformParameters<Scaling>(params.origin, Vector(1,0,0));
-    // }
+  }
 }
 
 void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
@@ -385,7 +385,8 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
   const static double diskLengthScale = 2.5;
 
   auto builder = DiskWidgetBuilder(gen.base.idGenerator)
-    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::NONE)}})
+    // .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
     //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(diskDiameterScale * params.scale)
     .defaultColor(params.defaultColor)
@@ -399,7 +400,7 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
     faceDisks_[f] = builder.tag("FaceDisk" + std::to_string(f))
       .diameterPoints(facePoints_[f], facePoints_[f] + axis * params.scale * diskLengthScale)
       .build();
-    faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
+    // faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
     //faceDisks_[f]->addTransformParameters<AxisTranslation>(axis);
   }
 }
@@ -417,7 +418,7 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   auto corners = boxData.getCorners();
   auto faceSpheres = boxData.getFaceSpheres();
   auto faceDisks = boxData.getFaceDisks();
-  // std::cout << "wid list size: " << widgets_.size() << "\n";
+
   widgets_ = edges;
   widgets_.insert(widgets_.end(), corners.begin(), corners.end());
   widgets_.insert(widgets_.end(), faceSpheres.begin(), faceSpheres.end());
@@ -432,67 +433,17 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
     corner << propagatesEvent<WidgetMovement::SCALE>::to << TheseWidgets{widgets_};
   for (auto& faceSphere : faceSpheres)
     faceSphere << propagatesEvent<WidgetMovement::ROTATE>::to << TheseWidgets{widgets_};
-  for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
-  {
-    auto edgesParallel = boxData.getEdgesParrallelToFace(i);
-    auto face = boxData.getWidgetsOnFace(i);
-    auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
+  // for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
+  // {
+    // auto edgesParallel = boxData.getEdgesParrallelToFace(i);
+    // auto face = boxData.getWidgetsOnFace(i);
+    // auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
 
     //faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{edgesParallel};
     //faceDisks[i] << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{face};
-    faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{widgets_};
-  }
-  //for (auto& faceDisk : faceDisks)
-  //{
-    //faceDisk << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
-    //faceDisk << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{widgets_};
-    // faceDisk->addTransformParameters<Rotation>(params.common.origin);
-  //}
-    // registerAllSiblingWidgetsForEvent(corner, WidgetMovement::SCALE);
+  // }
+}
 
-  // gen.glyphMaker->cylinder({params.common, Point(-2,0,0), Point(3,0,0)}, *this);
-  // ... TODO
-  // .transformMapping({
-    // {WidgetInteraction::CLICK, WidgetMovement::TRANSLATE},
-    // {WidgetInteraction::RIGHT_CLICK, WidgetMovement::AXIS_TRANSLATE}
-  // })
-  // ...
-  #if 0
-  // name = gen.glyphMaker->cylinder({params.common, , *this);
-  //TODO add axis translate for edges
-  // registerAllSiblingWidgetsForEvent(e, WidgetMovement::AXIS_TRANSLATE);
-
-  return;
-  for (const auto& widget : boxData.getCorners())
-    // name = gen.glyphMaker->sphere(params, *this);
-    registerAllSiblingWidgetsForEvent(widget, WidgetMovement::SCALE);
-  //TODO add axis scale to each corner
-  // everything scales then axis translates
-  // registerAllSiblingWidgetsForEvent(c, WidgetMovement::AXIS_SCALE);
-
-  for (const auto& widget : boxData.getFaceSpheres())
-    // name = gen.glyphMaker->sphere(params, *this);
-    registerAllSiblingWidgetsForEvent(widget, WidgetMovement::ROTATE);
-  //TODO right click uses oriented bounding box to change data orientation in bbox frame
-
-  // TODO still need to implement axis translate
-  for (const auto& widget : boxData.getFaceDisks())
-    // name = gen.glyphMaker->disk(params, *this);
-    registerAllSiblingWidgetsForEvent(widget, WidgetMovement::TRANSLATE_AXIS);
-  for (int f = 0; f < BBoxDataHandler::FACE_COUNT_; ++f)
-  {
-    const auto axisTranslateThese = boxData.getWidgetsOnFace(f);
-    const auto inverseAxisTranslateThese = boxData.getWidgetsOnOppositeFace(f);
-    const auto axisScalethese = boxData.getEdgesParrallelToFace(f);
-  }
-  // right click
-  for (int f = 0; f < BBoxDataHandler::FACE_COUNT_; ++f)
-  {
-    const auto axisTranslateThese = boxData.getWidgetsOnFace(f);
-    const auto leaveAlone = boxData.getWidgetsOnOppositeFace(f);
-    const auto halfScalehalfAxisTranslateThese = boxData.getEdgesParrallelToFace(f);
-  }
-  #endif
 
   // face 0 = {v0,v1,v2,v3}
   // axis translate
@@ -541,7 +492,6 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
     uniscaledParallelEdges = {e8,e9,e10,e11}
   );
   #endif
-}
 
 // Pseudocode
 #if 0

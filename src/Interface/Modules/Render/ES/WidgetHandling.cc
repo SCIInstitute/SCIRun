@@ -159,7 +159,7 @@ Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
 
 void WidgetTransformEvent::move(WidgetBase* widget, WidgetMovement moveType) const
 {
-  if (widget)
+  if (widget && moveType)
   {
     auto calc = impl_->calcFamily_->calcFor(widget, moveType);
     auto transform = calc->computeTransform(impl_->x_, impl_->y_);
