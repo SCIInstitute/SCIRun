@@ -88,13 +88,7 @@ gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
     * (originToSposViewLength / originToInitialSposLength_);
 
   // Flip if negative to avoid inverted normals
-  glm::mat4 flip;
-  bool negativeScale = scaling_factor < 0.0;
-  if (negativeScale)
-  {
-    flip = glm::rotate(glm::mat4(1.0f), static_cast<float>(M_PI), flipAxisWorld_);
-    scaling_factor = -scaling_factor;
-  }
+  scaling_factor = std::abs(scaling_factor);
 
   // Generate new transforms
   glm::mat4 translation = glm::translate(-originWorld_);
@@ -103,9 +97,6 @@ gen::Transform ObjectScaleCalculator::computeTransform(int x, int y) const
 
   auto trans = gen::Transform();
   trans.transform = scale * translation;
-
-  if (negativeScale)
-    trans.transform = flip * trans.transform;
 
   trans.transform = reverse_translation * trans.transform;
   return trans;
@@ -202,6 +193,7 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   float initLen = glm::length(scaleAxisView);
   float scaling_factor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
   //scaling_factor = (multiplier_ * scaling_factor) + (1.0-multiplier_;
+ 
   // Flip if negative to avoid inverted normals
   glm::mat4 flip;
   bool negativeScale = scaling_factor < 0.0;
@@ -219,7 +211,6 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   glm::mat4 scale = glm::scale(glm::mat4(1.0), scaleVec);
   glm::mat4 reverse_translation = glm::translate(originWorld_);
 
-  // TODO delete scaleTrans
   auto trans = gen::Transform();
   trans.transform = scale * translation;
 
@@ -236,95 +227,19 @@ ObjectAxisTranslationCalculator::ObjectAxisTranslationCalculator(const BasicRend
 
 gen::Transform ObjectAxisTranslationCalculator::computeTransform(int x, int y) const
 {
-  std::cout << "init pos: " << glm::to_string(initialPosition_) << std::endl;
   auto inverseProjection = glm::inverse(service_->camera().getViewToProjection());
 
   auto spos = service_->screen().positionFromClick(x, y);
   glm::vec2 transVec = (spos - initialPosition_) * glm::vec2(w_, w_);
-  std::cout << "trans vec: " << glm::to_string(transVec) << std::endl;
   auto trans = gen::Transform();
 
   glm::vec3 worldPos = (inverseProjection * glm::vec4(transVec, 0.0, 0.0)).xyz();
-//  if(reverse)
- //   worldPos = -worldPos;
-
-  glm::vec3 newPos = glm::dot(worldPos, axis_) * axis_; trans.transform[3] = glm::vec4(newPos, 1.0);
+  glm::vec3 newPos = glm::dot(worldPos, axis_) * axis_;
+  trans.transform[3] = glm::vec4(newPos, 1.0);
   return trans;
 }
-
-#if 0
-  std::cout << "axis: " << glm::to_string(scaleAxis_) << "\n";
-  auto spos = service_->screen().positionFromClick(x, y);
-
-  glm::vec3 currentSposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
-  currentSposView.z = -projectedW_;
-  glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(originView_.xy(), originView_.z);
-  glm::vec3 sposView = glm::vec3(glm::inverse(service_->camera().getViewToProjection()) * glm::vec4(spos * projectedW_, 0.0, 1.0));
-  glm::vec3 originView = glm::vec3(service_->camera().getWorldToView() * glm::vec4(originWorld_, 1.0));
-  glm::vec3 originToSpos = sposView - originView;
-
-  glm::vec3 scaleAxisView = (service_->camera().getWorldToView() * glm::vec4(scaleAxis_, 0.0)).xyz();
-  glm::vec3 shiftedOriginToCurrentSpos = originToCurrentSpos - (originToSpos - scaleAxisView);
-  std::cout << "scale axis view: " << glm::to_string(scaleAxisView) << "\n";
-  float initLen = glm::length(scaleAxisView);
-
-  float scaling_factor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
-  // scaling_factor = (multiplier_ * scaling_factor) + (1.0-multiplier_);
-  std::cout << "scaling factor: " << scaling_factor << "\n";
-
-  // Flip if negative to avoid inverted normals
-  glm::mat4 flip = glm::mat4(1.0);
-  bool negativeScale = scaling_factor < 0.0;
-  if (negativeScale)
-  {
-    //TODO: use more precise pi? or actual constant value?
-    flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, flipAxisWorld_);
-    scaling_factor = -scaling_factor;
-  }
-
-  auto trans = gen::Transform();
-  glm::mat4 translation = glm::translate(-originWorld_);
-  glm::mat4 scale = glm::scale(trans.transform, glm::vec3(scaling_factor));
-  glm::mat4 reverse_translation = glm::translate(originWorld_);
-
-  std::cout << "scale: " << glm::to_string(scale) << "\n";
-  std::cout << "translation: " << glm::to_string(translation) << "\n";
-  trans.transform = scale * translation;
-
-  if (negativeScale)
-    trans.transform = flip * trans.transform;
-
-  std::cout << "transform: " << glm::to_string(trans.transform) << "\n";
-  // trans.transform = reverse_translation * trans.transform;
-  return trans;
-}
-#endif
 
 void ObjectScaleAxisCalculator::setMultiplier(double multiplier)
 {
   multiplier_ = multiplier;
 }
-//glm::mat4 SRInterface::scaleAxisWidget( WidgetInfo info, const glm::ivec2& pos, bool negate, float multiplier)
-    // {
-    //   {
-    //     if(info.flipInvertedWidget)
-    //       flipTrans = glm::rotate(glm::mat4(1.0f), 3.1415926f, info.flipAxis);
-    //     if(negate)
-    //       scalingFactor = -scalingFactor;
-    //   }
-
-    //   glm::vec3 scaleVec = glm::vec3(1.0);
-    //   scaleVec[info.scaleAxisIndex] = scalingFactor;
-
-    //   glm::mat4 trans = glm::mat4(1.0);
-    //   glm::mat4 translation = glm::translate(-mOriginWorld);
-    //   glm::mat4 scale = glm::scale(trans, scaleVec);
-    //   glm::mat4 reverse_translation = glm::translate(mOriginWorld);
-
-    //   trans = info.scaleTrans * scale * glm::transpose(info.scaleTrans) * translation;
-
-    //   trans = flipTrans * trans;
-
-    //   trans = reverse_translation * trans;
-    //   return trans;
-    // }

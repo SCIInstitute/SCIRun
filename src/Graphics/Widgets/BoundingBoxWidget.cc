@@ -25,7 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Widgets/BasicBoundingBoxWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
@@ -346,6 +345,7 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
   auto builder = SphereWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
     .scale(cornerSphereRadius * params.scale)
+    .origin(params.origin)
     .defaultColor(params.defaultColor)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
@@ -353,7 +353,8 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
   for (int c = 0; c < CORNER_COUNT_; ++c)
   {
     corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c]).build();
-      // corners_[c]->addTransformParameters<Scaling>(params.origin, Vector(1,0,0));
+    auto flipVec = cornerPoints_[c] - params.origin;
+    corners_[c]->addTransformParameters<Scaling>(params.origin, flipVec);
   }
 }
 
@@ -366,6 +367,7 @@ void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
   auto builder = SphereWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::ROTATE)}})
     .scale(faceSphereRadius * params.scale)
+    .origin(params.origin)
     .defaultColor(params.defaultColor)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
@@ -396,7 +398,7 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
   for (int f = 0; f < FACE_COUNT_; ++f)
   {
     auto axis = getDirectionOfFace(f);
-    auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
+    // auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
     faceDisks_[f] = builder.tag("FaceDisk" + std::to_string(f))
       .diameterPoints(facePoints_[f], facePoints_[f] + axis * params.scale * diskLengthScale)
       .build();

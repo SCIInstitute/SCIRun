@@ -26,8 +26,6 @@
 */
 
 
-// #include "Core/Datatypes/Feedback.h"
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Core/Datatypes/Color.h>
@@ -84,13 +82,13 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 
 void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackTrans)
 {
+  // TODO implement feedback info of mouse button and widget movement type for rotating bounding box around field
   // if(btn == MouseButton::RIGHT && move == WidgetMovement::ROTATE)
     // widgetAxesRotated_ = true;
   // else
   // {
   fieldTrans_ = feedbackTrans * fieldTrans_;
   trans_ = feedbackTrans * trans_;
-  std::cout << "feedback that was applied: " << feedbackTrans << "\n";
   trans_.orthogonalize();
   // }
   // if(move == WidgetMovement::ROTATE)
@@ -329,21 +327,12 @@ namespace
 
 void EditMeshBoundingBox::generateGeomsList()
 {
-  SCIRun::Graphics::Datatypes::WidgetBaseParameters wParams = {*this, "EMBB"};
-  SCIRun::Graphics::Datatypes::BoundingBoxParameters bParams = {
-    {get_state()->getValue(Scale).toDouble(), "no-color", trans_.get_translation(), bbox_, resolution_},
-    {trans_.get_translation(), trans_.get_rotation()}};
-
   geoms_.clear();
-  auto bbox = WidgetFactory::createBoundingBox(wParams, bParams);
+  auto bbox = WidgetFactory::createBoundingBox({*this, "EMBB"},
+    {{get_state()->getValue(Scale).toDouble(), "no-color", trans_.get_translation(), bbox_, resolution_},
+    {trans_.get_translation(), trans_.get_rotation()}});
   auto bboxWidget = boost::dynamic_pointer_cast<CompositeWidget>(bbox);
   geoms_.insert(geoms_.end(), bboxWidget->subwidgetBegin(), bboxWidget->subwidgetEnd());
-  // const auto bboxWidget = WidgetFactory::createBoundingBox(*this, "EMBB",
-    // get_state()->getValue(Scale).toDouble(), trans_, trans_.get_translation(), widgetNum_++);
-
-  // geoms_.push_back(bboxWidget);
-  // for (const auto& widget : bboxWidget->widgets_)
-    // geoms_.push_back(widget);
 }
 
 void EditMeshBoundingBox::loadFromParameters()
