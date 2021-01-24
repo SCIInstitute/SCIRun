@@ -129,7 +129,7 @@ namespace SCIRun
     private:
       glm::vec2 initialPosition_;
       float w_;
-      glm::mat4 invViewProj_;
+      glm::mat4 invViewProj_ {1.0};
     };
 
     class SCISHARE ObjectScaleCalculator : public ObjectTransformCalculatorBase

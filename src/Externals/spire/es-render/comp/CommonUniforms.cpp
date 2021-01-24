@@ -26,9 +26,14 @@
 */
 
 
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <gl-shaders/GLShader.hpp>
 
 #include <es-general/util/Math.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 
 #include "CommonUniforms.hpp"
 
@@ -126,7 +131,7 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
       case U_CAM_VIEW_VEC:
         {
           glm::mat4 view = cam.getInverseView();
-          glm::vec3 viewVec = view[2].xyz();
+          glm::vec3 viewVec = xyz(view[2]);
           vec = -viewVec; // Our projection matrix looks down negative Z.
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
           break;
@@ -141,7 +146,7 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
       case U_CAM_UP:
         {
           glm::mat4 view = cam.getInverseView();
-          vec = view[1].xyz();
+          vec = xyz(view[1]);
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
           break;
         }

@@ -214,6 +214,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData3", "CalculateFieldData" },
     { "CalculateFieldData4", "CalculateFieldData" },
     { "CalculateFieldData5", "CalculateFieldData" },
+    { "InterfaceWithCleaver", "InterfaceWithCleaver2" },
     { "InterfaceWithNeuroFEMForward", "PlaceholderModule" },
     { "ViewLeadSignals", "PlaceholderModule" },
     { "ShowMatrix", "PlaceholderModule" },

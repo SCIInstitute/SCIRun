@@ -97,7 +97,7 @@ DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) 
 
 int ImportFieldsFromMatlab::indexMatlabFile(matlabconverter& converter, const matlabarray& mlarray, std::string& infostring) const
 {
-  return converter.sciFieldCompatible(mlarray, infostring);
+  return converter.sciFieldCompatible(mlarray, infostring, Core::Logging::LogSettings::Instance().verbose());
 }
 
 void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut)

@@ -31,6 +31,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <cmath>
+#include <glm/gtx/vec_swizzle.hpp>
 
 using namespace SCIRun::Render;
 
@@ -46,7 +47,7 @@ gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
   auto screenPos = service_->screen().positionFromClick(x, y);
   glm::vec2 transVec = (screenPos - initialPosition_) * glm::vec2(w_, w_);
   auto trans = gen::Transform();
-  trans.setPosition((invViewProj_ * glm::vec4(transVec, 0.0, 0.0)).xyz());
+  trans.setPosition(xyz(invViewProj_ * glm::vec4(transVec, 0.0, 0.0)));
   return trans;
 }
 

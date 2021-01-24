@@ -31,13 +31,15 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
@@ -96,20 +98,20 @@ using namespace SCIRun::TestUtils;
 
 TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
 {
-  InterfaceWithCleaverAlgorithm algo;
+  InterfaceWithCleaver2Algorithm algo;
 
   std::vector<FieldHandle> inputs;
   inputs.push_back(BoxSignedDistanceField(true));
   inputs.push_back(BoxSignedDistanceField(false));
 
-  auto info = algo.run(inputs);
+  auto output = boost::dynamic_pointer_cast<Field>(algo.runImpl(inputs)[Variables::OutputField]);
 
-  std::cout << "Number of mesh elements: " <<  info->vmesh()->num_elems() << std::endl;
-  std::cout << "Number of mesh nodes: " <<  info->vmesh()->num_nodes() << std::endl;
-  std::cout << "Number of mesh values: " <<  info->vfield()->num_values() << std::endl;
+  std::cout << "Number of mesh elements: " <<  output->vmesh()->num_elems() << std::endl;
+  std::cout << "Number of mesh nodes: " <<  output->vmesh()->num_nodes() << std::endl;
+  std::cout << "Number of mesh values: " <<  output->vfield()->num_values() << std::endl;
 
-  ASSERT_TRUE(info->vmesh()->num_elems() == 4326);
-  ASSERT_TRUE(info->vmesh()->num_nodes() == 908);
-  ASSERT_TRUE(info->vfield()->num_values() == 4326);
+  ASSERT_TRUE(output->vmesh()->num_elems() == 4326);
+  ASSERT_TRUE(output->vmesh()->num_nodes() == 908);
+  ASSERT_TRUE(output->vfield()->num_values() == 4326);
 
 }

@@ -110,8 +110,8 @@ namespace SCIRun
       void setLockRotation(bool lock) override;
       void setAutoRotateVector(const glm::vec2& axis) override;
       void setAutoRotateSpeed(double speed) override;
-      const glm::mat4& getWorldToView() const override;
-      const glm::mat4& getViewToProjection() const override;
+      glm::mat4 getWorldToView() const override;
+      glm::mat4 getViewToProjection() const override;
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...

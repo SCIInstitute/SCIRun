@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -42,6 +42,18 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -56,7 +68,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -91,6 +103,18 @@
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -144,7 +168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -209,6 +233,42 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>CustomColor0</name>
+								</first>
+								<second>
+									<name>CustomColor0</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.2,0.2,0.2)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CustomColor1</name>
+								</first>
+								<second>
+									<name>CustomColor1</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.8,0.8,0.8)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -223,7 +283,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>14</count>
+							<count>15</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -263,6 +323,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>PythonCode</name>
 								</first>
 								<second>
@@ -274,27 +346,27 @@ import time
 
 # BLUE CORNER
 time.sleep(2)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, &quot;Quaternion(-0.111024,-0.428840,0.717876,-0.537051)&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, [-0.111024,-0.428840,0.717876,-0.537051])
 scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraDistance&quot;, 11.412)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot;[-0.494965, 1.04728, 0.404422]&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, [-0.494965, 1.04728, 0.404422])
 
 # RED CORNER
 time.sleep(2)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, &quot;Quaternion(-0.921876,-0.104537,0.059056,-0.368415)&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, [-0.921876,-0.104537,0.059056,-0.368415])
 scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraDistance&quot;, 26.4076)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot;[10.5637, 11.3045, -6.36899]&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, [10.5637, 11.3045, -6.36899])
 
 # YELLOW CORNER
 time.sleep(2)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, &quot;Quaternion(0.734134,-0.322753,0.483731,-0.350549)&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, [0.734134,-0.322753,0.483731,-0.350549])
 scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraDistance&quot;, 9.838)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot;[15.209, 2.23101, 14.2198]&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, [15.209, 2.23101, 14.2198])
 
 # GREEN CORNER
 time.sleep(2)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, &quot;Quaternion(0.801765,-0.195615,0.371773,-0.425080)&quot;)
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraRotation&quot;, [0.801765,-0.195615,0.371773,-0.425080])
 scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraDistance&quot;, 21.239)
-scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot;[4.01746, 4.96012, 11.0702]&quot;)</value>
+scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, [4.01746, 4.96012, 11.0702])</value>
 									</value>
 								</second>
 							</item>
@@ -433,7 +505,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -473,6 +545,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Symmetric</name>
 								</first>
 								<second>
@@ -497,7 +581,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>38</count>
+							<count>39</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -753,6 +837,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 							</item>
 							<item>
 								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>RenderAsLocation</name>
 								</first>
 								<second>
@@ -969,7 +1065,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>51</count>
+							<count>52</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1038,8 +1134,32 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraLookAt</name>
 									<value>
-										<which>2</which>
-										<value>[19.889, 0.600165, 16.072]</value>
+										<which>5</which>
+										<value>
+											<count>3</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.98889999389648438e+01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>6.00165009498596191e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.60720005035400391e+01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -1050,8 +1170,39 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraRotation</name>
 									<value>
-										<which>2</which>
-										<value>Quaternion(-0.100210,-0.854330,0.491756,-0.135106)</value>
+										<which>5</which>
+										<value>
+											<count>4</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-8.54330301284790039e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>4.91756170988082886e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-1.35106042027473450e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-1.00210040807723999e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -1376,6 +1527,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1597,7 +1760,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>51</count>
+							<count>52</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1666,8 +1829,32 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraLookAt</name>
 									<value>
-										<which>2</which>
-										<value>[-0.494965, 1.04728, 0.404422]</value>
+										<which>5</which>
+										<value>
+											<count>3</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-4.94964987039566040e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.04727995395660400e+00</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>4.04421985149383545e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -1678,8 +1865,39 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraRotation</name>
 									<value>
-										<which>2</which>
-										<value>Quaternion(-0.111024,-0.428840,0.717876,-0.537051)</value>
+										<which>5</which>
+										<value>
+											<count>4</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-4.28840070962905884e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>7.17876076698303223e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-5.37051081657409668e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-1.11024014651775360e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -2004,6 +2222,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2225,7 +2455,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>51</count>
+							<count>52</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2294,8 +2524,32 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraLookAt</name>
 									<value>
-										<which>2</which>
-										<value>[10.5637, 11.3045, -6.36899]</value>
+										<which>5</which>
+										<value>
+											<count>3</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.05636997222900391e+01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.13044996261596680e+01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-6.36898994445800781e+00</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -2306,8 +2560,39 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraRotation</name>
 									<value>
-										<which>2</which>
-										<value>Quaternion(-0.921876,-0.104537,0.059056,-0.368415)</value>
+										<which>5</which>
+										<value>
+											<count>4</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-1.04536980390548706e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>5.90559840202331543e-02</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-3.68414908647537231e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-9.21875774860382080e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -2632,6 +2917,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2853,7 +3150,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>51</count>
+							<count>52</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2922,8 +3219,32 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraLookAt</name>
 									<value>
-										<which>2</which>
-										<value>[15.209, 2.23101, 14.2198]</value>
+										<which>5</which>
+										<value>
+											<count>3</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.52089996337890625e+01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>2.23100996017456055e+00</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.42197999954223633e+01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -2934,8 +3255,39 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraRotation</name>
 									<value>
-										<which>2</which>
-										<value>Quaternion(0.734133,-0.322753,0.483730,-0.350549)</value>
+										<which>5</which>
+										<value>
+											<count>4</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-3.22753012180328369e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>4.83729988336563110e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-3.50549012422561646e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>7.34133005142211914e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -3260,6 +3612,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3481,7 +3845,7 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 					</module>
 					<state>
 						<stateMap>
-							<count>51</count>
+							<count>52</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -3550,8 +3914,32 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraLookAt</name>
 									<value>
-										<which>2</which>
-										<value>[4.01746, 4.96012, 11.0702]</value>
+										<which>5</which>
+										<value>
+											<count>3</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>4.01745986938476562e+00</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>4.96012020111083984e+00</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>1.10701999664306641e+01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -3562,8 +3950,39 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 								<second>
 									<name>CameraRotation</name>
 									<value>
-										<which>2</which>
-										<value>Quaternion(0.801765,-0.195615,0.371773,-0.425080)</value>
+										<which>5</which>
+										<value>
+											<count>4</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-1.95614948868751526e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>3.71772915124893188e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>-4.25079911947250366e-01</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>1</which>
+													<value>8.01764845848083496e-01</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -3888,6 +4307,18 @@ scirun_set_module_state(&quot;ViewScene:1&quot;, &quot;CameraLookAt&quot;, &quot
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>

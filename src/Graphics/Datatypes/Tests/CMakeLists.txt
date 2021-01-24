@@ -26,14 +26,16 @@
 #
 
 
-MESSAGE(STATUS "Configuring External Packages")
+SET(Graphics_Datatypes_Tests_SRCS
+  GLMTests.cc
+)
 
-# TODO: move to external repository
+SCIRUN_ADD_UNIT_TEST(Graphics_Datatypes_Tests
+  ${Graphics_Datatypes_Tests_SRCS}
+)
 
-MESSAGE(STATUS "Configuring libxml2")
-ADD_SUBDIRECTORY(libxml2)
-
-MESSAGE(STATUS "Configuring spire")
-ADD_SUBDIRECTORY(spire)
-
-ADD_SUBDIRECTORY(submodules)
+TARGET_LINK_LIBRARIES(Graphics_Datatypes_Tests
+  gtest_main
+  gtest
+  gmock
+)
