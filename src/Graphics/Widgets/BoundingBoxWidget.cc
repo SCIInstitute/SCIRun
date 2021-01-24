@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Datatypes/Color.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
@@ -32,8 +33,9 @@
 #include <glm/gtx/matrix_operation.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace Graphics::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
 
 // Index diagram for corners and edges:
 // NOTE: This ordering is based on the order corners are generated.
@@ -63,26 +65,22 @@ using namespace SCIRun::Core::Geometry;
 //          [#] - face index
 //           #  - edge index
 
-BBoxDataHandler::BBoxDataHandler(const Point& center, const std::vector<Vector>& scaledEigvecs)
+BBoxDataHandler::BBoxDataHandler(const Point& center, const std::vector<Vector>& scaledEigvecs) :
+  TRANSLATE_COLOR_(ColorRGB(1.0, 1.0, 1.0).toString()),
+  ROTATE_COLOR_(ColorRGB(1.0, 0.379, 0.531).toString()),
+  SCALE_COLOR_(ColorRGB(0.66, 0.859, 0.461).toString()),
+  SCALE_AXIS_COLOR_(ColorRGB(0.469, 0.859, 0.906).toString())
 {
   scaledEigvecs_ = scaledEigvecs;
-  // vertices--sphere widgets
-  // left-click: scale
-  // right-click: axis scale
+  scale_ = std::min(std::min(scaledEigvecs_[0].length(), scaledEigvecs_[1].length()),
+                    scaledEigvecs_[2].length());
+
   corners_.resize(CORNER_COUNT_);
-
-  // edges--cylinders
-  // left-click: translate
-  // right-click: axis translate
   edges_.resize(EDGE_COUNT_);
-
-  // faces part 1--disks
-  // left-click: translate/bidirectional scale
-  // right-click: translate/unidirectional scale
   faceDisks_.resize(FACE_COUNT_);
   faceSpheres_.resize(FACE_COUNT_);
-
   facePoints_.resize(FACE_COUNT_);
+
   for (auto f = 0; f < FACE_COUNT_; ++f)
     facePoints_[f] = center + getDirectionOfFace(f);
 
@@ -309,8 +307,8 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
   auto builder = CylinderWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)},
                        {WidgetInteraction::RIGHT_CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
-    .scale(cylinderRadius * params.scale)
-    .defaultColor(params.defaultColor)
+    .scale(cylinderRadius * params.scale * scale_)
+    .defaultColor(TRANSLATE_COLOR_)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
@@ -344,9 +342,9 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
 
   auto builder = SphereWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
-    .scale(cornerSphereRadius * params.scale)
+    .scale(cornerSphereRadius * params.scale * scale_)
     .origin(params.origin)
-    .defaultColor(params.defaultColor)
+    .defaultColor(SCALE_COLOR_)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
@@ -366,9 +364,9 @@ void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
 
   auto builder = SphereWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::ROTATE)}})
-    .scale(faceSphereRadius * params.scale)
+    .scale(faceSphereRadius * params.scale * scale_)
     .origin(params.origin)
-    .defaultColor(params.defaultColor)
+    .defaultColor(ROTATE_COLOR_)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
@@ -390,8 +388,8 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::NONE)}})
     // .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
     //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
-    .scale(diskDiameterScale * params.scale)
-    .defaultColor(params.defaultColor)
+    .scale(diskDiameterScale * params.scale * scale_)
+    .defaultColor(SCALE_AXIS_COLOR_)
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 

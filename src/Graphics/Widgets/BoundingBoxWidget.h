@@ -73,6 +73,11 @@ namespace SCIRun {
       std::vector<WidgetHandle> getEdgesParrallelToFace(int f);
 
      private:
+      const std::string TRANSLATE_COLOR_;
+      const std::string ROTATE_COLOR_;
+      const std::string SCALE_COLOR_;
+      const std::string SCALE_AXIS_COLOR_;
+      double scale_;
       std::vector<Core::Geometry::Vector> scaledEigvecs_;
       std::vector<Core::Geometry::Point> cornerPoints_;
       std::vector<Core::Geometry::Point> facePoints_;
