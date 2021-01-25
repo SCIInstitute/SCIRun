@@ -63,7 +63,7 @@ ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* 
   originView_ = glm::vec3(view * glm::vec4(originWorld_, 1.0));
   glm::vec4 projectedOrigin = projection * glm::vec4(originView_, 1.0);
   projectedW_ = projectedOrigin.w;
-  glm::vec3 sposView = (inverseProjection * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0)).xyz();
+  glm::vec3 sposView = xyz(inverseProjection * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
 
   // Store initial data
   sposView.z = -projectedW_;
@@ -168,7 +168,7 @@ ObjectScaleAxisCalculator::ObjectScaleAxisCalculator(const BasicRendererObjectPr
   originView_ = glm::vec3(view * glm::vec4(originWorld_, 1.0));
   glm::vec4 projectedOrigin = projection * glm::vec4(originView_, 1.0);
   projectedW_ = projectedOrigin.w;
-  glm::vec3 sposView = (inverseProjection * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0)).xyz();
+  glm::vec3 sposView = xyz(inverseProjection * glm::vec4(p.initialPosition_ * projectedW_, 0.0, 1.0));
 
   // Store initial data
   sposView.z = -projectedW_;
@@ -187,7 +187,7 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   // Apply transformations to vectors
   glm::vec3 sposView = glm::vec3(inverseProjection * glm::vec4(spos * projectedW_, 0.0, 1.0));
   sposView.z = -projectedW_;
-  glm::vec3 scaleAxisView = (view * glm::vec4(axis_, 0.0)).xyz();
+  glm::vec3 scaleAxisView = xyz(view * glm::vec4(axis_, 0.0));
   glm::vec3 originToSposView = sposView - originView_;
   glm::vec3 shiftedOriginToCurrentSpos = originToSposView - (originToInitialSpos_ - scaleAxisView);
 
@@ -234,7 +234,7 @@ gen::Transform ObjectAxisTranslationCalculator::computeTransform(int x, int y) c
   glm::vec2 transVec = (spos - initialPosition_) * glm::vec2(w_, w_);
   auto trans = gen::Transform();
 
-  glm::vec3 worldPos = (inverseProjection * glm::vec4(transVec, 0.0, 0.0)).xyz();
+  glm::vec3 worldPos = xyz(inverseProjection * glm::vec4(transVec, 0.0, 0.0));
   glm::vec3 newPos = glm::dot(worldPos, axis_) * axis_;
   trans.transform[3] = glm::vec4(newPos, 1.0);
   return trans;
