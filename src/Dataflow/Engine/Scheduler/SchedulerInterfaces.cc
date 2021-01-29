@@ -51,7 +51,7 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   return instance_;
 }
 
-ExecutionContext::ExecutionContext(NetworkInterface& net) : network(net), lookup(net) {}
+ExecutionContext::ExecutionContext(NetworkInterface& net) : network_(net), lookup_(net) {}
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
@@ -60,8 +60,8 @@ const ExecutionBounds& ExecutionContext::bounds() const
 
 void ExecutionContext::preexecute()
 {
-  network.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, boost::lambda::constant(true));
-  network.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter);
+  network_.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, boost::lambda::constant(true));
+  network_.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter_);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);
