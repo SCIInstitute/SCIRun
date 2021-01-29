@@ -79,6 +79,6 @@ namespace
 
 void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
-  ParallelExecution runner(&context.lookup, order, context.bounds(), &executionLock);
+  ParallelExecution runner(&context.lookup_, order, context.bounds(), &executionLock);
   boost::thread execution(runner);
 }

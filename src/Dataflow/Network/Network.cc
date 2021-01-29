@@ -31,8 +31,6 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
 #include <boost/thread.hpp>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/Connection.h>
@@ -59,18 +57,19 @@ Network::~Network()
 
 ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 {
-  ModuleHandle module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
+  auto module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
   modules_.push_back(module);
   if (module)
   {
-    module->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, this, _1));
+    module->connectErrorListener([this](const ModuleId& id) { incrementErrorCode(id); });
   }
   return module;
 }
 
 bool Network::remove_module(const ModuleId& id)
 {
-  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::id, *boost::lambda::_1) == id);
+  auto loc = std::find_if(modules_.begin(), modules_.end(),
+    [&](ModuleHandle m) { return m->id() == id; } );
   if (loc != modules_.end())
   {
     // Inform the module that it is about to be erased from the network...
@@ -162,7 +161,8 @@ ModuleHandle Network::module(size_t i) const
 
 ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
-  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::id, *boost::lambda::_1) == id);
+  auto i = std::find_if(modules_.begin(), modules_.end(),
+    [&](ModuleHandle m) { return m->id() == id; });
   return i == modules_.end() ? nullptr : *i;
 }
 
@@ -186,7 +186,6 @@ struct GetConnectionIds
 
 std::string Network::toString() const
 {
-  using boost::lambda::bind;
   std::ostringstream ostr;
   ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";

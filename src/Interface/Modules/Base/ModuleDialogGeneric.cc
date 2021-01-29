@@ -333,7 +333,7 @@ public:
   typedef boost::function<std::string(const QString&)> FromQStringConverter;
   typedef boost::function<QString(const std::string&)> ToQStringConverter;
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
-    FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
+    FromQStringConverter fromLabelConverter = &QString::toStdString,
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
