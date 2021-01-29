@@ -383,7 +383,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
   connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
 
-  Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
+  Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
   connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
 
@@ -431,7 +431,7 @@ void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
-  theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
+  theModule_->setUpdaterFunc([this](int i) { updateProgressBarSignal(i); });
   if (theModule_->hasUI())
     theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
