@@ -50,7 +50,8 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
   if (!additionalFilter_)
     return filter;
 
-  return [filter, this](ModuleHandle mh) { return filter(mh) && additionalFilter_(mh); };
+  auto additional = additionalFilter_;
+  return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
 }
 
 ExecutionQueueManager::ExecutionQueueManager() :
