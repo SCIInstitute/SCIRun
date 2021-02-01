@@ -67,13 +67,12 @@ IF(UNIX)
   ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
 ENDIF()
 
+SET(boost_GIT_TAG "origin/v1.75.0")
+
 # TODO: set up 64-bit build detection
 # Boost Jam needs to have 64-bit build explicitly configured
 IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
-  SET(boost_GIT_TAG "origin/v1.75.0")
-ELSE()
-  SET(boost_GIT_TAG "origin/v1.75.0")
 ENDIF()
 
 
