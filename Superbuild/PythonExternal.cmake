@@ -34,7 +34,7 @@ IF(WIN32)
 ENDIF()
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
-set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.4.3 3.5.6 3.6.7 3.7.9 3.8.7 3.9.1)
+set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.4.3 3.5.6 3.6.7 3.7.9 3.8.2 3.8.7 3.9.1)
 
 string(REPLACE "." ";" USER_PYTHON_VERSION_LIST ${USER_PYTHON_VERSION})
 list(GET USER_PYTHON_VERSION_LIST 0 USER_PYTHON_VERSION_MAJOR)
@@ -65,17 +65,15 @@ SET(python_WIN32_ARCH)
 SET(python_WIN32_64BIT_DIR)
 SET(python_FRAMEWORK_ARCHIVE)
 
-ExternalProject_Get_Property(Python_external SOURCE_DIR)
-ExternalProject_Get_Property(Python_external INSTALL_DIR)
-
 IF(UNIX)
   # TODO: figure out pip package
   SET(python_CONFIGURE_FLAGS
-    "--prefix=${INSTALL_DIR}"
+    "--prefix=<INSTALL_DIR>"
+    "--with-ensurepip=yes"
   )
   IF(APPLE)
     # framework contains *.dylib
-    LIST(APPEND python_CONFIGURE_FLAGS "--enable-framework=${INSTALL_DIR}")
+    LIST(APPEND python_CONFIGURE_FLAGS "--enable-framework=<INSTALL_DIR>")
     SET(python_FRAMEWORK_ARCHIVE "framework.tar")
   ELSE()
     LIST(APPEND python_CONFIGURE_FLAGS "--enable-shared")
@@ -89,7 +87,6 @@ ELSE()
   SET(python_ABIFLAG_PYDEBUG "_d")
 ENDIF()
 
-message("python_CONFIGURE_FLAGS" "${python_CONFIGURE_FLAGS}")
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 IF(UNIX)
@@ -97,7 +94,7 @@ IF(UNIX)
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
     BUILD_IN_SOURCE ON
-    CONFIGURE_COMMAND ${SOURCE_DIR}/configure ${python_CONFIGURE_FLAGS}
+    CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
   )
   IF(APPLE)
@@ -105,7 +102,7 @@ IF(UNIX)
     ExternalProject_Add_Step(Python_external framework_tar_archive
       COMMAND "${CMAKE_COMMAND}" -E tar cf ${python_FRAMEWORK_ARCHIVE} Python.framework
 	DEPENDEES install
-	WORKING_DIRECTORY ${INSTALL_DIR}
+	WORKING_DIRECTORY <INSTALL_DIR>
     )
   ENDIF()
 ELSE()
@@ -117,17 +114,20 @@ ELSE()
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-      ${SOURCE_DIR}/PC/pyconfig.h
-      ${SOURCE_DIR}/Include/pyconfig.h
+      <SOURCE_DIR>/PC/pyconfig.h
+      <SOURCE_DIR>/Include/pyconfig.h
   )
   # build both Release and Debug versions
   ExternalProject_Add_Step(Python_external debug_build
     COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH}
       DEPENDEES build
       DEPENDERS install
-      WORKING_DIRECTORY ${SOURCE_DIR}
+      WORKING_DIRECTORY <SOURCE_DIR>
   )
 ENDIF()
+
+ExternalProject_Get_Property(Python_external SOURCE_DIR)
+ExternalProject_Get_Property(Python_external INSTALL_DIR)
 
 SET(SCI_PYTHON_MODULE_PARENT_PATH lib)
 
