@@ -69,7 +69,7 @@ IF(UNIX)
   # TODO: figure out pip package
   SET(python_CONFIGURE_FLAGS
     "--prefix=<INSTALL_DIR>"
-    "--with-ensurepip=yes"
+    "--with-ensurepip=no"
   )
   IF(APPLE)
     # framework contains *.dylib
