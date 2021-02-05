@@ -305,8 +305,8 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
   const static double cylinderRadius = 1;
 
   auto builder = CylinderWidgetBuilder(gen.base.idGenerator)
-    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)},
-                       {WidgetInteraction::RIGHT_CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
+                       //WidgetInteraction::RIGHT_CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(cylinderRadius * params.scale * scale_)
     .defaultColor(TRANSLATE_COLOR_)
     .boundingBox(params.bbox)
@@ -427,7 +427,7 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   for (auto& edge : edges)
   {
     edge << propagatesEvent<WidgetMovement::TRANSLATE>::to << TheseWidgets{widgets_};
-    edge << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
+    // edge << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
   }
   for (auto& corner : corners)
     corner << propagatesEvent<WidgetMovement::SCALE>::to << TheseWidgets{widgets_};

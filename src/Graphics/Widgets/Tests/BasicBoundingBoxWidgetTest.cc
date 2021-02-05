@@ -27,7 +27,7 @@
 
 #include <gtest/gtest.h>
 
-#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/BasicBoundingBoxWidget.h>
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
 using namespace SCIRun::Graphics::Datatypes;

@@ -75,6 +75,7 @@ namespace SCIRun
         std::string cone(ConeParameters params, WidgetBase& widget) const override { return "__cone__" + std::to_string(instanceCount_++); }
         std::string cylinder(CylinderParameters params, WidgetBase& widget) const override { return "__cylinder__" + std::to_string(instanceCount_++); }
         std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const override { return "__basicBox__" + std::to_string(instanceCount_++); }
+        std::string box(BoundingBoxParameters params, WidgetBase& widget) const override { return "__box__" + std::to_string(instanceCount_++); }
       private:
         mutable int instanceCount_{0};
       };
