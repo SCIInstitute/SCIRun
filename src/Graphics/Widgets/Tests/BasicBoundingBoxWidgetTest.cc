@@ -40,7 +40,7 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxReal)
   BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
   {
     {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
-    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
+    {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}
   });
 
   EXPECT_EQ(Point(0,2,1), box.position());
@@ -57,7 +57,7 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxStubbed)
   BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
   {
     {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
-    {{0,2,1},{1,1,1},{1,0,1},{0,1,1}}
+    {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}
   });
 
   EXPECT_EQ(Point(0,2,1), box.position());
