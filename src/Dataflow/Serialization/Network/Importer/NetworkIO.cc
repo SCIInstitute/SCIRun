@@ -224,7 +224,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "BuildElemLeadField", "PlaceholderModule" },
     { "OptimizeDipole", "PlaceholderModule" },
     { "OptimizeConductivities", "PlaceholderModule" },
-    { "CalculateNodeNormals", "PlaceholderModule" },
+    { "CalculateNodeNormals", "GenerateNodeNormals" },
     { "SynchronizeGeometry", "PlaceholderModule" },
     { "TransformData", "PlaceholderModule" },
     { "SetFieldOrMeshStringProperty", "PlaceholderModule" },
@@ -1213,7 +1213,6 @@ LegacyNetworkIO::load_net(const std::string &net)
   if (!load_network())
   {
     //logCritical("!!!!!!! Network import unsuccessful: {}", net);
-
     return nullptr;
   }
 
