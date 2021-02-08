@@ -41,12 +41,8 @@
 #ifndef Q_MOC_RUN
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/GLContext.h>
-#include <Interface/Modules/Render/QtGLContext.h>
-
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #endif
-//#include <QtOpenGL/QGLWidget>
 #include <QOpenGLWidget>
 
 namespace SCIRun {

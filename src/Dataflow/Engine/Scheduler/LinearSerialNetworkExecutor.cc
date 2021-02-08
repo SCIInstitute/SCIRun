@@ -30,7 +30,6 @@
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -69,5 +68,5 @@ namespace
 void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
   LinearExecution runner(context.lookup_, order, context.bounds(), &executionLock);
-  boost::thread execution(runner);
+  Core::Thread::Util::launchAsyncThread(runner);
 }

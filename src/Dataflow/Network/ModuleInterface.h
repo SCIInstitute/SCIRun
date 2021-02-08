@@ -93,6 +93,7 @@ namespace Networks {
     virtual bool isImplementationDisabled() const = 0;
     virtual void setProgrammableInputPortEnabled(bool enable) = 0;
     virtual bool checkForVirtualConnection(const ModuleInterface& downstream) const = 0;
+    virtual void disconnectStateListeners() = 0;
   };
 
   class SCISHARE ModuleInterface :

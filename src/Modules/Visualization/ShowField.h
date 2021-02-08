@@ -98,7 +98,7 @@ namespace SCIRun {
       class SCISHARE ShowField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
-        public Core::Thread::Interruptible
+        public Core::Thread::Stoppable
       {
       public:
         ShowField();

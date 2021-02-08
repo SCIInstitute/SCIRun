@@ -26,42 +26,31 @@
 */
 
 
-/// author James Hughes
-/// date   December 2012
-/// brief  Not sure this file should go in Modules/Render. But it is an
-///        auxiliary file to the ViewScene render module.
+ #ifndef MODULES_FIELDS_GenerateNodeNormals_H
+ #define MODULES_FIELDS_GenerateNodeNormals_H
 
-#ifndef INTERFACE_MODULES_RENDER_GLCONTEXT_H
-#define INTERFACE_MODULES_RENDER_GLCONTEXT_H
-
-// For windows.
-#define NOMINMAX
-
-#include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
-#include <Interface/Modules/Render/share.h>
+ #include <Dataflow/Network/Module.h>
+ #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Fields {
 
-/// Context that will be sent to spire.
-class SCISHARE GLContext
-{
-public:
-  GLContext(QGLWidget* glWidget);
-  virtual ~GLContext();
+  class SCISHARE GenerateNodeNormals : public SCIRun::Dataflow::Networks::Module,
+    public Has1OutputPort<FieldPortTag>,
+    public Has2InputPorts<FieldPortTag, FieldPortTag>
+  {
+  public:
+    GenerateNodeNormals();
 
-  /// Mandatory override from Context.
-  virtual void makeCurrent();
+    virtual void execute();
+    virtual void setStateDefaults(){}
 
-  /// Mandatory override from Context.
-  virtual void swapBuffers();
+    INPUT_PORT(0, InputField, Field);
+    INPUT_PORT(1, InputPoint, Field);
+    OUTPUT_PORT(0, OutputField, Field);
 
-private:
-
-  QGLWidget* mGLWidget;
-};
-
-} // end of namespace SCIRun
-} // end of namespace Gui
-
-#endif
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+  };
+}}}
+	#endif
