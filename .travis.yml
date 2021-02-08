@@ -23,24 +23,47 @@ matrix:
       dist: bionic
       compiler: gcc
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-#    - os: osx
-#      osx_image: xcode8.3
-#      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode9.4
+    - os: linux
+      dist: focal
+      compiler: gcc
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-#    - os: osx
-#      osx_image: xcode10.1
-#      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: gcc
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: gcc
+      env: PYTHON_VERSION=3.7.1 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: gcc
+      env: PYTHON_VERSION=3.8.2 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: clang
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: clang
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: clang
+      env: PYTHON_VERSION=3.7.1 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: focal
+      compiler: clang
+      env: PYTHON_VERSION=3.8.2 OSPRAY_BUILD=OFF
+    # - os: osx
+    #   osx_image: xcode9.4
+    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode10.3
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode11
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-#    - os: osx
-#      osx_image: xcode10.1
-#      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode11
       env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF

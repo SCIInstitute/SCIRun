@@ -376,6 +376,11 @@ bool Module::executeWithSignals() NOEXCEPT
 {
   auto starting = "STARTING MODULE: " + id().id_;
 
+  if (isStoppable())
+  {
+    dynamic_cast<Stoppable*>(this)->resetStoppability();
+  }
+
   runProgrammablePortInput();
 
 #ifdef BUILD_HEADLESS //TODO: better headless logging
@@ -425,6 +430,11 @@ bool Module::executeWithSignals() NOEXCEPT
     ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
+  catch (const ThreadStopped&)
+  {
+    error("MODULE ERROR: execution thread interrupted by user.");
+    threadStopValue = true;
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
@@ -439,11 +449,6 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (const std::exception& e)
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
-  }
-  catch (const boost::thread_interrupted&)
-  {
-    error("MODULE ERROR: execution thread interrupted by user.");
-    threadStopValue = true;
   }
   catch (...)
   {
@@ -1144,7 +1149,7 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Stoppable*>(this) != nullptr;
 }
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const
@@ -1175,4 +1180,9 @@ std::string Module::helpPageUrl() const
 std::string Module::newHelpPageUrl() const
 {
   return "https://sciinstitute.github.io/SCIRun/modules.html#" + name();
+}
+
+void Module::disconnectStateListeners()
+{
+  get_state()->disconnectAll();
 }

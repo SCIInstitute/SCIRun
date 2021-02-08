@@ -70,7 +70,6 @@ namespace Networks {
     ConnectionInputPort(ModuleHandle m, size_t index);
   };
 
-  typedef boost::signals2::signal<void(const std::string&)> ModuleInterruptedSignal;
 
   class SCISHARE NetworkInterface : public ExecutableLookup
   {
@@ -95,9 +94,6 @@ namespace Networks {
     virtual std::vector<ModuleExecutionState::Value> moduleExecutionStates() const = 0;
     virtual void setExpandedModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) = 0;
     virtual void clear() = 0;
-
-    virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const = 0;
-    virtual void interruptModuleRequest(const ModuleId& id) = 0;
 
     virtual std::string toString() const = 0;
   };

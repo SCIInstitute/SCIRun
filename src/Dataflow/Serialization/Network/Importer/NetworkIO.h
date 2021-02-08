@@ -47,7 +47,7 @@ namespace Dataflow {
 namespace Networks {
 
   typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(const std::string&)> ValueConverter;
-  struct NewNameAndValueConverter
+  struct SCISHARE NewNameAndValueConverter
   {
     Core::Algorithms::Name name;
     ValueConverter valueConverter;
@@ -55,7 +55,7 @@ namespace Networks {
   typedef std::map<std::string, NewNameAndValueConverter> OldStateNameConverterLookup;
   typedef std::map<std::string, OldStateNameConverterLookup> StateConverterLookupByModule;
 
-  class LegacyNetworkStateConversion
+  class SCISHARE LegacyNetworkStateConversion
   {
   public:
     LegacyNetworkStateConversion();
@@ -63,8 +63,6 @@ namespace Networks {
     boost::optional<NewNameAndValueConverter> getStateConverter(const std::string& moduleName, const std::string& oldStateName) const;
   private:
     StateConverterLookupByModule nameAndValLookup_;
-    //std::unique_ptr<std::string> v4MergeStateToV5_;  //??
-    //ValueConverter initState, appendState, useState;
   };
 
   class SCISHARE LegacyNetworkIO

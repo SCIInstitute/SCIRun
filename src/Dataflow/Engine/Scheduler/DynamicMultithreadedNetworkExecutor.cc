@@ -67,39 +67,22 @@ namespace SCIRun {
         }
         ~DynamicMultithreadedNetworkExecutorImpl()
         {
-          interruptCxn_.disconnect();
         }
         void operator()() const
         {
           Guard g(executionLock_->get());
 
-          if (network_)
-          {
-            interruptCxn_ = network_->connectModuleInterrupted([&](const std::string& id) { interruptModule(id); });
-          }
-
           ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
 
           waitForStartupInit(*network_);
 
-          boost::thread consume(boost::ref(*consumer_));
-          boost::thread produce(boost::ref(*producer_));
+          std::thread consume(std::ref(*consumer_));
+          std::thread produce(std::ref(*producer_));
           consume.join();
           produce.join();
           executeThreads_->joinAll();
         }
 
-        void interruptModule(const std::string& id) const
-        {
-          if (executeThreads_)
-          {
-            auto thread = executeThreads_->getThreadForModule(id);
-            if (thread)
-            {
-              thread->interrupt();
-            }
-          }
-        }
       private:
         mutable DynamicExecutor::ExecutionThreadGroupPtr executeThreads_;
         const Networks::ExecutableLookup* lookup_;
@@ -109,7 +92,6 @@ namespace SCIRun {
         DynamicExecutor::ModuleConsumerPtr consumer_;
         const NetworkInterface* network_;
         Mutex* executionLock_;
-        mutable boost::signals2::connection interruptCxn_;
       };
 }}}
 
@@ -128,7 +110,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  boost::thread execution(runner);
+  Core::Thread::Util::launchAsyncThread(runner);
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const

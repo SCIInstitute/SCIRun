@@ -114,7 +114,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setViewUpdateFunc([](const QString& q) { qDebug() << q; });
 #endif
 
-  connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
+  if (allowModificationSignalConnection())
+    connect(this, &NetworkEditor::modified, [this]() { setSceneRect(QRectF()); });
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -432,7 +433,6 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   auto proxy = new ModuleProxyWidget(module);
 
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
-  connect(module, SIGNAL(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(noteChanged()), this, SIGNAL(modified()));
   connect(module, SIGNAL(executionDisabled(bool)), this, SIGNAL(modified()));
@@ -2495,4 +2495,12 @@ ZLevelManager::ZLevelManager(QGraphicsScene* scene)
   : scene_(scene), minZ_(INITIAL_Z), maxZ_(INITIAL_Z)
 {
 
+}
+
+bool SCIRun::Gui::allowModificationSignalConnection()
+{
+  auto cmd = Application::Instance().parameters();
+  return !cmd->executeNetwork() &&
+    !cmd->executeNetworkAndQuit() &&
+    !cmd->isRegressionMode();
 }

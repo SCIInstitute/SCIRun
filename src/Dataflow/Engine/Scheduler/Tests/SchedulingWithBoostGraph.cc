@@ -67,7 +67,6 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/visitors.hpp>
-#include <boost/thread.hpp>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
@@ -229,7 +228,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   executor.execute(context, order, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+  std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
@@ -282,7 +281,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   strategy.execute(context, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+  std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
@@ -450,7 +449,7 @@ namespace ThreadingPrototype
 
     void run()
     {
-      boost::this_thread::sleep(boost::posix_time::milliseconds(runtime));
+      std::this_thread::sleep_for(std::chrono::milliseconds(runtime));
       done = true;
     }
   };
@@ -489,7 +488,7 @@ namespace ThreadingPrototype
 
   UnitPtr makeUnit()
   {
-    return UnitPtr(new Unit(boost::lexical_cast<std::string>(rand())));
+    return UnitPtr(new Unit(std::to_string(rand())));
   }
 
   std::ostream& operator<<(std::ostream& o, const UnitPtr& u)
@@ -643,8 +642,8 @@ namespace ThreadingPrototype
     DoneList done;
     WorkUnitConsumer consumer(workQ, producer, done, mutex);
 
-    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
-    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
+    std::thread tR(boost::bind(&WorkUnitProducer::run, producer));
+    std::thread tC(boost::bind(&WorkUnitConsumer::run, consumer));
 
     tR.join();
     tC.join();
@@ -787,8 +786,8 @@ namespace ThreadingPrototype
     DoneList done;
     WorkUnitConsumer2 consumer(workQ, producer, done);
 
-    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer2::run, producer));
-    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer2::run, consumer));
+    std::thread tR(boost::bind(&WorkUnitProducer2::run, producer));
+    std::thread tC(boost::bind(&WorkUnitConsumer2::run, consumer));
 
     tR.join();
     tC.join();

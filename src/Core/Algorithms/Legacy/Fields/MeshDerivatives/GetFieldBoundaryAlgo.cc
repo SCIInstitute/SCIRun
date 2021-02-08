@@ -145,7 +145,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
   while (be != ee)
   {
-    checkForInterruption();
+    checkForInterruption(this);
     ci = *be;
     imesh->get_delems(delems, ci);
     for (size_t p = 0; p < delems.size(); p++)
@@ -267,7 +267,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
     while (it != it_end)
     {
-      checkForInterruption();
+      checkForInterruption(this);
       VMesh::Elem::index_type idx1((*it).second);
       VMesh::Elem::index_type idx2((*it).first);
 
@@ -284,7 +284,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
     while (it != it_end)
     {
-      checkForInterruption();
+      checkForInterruption(this);
       VMesh::Node::index_type idx1((*it).first);
       VMesh::Node::index_type idx2((*it).second);
       ofield->copy_value(ifield,idx1,idx2);
@@ -388,7 +388,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
 
   while (be != ee)
   {
-    checkForInterruption();
+    checkForInterruption(this);
     ci = *be;
     imesh->get_delems(delems, ci);
     for (size_t p = 0; p < delems.size(); p++)

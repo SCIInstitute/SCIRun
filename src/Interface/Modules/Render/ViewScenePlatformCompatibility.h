@@ -41,12 +41,10 @@
 
 #  include <QtGui>
 
-#  include <Interface/Modules/Render/QtGLContext.h>
 #else
 #  include <QtGui>
 
 #  include <Core/Datatypes/Geometry.h>
-#  include <Interface/Modules/Render/QtGLContext.h>
 #  include <Interface/Modules/Render/ViewScene.h>
 #endif
 

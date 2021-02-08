@@ -34,6 +34,7 @@
 #include <QProgressBar>
 #ifndef Q_MOC_RUN
 #include <boost/timer.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Thread/Mutex.h>
 #endif
 
@@ -58,7 +59,7 @@ namespace Gui {
     virtual size_t unexecuted() const = 0;
   };
 
-  using NetworkStatusPtr = boost::shared_ptr<NetworkStatus>;
+  using NetworkStatusPtr = SharedPointer<NetworkStatus>;
 
   class SCIRunProgressBar : public QProgressBar
   {

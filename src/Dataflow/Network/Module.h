@@ -123,6 +123,7 @@ namespace Networks {
     boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
     boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
     boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) override final;
+    void disconnectStateListeners() override final;
     void addPortConnection(const boost::signals2::connection& con) override final;
     Core::Algorithms::AlgorithmHandle getAlgorithm() const override final;
     void setLogger(Core::Logging::LoggerHandle log) override final;

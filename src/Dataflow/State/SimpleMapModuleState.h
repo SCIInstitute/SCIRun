@@ -56,6 +56,7 @@ namespace State {
     virtual TransientValueOption getTransientValue(const Name& name) const override;
     virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) override;
     virtual void fireTransientStateChangeSignal() override;
+    virtual void disconnectAll() override;
 
   protected:
     typedef std::map<Name, Value> StateMap;
@@ -65,6 +66,7 @@ namespace State {
     state_changed_sig_t stateChangedSignal_;
     std::map<Name, state_changed_sig_t> specificStateChangeSignalMap_;
     std::string name_;
+    std::vector<boost::signals2::connection> generalStateConnections_, specificStateConnections_;
   private:
     void print() const;
   };

@@ -30,8 +30,8 @@
 #include <Interface/qt_include.h>
 #include <QtConcurrent>
 #include "ui_Module.h"
-#include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Application/Application.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
@@ -1048,6 +1048,7 @@ ModuleWidget::~ModuleWidget()
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
+  theModule_->disconnectStateListeners();
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
 
@@ -1497,7 +1498,9 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  Q_EMIT interrupt(theModule_->id());
+  auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
+  if (stoppable)
+    stoppable->sendStopRequest();
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)

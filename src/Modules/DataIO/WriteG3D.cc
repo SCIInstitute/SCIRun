@@ -161,7 +161,7 @@ void WriteG3D::calculateColors()
 
     while (eiter != eiter_end)
     {
-      checkForInterruption();
+      checkForInterruption(this);
 
       Point p;
       mesh->get_point(p, *eiter);
