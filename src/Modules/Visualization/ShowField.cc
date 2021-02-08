@@ -63,35 +63,32 @@ namespace detail
 class GeometryBuilder
 {
 public:
-  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state) : moduleId_(moduleId), state_(state) {}
+  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state, Stoppable* stoppable)
+    : moduleId_(moduleId), state_(state), stoppable_(stoppable) {}
   /// Constructs a geometry object (essentially a spire object) from the given
   /// field data.
   GeometryHandle buildGeometryObject(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    const GeometryIDGenerator& gid,
-    Interruptible* interruptible);
+    const GeometryIDGenerator& gid);
 
   /// Mesh construction. Any of the functions below can modify the renderState.
   /// This modified render state will be passed onto the renderer.
   void renderNodes(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFaces(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFacesLinear(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
@@ -109,7 +106,6 @@ public:
   void renderEdges(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
     RenderState state,
     GeometryHandle geom,
     const std::string& id);
@@ -123,18 +119,20 @@ private:
   float nodeTransparencyValue_ = 0.65f;
   std::string moduleId_;
   ModuleStateHandle state_;
+  Stoppable* stoppable_;
 };
 }}}}
 
 using namespace detail;
 
-ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
-  builder_(new GeometryBuilder(id().id_, get_state()))
+ShowField::ShowField() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
   //INITIALIZE_PORT(OspraySceneGraph);
+
+  builder_.reset(new GeometryBuilder(id().id_, get_state(), this));
 }
 
 void ShowField::setStateDefaults()
@@ -200,8 +198,8 @@ void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
     auto sel = dynamic_cast<const MeshComponentSelectionFeedback&>(var);
     if (sel.moduleId == id().id_)
     {
-    get_state()->setValue(Name("Show" + sel.component), sel.selected);
-    enqueueExecuteAgain(false);
+      get_state()->setValue(Name("Show" + sel.component), sel.selected);
+      enqueueExecuteAgain(false);
     }
   }
   catch (std::bad_cast&)
@@ -218,7 +216,7 @@ void ShowField::execute()
   if (needToExecute())
   {
     updateAvailableRenderOptions(field);
-    auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
+    auto geom = builder_->buildGeometryObject(field, colorMap, *this);
     sendOutput(SceneGraph, geom);
   }
 }
@@ -343,7 +341,7 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  const GeometryIDGenerator& gid, Interruptible* interruptible)
+  const GeometryIDGenerator& gid)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
   // auto progressFunc = getUpdaterFunc();
@@ -378,13 +376,13 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   if (showFaces && dim < 2) { showFaces = false; }
 
   if (showFaces)
-    renderFaces(field, colorMap, interruptible, getFaceRenderState(colorMap), geom, geom->uniqueID());
+    renderFaces(field, colorMap, getFaceRenderState(colorMap), geom, geom->uniqueID());
 
   if (showEdges)
-    renderEdges(field, colorMap, interruptible, getEdgeRenderState(colorMap), geom, geom->uniqueID());
+    renderEdges(field, colorMap, getEdgeRenderState(colorMap), geom, geom->uniqueID());
 
   if (showNodes)
-    renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
+    renderNodes(field, colorMap, getNodeRenderState(colorMap), geom, geom->uniqueID());
 
   return geom;
 }
@@ -393,7 +391,6 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 void GeometryBuilder::renderFaces(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
   RenderState state, GeometryHandle geom,
   const std::string& id)
 {
@@ -411,7 +408,7 @@ void GeometryBuilder::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, interruptible, state, geom, id);
+    return renderFacesLinear(field, colorMap, state, geom, id);
   }
   else
   {
@@ -494,7 +491,6 @@ namespace
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -602,7 +598,9 @@ void GeometryBuilder::renderFacesLinear(
 
     while (facesLeftInThisPass > 0)
     {
-      interruptible->checkForInterruption();
+      if (stoppable_->stopRequested())
+        throw "stopped";
+
       mesh->get_nodes(nodes, *fiter);
 
       for(size_t i = 0; i < numNodesPerFace; ++i)
@@ -830,7 +828,6 @@ void GeometryBuilder::renderFacesLinear(
 void GeometryBuilder::renderNodes(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -880,7 +877,8 @@ void GeometryBuilder::renderNodes(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    interruptible->checkForInterruption();
+    if (stoppable_->stopRequested())
+      throw "stopped";
 
     Point p;
     mesh->get_point(p, *eiter);
@@ -926,7 +924,6 @@ void GeometryBuilder::renderNodes(
 void GeometryBuilder::renderEdges(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -977,7 +974,8 @@ void GeometryBuilder::renderEdges(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    interruptible->checkForInterruption();
+    if (stoppable_->stopRequested())
+      throw "stopped";
 
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);

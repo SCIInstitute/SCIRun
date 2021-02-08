@@ -46,9 +46,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewSceneControlsDock.h
   ViewOspraySceneConfig.h
   GLWidget.h
-  GLContext.h
   GLContextPlatformCompatibility.h
-  QtGLContext.h
   Screenshot.h
   OsprayViewerDialog.h
 )
@@ -85,8 +83,6 @@ SET(Interface_Modules_Render_SOURCES
   ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc
-  GLContext.cc
-  QtGLContext.cc
   Screenshot.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc

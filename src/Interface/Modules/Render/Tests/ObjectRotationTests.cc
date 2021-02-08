@@ -126,13 +126,13 @@ TEST_F(RotationTest, CanRotateArbitraryFromArbitrary)
 
   auto t = rotator.computeTransform(25, -42);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
   expected[0] = glm::vec4{0.9994457364082336,	-0.003830079222097993,	0.03306873887777328,	0};
   expected[1] = glm::vec4{0.002393543953076005,	0.9990561604499817,	0.04337168484926224,	0};
   expected[2] = glm::vec4{-0.03320364654064178,	-0.04326849430799484,	0.9985115528106689,	0};
   expected[3] = glm::vec4{0.09537804126739502,	0.1355232000350952,	-0.1153466701507568,	1};
 
-  EXPECT_TRUE(t.transform == expected);
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
+
+  EXPECT_TRUE(epsilonEqual(t.transform, expected, 1e-5));
 }

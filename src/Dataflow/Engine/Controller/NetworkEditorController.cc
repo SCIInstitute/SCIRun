@@ -29,7 +29,6 @@
 /// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.cc
 
 #include <iostream>
-#include <boost/thread.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -103,7 +102,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
-  executionManager_.stop();
+  executionManager_.stopExecution();
 }
 
 namespace
@@ -269,12 +268,6 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
-void NetworkEditorController::interruptModule(const ModuleId& id)
-{
-  theNetwork_->interruptModuleRequest(id);
-  ///*emit*/ networkInterrupted_();
-}
-
 namespace
 {
   InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)
@@ -296,7 +289,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   for (const auto& originalInputPort : module->inputPorts())
   {
@@ -328,7 +321,7 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
   auto newMod = addModule(newModuleName);
 
   /// @todo: see above
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   /// @todo duplication
   if (portToConnect->isInput())
@@ -674,7 +667,7 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
@@ -704,7 +697,7 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);
@@ -715,8 +708,8 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 {
   connectNetworkExecutionFinished([this](int)
   {
-    std::cout << "Execution manager thread stopped." << std::endl;
-    executionManager_.stop();
+    //std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stopExecution();
   });
 }
 

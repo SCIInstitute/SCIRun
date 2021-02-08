@@ -29,7 +29,6 @@
 #ifndef CORE_UTILS_SINGLETON_H
 #define CORE_UTILS_SINGLETON_H
 
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 #include <Core/Utils/share.h>
 
