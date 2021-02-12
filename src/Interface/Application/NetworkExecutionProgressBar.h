@@ -33,7 +33,6 @@
 #include <QTextStream>
 #include <QProgressBar>
 #ifndef Q_MOC_RUN
-#include <boost/timer.hpp>
 #include <Core/Utils/SmartPointers.h>
 #include <Core/Thread/Mutex.h>
 #endif
@@ -98,7 +97,7 @@ private:
   size_t totalModules_;
   double totalExecutionTime_;
   Core::Thread::Mutex mutex_;
-  boost::timer executionTimer_;
+  //boost::timer executionTimer_;
   QString timingLog_;
   QTextStream timingStream_;
 

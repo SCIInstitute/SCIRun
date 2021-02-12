@@ -52,8 +52,6 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
@@ -1288,7 +1286,7 @@ void NetworkEditor::centerView()
   }
 
   ModulePositions positions;
-  fillModulePositionMap(positions, boost::lambda::constant(true));
+  fillModulePositionMap(positions, []() { return true; });
   centerOn(findCenterOfNetwork(positions));
 }
 
