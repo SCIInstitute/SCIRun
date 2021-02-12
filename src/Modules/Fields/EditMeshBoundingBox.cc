@@ -177,10 +177,10 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
     changeAxesOrientation(field);
   if (firstRun_ && state->getValue(DataSaved).toBool())
   {
-    firstRun_ = false;
     loadFromParameters();
     updateInputFieldAttributes();
   }
+  firstRun_ = false;
 
   if(transient_value_cast<bool>(state->getTransientValue(SetOutputCenter)))
     setOutputCenter();
