@@ -107,7 +107,7 @@ namespace detail
     ColorRGB sphereCol = (params.show_as_vector) ? deflPointColor : resizeColor;
     return SphereWidgetBuilder(gen.base.idGenerator)
                         .tag(widgetName(ArrowWidgetSection::SPHERE, params.widget_num, params.widget_iter))
-      .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
+                        .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
                         .scale(sphereRadius * params.common.scale)
                         .defaultColor(sphereCol.toString())
                         .origin(origin)

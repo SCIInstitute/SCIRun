@@ -481,6 +481,7 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
 
   return SphereWidgetBuilder(idGenerator)
     .tag("GSPPFF")
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
     .scale(radius)
     .defaultColor(state->getValue(Parameters::ProbeColor).toString())
     .origin(point)
