@@ -1096,7 +1096,7 @@ bool ModuleWidget::executeWithSignals()
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
-    timer_.restart();
+    timer_.start();
     theModule_->executeWithSignals();
     if (!disabled_)
       Q_EMIT updateProgressBarSignal(1);
@@ -1349,7 +1349,7 @@ void ModuleWidget::updateProgressBar(double percent)
 
 void ModuleWidget::updateModuleTime()
 {
-  fullWidgetDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
+  fullWidgetDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_.elapsed().wall));
 }
 
 void ModuleWidget::launchDocumentation()

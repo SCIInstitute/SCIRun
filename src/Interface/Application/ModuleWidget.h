@@ -34,6 +34,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/bimap.hpp>
+#include <boost/timer/timer.hpp>
 #include <deque>
 #include <atomic>
 #include <Interface/Application/Note.h>
@@ -259,7 +260,7 @@ protected:
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
-  //boost::timer timer_;
+  boost::timer::cpu_timer timer_;
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;

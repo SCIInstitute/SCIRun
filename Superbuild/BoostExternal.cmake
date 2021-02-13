@@ -45,6 +45,7 @@ SET( boost_DEPENDENCIES )
 # explicitly set library list
 SET(boost_Libraries
   "atomic"
+  "chrono"
   "date_time"
   "exception"
   "filesystem"
@@ -53,6 +54,7 @@ SET(boost_Libraries
   "serialization"
   "system"
   "thread"
+  "timer"
   CACHE INTERNAL "Boost library name.")
 
 IF(BUILD_WITH_PYTHON)

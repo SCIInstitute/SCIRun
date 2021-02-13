@@ -83,6 +83,7 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
     progressBar_->setValue(0);
   }
 }
+
 void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
@@ -92,7 +93,7 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     counterLabel_->setText(counterLabelString());
     progressBar_->setValue(numModulesDone_);
     totalExecutionTime_ += execTime;
-    auto wallTime = executionTimer_.elapsed();
+    auto wallTime = executionTimer_.elapsed().wall;
     //Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\n
     progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
@@ -109,7 +110,7 @@ void NetworkExecutionProgressBar::resetModulesDone()
   Guard g(mutex_.get());
   numModulesDone_ = 0;
   totalExecutionTime_ = 0;
-  executionTimer_.restart();
+  executionTimer_.stop();
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);
   progressBar_->setToolTip("");

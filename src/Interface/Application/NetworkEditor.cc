@@ -1286,7 +1286,7 @@ void NetworkEditor::centerView()
   }
 
   ModulePositions positions;
-  fillModulePositionMap(positions, []() { return true; });
+  fillModulePositionMap(positions, [](ModuleHandle) { return true; });
   centerOn(findCenterOfNetwork(positions));
 }
 
