@@ -252,8 +252,8 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
   auto realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
-    realModule->addPortConnection(connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2)));
-    realModule->addPortConnection(connectPortRemoved(boost::bind(&ModuleInterface::portRemovedSlot, realModule.get(), _1, _2)));
+    realModule->addPortConnection(connectPortAdded([realModule](const ModuleId& mid, const PortId& pid) { realModule->portAddedSlot(mid, pid); }));
+    realModule->addPortConnection(connectPortRemoved([realModule](const ModuleId& mid, const PortId& pid) { realModule->portRemovedSlot(mid, pid); }));
   }
   return realModule;
 }

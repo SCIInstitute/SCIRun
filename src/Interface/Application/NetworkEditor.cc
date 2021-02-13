@@ -583,8 +583,8 @@ void NetworkEditor::logViewerDims(const QString& msg)
   if (!viewUpdateFunc_)
     return;
 
-  auto rect = sceneRect();
-  auto itemBound = scene_->itemsBoundingRect();
+  const auto rect = sceneRect();
+  const auto itemBound = scene_->itemsBoundingRect();
   viewUpdateFunc_(msg + tr(" sceneRect topLeft %1,%2 bottomRight %3,%4")
     .arg(rect.topLeft().x())
     .arg(rect.topLeft().y())
@@ -597,7 +597,7 @@ void NetworkEditor::logViewerDims(const QString& msg)
     .arg(itemBound.bottomRight().x())
     .arg(itemBound.bottomRight().y())
   );
-  auto visibleRect = mapToScene(viewport()->geometry()).boundingRect();
+  const auto visibleRect = mapToScene(viewport()->geometry()).boundingRect();
   viewUpdateFunc_(tr("visibleRect topLeft %1,%2 bottomRight %3,%4")
     .arg(visibleRect.topLeft().x())
     .arg(visibleRect.topLeft().y())
