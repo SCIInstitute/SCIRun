@@ -407,9 +407,21 @@ private_(new PythonConsoleWidgetPrivate)
 
   setWindowTitle("Python console");
 
-  PythonInterpreter::Instance().prompt_signal_.connect(boost::bind(&PythonConsoleEdit::prompt, private_->console_edit_, _1));
-  PythonInterpreter::Instance().output_signal_.connect(boost::bind(&PythonConsoleEdit::print_output, private_->console_edit_, _1));
-  PythonInterpreter::Instance().error_signal_.connect(boost::bind(&PythonConsoleEdit::print_error, private_->console_edit_, _1));
+  PythonInterpreter::Instance().prompt_signal_.connect(
+      [this](const std::string& m)
+      {
+        private_->console_edit_->prompt(m);
+      });
+  PythonInterpreter::Instance().output_signal_.connect(
+      [this](const std::string& m)
+      {
+        private_->console_edit_->print_output(m);
+      });
+  PythonInterpreter::Instance().error_signal_.connect(
+      [this](const std::string& m)
+      {
+        private_->console_edit_->print_error(m);
+      });
 
   showBanner();
   PythonInterpreter::Instance().importSCIRunLibrary();
