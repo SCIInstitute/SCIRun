@@ -28,7 +28,7 @@
 
 /// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.cc
 
-#include <iostream>
+#include <boost/foreach.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -45,8 +45,6 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/foreach.hpp>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
@@ -273,7 +271,7 @@ namespace
   InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)
   {
     auto ports = mod->findInputPortsWithName(name);
-    auto firstEmptyDynamicPortWithName = std::find_if(ports.begin(), ports.end(),
+    const auto firstEmptyDynamicPortWithName = std::find_if(ports.begin(), ports.end(),
       [](InputPortHandle iport) { return iport->nconnections() == 0; });
     return firstEmptyDynamicPortWithName != ports.end() ? *firstEmptyDynamicPortWithName : nullptr;
   }
@@ -282,7 +280,7 @@ namespace
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
-  auto id(module->id());
+  const auto id(module->id());
   auto newModule = addModuleImpl(module->info());
   newModule->setState(module->get_state()->clone());
   static ModuleCounter dummy;
@@ -353,16 +351,16 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
 {
   auto newMod = connectNewModule(portToConnect, info.newModuleName);
 
-  auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
+  const auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
 
   auto newModOutputPorts = newMod->outputPorts();
-  auto firstMatchingOutputPort = std::find_if(newModOutputPorts.begin(), newModOutputPorts.end(),
+  const auto firstMatchingOutputPort = std::find_if(newModOutputPorts.begin(), newModOutputPorts.end(),
     [&](OutputPortHandle oport) { return oport->get_typename() == portToConnect->get_typename(); }
     );
 
   if (firstMatchingOutputPort != newModOutputPorts.end())
   {
-    auto newOutputPortToConnectFrom = *firstMatchingOutputPort;
+    const auto newOutputPortToConnectFrom = *firstMatchingOutputPort;
 
     auto endModuleInputPortOptions = endModule->findInputPortsWithName(info.inputPortName);
     if (!endModuleInputPortOptions.empty())
@@ -371,19 +369,19 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
 
       if (!firstPort->isDynamic())  // easy case
       {
-        auto connId = firstPort->connection(0)->id_;
+        const auto connId = firstPort->connection(0)->id_;
         removeConnection(connId);
         requestConnection(newOutputPortToConnectFrom.get(), firstPort.get());
       }
       else //dynamic: match portId exactly, remove, then retrieve list again to find first empty dynamic port of same name.
       {
-        auto exactMatch = std::find_if(endModuleInputPortOptions.begin(), endModuleInputPortOptions.end(),
+        const auto exactMatch = std::find_if(endModuleInputPortOptions.begin(), endModuleInputPortOptions.end(),
           [&](InputPortHandle iport) { return iport->id().toString() == info.inputPortId; });
         if (exactMatch != endModuleInputPortOptions.end())
         {
-          auto connId = (*exactMatch)->connection(0)->id_;
+          const auto connId = (*exactMatch)->connection(0)->id_;
           removeConnection(connId);
-          auto firstEmptyDynamicPortWithName = getFirstAvailableDynamicPortWithName(endModule, info.inputPortName);
+          const auto firstEmptyDynamicPortWithName = getFirstAvailableDynamicPortWithName(endModule, info.inputPortName);
           if (firstEmptyDynamicPortWithName)
           {
             requestConnection(newOutputPortToConnectFrom.get(), firstEmptyDynamicPortWithName.get());
@@ -410,10 +408,10 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
 
-  auto out = from->isInput() ? to : from;
-  auto in = from->isInput() ? from : to;
+  const auto out = from->isInput() ? to : from;
+  const auto in = from->isInput() ? from : to;
 
-  ConnectionDescription desc(
+  const ConnectionDescription desc(
     OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
     IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
@@ -791,7 +789,7 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
 
 void NetworkEditorController::cleanUpNetwork()
 {
-  auto all = boost::lambda::constant(true);
+  auto all = [](ModuleHandle) { return true; };
   NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
   auto connected = analyze.connectedComponents();
 

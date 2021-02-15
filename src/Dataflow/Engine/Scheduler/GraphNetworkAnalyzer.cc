@@ -37,7 +37,6 @@
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
-#include <boost/lambda/lambda.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Engine::NetworkGraph;

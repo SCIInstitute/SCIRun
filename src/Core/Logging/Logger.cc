@@ -43,7 +43,7 @@ ScopedTimeRemarker::ScopedTimeRemarker(LegacyLoggerInterface* log, const std::st
 ScopedTimeRemarker::~ScopedTimeRemarker()
 {
   std::ostringstream perf;
-  perf << label_ <<  " took " << timer_.elapsed() << " seconds." << std::endl;
+  perf << label_ <<  " took " << timer_.elapsed().wall << " seconds." << std::endl;
   log_->status(perf.str());
 }
 
@@ -55,7 +55,7 @@ ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): la
 
 ScopedTimeLogger::~ScopedTimeLogger()
 {
-  auto time = timer_.elapsed();
+  auto time = timer_.elapsed().wall;
   if (shouldLog_)
     LOG_DEBUG("{} took {} seconds.", label_, time);
 }

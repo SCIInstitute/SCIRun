@@ -32,7 +32,7 @@
 #define CORE_LOGGING_SCOPEDTIMEREMARKER_H
 
 #include <string>
-#include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Logging/share.h>
 
@@ -50,7 +50,7 @@ namespace SCIRun
       private:
         LegacyLoggerInterface* log_;
         std::string label_;
-        boost::timer timer_;
+        boost::timer::cpu_timer timer_;
       };
 
       class SCISHARE ScopedTimeLogger
@@ -61,7 +61,7 @@ namespace SCIRun
       private:
         std::string label_;
         bool shouldLog_;
-        boost::timer timer_;
+        boost::timer::cpu_timer timer_;
       };
     }
   }

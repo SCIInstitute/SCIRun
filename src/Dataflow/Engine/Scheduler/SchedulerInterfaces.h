@@ -63,11 +63,11 @@ namespace Engine {
   class SCISHARE ScopedExecutionBoundsSignaller
   {
   public:
-    ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever);
+    ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, std::function<int()> errorCodeRetriever);
     ~ScopedExecutionBoundsSignaller();
   private:
     const ExecutionBounds* bounds_;
-    boost::function<int()> errorCodeRetriever_;
+    std::function<int()> errorCodeRetriever_;
   };
 
   struct SCISHARE ExecutionContext : boost::noncopyable

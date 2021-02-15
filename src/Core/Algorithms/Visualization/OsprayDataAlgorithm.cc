@@ -28,7 +28,6 @@
 
 #include <Core/Algorithms/Visualization/OsprayDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -40,13 +39,10 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/utility.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/undirected_dfs.hpp>
-#include <boost/cstdlib.hpp>
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
-#include <boost/lambda/lambda.hpp>
 
 #include <Core/Logging/Log.h>
 #include <spdlog/fmt/ostr.h>
