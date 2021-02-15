@@ -483,11 +483,11 @@ namespace Gui {
     std::map<std::string, QString> subnetNameMap_;
 
     template <typename Func>
-    void tailRecurse(Func func)
+    void tailRecurse(Func p)
     {
       for (auto& child : childrenNetworks_)
       {
-        func(child.second->get());
+        std::invoke(p, child.second->get());
       }
     }
 

@@ -465,7 +465,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   }
 
   LOG_TRACE("NetworkEditor connecting to state.");
-  module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
+  module->getModule()->get_state()->connectStateChanged([this]() { modified(); });
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
@@ -609,13 +609,13 @@ void NetworkEditor::logViewerDims(const QString& msg)
 void NetworkEditor::setMouseAsDragMode()
 {
   setDragMode(ScrollHandDrag);
-  tailRecurse(boost::bind(&NetworkEditor::setMouseAsDragMode, _1));
+  tailRecurse(&NetworkEditor::setMouseAsDragMode);
 }
 
 void NetworkEditor::setMouseAsSelectMode()
 {
   setDragMode(RubberBandDrag);
-  tailRecurse(boost::bind(&NetworkEditor::setMouseAsSelectMode, _1));
+  tailRecurse(&NetworkEditor::setMouseAsSelectMode);
 }
 
 void NetworkEditor::bringToFront()
@@ -1281,7 +1281,7 @@ void NetworkEditor::centerView()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::centerView, _1));
+    tailRecurse(&NetworkEditor::centerView);
     return;
   }
 
@@ -1782,7 +1782,7 @@ void NetworkEditor::selectAll()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::selectAll, _1));
+    tailRecurse(&NetworkEditor::selectAll);
     return;
   }
 
@@ -1796,7 +1796,7 @@ void NetworkEditor::pinAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::pinAllModuleUIs, _1));
+    tailRecurse(&NetworkEditor::pinAllModuleUIs);
     return;
   }
 
@@ -1812,7 +1812,7 @@ void NetworkEditor::hideAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::hideAllModuleUIs, _1));
+    tailRecurse(&NetworkEditor::hideAllModuleUIs);
     return;
   }
 
@@ -1848,7 +1848,7 @@ void NetworkEditor::restoreAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::restoreAllModuleUIs, _1));
+    tailRecurse(&NetworkEditor::restoreAllModuleUIs);
     return;
   }
 
@@ -1913,7 +1913,7 @@ void NetworkEditor::zoomIn()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::zoomIn, _1));
+    tailRecurse(&NetworkEditor::zoomIn);
     return;
   }
 
@@ -1933,7 +1933,7 @@ void NetworkEditor::zoomOut()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::zoomOut, _1));
+    tailRecurse(&NetworkEditor::zoomOut);
     return;
   }
 
@@ -1952,7 +1952,7 @@ void NetworkEditor::zoomReset()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(boost::bind(&NetworkEditor::zoomReset, _1));
+    tailRecurse(&NetworkEditor::zoomReset);
     return;
   }
 
@@ -2044,7 +2044,7 @@ void NetworkEditor::metadataLayer(bool active)
     if (module)
       module->updateMetadata(active);
   }
-  tailRecurse(boost::bind(&NetworkEditor::metadataLayer, _1, active));
+  // TODO: tailRecurse(&NetworkEditor::metadataLayer, active);
 }
 
 void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
@@ -2058,7 +2058,7 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
     }
   }
 
-  tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
+  //TODO: tailRecurse(&NetworkEditor::adjustExecuteButtonsToDownstream, downOnly);
 }
 
 void NetworkEditor::updateExecuteButtons(bool downstream)
@@ -2186,7 +2186,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
     removeTagGroups();
   }
 
-  tailRecurse(boost::bind(&NetworkEditor::tagLayer, _1, active, tag));
+  //TODO: tailRecurse(&NetworkEditor::tagLayer, active, tag);
 }
 
 namespace
