@@ -191,7 +191,7 @@ bool NetworkFileProcessCommand::execute()
 
     if (file)
     {
-      auto load = boost::bind(&NetworkFileProcessCommand::guiProcess, this, file);
+      auto load = [this, file] { guiProcess(file); };
       if (Application::Instance().parameters()->isRegressionMode())
       {
         load();
