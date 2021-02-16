@@ -30,9 +30,9 @@
 #define TESTING_UTIL_MATRIXTESTUTILITIES 1
 
 #include <gtest/gtest.h>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 #include <boost/assign.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
@@ -214,17 +214,17 @@ struct SCISHARE ScopedTimer
   explicit ScopedTimer(const std::string& name) : name_(name)
   {
     std::cout << "Starting timer " << name_ << std::endl;
-    t_.restart();
+    //t_.start();
   }
 
   ~ScopedTimer()
   {
-    double elapsed = t_.elapsed();
+    auto elapsed = t_.elapsed().wall;
     std::cout << "Timer " << name_ << " stopped at " << elapsed << " seconds." << std::endl;
   }
 
   std::string name_;
-  boost::timer t_;
+  boost::timer::cpu_timer t_;
 };
 
 // TODO: move to Field utils file
