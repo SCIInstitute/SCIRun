@@ -485,10 +485,13 @@ namespace Gui {
     template <typename Func>
     void tailRecurse(Func p)
     {
+      //TODO: needs C++17. Will enable later on Mac when subnets are closer to working.
+      #ifdef _WIN32
       for (auto& child : childrenNetworks_)
       {
         std::invoke(p, child.second->get());
       }
+      #endif
     }
 
     static NetworkEditor* inEditingContext_;
