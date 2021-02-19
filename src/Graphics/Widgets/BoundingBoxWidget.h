@@ -51,7 +51,7 @@ namespace SCIRun {
                       const std::vector<Core::Geometry::Vector>& scaledEigvecs);
       void makeCylinders(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
                          WidgetBase& widget);
-      void makeCornerSpheres(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
+      void makeCornerSuperquadrics(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
                              WidgetBase& widget);
       void makeFaceSpheres(const GeneralWidgetParameters& gen, const CommonWidgetParameters& params,
                            WidgetBase& widget);

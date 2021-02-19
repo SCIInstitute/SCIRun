@@ -72,8 +72,7 @@ BBoxDataHandler::BBoxDataHandler(const Point& center, const std::vector<Vector>&
   SCALE_AXIS_COLOR_(ColorRGB(0.469, 0.859, 0.906).toString())
 {
   scaledEigvecs_ = scaledEigvecs;
-  scale_ = std::min(std::min(scaledEigvecs_[0].length(), scaledEigvecs_[1].length()),
-                    scaledEigvecs_[2].length());
+  scale_ = (scaledEigvecs_[0] + scaledEigvecs_[1] + scaledEigvecs_[2]).length();
 
   corners_.resize(CORNER_COUNT_);
   edges_.resize(EDGE_COUNT_);
@@ -334,13 +333,12 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
     edge->addTransformParameters<AxisTranslation>(getDirectionOfFace(4));
 }
 
-void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
-                                        const CommonWidgetParameters& params,
-                                        WidgetBase& widget)
+void BBoxDataHandler::makeCornerSuperquadrics(const GeneralWidgetParameters& gen,
+                                              const CommonWidgetParameters& params,
+                                              WidgetBase& widget)
 {
   const static double cornerSphereRadius = 1.5;
-  const static double A = 1.5;
-  const static double B = 1.5;
+  const static double cornerEmphasis = 0.4;
 
   auto builder = SuperquadricWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
@@ -350,20 +348,11 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
-
-  // auto builder = SphereWidgetBuilder(gen.base.idGenerator)
-  //   .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
-  //   .scale(cornerSphereRadius * params.scale * scale_)
-  //   .origin(params.origin)
-  //   .defaultColor(SCALE_COLOR_)
-  //   .boundingBox(params.bbox)
-  //   .resolution(params.resolution);
-
+  Tensor t = Tensor(scaledEigvecs_[0].normal(), scaledEigvecs_[1].normal(), scaledEigvecs_[2].normal());
   for (int c = 0; c < CORNER_COUNT_; ++c)
   {
-    Tensor t = Tensor(scaledEigvecs_[0], scaledEigvecs_[1], scaledEigvecs_[2]);
     corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c])
-      .tensor(t).A(A).B(B).build();
+      .tensor(t).A(cornerEmphasis).B(cornerEmphasis).build();
     auto flipVec = cornerPoints_[c] - params.origin;
     corners_[c]->addTransformParameters<Scaling>(params.origin, flipVec);
   }
@@ -408,10 +397,10 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
 
   for (int f = 0; f < FACE_COUNT_; ++f)
   {
-    auto axis = getDirectionOfFace(f);
+    auto axis = getDirectionOfFace(f).normal();
     // auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
     faceDisks_[f] = builder.tag("FaceDisk" + std::to_string(f))
-      .diameterPoints(facePoints_[f], facePoints_[f] + axis * params.scale * diskLengthScale)
+      .diameterPoints(facePoints_[f], facePoints_[f] + axis * scale_ * params.scale * diskLengthScale)
       .build();
     // faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
     //faceDisks_[f]->addTransformParameters<AxisTranslation>(axis);
@@ -423,7 +412,7 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
 {
   BBoxDataHandler boxData(params.pos.center_, params.pos.scaledEigvecs_);
   boxData.makeCylinders(gen, params.common, *this);
-  boxData.makeCornerSpheres(gen, params.common, *this);
+  boxData.makeCornerSuperquadrics(gen, params.common, *this);
   boxData.makeFaceSpheres(gen, params.common, *this);
   boxData.makeFaceDisks(gen, params.common, *this);
 
