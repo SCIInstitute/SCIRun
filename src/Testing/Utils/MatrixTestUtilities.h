@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/timer/timer.hpp>
 #include <boost/assign.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
@@ -41,8 +40,11 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
 
 #include <Testing/Utils/share.h>
+
+
 
 namespace SCIRun
 {
@@ -214,17 +216,16 @@ struct SCISHARE ScopedTimer
   explicit ScopedTimer(const std::string& name) : name_(name)
   {
     std::cout << "Starting timer " << name_ << std::endl;
-    //t_.start();
   }
 
   ~ScopedTimer()
   {
-    auto elapsed = t_.elapsed().wall;
+    const auto elapsed = t_.elapsedSeconds();
     std::cout << "Timer " << name_ << " stopped at " << elapsed << " seconds." << std::endl;
   }
 
   std::string name_;
-  boost::timer::cpu_timer t_;
+  Core::Logging::SimpleScopedTimer t_;
 };
 
 // TODO: move to Field utils file

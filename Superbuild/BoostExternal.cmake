@@ -54,7 +54,6 @@ SET(boost_Libraries
   "serialization"
   "system"
   "thread"
-  "timer"
   CACHE INTERNAL "Boost library name.")
 
 IF(BUILD_WITH_PYTHON)

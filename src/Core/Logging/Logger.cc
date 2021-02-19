@@ -37,13 +37,24 @@ using namespace SCIRun::Core::Logging;
 
 LegacyLoggerInterface::~LegacyLoggerInterface() {}
 
+SimpleScopedTimer::SimpleScopedTimer() : start_(std::chrono::steady_clock::now())
+{
+}
+
+double SimpleScopedTimer::elapsedSeconds() const
+{
+  const auto end = std::chrono::steady_clock::now();
+  const std::chrono::duration<double> elapsedSeconds = end - start_;
+  return elapsedSeconds.count();
+}
+
 ScopedTimeRemarker::ScopedTimeRemarker(LegacyLoggerInterface* log, const std::string& label) : log_(log), label_(label)
 {}
 
 ScopedTimeRemarker::~ScopedTimeRemarker()
 {
   std::ostringstream perf;
-  perf << label_ <<  " took " << timer_.elapsed().wall << " seconds." << std::endl;
+  perf << label_ <<  " took " << timer_.elapsedSeconds() << " seconds." << std::endl;
   log_->status(perf.str());
 }
 
@@ -55,7 +66,7 @@ ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): la
 
 ScopedTimeLogger::~ScopedTimeLogger()
 {
-  auto time = timer_.elapsed().wall;
+  auto time = timer_.elapsedSeconds();
   if (shouldLog_)
     LOG_DEBUG("{} took {} seconds.", label_, time);
 }
