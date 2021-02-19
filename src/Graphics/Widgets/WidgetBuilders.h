@@ -108,6 +108,22 @@ namespace SCIRun
       private:
         bool renderBase_;
       };
+
+      class SCISHARE SuperquadricWidgetBuilder : public CommonWidgetBuilder<SuperquadricWidgetBuilder>
+      {
+      public:
+        using CommonWidgetBuilder::CommonWidgetBuilder;
+        SuperquadricWidgetBuilder& centerPoint(const Core::Geometry::Point& c) { point_ = c; return *this; };
+        SuperquadricWidgetBuilder& tensor(const Core::Geometry::Tensor& t) { tensor_ = t; return *this; };
+        SuperquadricWidgetBuilder& A(const double a) { A_ = a; return *this; };
+        SuperquadricWidgetBuilder& B(const double b) { B_ = b; return *this; };
+        WidgetHandle build() const;
+      private:
+        Core::Geometry::Point point_;
+        Core::Geometry::Tensor tensor_;
+        double A_;
+        double B_;
+      };
     }
   }
 }

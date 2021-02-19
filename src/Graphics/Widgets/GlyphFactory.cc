@@ -58,6 +58,30 @@ std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget
   return name;
 }
 
+std::string RealGlyphFactory::superquadric(SuperquadricParameters params, WidgetBase& widget) const
+{
+  if (params.common.scale < 0) params.common.scale = 1.;
+  if (params.common.resolution < 0) params.common.resolution = 10;
+
+  auto colorScheme = ColorScheme::COLOR_UNIFORM;
+  std::stringstream ss;
+  ss << params.common.scale << params.common.resolution << static_cast<int>(colorScheme);
+
+  auto name = widget.uniqueID() + "widget" + ss.str();
+
+  Graphics::GlyphGeom glyphs;
+  ColorRGB node_color;
+  glyphs.addSuperquadricSurface(params.point, params.tensor, params.common.scale,
+                                params.common.resolution, node_color, params.A, params.B);
+
+  auto renState = getSphereRenderState(params.common.defaultColor);
+
+  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+
+  return name;
+}
+
 RenderState RealGlyphFactory::getSphereRenderState(const std::string& defaultColor) const
 {
   RenderState renState;

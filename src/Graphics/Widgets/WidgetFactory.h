@@ -60,6 +60,8 @@ namespace SCIRun
 
         static WidgetHandle createDisk(const WidgetBaseParameters& gen, DiskParameters params);
 
+        static WidgetHandle createSuperquadric(const WidgetBaseParameters& gen, SuperquadricParameters params);
+
         template <typename WidgetIter>
         static WidgetHandle createComposite(const WidgetBaseParameters& gen, WidgetIter begin, WidgetIter end)
         {

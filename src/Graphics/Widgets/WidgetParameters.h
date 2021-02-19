@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Graphics_Widgets_WidgetParameters_H
 
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/share.h>
 
@@ -52,6 +53,15 @@ namespace SCIRun
       {
         CommonWidgetParameters common;
         Core::Geometry::Point point;
+      };
+
+      struct SCISHARE SuperquadricParameters
+      {
+        CommonWidgetParameters common;
+        Core::Geometry::Point point;
+        Core::Geometry::Tensor tensor;
+        double A;
+        double B;
       };
 
       struct SCISHARE CylinderParameters

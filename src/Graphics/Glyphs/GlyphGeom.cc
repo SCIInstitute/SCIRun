@@ -115,6 +115,17 @@ void GlyphGeom::addSuperquadricTensor(const Point& center, Tensor& t, double sca
   builder.generateSuperquadricTensor(constructor_, emphasis);
 }
 
+void GlyphGeom::addSuperquadricSurface(const Point& center, Tensor& t, double scale, int resolution,
+                                       const ColorRGB& color, double A, double B)
+{
+  TensorGlyphBuilder builder(t, center);
+  builder.setResolution(resolution);
+  builder.setColor(color);
+  builder.scaleTensor(scale);
+  builder.makeTensorPositive();
+  builder.generateSuperquadricSurface(constructor_, A, B);
+}
+
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2,
                             bool renderBase1, bool renderBase2)

@@ -50,6 +50,7 @@ namespace SCIRun
         virtual std::string cylinder(CylinderParameters params, WidgetBase& widget) const = 0;
         virtual std::string box(BoundingBoxParameters params, WidgetBase& widget) const = 0;
         virtual std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const = 0;
+        virtual std::string superquadric(SuperquadricParameters params, WidgetBase& widget) const = 0;
       };
 
       class SCISHARE RealGlyphFactory : public AbstractGlyphFactory
@@ -61,6 +62,7 @@ namespace SCIRun
         std::string cylinder(CylinderParameters params, WidgetBase& widget) const override;
         std::string box(BoundingBoxParameters params, WidgetBase& widget) const override;
         std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const override;
+        std::string superquadric(SuperquadricParameters params, WidgetBase& widget) const override;
       private:
         RenderState getSphereRenderState(const std::string& defaultColor) const;
       };

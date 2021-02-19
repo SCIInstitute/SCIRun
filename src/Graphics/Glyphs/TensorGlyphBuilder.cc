@@ -236,6 +236,24 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlyphConstructor& constructo
   double A = linear ? pPower : lPower;
   double B = linear ? lPower : pPower;
 
+  generateSuperquadricSurfacePrivate(constructor, A, B);
+}
+
+void TensorGlyphBuilder::generateSuperquadricSurface(GlyphConstructor& constructor, double A, double B)
+{
+  makeTensorPositive();
+  computeTransforms();
+  postScaleTransorms();
+  computeSinCosTable(false);
+  generateSuperquadricSurfacePrivate(constructor, A, B);
+}
+
+void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B)
+{
+  double cl = t_.linearCertainty();
+  double cp = t_.planarCertainty();
+  bool linear = cl >= cp;
+
   double normalA = 2.0-A;
   double normalB = 2.0-B;
 

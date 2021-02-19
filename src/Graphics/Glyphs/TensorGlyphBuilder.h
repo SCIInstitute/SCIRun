@@ -51,10 +51,12 @@ public:
   void setColor(const Core::Datatypes::ColorRGB& color);
   void setResolution(double resolution);
   void generateSuperquadricTensor(GlyphConstructor& constructor, double emphasis);
+  void generateSuperquadricSurface(GlyphConstructor& constructor, double A, double B);
   void generateEllipsoid(GlyphConstructor& constructor, bool half);
   void generateBox(GlyphConstructor& constructor);
 
 private:
+  void generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B);
   Core::Geometry::Point evaluateSuperquadricPointLinear(double sinphi, double cosphi, double sintheta,
                                         double costheta, double A, double B);
   Core::Geometry::Point evaluateSuperquadricPointPlanar(double sinphi, double cosphi, double sintheta,

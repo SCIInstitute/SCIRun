@@ -101,7 +101,9 @@ public:
   void addNeedle(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
                  const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
   void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
-
+  void addSuperquadricSurface(const Core::Geometry::Point& center, Core::Geometry::Tensor& t,
+                              double scale, int resolution, const Core::Datatypes::ColorRGB& color,
+                              double A, double B);
   void generateSphere(const Core::Geometry::Point& center, double radius, int resolution,
                       const Core::Datatypes::ColorRGB& color);
   void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,

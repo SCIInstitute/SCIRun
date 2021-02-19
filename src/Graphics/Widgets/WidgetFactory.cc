@@ -33,6 +33,7 @@
 #include <Graphics/Widgets/DiskWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/SuperquadricWidget.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 
@@ -92,6 +93,12 @@ WidgetHandle WidgetFactory::createDisk(const WidgetBaseParameters& gen,
   return boost::make_shared<DiskWidget>(packageWithGlyph(gen), params);
 }
 
+WidgetHandle WidgetFactory::createSuperquadric(const WidgetBaseParameters& gen,
+                                               SuperquadricParameters params)
+{
+  return boost::make_shared<SuperquadricWidget>(packageWithGlyph(gen), params);
+}
+
 WidgetHandle SphereWidgetBuilder::build() const
 {
   return WidgetFactory::createSphere({ idGenerator_, tag_, mapping_ },
@@ -114,4 +121,10 @@ WidgetHandle ConeWidgetBuilder::build() const
 {
   return WidgetFactory::createCone({ idGenerator_, tag_, mapping_ },
     { { { scale_, defaultColor_, origin_, bbox_, resolution_ }, p1_, p2_}, renderBase_ });
+}
+
+WidgetHandle SuperquadricWidgetBuilder::build() const
+{
+  return WidgetFactory::createSuperquadric({ idGenerator_, tag_, mapping_ },
+    { { scale_, defaultColor_, origin_, bbox_, resolution_ }, point_, tensor_, A_, B_ });
 }

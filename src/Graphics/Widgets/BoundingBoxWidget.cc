@@ -339,8 +339,10 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
                                         WidgetBase& widget)
 {
   const static double cornerSphereRadius = 1.5;
+  const static double A = 1.5;
+  const static double B = 1.5;
 
-  auto builder = SphereWidgetBuilder(gen.base.idGenerator)
+  auto builder = SuperquadricWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
     .scale(cornerSphereRadius * params.scale * scale_)
     .origin(params.origin)
@@ -348,9 +350,20 @@ void BBoxDataHandler::makeCornerSpheres(const GeneralWidgetParameters& gen,
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
+
+  // auto builder = SphereWidgetBuilder(gen.base.idGenerator)
+  //   .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE)}})
+  //   .scale(cornerSphereRadius * params.scale * scale_)
+  //   .origin(params.origin)
+  //   .defaultColor(SCALE_COLOR_)
+  //   .boundingBox(params.bbox)
+  //   .resolution(params.resolution);
+
   for (int c = 0; c < CORNER_COUNT_; ++c)
   {
-    corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c]).build();
+    Tensor t = Tensor(scaledEigvecs_[0], scaledEigvecs_[1], scaledEigvecs_[2]);
+    corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c])
+      .tensor(t).A(A).B(B).build();
     auto flipVec = cornerPoints_[c] - params.origin;
     corners_[c]->addTransformParameters<Scaling>(params.origin, flipVec);
   }
