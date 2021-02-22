@@ -29,6 +29,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <QOpenGLWidget>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Datatypes;
@@ -44,7 +45,8 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
 
 QString Screenshot::screenshotDirectory()
 {
-  static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
+  // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
+  static const QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
   QDir dir(filePath);
   if (!dir.exists())
   {
@@ -88,11 +90,27 @@ void Screenshot::saveScreenshot(const QString& filename)
   screenshot_.save(filename);
 }
 
+void Screenshot::saveScreenshotFromPath()
+{
+  index_++;
+  auto fileName = screenshotFileFromPreferences();
+  if (!fileName.isEmpty())
+  {
+    QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+    screenshot_.save(fileName);
+  }
+}
+
+QString Screenshot::screenshotFileFromPreferences() const
+{
+  //return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
+  //TODO: might want to have an option to save to an auto-generated file for speed
+  return screenshotDirectory() + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+}
+
 QString Screenshot::screenshotFile() const
 {
   return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
-  //TODO: might want to have an option to save to an auto-generated file for speed
-  //return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const

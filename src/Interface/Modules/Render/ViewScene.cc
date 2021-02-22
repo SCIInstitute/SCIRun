@@ -464,6 +464,7 @@ void ViewSceneDialog::addToolBar()
   addConfigurationDock();
   addAutoViewButton();
   addScreenshotButton();
+  addQuickScreenshotButton();
 
   glLayout->addWidget(mToolBar);
 
@@ -561,6 +562,17 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   addToolbarButton(screenshotButton);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::addQuickScreenshotButton()
+{
+  QPushButton* quickScreenshotButton = new QPushButton(this);
+  quickScreenshotButton->setToolTip("Take Quick screenshot");
+  // quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
+  quickScreenshotButton->setShortcut(Qt::Key_F12);
+  connect(quickScreenshotButton, SIGNAL(clicked(bool)), this, SLOT(quickScreenshotClicked()));
+  addToolbarButton(quickScreenshotButton);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2701,6 +2713,12 @@ void ViewSceneDialog::screenshotClicked()
 {
   takeScreenshot();
   screenshotTaker_->saveScreenshot();
+}
+
+void ViewSceneDialog::quickScreenshotClicked()
+{
+  takeScreenshot();
+  screenshotTaker_->saveScreenshotFromPath();
 }
 
 void ViewSceneDialog::autoSaveScreenshot()
