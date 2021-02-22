@@ -102,6 +102,26 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
 #endif
 }
 
+boost::filesystem::path Preferences::screenshotDirectory() const
+{
+  return screenshotDir_;
+}
+
+void Preferences::setScreenshotDirectory(const boost::filesystem::path& path)
+{
+  screenshotDir_ = path;
+
+  if (!boost::filesystem::exists(path))
+    logWarning("Data directory {} does not exist.", path.string());
+  if (!boost::filesystem::is_directory(path))
+    logWarning("Data directory {} is not a directory.", path.string());
+
+  if (screenshotDir_.string().back() == boost::filesystem::path::preferred_separator)
+  {
+    screenshotDir_.remove_filename();
+  }
+}
+
 /// @todo: not sure where this should go.
 std::string Preferences::dataDirectoryPlaceholder() const
 {
