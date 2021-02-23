@@ -31,7 +31,6 @@
 
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitProducerInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -42,25 +41,19 @@ namespace SCIRun {
         struct SCISHARE ModuleExecutor
         {
           ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
-            module_(mod), lookup_(lookup), producer_(producer),
-            shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
+            module_(mod), lookup_(lookup), producer_(producer)
           {
-            //Core::Logging::Log::get("executor").setVerbose(shouldLog_);
           }
           void run() const
           {
-            //log_->trace_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
-            auto exec = lookup_->lookupExecutable(module_->id());
-            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules,
-              boost::ref(*producer_))));
+            auto* exec = lookup_->lookupExecutable(module_->id());
+            boost::signals2::scoped_connection s(exec->connectExecuteEnds([this](double, const Networks::ModuleId&) { producer_->enqueueReadyModules(); }));
             exec->executeWithSignals();
           }
 
           Networks::ModuleHandle module_;
           const Networks::ExecutableLookup* lookup_;
           ProducerInterfacePtr producer_;
-          bool shouldLog_;
-          //static Core::Logging::Logger2 log_;
         };
 
 

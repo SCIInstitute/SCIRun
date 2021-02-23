@@ -29,9 +29,6 @@
 */
 
 
-#include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
-
 // Tikhonov specific headers
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
@@ -43,7 +40,6 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
 #include <unsupported/Eigen/Splines>
@@ -51,7 +47,6 @@
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 

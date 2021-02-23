@@ -44,7 +44,6 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
-#include <boost/lambda/lambda.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Utils/StringUtil.h>
 

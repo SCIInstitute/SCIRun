@@ -29,23 +29,14 @@
 */
 
 
-// SCIRUN lybraries
-#include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/LoggerInterface.h>
-#include <Core/Utils/Exception.h>
 
 // Tikhonov inverse libraries
-#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
-// EIGEN LIBRARY
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
 
