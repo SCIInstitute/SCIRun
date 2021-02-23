@@ -46,7 +46,7 @@ namespace Networks {
   class SCISHARE ExecutableObject
   {
   public:
-    virtual ~ExecutableObject() {}
+    virtual ~ExecutableObject() = default;
     virtual bool executeWithSignals() = 0;
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;

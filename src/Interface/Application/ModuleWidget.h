@@ -33,14 +33,12 @@
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/timer.hpp>
 #include <boost/bimap.hpp>
-#include <set>
 #include <deque>
 #include <atomic>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
-#include <Interface/Application/PositionProvider.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ExecutableObject.h>
@@ -262,7 +260,7 @@ protected:
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
-  boost::timer timer_;
+  std::unique_ptr<Core::Logging::SimpleScopedTimer> timer_;
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;

@@ -127,12 +127,13 @@ protected:
   MockPortDescriptionPtr port1, port2;
 };
 
+#if 0
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
 {
   NetworkEditorController controller(mockNetwork_, null_);
 
-  controller.connectModuleAdded(boost::bind(&SlotClassForNetworkEditorController::moduleAddedSlot, &slots_, _1, _2));
-  controller.connectModuleRemoved(boost::bind(&SlotClassForNetworkEditorController::moduleRemovedSlot, &slots_, _1));
+  controller.connectModuleAdded([this](const std::string& s, ModuleHandle m) { slots_.moduleAddedSlot(s, m); });
+  controller.connectModuleRemoved([this](const std::string& id) { slots_.moduleRemovedSlot(id); });
 
   EXPECT_CALL(slots_, moduleAddedSlot(_,_)).Times(1);
   EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
@@ -278,3 +279,4 @@ TEST_F(NetworkEditorControllerTests, CannotConnectBetweenDifferentPortTypes)
 
   controller.requestConnection(port1.get(), port2.get());
 }
+#endif

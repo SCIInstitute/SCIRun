@@ -26,20 +26,31 @@
 */
 
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
-#include <Dataflow/Engine/Scheduler/DynamicMultithreadedNetworkExecutor.h>
-#include <Dataflow/Network/NetworkInterface.h>
+ #ifndef MODULES_FIELDS_GenerateNodeNormals_H
+ #define MODULES_FIELDS_GenerateNodeNormals_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Thread;
+ #include <Dataflow/Network/Module.h>
+ #include <Modules/Legacy/Fields/share.h>
 
-void DynamicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
-{
-  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
-  BoostGraphParallelScheduler scheduler(filter);
-  DynamicMultithreadedNetworkExecutor executor(context.network_);
-  executeWithCycleCheck(scheduler, executor, context, executionLock);
-}
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
+
+  class SCISHARE GenerateNodeNormals : public SCIRun::Dataflow::Networks::Module,
+    public Has1OutputPort<FieldPortTag>,
+    public Has2InputPorts<FieldPortTag, FieldPortTag>
+  {
+  public:
+    GenerateNodeNormals();
+
+    virtual void execute();
+    virtual void setStateDefaults(){}
+
+    INPUT_PORT(0, InputField, Field);
+    INPUT_PORT(1, InputPoint, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+  };
+}}}
+	#endif

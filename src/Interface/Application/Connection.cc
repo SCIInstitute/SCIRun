@@ -27,9 +27,7 @@
 
 
 #include <iostream>
-#include <stdexcept>
 #include <Interface/qt_include.h>
-#include <boost/bind.hpp>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Connection.h>

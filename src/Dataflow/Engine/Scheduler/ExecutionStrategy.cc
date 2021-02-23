@@ -46,11 +46,12 @@ boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(co
 ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
 {
   if (!filter)
-    return additionalFilter;
-  if (!additionalFilter)
+    return additionalFilter_;
+  if (!additionalFilter_)
     return filter;
 
-  return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
+  auto additional = additionalFilter_;
+  return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
 }
 
 ExecutionQueueManager::ExecutionQueueManager() :

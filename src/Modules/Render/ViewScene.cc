@@ -84,6 +84,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 
 ViewScene::~ViewScene()
 {
+  screenShotMutex_.unlock();
 }
 
 void ViewScene::setStateDefaults()
