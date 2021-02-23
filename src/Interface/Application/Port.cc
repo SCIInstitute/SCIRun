@@ -28,7 +28,6 @@
 
 #include <iostream>
 #include <Interface/qt_include.h>
-#include <boost/lambda/lambda.hpp>
 #include <boost/regex.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>

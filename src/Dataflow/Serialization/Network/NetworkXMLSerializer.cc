@@ -36,7 +36,6 @@
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <fstream>
-#include <boost/lambda/lambda.hpp>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -174,7 +173,7 @@ NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
-  return to_xml_data(network, boost::lambda::constant(true), boost::lambda::constant(true));
+  return to_xml_data(network, [](ModuleHandle) { return true; }, [](const ConnectionDescription&) { return true; });
 }
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)

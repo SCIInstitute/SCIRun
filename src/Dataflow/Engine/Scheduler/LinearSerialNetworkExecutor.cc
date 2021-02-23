@@ -67,6 +67,6 @@ namespace
 
 void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
-  LinearExecution runner(context.lookup, order, context.bounds(), &executionLock);
+  LinearExecution runner(context.lookup_, order, context.bounds(), &executionLock);
   Core::Thread::Util::launchAsyncThread(runner);
 }

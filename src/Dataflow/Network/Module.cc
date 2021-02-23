@@ -28,8 +28,6 @@
 
 #include <memory>
 #include <numeric>
-#include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <chrono>
 #include <atomic>
@@ -961,7 +959,7 @@ void ModuleWithAsyncDynamicPorts::execute()
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
   if (h->isDynamic())
-    h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+    h->connectDataOnPortHasChanged([this](const PortId& pid, DatatypeHandle data) { asyncExecute(pid, data); });
   return Module::add_input_port(h);
 }
 

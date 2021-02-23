@@ -105,12 +105,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   freopen("CONOUT$", "w", stderr);
 #endif
 
-  const char *argv[100] = { 0 };
+  const char *argv[100] = { nullptr };
   int argc;
   {
-    LPWSTR *szArglist;
-
-    szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
+    LPWSTR* szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
     if (!szArglist)
     {
       std::cout << "CommandLineToArgvW failed" << std::endl;

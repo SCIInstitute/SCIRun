@@ -28,10 +28,6 @@
 
 #include <es-log/trace-log.h>
 #include <QtGui>
-#include <functional>
-#include <boost/bind.hpp>
-#include <boost/assign.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -39,7 +35,6 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
@@ -50,7 +45,6 @@
 #include <Interface/Application/MacroEditor.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
-#include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
@@ -65,13 +59,11 @@
 #include <Core/Thread/Parallel.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;

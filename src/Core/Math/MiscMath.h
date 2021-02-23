@@ -37,7 +37,8 @@
 #include <limits>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Math/share.h>
 
 // Define missing Windows function
@@ -57,7 +58,7 @@ namespace SCIRun {
 	#endif
 
 template<typename T>
-inline bool nonzero(T d)
+bool nonzero(T d)
 {
   btt::close_at_tolerance<T> comp(btt::percent_tolerance(std::numeric_limits<T>::epsilon()));
   return(! comp(d, 0));
@@ -234,13 +235,13 @@ inline int Sign(int i)
 //-----------------------------------------
 // Interpolation function
 template <class T>
-inline T Interpolate(T d1, T d2, double weight)
+T Interpolate(T d1, T d2, double weight)
 {
   return T(d2*weight+d1*(1.0-weight));
 }
 
 template <class T>
-inline T Interpolate(T d1, T d2, float weight)
+T Interpolate(T d1, T d2, float weight)
 {
   return T(d2*weight+d1*(1-weight));
 }
