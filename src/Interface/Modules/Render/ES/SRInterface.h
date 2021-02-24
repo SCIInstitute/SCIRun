@@ -32,7 +32,6 @@
 #include <unordered_map>
 #include <cstdint>
 #include <memory>
-#include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/ES/Core.h>
 
 //freetype
@@ -49,6 +48,12 @@
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
 #include <Interface/Modules/Render/share.h>
 
+namespace ren
+{
+  class VBOMan;
+  class IBOMan;
+  class FBOMan;
+}
 
 namespace SCIRun
 {
@@ -75,7 +80,6 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void widgetMouseDown(MouseButton btn, int x, int y) override;
       void widgetMouseMove(MouseButton btn, int x, int y) override;
       void widgetMouseUp() override;
       void inputMouseDown(MouseButton btn, float x, float y) override;
@@ -85,7 +89,6 @@ namespace SCIRun
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
       MouseMode getMouseMode() const override    {return mMouseMode;}
       void calculateScreenSpaceCoords(int x_in, int y_in, float& x_out, float& y_out) override;
-
 
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
@@ -106,13 +109,19 @@ namespace SCIRun
       void setLockRotation(bool lock) override;
       void setAutoRotateVector(const glm::vec2& axis) override;
       void setAutoRotateSpeed(double speed) override;
-      const glm::mat4& getWorldToView() const override;
-      const glm::mat4& getViewToProjection() const override;
+      glm::mat4 getWorldToView() const override;
+      glm::mat4 getViewToProjection() const override;
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      Graphics::Datatypes::WidgetHandle select(int x, int y, Graphics::Datatypes::WidgetList& widgets) override;
+      Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) override;
+      std::tuple<uint32_t, std::string, std::vector<uint64_t>> addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget);
+      void addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan);
+      void addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan);
+      GLenum computePrimitiveType(size_t indexSize);
+      GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
+      void setWidgetInteractionMode(MouseButton btn) override;
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;
@@ -124,6 +133,7 @@ namespace SCIRun
       void setClippingPlaneZ(double value) override;
       void setClippingPlaneD(double value) override;
       void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
+      void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.
@@ -134,6 +144,7 @@ namespace SCIRun
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects) override;
       Core::Geometry::BBox getSceneBox() override {return mSceneBBox;}
+      void cleanupSelect() override;
 
       bool hasShaderPromise() const override;
       void runGCOnNextExecution() override;
@@ -161,6 +172,7 @@ namespace SCIRun
       glm::mat4 getStaticCameraViewProjection() override;
 
       void modifyObject(const std::string& id, const gen::Transform& trans) override;
+      glm::mat4 getWorldToProjection() const override;
 
     private:
       void setupCore();
@@ -221,7 +233,8 @@ namespace SCIRun
       ScreenParams screen_;
       WidgetUpdateService widgetUpdater_;
 
-      GLuint                              mFontTexture        {};       // 2D texture for fonts
+      GLuint                              mFontTexture        {0};       // 2D texture for fonts
+      boost::optional<GLuint> widgetSelectFboId_ {};
 
       int                                 axesFailCount_      {0};
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
@@ -242,6 +255,7 @@ namespace SCIRun
       double                              mMatDiffuse         {};
       double                              mMatSpecular        {};
       double                              mMatShine           {};
+      float                               selectionDepth_ {0.0};
 
       //fog settings
       double                              mFogIntensity       {};

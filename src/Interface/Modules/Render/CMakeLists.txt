@@ -26,7 +26,7 @@
 #
 
 
-ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+ADD_DEFINITIONS(-DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
 
 IF(UNIX)
   ADD_DEFINITIONS(-Wno-missing-braces)
@@ -46,9 +46,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewSceneControlsDock.h
   ViewOspraySceneConfig.h
   GLWidget.h
-  GLContext.h
   GLContextPlatformCompatibility.h
-  QtGLContext.h
   Screenshot.h
   OsprayViewerDialog.h
 )
@@ -66,6 +64,7 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/RendererInterfaceFwd.h
   ES/RendererCollaborators.h
   ES/RendererInterfaceCollaborators.h
+  ES/ObjectTransformCalculators.h
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
@@ -84,8 +83,6 @@ SET(Interface_Modules_Render_SOURCES
   ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc
-  GLContext.cc
-  QtGLContext.cc
   Screenshot.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc
@@ -96,6 +93,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/CoreBootstrap.cc
   ES/Registration.cc
   ES/AssetBootstrap.cc
+  ES/ObjectTransformCalculators.cc
+  ES/WidgetHandling.cc
   ES/comp/LightingUniforms.cc
   ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc

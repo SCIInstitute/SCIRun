@@ -38,6 +38,7 @@ SET(Modules_Visualization_SRCS
   ShowFieldWithOspray.cc
   CreateTestingArrow.cc
   ShowMeshBoundingBox.cc
+  ShowOrientationAxes.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -52,6 +53,7 @@ SET(Modules_Visualization_HEADERS
   ShowFieldWithOspray.h
   CreateTestingArrow.h
   ShowMeshBoundingBox.h
+  ShowOrientationAxes.h
   share.h
 )
 

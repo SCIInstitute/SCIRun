@@ -57,6 +57,8 @@ namespace Gui
 
   QGraphicsEffect* blurEffect(double radius = 2);
 
+  bool allowModificationSignalConnection();
+
   inline QAction* separatorAction(QWidget* parent)
   {
     auto sep = new QAction(parent);
@@ -81,9 +83,6 @@ namespace Gui
   QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup, QWidget* parent);
   bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const Dataflow::Networks::ModuleDescription& module);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
-
-  const char* addNewModuleActionTypePropertyName();
-  const char* insertNewModuleActionTypePropertyName();
 
   const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 

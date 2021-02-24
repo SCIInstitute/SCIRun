@@ -49,13 +49,13 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(NoInnerBoundary);
         ALGORITHM_PARAMETER_DECL(DisconnectBoundaries);
 
-class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase, public Core::Thread::Interruptible
+class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase, public Core::Thread::Stoppable
 {
   public:
     GetDomainBoundaryAlgo();
 
-    static AlgorithmInputName ElemLink;
-    static AlgorithmOutputName BoundaryField;
+    static const AlgorithmInputName ElemLink;
+    static const AlgorithmOutputName BoundaryField;
 
     virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 

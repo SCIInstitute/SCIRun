@@ -49,27 +49,27 @@ const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QWidget* parent) :
-    QOpenGLWidget(parent)
+  QOpenGLWidget(parent)
 {
-  mGraphics.reset(new Render::SRInterface());
+  graphics_.reset(new Render::SRInterface());
 
-  mTimer = new QTimer(this);
-  connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
-  mTimer->start(RendererUpdateInMS);}
+  timer_ = new QTimer(this);
+  connect(timer_, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  timer_->start(RendererUpdateInMS);}
 
 //------------------------------------------------------------------------------
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
-  if (mGraphics != nullptr)
+  if (graphics_ != nullptr)
   {
-    mGraphics.reset();
+    graphics_.reset();
   }
 }
 
-void GLWidget::setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
-void GLWidget::setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
-void GLWidget::setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
+void GLWidget::setLockZoom(bool lock)     { graphics_->setLockZoom(lock); }
+void GLWidget::setLockPanning(bool lock)  { graphics_->setLockPanning(lock); }
+void GLWidget::setLockRotation(bool lock) { graphics_->setLockRotation(lock); }
 
 //------------------------------------------------------------------------------
 void GLWidget::initializeGL()
@@ -80,28 +80,14 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
   //set to 200ms to force promise fullfilment every frame if a good frame as been requested
-  double lUpdateTime = mFrameRequested ? 0.2 : updateTime;
-  mGraphics->doFrame(lUpdateTime);
+  double lUpdateTime = frameRequested_ ? 0.2 : updateTime;
+  graphics_->doFrame(lUpdateTime);
 
-  if (mFrameRequested && !mGraphics->hasShaderPromise())
+  if (frameRequested_ && !graphics_->hasShaderPromise())
   {
-    mFrameRequested = false;
+    frameRequested_ = false;
     finishedFrame();
   }
-}
-
-//------------------------------------------------------------------------------
-SCIRun::Render::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
-{
-  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
-  if (event->buttons() & Qt::LeftButton)
-    btn = Render::MouseButton::MOUSE_LEFT;
-  else if (event->buttons() & Qt::RightButton)
-    btn = Render::MouseButton::MOUSE_RIGHT;
-  else if (event->buttons() & Qt::MidButton)
-    btn = Render::MouseButton::MOUSE_MIDDLE;
-
-  return btn;
 }
 
 //------------------------------------------------------------------------------
@@ -132,17 +118,17 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 void GLWidget::resizeGL(int width, int height)
 {
   makeCurrent();
-  mGraphics->eventResize(static_cast<size_t>(width),
+  graphics_->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
-  //updateRenderer();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
-  if (mGraphics != nullptr)
+  if (graphics_)
   {
-    mGraphics.reset();
+    graphics_->cleanupSelect();
+    graphics_.reset();
   }
   QOpenGLWidget::closeEvent(evt);
 }
@@ -150,7 +136,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  if(isValid())
+  if (isValid())
   {
     update();
   }

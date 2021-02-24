@@ -192,11 +192,9 @@ IF(BUILD_TESTING)
   SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
-  #INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
-  #TEST_DATA()
-
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
+  OPTION(RUN_IMPORT_TESTS "Run v4 import tests" ON)
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
@@ -828,6 +826,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Graphics_Widgets_Tests         PROPERTY FOLDER "Graphics/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
@@ -862,7 +861,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)

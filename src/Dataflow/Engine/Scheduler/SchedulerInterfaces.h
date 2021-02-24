@@ -63,26 +63,26 @@ namespace Engine {
   class SCISHARE ScopedExecutionBoundsSignaller
   {
   public:
-    ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever);
+    ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, std::function<int()> errorCodeRetriever);
     ~ScopedExecutionBoundsSignaller();
   private:
     const ExecutionBounds* bounds_;
-    boost::function<int()> errorCodeRetriever_;
+    std::function<int()> errorCodeRetriever_;
   };
 
   struct SCISHARE ExecutionContext : boost::noncopyable
   {
     explicit ExecutionContext(Networks::NetworkInterface& net);
     ExecutionContext(Networks::NetworkInterface& net,
-                     const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
+                     const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
 
     ExecutionContext(Networks::NetworkInterface& net,
-      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
+      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network_(net), lookup_(lkp), additionalFilter_(filter) {}
 
     void preexecute();
-    Networks::NetworkInterface& network;
-    const Networks::ExecutableLookup& lookup;
-    Networks::ModuleFilter additionalFilter;
+    Networks::NetworkInterface& network_;
+    const Networks::ExecutableLookup& lookup_;
+    Networks::ModuleFilter additionalFilter_;
 
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
@@ -113,7 +113,7 @@ namespace Engine {
     OrderType order;
     try
     {
-      order = scheduler.schedule(context.network);
+      order = scheduler.schedule(context.network_);
     }
     catch (NetworkHasCyclesException&)
     {

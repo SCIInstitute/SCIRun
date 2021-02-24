@@ -28,7 +28,8 @@
 
 #include <iostream>
 #include <vector>
-#include <boost/thread.hpp>
+#include <chrono>
+#include <thread>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -143,9 +144,9 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
   {
 #ifdef _MSC_VER
     // fix for https://svn.boost.org/trac/boost/ticket/6320
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Guard g(AlgorithmParameterHelper::lock_.get());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     boost::filesystem::path::imbue( std::locale( "" ) );
     boost::filesystem::path dummy("boost bug workaround");
     LOG_DEBUG(dummy.string());

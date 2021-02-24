@@ -26,7 +26,6 @@
 */
 
 
-#include <boost/timer.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -35,7 +34,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <streambuf>
 
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>

@@ -36,6 +36,4 @@
 
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 
-#include <QtOpenGL/QGLWidget>
-
 #endif

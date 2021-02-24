@@ -27,22 +27,14 @@
 
 
 #include <es-log/trace-log.h>
-#include <Interface/qt_include.h>
-#include <functional>
-#include <boost/bind.hpp>
-#include <boost/assign.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
-#include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
@@ -52,26 +44,18 @@
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
-#include <Interface/Application/ModuleWizard/ModuleWizard.h>
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
-#include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include <Core/Thread/Parallel.h>
-#include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
-#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
-
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -258,6 +242,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionStateViewer_, &QAction::triggered, [this]() { networkEditor_->showStateViewer(); });
 
   auto dimFunc = [this](const char* type)
   {

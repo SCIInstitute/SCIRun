@@ -35,7 +35,6 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 #include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
@@ -103,7 +102,7 @@ namespace SCIRun {
 
           void operator()() const
           {
-            id_ = boost::this_thread::get_id();
+            id_ = std::this_thread::get_id();
 
             //log_->trace_if(shouldLog_, "Producer started {}", id_);
 
@@ -111,7 +110,7 @@ namespace SCIRun {
 
             while (!badGroup_ && !isDone())
             {
-              boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
               //std::cout << "producer thread waiting " << id_ << std::endl;
             }
 
@@ -136,10 +135,10 @@ namespace SCIRun {
           //static Core::Logging::Logger2 log_;
           //bool shouldLog_;
           size_t numModules_;
-          mutable boost::thread::id id_;
+          mutable std::thread::id id_;
         };
 
-        typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;
+        typedef SharedPointer<ModuleProducer> ModuleProducerPtr;
 
       }}
 

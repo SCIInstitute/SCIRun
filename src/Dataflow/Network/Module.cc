@@ -28,10 +28,8 @@
 
 #include <memory>
 #include <numeric>
-#include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/timer.hpp>
+#include <chrono>
 #include <atomic>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -168,8 +166,9 @@ namespace SCIRun
           metadata_(state_),
           executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
         {
-          iports_.set_module(module_);
-          oports_.set_module(module_);
+          // this captures the virtual call add_input_port, which will ensure dynamic ports have their asyncExecute listener attached (solves #957)
+          iports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_input_port(boost::dynamic_pointer_cast<InputPort>(p)); });
+          oports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_output_port(boost::dynamic_pointer_cast<OutputPort>(p)); });
         }
 
         boost::atomic<bool> inputsChanged_ { false };
@@ -199,6 +198,8 @@ namespace SCIRun
         LoggerHandle log_;
         AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
         UiToggleFunc uiToggleFunc_;
+
+        std::string description_;
 
         bool returnCode_{ false };
       };
@@ -373,6 +374,11 @@ bool Module::executeWithSignals() NOEXCEPT
 {
   auto starting = "STARTING MODULE: " + id().id_;
 
+  if (isStoppable())
+  {
+    dynamic_cast<Stoppable*>(this)->resetStoppability();
+  }
+
   runProgrammablePortInput();
 
 #ifdef BUILD_HEADLESS //TODO: better headless logging
@@ -384,7 +390,7 @@ bool Module::executeWithSignals() NOEXCEPT
   }
 #endif
   impl_->executeBegins_(id());
-  boost::timer executionTimer;
+  auto start = std::chrono::steady_clock::now();
   {
     auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
     impl_->metadata_.setMetadata("Last execution timestamp", isoString);
@@ -422,6 +428,11 @@ bool Module::executeWithSignals() NOEXCEPT
     ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
+  catch (const ThreadStopped&)
+  {
+    error("MODULE ERROR: execution thread interrupted by user.");
+    threadStopValue = true;
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
@@ -437,27 +448,21 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
-  catch (const boost::thread_interrupted&)
-  {
-    error("MODULE ERROR: execution thread interrupted by user.");
-    threadStopValue = true;
-  }
   catch (...)
   {
     error("MODULE ERROR: unhandled exception caught");
   }
   impl_->threadStopped_ = threadStopValue;
 
-  auto executionTime = executionTimer.elapsed();
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end-start;
   {
-    std::ostringstream ostr;
-    ostr << executionTime;
-    impl_->metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
+    impl_->metadata_.setMetadata("Last execution duration (seconds)", std::to_string(elapsed_seconds.count()));
   }
 
   std::ostringstream finished;
   finished << "MODULE " << id().id_ << " FINISHED " <<
-    (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+    (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << elapsed_seconds.count() << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   if (!LogSettings::Instance().verbose())
@@ -479,7 +484,7 @@ bool Module::executeWithSignals() NOEXCEPT
     impl_->inputsChanged_ = false;
   }
 
-  impl_->executeEnds_(executionTime, id());
+  impl_->executeEnds_(elapsed_seconds.count(), id());
   return impl_->returnCode_;
 }
 
@@ -488,12 +493,7 @@ void Module::runProgrammablePortInput()
   auto prog = getOptionalInputAtIndex<MetadataObject>(ProgrammablePortId());
   if (prog && *prog)
   {
-    //logCritical("MetadataObject found! {}", id().id_);
     (*prog)->process(id());
-  }
-  else
-  {
-    //logCritical("\tMetadataObject NOT found! {}", id().id_);
   }
 }
 
@@ -749,6 +749,26 @@ void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id) const
   }
 }
 
+ModuleBuilder& ModuleBuilder::setInfoStrings(const ModuleDescription& desc)
+{
+  auto m = dynamic_cast<Module*>(module_.get());
+  if (m)
+  {
+    m->setInfoStrings(desc);
+  }
+  return *this;
+}
+
+std::string Module::description() const
+{
+  return impl_->description_;
+}
+
+void Module::setInfoStrings(const ModuleDescription& desc)
+{
+  impl_->description_ = desc.moduleInfo_;
+}
+
 ModuleHandle ModuleBuilder::build() const
 {
   return module_;
@@ -938,7 +958,8 @@ void ModuleWithAsyncDynamicPorts::execute()
 
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
-  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+  if (h->isDynamic())
+    h->connectDataOnPortHasChanged([this](const PortId& pid, DatatypeHandle data) { asyncExecute(pid, data); });
   return Module::add_input_port(h);
 }
 
@@ -1126,7 +1147,7 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Stoppable*>(this) != nullptr;
 }
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const
@@ -1156,5 +1177,10 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://sciinstitute.github.io/scirun.pages/modules.html#" + name();
+  return "https://sciinstitute.github.io/SCIRun/modules.html#" + name();
+}
+
+void Module::disconnectStateListeners()
+{
+  get_state()->disconnectAll();
 }

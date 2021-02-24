@@ -28,6 +28,8 @@
 
 #include <gtest/gtest.h>
 #include <Interface/Modules/Render/Tests/ObjectTransformationHelper.h>
+#include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/matrix_access.hpp>
 
 using namespace SCIRun;
 using namespace Render;
@@ -64,18 +66,26 @@ protected:
 
 TEST_F(TranslationTest, CanConstruct)
 {
-  TranslateParameters p {};
+  ObjectTranslationCalculator::Params p {};
   ObjectTranslationCalculator translator(&brop, p);
 }
 
 bool SCIRun::RenderTesting::operator==(const glm::mat4& lhs, const glm::mat4& rhs)
 {
-  return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2] && lhs[3] == rhs[3];
+  static const float epsilon = 1e-6f;
+  return epsilonEqual(lhs, rhs, epsilon);
+}
+
+bool SCIRun::RenderTesting::epsilonEqual(const glm::mat4& lhs, const glm::mat4& rhs, float epsilon)
+{
+  auto indexes = {0,1,2,3};
+  return std::all_of(std::begin(indexes), std::end(indexes),
+    [&](int i) { return glm::all(glm::epsilonEqual(glm::row(lhs, i), glm::row(rhs, i), epsilon)); });
 }
 
 TEST_F(TranslationTest, CanTranslateHorizontalFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -97,7 +107,7 @@ TEST_F(TranslationTest, CanTranslateHorizontalFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateVerticalFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -119,7 +129,7 @@ TEST_F(TranslationTest, CanTranslateVerticalFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateArbitraryFromOrigin)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,0};
   p.w_ = 1.0;
   p.viewProj = viewProj_;
@@ -141,7 +151,7 @@ TEST_F(TranslationTest, CanTranslateArbitraryFromOrigin)
 
 TEST_F(TranslationTest, CanTranslateArbitraryFromArbitrary)
 {
-  TranslateParameters p;
+  ObjectTranslationCalculator::Params p;
   p.initialPosition_ = glm::vec2{15,30};
   p.w_ = 1.0;
   p.viewProj = viewProj_;

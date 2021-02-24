@@ -45,13 +45,13 @@ protected:
 
 TEST_F(RotationTest, CanConstruct)
 {
-  RotateParameters p {};
+  ObjectRotationCalculator::Params p {};
   ObjectRotationCalculator rotator(&brop, p);
 }
 
 TEST_F(RotationTest, CanRotateHorizontalFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{1,0};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -73,7 +73,7 @@ TEST_F(RotationTest, CanRotateHorizontalFromOrigin)
 
 TEST_F(RotationTest, CanRotateVerticalFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -95,7 +95,7 @@ TEST_F(RotationTest, CanRotateVerticalFromOrigin)
 
 TEST_F(RotationTest, CanRotateArbitraryFromOrigin)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{0,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{0,0,0};
@@ -117,7 +117,7 @@ TEST_F(RotationTest, CanRotateArbitraryFromOrigin)
 
 TEST_F(RotationTest, CanRotateArbitraryFromArbitrary)
 {
-  RotateParameters p;
+  ObjectRotationCalculator::Params p;
   p.initialPosition_ = glm::vec2{-1,1};
   p.w_ = 1.0;
   p.originWorld_ = glm::vec3{1,2,3};
@@ -126,13 +126,13 @@ TEST_F(RotationTest, CanRotateArbitraryFromArbitrary)
 
   auto t = rotator.computeTransform(25, -42);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
   expected[0] = glm::vec4{0.9994457364082336,	-0.003830079222097993,	0.03306873887777328,	0};
   expected[1] = glm::vec4{0.002393543953076005,	0.9990561604499817,	0.04337168484926224,	0};
   expected[2] = glm::vec4{-0.03320364654064178,	-0.04326849430799484,	0.9985115528106689,	0};
   expected[3] = glm::vec4{0.09537804126739502,	0.1355232000350952,	-0.1153466701507568,	1};
 
-  EXPECT_TRUE(t.transform == expected);
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
+
+  EXPECT_TRUE(epsilonEqual(t.transform, expected, 1e-5));
 }

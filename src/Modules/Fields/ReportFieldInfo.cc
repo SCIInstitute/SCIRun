@@ -57,9 +57,9 @@ ReportFieldInfo::ReportFieldInfo() : Module(staticInfo_)
 
 void ReportFieldInfo::execute()
 {
-  auto field = getRequiredInput(InputField);
+  const auto field = getRequiredInput(InputField);
 
-  auto output = algo().run(withInputData((InputField, field)));
+  const auto output = algo().run(withInputData((InputField, field)));
 
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 

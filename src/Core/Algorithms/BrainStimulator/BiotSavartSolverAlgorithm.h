@@ -63,17 +63,10 @@ namespace BrainStimulator {
   public:
     BiotSavartSolverAlgorithm()
     {
-     //istep=0.0;
-     //tfactor = 0;
-     addParameter(Parameters::OutType,0);
+      addParameter(Parameters::OutType, 0);
     }
     AlgorithmOutput run(const AlgorithmInput& input) const override;
-    bool run(FieldHandle mesh, FieldHandle coil, Datatypes::MatrixHandle &outdata, int outtype) const;
-
-  private:
-    //double istep;
-    //unsigned int tfactor;
-
+    bool run(FieldHandle mesh, FieldHandle coil, Datatypes::DenseMatrixHandle& outdata, int outtype) const;
   };
 
 }}}}

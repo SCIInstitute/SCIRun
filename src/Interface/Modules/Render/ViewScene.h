@@ -32,23 +32,22 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include "Interface/Modules/Render/ui_ViewScene.h"
-#include <Interface/Modules/Render/ViewSceneManager.h>
-#include <atomic>
-
-#include <Modules/Visualization/TextBuilder.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Interface/Modules/Render/ViewSceneManager.h>
+#include <Modules/Render/ViewScene.h>
+#include <Modules/Visualization/TextBuilder.h>
+#include <atomic>
+#include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
 class QStandardItemModel;
 class QStandardItem;
-class QGLWidget;
 
 namespace SCIRun {
   namespace Gui {
@@ -56,6 +55,7 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
+    class PreviousWidgetSelectionInfo;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -68,7 +68,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
-      
+
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
       void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
@@ -225,6 +225,8 @@ namespace SCIRun {
       void wheelEvent(QWheelEvent* event) override;
       void keyPressEvent(QKeyEvent* event) override;
       void keyReleaseEvent(QKeyEvent*event) override;
+      void focusOutEvent(QFocusEvent* event) override;
+      void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
 
@@ -252,11 +254,18 @@ namespace SCIRun {
       void pushCameraLookAt();
       void pushCameraRotation();
       void pushCameraState();
+      bool clickedInViewer(QMouseEvent* e) const;
 
       //---------------- Widgets -------------------------------------------------------------------
-      void selectObject(const int x, const int y);
+      bool needToWaitForWidgetSelection();
+      bool canSelectWidget();
+      bool tryWidgetSelection(int x, int y, Render::MouseButton button);
+      void selectObject(const int x, const int y, Render::MouseButton button);
+      Modules::Render::ViewScene::GeomListPtr getGeomData();
+      bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
       void backupColorValues(Graphics::Datatypes::WidgetHandle widget);
+      void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
@@ -306,6 +315,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
+      PreviousWidgetSelectionInfo*          previousWidgetInfo_           {nullptr};
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};
@@ -313,8 +323,12 @@ namespace SCIRun {
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
+      bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       int                                   clippingPlaneIndex_           {0};
+      const static int                      delayAfterModuleExecution_    {200};
+      const static int                      delayAfterWidgetColorRestored_ {50};
+      int                                   delayAfterLastSelection_      {50};
       float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                            {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
@@ -333,6 +347,7 @@ namespace SCIRun {
       Modules::Visualization::TextBuilder               textBuilder_        {};
       Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
       std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
+      std::vector<Graphics::Datatypes::WidgetHandle>    widgetHandles_      {};
       QAction*                                          lockRotation_       {nullptr};
       QAction*                                          lockPan_            {nullptr};
       QAction*                                          lockZoom_           {nullptr};
@@ -346,7 +361,12 @@ namespace SCIRun {
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
       std::string                                       name_               {""};
+
+      const int DIMENSIONS_ = 3;
+      const int QUATERNION_SIZE_ = 4;
     };
+
+    Render::MouseButton getSpireButton(QMouseEvent* event);
 
   } // namespace Gui
 } // namespace SCIRun

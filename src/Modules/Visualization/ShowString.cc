@@ -77,29 +77,6 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::FixedVertical, std::string("Top"));
   state->setValue(Parameters::CoordinateHorizontal, 0.5);
   state->setValue(Parameters::CoordinateVertical, 0.5);
-
-  getOutputPort(RenderedString)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWindowResizeFeedback(var); });
-}
-
-void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
-{
-  if (!executedOnce_)
-    return;
-
-  try
-  {
-    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (lastWindowSize_ != vsf.windowSize)
-    {
-      lastWindowSize_ = vsf.windowSize;
-      needReexecute_ = true;
-      enqueueExecuteAgain(false);
-    }
-  }
-  catch (std::bad_cast&)
-  {
-    //ignore
-  }
 }
 
 void ShowString::execute()

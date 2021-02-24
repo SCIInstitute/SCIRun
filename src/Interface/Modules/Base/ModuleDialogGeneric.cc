@@ -333,7 +333,7 @@ public:
   typedef boost::function<std::string(const QString&)> FromQStringConverter;
   typedef boost::function<QString(const std::string&)> ToQStringConverter;
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
-    FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
+    FromQStringConverter fromLabelConverter = &QString::toStdString,
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
@@ -998,7 +998,7 @@ void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 
 void SCIRun::Gui::openPythonAPIDoc()
 {
-  openUrl("http://sciinstitute.github.io/scirun.pages/python.html", "SCIRun Python API page");
+  openUrl("http://sciinstitute.github.io/SCIRun/python.html", "SCIRun Python API page");
 }
 
 namespace detail

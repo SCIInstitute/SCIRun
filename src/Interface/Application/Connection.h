@@ -73,7 +73,7 @@ class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes
 
 public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
-  ~ConnectionLine();
+  virtual ~ConnectionLine();
   void setColor(const QColor& color);
   void setColorAndWidth(const QColor& color, int width);
   QColor color() const;
@@ -96,14 +96,13 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
-  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input);
+  void insertNewModule(const QMap<QString, std::string>& info);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-  virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;

@@ -27,7 +27,6 @@
 
 
 #include <gtest/gtest.h>
-#include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 
@@ -119,12 +118,12 @@ TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
 
   int trueCount = 0;
   int tryCount = 50;
-  std::vector< boost::shared_ptr<boost::thread> > threads;
+  std::vector< std::shared_ptr<std::thread> > threads;
 
   for (int i = 0; i < tryCount; ++i)
   {
     TryRegister tr(table, trueCount, i);
-    boost::shared_ptr<boost::thread> t(new boost::thread(tr));
+    std::shared_ptr<std::thread> t(new std::thread(tr));
     threads.push_back(t);
   }
 
@@ -141,7 +140,7 @@ TEST(StringFormatting, NewWayMatchesOldWay)
   double x = 3.14159265;
   char s[32];
   sprintf(s, "%8.4f", x);
-  auto expected = boost::lexical_cast<std::string>(s);
+  std::string expected(s);
 
   auto actual = str(boost::format("%8.4f") % x);
 

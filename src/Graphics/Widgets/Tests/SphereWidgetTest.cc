@@ -46,7 +46,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphereReal)
   });
 
   EXPECT_EQ(Point(-1,1,0), sphere.position());
-  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere.name());
+  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere10widget10100", sphere.name());
 }
 
 TEST(SphereWidgetTest, CanCreateSingleSphereWithBuilder)
@@ -64,7 +64,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphereWithBuilder)
     .build();
 
   EXPECT_EQ(Point(-1,1,0), sphere->position());
-  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere1widget10100", sphere->name());
+  EXPECT_EQ("<dummyGeomId>SphereWidget::testSphere10widget10100", sphere->name());
 }
 
 TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
@@ -81,7 +81,8 @@ TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
   EXPECT_EQ("__sphere__0", sphere.name());
 }
 
-TEST(WidgetMovementTreeTest, CanCreate)
+//TODO: might not need this idea
+TEST(WidgetMovementTreeTest, DISABLED_CanCreate)
 {
   StubGeometryIDGenerator idGen;
 

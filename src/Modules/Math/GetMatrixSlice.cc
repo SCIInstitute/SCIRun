@@ -31,7 +31,6 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -128,6 +127,6 @@ void GetMatrixSlice::playAgain(int nextIndex)
   playing_ = true;
   int delay = state->getValue(Parameters::PlayModeDelay).toInt();
   //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
-  boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
+  std::this_thread::sleep_for(std::chrono::milliseconds(delay));
   enqueueExecuteAgain(false);
 }

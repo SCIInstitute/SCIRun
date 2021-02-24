@@ -53,11 +53,11 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
-    void interrupt(const SCIRun::Dataflow::Networks::ModuleId& id);
     boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
-    void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnectUponInsertion);
+    void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);

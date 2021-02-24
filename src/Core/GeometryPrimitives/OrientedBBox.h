@@ -29,7 +29,7 @@
 #ifndef CORE_GEOMETRY_ORIENTEDBBOX_H
 #define CORE_GEOMETRY_ORIENTEDBBOX_H
 
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/BBoxBase.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
@@ -37,25 +37,21 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-class SCISHARE OrientedBBox
+class SCISHARE OrientedBBox : public Core::Geometry::BBoxBase
 {
 public:
   OrientedBBox(const Core::Geometry::Vector &e1, const Core::Geometry::Vector &e2, const Core::Geometry::Vector &e3);
   /// Expand the bounding box to include point p
 
-  Core::Geometry::Point center() const;
-  Core::Geometry::Point get_max() const;
-  Core::Geometry::Point get_min() const;
-  Core::Geometry::Vector diagonal() const;
-  bool valid() const;
-  void extend(double val);
-  void extend(const Core::Geometry::Point &p);
+  Core::Geometry::Point center() const override;
+  Core::Geometry::Point get_max() const override;
+  Core::Geometry::Point get_min() const override;
+  Core::Geometry::Vector diagonal() const override;
+  void extend(double val) override;
+  void extend(const Core::Geometry::Point &p) override;
 
 private:
   std::vector<Vector> eigvecs_;
-  Core::Geometry::Point cmin_;
-  Core::Geometry::Point cmax_;
-  bool is_valid_;
 };
 
 SCISHARE std::ostream &operator<<(std::ostream &out, const OrientedBBox &b);

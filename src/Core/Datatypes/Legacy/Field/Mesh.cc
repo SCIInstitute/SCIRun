@@ -75,7 +75,7 @@ MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -123,7 +123,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -170,7 +170,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -212,7 +212,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -255,7 +255,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -296,7 +296,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -339,7 +339,7 @@ MeshTypeID::MeshTypeID(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -427,7 +427,7 @@ SCIRun::CreateMesh(const std::string& type)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -451,7 +451,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -475,7 +475,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -498,7 +498,7 @@ SCIRun::CreateMesh(const std::string& type, size_type x,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -521,7 +521,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -547,7 +547,7 @@ SCIRun::CreateMesh(const std::string& type, size_type x, size_type y)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
@@ -573,7 +573,7 @@ SCIRun::CreateMesh(const std::string& type, size_type x)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())

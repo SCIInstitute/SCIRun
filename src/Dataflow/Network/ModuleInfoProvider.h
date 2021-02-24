@@ -67,6 +67,7 @@ namespace Networks {
     virtual std::string legacyModuleName() const = 0;
     virtual bool isDeprecated() const = 0;
     virtual std::string replacementModuleName() const = 0;
+    virtual std::string description() const = 0;
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);

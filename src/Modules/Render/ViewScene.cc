@@ -32,7 +32,6 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/thread.hpp>
 #include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header
@@ -54,6 +53,17 @@ MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
 Mutex ViewScene::mutex_("ViewScene");
 
+ViewScene::ScopedExecutionReporter::ScopedExecutionReporter(ModuleStateHandle state)
+  : state_(state)
+{
+  state_->setValue(IsExecuting, true);
+}
+
+ViewScene::ScopedExecutionReporter::~ScopedExecutionReporter()
+{
+  state_->setValue(IsExecuting, false);
+}
+
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, VSMutex);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
@@ -74,6 +84,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 
 ViewScene::~ViewScene()
 {
+  screenShotMutex_.unlock();
 }
 
 void ViewScene::setStateDefaults()
@@ -127,10 +138,13 @@ void ViewScene::setStateDefaults()
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
+  state->setValue(IsExecuting, false);
+  state->setTransientValue(TimeExecutionFinished, 0, false);
   state->setValue(CameraDistanceMinimum, 1e-10);
-  state->setValue(CameraLookAt, Point(0.0, 0.0, 0.0).get_string());
-  state->setValue(CameraRotation, std::string("Quaternion(1.0,0.0,0.0,0.0)"));
-
+  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(HasNewGeometry, false);
+  
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
@@ -168,10 +182,12 @@ void ViewScene::updateTransientList()
   }
 
   geoms->clear();
+
   for (const auto& geomPair : activeGeoms_)
   {
     auto geom = geomPair.second;
     geom->addToList(geom, *geoms);
+    LOG_DEBUG("updateTransientList added geom to state list: {}", geomPair.first.toString());
   }
 
   // Grab geometry inputs and pass them along in a transient value to the GUI
@@ -220,6 +236,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     }
 
     activeGeoms_[pid] = geom;
+    LOG_DEBUG("asyncExecute added active geom to map: {}", pid.toString());
     updateTransientList();
   }
 }
@@ -236,6 +253,9 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
+  auto state = get_state();
+  auto executionReporter = ScopedExecutionReporter(state);
+
   fireTransientStateChangeSignalForGeomData();
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
@@ -246,7 +266,7 @@ void ViewScene::execute()
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
     ModuleStateInterface::TransientValueOption screenshotDataOption;
-    screenshotDataOption = get_state()->getTransientValue(Parameters::ScreenshotData);
+    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
@@ -255,6 +275,14 @@ void ViewScene::execute()
     }
   }
 #endif
+  state->setValue(HasNewGeometry, true);
+  state->setTransientValue(TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+}
+
+unsigned long ViewScene::getCurrentTimeSinceEpoch()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void ViewScene::processViewSceneObjectFeedback()
@@ -332,3 +360,6 @@ const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
 const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");
 const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
 const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
+const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");
+const AlgorithmParameterName ViewScene::TimeExecutionFinished("TimeExecutionFinished");
+const AlgorithmParameterName ViewScene::HasNewGeometry("HasNewGeometry");

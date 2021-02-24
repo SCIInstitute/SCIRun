@@ -100,17 +100,12 @@
         </item>
         <item>
          <property name="text">
-          <string>interpolatedataonly</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>closestnodedata</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>closestinterpolatedata</string>
+          <string>closestinterpolateddata</string>
          </property>
         </item>
        </widget>

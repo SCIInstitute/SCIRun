@@ -28,14 +28,12 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
-#include <boost/lambda/core.hpp>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, std::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
 {
   bounds_->executeStarts_();
 }
@@ -51,7 +49,7 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   return instance_;
 }
 
-ExecutionContext::ExecutionContext(NetworkInterface& net) : network(net), lookup(net) {}
+ExecutionContext::ExecutionContext(NetworkInterface& net) : network_(net), lookup_(net) {}
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
@@ -60,8 +58,8 @@ const ExecutionBounds& ExecutionContext::bounds() const
 
 void ExecutionContext::preexecute()
 {
-  network.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, boost::lambda::constant(true));
-  network.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter);
+  network_.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, [](ModuleHandle) { return true; });
+  network_.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter_);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);
@@ -71,7 +69,7 @@ void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& l
   if (!waitedAlready_ && lookup.containsViewScene())
   {
     logWarning("Waiting for rendering system initialization....");
-    boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+    std::this_thread::sleep_for(std::chrono::milliseconds(800));
     logWarning("Done waiting.");
     waitedAlready_ = true;
   }

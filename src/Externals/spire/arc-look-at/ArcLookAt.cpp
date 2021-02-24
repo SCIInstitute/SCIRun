@@ -31,6 +31,8 @@
 
 #include "ArcLookAt.hpp"
 #include <arc-ball/ArcBall.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace spire {
 
@@ -73,9 +75,9 @@ void ArcLookAt::doRotation(const glm::vec2& ssPos)
 }
 
 //------------------------------------------------------------------------------
-void ArcLookAt::doZoom(glm::float_t camZoom, int zoomSpeed)
+void ArcLookAt::doZoom(float camZoom, int zoomSpeed)
 {
-  glm::float_t prevDistance = mCamDistance;
+  float prevDistance = mCamDistance;
   zoomSpeed = zoomSpeed > 1 ? zoomSpeed : 2;
   camZoom /= zoomSpeed;
   camZoom *= prevDistance;
@@ -90,11 +92,11 @@ void ArcLookAt::doZoom(const glm::vec2& ssPos)
   // Use distance delta from center of screen to control zoom.
   // Will need a new variable to control this.
   glm::vec2 delta = ssPos - mReferenceScreenPos;
-  glm::float_t xScale = 4.0f;
-  glm::float_t yScale = 4.0f;
+  float xScale = 4.0f;
+  float yScale = 4.0f;
 
-	glm::float_t prevDistance = mCamDistance;
-	glm::float_t camZoom = mCamDistance + (delta.x) * xScale + (-delta.y) * yScale;
+	float prevDistance = mCamDistance;
+	float camZoom = mCamDistance + (delta.x) * xScale + (-delta.y) * yScale;
 	mCamDistance = camZoom;
 	if (mCamDistance <= 0)
 		mCamDistance = prevDistance;
@@ -103,12 +105,23 @@ void ArcLookAt::doZoom(const glm::vec2& ssPos)
 //------------------------------------------------------------------------------
 glm::mat4 ArcLookAt::getWorldViewTransform() const
 {
-  glm::mat4 finalTrafo;
-  finalTrafo[3].xyz() = -mCamLookAt;
-  finalTrafo          = mArcBall->getTransformation() * finalTrafo;
-  finalTrafo[3][2]   += -mCamDistance;
-
+  auto finalTrafo = mArcBall->getTransformation() * glm::translate(glm::mat4(1.0f), -mCamLookAt);
+  finalTrafo[3][2] -= mCamDistance;
   return finalTrafo;
+}
+
+//------------------------------------------------------------------------------
+glm::vec3 ArcLookAt::getUp()
+{
+  return glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f) * glm::mat3(mArcBall->getTransformation()));
+}
+
+//------------------------------------------------------------------------------
+glm::vec3 ArcLookAt::getPos()
+{
+  glm::vec3 relativePos = glm::vec3(0.0f, 0.0f, -1.0f) * glm::mat3(mArcBall->getTransformation());
+  relativePos = glm::normalize(relativePos) * mCamDistance;
+  return relativePos - mCamLookAt;
 }
 
 //------------------------------------------------------------------------------

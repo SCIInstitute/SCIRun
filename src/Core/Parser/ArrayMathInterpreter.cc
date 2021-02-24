@@ -33,7 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Thread/Parallel.h>
-#include <boost/bind.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -1515,7 +1514,7 @@ ArrayMathProgram::run_sequential(size_t& error_line)
   error_line_.resize(num_proc_,0);
   success_.resize(num_proc_,true);
 
-  Parallel::RunTasks(boost::bind(&ArrayMathProgram::run_parallel, this, _1), num_proc_);
+  Parallel::RunTasks([this](int i) { run_parallel(i); }, num_proc_);
 
   for (int j=0; j<num_proc_; j++)
   {

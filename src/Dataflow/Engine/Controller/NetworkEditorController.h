@@ -102,15 +102,16 @@ namespace Engine {
     virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
     Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
-    void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
-    Networks::ModuleHandle connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const Networks::PortDescriptionInterface* portToConnectUponInsertion);
+    Networks::ModuleHandle connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    struct InsertInfo { std::string newModuleName, endModuleId, inputPortName, inputPortId; };
+    Networks::ModuleHandle insertNewModule(const Networks::PortDescriptionInterface* portToConnect, const InsertInfo& info);
 
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    boost::shared_ptr<boost::thread> executeAll(const Networks::ExecutableLookup* lookup);
+    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup);
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     virtual Networks::NetworkFileHandle saveNetwork() const override;
@@ -139,11 +140,11 @@ namespace Engine {
     // headless hack
     void stopExecutionContextLoopWhenExecutionFinishes();
 
-    virtual void enableSignals() override;
-    virtual void disableSignals() override;
+    void enableSignals() override;
+    void disableSignals() override;
 
-    virtual Networks::NetworkHandle getNetwork() const override;
-    virtual void setNetwork(Networks::NetworkHandle nh) override;
+    Networks::NetworkHandle getNetwork() const override;
+    void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
@@ -169,7 +170,7 @@ namespace Engine {
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
 
-    boost::shared_ptr<boost::thread> executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
     ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
 

@@ -75,6 +75,7 @@ ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupI
     /// @todo: log
     std::ostringstream ostr;
     ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+    logCritical("ModuleDescriptionLookup error: Undefined module \"{}\"", info.module_name_);
     THROW_INVALID_ARGUMENT(ostr.str());
   }
   return iter->second;
@@ -131,6 +132,8 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
+
+  builder.setInfoStrings(desc);
 
   return builder.setStateDefaults().build();
 }

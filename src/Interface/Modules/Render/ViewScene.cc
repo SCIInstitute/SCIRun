@@ -25,26 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <es-log/trace-log.h>
-#include <gl-platform/GLPlatform.hpp>
-
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Thread/Mutex.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Interface/Modules/Render/ES/RendererInterface.h>
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
-#include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewSceneUtility.h>
+#include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <gl-platform/GLPlatform.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -151,7 +149,165 @@ namespace Gui {
         }
     }
   };
+
+  class PreviousWidgetSelectionInfo
+  {
+  public:
+    PreviousWidgetSelectionInfo() {}
+    unsigned long timeSince(const std::chrono::system_clock::time_point& time) const;
+    unsigned long timeSince(unsigned long time) const;
+    unsigned long timeSinceWidgetColorRestored() const;
+    unsigned long timeSinceLastSelectionAttempt() const;
+    bool hasSameMousePosition(int x, int y) const;
+    bool hasSameCameraTansform(const glm::mat4& mat) const;
+    bool hasSameWidget(WidgetHandle widget) const;
+    void widgetColorRestored();
+    void selectionAttempt();
+    void setCameraTransform(glm::mat4 mat);
+    void setMousePosition(int x, int y);
+    void setFrameIsFinished(bool finished);
+    bool getFrameIsFinished() const;
+    void setPreviousWidget(WidgetHandle widget);
+    WidgetHandle getPreviousWidget() const;
+    bool hasPreviousWidget() const;
+    void deletePreviousWidget();
+    int getPreviousMouseX() const;
+    int getPreviousMouseY() const;
+  private:
+    unsigned long timeSinceEpoch(const std::chrono::system_clock::time_point& time) const;
+    std::chrono::system_clock::time_point timeWidgetColorRestored_      {};
+    std::chrono::system_clock::time_point timeOfLastSelectionAttempt_   {};
+    Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
+    glm::mat4                             previousCameraTransform_      {0.0};
+    int                                   lastMousePressEventX_         {0};
+    int                                   lastMousePressEventY_         {0};
+    bool                                  frameIsFinished_              {false};
+  };
 }}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
+{
+  return timeSinceEpoch(std::chrono::system_clock::now()) - timeSinceEpoch(time);
+}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned long time) const
+{
+  return timeSinceEpoch(std::chrono::system_clock::now()) - time;
+}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameMousePosition(int x, int y) const
+{
+  return lastMousePressEventX_ == x && lastMousePressEventY_ == y;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameCameraTansform(const glm::mat4& mat) const
+{
+  return previousCameraTransform_ == mat;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::widgetColorRestored()
+{
+  timeWidgetColorRestored_ = std::chrono::system_clock::now();
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::selectionAttempt()
+{
+  timeOfLastSelectionAttempt_ = std::chrono::system_clock::now();
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setCameraTransform(glm::mat4 mat)
+{
+  previousCameraTransform_ = mat;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setMousePosition(int x, int y)
+{
+  lastMousePressEventX_ = x;
+  lastMousePressEventY_ = y;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setFrameIsFinished(bool finished)
+{
+  frameIsFinished_ = finished;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::getFrameIsFinished() const
+{
+  return frameIsFinished_;
+}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long PreviousWidgetSelectionInfo::timeSinceWidgetColorRestored() const
+{
+  return timeSince(timeWidgetColorRestored_);
+}
+
+//--------------------------------------------------------------------------------------------------
+unsigned long PreviousWidgetSelectionInfo::timeSinceLastSelectionAttempt() const
+{
+  return timeSince(timeOfLastSelectionAttempt_);
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::setPreviousWidget(const WidgetHandle widget)
+{
+  previousSelectedWidget_ = widget;
+}
+
+//--------------------------------------------------------------------------------------------------
+WidgetHandle PreviousWidgetSelectionInfo::getPreviousWidget() const
+{
+  return previousSelectedWidget_;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasSameWidget(const WidgetHandle widget) const
+{
+  return previousSelectedWidget_ == widget;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
+{
+  if (previousSelectedWidget_)
+    return true;
+  else
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void PreviousWidgetSelectionInfo::deletePreviousWidget()
+{
+  previousSelectedWidget_.reset();
+}
+
+//--------------------------------------------------------------------------------------------------
+int PreviousWidgetSelectionInfo::getPreviousMouseX() const
+{
+  return lastMousePressEventX_;
+}
+
+//--------------------------------------------------------------------------------------------------
+int PreviousWidgetSelectionInfo::getPreviousMouseY() const
+{
+  return lastMousePressEventY_;
+}
 
 namespace
 {
@@ -200,6 +356,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   format.setProfile(QSurfaceFormat::CoreProfile);
   format.setVersion(2, 1);
   mGLWidget->setFormat(format);
+  previousWidgetInfo_ = new PreviousWidgetSelectionInfo();
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
@@ -499,6 +656,7 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox->setMinimumWidth(60);
   mUpVectorBox->setToolTip("Vector pointing up");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
+  mUpVectorBox->setEnabled(false);
   mViewBar->addWidget(mUpVectorBox);
   mViewBar->setMinimumHeight(35);
   initAxisViewParams();
@@ -609,10 +767,21 @@ void ViewSceneDialog::pullCameraRotation()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  std::string rotString = state_->getValue(Modules::Render::ViewScene::CameraRotation).toString();
-  glm::quat q = ViewSceneUtility::stringToQuat(rotString);
-  spire->setCameraRotation(q);
+  glm::quat q;
+  auto rotVariable = state_->getValue(Modules::Render::ViewScene::CameraRotation);
+  if (rotVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
+    q = ViewSceneUtility::stringToQuat(state_->getValue(Modules::Render::ViewScene::CameraRotation).toString());
+  else
+  {
+    auto rotation = toDoubleVector(rotVariable.toVector());
+    if (rotation.size() == QUATERNION_SIZE_)
+      q = glm::normalize(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
+    else
+      THROW_INVALID_ARGUMENT("CameraRotation must have " + std::to_string(QUATERNION_SIZE_) +
+                             " values. " + std::to_string(rotation.size()) + " values were provided.");
+  }
 
+  spire->setCameraRotation(q);
   pushCameraRotation();
 }
 
@@ -623,8 +792,21 @@ void ViewSceneDialog::pullCameraLookAt()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto lookAt = pointFromString(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toString());
-  spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+  auto lookAtVariable = state_->getValue(Modules::Render::ViewScene::CameraLookAt);
+  if (lookAtVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
+  {
+    auto lookAtPoint = pointFromString(lookAtVariable.toString());
+    spire->setCameraLookAt(glm::vec3(lookAtPoint[0], lookAtPoint[1], lookAtPoint[2]));
+  }
+  else
+  {
+    auto lookAt = toDoubleVector(lookAtVariable.toVector());
+    if (lookAt.size() == DIMENSIONS_)
+      spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+    else
+      THROW_INVALID_ARGUMENT("CameraLookAt must have " + std::to_string(DIMENSIONS_) + " values. "
+                             + std::to_string(lookAt.size()) + " values were provided.");
+  }
 
   pushCameraLookAt();
 }
@@ -671,8 +853,8 @@ void ViewSceneDialog::pushCameraLookAt()
   if(!spire) return;
 
   auto v = spire->getCameraLookAt();
-  auto lookAt = Point((double)v.x, (double)v.y, (double)v.z);
-  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt.get_string());
+  auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
+  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
   pushingCameraState_ = false;
 }
 
@@ -684,7 +866,7 @@ void ViewSceneDialog::pushCameraRotation()
   if(!spire) return;
 
   auto q = spire->getCameraRotation();
-  state_->setValue(Modules::Render::ViewScene::CameraRotation, ViewSceneUtility::quatToString(q));
+  state_->setValue(Modules::Render::ViewScene::CameraRotation, makeAnonymousVariableList(q[0], q[1], q[2], q[3]));
   pushingCameraState_ = false;
 }
 
@@ -940,6 +1122,7 @@ void ViewSceneDialog::frameFinished()
 {
   sendScreenshotDownstreamForTesting();
   unblockExecution();
+  previousWidgetInfo_->setFrameIsFinished(true);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1031,6 +1214,7 @@ void ViewSceneDialog::viewBarButtonClicked()
   QString color = hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
   viewBarBtn_->setStyleSheet("QPushButton { background-color: " + color + "; }");
   mDownViewBox->setCurrentIndex(0);
+  mUpVectorBox->setDisabled(hideViewBar_);
   mUpVectorBox->clear();
 }
 
@@ -1056,7 +1240,7 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseDownHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
@@ -1065,7 +1249,7 @@ void ViewSceneDialog::inputMouseDownHelper(Render::MouseButton btn, float x, flo
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseMoveHelper(Render::MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
   if(!spire) return;
@@ -1106,41 +1290,48 @@ void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDi
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+bool ViewSceneDialog::tryWidgetSelection(int x, int y, MouseButton button)
 {
-  if (shiftdown_)
+  bool widgetSelected = false;
+  if (canSelectWidget())
   {
-    selectObject(event->x(), event->y());
-    updateModifiedGeometries();
+    mouseButtonPressed_ = true;
+    selectObject(x, y, button);
+    widgetSelected = true;
+    updateCursor();
   }
-  else
-  {
-    auto spire = mSpire.lock();
-    if(!spire) return;
+  return widgetSelected;
+}
 
-    int x_window = event->x() - mGLWidget->pos().x();
-    int y_window = event->y() - mGLWidget->pos().y();
+//------------------------------------------------------------------------------
+MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
+{
+  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
+  if (event->buttons() & Qt::LeftButton)
+    btn = MouseButton::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton)
+    btn = MouseButton::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)
+    btn = MouseButton::MOUSE_MIDDLE;
 
-    float x_ss, y_ss;
-    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-    auto btn = mGLWidget->getSpireButton(event);
-
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseDownHelper(btn, x_ss, y_ss);
-  }
+  return btn;
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
+  if (!clickedInViewer(event))
+    return;
+
   auto spire = mSpire.lock();
   if(!spire) return;
 
   int x_window = event->x() - mGLWidget->pos().x();
   int y_window = event->y() - mGLWidget->pos().y();
 
-  auto btn = mGLWidget->getSpireButton(event);
+  auto btn = getSpireButton(event);
 
-  if(selectedWidget_)
+  if (selectedWidget_)
   {
     spire->widgetMouseMove(btn, x_window, y_window);
   }
@@ -1148,27 +1339,99 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   {
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
+    for (auto vsd : viewScenesToUpdate)
+      vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
+  else
+  {
+    tryWidgetSelection(previousWidgetInfo_->getPreviousMouseX(),
+                       previousWidgetInfo_->getPreviousMouseY(), btn);
+  }
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::needToWaitForWidgetSelection()
+{
+  auto lastExec = transient_value_cast<unsigned long>(state_->getTransientValue(Modules::Render::ViewScene::TimeExecutionFinished));
+
+  return previousWidgetInfo_->timeSince(lastExec) < delayAfterModuleExecution_
+    || previousWidgetInfo_->timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_
+    || previousWidgetInfo_->timeSinceLastSelectionAttempt() < delayAfterLastSelection_;
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::canSelectWidget()
+{
+  return shiftdown_ && previousWidgetInfo_->getFrameIsFinished()
+    && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
+}
+
+bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
+{
+  return childAt(e->x(), e->y()) == mGLWidget;
+}
+
+void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+{
+  if (!clickedInViewer(event))
+    return;
+
+  auto btn = getSpireButton(event);
+  if (!tryWidgetSelection(event->x(), event->y(), btn))
+  {
+    auto spire = mSpire.lock();
+    if (!spire) return;
+
+    int x_window = event->x() - mGLWidget->pos().x();
+    int y_window = event->y() - mGLWidget->pos().y();
+
+    float x_ss, y_ss;
+    spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
+
+
+    for (auto vsd : viewScenesToUpdate)
+      vsd->inputMouseDownHelper(btn, x_ss, y_ss);
+  }
+  previousWidgetInfo_->setMousePosition(event->x(), event->y());
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
+  auto spire = mSpire.lock();
+  bool widgetMoved = spire->getWidgetTransform() != glm::mat4(1.0f);
   if (selectedWidget_)
   {
-    restoreObjColor();
-    selectedWidget_->changeID();
-    updateModifiedGeometries();
+    if (widgetMoved)
+    {
+      Q_EMIT mousePressSignalForGeometryObjectFeedback(
+               event->x(), event->y(), selectedWidget_->uniqueID());
+      previousWidgetInfo_->setFrameIsFinished(false);
+    }
+    else
+    {
+      restoreObjColor();
+      selectedWidget_->changeID();
+      updateModifiedGeometries();
+      previousWidgetInfo_->widgetColorRestored();
+    }
+
     unblockExecution();
-    Q_EMIT mousePressSignalForGeometryObjectFeedback(event->x(), event->y(), selectedWidget_->uniqueID());
+    previousWidgetInfo_->setPreviousWidget(selectedWidget_);
     selectedWidget_.reset();
+    auto spire = mSpire.lock();
+    if (!spire) return;
+    spire->widgetMouseUp();
+    updateCursor();
   }
-  else if(!shiftdown_)
+  else if (!shiftdown_)
   {
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
+    for (auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
   }
+
+  mouseButtonPressed_ = false;
 }
+
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
@@ -1186,6 +1449,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = true;
+    updateCursor();
     break;
   }
 }
@@ -1197,10 +1461,31 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   {
   case Qt::Key_Shift:
     shiftdown_ = false;
+    updateCursor();
     break;
   }
 }
 
+void ViewSceneDialog::focusOutEvent(QFocusEvent* event)
+{
+  shiftdown_ = false;
+  updateCursor();
+}
+
+void ViewSceneDialog::focusInEvent(QFocusEvent* event)
+{
+  updateCursor();
+}
+
+void ViewSceneDialog::updateCursor()
+{
+  if (selectedWidget_)
+    setCursor(Qt::ClosedHandCursor);
+  else if (shiftdown_)
+    setCursor(Qt::OpenHandCursor);
+  else
+    setCursor(Qt::ArrowCursor);
+}
 
 
 //--------------------------------------------------------------------------------------------------
@@ -1227,11 +1512,15 @@ void ViewSceneDialog::viewAxisSelected(const QString& name)
     mUpVectorBox->addItem("+Z");
     mUpVectorBox->addItem("-Z");
   }
+  mUpVectorBox->setEnabled(true);
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(const QString& name)
 {
+  if (name.isEmpty())
+    return;
+
   glm::vec3 up, view;
   std::tie(view, up) = axisViewParams[mDownViewBox->currentText()][name];
 
@@ -1430,7 +1719,6 @@ void ViewSceneDialog::autoRotateDown()
 //---------------- Widgets -------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
@@ -1479,20 +1767,8 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::selectObject(const int x, const int y)
+SCIRun::Modules::Render::ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
 {
-  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
-  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
-
-  auto spire = mSpire.lock();
-  if (!spire)
-    return;
-
-  spire->removeAllGeomObjects();
-
-  // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
@@ -1500,14 +1776,89 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return;
+      return nullptr;
     }
-
-    auto widgets = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
-    selectedWidget_ = spire->select(x - mGLWidget->pos().x(), y - mGLWidget->pos().y(), widgets);
-
-    widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_, WidgetColor::RED);
+    return geomData;
   }
+  return {};
+}
+
+void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
+{
+  bool geomDataPresent = false;
+  {
+    LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+    Guard lock(Modules::Render::ViewScene::mutex_.get());
+    LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+    auto spire = mSpire.lock();
+    if (!spire) return;
+
+    auto geomData = getGeomData();
+    if (geomData)
+    {
+      geomDataPresent = true;
+      // Search for new widgets if geometry has changed
+      bool newGeometry = state_->getValue(Modules::Render::ViewScene::HasNewGeometry).toBool();
+      if (newGeometry)
+      {
+        widgetHandles_ = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+        state_->setValue(Modules::Render::ViewScene::HasNewGeometry, false);
+      }
+
+      // Search for new widget unless mouse and camera wasn't moved
+      auto adjustedX = x - mGLWidget->pos().x();
+      auto adjustedY = y - mGLWidget->pos().y();
+      auto currentCameraTransform = spire->getWorldToProjection();
+      //TODO: extract function
+      const bool reuseWidget = !newGeometry && previousWidgetInfo_->hasSameMousePosition(x, y)
+        && previousWidgetInfo_->hasSameCameraTansform(currentCameraTransform);
+      if (reuseWidget)
+      {
+        if (previousWidgetInfo_->hasPreviousWidget())
+        {
+          selectedWidget_ = previousWidgetInfo_->getPreviousWidget();
+          spire->doInitialWidgetUpdate(selectedWidget_, adjustedX, adjustedY);
+        }
+        delayAfterLastSelection_ = 50;
+      }
+      else
+      {
+        spire->removeAllGeomObjects();
+        spire->setWidgetInteractionMode(button);
+        selectedWidget_ = spire->select(adjustedX, adjustedY, widgetHandles_);
+        previousWidgetInfo_->setCameraTransform(currentCameraTransform);
+        delayAfterLastSelection_ = 200;
+      }
+
+      if (selectedWidget_)
+      {
+        widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(selectedWidget_, WidgetColor::RED);
+        selectedWidget_->changeID();
+      }
+      previousWidgetInfo_->deletePreviousWidget();
+    }
+    previousWidgetInfo_->selectionAttempt();
+  }
+  if (geomDataPresent)
+    updateModifiedGeometries();
+}
+
+//--------------------------------------------------------------------------------------------------
+bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
+{
+  auto geomData = getGeomData();
+  if (geomData)
+  {
+    auto id = widget->uniqueID();
+    for (auto it = geomData->begin(); it != geomData->end(); ++it)
+    {
+      auto obj = *it;
+      if (obj->uniqueID() == id)
+        return true;
+    }
+  }
+  return false;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2291,7 +2642,7 @@ void ViewSceneDialog::setFogColor(const glm::vec4 &color)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setFogColor(color/255.0);
+    spire->setFogColor(color/255.0f);
 }
 
 

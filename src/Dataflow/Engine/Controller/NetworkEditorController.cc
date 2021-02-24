@@ -28,8 +28,7 @@
 
 /// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.cc
 
-#include <iostream>
-#include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -46,8 +45,6 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/foreach.hpp>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
@@ -103,7 +100,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
-  executionManager_.stop();
+  executionManager_.stopExecution();
 }
 
 namespace
@@ -118,22 +115,18 @@ namespace
         return false;
       return label.front() == '[' && label.back() == ']';
     }
-    ModuleHandle create(const std::string& label)
+    ModuleHandle createSnippet(const std::string& label)
     {
       auto modsNeeded = parseModules(label);
 
       ModulePositions positions;
       int i = 0;
       const double MODULE_VERTICAL_SPACING = 110;
-      const double MODULE_HORIZONTAL_SPACING = 264;
+      const double MODULE_HORIZONTAL_SPACING = 50;
       const double MODULE_SPACING_OFFSET = 10;
-      const double INITIAL_SNIPPET_LOC = 50;
-      static double snippetSpacer = 50;
+      const std::pair<double,double> initialPosition = {-500, -500};
+      static double snippetSpacer = MODULE_SPACING_OFFSET;
       static int numSnips = 0;
-      if (0 == nec_.getNetwork()->nmodules())
-      {
-        snippetSpacer = INITIAL_SNIPPET_LOC;
-      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -147,8 +140,8 @@ namespace
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->id().id_] =
-          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
-            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
+          { initialPosition.first + numSnips * MODULE_HORIZONTAL_SPACING + snippetSpacer,
+            initialPosition.second + MODULE_VERTICAL_SPACING * i++ + snippetSpacer };
       }
       numSnips = (numSnips + 1) % 3;
       if (0 == numSnips)
@@ -230,7 +223,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    return snippet.create(name);
+    return snippet.createSnippet(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
@@ -257,8 +250,8 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
   auto realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
-    realModule->addPortConnection(connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2)));
-    realModule->addPortConnection(connectPortRemoved(boost::bind(&ModuleInterface::portRemovedSlot, realModule.get(), _1, _2)));
+    realModule->addPortConnection(connectPortAdded([realModule](const ModuleId& mid, const PortId& pid) { realModule->portAddedSlot(mid, pid); }));
+    realModule->addPortConnection(connectPortRemoved([realModule](const ModuleId& mid, const PortId& pid) { realModule->portRemovedSlot(mid, pid); }));
   }
   return realModule;
 }
@@ -273,32 +266,43 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
-void NetworkEditorController::interruptModule(const ModuleId& id)
+namespace
 {
-  theNetwork_->interruptModuleRequest(id);
-  ///*emit*/ networkInterrupted_();
+  InputPortHandle getFirstAvailableDynamicPortWithName(ModuleHandle mod, const std::string& name)
+  {
+    auto ports = mod->findInputPortsWithName(name);
+    const auto firstEmptyDynamicPortWithName = std::find_if(ports.begin(), ports.end(),
+      [](InputPortHandle iport) { return iport->nconnections() == 0; });
+    return firstEmptyDynamicPortWithName != ports.end() ? *firstEmptyDynamicPortWithName : nullptr;
+  }
 }
 
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
-  auto id(module->id());
+  const auto id(module->id());
   auto newModule = addModuleImpl(module->info());
   newModule->setState(module->get_state()->clone());
   static ModuleCounter dummy;
   moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-  for (const auto& input : module->inputPorts())
+  for (const auto& originalInputPort : module->inputPorts())
   {
-    if (input->nconnections() == 1)
+    if (originalInputPort->nconnections() == 1)
     {
-      auto conn = input->connection(0);
+      auto conn = originalInputPort->connection(0);
       auto source = conn->oport_;
-      /// @todo: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
-      requestConnection(source.get(), newModule->getInputPort(input->id()).get());
+      if (!originalInputPort->isDynamic())
+        requestConnection(source.get(), newModule->getInputPort(originalInputPort->id()).get());
+      else
+      {
+        auto toConnect = getFirstAvailableDynamicPortWithName(newModule, originalInputPort->get_portname());
+        if (toConnect)
+          requestConnection(source.get(), toConnect.get());
+      }
     }
   }
 
@@ -310,12 +314,12 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
+ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto newMod = addModule(newModuleName);
 
   /// @todo: see above
-  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   /// @todo duplication
   if (portToConnect->isInput())
@@ -336,16 +340,53 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        if (portToConnectUponInsertion)
+        return newMod;
+      }
+    }
+  }
+  return newMod;
+}
+
+ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInterface* portToConnect, const InsertInfo& info)
+{
+  auto newMod = connectNewModule(portToConnect, info.newModuleName);
+
+  const auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
+
+  auto newModOutputPorts = newMod->outputPorts();
+  const auto firstMatchingOutputPort = std::find_if(newModOutputPorts.begin(), newModOutputPorts.end(),
+    [&](OutputPortHandle oport) { return oport->get_typename() == portToConnect->get_typename(); }
+    );
+
+  if (firstMatchingOutputPort != newModOutputPorts.end())
+  {
+    const auto newOutputPortToConnectFrom = *firstMatchingOutputPort;
+
+    auto endModuleInputPortOptions = endModule->findInputPortsWithName(info.inputPortName);
+    if (!endModuleInputPortOptions.empty())
+    {
+      auto firstPort = endModuleInputPortOptions[0];
+
+      if (!firstPort->isDynamic())  // easy case
+      {
+        const auto connId = firstPort->connection(0)->id_;
+        removeConnection(connId);
+        requestConnection(newOutputPortToConnectFrom.get(), firstPort.get());
+      }
+      else //dynamic: match portId exactly, remove, then retrieve list again to find first empty dynamic port of same name.
+      {
+        const auto exactMatch = std::find_if(endModuleInputPortOptions.begin(), endModuleInputPortOptions.end(),
+          [&](InputPortHandle iport) { return iport->id().toString() == info.inputPortId; });
+        if (exactMatch != endModuleInputPortOptions.end())
         {
-          auto oports = newMod->outputPorts();
-          auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
-          if (fromPort != oports.end())
+          const auto connId = (*exactMatch)->connection(0)->id_;
+          removeConnection(connId);
+          const auto firstEmptyDynamicPortWithName = getFirstAvailableDynamicPortWithName(endModule, info.inputPortName);
+          if (firstEmptyDynamicPortWithName)
           {
-            requestConnection(fromPort->get(), portToConnectUponInsertion);
+            requestConnection(newOutputPortToConnectFrom.get(), firstEmptyDynamicPortWithName.get());
           }
         }
-        return newMod;
       }
     }
   }
@@ -367,10 +408,10 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
 
-  auto out = from->isInput() ? to : from;
-  auto in = from->isInput() ? from : to;
+  const auto out = from->isInput() ? to : from;
+  const auto in = from->isInput() ? from : to;
 
-  ConnectionDescription desc(
+  const ConnectionDescription desc(
     OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
     IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
@@ -394,7 +435,9 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
   if (theNetwork_->disconnect(id))
+  {
     connectionRemoved_(id);
+  }
   printNetwork();
 }
 
@@ -524,13 +567,19 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       theNetwork_->clear();
       throw;
     }
+    catch (std::exception& ex)
+    {
+      logError("File load failed: exception while processing xml network data: {}", ex.what());
+      theNetwork_->clear();
+      throw;
+    }
     eventCmdFactory_->create(NetworkEventCommands::OnNetworkLoad)->execute();
   }
 }
 
 namespace
 {
-  const int xMoveIncrement = 300;
+  const int xMoveIncrement = 10;
   int xMoveIndex = 1;
   int yMoveIndex = 0;
   const int moveMod = 4;
@@ -616,7 +665,7 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
@@ -646,7 +695,7 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);
@@ -657,8 +706,8 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 {
   connectNetworkExecutionFinished([this](int)
   {
-    std::cout << "Execution manager thread stopped." << std::endl;
-    executionManager_.stop();
+    //std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stopExecution();
   });
 }
 
@@ -740,7 +789,7 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
 
 void NetworkEditorController::cleanUpNetwork()
 {
-  auto all = boost::lambda::constant(true);
+  auto all = [](ModuleHandle) { return true; };
   NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
   auto connected = analyze.connectedComponents();
 

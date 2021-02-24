@@ -28,7 +28,7 @@
 
 #ifndef MODULES_DATAIO_READ_FILE_H
 #define MODULES_DATAIO_READ_FILE_H
-\
+
 #include <Dataflow/Network/Module.h>
 #include <Modules/DataIO/share.h>
 
@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadFile : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE AutoReadFile : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
     public Has2OutputPorts<MatrixPortTag, FieldPortTag>
   {
   public:
-    ReadFile();
+    AutoReadFile();
     void setStateDefaults() override;
     void execute() override;
 
