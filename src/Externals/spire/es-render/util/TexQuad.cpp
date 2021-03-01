@@ -144,7 +144,6 @@ glm::mat4 getTexQuadTransform(const glm::vec3& center, float width, float height
 
 glm::mat4 getTexQuadTransform(const glm::vec2& topLeft, const glm::vec2& bottomRight, float z)
 {
-  glm::mat4 trafo;
   float width = bottomRight.x - topLeft.x;
   float height = topLeft.y - bottomRight.y;
   glm::vec3 center = glm::vec3(width / 2.0f, height / 2.0f, z);

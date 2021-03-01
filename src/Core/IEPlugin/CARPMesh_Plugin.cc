@@ -59,9 +59,8 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     {
       std::ifstream inputfile;
       inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-      inputfile.open(elems_fn.c_str());
+      inputfile.open(elems_fn);
     }
-
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + elems_fn);
@@ -79,7 +78,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
         std::ifstream inputfile;
         inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         elems_fn = base + ".elem";
-        inputfile.open(elems_fn.c_str());
+        inputfile.open(elems_fn);
       }
       catch (...)
       {
@@ -88,7 +87,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
           std::ifstream inputfile;
           inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
           elems_fn = base + ".tet";
-          inputfile.open(elems_fn.c_str());
+          inputfile.open(elems_fn);
         }
         catch (...)
         {
@@ -103,9 +102,8 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       {
         std::ifstream inputfile;
         inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        inputfile.open(elems_fn.c_str());
+        inputfile.open(elems_fn);
       }
-
       catch (...)
       {
         if (pr) pr->error("Could not open file: " + elems_fn);
@@ -122,9 +120,8 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     {
       std::ifstream inputfile;
       inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-      inputfile.open(pts_fn.c_str());
+      inputfile.open(pts_fn);
     }
-
     catch (...)
     {
       if (pr) pr->error("Could not open file: " + pts_fn);
@@ -142,7 +139,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
         std::ifstream inputfile;
         inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         pts_fn = base + ".pts";
-        inputfile.open(pts_fn.c_str());
+        inputfile.open(pts_fn);
       }
       catch (...)
       {
@@ -151,9 +148,8 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
           std::ifstream inputfile;
           inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
           pts_fn = base + ".pos";
-          inputfile.open(pts_fn.c_str());
+          inputfile.open(pts_fn);
         }
-
         catch (...)
         {
           if (pr) pr->error("Could not open file: " + base + ".pts");
@@ -167,9 +163,8 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       {
         std::ifstream inputfile;
         inputfile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        inputfile.open(pts_fn.c_str());
+        inputfile.open(pts_fn);
       }
-
       catch (...)
       {
         if (pr) pr->error("Could not open file: " + pts_fn);
@@ -179,26 +174,21 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   }
 
   std::string line;
-
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
-
   int num_nodes = 0; int num_elems = 0;
   std::vector<double> values;
   std::vector<double> fvalues;
   std::vector<VMesh::index_type> ivalues;
   std::string elem_type;
 
-
   // Check the element type
-
   {
     std::ifstream inputfile;
     inputfile.exceptions(std::ifstream::badbit);
-
     try
     {
-      inputfile.open(elems_fn.c_str());
+      inputfile.open(elems_fn);
 
       for (int lineno = 0; getline(inputfile, line) && lineno < 2; lineno++)
       {
@@ -224,43 +214,31 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       return (result);
     }
   }
-
   // add data to elems (constant basis)
-
-//std::cout << "Loading element type: " << std::endl;
-//std::cout << elem_type << std::endl;
-
   FieldInformation fi(nullptr);
-
   int elem_n = (elem_type == "Tt") ? 4 : 3;
 
   if (elem_type == "Tt")
   {
     fi = FieldInformation("TetVolMesh", -1, "double");
     fi.make_constantdata();
-
   }
   else if (elem_type == "Tr")
   {
     fi = FieldInformation("TriSurfMesh", -1, "double");
-
   }
 
   result = CreateField(fi);
-
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
 
   // Elements file
-
   {
     std::ifstream inputfile;
     inputfile.exceptions(std::ifstream::badbit);
-
     try
     {
-      inputfile.open(elems_fn.c_str());
-
+      inputfile.open(elems_fn);
       VMesh::Node::array_type vdata;
       vdata.resize(elem_n);
 
@@ -271,18 +249,13 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
 
       for (int i = 0; i < num_elems && getline(inputfile, line, '\n'); ++i)
       {
-
         multiple_from_string(line, ivalues);
-
         for (size_t j = 0; j < ivalues.size() && j < elem_n; j++)
         {
           vdata[j] = ivalues[j];
         }
-
         fvalues.push_back(ivalues[ivalues.size() - 1]);
-
         mesh->add_elem(vdata);
-
       }
     }
     catch (...)
@@ -292,30 +265,24 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     }
     inputfile.close();
   }
-
-
   // Points file
-
   {
     std::ifstream inputfile;
     inputfile.exceptions(std::ifstream::badbit);
-
     try
     {
-      inputfile.open(pts_fn.c_str());
+      inputfile.open(pts_fn);
 
       std::vector<double> vdata(3);
       getline(inputfile, line, '\n');
       multiple_from_string(line, values);
       num_nodes = static_cast<int>(values[0]);
 
-      for (int i = 0; i < num_nodes && getline(inputfile, line, '\n'); ++i) {
-
+      for (int i = 0; i < num_nodes && getline(inputfile, line, '\n'); ++i)
+      {
         multiple_from_string(line, values);
-        int sf = 1000;
-
-        if (values.size() == 3) mesh->add_point(Point(values[0] / sf, values[1] / sf, values[2] / sf));
-
+        if (values.size() == 3)
+          mesh->add_point(Point(values[0], values[1], values[2]));
       }
     }
     catch (...)
@@ -342,7 +309,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
   FieldInformation fi(fh);
 
-
   // Points file
   {
     std::ofstream outputfile;
@@ -364,7 +330,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
     try
     {
-      outputfile.open(pts_fn.c_str());
+      outputfile.open(pts_fn);
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -376,13 +342,11 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
-
       mesh->begin(nodeIter);
       mesh->end(nodeIterEnd);
       mesh->size(nodeSize);
 
       // N.B: not writing header
-
       outputfile << nodeSize << std::endl;
 
       while (nodeIter != nodeIterEnd)
@@ -400,7 +364,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-
   // Elements file
   {
     std::ofstream outputfile;
@@ -422,8 +385,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
     try
     {
-      outputfile.open(elems_fn.c_str());
-
+      outputfile.open(elems_fn);
       VMesh::Cell::iterator cellIter;
       VMesh::Cell::iterator cellIterEnd;
       VMesh::Cell::size_type cellSize;
@@ -431,39 +393,29 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-
-
-
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
 #endif
-
       outputfile << cellSize << std::endl;
 
       if (fi.is_tetvolmesh())
       {
         VMesh::Node::array_type cellNodes(4);
-
         double scalaroutput;
-
-        while (cellIter != cellIterEnd) {
-
+        while (cellIter != cellIterEnd)
+        {
           field->get_value(scalaroutput, *cellIter);
           mesh->get_nodes(cellNodes, *cellIter);
-
           outputfile << "Tt" << " " << cellNodes[0] << " " << cellNodes[1] << " " << cellNodes[2] << " " << cellNodes[3] << " " << scalaroutput << std::endl;
           ++cellIter;
         }
       }
       else if (fi.is_trisurfmesh())
       {
-
         VMesh::Node::array_type faceNodes(3);
-
         double scalaroutput;
-
-        while (cellIter != cellIterEnd) {
-
+        while (cellIter != cellIterEnd)
+        {
           field->get_value(scalaroutput, *cellIter);
           mesh->get_nodes(faceNodes, *cellIter);
 
@@ -473,11 +425,9 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       }
       else
       {
-
         if (pr) pr->error("Please convert to TetVol mesh ");
         return false;
       }
-
     }
     catch (...)
     {
@@ -508,7 +458,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
     try
     {
-      outputfile.open(lon_fn.c_str());
+      outputfile.open(lon_fn);
 
       VMesh::Cell::iterator cellIter;
       VMesh::Cell::iterator cellIterEnd;
@@ -524,11 +474,10 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
 
       outputfile << 1 << std::endl;
 
-      std::cout << "The generated *.lon file assumes a bath in the smallest mask layer and assigns a fiber direction of [0 0 1] to all other data layers. If a different fiber file is required, please use the CarpFiber exporter/importer." << std::endl;
+      if (pr) pr->remark("The generated *.lon file assumes a bath in the smallest mask layer and assigns a fiber direction of [0 0 1] to all other data layers. If a different fiber file is required, please use the CarpFiber exporter/importer.");
 
       if (fi.is_tetvolmesh())
       {
-
         VMesh::Node::array_type cellNodes(4);
 
         std::vector<double> region;
@@ -552,7 +501,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
         }
 
         VMesh::Cell::iterator cellIter;
-
         while (cellIter != cellIterEnd)
         {
           if (region[*cellIter] != min_region)
@@ -563,7 +511,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
           {
             outputfile << 0 << " " << 0 << " " << 0 << std::endl;
           }
-
           ++cellIter;
         }
       }
@@ -572,7 +519,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
         if (pr) pr->error("Please convert to Tetvol");
         return false;
       }
-
     }
     catch (...)
     {
@@ -581,7 +527,5 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
     }
     outputfile.close();
   }
-
-
   return true;
 }

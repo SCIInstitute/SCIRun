@@ -1499,9 +1499,12 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
+  //TODO: doesn't quite work yet
+  #if 0
   auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
   if (stoppable)
     stoppable->sendStopRequest();
+  #endif
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
