@@ -44,7 +44,7 @@ class SCISHARE ModelTMSCoilDialog : public ModuleDialogGeneric,
 public:
   ModelTMSCoilDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 
 }

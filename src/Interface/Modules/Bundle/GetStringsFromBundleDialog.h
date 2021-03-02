@@ -43,7 +43,7 @@ class SCISHARE GetStringsFromBundleDialog : public ModuleDialogGeneric, public U
 public:
   GetStringsFromBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial() override;
 private:

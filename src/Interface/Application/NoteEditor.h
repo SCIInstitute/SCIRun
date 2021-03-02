@@ -42,7 +42,7 @@ class NoteEditor : public QDialog, public Ui::NoteEditor
 	Q_OBJECT
 
 public:
-  explicit NoteEditor(const QString& moduleName, bool positionAdjustable = true, QWidget* parent = 0);
+  explicit NoteEditor(const QString& moduleName, bool positionAdjustable = true, QWidget* parent = nullptr);
   void setNoteHtml(const QString& text);
 public Q_SLOTS:
   void changeNotePosition(int index);

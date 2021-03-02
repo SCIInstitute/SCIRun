@@ -37,11 +37,8 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Dataflow/Network/ModuleBuilder.h>

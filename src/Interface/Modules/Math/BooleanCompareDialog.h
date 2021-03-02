@@ -25,30 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H
 #define INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H 1
 
-#include "Interface/Modules/Math/ui_BooleanCompareDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Math/ui_BooleanCompareDialog.h"
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Gui {
-		class SCISHARE BooleanCompareDialog : public ModuleDialogGeneric,
-			public Ui::BooleanCompareDialog
-		{
-			Q_OBJECT
+namespace Gui {
+  class SCISHARE BooleanCompareDialog : public ModuleDialogGeneric, public Ui::BooleanCompareDialog
+  {
+    Q_OBJECT
 
-		public:
-			BooleanCompareDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
-        private:
+   public:
+    BooleanCompareDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
 
-            boost::shared_ptr<class BooleanCompareDialogImpl> impl_;
-		};
-	}
+   private:
+    boost::shared_ptr<class BooleanCompareDialogImpl> impl_;
+  };
+}
 }
 
 #endif

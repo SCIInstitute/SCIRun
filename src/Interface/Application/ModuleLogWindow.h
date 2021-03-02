@@ -46,7 +46,7 @@ class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 	Q_OBJECT
 
 public:
-  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   QString name() const { return moduleName_; }
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);

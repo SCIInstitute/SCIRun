@@ -44,7 +44,7 @@ class SCISHARE MapFieldDataOntoElemsDialog : public ModuleDialogGeneric,
 public:
   MapFieldDataOntoElemsDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial() override;
 private Q_SLOTS:

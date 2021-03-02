@@ -43,7 +43,7 @@ class SCISHARE GetFieldsFromBundleDialog : public ModuleDialogGeneric, public Ui
 public:
   GetFieldsFromBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial() override;
 private:

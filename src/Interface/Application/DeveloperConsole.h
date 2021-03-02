@@ -41,7 +41,7 @@ class DeveloperConsole : public QDockWidget, public Ui::DeveloperConsole
 	Q_OBJECT
 
 public:
-  explicit DeveloperConsole(QWidget* parent = 0);
+  explicit DeveloperConsole(QWidget* parent = nullptr);
   void updateNetworkViewLog(const QString& s);
 public Q_SLOTS:
   void executorButtonClicked();

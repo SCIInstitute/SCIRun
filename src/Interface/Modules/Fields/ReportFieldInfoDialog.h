@@ -44,7 +44,7 @@ class SCISHARE ReportFieldInfoDialog : public ModuleDialogGeneric,
 public:
   ReportFieldInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
   virtual void moduleExecuted() { pullAndDisplayInfo(); }
 private Q_SLOTS:
     void pullAndDisplayInfo();

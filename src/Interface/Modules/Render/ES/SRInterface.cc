@@ -1056,7 +1056,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
                   std::vector<char> sorted_buffer(ibo.data->getBufferSize());
                   char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-                  char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+                  char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : nullptr;
 
                   if (sbuffer && num_triangles > 0)
                   {
@@ -1564,7 +1564,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // X Axis
@@ -1582,7 +1582,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Y Axis (dark)
@@ -1600,7 +1600,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Y Axis
@@ -1618,7 +1618,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Z Axis (dark)
@@ -1636,7 +1636,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Z Axis
@@ -1655,7 +1655,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               ptr = glm::value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             mArrowAttribs.unbind();

@@ -55,7 +55,7 @@ class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneri
 public:
   SolveInverseProblemWithTikhonovDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
   virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void setSpinBoxValue(int value);

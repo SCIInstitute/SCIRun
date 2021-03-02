@@ -210,7 +210,7 @@ private:
 
     std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
     char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
-    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : nullptr;
     GLuint result = ibo.front().glid;
     if (sbuffer && num_triangles > 0)
     {
@@ -563,7 +563,7 @@ private:
             rlistTrafo, camera.front().data, time.front().globalTime);
 
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
     else
@@ -571,7 +571,7 @@ private:
       if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
       {
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
       else
       {
@@ -585,12 +585,12 @@ private:
         GL(glUniform1f(fdToggleLoc, 1.0f));
         glCullFace(GL_BACK);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
 
         GL(glUniform1f(fdToggleLoc, 0.0f));
         glCullFace(GL_FRONT);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
 

@@ -26,6 +26,9 @@
 */
 
 
+#ifndef MODULETESTBASE_H
+#define MODULETESTBASE_H
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -92,3 +95,5 @@ namespace SCIRun
     };
   }
 }
+
+#endif // MODULETESTBASE_H

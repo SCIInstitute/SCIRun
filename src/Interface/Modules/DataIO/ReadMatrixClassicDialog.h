@@ -45,7 +45,7 @@ class SCISHARE ReadMatrixClassicDialog : public ModuleDialogGeneric,
 public:
   ReadMatrixClassicDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial();
 

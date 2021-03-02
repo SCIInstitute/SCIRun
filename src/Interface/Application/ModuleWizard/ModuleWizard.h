@@ -47,7 +47,7 @@ class ClassWizard : public QWizard
     Q_OBJECT
 
 public:
-    ClassWizard(QWidget *parent = 0);
+    ClassWizard(QWidget *parent = nullptr);
 
     void accept();
 };
@@ -57,7 +57,7 @@ class IntroPage : public QWizardPage
     Q_OBJECT
 
 public:
-    IntroPage(QWidget *parent = 0);
+    IntroPage(QWidget *parent = nullptr);
 
 private:
     QLabel *label;
@@ -68,7 +68,7 @@ class ClassInfoPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ClassInfoPage(QWidget *parent = 0);
+    ClassInfoPage(QWidget *parent = nullptr);
 
 private:
     QLabel *classNameLabel;
@@ -88,7 +88,7 @@ class CodeStylePage : public QWizardPage
     Q_OBJECT
 
 public:
-    CodeStylePage(QWidget *parent = 0);
+    CodeStylePage(QWidget *parent = nullptr);
 
 protected:
     void initializePage();
@@ -108,7 +108,7 @@ class OutputFilesPage : public QWizardPage
     Q_OBJECT
 
 public:
-    OutputFilesPage(QWidget *parent = 0);
+    OutputFilesPage(QWidget *parent = nullptr);
 
 protected:
     void initializePage();
@@ -127,7 +127,7 @@ class ConclusionPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ConclusionPage(QWidget *parent = 0);
+    ConclusionPage(QWidget *parent = nullptr);
 
 protected:
     void initializePage();
