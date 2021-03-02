@@ -325,9 +325,7 @@ std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalNam
   return originalName;
 }
 
-void
-LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to,
-  const std::string& from_port, const std::string& to_port, const std::string& con_id)
+void LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port, const std::string& con_id)
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
@@ -353,6 +351,11 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     out.moduleId_ = fromId;
 
     auto fromIndex = boost::lexical_cast<int>(from_port);
+    if (fromDesc.output_ports_.empty())
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
     {
       out.portId_ = fromDesc.output_ports_.back().id;
@@ -364,7 +367,11 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     in.moduleId_ = toId;
 
     auto toIndex = boost::lexical_cast<int>(to_port);
-
+    if (toDesc.input_ports_.empty())
+    {
+      simpleLog_ << "Module description has changed: input ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
     {
       in.portId_ = toDesc.input_ports_.back().id;
@@ -392,11 +399,9 @@ const std::string &from_port,
 const std::string &to_id,
 const std::string &to_port0)
 {
-  std::string to_port = to_port0;
-  std::string from = get_mod_id(from_id);
-  std::string to = get_mod_id(to_id);
-  if (from.find("Subnet") == std::string::npos &&
-    to.find("Subnet") == std::string::npos)
+  const auto from = get_mod_id(from_id);
+  const auto to = get_mod_id(to_id);
+  if (from.find("Subnet") == std::string::npos && to.find("Subnet") == std::string::npos)
   {
     createConnectionNew(from_id, to_id, from_port, to_port0, con_id);
   }

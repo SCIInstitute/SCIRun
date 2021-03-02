@@ -221,7 +221,7 @@ bool NetworkFileProcessCommand::execute()
       if (!tempFile)
       {
         GuiLogger::logInfoStd("File load done (" + filename + ").");
-        SCIRun::Core::setCurrentFileName(filename);
+        setCurrentFileName(filename);
       }
       return true;
     }
@@ -232,7 +232,7 @@ bool NetworkFileProcessCommand::execute()
     const std::string message(e.what());
     GuiLogger::logErrorStd("File load failed (" + filename + "): SCIRun exception in load_xml, " + message);
 
-    auto quiet = get(Core::Algorithms::AlgorithmParameterName("QuietMode")).toBool();
+    auto quiet = get(AlgorithmParameterName("QuietMode")).toBool();
 
     if (!quiet)
     {
