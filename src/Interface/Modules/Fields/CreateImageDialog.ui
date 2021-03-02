@@ -26,123 +26,6 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="minimumSize">
-      <size>
-       <width>350</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Mesh Size</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0" rowspan="2">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Height</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="width_">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="minimum">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" rowspan="2">
-       <widget class="QSpinBox" name="height_">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="minimum">
-         <number>2</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Width</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Pad Percentage</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="padPercentageSpinBox_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="decimals">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <double>999999999.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="modeLabel">
-        <property name="text">
-         <string>Mode</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="mode_">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>30</height>
-         </size>
-        </property>
-        <item>
-         <property name="text">
-          <string>Manual</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Auto</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="minimumSize">
@@ -364,7 +247,7 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="indexLabel_">
            <property name="text">
             <string>Index</string>
            </property>
@@ -383,15 +266,130 @@
         </layout>
        </widget>
       </item>
-      <item>
-       <widget class="QLabel" name="label">
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QComboBox" name="dataLocation_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <item>
+      <property name="text">
+       <string>Nodes(linear basis)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Faces(constant basis)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>None</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>350</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Mesh Size</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0" rowspan="2">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Data At Location</string>
+         <string>Height</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QComboBox" name="dataLocation_">
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="width_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" rowspan="2">
+       <widget class="QSpinBox" name="height_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Width</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Pad Percentage</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="padPercentageSpinBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="modeLabel_">
+        <property name="text">
+         <string>Mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="mode_">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -400,22 +398,24 @@
         </property>
         <item>
          <property name="text">
-          <string>Nodes(linear basis)</string>
+          <string>Manual</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Faces(constant basis)</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>None</string>
+          <string>Auto</string>
          </property>
         </item>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Data At Location</string>
+     </property>
     </widget>
    </item>
   </layout>
