@@ -47,10 +47,8 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Core/XMLUtil/XMLUtil.h>
-//#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
-//#include <Core/Util/Environment.h>
-#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <sci_debug.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
@@ -71,8 +69,7 @@ LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory
   std::ostringstream& simpleLog) :
 net_file_("new.srn"),
 done_writing_(false),
-doc_(0),
-out_fname_(""),
+doc_(nullptr),
 sn_count_(0),
 sn_ctx_(0),
 dtdPath_(dtdpath),
@@ -151,22 +148,17 @@ const std::string &y)
 }
 
 void
-LegacyNetworkIO::gui_add_module_at_position(const std::string &mod_id,
-const std::string &cpackage,
-const std::string &ccategory,
-const std::string &moduleNameOrig,
-const std::string &cversion,
-const std::string& x,
-const std::string &y)
+LegacyNetworkIO::gui_add_module_at_position(const std::string& mod_id,
+    const std::string& cpackage,
+    const std::string& ccategory,
+    const std::string& moduleNameOrig,
+    const std::string& x,
+    const std::string& y)
 {
   if (!xmlData_)
     return;
 
   const std::string cmodule = checkForModuleRename(moduleNameOrig);
-  if (cmodule == "PlaceholderModule")
-  {
-    //TODO: add state to placeholder module with original name
-  }
 
   std::vector<int> existingIdsWithThisModuleName;
   boost::copy(moduleIdMap_
@@ -179,6 +171,11 @@ const std::string &y)
     nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
   moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
+  if (cmodule == "PlaceholderModule")
+  {
+    xmlData_->network.modules[moduleIdMap_[mod_id]].state.setValue(Variables::Filename, std::string(moduleNameOrig));
+  }
+
   if (!modFactory_.moduleImplementationExists(cmodule))
   {
     simpleLog_ << "ERROR: module not implemented: " << cmodule << std::endl;
@@ -190,7 +187,7 @@ const std::string &y)
     THROW_INVALID_ARGUMENT(ostr.str());
   }
 
-  ModuleLookupInfoXML& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
+  auto& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
   mod.module_name_= cmodule;
@@ -361,8 +358,15 @@ void LegacyNetworkIO::createConnectionNew(const std::string& from, const std::st
       out.portId_ = fromDesc.output_ports_.back().id;
       out.portId_.id = fromIndex;
     }
-    else
+    else if (0 <= fromIndex && fromIndex < fromDesc.output_ports_.size())
+    {
       out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
+    }
+    else
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     IncomingConnectionDescription in;
     in.moduleId_ = toId;
 
@@ -377,8 +381,15 @@ void LegacyNetworkIO::createConnectionNew(const std::string& from, const std::st
       in.portId_ = toDesc.input_ports_.back().id;
       in.portId_.id = toIndex;
     }
-    else
+    else if (0 <= toIndex && toIndex < toDesc.input_ports_.size())
+    {
       in.portId_ = toDesc.input_ports_.at(toIndex).id;
+    }
+    else
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
 
     ConnectionDescriptionXML conn;
     conn.out_ = out;
@@ -804,7 +815,7 @@ void
 LegacyNetworkIO::process_environment(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("var"))
     {
@@ -820,25 +831,24 @@ void
 LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("module") ||
       std::string(to_char_ptr(node->name)) == std::string("subnet"))
     {
       bool do_subnet = std::string(to_char_ptr(node->name)) == std::string("subnet");
-      xmlNodePtr network_node = 0;
+      xmlNodePtr network_node = nullptr;
 
       std::string x,y;
       xmlAttrPtr id_att = get_attribute_by_name(node, "id");
       xmlAttrPtr package_att = get_attribute_by_name(node, "package");
       xmlAttrPtr category_att = get_attribute_by_name(node, "category");
       xmlAttrPtr name_att = get_attribute_by_name(node, "name");
-      xmlAttrPtr version_att = get_attribute_by_name(node, "version");
 
       std::string mname = std::string(to_char_ptr(name_att->children->content));
       std::string mid = std::string(to_char_ptr(id_att->children->content));
       xmlNodePtr pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("position"))
         {
@@ -860,11 +870,9 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
           {
             std::string package = std::string(to_char_ptr(package_att->children->content));
             std::string category = std::string(to_char_ptr(category_att->children->content));
-            std::string version = "1.0";
-            if (version_att != 0) version = std::string(to_char_ptr(version_att->children->content));
 
             gui_add_module_at_position(mid, package, category,
-              mname, version, x, y);
+                mname, x, y);
           }
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("network"))
@@ -887,7 +895,7 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
         else if (std::string(to_char_ptr(pnode->name)) == std::string("port_caching"))
         {
           xmlNodePtr pc_node = pnode->children;
-          for (; pc_node != 0; pc_node = pc_node->next)
+          for (; pc_node; pc_node = pc_node->next)
           {
             if (std::string(to_char_ptr(pc_node->name)) == std::string("port"))
             {
@@ -910,7 +918,7 @@ void
 LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("module"))
     {
@@ -921,7 +929,7 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
       xmlNodePtr pnode;
 
       pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode != nullptr; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("var"))
         {
@@ -933,11 +941,9 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
           std::string val = std::string(to_char_ptr(val_att->children->content));
 
           std::string filename = "no";
-          if (filename_att != 0) filename =
-            std::string(to_char_ptr(filename_att->children->content));
+          if (filename_att) filename = std::string(to_char_ptr(filename_att->children->content));
           std::string substitute = "yes";
-          if (substitute_att != 0) substitute =
-            std::string(to_char_ptr(substitute_att->children->content));
+          if (substitute_att) substitute = std::string(to_char_ptr(substitute_att->children->content));
 
           if (filename == "yes")
           {
@@ -960,13 +966,13 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
 
       bool has_gui_callback = false;
       pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("gui_callback"))
         {
           has_gui_callback = true;
           xmlNodePtr gc_node = pnode->children;
-          for (; gc_node != 0; gc_node = gc_node->next)
+          for (; gc_node; gc_node = gc_node->next)
           {
             if (std::string(to_char_ptr(gc_node->name)) == std::string("callback"))
             {
@@ -985,7 +991,7 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
       if (has_gui_callback)
       {
         pnode = node->children;
-        for (; pnode != 0; pnode = pnode->next)
+        for (; pnode; pnode = pnode->next)
         {
           if (std::string(to_char_ptr(pnode->name)) == std::string("var"))
           {
@@ -997,10 +1003,10 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
             std::string val = std::string(to_char_ptr(val_att->children->content));
 
             std::string filename = "no";
-            if (filename_att != 0) filename =
+            if (filename_att) filename =
               std::string(to_char_ptr(filename_att->children->content));
             std::string substitute = "yes";
-            if (substitute_att != 0) substitute =
+            if (substitute_att) substitute =
               std::string(to_char_ptr(substitute_att->children->content));
 
             if (filename == "yes")
@@ -1040,7 +1046,7 @@ void
 LegacyNetworkIO::process_connections(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     if (std::string(to_char_ptr(node->name)) == std::string("connection")) {
       xmlAttrPtr id_att = get_attribute_by_name(node, "id");
       xmlAttrPtr from_att = get_attribute_by_name(node, "from");
@@ -1067,7 +1073,7 @@ LegacyNetworkIO::process_connections(const xmlNodePtr enode)
 
 
       xmlNodePtr cnode = node->children;
-      for (; cnode != 0; cnode = cnode->next)
+      for (; cnode; cnode = cnode->next)
       {
         if (std::string(to_char_ptr(cnode->name)) == std::string("route"))
         {
@@ -1106,12 +1112,9 @@ LegacyNetworkIO::process_filename(const std::string &orig)
   // Remove blanks and tabs from the input
   // (Some could have editted the XML file manually and may have left spaces)
 
-  if (filename.size() > 0)
+  if (!filename.empty() && filename[0] == '{')
   {
-    if (filename[0] == '{')
-    {
-      filename = filename.substr(1,filename.size()-2);
-    }
+    filename = filename.substr(1,filename.size()-2);
   }
 
   while (filename.size() > 0 &&
@@ -1232,7 +1235,7 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
   // have to multi pass this document to workaround tcl timing issues.
   // PASS 1 - create the modules and connections
   xmlNode* node = network_node;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     // skip all but the component node.
     if (node->type == XML_ELEMENT_NODE &&
       std::string(to_char_ptr(node->name)) == std::string("network"))
@@ -1268,7 +1271,7 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
       }
 
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next)
+      for (; enode; enode = enode->next)
       {
         auto name = std::string(to_char_ptr(enode->name));
         if (enode->type == XML_ELEMENT_NODE && name == "environment")
@@ -1293,13 +1296,13 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
 
   // PASS 2 -- call the callbacks and set the variables
   node = network_node;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     // skip all but the component node.
     if (node->type == XML_ELEMENT_NODE &&
       std::string(to_char_ptr(node->name)) == std::string("network"))
     {
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next) {
+      for (; enode; enode = enode->next) {
 
         if (enode->type == XML_ELEMENT_NODE &&
           std::string(to_char_ptr(enode->name)) == std::string("modules"))
@@ -1358,14 +1361,14 @@ LegacyNetworkIO::load_network()
 #else
   flags |= XML_PARSE_NOWARNING;
 #endif
-  doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), 0, flags);
+  doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), nullptr, flags);
   /* check if parsing suceeded */
-  if (doc == 0) {
+  if (!doc) {
     simpleLog_ << "LegacyNetworkIO.cc: Failed to parse " << net_file_
       << std::endl;
     return false;
   } else {
-    /* check if validation suceeded */
+    /* check if validation succeeded */
     if (ctxt->valid == 0) {
       simpleLog_ << "LegacyNetworkIO.cc: Failed to validate " << net_file_
         << std::endl;
