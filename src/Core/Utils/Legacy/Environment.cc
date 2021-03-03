@@ -638,7 +638,7 @@ SCIRun::parse_rcfile( const char* rcfile )
 void
 SCIRun::find_and_parse_rcfile(const std::string &rcfile)
 {
-  bool foundrc=false;
+  bool foundrc = false;
   const std::string slash("/");
 
   // 1. check the local directory
@@ -652,9 +652,9 @@ SCIRun::find_and_parse_rcfile(const std::string &rcfile)
   }
 
   // 3. check the user's home directory
-  const char *HOME = NULL;
-  if (!foundrc && (HOME = sci_getenv("HOME"))) {
-    filename = HOME + slash + std::string(rcfile);
+  const char* home = nullptr;
+  if (!foundrc && (home = sci_getenv("HOME"))) {
+    filename = home + slash + std::string(rcfile);
     foundrc = parse_rcfile(filename.c_str());
   }
 

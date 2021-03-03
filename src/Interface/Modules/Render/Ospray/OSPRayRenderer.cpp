@@ -253,11 +253,11 @@ void OSPRayRenderer::addMeshToGroup(OsprayGeometryObject* geometryObject, uint32
 
   OsprayGeometryObject::FieldData& data = geometryObject->data;
 
-  float* vertices   = data.vertex.size()   > 0 ? data.vertex.data()   : NULL;
-  float* colors     = data.color.size()    > 0 ? data.color.data()    : NULL;
-  float* normals    = data.normal.size()   > 0 ? data.normal.data()   : NULL;
-  float* texCoords  = data.texCoord.size() > 0 ? data.texCoord.data() : NULL;
-  uint32_t* indices = data.index.size()    > 0 ? data.index.data()    : NULL;
+  float* vertices   = data.vertex.size()   > 0 ? data.vertex.data()   : nullptr;
+  float* colors     = data.color.size()    > 0 ? data.color.data()    : nullptr;
+  float* normals    = data.normal.size()   > 0 ? data.normal.data()   : nullptr;
+  float* texCoords  = data.texCoord.size() > 0 ? data.texCoord.data() : nullptr;
+  uint32_t* indices = data.index.size()    > 0 ? data.index.data()    : nullptr;
 
   uint32_t numVertices = data.vertex.size() / 3;
   size_t numPolygons = data.index.size() / vertsPerPoly;

@@ -55,7 +55,7 @@ namespace SCIRun {
 
   // Use the following functions to get/put environment variables.
   SCISHARE void sci_putenv( const std::string & key, const std::string & val );
-  // Returns NULL if 'key' not found.
+  // Returns null if 'key' not found.
   SCISHARE const char *sci_getenv( const std::string & key );
 
   // sci_getenv_p

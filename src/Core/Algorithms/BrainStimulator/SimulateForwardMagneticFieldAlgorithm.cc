@@ -263,7 +263,7 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
 
   if (!efld_ || !ctfld_ || !ctmsh_ || !dipfld_ || !detfld_ || !emsh_ || !dipmsh_ || !detmsh_)
   {
-     algo_->error("At least one required input field/mesh has a NULL pointer.");
+     algo_->error("At least one required input field/mesh has a null pointer.");
   }
 
   have_tensors_=false; /// we dont support a conductivity_table in a FieldHandle (could not be set in SCIRun4 as well)
@@ -318,7 +318,7 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
 {
   if (!ElectricField || !DipoleSources || !DetectorLocations || !ConductivityTensors)
   {
-    THROW_ALGORITHM_INPUT_ERROR("At least one required input has a NULL pointer.");
+    THROW_ALGORITHM_INPUT_ERROR("At least one required input has a null pointer.");
   }
 
   if (!ElectricField->vfield()->is_vector())

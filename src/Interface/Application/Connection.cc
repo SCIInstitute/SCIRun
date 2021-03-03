@@ -269,13 +269,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
     fromPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL FROM PORT: {}", id_.id_);
+    LOG_DEBUG("Null FROM PORT: {}", id_.id_);
   if (toPort_)
   {
     toPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL TO PORT: {}", id_.id_);
+    LOG_DEBUG("Null TO PORT: {}", id_.id_);
 
   if (fromPort_ && toPort_)
   {

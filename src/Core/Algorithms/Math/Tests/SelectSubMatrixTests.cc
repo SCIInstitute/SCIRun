@@ -667,7 +667,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsonly)
 
   if (!result1)
   {
-    std::cout << "ERROR (GUI Columns only): output is not NULL." << std::endl;
+    std::cout << "ERROR (GUI Columns only): output is not null." << std::endl;
   }
 
   EXPECT_EQ(m1->ncols(), result1->ncols());
@@ -696,7 +696,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_columnsonly)
 
   if (!result1)
   {
-    std::cout << "ERROR (GUI Columns only): output is not NULL." << std::endl;
+    std::cout << "ERROR (GUI Columns only): output is not null." << std::endl;
   }
 
   EXPECT_EQ(m1->nrows(), result1->nrows());
@@ -762,14 +762,14 @@ TEST(SelectSubMatrixTests, InputMatrix_empty)
 
   if (result2)
   {
-    std::cout << "ERROR (indices NULL, DenseMatrixHandle empty): output is not NULL." << std::endl;
+    std::cout << "ERROR (indices null, DenseMatrixHandle empty): output is not null." << std::endl;
   }
 
   DenseMatrixHandle result3 =  castMatrix::toDense(algo.run(0,0,0));
 
   if (result3)
   {
-    std::cout << "ERROR (indices NULL, DenseMatrixHandle NULL): output is not NULL." << std::endl;
+    std::cout << "ERROR (indices null, DenseMatrixHandle null): output is not null." << std::endl;
   }
 }
 

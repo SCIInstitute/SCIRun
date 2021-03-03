@@ -57,7 +57,7 @@ namespace ospray {
         std::cout << "Reading LLNL Richtmyer-Meshkov bob from " << inFilesDir
           << " with " << numThreads << " threads" << std::endl;
 
-        useGZip = (getenv("OSPRAY_RM_NO_GZIP") == NULL);
+        useGZip = (getenv("OSPRAY_RM_NO_GZIP") == nullptr);
 
         const size_t slash = fileName.rfind('/');
         std::string base = slash != std::string::npos ? fileName.substr(slash + 1) : fileName;
@@ -215,7 +215,7 @@ namespace ospray {
               "Must be of format <X>x<Y>x<>Z (e.g., '4x4x4'");
         }
         volume->handle = ospNewVolume("data_distributed_volume");
-        if (volume->handle == NULL){
+        if (volume->handle == nullptr){
           throw std::runtime_error("#loaders.ospObjectFile: could not create volume ...");
         }
         ospSetVec3i(volume->handle,"num_dp_blocks",blockDims);
@@ -227,7 +227,7 @@ namespace ospray {
         std::cout << "#osp.loader: where X, Y, and Z are the desired _number_ of data parallel blocks" << std::endl;
         volume->handle = ospNewVolume("block_bricked_volume");
       }
-      if (volume->handle == NULL){
+      if (volume->handle == nullptr){
         throw std::runtime_error("#loaders.ospObjectFile: could not create volume ...");
       }
 
@@ -238,4 +238,3 @@ namespace ospray {
     }
   }
 }
-

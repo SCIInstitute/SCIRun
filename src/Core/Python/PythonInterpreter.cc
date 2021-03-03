@@ -601,7 +601,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	catch ( ... ) {}
 
 	// If an error happened during compilation, print the error message
-	if ( PyErr_Occurred() != NULL )
+	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
 	}
@@ -611,7 +611,7 @@ void PythonInterpreter::run_script( const std::string& script )
 		boost::python::dict local_var;
 		PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr() );
 		Py_XDECREF( result );
-		if ( PyErr_Occurred() != NULL )
+		if ( PyErr_Occurred() )
 		{
 			PyErr_Print();
 		}

@@ -768,7 +768,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
   mclass = mlarray.getclass();
 
   // In case no converter is found return 0
-  // Hence initialise scinrrd as a NULL ptr
+  // Hence initialise scinrrd as a nullptr
 
   scinrrd.reset();
 

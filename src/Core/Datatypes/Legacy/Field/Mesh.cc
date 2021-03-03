@@ -71,7 +71,7 @@ MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
     structquadsurf_maker(0),
     structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -119,7 +119,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   structquadsurf_maker(0),
   structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -166,7 +166,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   structquadsurf_maker(0),
   structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -208,7 +208,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   structquadsurf_maker(0),
   structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -251,7 +251,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   structquadsurf_maker(0),
   structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -292,7 +292,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   structquadsurf_maker(structquadsurf_maker),
   structcurve_maker(0)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -335,7 +335,7 @@ MeshTypeID::MeshTypeID(const std::string& type,
   structquadsurf_maker(0),
   structcurve_maker(structcurve_maker)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -423,7 +423,7 @@ SCIRun::CreateMesh(const std::string& type)
 {
   MeshHandle handle;
 
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -447,7 +447,7 @@ SCIRun::CreateMesh(const std::string& type,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -471,7 +471,7 @@ SCIRun::CreateMesh(const std::string& type,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -494,7 +494,7 @@ SCIRun::CreateMesh(const std::string& type, size_type x,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -517,7 +517,7 @@ SCIRun::CreateMesh(const std::string& type,
 	   size_type x, size_type y, size_type z)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -543,7 +543,7 @@ MeshHandle
 SCIRun::CreateMesh(const std::string& type, size_type x, size_type y)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
@@ -569,7 +569,7 @@ MeshHandle
 SCIRun::CreateMesh(const std::string& type, size_type x)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }

@@ -79,10 +79,10 @@ int mainImpl(int argc, const char* argv[], char **environment)
 const char* utf8_encode(const std::wstring &wstr)
 {
   if (wstr.empty()) return "";
-  int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+  int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), nullptr, 0, nullptr, nullptr);
   char* strTo = new char[size_needed + 1];
   strTo[size_needed] = 0;
-  WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), strTo, size_needed, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), strTo, size_needed, nullptr, nullptr);
   return strTo;
 }
 

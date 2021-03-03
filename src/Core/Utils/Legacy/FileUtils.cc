@@ -90,7 +90,7 @@ InsertStringInFile(char* filename, const char* match, const char* add_text)
   /* create a copy of the original file */
   ifile = fopen(filename,"r");
 
-  if( ifile == NULL ) {
+  if( !ifile ) {
     printf( "ERROR: In Core/Util/FileUtils.cc: InsertStringInFile:\n" );
     printf("        File '%s' does not exist!\n", filename );
     printf( "       There is something seriously wrong with your SCIRun installation.\n");
@@ -366,7 +366,7 @@ testFilesystem( std::string directoryPath )
 
   // Create a temporary file
   fp = fopen( fileName.c_str(), "w" );
-  if( fp == NULL ) {
+  if( !fp ) {
     printf( "ERROR: testFilesystem() failed to create a temporary file in %s\n", directoryPath.c_str() );
     printf( "       errno is %d\n", errno );
       return false;

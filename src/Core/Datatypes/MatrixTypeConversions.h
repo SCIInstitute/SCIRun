@@ -45,7 +45,7 @@ namespace Core {
   namespace Datatypes {
 
     /// No conversion is done.
-    /// NULL is returned if the matrix is not of the appropriate type.
+    /// nullptr is returned if the matrix is not of the appropriate type.
     class SCISHARE castMatrix
     {
     public:
