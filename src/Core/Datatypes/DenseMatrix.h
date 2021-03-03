@@ -31,9 +31,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/GeometryPrimitives/Transform.h> /// @todo
-#define register
+//#define register
 #include <Eigen/Dense>
-#undef register
+//#undef register
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {

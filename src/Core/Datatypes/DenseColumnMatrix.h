@@ -30,9 +30,9 @@
 #define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
 
 #include <Core/Datatypes/Matrix.h>
-#define register
+//#define register
 #include <Eigen/Dense>
-#undef register
+//#undef register
 
 namespace SCIRun {
 namespace Core {

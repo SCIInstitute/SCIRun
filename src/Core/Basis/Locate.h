@@ -197,7 +197,7 @@ namespace SCIRun {
 
   /// area calculation on points
   template <class VECTOR1, class VECTOR2>
-    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)
+    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point*)
   {
     const unsigned int dvsize = derivs.size();
 
@@ -287,7 +287,7 @@ namespace SCIRun {
 
   /// arc length calculation on points
    template <class VECTOR1, class VECTOR2>
-  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)
+  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point*)
   {
     const unsigned int dvsize = dv.size();
 

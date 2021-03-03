@@ -191,7 +191,7 @@ private:
 class SessionDB : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement, const std::string& message)
+  virtual void consume(const std::string& /*statement*/, const std::string& /*message*/)
   {
     // TODO
   }

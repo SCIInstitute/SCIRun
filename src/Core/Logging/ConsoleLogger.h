@@ -56,12 +56,12 @@ namespace SCIRun
       class SCISHARE NullLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const override {}
-        virtual void warning(const std::string& msg) const override {}
-        virtual void remark(const std::string& msg) const override {}
-        virtual void status(const std::string& msg) const override {}
+        virtual void error(const std::string&) const override {}
+        virtual void warning(const std::string&) const override {}
+        virtual void remark(const std::string&) const override {}
+        virtual void status(const std::string&) const override {}
         virtual bool errorReported() const override { return false; }
-        virtual void setErrorFlag(bool flag) override {}
+        virtual void setErrorFlag(bool) override {}
       };
     }
   }

@@ -59,7 +59,7 @@ namespace Datatypes {
 
   //TODO: template partial spec for double/float/etc.
   template <typename T>
-  std::istream& operator>>(std::istream& in, FloatNaNHelper<T>& f)
+  std::istream& operator>>(std::istream& in, FloatNaNHelper<T>&)
   {
     return in;
   }

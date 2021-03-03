@@ -574,10 +574,10 @@ GeometryHandle ShowAndEditDipolesImpl::addLines()
   auto bbox = fieldInput_->vmesh()->get_bounding_box();
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
-  std::string idName = "SAEDField" +
+  std::string idName = std::string("SAEDField") +
     GeometryObject::delimiter +
     state_()->getValue(Parameters::FieldName).toString()
-    + " (from " + module_->id().id_ +")" +
+    + " (from " + module_->id().id_ + ")" +
     "(" + std::to_string(widgetIter_) + ")";
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*module_, idName, true));

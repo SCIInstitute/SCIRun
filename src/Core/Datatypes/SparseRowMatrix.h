@@ -31,9 +31,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Math/MiscMath.h>
-#define register
+//#define register
 #include <Eigen/SparseCore>
-#undef register
+//#undef register
 
 namespace SCIRun {
 namespace Core {

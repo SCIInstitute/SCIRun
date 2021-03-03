@@ -575,6 +575,16 @@ ENDMACRO()
 MACRO(SCIRUN_ADD_LIBRARY library)
   ADD_LIBRARY(${library} ${ARGN})
 
+  if(MSVC)
+    # TODO:
+    # target_compile_options(${library} PRIVATE /W4 /WX)
+  else()
+    # TODO:
+    #target_compile_options(${library} PRIVATE -Wunused-parameter)
+        #eventually: -Wall -Wextra -pedantic -Werror)
+    # to fix: -Wunused-parameter
+  endif()
+
   # Set up installer package (Release build only)
   IF(WIN32)
     INSTALL(TARGETS ${library} RUNTIME DESTINATION bin CONFIGURATIONS Release)

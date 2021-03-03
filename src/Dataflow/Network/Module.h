@@ -133,7 +133,7 @@ namespace Networks {
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
     void setProgrammableInputPortEnabled(bool enable) override final;
-    bool checkForVirtualConnection(const ModuleInterface& downstream) const override { return false; }
+    bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
     void setInfoStrings(const ModuleDescription& desc);
     static const int TraitFlags;
