@@ -183,7 +183,8 @@ void OsprayViewerDialog::addToolBar()
 
 void OsprayViewerDialog::adjustToolbar()
 {
-  adjustToolbarForHighResolution(toolBar_);
+  if (toolBar_)
+    adjustToolbarForHighResolution(toolBar_);
 }
 
 void OsprayViewerDialog::addConfigurationButton()
