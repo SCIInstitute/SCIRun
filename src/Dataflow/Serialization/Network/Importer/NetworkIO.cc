@@ -147,6 +147,18 @@ const std::string &y)
   #endif
 }
 
+namespace
+{
+  bool isPlaceholderModule(const std::string& name)
+  {
+    return name == "PlaceholderModule";
+  }
+
+  std::pair<std::string, std::string> unconvertedModule(const std::string& m)
+  {
+    return { m, "PlaceholderModule" };
+  }
+}
 void
 LegacyNetworkIO::gui_add_module_at_position(const std::string& mod_id,
     const std::string& cpackage,
@@ -171,7 +183,7 @@ LegacyNetworkIO::gui_add_module_at_position(const std::string& mod_id,
     nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
   moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
-  if (cmodule == "PlaceholderModule")
+  if (isPlaceholderModule(cmodule))
   {
     xmlData_->network.modules[moduleIdMap_[mod_id]].state.setValue(Variables::Filename, std::string(moduleNameOrig));
   }
@@ -215,7 +227,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "InterfaceWithNeuroFEMForward", "PlaceholderModule" },
     { "ClipFieldByFunction2", "ClipFieldByFunction" },
     { "ViewLeadSignals", "PlaceholderModule" },
-    { "ShowMatrix", "PlaceholderModule" },
+    unconvertedModule("ShowMatrix"),
     { "ConvertFieldDataFromIndicesToTensors", "PlaceholderModule" },
     { "CalculateMisfitField", "PlaceholderModule" },
     { "SwapNodeLocationsWithMatrixEntries", "PlaceholderModule" },
@@ -264,7 +276,6 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "Isosurface", "PlaceholderModule" },
     { "FieldSlicer", "PlaceholderModule" },
     { "GenStandardColorMaps", "PlaceholderModule" },
-    { "GetSubmatrix", "PlaceholderModule" },
     { "CalculateDataArray", "PlaceholderModule" },
     { "InterfaceWithMatlabViaBundles", "PlaceholderModule" },
     { "TendAnvol", "PlaceholderModule" },
@@ -303,6 +314,9 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "SampleLattice", "PlaceholderModule" },
     { "NrrdSelectTime", "PlaceholderModule" },
     { "NrrdSetProperty", "PlaceholderModule" },
+    { "ReportMatrixColumnMeasure", "ReportMatrixSliceMeasure" },
+    { "ReportMatrixRowMeasure", "ReportMatrixSliceMeasure" },
+    { "GetSubmatrix", "SelectSubMatrix" },
     { "FieldInfo", "PlaceholderModule" },
     { "SampleField", "PlaceholderModule" },
     { "TextureBuilder", "PlaceholderModule" },
@@ -318,7 +332,9 @@ std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalNam
 {
   auto rename = moduleRenameMap_.find(originalName);
   if (rename != moduleRenameMap_.end())
+  {
     return rename->second;
+  }
   return originalName;
 }
 
@@ -327,7 +343,7 @@ void LegacyNetworkIO::createConnectionNew(const std::string& from, const std::st
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
 
-  if (fromId.name_ == "PlaceholderModule" || toId.name_ == "PlaceholderModule")
+  if (isPlaceholderModule(fromId.name_) || isPlaceholderModule(toId.name_))
     return;
 
   if (!xmlData_)
