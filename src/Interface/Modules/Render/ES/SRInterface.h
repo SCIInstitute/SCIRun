@@ -32,7 +32,6 @@
 #include <unordered_map>
 #include <cstdint>
 #include <memory>
-#include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/ES/Core.h>
 
 //freetype

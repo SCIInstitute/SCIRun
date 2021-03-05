@@ -35,8 +35,8 @@
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
@@ -50,10 +50,10 @@ namespace SCIRun {
         class ReadMatrixAlgorithmPrivate
         {
         public:
-          static boost::mutex fileCheckMutex_;
+          static std::mutex fileCheckMutex_;
         };
 
-        boost::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
+        std::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
       }}}}
 
 ReadMatrixAlgorithm::ReadMatrixAlgorithm()
@@ -65,7 +65,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 {
   {
     //BOOST FILESYSTEM BUG: it is not thread-safe. @todo: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
-    boost::lock_guard<boost::mutex> guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
+    Core::Thread::Guard guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
     ENSURE_FILE_EXISTS(filename);
   }
 

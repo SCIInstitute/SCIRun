@@ -45,6 +45,7 @@ SET( boost_DEPENDENCIES )
 # explicitly set library list
 SET(boost_Libraries
   "atomic"
+  "chrono"
   "date_time"
   "exception"
   "filesystem"
@@ -67,21 +68,12 @@ IF(UNIX)
   ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
 ENDIF()
 
+SET(boost_GIT_TAG "origin/v1.75.0")
+
 # TODO: set up 64-bit build detection
 # Boost Jam needs to have 64-bit build explicitly configured
 IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
-  SET(boost_GIT_TAG "origin/v1.67.0")
-ELSE()
-
-  if (${USER_PYTHON_VERSION} VERSION_GREATER "3.7")
-    #message(${USER_PYTHON_VERSION} " needs a later boost")
-    SET(boost_GIT_TAG "origin/v1.67.0")
-  else()
-    #message(${USER_PYTHON_VERSION} " ok with old boost")
-    SET(boost_GIT_TAG "origin/v1.58.0")
-  endif()
-
 ENDIF()
 
 

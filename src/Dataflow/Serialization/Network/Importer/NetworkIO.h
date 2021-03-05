@@ -46,16 +46,17 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(const std::string&)> ValueConverter;
-  struct NewNameAndValueConverter
+  using ValueConverter = std::function<Core::Algorithms::AlgorithmParameter::Value(const std::string&)>;
+  struct SCISHARE NewNameAndValueConverter
   {
     Core::Algorithms::Name name;
     ValueConverter valueConverter;
   };
-  typedef std::map<std::string, NewNameAndValueConverter> OldStateNameConverterLookup;
-  typedef std::map<std::string, OldStateNameConverterLookup> StateConverterLookupByModule;
 
-  class LegacyNetworkStateConversion
+  using OldStateNameConverterLookup = std::map<std::string, NewNameAndValueConverter>;
+  using StateConverterLookupByModule = std::map<std::string, OldStateNameConverterLookup>;
+
+  class SCISHARE LegacyNetworkStateConversion
   {
   public:
     LegacyNetworkStateConversion();
@@ -63,8 +64,6 @@ namespace Networks {
     boost::optional<NewNameAndValueConverter> getStateConverter(const std::string& moduleName, const std::string& oldStateName) const;
   private:
     StateConverterLookupByModule nameAndValLookup_;
-    //std::unique_ptr<std::string> v4MergeStateToV5_;  //??
-    //ValueConverter initState, appendState, useState;
   };
 
   class SCISHARE LegacyNetworkIO
@@ -175,7 +174,7 @@ namespace Networks {
 
     std::stack<id_map_t> netid_to_modid_;
     std::stack<id_map_t> netid_to_conid_;
-    //! the enviroment variable substitutions
+    //! the environment variable substitutions
     id_map_t env_subs_;
 
     std::string net_file_;

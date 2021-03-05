@@ -30,8 +30,8 @@
 #include <Interface/qt_include.h>
 #include <QtConcurrent>
 #include "ui_Module.h"
-#include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Application/Application.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
@@ -378,16 +378,17 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   updateProgrammablePorts();
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
+  theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(
+      [this, state] { updateBackgroundColorForModuleState(state); }); });
 
   theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
   connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
 
-  Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
+  Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
   connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
 
-  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 
@@ -431,7 +432,7 @@ void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
-  theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
+  theModule_->setUpdaterFunc([this](int i) { updateProgressBarSignal(i); });
   if (theModule_->hasUI())
     theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
@@ -1048,6 +1049,7 @@ ModuleWidget::~ModuleWidget()
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
+  theModule_->disconnectStateListeners();
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
 
@@ -1095,7 +1097,7 @@ bool ModuleWidget::executeWithSignals()
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
-    timer_.restart();
+    timer_.reset(new SimpleScopedTimer);
     theModule_->executeWithSignals();
     if (!disabled_)
       Q_EMIT updateProgressBarSignal(1);
@@ -1348,7 +1350,7 @@ void ModuleWidget::updateProgressBar(double percent)
 
 void ModuleWidget::updateModuleTime()
 {
-  fullWidgetDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
+  fullWidgetDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_->elapsedSeconds()));
 }
 
 void ModuleWidget::launchDocumentation()
@@ -1497,7 +1499,12 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  Q_EMIT interrupt(theModule_->id());
+  //TODO: doesn't quite work yet
+  #if 0
+  auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
+  if (stoppable)
+    stoppable->sendStopRequest();
+  #endif
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)

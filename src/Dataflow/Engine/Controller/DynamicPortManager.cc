@@ -41,11 +41,11 @@ using namespace SCIRun::Dataflow::Networks;
 DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller) : controller_(controller), enabled_(true)
 {
   ENSURE_NOT_NULL(controller, "DPM needs network controller object");
-  addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
-  removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
+  addedSignal.connect([this](const ConnectionDescription& cd) { connectionAddedNeedToCloneAPort(cd); });
+  removeSignal.connect([this](const ConnectionId& cid) { connectionRemovedNeedToRemoveAPort(cid); });
 }
 
-void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void DynamicPortManager::connectionAddedNeedToCloneAPort(const ConnectionDescription& cd)
 {
   if (enabled_)
   {
@@ -59,7 +59,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
   }
 }
 
-void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
+void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const ConnectionId& id)
 {
   if (enabled_)
   {

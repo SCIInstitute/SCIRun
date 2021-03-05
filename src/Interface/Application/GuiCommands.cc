@@ -166,7 +166,7 @@ namespace
 
 QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
 {
-  auto pointRange = positions.modulePositions | boost::adaptors::map_values;
+  const auto pointRange = positions.modulePositions | boost::adaptors::map_values;
   return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
@@ -181,8 +181,8 @@ namespace std
 
 bool NetworkFileProcessCommand::execute()
 {
-  auto filename = get(Variables::Filename).toFilename().string();
-  auto tempFile = get(Name("temporaryFile")).toBool();
+  const auto filename = get(Variables::Filename).toFilename().string();
+  const auto tempFile = get(Name("temporaryFile")).toBool();
   GuiLogger::logInfoQ("Attempting load of " + QString::fromStdString(filename));
 
   try
@@ -191,14 +191,14 @@ bool NetworkFileProcessCommand::execute()
 
     if (file)
     {
-      auto load = boost::bind(&NetworkFileProcessCommand::guiProcess, this, file);
-      if (Core::Application::Instance().parameters()->isRegressionMode())
+      auto load = [this, file] { return guiProcess(file); };
+      if (Application::Instance().parameters()->isRegressionMode())
       {
         load();
       }
       else
       {
-        int numModules = static_cast<int>(file->network.modules.size());
+        const int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
@@ -215,7 +215,7 @@ bool NetworkFileProcessCommand::execute()
       }
       file_ = file;
 
-      auto center = findCenterOfNetworkFile(*file);
+      const auto center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
       if (!tempFile)
@@ -229,7 +229,7 @@ bool NetworkFileProcessCommand::execute()
   }
   catch (ExceptionBase& e)
   {
-    std::string message(e.what());
+    const std::string message(e.what());
     GuiLogger::logErrorStd("File load failed (" + filename + "): SCIRun exception in load_xml, " + message);
 
     auto quiet = get(Core::Algorithms::AlgorithmParameterName("QuietMode")).toBool();
