@@ -51,6 +51,7 @@ namespace State {
     virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
     virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
     virtual void fireTransientStateChangeSignal() override {}
+    void disconnectAll() override {}
   };
 
 }}}

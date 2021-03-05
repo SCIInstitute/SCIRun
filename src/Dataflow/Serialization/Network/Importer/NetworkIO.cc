@@ -216,6 +216,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData5", "CalculateFieldData" },
     { "InterfaceWithCleaver", "InterfaceWithCleaver2" },
     { "InterfaceWithNeuroFEMForward", "PlaceholderModule" },
+    { "ClipFieldByFunction2", "ClipFieldByFunction" },
     { "ViewLeadSignals", "PlaceholderModule" },
     { "ShowMatrix", "PlaceholderModule" },
     { "ConvertFieldDataFromIndicesToTensors", "PlaceholderModule" },
@@ -224,7 +225,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "BuildElemLeadField", "PlaceholderModule" },
     { "OptimizeDipole", "PlaceholderModule" },
     { "OptimizeConductivities", "PlaceholderModule" },
-    { "CalculateNodeNormals", "PlaceholderModule" },
+    { "CalculateNodeNormals", "GenerateNodeNormals" },
     { "SynchronizeGeometry", "PlaceholderModule" },
     { "TransformData", "PlaceholderModule" },
     { "SetFieldOrMeshStringProperty", "PlaceholderModule" },
@@ -459,12 +460,13 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
+  //logCritical("getStateConverter {} {}", moduleName, var);
   auto converterObj = legacyState_.getStateConverter(moduleName, var);
   if (converterObj && converterObj->valueConverter)
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
-    simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
-      << (converterObj->valueConverter ? "<func>" : "null func") << " from " << stripBraces << " to " << converterObj->valueConverter(stripBraces) << std::endl;
+    // simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
+    //   << (converterObj->valueConverter ? "<func>" : "null func") << " from " << stripBraces << " to " << converterObj->valueConverter(stripBraces) << std::endl;
     stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
   else
@@ -598,16 +600,19 @@ namespace
   ValueConverter startColorR = [](const std::string& s)
   {
     colorState = "Color(" + s;
+    //SCIRun::logCritical("startColorR {} -+- {}", s, colorState);
     return colorState;
   };
   ValueConverter appendColorG = [](const std::string& s)
   {
     colorState += "," + s;
+    //SCIRun::logCritical("appendColorG {} -+- {}", s, colorState);
     return colorState;
   };
   ValueConverter appendColorB = [](const std::string& s)
   {
     colorState += "," + s + ")";
+    //SCIRun::logCritical("appendColorB {} -+- {}", s, colorState);
     return colorState;
   };
 
@@ -1204,16 +1209,15 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
-  logCritical("^^^^^ Importing network: {}", net);
+  //logCritical("^^^^^ Importing network: {}", net);
   net_file_ = net;
   if (!load_network())
   {
-    logCritical("!!!!!!! Network import unsuccessful: {}", net);  
-
+    //logCritical("!!!!!!! Network import unsuccessful: {}", net);
     return nullptr;
   }
 
-  logCritical("~~~ ~~~ ~~~ Network import successful: {}", net);
+  //logCritical("~~~ ~~~ ~~~ Network import successful: {}", net);
   return xmlData_;
 }
 

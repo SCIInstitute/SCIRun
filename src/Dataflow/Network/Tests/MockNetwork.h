@@ -63,8 +63,6 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(moduleExecutionStates, std::vector<ModuleExecutionState::Value>());
           MOCK_METHOD0(clear, void());
           MOCK_CONST_METHOD0(containsViewScene, bool());
-          MOCK_CONST_METHOD1(connectModuleInterrupted, boost::signals2::connection(ModuleInterruptedSignal::slot_function_type));
-          MOCK_METHOD1(interruptModuleRequest, void(const ModuleId&));
         };
 
         typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;

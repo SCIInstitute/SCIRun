@@ -85,7 +85,7 @@ using namespace SCIRun::TestUtils;
 
    if (negative)
    {
-    for (int i=0;i<27;i++)
+     for (int i=0;i<27;i++)
      {
        values[i]=-values[i];
      }
@@ -110,8 +110,8 @@ TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
   std::cout << "Number of mesh nodes: " <<  output->vmesh()->num_nodes() << std::endl;
   std::cout << "Number of mesh values: " <<  output->vfield()->num_values() << std::endl;
 
-  ASSERT_TRUE(output->vmesh()->num_elems() == 4326);
-  ASSERT_TRUE(output->vmesh()->num_nodes() == 908);
-  ASSERT_TRUE(output->vfield()->num_values() == 4326);
+  EXPECT_EQ(output->vmesh()->num_elems(), 12);
+  EXPECT_EQ(output->vmesh()->num_nodes(), 9);
+  EXPECT_EQ(output->vfield()->num_values(), 12);
 
 }

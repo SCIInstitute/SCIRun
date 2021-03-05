@@ -267,7 +267,7 @@ private:
 
 SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
 {
-  boost::shared_ptr<detail::CompositeSessionBackEnd> compositeSession(new detail::CompositeSessionBackEnd);
+  std::shared_ptr<detail::CompositeSessionBackEnd> compositeSession(new detail::CompositeSessionBackEnd);
   // try create db backend
   try
   {
@@ -293,7 +293,7 @@ SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
     std::cout << "Error creating text session back end: " << e.what() << std::endl;
   }
 
-  return boost::make_shared<detail::BasicSession>(compositeSession);
+  return std::make_shared<detail::BasicSession>(compositeSession);
 }
 
 SessionHandle SessionUser::session()

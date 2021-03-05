@@ -35,11 +35,28 @@
 
 namespace shaders = spire;
 
+bool spire::RepetitiveMessageTracker::hasPostedFor(const std::string& className, int glIdNumber, const std::string& objectName)
+{
+  bool trackedBefore = tracking_[className][glIdNumber][objectName];
+  if (trackedBefore)
+  {
+    return true;
+  }
+  else
+  {
+    tracking_[className][glIdNumber][objectName] = true;
+    std::cerr << "[RENDERER LOG] ";
+    return false;
+  }
+}
+
+std::map<std::string, std::map<int, std::map<std::string, bool>>> spire::RepetitiveMessageTracker::tracking_;
+
 namespace ren {
 
 void Texture::checkUniform(GLuint shaderID)
 {
-  if (isSetUp() == false)
+  if (!isSetUp())
   {
     bool boundUniform = false;
     std::vector<shaders::ShaderUniform> uniforms =
@@ -55,10 +72,13 @@ void Texture::checkUniform(GLuint shaderID)
       }
     }
 
-    if (boundUniform == false)
+    if (!boundUniform)
     {
-      std::cerr << "Unable to find uniform with name: " << uniformName <<
+      if (!spire::RepetitiveMessageTracker::hasPostedFor("Texture", shaderID, uniformName))
+      {
+        std::cerr << "Unable to find uniform with name: " << uniformName <<
           " in shader with ID: " << shaderID << std::endl;
+      }
     }
   }
 }

@@ -32,7 +32,6 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Parallel.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -79,6 +78,6 @@ namespace
 
 void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
-  ParallelExecution runner(&context.lookup, order, context.bounds(), &executionLock);
-  boost::thread execution(runner);
+  ParallelExecution runner(&context.lookup_, order, context.bounds(), &executionLock);
+  Core::Thread::Util::launchAsyncThread(runner);
 }

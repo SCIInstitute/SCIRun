@@ -65,7 +65,11 @@ namespace SCIRun
 {
 namespace Gui
 {
-class PythonConsoleWidget {};
+class PythonConsoleWidget
+{
+public:
+  PythonConsoleWidget() {}
+};
 }
 }
 #endif

@@ -41,7 +41,7 @@
 #include <boost/preprocessor.hpp>
 #include <string>
 #include <vector>
-#include <boost/thread/condition_variable.hpp>
+#include <condition_variable>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
@@ -99,7 +99,7 @@ public:
 
 	// Condition variable to make sure the PythonInterpreter thread has
 	// completed initialization before continuing the main thread.
-	boost::condition_variable thread_condition_variable_;
+	std::condition_variable thread_condition_variable_;
 private:
   // The name of the executable
   std::vector< wchar_t > program_name_;

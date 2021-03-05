@@ -81,10 +81,13 @@ void VecUniform::checkUniform(GLuint shaderID)
     }
   }
 
-  if (boundUniform == false)
+  if (!boundUniform)
   {
-    std::cerr << "Unable to find uniform with name: " << uniformName <<
-        " in shader with ID: " << shaderID << std::endl;
+    if (!spire::RepetitiveMessageTracker::hasPostedFor("VecUniform", shaderID, uniformName))
+    {
+      std::cerr << "Unable to find uniform with name: " << uniformName << " in shader with ID: "
+        << shaderID << std::endl;
+    }
   }
 }
 

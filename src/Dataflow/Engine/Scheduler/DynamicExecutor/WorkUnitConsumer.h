@@ -35,7 +35,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
-#include <boost/thread/thread.hpp>
+#include <Core/Thread/Parallel.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -47,50 +47,47 @@ namespace DynamicExecutor {
   class SCISHARE ExecutionThreadGroup : boost::noncopyable
   {
   public:
-    ExecutionThreadGroup()
-    {
-      clear();
-    }
     void startExecution(const ModuleExecutor& executor)
     {
-      auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
-      Core::Thread::Guard g(mapLock_->get());
-      threadsByModuleId_[executor.module_->id().id_] = thread;
+      //auto thread = 
+      executeThreads_.create_thread([=]() { executor.run(); });
+      //Core::Thread::Guard g(mapLock_->get());
+      //threadsByModuleId_[executor.module_->id().id_] = thread;
     }
     void joinAll()
     {
-      executeThreads_->join_all();
+      executeThreads_.join_all();
     }
     void clear()
     {
-      executeThreads_.reset(new boost::thread_group);
-      threadsByModuleId_.clear();
-      std::ostringstream lockName;
-      lockName << "threadMap " << this;
-      mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
+      executeThreads_.clear();
+     // threadsByModuleId_.clear();
+      //std::ostringstream lockName;
+      //lockName << "threadMap " << this;
+      //mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
     }
-    boost::thread* getThreadForModule(const std::string& moduleId) const
-    {
-      if (!mapLock_)
-      {
-        return nullptr;
-      }
-      Core::Thread::Guard g(mapLock_->get());
+    //std::thread* getThreadForModule(const std::string& moduleId) const
+    //{
+    //  if (!mapLock_)
+    //  {
+    //    return nullptr;
+    //  }
+    //  Core::Thread::Guard g(mapLock_->get());
 
-      auto it = threadsByModuleId_.find(moduleId);
-      if (it == threadsByModuleId_.end())
-        return nullptr;
-      if (!executeThreads_->is_thread_in(it->second))
-        return nullptr;
-      return it->second;
-    }
+    //  auto it = threadsByModuleId_.find(moduleId);
+    //  if (it == threadsByModuleId_.end())
+    //    return nullptr;
+    //  if (!executeThreads_->is_thread_in(it->second))
+    //    return nullptr;
+    //  return it->second;
+    //}
   private:
-    mutable boost::shared_ptr<boost::thread_group> executeThreads_;
-    std::map<std::string, boost::thread*> threadsByModuleId_;
-    mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
+    mutable Core::Thread::ThreadGroup executeThreads_;
+    //std::map<std::string, std::thread*> threadsByModuleId_;
+    //mutable SharedPointer<Core::Thread::Mutex> mapLock_;
   };
 
-  typedef boost::shared_ptr<ExecutionThreadGroup> ExecutionThreadGroupPtr;
+  typedef SharedPointer<ExecutionThreadGroup> ExecutionThreadGroupPtr;
 
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
