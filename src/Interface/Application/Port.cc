@@ -604,7 +604,7 @@ void PortWidget::makePotentialConnectionLine(PortWidget* other)
   if (other && getScene_ && other->getScene_ && getScene_() != other->getScene_())
     return;
 
-  auto potentials = potentialConnectionsMap_[this];
+  auto& potentials = potentialConnectionsMap_[this];
   if (potentials.find(other) == potentials.end())
   {
     potentialConnectionsMap_[this][other] = true;
