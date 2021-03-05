@@ -46,12 +46,19 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
 QString Screenshot::screenshotDirectory()
 {
   // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-  const QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
-  QDir dir(filePath);
-  if (!dir.exists())
+  QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
+
+  if (filePath.isEmpty())
   {
-    dir.mkpath(filePath);
+    filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
+
+    QDir dir(filePath);
+    if (!dir.exists())
+    {
+      dir.mkpath(filePath);
+    }
   }
+
   return filePath;
 }
 
