@@ -46,7 +46,7 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
 QString Screenshot::screenshotDirectory()
 {
   // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-  static const QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
+  const QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
   QDir dir(filePath);
   if (!dir.exists())
   {
@@ -103,8 +103,6 @@ void Screenshot::saveScreenshotFromPath()
 
 QString Screenshot::screenshotFileFromPreferences() const
 {
-  //return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
-  //TODO: might want to have an option to save to an auto-generated file for speed
   return screenshotDirectory() + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
 

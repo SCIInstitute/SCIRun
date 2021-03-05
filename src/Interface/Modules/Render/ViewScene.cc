@@ -557,7 +557,7 @@ void ViewSceneDialog::addAutoViewButton()
 void ViewSceneDialog::addScreenshotButton()
 {
   QPushButton* screenshotButton = new QPushButton(this);
-  screenshotButton->setToolTip("Take screenshot");
+  screenshotButton->setToolTip("Take Screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
@@ -568,8 +568,8 @@ void ViewSceneDialog::addScreenshotButton()
 void ViewSceneDialog::addQuickScreenshotButton()
 {
   QPushButton* quickScreenshotButton = new QPushButton(this);
-  quickScreenshotButton->setToolTip("Take Quick screenshot");
-  // quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
+  quickScreenshotButton->setToolTip("Take Quick Screenshot");
+  quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
   quickScreenshotButton->setShortcut(Qt::Key_F12);
   connect(quickScreenshotButton, SIGNAL(clicked(bool)), this, SLOT(quickScreenshotClicked()));
   addToolbarButton(quickScreenshotButton);
