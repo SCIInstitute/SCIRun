@@ -30,7 +30,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <cmath>
+#include <Core/Math/MiscMath.h>
 #include <glm/gtx/vec_swizzle.hpp>
 
 using namespace SCIRun::Render;
