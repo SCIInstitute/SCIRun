@@ -69,8 +69,8 @@ namespace Matlab {
   {
   public:
     ImportFieldsFromMatlab();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, Field1, Field);
     OUTPUT_PORT(1, Field2, Field);

@@ -42,8 +42,8 @@ namespace SCIRun {
 			{
 			public:
 				CollectMatrices();
-				virtual void setStateDefaults() override;
-				virtual void execute() override;
+				void setStateDefaults() override;
+				void execute() override;
 
 				INPUT_PORT(0, Optional_BaseMatrix, Matrix);
 				INPUT_PORT(1, SubMatrix, Matrix);

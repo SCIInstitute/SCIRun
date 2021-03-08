@@ -56,8 +56,8 @@ class GenericReader : public SCIRun::Dataflow::Networks::Module,
 public:
   GenericReader(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void setStateDefaults() override final;
-  virtual void execute() override;
+  void setStateDefaults() override final;
+  void execute() override;
   INPUT_PORT(0, Filename, String);
   //OUTPUT_PORT(0, Object, PortType);
   OUTPUT_PORT(1, FileLoaded, String);

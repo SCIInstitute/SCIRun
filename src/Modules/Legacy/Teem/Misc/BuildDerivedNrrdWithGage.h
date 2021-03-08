@@ -64,8 +64,8 @@ namespace Teem {
   {
   public:
     BuildDerivedNrrdWithGage();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, InputNrrd, NrrdDataType);
     OUTPUT_PORT(0, OutputNrrd, NrrdDataType);

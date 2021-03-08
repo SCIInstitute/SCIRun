@@ -42,8 +42,8 @@ namespace SCIRun {
             {
             public:
                 ComputePCA();
-                virtual void setStateDefaults() override {}
-                virtual void execute() override;
+                void setStateDefaults() override {}
+                void execute() override;
 
                 INPUT_PORT(0, InputMatrix, Matrix);
                 OUTPUT_PORT(0, LeftPrincipalMatrix, DenseMatrix);

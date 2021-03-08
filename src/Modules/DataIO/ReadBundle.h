@@ -41,7 +41,7 @@ namespace DataIO {
   public:
     typedef GenericReader<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
     ReadBundle();
-    virtual void execute() override;
+    void execute() override;
     virtual bool useCustomImporter(const std::string& filename) const override { return false; }
 
     OUTPUT_PORT(0, Bundle, Bundle);

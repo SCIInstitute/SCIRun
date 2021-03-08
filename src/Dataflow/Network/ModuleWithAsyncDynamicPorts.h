@@ -41,7 +41,7 @@ namespace Networks {
   public:
     explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI);
     virtual bool hasDynamicPorts() const override { return true; }
-    virtual void execute() override;
+    void execute() override;
     virtual void asyncExecute(const PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
     virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
   protected:

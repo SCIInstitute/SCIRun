@@ -44,7 +44,7 @@ namespace SCIRun {
       public:
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteField();
-        virtual void execute() override;
+        void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 

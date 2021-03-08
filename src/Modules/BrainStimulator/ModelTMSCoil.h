@@ -54,8 +54,8 @@ class SCISHARE ModelTMSCoil : public SCIRun::Dataflow::Networks::Module,
   public:
     ModelTMSCoil();
 
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     OUTPUT_PORT(0, Mesh, Field);
 

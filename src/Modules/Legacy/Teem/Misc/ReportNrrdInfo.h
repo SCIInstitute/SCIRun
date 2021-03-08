@@ -42,8 +42,8 @@ namespace Teem {
   {
   public:
     ReportNrrdInfo();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, Query_Nrrd, NrrdDataType)
 

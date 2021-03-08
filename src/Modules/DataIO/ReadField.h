@@ -45,7 +45,7 @@ namespace DataIO {
   public:
     typedef GenericReader<FieldHandle, FieldPortTag> my_base;
     ReadField();
-    virtual void execute() override;
+    void execute() override;
     virtual bool useCustomImporter(const std::string& filename) const override;
     virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
 

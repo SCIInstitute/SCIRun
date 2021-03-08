@@ -102,7 +102,7 @@ namespace SCIRun {
       {
       public:
         ShowField();
-        virtual void execute() override;
+        void execute() override;
 
         INPUT_PORT(0, Field, Field);
         INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -111,7 +111,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
-        virtual void setStateDefaults() override;
+        void setStateDefaults() override;
       private:
         void updateAvailableRenderOptions(FieldHandle field);
         void processMeshComponentSelection(const Core::Datatypes::ModuleFeedback& var);

@@ -42,8 +42,8 @@ namespace Math {
   {
   public:
     SelectSubMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, InputMatrix, DenseMatrix);
     INPUT_PORT(1, RowIndicies, DenseMatrix);

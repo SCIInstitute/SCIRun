@@ -44,7 +44,7 @@ namespace SCIRun {
       public:
         typedef GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
         WriteMatrix();
-        virtual void execute() override;
+        void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 

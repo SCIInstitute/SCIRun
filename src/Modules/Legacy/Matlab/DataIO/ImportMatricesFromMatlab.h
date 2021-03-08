@@ -42,8 +42,8 @@ namespace Matlab {
   {
   public:
     ImportMatricesFromMatlab();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, Matrix1, Matrix);
     OUTPUT_PORT(1, Matrix2, Matrix);

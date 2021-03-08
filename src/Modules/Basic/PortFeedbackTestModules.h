@@ -42,8 +42,8 @@ namespace Basic {
   {
   public:
     PortFeedbackSender();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, Input, String);
 
@@ -57,8 +57,8 @@ namespace Basic {
   public:
     void processFeedback(const Core::Datatypes::ModuleFeedback& var);
     PortFeedbackReceiver();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     OUTPUT_PORT(0, Output, String);
 

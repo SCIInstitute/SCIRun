@@ -93,10 +93,10 @@ namespace Render {
   public:
     OsprayViewer();
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
-    virtual void setStateDefaults() override;
+    void setStateDefaults() override;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, OsprayGeometryObject);
-    virtual void execute() override;
+    void execute() override;
 
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
 

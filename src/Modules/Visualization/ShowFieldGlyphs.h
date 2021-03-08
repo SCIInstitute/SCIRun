@@ -47,7 +47,7 @@ namespace SCIRun {
       {
       public:
         ShowFieldGlyphs();
-        virtual void execute() override;
+        void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
         // Mesh Color
@@ -108,7 +108,7 @@ namespace SCIRun {
         INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        virtual void setStateDefaults() override;
+        void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 

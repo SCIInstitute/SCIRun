@@ -49,7 +49,7 @@ namespace SCIRun {
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         //typedef GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>> my_base;
         WriteG3D();
-        virtual void execute() override;
+        void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 
@@ -61,7 +61,7 @@ namespace SCIRun {
         INPUT_PORT(0, FieldToWrite, Field);
         //INPUT_PORT(1, ColorMapObject, ColorMap);
 
-        virtual void setStateDefaults() override;
+        void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       protected:

@@ -46,8 +46,8 @@ namespace SCIRun {
       public:
         CleanupTetMesh();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputTetMesh, Field);
         OUTPUT_PORT(0, OutputTetMesh, Field);
