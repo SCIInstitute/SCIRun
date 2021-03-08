@@ -65,7 +65,7 @@ Q_SIGNALS:
   void newGeometryValueForwarder();
 
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;

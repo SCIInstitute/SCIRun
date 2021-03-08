@@ -161,13 +161,13 @@ public:
     return Base::pen().color();
   }
 
-  virtual void makePotential() override
+  void makePotential() override
   {
     Base::setOpacity(0.3);
     Base::setPen(QPen(color(), 3.0, Qt::DotLine));
   }
 
-  virtual void highlight(bool on) override
+  void highlight(bool on) override
   {
     if (on)
     {
@@ -184,24 +184,24 @@ public:
     isHighlighted_ = on;
   }
 
-  virtual bool isHighlighted() const override { return isHighlighted_; }
+  bool isHighlighted() const override { return isHighlighted_; }
 
-  virtual QPointF endpoint() const override
+  QPointF endpoint() const override
   {
     return lastEnd_;
   }
 
-  virtual PortWidget* receiver() const override
+  PortWidget* receiver() const override
   {
     return receiver_;
   }
 
-  virtual void setReceiver(PortWidget* rec) override
+  void setReceiver(PortWidget* rec) override
   {
     receiver_ = rec;
   }
 
-  virtual void setLabel(QGraphicsTextItem* label) override
+  void setLabel(QGraphicsTextItem* label) override
   {
     label_ = label;
   }

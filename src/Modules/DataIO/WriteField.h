@@ -45,15 +45,15 @@ namespace SCIRun {
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteField();
         void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
+        bool useCustomExporter(const std::string& filename) const override;
+        bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       protected:
-        virtual std::string defaultFileTypeName() const override;
+        std::string defaultFileTypeName() const override;
       };
 
     }}}

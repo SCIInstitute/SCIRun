@@ -56,11 +56,11 @@ public:
   explicit NrrdData(const NrrdData&);
   virtual ~NrrdData();
 
-  virtual NrrdData* clone() const override;
+  NrrdData* clone() const override;
 
-  virtual void io(Piostream&) override;
+  void io(Piostream&) override;
   static PersistentTypeID type_id;
-  virtual std::string dynamic_type_name() const override { return type_id.type; }
+  std::string dynamic_type_name() const override { return type_id.type; }
 
   // Separate raw files.
   void set_embed_object(bool v) { embed_object_ = v; }

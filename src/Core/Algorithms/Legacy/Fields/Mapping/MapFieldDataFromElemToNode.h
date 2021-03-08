@@ -46,7 +46,7 @@ class SCISHARE MapFieldDataFromElemToNodeAlgo : public AlgorithmBase, public Thr
 
     static AlgorithmParameterName Method;
     FieldHandle runImpl(FieldHandle input_field) const;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
 };
 

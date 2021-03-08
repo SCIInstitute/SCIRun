@@ -64,7 +64,7 @@ namespace Datatypes
     GeometryObject(const GeometryObject& other) = delete;
     GeometryObject& operator=(const GeometryObject& other) = delete;
 
-    virtual GeometryObject* clone() const override;
+    GeometryObject* clone() const override;
 
     //weird signature--need to avoid raw ptrs and shared_from_this for now
     virtual void addToList(GeometryBaseHandle handle, GeomList& list);
@@ -72,7 +72,7 @@ namespace Datatypes
     const std::string uniqueID() const { return objectName_ + std::to_string(idIncrement_); }
     void changeID() { ++idIncrement_; }
 
-    virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
+    std::string dynamic_type_name() const override { return "GeometryObject"; }
 
     static const char delimiter = '\t';
 
@@ -93,9 +93,9 @@ namespace Datatypes
     OsprayGeometryObject(const OsprayGeometryObject& other) = delete;
     OsprayGeometryObject& operator=(const OsprayGeometryObject& other) = delete;
 
-    virtual OsprayGeometryObject* clone() const override;
+    OsprayGeometryObject* clone() const override;
 
-    virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
+    std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
 
     struct FieldData
     {

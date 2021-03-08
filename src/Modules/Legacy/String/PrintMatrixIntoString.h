@@ -47,7 +47,7 @@ namespace SCIRun {
         PrintMatrixIntoString();
         void execute() override;
         void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        bool hasDynamicPorts() const override { return true; }
 
         INPUT_PORT(0, Format, String);
         INPUT_PORT_DYNAMIC(1, Input, Matrix);

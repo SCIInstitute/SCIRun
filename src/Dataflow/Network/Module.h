@@ -182,7 +182,7 @@ namespace Networks {
     virtual void postStateChangeInternalSignalHookup();
 
 /*** protected Dev-interface ****/
-    virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
+    void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
     virtual void removeInputPort(const PortId& id);

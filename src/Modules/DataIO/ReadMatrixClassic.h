@@ -44,8 +44,8 @@ namespace DataIO {
     typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
     ReadMatrix();
     void execute() override;
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+    bool useCustomImporter(const std::string& filename) const override;
+    bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
 
     OUTPUT_PORT(0, Matrix, Matrix);
 
@@ -54,7 +54,7 @@ namespace DataIO {
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
   protected:
-    virtual std::string defaultFileTypeName() const override;
+    std::string defaultFileTypeName() const override;
   };
 
 }}}

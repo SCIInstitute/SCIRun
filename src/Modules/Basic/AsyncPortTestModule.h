@@ -43,14 +43,14 @@ namespace Basic {
   public:
     AsyncPortTestModule();
     void execute() override;
-    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
+    void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override {}
 
     INPUT_PORT_DYNAMIC(0, AsyncField, Field);
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   protected:
-    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}
+    void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}
   private:
     boost::atomic<int> counter_;
   };

@@ -45,7 +45,7 @@ public:
   ReportMatrixInfoDialog(const std::string& name,
     Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
+  void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void pullAndDisplayInfo();
 };

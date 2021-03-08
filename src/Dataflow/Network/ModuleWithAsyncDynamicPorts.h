@@ -40,13 +40,13 @@ namespace Networks {
   {
   public:
     explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI);
-    virtual bool hasDynamicPorts() const override { return true; }
+    bool hasDynamicPorts() const override { return true; }
     void execute() override;
     virtual void asyncExecute(const PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
-    virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
+    void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
   protected:
     virtual void portRemovedSlotImpl(const PortId& pid) = 0;
-    virtual size_t add_input_port(InputPortHandle h) override;
+    size_t add_input_port(InputPortHandle h) override;
   };
 
 }}}

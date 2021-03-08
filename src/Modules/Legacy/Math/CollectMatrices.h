@@ -51,7 +51,7 @@ namespace SCIRun {
 
 				MODULE_TRAITS_AND_INFO(ModuleHasUI)
       protected:
-        virtual void postStateChangeInternalSignalHookup() override;
+        void postStateChangeInternalSignalHookup() override;
       private:
         boost::shared_ptr<class CollectMatricesImpl> impl_;
         void checkForClearOutput();

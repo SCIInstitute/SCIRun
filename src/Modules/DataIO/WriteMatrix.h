@@ -45,15 +45,15 @@ namespace SCIRun {
         typedef GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
         WriteMatrix();
         void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
+        bool useCustomExporter(const std::string& filename) const override;
+        bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, MatrixToWrite, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
       protected:
-        virtual std::string defaultFileTypeName() const override;
+        std::string defaultFileTypeName() const override;
       };
 
     }}}

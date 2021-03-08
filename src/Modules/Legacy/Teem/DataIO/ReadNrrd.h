@@ -46,8 +46,8 @@ namespace DataIO {
     ReadNrrd();
     void execute() override;
     void setStateDefaults() override;
-    //virtual bool useCustomImporter(const std::string& filename) const override;
-    //virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
+    //bool useCustomImporter(const std::string& filename) const override;
+    //bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
 
     OUTPUT_PORT(0, Output_Data, NrrdDataType);
 

@@ -110,7 +110,7 @@ public:
   StructHexVolMesh();
   StructHexVolMesh(size_type i, size_type j, size_type k);
   StructHexVolMesh(const StructHexVolMesh<Basis> &copy);
-  virtual StructHexVolMesh *clone() const override { return new StructHexVolMesh<Basis>(*this); }
+  StructHexVolMesh *clone() const override { return new StructHexVolMesh<Basis>(*this); }
   virtual ~StructHexVolMesh()
   {
     DEBUG_DESTRUCTOR("StructHexVolMesh")
@@ -213,11 +213,11 @@ public:
   friend class ElemData;
 
   /// get the mesh statistics
-  virtual Core::Geometry::BBox get_bounding_box() const override;
-  virtual void transform(const Core::Geometry::Transform &t) override;
+  Core::Geometry::BBox get_bounding_box() const override;
+  void transform(const Core::Geometry::Transform &t) override;
 
-  virtual bool get_dim(std::vector<size_type>&) const override;
-  virtual void set_dim(const std::vector<size_type>& dims) override {
+  bool get_dim(std::vector<size_type>&) const override;
+  void set_dim(const std::vector<size_type>& dims) override {
     LatVolMesh<Basis>::ni_ = dims[0];
     LatVolMesh<Basis>::nj_ = dims[1];
     LatVolMesh<Basis>::nk_ = dims[2];
@@ -230,7 +230,7 @@ public:
     LatVolMesh<Basis>::vmesh_.reset(CreateVStructHexVolMesh(this));
   }
 
-  virtual int topology_geometry() const override
+  int topology_geometry() const override
   {
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
@@ -765,19 +765,19 @@ public:
   double get_epsilon() const
   { return (epsilon_); }
 
-  virtual bool synchronize(mask_type) override;
-  virtual bool unsynchronize(mask_type) override;
+  bool synchronize(mask_type) override;
+  bool unsynchronize(mask_type) override;
   bool clear_synchronization();
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&) override;
+  void io(Piostream&) override;
   static PersistentTypeID structhexvol_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const override;
+  const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();

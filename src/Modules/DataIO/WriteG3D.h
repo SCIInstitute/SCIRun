@@ -50,8 +50,8 @@ namespace SCIRun {
         //typedef GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>> my_base;
         WriteG3D();
         void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
+        bool useCustomExporter(const std::string& filename) const override;
+        bool call_exporter(const std::string& filename) override;
 
         static const Core::Algorithms::AlgorithmParameterName EnableTransparency;
         static const Core::Algorithms::AlgorithmParameterName TransparencyValue;
@@ -65,7 +65,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       protected:
-        virtual std::string defaultFileTypeName() const override;
+        std::string defaultFileTypeName() const override;
 
       private:
         void calculateColors();

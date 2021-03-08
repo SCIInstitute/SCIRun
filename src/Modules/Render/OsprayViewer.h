@@ -92,7 +92,7 @@ namespace Render {
   {
   public:
     OsprayViewer();
-    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
+    void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, OsprayGeometryObject);
@@ -105,7 +105,7 @@ namespace Render {
   #endif
 
   protected:
-    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
+    void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
     void sendCompositeGeometry();
   };

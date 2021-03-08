@@ -51,7 +51,7 @@ namespace SCIRun {
           Datatypes::ComplexDenseMatrixHandle runComplexMatrix(FieldHandle input) const;
           NrrdDataHandle runNrrd(FieldHandle input) const;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
 
         private:
           template <class MatrixReturnType>

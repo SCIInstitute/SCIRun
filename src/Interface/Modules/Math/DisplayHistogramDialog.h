@@ -52,7 +52,7 @@ namespace SCIRun
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
     protected:
-      virtual void pullSpecial() override;
+      void pullSpecial() override;
 
     private:
       QtUtils::QtHistogramWidget* histoWidget_;

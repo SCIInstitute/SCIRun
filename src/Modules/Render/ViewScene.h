@@ -79,7 +79,7 @@ namespace Render {
   public:
     ViewScene();
     ~ViewScene();
-    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
+    void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
     static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
@@ -151,7 +151,7 @@ namespace Render {
     typedef SharedPointer<Core::Datatypes::GeomList> GeomListPtr;
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
-    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
+    void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
     void processViewSceneObjectFeedback();
     void processMeshComponentSelection();

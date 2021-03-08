@@ -56,8 +56,8 @@ namespace Datatypes {
   public:
     // Persistent representation.
     MatrixIOBase() : separate_raw_(false) {}
-    virtual std::string dynamic_type_name() const override { return "MatrixIOBase"; }
-    virtual void io(Piostream&) override;
+    std::string dynamic_type_name() const override { return "MatrixIOBase"; }
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
   protected:
     bool           separate_raw_;
@@ -89,7 +89,7 @@ namespace Datatypes {
 
     static PersistentTypeID type_id;
 
-    virtual MatrixBase<T>* clone() const override = 0;
+    MatrixBase<T>* clone() const override = 0;
 
   private:
     virtual void print(std::ostream&) const = 0;

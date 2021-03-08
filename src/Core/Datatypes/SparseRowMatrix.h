@@ -130,13 +130,13 @@ namespace Datatypes {
     }
     SparseRowMatrixGeneric(SparseRowMatrixGeneric&& other) : EigenBase(std::move(other)) {}
 
-    virtual SparseRowMatrixGeneric* clone() const override
+    SparseRowMatrixGeneric* clone() const override
     {
       return new SparseRowMatrixGeneric(*this);
     }
 
-    virtual size_t nrows() const override { return this->rows(); }
-    virtual size_t ncols() const override { return this->cols(); }
+    size_t nrows() const override { return this->rows(); }
+    size_t ncols() const override { return this->cols(); }
 
     typedef index_type RowsData;
     typedef index_type ColumnsData;
@@ -162,7 +162,7 @@ namespace Datatypes {
       return tr.block(i, 0, 1, nrows()).transpose();
     }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
+    void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
@@ -178,11 +178,11 @@ namespace Datatypes {
       return this->isApprox(this->transpose(),1e-16);
     }
 
-    virtual T get(int i, int j) const override
+    T get(int i, int j) const override
     {
       return this->coeff(i,j);
     }
-    virtual void put(int i, int j, const T& val) override
+    void put(int i, int j, const T& val) override
     {
       this->coeffRef(i,j) = val;
       //TODO: not sure this is best place for this call: it's the slowest but also the safest since this is a virtual Matrix function. Users should know to avoid calling this with known sparse matrices.
@@ -322,14 +322,14 @@ namespace Datatypes {
     const MatrixBase<T>& castForPrinting() const { return *this; } /// @todo: lame...figure out a better way
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const override { return type_id.type; }
-    virtual void io(Piostream&) override;
+    std::string dynamic_type_name() const override { return type_id.type; }
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
 
     static Persistent* SparseRowMatrixGenericMaker();
 
   private:
-    virtual void print(std::ostream& o) const override
+    void print(std::ostream& o) const override
     {
       o << static_cast<const EigenBase&>(*this);
     }

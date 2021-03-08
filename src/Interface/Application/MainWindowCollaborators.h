@@ -62,7 +62,7 @@ namespace Gui {
   public:
     explicit TextEditAppender(QTextEdit* text) : text_(text) {}
     void log(const QString& message) const;
-    virtual void log4(const std::string& message) const override;
+    void log4(const std::string& message) const override;
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;

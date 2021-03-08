@@ -47,7 +47,7 @@ public:
     QWidget* parent = nullptr);
 
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 private Q_SLOTS:
   void push();
   void validateCell(int row, int col);
