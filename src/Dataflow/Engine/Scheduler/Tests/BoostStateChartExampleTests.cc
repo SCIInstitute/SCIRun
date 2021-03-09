@@ -157,7 +157,7 @@ public:
     //context< Active >().ElapsedTime() +=  std::difftime( std::time( 0 ), startTime_ );
     context< Active >().ElapsedTime() = ElapsedTime();
   }
-  virtual double ElapsedTime() const override
+  double ElapsedTime() const override
   {
     return context< Active >().ElapsedTime() +
       std::difftime( std::time( 0 ), startTime_ );
@@ -173,7 +173,7 @@ struct Stopped : IElapsedTime, sc::simple_state< Stopped, Active >
 // why we have to put them into an mpl::list<> as soon as there
 // is more than one of them
 // (see Specifying multiple reactions for a state).
-  virtual double ElapsedTime() const override
+  double ElapsedTime() const override
   {
     return context< Active >().ElapsedTime();
   }
@@ -255,11 +255,11 @@ public:
   {
     std::cout << "~ModuleNotExecuted" << std::endl;
   }
-  virtual ModuleExecutionState::Value stateValue() const override
+  ModuleExecutionState::Value stateValue() const override
   {
     return ModuleExecutionState::NotExecuted;
   }
-  virtual std::string color() const override { return "gray"; }
+  std::string color() const override { return "gray"; }
 };
 
 struct ModuleWaiting : ModuleColorProvider, sc::simple_state< ModuleWaiting, ModuleState >
@@ -274,11 +274,11 @@ public:
   {
     std::cout << "~ModuleWaiting" << std::endl;
   }
-  virtual ModuleExecutionState::Value stateValue() const override
+  ModuleExecutionState::Value stateValue() const override
   {
     return ModuleExecutionState::Waiting;
   }
-  virtual std::string color() const override { return "yellow"; }
+  std::string color() const override { return "yellow"; }
 };
 
 struct ModuleRunning : ModuleColorProvider, sc::simple_state< ModuleRunning, ModuleState >
@@ -296,11 +296,11 @@ public:
   {
     std::cout << "~ModuleRunning" << std::endl;
   }
-  virtual ModuleExecutionState::Value stateValue() const override
+  ModuleExecutionState::Value stateValue() const override
   {
     return ModuleExecutionState::Executing;
   }
-  virtual std::string color() const override { return "green"; }
+  std::string color() const override { return "green"; }
 };
 
 struct ModuleErrored : ModuleColorProvider, sc::simple_state< ModuleErrored, ModuleState >
@@ -315,11 +315,11 @@ public:
   {
     std::cout << "~ModuleErrored" << std::endl;
   }
-  virtual ModuleExecutionState::Value stateValue() const override
+  ModuleExecutionState::Value stateValue() const override
   {
     return ModuleExecutionState::Errored;
   }
-  virtual std::string color() const override { return "red"; }
+  std::string color() const override { return "red"; }
 };
 
 struct ModuleCompleted : ModuleColorProvider, sc::simple_state< ModuleCompleted, ModuleState >
@@ -334,11 +334,11 @@ public:
   {
     std::cout << "~ModuleCompleted" << std::endl;
   }
-  virtual ModuleExecutionState::Value stateValue() const override
+  ModuleExecutionState::Value stateValue() const override
   {
     return ModuleExecutionState::Completed;
   }
-  virtual std::string color() const override { return "darkGray"; }
+  std::string color() const override { return "darkGray"; }
 };
 
 TEST(ModuleStateChart, RunNormalTransitions)
@@ -398,17 +398,17 @@ public:
     moduleState_.initiate();
   }
 
-  virtual Value currentState() const override
+  Value currentState() const override
   {
     return moduleState_.currentStateValue();
   }
 
-  virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
+  boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
   {
     return signal_.connect(subscriber);
   }
 
-  virtual bool transitionTo(Value state) override
+  bool transitionTo(Value state) override
   {
     //Guard g(mutex_.get());
     auto current = currentState();
@@ -436,7 +436,7 @@ public:
     return changed;
   }
 
-  virtual std::string currentColor() const override
+  std::string currentColor() const override
   {
     return moduleState_.currentColor();
   }

@@ -942,13 +942,13 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
 class SurfaceAndPoints : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
-  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
+  MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 class SurfaceToSurface : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
-  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
+  MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)

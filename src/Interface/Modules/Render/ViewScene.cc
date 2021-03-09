@@ -315,7 +315,7 @@ namespace
   {
   public:
     explicit DialogIdGenerator(const std::string& name) : moduleName_(name) {}
-    virtual std::string generateGeometryID(const std::string& tag) const override
+    std::string generateGeometryID(const std::string& tag) const override
     {
       return moduleName_ + "::" + tag;
     }

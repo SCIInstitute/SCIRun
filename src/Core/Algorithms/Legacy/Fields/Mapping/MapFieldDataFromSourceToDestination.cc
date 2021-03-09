@@ -98,7 +98,7 @@ class MapFieldDataFromSourceToDestinationClosestDataPAlgo : public MapFieldDataF
     explicit MapFieldDataFromSourceToDestinationClosestDataPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationClosestDataPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 };
 
 void
@@ -207,7 +207,7 @@ class MapFieldDataFromSourceToDestinationSingleDestinationPAlgo : public MapFiel
     explicit MapFieldDataFromSourceToDestinationSingleDestinationPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationSingleDestinationPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 
     std::vector<index_type> tcc_;
     std::vector<index_type> cc_;
@@ -348,7 +348,7 @@ class MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo : public MapField
     explicit MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 };
 
 void

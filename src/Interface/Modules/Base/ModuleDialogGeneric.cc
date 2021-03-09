@@ -358,7 +358,7 @@ public:
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto value = state_->getValue(stateKey_).toString();
     auto qstring = toLabelConverter_(value);
@@ -368,7 +368,7 @@ public:
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     auto label = fromLabelConverter_(comboBox_->currentText());
     if (label != state_->getValue(stateKey_).toString())
@@ -433,7 +433,7 @@ public:
   {
     connect(comboBox, SIGNAL(activated(int)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto value = state_->getValue(stateKey_).toBool();
     auto index = value ? 1 : 0;
@@ -443,7 +443,7 @@ public:
       comboBox_->setCurrentIndex(index);
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     auto index = comboBox_->currentIndex();
     if (index != (state_->getValue(stateKey_).toBool() ? 1 : 0))
@@ -470,7 +470,7 @@ public:
   {
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != textEdit_->toPlainText())
@@ -479,7 +479,7 @@ public:
       LOG_TRACE("In new version of pull code for TextEdit: {}", newValue.toStdString());
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for TextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
@@ -502,7 +502,7 @@ public:
   {
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != textEdit_->toPlainText())
@@ -511,7 +511,7 @@ public:
       LOG_TRACE("In new version of pull code for PlainTextEdit: {}", newValue.toStdString());
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for PlainTextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
@@ -534,7 +534,7 @@ public:
   {
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != lineEdit_->text())
@@ -543,7 +543,7 @@ public:
       LOG_TRACE("In new version of pull code for LineEdit: {}", newValue.toStdString());
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
     state_->setValue(stateKey_, lineEdit_->text().toStdString());
@@ -566,7 +566,7 @@ public:
   {
     connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != tabWidget_->tabText(tabWidget_->currentIndex()))
@@ -582,7 +582,7 @@ public:
       }
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for QTabWidget: {}", tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
     state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
@@ -606,7 +606,7 @@ public:
         connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
         lineEdit_->setValidator(new QDoubleValidator(lineEdit_));
       }
-      virtual void pull() override
+      void pull() override
       {
         auto newValue = QString::number(state_->getValue(stateKey_).toDouble());
         if (newValue != lineEdit_->text())
@@ -615,7 +615,7 @@ public:
           LOG_TRACE("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
         }
       }
-      virtual void pushImpl() override
+      void pushImpl() override
       {
         LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
         bool ok;
@@ -641,7 +641,7 @@ public:
   {
     connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != spinBox_->value())
@@ -650,7 +650,7 @@ public:
       LOG_TRACE("In new version of pull code for SpinBox: {}", newValue);
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for SpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
@@ -673,7 +673,7 @@ public:
   {
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = state_->getValue(stateKey_).toDouble();
     if (newValue != spinBox_->value())
@@ -682,7 +682,7 @@ public:
       LOG_TRACE("In new version of pull code for DoubleSpinBox: {}", newValue);
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for DoubleSpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
@@ -705,7 +705,7 @@ public:
   {
     connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   }
-  virtual void pull() override
+  void pull() override
   {
     bool newValue = state_->getValue(stateKey_).toBool();
     if (newValue != checkBox_->isChecked())
@@ -714,7 +714,7 @@ public:
       checkBox_->setChecked(newValue);
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     LOG_TRACE("In new version of push code for CheckBox: {}", checkBox_->isChecked());
     state_->setValue(stateKey_, checkBox_->isChecked());
@@ -737,7 +737,7 @@ public:
       {
         connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
       }
-      virtual void pull() override
+      void pull() override
       {
         bool newValue = state_->getValue(stateKey_).toBool();
         if (newValue != checkable_->isChecked())
@@ -746,7 +746,7 @@ public:
           checkable_->setChecked(newValue);
         }
       }
-      virtual void pushImpl() override
+      void pushImpl() override
       {
         LOG_TRACE("In new version of push code for checkable QAbstractButton: {}", checkable_->isChecked());
         state_->setValue(stateKey_, checkable_->isChecked());
@@ -768,7 +768,7 @@ public:
     WidgetSlotManager(state, dialog, label, stateKey), stateKey_(stateKey), label_(label)
   {
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
@@ -777,7 +777,7 @@ public:
       label_->setText(QString::fromStdString(newValue));
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
   }
 private:
@@ -797,7 +797,7 @@ public:
     WidgetSlotManager(state, dialog, slider, stateKey), stateKey_(stateKey), slider_(slider)
   {
   }
-  virtual void pull() override
+  void pull() override
   {
     auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != slider_->value())
@@ -806,7 +806,7 @@ public:
       slider_->setValue(newValue);
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
   }
 private:
@@ -831,7 +831,7 @@ public:
       WidgetStyleMixin::setStateVarTooltipWithStyle(button, stateKey.name_);
     }
   }
-  virtual void pull() override
+  void pull() override
   {
     auto checkedIndex = state_->getValue(stateKey_).toInt();
     if (checkedIndex >= 0 && checkedIndex < radioButtons_.size())
@@ -843,7 +843,7 @@ public:
       }
     }
   }
-  virtual void pushImpl() override
+  void pushImpl() override
   {
     auto firstChecked = std::find_if(radioButtons_.begin(), radioButtons_.end(), [](QRadioButton* button) { return button->isChecked(); });
     int indexOfChecked = firstChecked - radioButtons_.begin();

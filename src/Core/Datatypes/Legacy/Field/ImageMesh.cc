@@ -55,7 +55,7 @@ template<class MESH>
 class VImageMesh : public VMeshShared<MESH> {
   public:
 
-    virtual bool is_imagemesh()  override         { return (true); }
+    bool is_imagemesh()  override         { return (true); }
 
     explicit VImageMesh(MESH* mesh) : VMeshShared<MESH>(mesh)
     {
@@ -69,12 +69,12 @@ class VImageMesh : public VMeshShared<MESH> {
       DEBUG_DESTRUCTOR("VImageMesh")
     }
 
-    virtual void size(VMesh::Node::size_type& size) const override;
-    virtual void size(VMesh::ENode::size_type& size) const override;
-    virtual void size(VMesh::Edge::size_type& size) const override;
-    virtual void size(VMesh::Face::size_type& size) const override;
-    virtual void size(VMesh::Elem::size_type& size) const override;
-    virtual void size(VMesh::DElem::size_type& size) const override;
+    void size(VMesh::Node::size_type& size) const override;
+    void size(VMesh::ENode::size_type& size) const override;
+    void size(VMesh::Edge::size_type& size) const override;
+    void size(VMesh::Face::size_type& size) const override;
+    void size(VMesh::Elem::size_type& size) const override;
+    void size(VMesh::DElem::size_type& size) const override;
 
     virtual void get_nodes(VMesh::Node::array_type& nodes,
                            VMesh::Edge::index_type i) const override;
@@ -127,25 +127,25 @@ class VImageMesh : public VMeshShared<MESH> {
                             VMesh::Elem::index_type i) const override;
 
     /// Get the center of a certain mesh element
-    virtual void get_center(Point &point, VMesh::Node::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::ENode::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Edge::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Face::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Elem::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::DElem::index_type i) const override;
+    void get_center(Point &point, VMesh::Node::index_type i) const override;
+    void get_center(Point &point, VMesh::ENode::index_type i) const override;
+    void get_center(Point &point, VMesh::Edge::index_type i) const override;
+    void get_center(Point &point, VMesh::Face::index_type i) const override;
+    void get_center(Point &point, VMesh::Elem::index_type i) const override;
+    void get_center(Point &point, VMesh::DElem::index_type i) const override;
 
     /// Get the centers of a series of nodes
-    virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
-    virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
+    void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
+    void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
 
-    virtual double get_size(VMesh::Node::index_type i) const override;
-    virtual double get_size(VMesh::Edge::index_type i) const override;
-    virtual double get_size(VMesh::Face::index_type i) const override;
-    virtual double get_size(VMesh::Elem::index_type i) const override;
-    virtual double get_size(VMesh::DElem::index_type i) const override;
+    double get_size(VMesh::Node::index_type i) const override;
+    double get_size(VMesh::Edge::index_type i) const override;
+    double get_size(VMesh::Face::index_type i) const override;
+    double get_size(VMesh::Elem::index_type i) const override;
+    double get_size(VMesh::DElem::index_type i) const override;
 
-    virtual bool locate(VMesh::Node::index_type &i, const Point &point) const override;
-    virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
+    bool locate(VMesh::Node::index_type &i, const Point &point) const override;
+    bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
     virtual bool locate(VMesh::Elem::index_type &i,
                         VMesh::coords_type &coords,
                         const Point &point) const override;
@@ -229,14 +229,14 @@ class VImageMesh : public VMeshShared<MESH> {
                                      VMesh::Elem::index_type idx,
                                      double* Ji) const override;
 
-    virtual double  scaled_jacobian_metric(const VMesh::Elem::index_type) const override;
-    virtual double  jacobian_metric(const VMesh::Elem::index_type) const override;
+    double  scaled_jacobian_metric(const VMesh::Elem::index_type) const override;
+    double  jacobian_metric(const VMesh::Elem::index_type) const override;
 
-    virtual void get_dimensions(VMesh::dimension_type& dims) override;
-    virtual void get_elem_dimensions(VMesh::dimension_type& dims) override;
+    void get_dimensions(VMesh::dimension_type& dims) override;
+    void get_elem_dimensions(VMesh::dimension_type& dims) override;
 
-    virtual Transform get_transform() const override;
-    virtual void set_transform(const Transform& t) override;
+    Transform get_transform() const override;
+    void set_transform(const Transform& t) override;
 
     virtual void get_interpolate_weights(const Point& point,
                                          VMesh::ElemInterpolate& ei,

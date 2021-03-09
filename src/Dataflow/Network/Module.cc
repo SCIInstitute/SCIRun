@@ -77,19 +77,19 @@ namespace detail
   {
   public:
     PerTypeInstanceCountIdGenerator() : mapLock_("moduleCounts") {}
-    virtual int makeId(const std::string& name) override final
+    int makeId(const std::string& name) override final
     {
       Guard g(mapLock_.get());
       return instanceCounts_[name]++;
     }
-    virtual bool takeId(const std::string& name, int id) override final
+    bool takeId(const std::string& name, int id) override final
     {
       Guard g(mapLock_.get());
       int next = instanceCounts_[name];
       instanceCounts_[name] = std::max(next, id + 1);
       return true;
     }
-    virtual void reset() override final
+    void reset() override final
     {
       Guard g(mapLock_.get());
       instanceCounts_.clear();
@@ -103,15 +103,15 @@ namespace detail
   class ModuleExecutionStateImpl : public ModuleExecutionState
   {
   public:
-    virtual Value currentState() const override
+    Value currentState() const override
     {
       return current_;
     }
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
+    boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
     {
       return signal_.connect(subscriber);
     }
-    virtual bool transitionTo(Value state) override
+    bool transitionTo(Value state) override
     {
       if (current_ != state)
       {
@@ -122,16 +122,16 @@ namespace detail
       setExpandedState(state);
       return true;
     }
-    virtual std::string currentColor() const override
+    std::string currentColor() const override
     {
       return "not implemented";
     }
-    virtual Value expandedState() const override
+    Value expandedState() const override
     {
       return expandedState_.value_or(currentState());
     }
 
-    virtual void setExpandedState(Value state) override
+    void setExpandedState(Value state) override
     {
       expandedState_ = state;
     }
@@ -663,13 +663,13 @@ class DummyModule : public Module
 {
 public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
-  virtual void execute() override
+  void execute() override
   {
     std::ostringstream ostr;
     ostr << "Module " << name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
-  virtual void setStateDefaults() override
+  void setStateDefaults() override
   {}
 };
 

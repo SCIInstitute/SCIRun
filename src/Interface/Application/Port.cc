@@ -174,7 +174,7 @@ namespace SCIRun {
           qDebug() << "action not found:" << compatibleModules();
       }
 
-      virtual void showEvent(QShowEvent* event) override
+      void showEvent(QShowEvent* event) override
       {
         QPoint p = pos();
         QRect geo = parent_->geometry();
