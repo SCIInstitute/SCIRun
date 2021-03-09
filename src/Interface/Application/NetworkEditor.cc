@@ -2200,17 +2200,17 @@ namespace
       setAcceptHoverEvents(true);
     }
   protected:
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
+    void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
     {
       setPen(QPen(pen().color(), 5));
     }
 
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
     {
       setPen(QPen(pen().color(), 3));
     }
 
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
       QMenu menu;
       auto autoDisplay = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
@@ -2424,7 +2424,6 @@ FloatingTextItem::FloatingTextItem(const QString& text, std::function<void()> ac
 FloatingTextItem::~FloatingTextItem()
 {
   --instanceCounter_;
-  delete rect_;
 }
 
 void FloatingTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
