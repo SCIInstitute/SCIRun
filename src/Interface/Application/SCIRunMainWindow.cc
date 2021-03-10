@@ -42,7 +42,6 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -328,10 +327,10 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
   actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
-	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-		"QHeaderView::section { background: rgb(66,66,69);} "
-		);
+  moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
+	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+	  "QHeaderView::section { background: rgb(66,66,69);} "
+	  );
 
   hideNonfunctioningWidgets();
 
