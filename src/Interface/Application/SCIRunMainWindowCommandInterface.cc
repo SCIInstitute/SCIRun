@@ -232,6 +232,18 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
   }
 }
 
+void SCIRunMainWindow::setScreenshotDirectory(const QString& dir)
+{
+  if (!dir.isEmpty())
+  {
+    prefsWindow_->screenshotLineEdit_->setText(dir);
+    prefsWindow_->screenshotLineEdit_->setToolTip(dir);
+
+    RemembersFileDialogDirectory::setStartingDir(dir);
+    Preferences::Instance().setScreenshotDirectory(dir.toStdString());
+  }
+}
+
 void SCIRunMainWindow::setDataPath(const QString& dirs)
 {
 	if (!dirs.isEmpty())

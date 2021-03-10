@@ -102,3 +102,15 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
     settings.setValue("dataDirectory", QString::fromStdString(Preferences::Instance().dataDirectory().string()));
   }
 }
+
+void SCIRunMainWindow::setScreenshotDirectoryFromGUI()
+{
+	auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().parent_path().string()));
+	setScreenshotDirectory(dir);
+
+	{
+		QSettings settings;
+		settings.setValue("screenshotDirectory", QString::fromStdString(Preferences::Instance().screenshotDirectory().string()));
+	}
+
+}
