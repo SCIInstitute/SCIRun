@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
+    <width>420</width>
     <height>142</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>360</width>
+    <width>420</width>
     <height>142</height>
    </size>
   </property>
@@ -37,7 +37,7 @@
          <widget class="QRadioButton" name="rowRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
@@ -50,7 +50,7 @@
          <widget class="QRadioButton" name="columnRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
@@ -72,7 +72,7 @@
          <widget class="QRadioButton" name="appendRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
@@ -85,7 +85,7 @@
          <widget class="QRadioButton" name="replaceRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
@@ -107,7 +107,7 @@
          <widget class="QRadioButton" name="prependRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
@@ -120,7 +120,7 @@
          <widget class="QRadioButton" name="postpendRadioButton_">
           <property name="minimumSize">
            <size>
-            <width>80</width>
+            <width>100</width>
             <height>35</height>
            </size>
           </property>
