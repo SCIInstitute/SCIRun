@@ -127,7 +127,7 @@ void WidgetDisablingService::addWidget(const InputWidget& w)
 
 void WidgetDisablingService::removeWidget(const InputWidget& w)
 {
-  inputWidgets_.erase(std::remove(inputWidgets_.begin(), inputWidgets_.end(), w));
+  inputWidgets_.erase(std::remove(inputWidgets_.begin(), inputWidgets_.end(), w), inputWidgets_.end());
 }
 
 void WidgetDisablingService::disableInputWidgets()
