@@ -12,8 +12,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1</width>
-    <height>1</height>
+    <width>360</width>
+    <height>142</height>
    </size>
   </property>
   <property name="font">
