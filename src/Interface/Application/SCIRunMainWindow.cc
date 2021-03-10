@@ -226,6 +226,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   makeFilterButtonMenu();
 
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(prefsWindow_->screenshotPathPushButton_, SIGNAL(clicked()), this, SLOT(setScreenshotDirectoryFromGUI()));
   //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));

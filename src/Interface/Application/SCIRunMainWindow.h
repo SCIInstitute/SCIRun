@@ -90,6 +90,7 @@ public:
   void setCurrentFile(const QString& fileName);
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
+  void setScreenshotDirectory(const QString& dir);
   void setupQuitAfterExecute();
 
   //TODO: extract another interface for command objects
@@ -110,6 +111,7 @@ public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
   void setDataDirectoryFromGUI();
+  void setScreenshotDirectoryFromGUI();
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
   void reportIssue();
