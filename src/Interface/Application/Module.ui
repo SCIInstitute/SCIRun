@@ -87,8 +87,8 @@
       <property name="font">
        <font>
         <family>Helvetica</family>
-        <weight>75</weight>
-        <bold>true</bold>
+        <weight>50</weight>
+        <bold>false</bold>
        </font>
       </property>
       <property name="text">
