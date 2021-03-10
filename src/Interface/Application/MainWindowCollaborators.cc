@@ -993,7 +993,9 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
                     "selection-background-color:blue;" // 336699 lighter blue
                     "background-color:rgb(66,66,69);"
                     "selection-color:yellow;}"
+#ifndef __linux__ 
                     "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
+#endif
                     "QLineEdit{border:1px solid white}"
                     "QToolBar{"
                     "border:1px solid black;"
