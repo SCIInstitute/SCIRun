@@ -87,7 +87,7 @@ namespace SCIRun {
       ColorMapPreviewPoint(qreal x, qreal y);
       QPointF center() const { return center_; }
     protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event)
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override
       {
         //qDebug() << "ColorMapPreviewPoint clicked.";
         ////if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier)

@@ -75,15 +75,15 @@ public:
 
   /// Clone the field data, but not the mesh.
   /// Use mesh_detach() first to clone the complete field
-  virtual GenericField<Mesh, Basis, FData> *clone() const;
+  GenericField<Mesh, Basis, FData> *clone() const override;
 
   /// Clone everything, field data and mesh.
-  virtual GenericField<Mesh, Basis, FData> *deep_clone() const;
+  GenericField<Mesh, Basis, FData> *deep_clone() const override;
 
   /// Obtain a Handle to the Mesh
-  virtual MeshHandle mesh() const;
-  virtual VMesh*  vmesh() const;
-  virtual VField* vfield() const;
+  MeshHandle mesh() const override;
+  VMesh*  vmesh() const override;
+  VField* vfield() const override;
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   /// Clone the mesh
@@ -95,7 +95,7 @@ public:
   /// 0 = constant data per element
   /// 1 = linear data per element
   /// >1 = non linear data per element
-  virtual int basis_order() const { return basis_.polynomial_order(); }
+  int basis_order() const override { return basis_.polynomial_order(); }
 
   /// Get the classes on which this function relies:
   /// Get the basis describing interpolation within an element
@@ -105,7 +105,7 @@ public:
   // const mesh_handle_type &get_typed_mesh() const;
 
   /// Persistent I/O.
-  virtual void io(Piostream &stream);
+  void io(Piostream &stream) override;
 
   /// Tag the constructor of this class and put it in the Pio DataBase
   static  PersistentTypeID type_id;
@@ -115,12 +115,11 @@ public:
 
   /// Function to retrieve the name of this field class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return type_id.type; }
+  std::string dynamic_type_name() const override { return type_id.type; }
 
   /// A different way of tagging a class. Currently two systems are used next
   /// to each other: type_name and get_type_description. Neither is perfect
-  virtual
-  const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
+  const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const override;
 
   /// Static functions to instantiate the field from Pio or using CreateField()
   static Persistent *maker();

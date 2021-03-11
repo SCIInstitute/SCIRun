@@ -624,20 +624,21 @@ public:
     vmesh_.reset(CreateVLatVolMesh(this));
   }
 
-  virtual LatVolMesh *clone() const { return new LatVolMesh(*this); }
+LatVolMesh *clone() const override { return new LatVolMesh(*this); }
   virtual ~LatVolMesh()
   {
     DEBUG_DESTRUCTOR("LatVolMesh")
   }
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() {
+VMesh* vmesh() override
+  {
        return (vmesh_.get());
   }
 
-  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -674,8 +675,8 @@ public:
   /// Synchronize functions, as there is nothing to synchronize, these
   /// functions always succeed
 
-  virtual bool synchronize(mask_type /*sync*/) { return (true); }
-  virtual bool unsynchronize(mask_type /*sync*/) { return (true); }
+bool synchronize(mask_type /*sync*/) override { return (true); }
+bool unsynchronize(mask_type /*sync*/) override { return (true); }
   bool clear_synchronization() { return (true); }
 
   /// Get the local coordinates for a certain point within an element
@@ -1080,7 +1081,7 @@ public:
   double get_epsilon() const;
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
@@ -1090,7 +1091,7 @@ private:
 
 public:
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
+std::string dynamic_type_name() const override { return latvol_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform& get_transform() { return transform_; }
@@ -1107,7 +1108,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* cell_type_description();
   static const TypeDescription* face_type_description();
   static const TypeDescription* edge_type_description();

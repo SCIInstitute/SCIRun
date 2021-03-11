@@ -417,21 +417,21 @@ public:
     vmesh_.reset(CreateVImageMesh(this));
   }
 
-  virtual ImageMesh *clone() const { return new ImageMesh(*this); }
+ImageMesh *clone() const override { return new ImageMesh(*this); }
   virtual ~ImageMesh()
   {
     DEBUG_DESTRUCTOR("ImageMesh")
   }
 
-  MeshFacadeHandle getFacade() const
+  MeshFacadeHandle getFacade() const override
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return vmesh_.get(); }
+VMesh* vmesh() override { return vmesh_.get(); }
 
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -672,8 +672,8 @@ public:
   virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
-  virtual bool synchronize(mask_type sync);
-  virtual bool unsynchronize(mask_type sync);
+bool synchronize(mask_type sync) override;
+bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   /// set the mesh statistics
@@ -827,14 +827,14 @@ public:
 
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
   static PersistentTypeID imagemesh_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return imagemesh_typeid.type; }
+std::string dynamic_type_name() const override { return imagemesh_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform &get_transform() { return transform_; }
@@ -846,7 +846,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();

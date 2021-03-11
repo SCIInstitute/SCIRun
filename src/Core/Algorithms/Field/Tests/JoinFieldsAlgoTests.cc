@@ -150,7 +150,8 @@ protected:
     algo_.set(JoinFieldsAlgo::MakeNoData,      std::get<3>(GetParam()));
     algo_.set(JoinFieldsAlgo::Tolerance,       std::get<4>(GetParam()));
   }
-  virtual void TearDown(){ }
+
+  void TearDown() override { }
 };
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)

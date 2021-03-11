@@ -53,7 +53,7 @@ class PythonConsoleEdit : public QTextEdit
 public:
   PythonConsoleEdit(NetworkEditor* rootNetworkEditor, PythonConsoleWidget* parent);
 
-  virtual void keyPressEvent(QKeyEvent* e);
+  void keyPressEvent(QKeyEvent* e) override;
   //virtual void focusOutEvent( QFocusEvent* e );
 
   const int document_end();

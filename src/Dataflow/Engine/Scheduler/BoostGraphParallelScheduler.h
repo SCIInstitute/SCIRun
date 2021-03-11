@@ -43,7 +43,7 @@ namespace Engine {
   {
   public:
     explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter);
-    virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
+    ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const override;
   private:
     Networks::ModuleFilter filter_;
   };

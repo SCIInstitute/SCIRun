@@ -122,7 +122,8 @@ protected:
 		std::cout << "max diff is: " << maxDiff << std::endl;
 		*/
 		}
-	virtual void TearDown(){}
+
+        void TearDown() override {}
 };
 
 TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)

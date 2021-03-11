@@ -132,7 +132,7 @@ class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     explicit SolveLinearSystemCGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+    bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
@@ -344,8 +344,8 @@ class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     explicit SolveLinearSystemBICGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-    virtual bool parallel(ParallelLinearAlgebra& PLA,
-                          SolverInputs& matrices) const;
+    bool parallel(ParallelLinearAlgebra& PLA,
+                          SolverInputs& matrices) const override;
 };
 
 bool
@@ -559,7 +559,7 @@ class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo
 {
 public:
   explicit SolveLinearSystemMINRESAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+  bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 
@@ -911,7 +911,7 @@ class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo
 {
 public:
   explicit SolveLinearSystemJACOBIAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+  bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 

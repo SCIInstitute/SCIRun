@@ -74,7 +74,7 @@ namespace State {
   class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Dataflow::Networks::ModuleStateInterfaceFactory
   {
   public:
-    virtual SCIRun::Dataflow::Networks::ModuleStateInterface* make_state(const std::string& name) const;
+    SCIRun::Dataflow::Networks::ModuleStateInterface* make_state(const std::string& name) const override;
   };
 
 }}}

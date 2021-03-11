@@ -269,7 +269,7 @@ void PioImpl(Piostream& stream, boost::shared_ptr<T>& data, const PersistentType
 */
 
 template<class T>
-inline void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
@@ -282,7 +282,7 @@ inline void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::e
 }
 
 template<class T>
-inline void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
@@ -295,7 +295,7 @@ inline void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::
 }
 
 template<class T>
-inline void Pio(Piostream& stream, T* data, size_type sz)
+void Pio(Piostream& stream, T* data, size_type sz)
 {
   if (!stream.block_io(data, sizeof(T), sz))
   {
@@ -305,7 +305,7 @@ inline void Pio(Piostream& stream, T* data, size_type sz)
 }
 
 template <typename Size>
-inline void Pio_size(Piostream& stream, Size& size)
+void Pio_size(Piostream& stream, Size& size)
 {
   long long temp = static_cast<long long>(size);
   stream.io(temp);
@@ -313,7 +313,7 @@ inline void Pio_size(Piostream& stream, Size& size)
 }
 
 template <typename Index>
-inline void Pio_index(Piostream& stream, Index& index)
+void Pio_index(Piostream& stream, Index& index)
 {
   long long temp = static_cast<long long>(index);
   stream.io(temp);

@@ -44,7 +44,7 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
     virtual ~Field();
 
     /// Clone field will generate a pointer to a new copy
-    virtual Field* clone() const = 0;
+    Field* clone() const override = 0;
 
     virtual Field* deep_clone() const = 0;
 
@@ -79,7 +79,7 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
 
     /// Persistent I/O.
     static  PersistentTypeID type_id;
-    virtual void io(Piostream &stream);
+    void io(Piostream &stream) override;
     virtual std::string type_name() const;
 };
 
@@ -118,14 +118,14 @@ class SCISHARE NullField : public Field
 {
 public:
   explicit NullField() : Field() {}
-  virtual Field* clone() const { return 0; }
-  virtual Field* deep_clone() const { return 0; }
-  virtual MeshHandle mesh() const { return MeshHandle(); }
-  virtual VMesh* vmesh()   const { return 0; }
-  virtual VField* vfield() const { return 0; }
-  virtual int basis_order() const { return 0; }
-  virtual const TypeDescription* get_type_description(td_info_e) const { return 0; }
-  virtual std::string dynamic_type_name() const { return "NullField"; }
+  Field* clone() const override { return 0; }
+  Field* deep_clone() const override { return 0; }
+  MeshHandle mesh() const override { return MeshHandle(); }
+  VMesh* vmesh()   const override { return 0; }
+  VField* vfield() const override { return 0; }
+  int basis_order() const override { return 0; }
+  const TypeDescription* get_type_description(td_info_e) const override { return 0; }
+  std::string dynamic_type_name() const override { return "NullField"; }
 };
 
 }

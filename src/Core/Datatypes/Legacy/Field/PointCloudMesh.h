@@ -177,22 +177,22 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual PointCloudMesh *clone() const { return new PointCloudMesh(*this); }
+PointCloudMesh *clone() const override { return new PointCloudMesh(*this); }
 
   /// Destructor
   virtual ~PointCloudMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get()); }
+VMesh* vmesh() override { return (vmesh_.get()); }
 
-  virtual MeshFacadeHandle getFacade() const
+MeshFacadeHandle getFacade() const override
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// This one should go at some point, should be reroute throught the
   /// virtual interface
-  virtual int basis_order()
+int basis_order() override
   {
     return (basis_.polynomial_order());
   }
@@ -224,8 +224,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type sync);
-  virtual bool unsynchronize(mask_type sync);
+bool synchronize(mask_type sync) override;
+bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   /// Get the basis class
@@ -1218,7 +1218,7 @@ public:
     { return (epsilon_); }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
@@ -1227,11 +1227,11 @@ public:
   static PersistentTypeID pointcloud_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return pointcloud_typeid.type; }
+std::string dynamic_type_name() const override { return pointcloud_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();

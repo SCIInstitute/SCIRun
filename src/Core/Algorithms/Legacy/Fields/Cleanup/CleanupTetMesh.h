@@ -46,7 +46,7 @@ namespace Fields {
   {
   public:
     CleanupTetMeshAlgo();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
     static AlgorithmInputName InputTetMesh;
     static AlgorithmOutputName OutputTetMesh;
     bool run(FieldHandle input, FieldHandle& output) const;

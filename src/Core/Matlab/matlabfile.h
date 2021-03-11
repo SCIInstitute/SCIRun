@@ -101,8 +101,8 @@ namespace MatlabIO
 
     // open and close a file (not needed at this point)
     // access mode is "r" or "w", a combination is not supported yet
-    void open(const std::string& filename, const std::string& accessmode);
-    void close();
+    void open(const std::string& filename, const std::string& accessmode) override;
+    void close() override;
 
     // functions for scanning through the contents of a Matlab file
     // getnummatlabarrays() gets the number of arrays stored in the file

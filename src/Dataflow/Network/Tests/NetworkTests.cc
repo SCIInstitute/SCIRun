@@ -58,7 +58,7 @@ protected:
     moduleFactory_.reset(new MockModuleFactory);
   }
 
-  virtual void TearDown()
+  void TearDown() override
   {
     moduleFactory_.reset();
     sf_.reset();

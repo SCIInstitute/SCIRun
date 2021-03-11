@@ -24,68 +24,80 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-	 Author: 							Jaume Coll-Font, Yesim Serinagaoglu & Alireza Ghodrati
-	 Last Modification:		September 6 2017
+         Author: 							Jaume Coll-Font, Yesim
+   Serinagaoglu & Alireza Ghodrati Last Modification:		September 6 2017
 */
-
 
 #ifndef BioPSE_SolveInverseProblemWithTikhonovSVDimpl_H__
 #define BioPSE_SolveInverseProblemWithTikhonovSVDimpl_H__
 
-#include <vector>
-
-#include <boost/utility.hpp>
-#include <boost/function.hpp>
-
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
-#include <Core/Logging/LoggerFwd.h>
-
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
-
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Legacy/Inverse/share.h>
-
 
 namespace SCIRun {
 namespace Core {
-namespace Algorithms {
-namespace Inverse {
+  namespace Algorithms {
+    namespace Inverse {
 
-		    class SCISHARE SolveInverseProblemWithTikhonovSVD_impl : public TikhonovImpl
-		    {
+      class SCISHARE SolveInverseProblemWithTikhonovSVD_impl : public TikhonovImpl
+      {
+       public:
+        SolveInverseProblemWithTikhonovSVD_impl(
+            const Datatypes::DenseMatrix& forwardMatrix_,
+            const Datatypes::DenseMatrix& measuredData_,
+            const Datatypes::DenseMatrix& sourceWeighting_,
+            const Datatypes::DenseMatrix& sensorWeighting_,
+            const Datatypes::DenseMatrix& matrixU_,
+            const Datatypes::DenseMatrix& singularValues_,
+            const Datatypes::DenseMatrix& matrixV_)
+        {
+          preAlocateInverseMatrices(forwardMatrix_, measuredData_, sourceWeighting_,
+              sensorWeighting_, matrixU_, singularValues_, matrixV_);
+        }
 
+        SolveInverseProblemWithTikhonovSVD_impl(
+            const Datatypes::DenseMatrix& forwardMatrix_,
+            const Datatypes::DenseMatrix& measuredData_,
+            const Datatypes::DenseMatrix& sourceWeighting_,
+            const Datatypes::DenseMatrix& sensorWeighting_)
+        {
+          preAlocateInverseMatrices(
+              forwardMatrix_, measuredData_, sourceWeighting_, sensorWeighting_);
+        }
 
-		    public:
-		        SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
-                                    {
-										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_, matrixU_, singularValues_, matrixV_ );
-                                    };
+       private:
+        // Data Members
+        int rank;
+        SCIRun::Core::Datatypes::DenseMatrix svd_MatrixU;
+        SCIRun::Core::Datatypes::DenseColumnMatrix svd_SingularValues;
+        SCIRun::Core::Datatypes::DenseMatrix svd_MatrixV;
 
-				SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
-                                    {
-										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_);
-                                    };
+        SCIRun::Core::Datatypes::DenseMatrix Uy;
 
-		    private:
+        // Methods
+        void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,
+            const Datatypes::DenseMatrix& measuredData_,
+            const Datatypes::DenseMatrix& sourceWeighting_,
+            const Datatypes::DenseMatrix& sensorWeighting_,
+            const Datatypes::DenseMatrix& matrixU_,
+            const Datatypes::DenseMatrix& singularValues_,
+            const Datatypes::DenseMatrix& matrixV_);
+        void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,
+            const Datatypes::DenseMatrix& measuredData_,
+            const Datatypes::DenseMatrix& sourceWeighting_,
+            const Datatypes::DenseMatrix& sensorWeighting_);
 
-				// Data Members
-		        int rank;
-				SCIRun::Core::Datatypes::DenseMatrix svd_MatrixU;
-				SCIRun::Core::Datatypes::DenseColumnMatrix svd_SingularValues;
-				SCIRun::Core::Datatypes::DenseMatrix svd_MatrixV;
-
-		        SCIRun::Core::Datatypes::DenseMatrix Uy;
-
-				// Methods
-				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_);
-				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
-
-		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda, bool inverseCalculation) const;
-		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
-
-
-		    };
-}}}}
+        SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution(
+            double lambda, bool inverseCalculation) const override;
+        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME
+        //      OTHER TIME
+      };
+    }
+  }
+}
+}
 
 #endif

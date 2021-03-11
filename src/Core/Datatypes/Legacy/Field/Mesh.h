@@ -45,7 +45,7 @@ public:
   Mesh(const Mesh& copy);
 
   virtual ~Mesh();
-  virtual Mesh *clone() const = 0;
+  Mesh *clone() const override = 0;
   virtual MeshFacadeHandle getFacade() const = 0;
 
   /// These will become obsolete at some point
@@ -90,7 +90,7 @@ public:
   virtual int basis_order();
 
   /// Persistent I/O.
-  void    io(Piostream &stream);
+  void    io(Piostream &stream) override;
   static  PersistentTypeID type_id;
   static  const std::string type_name(int n = -1);
   virtual const TypeDescription *get_type_description() const = 0;

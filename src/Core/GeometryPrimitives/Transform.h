@@ -157,7 +157,7 @@ namespace SCIRun {
 
         /// Persistent I/O.
         static PersistentTypeID type_id;
-        virtual void io(Piostream &stream);
+        void io(Piostream &stream) override;
         std::vector<Vector> get_rotation() const;
         Point get_translation() const;
       };

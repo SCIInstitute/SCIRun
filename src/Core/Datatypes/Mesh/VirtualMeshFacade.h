@@ -53,51 +53,51 @@ namespace Datatypes {
       //  THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
-    virtual typename my_base::Edges edges() const
+    typename my_base::Edges edges() const override
     {
       return typename my_base::Edges(typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Faces faces() const
+    typename my_base::Faces faces() const override
     {
       return typename my_base::Faces(typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Nodes nodes() const
+    typename my_base::Nodes nodes() const override
     {
       return typename my_base::Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Cells cells() const
+    typename my_base::Cells cells() const override
     {
       return typename my_base::Cells(typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual size_t numNodes() const
+    size_t numNodes() const override
     {
       return vmesh_->num_nodes();
     }
 
-    virtual size_t numEdges() const
+    size_t numEdges() const override
     {
       /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
       return vmesh_->num_edges();
     }
 
-    virtual size_t numFaces() const
+    size_t numFaces() const override
     {
       return vmesh_->num_faces();
     }
 
-    virtual size_t numCells() const
+    size_t numCells() const override
     {
       /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/* CELLS_E */ 1 << 3);
       return vmesh_->num_cells();
     }
 
-    virtual size_t numElements() const
+    size_t numElements() const override
     {
       return vmesh_->num_elems();
     }

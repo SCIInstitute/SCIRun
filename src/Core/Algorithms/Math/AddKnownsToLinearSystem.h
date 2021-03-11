@@ -48,7 +48,7 @@ namespace SCIRun {
           static const AlgorithmOutputName OutPutLHSMatrix;
           static const AlgorithmOutputName OutPutRHSVector;
           bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
-          virtual AlgorithmOutput run(const AlgorithmInput &) const;
+          AlgorithmOutput run(const AlgorithmInput &) const override;
         };
 
       }

@@ -81,11 +81,11 @@ namespace SCIRun
       void reset_histogram();
 
     public:
-      virtual void mousePressEvent(QMouseEvent* e);
+      void mousePressEvent(QMouseEvent* e) override;
 
-      virtual void mouseMoveEvent(QMouseEvent* e);
+      void mouseMoveEvent(QMouseEvent* e) override;
 
-      virtual void resizeEvent(QResizeEvent* e);
+      void resizeEvent(QResizeEvent* e) override;
 
       //void set_thresholds(QtSliderDoubleCombo* upper_threshold, QtSliderDoubleCombo* lower_threshold);
 

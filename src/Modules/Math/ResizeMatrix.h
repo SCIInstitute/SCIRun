@@ -41,8 +41,8 @@ namespace SCIRun{
       {
       public:
         ResizeMatrix();
-        virtual void execute();
-        virtual void setStateDefaults();
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0,InputMatrix, Matrix);
         OUTPUT_PORT(0,OutputMatrix, Matrix);

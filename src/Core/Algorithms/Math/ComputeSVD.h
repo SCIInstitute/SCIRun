@@ -44,7 +44,7 @@ namespace SCIRun {
 					static AlgorithmOutputName SingularValues;
 					static AlgorithmOutputName RightSingularMatrix;
 					void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle& LeftSingMat, Datatypes::DenseMatrixHandle& SingVals, Datatypes::DenseMatrixHandle& RightSingMat) const;
-					virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+                                        AlgorithmOutput run(const AlgorithmInput& input) const override;
 			};
 
 }}}}

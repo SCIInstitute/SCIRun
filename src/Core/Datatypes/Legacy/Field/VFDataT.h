@@ -230,28 +230,30 @@ public:
   virtual ~VFDataT() {}
 
 
-  virtual void resize_fdata(VMesh::dimension_type dim)
+  void resize_fdata(VMesh::dimension_type dim) override
   {
     resize(fdata_,dim);
   }
 
-  virtual void resize_efdata(VMesh::dimension_type dim)
+  void resize_efdata(VMesh::dimension_type dim) override
   {
     resize(efdata_,dim);
   }
 
-  virtual VMesh::size_type fdata_size() const
-    { return (fdata_.size()); }
-  virtual VMesh::size_type efdata_size() const
-    { return (efdata_.size()); }
+  VMesh::size_type fdata_size() const override
+  { return (fdata_.size()); }
 
-  virtual void* fdata_pointer() const
-    {
+  VMesh::size_type efdata_size() const override
+  { return (efdata_.size()); }
+
+  void* fdata_pointer() const override
+  {
       if (fdata_.size() == 0) return (0);
       return (&(fdata_[0]));
     }
-  virtual void* efdata_pointer() const
-    {
+
+  void* efdata_pointer() const override
+  {
       if (efdata_.size() == 0) return (0);
       return (&(efdata_[0]));
     }
@@ -277,61 +279,61 @@ public:
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Tensor)
 
-  virtual void copy_value(VFData* fdata,
+  void copy_value(VFData* fdata,
                           VMesh::index_type vidx,
-                          VMesh::index_type idx)
+                          VMesh::index_type idx) override
   {
     fdata->get_value(fdata_[idx],vidx);
   }
 
-  virtual void copy_values(VFData* fdata,
+  void copy_values(VFData* fdata,
                            VMesh::index_type vidx,
                            VMesh::index_type idx,
-                           VMesh::size_type num)
+                           VMesh::size_type num) override
   {
     fdata->get_values(&(fdata_[idx]),num,vidx);
   }
 
 
-  virtual void copy_weighted_value(VFData* fdata,
+  void copy_weighted_value(VFData* fdata,
                                    const VMesh::index_type* vidx,
                                    const VMesh::weight_type* vw,
                                    VMesh::size_type sz,
-                                   VMesh::index_type idx)
+                                   VMesh::index_type idx) override
   {
     fdata->get_weighted_value(fdata_[idx],vidx,vw,sz);
   }
 
-  virtual void copy_evalue(VFData* fdata,
+  void copy_evalue(VFData* fdata,
                            VMesh::index_type vidx,
-                           VMesh::index_type idx)
+                           VMesh::index_type idx) override
   {
     typename EFDATA::value_type val;
     fdata->get_value(val,vidx);
     efdata_[idx] = val;
   }
 
-  virtual void copy_evalues(VFData* fdata,
+  void copy_evalues(VFData* fdata,
                             VMesh::index_type vidx,
                             VMesh::index_type idx,
-                            VMesh::size_type num)
+                            VMesh::size_type num) override
   {
     fdata->get_evalues(&(fdata_[idx]),num,vidx);
   }
 
 
-  virtual void copy_weighted_evalue(VFData* fdata,
+  void copy_weighted_evalue(VFData* fdata,
                                     const VMesh::index_type* vidx,
                                     const VMesh::weight_type* vw,
                                     VMesh::size_type sz,
-                                    VMesh::index_type idx)
+                                    VMesh::index_type idx) override
   {
     typename FDATA::value_type val;
     fdata->get_weighted_evalue(val,vidx,vw,sz);
     efdata_[idx] = val;
   }
 
-  virtual void copy_values(VFData* fdata)
+  void copy_values(VFData* fdata) override
   {
     VMesh::size_type sz1 = fdata_.size();
     VMesh::size_type sz2 = fdata->fdata_size();
@@ -340,7 +342,7 @@ public:
     fdata->get_values(&(fdata_[0]),sz1,0);
   }
 
-  virtual void copy_evalues(VFData* fdata)
+  void copy_evalues(VFData* fdata) override
   {
     VMesh::size_type sz1 = efdata_.size();
     VMesh::size_type sz2 = fdata->efdata_size();
@@ -739,7 +741,7 @@ public:
     ASSERTFAIL("Gradient encountered an unknown basis_order");
   }
 
-  virtual VMesh::size_type size() { return (VMesh::size_type(fdata_.size())); }
+  VMesh::size_type size() override { return (VMesh::size_type(fdata_.size())); }
 
 protected:
   FDATA& fdata_;
@@ -795,7 +797,7 @@ public:
   // destructor
   virtual ~VFDataScalarT() {}
 
-  virtual bool min(double& val, VMesh::index_type& idx) const
+  bool min(double& val, VMesh::index_type& idx) const override
   {
     typename FDATA::value_type tval(0);
     idx = 0;
@@ -818,7 +820,7 @@ public:
     return (true);
   }
 
-  virtual bool max(double& val, VMesh::index_type& idx) const
+  bool max(double& val, VMesh::index_type& idx) const override
   {
     typename FDATA::value_type tval(0);
     idx = 0;
@@ -837,8 +839,8 @@ public:
     return (true);
   }
 
-  virtual bool minmax(double& min, VMesh::index_type& idxmin,
-                      double& max, VMesh::index_type& idxmax) const
+  bool minmax(double& min, VMesh::index_type& idxmin,
+                      double& max, VMesh::index_type& idxmax) const override
   {
     typename FDATA::value_type tval(0);
     typename FDATA::value_type tval2(0);
@@ -870,7 +872,7 @@ public:
   // destructor
   virtual ~VFDataVectorT() {}
 
-  virtual bool min(double& val, VMesh::index_type& idx) const
+  bool min(double& val, VMesh::index_type& idx) const override
   {
     double tval = 0;
     idx = 0;
@@ -887,7 +889,7 @@ public:
     return (true);
   }
 
-  virtual bool max(double& val, VMesh::index_type& idx) const
+  bool max(double& val, VMesh::index_type& idx) const override
   {
     double tval = 0;
     idx = 0;
@@ -903,8 +905,8 @@ public:
     return (true);
   }
 
-  virtual bool minmax(double& min, VMesh::index_type& idxmin,
-                      double& max, VMesh::index_type& idxmax) const
+  bool minmax(double& min, VMesh::index_type& idxmin,
+                      double& max, VMesh::index_type& idxmax) const override
   {
     double tval = 0;
     double tval2 = 0;
@@ -935,7 +937,7 @@ public:
   // destructor
   virtual ~VFDataTensorT() {}
 
-  virtual bool min(double& val, VMesh::index_type& idx) const
+  bool min(double& val, VMesh::index_type& idx) const override
   {
     double tval = 0;
     idx = 0;
@@ -952,7 +954,7 @@ public:
     return (true);
   }
 
-  virtual bool max(double& val, VMesh::index_type& idx) const
+  bool max(double& val, VMesh::index_type& idx) const override
   {
     double tval = 0;
     idx = 0;
@@ -967,8 +969,8 @@ public:
     val = CastFData<double>(tval);
     return (true);  }
 
-  virtual bool minmax(double& min, VMesh::index_type& idxmin,
-                      double& max, VMesh::index_type& idxmax) const
+  bool minmax(double& min, VMesh::index_type& idxmin,
+                      double& max, VMesh::index_type& idxmax) const override
   {
     double tval = 0;
     double tval2 = 0;

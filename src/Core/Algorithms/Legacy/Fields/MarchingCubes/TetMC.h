@@ -69,8 +69,8 @@ class TetMC : public BaseMC
     virtual ~TetMC() {}
 
     void extract( VMesh::Elem::index_type, double );
-    virtual void reset( int, bool build_field, bool build_geom, bool transparency );
-    virtual FieldHandle get_field(double val);
+    void reset( int, bool build_field, bool build_geom, bool transparency ) override;
+    FieldHandle get_field(double val) override;
 
   private:
     void extract_n( VMesh::Elem::index_type, double );

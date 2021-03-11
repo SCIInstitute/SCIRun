@@ -189,8 +189,8 @@ protected:
 	//algo_.set(Parameters::DisconnectBoundaries, ::std::tr1::get<5>(GetParam()));
     //ASSERT_TRUE(algo_.runImpl(latVol, unused, boundary));
   }
-  virtual void TearDown()
-  {  }
+
+  void TearDown() override {  }
 };
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)

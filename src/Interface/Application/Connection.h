@@ -219,21 +219,21 @@ class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGr
 {
 public:
   ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer);
-  virtual void update(const QPointF& end);
+  void update(const QPointF& end) override;
 };
 
 class ConnectionInProgressCurved : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
   ConnectionInProgressCurved(PortWidget* port, ConnectionDrawStrategyPtr drawer);
-  virtual void update(const QPointF& end);
+  void update(const QPointF& end) override;
 };
 
 class ConnectionInProgressManhattan : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
   ConnectionInProgressManhattan(PortWidget* port, ConnectionDrawStrategyPtr drawer);
-  virtual void update(const QPointF& end);
+  void update(const QPointF& end) override;
 };
 
 class ConnectionFactory
