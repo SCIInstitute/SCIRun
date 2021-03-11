@@ -76,7 +76,7 @@ template<class MESH> class TriSurfMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
+VMesh* CreateVTriSurfMesh(MESH*) { return (nullptr); }
 
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 /// Declare that these can be found in a library that is already
@@ -2099,7 +2099,7 @@ TriSurfMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -3832,10 +3832,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(TriSurfMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("TriSurfMesh", subs,
@@ -3851,7 +3851,7 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
 }
 
 
@@ -3859,11 +3859,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3877,11 +3877,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3895,11 +3895,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3913,11 +3913,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

@@ -208,7 +208,7 @@ TEST(ImportExportPluginManagerTest, DuplicatesByNameGetAddedUnderIncrementedName
 
 TEST(WriteMatrixTests, FileExtensionRegex)
 {
-  EXPECT_EQ("SCIRun Field File", fileTypeDescriptionFromDialogBoxFilter(defaultImportTypeForFile<Field>(0)));
+  EXPECT_EQ("SCIRun Field File", fileTypeDescriptionFromDialogBoxFilter(defaultImportTypeForFile<Field>(nullptr)));
   EXPECT_EQ("ObjToField", fileTypeDescriptionFromDialogBoxFilter("ObjToField (*.obj)"));
   EXPECT_EQ("SCIRun Field ASCII", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field ASCII (*.fld)"));
   EXPECT_EQ("SCIRun Field Binary", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field Binary (*.fld)"));

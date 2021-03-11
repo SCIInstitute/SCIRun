@@ -331,7 +331,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     if (datalocation == "Node")
     {
       FieldInformation fi(SCANLINEMESH_E,LINEARDATA_E,DOUBLE_E);
-      fi.set_data_typeT((T*)0);
+      fi.set_data_typeT((T*)nullptr);
 
       MeshHandle mesh = CreateMesh(fi,rsize[0],Point(rmin[0],0.0,0.0),Point(rmax[0],0.0,0.0));
       output = CreateField(fi,mesh);
@@ -360,7 +360,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     else if (datalocation == "Element")
     {
       FieldInformation fi(SCANLINEMESH_E,CONSTANTDATA_E,DOUBLE_E);
-      fi.set_data_typeT( static_cast<T*>(0) );
+      fi.set_data_typeT( static_cast<T*>(nullptr) );
 
       MeshHandle mesh = CreateMesh(fi,rsize[0]+1,Point(rmin[0],0.0,0.0),Point(rmax[0],0.0,0.0));
       output = CreateField(fi,mesh);
@@ -397,7 +397,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     if (datalocation == "Node")
     {
       FieldInformation fi(IMAGEMESH_E,LINEARDATA_E,DOUBLE_E);
-      fi.set_data_typeT( static_cast<T*>(0) );
+      fi.set_data_typeT( static_cast<T*>(nullptr) );
 
       MeshHandle mesh = CreateMesh(fi,rsize[0],rsize[1],Point(rmin[0],rmin[1],0.0),Point(rmax[0],rmax[1],0.0));
       output = CreateField(fi,mesh);
@@ -426,7 +426,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     else if (datalocation == "Element")
     {
       FieldInformation fi(IMAGEMESH_E,CONSTANTDATA_E,DOUBLE_E);
-      fi.set_data_typeT( static_cast<T*>(0) );
+      fi.set_data_typeT( static_cast<T*>(nullptr) );
 
       MeshHandle mesh = CreateMesh(fi,rsize[0]+1,rsize[1]+1,Point(rmin[0],rmin[1],0.0),Point(rmax[0],rmax[1],0.0));
       output = CreateField(fi,mesh);
@@ -463,7 +463,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     if (datalocation == "Node")
     {
       FieldInformation fi(LATVOLMESH_E,LINEARDATA_E,DOUBLE_E);
-      fi.set_data_typeT( static_cast<T*>(0) );
+      fi.set_data_typeT( static_cast<T*>(nullptr) );
 
       MeshHandle mesh = CreateMesh(fi,rsize[0],rsize[1],rsize[2],Point(rmin[0],rmin[1],rmin[2]),Point(rmax[0],rmax[1],rmax[2]));
       output = CreateField(fi,mesh);
@@ -492,7 +492,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
     else if (datalocation == "Element")
     {
       FieldInformation fi(LATVOLMESH_E,CONSTANTDATA_E,DOUBLE_E);
-      fi.set_data_typeT( static_cast<T*>(0) );
+      fi.set_data_typeT( static_cast<T*>(nullptr) );
 
       MeshHandle mesh = CreateMesh(fi,rsize[0]+1,rsize[1]+1,rsize[2]+1,Point(rmin[0],rmin[1],rmin[2]),Point(rmax[0],rmax[1],rmax[2]));
       output = CreateField(fi,mesh);
@@ -543,7 +543,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
   M[1][0] = 0.0; M[1][1] = 1.0; M[1][2] = 0.0;
   M[2][0] = 0.0; M[2][1] = 0.0; M[2][2] = 1.0;
 
-  if (nrrd == 0)
+  if (nrrd == nullptr)
   {
     pr->error("NrrdToVectorField: NrrdData does not contain Nrrd");
     return (false);
@@ -1078,7 +1078,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
   M[1][0] = 0.0; M[1][1] = 1.0; M[1][2] = 0.0;
   M[2][0] = 0.0; M[2][1] = 0.0; M[2][2] = 1.0;
 
-  if (nrrd == 0)
+  if (nrrd == nullptr)
   {
     pr->error("NrrdToTensorField: NrrdData does not contain Nrrd");
     return (false);

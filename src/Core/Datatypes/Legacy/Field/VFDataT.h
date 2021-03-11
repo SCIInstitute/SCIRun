@@ -248,13 +248,13 @@ public:
 
   void* fdata_pointer() const override
   {
-      if (fdata_.size() == 0) return (0);
+      if (fdata_.size() == 0) return (nullptr);
       return (&(fdata_[0]));
     }
 
   void* efdata_pointer() const override
   {
-      if (efdata_.size() == 0) return (0);
+      if (efdata_.size() == 0) return (nullptr);
       return (&(efdata_[0]));
     }
 

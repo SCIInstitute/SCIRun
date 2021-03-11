@@ -76,7 +76,7 @@ void  TriMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   geomHandle_ = lines_;
   #endif
 
-  curve_ = 0;
+  curve_ = nullptr;
   if (build_field_)
   {
     FieldInformation fi("CurveMesh",basis_order_,"double");

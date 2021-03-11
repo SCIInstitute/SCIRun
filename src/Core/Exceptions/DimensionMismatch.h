@@ -47,7 +47,7 @@
 namespace SCIRun {
 	class SCISHARE DimensionMismatch : public Exception {
 	public:
-    DimensionMismatch(size_type value, size_type expected, const char* file = 0, int line = -1);
+    DimensionMismatch(size_type value, size_type expected, const char* file = nullptr, int line = -1);
     DimensionMismatch(const DimensionMismatch&);
     virtual ~DimensionMismatch() NOEXCEPT;
     const char* message() const override;

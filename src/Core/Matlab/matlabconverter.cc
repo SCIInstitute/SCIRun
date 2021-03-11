@@ -91,7 +91,7 @@ using namespace SCIRun::Core::Datatypes;
 
 // Set defaults in the constructor
 matlabconverter::matlabconverter() :
-    pr_(0),
+    pr_(nullptr),
     numericarray_(false),
     indexbase_(1),
     datatype_(matlabarray::miSAMEASDATA),
@@ -908,7 +908,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
         }
       }
 
-      if (scinrrd != 0)
+      if (scinrrd != nullptr)
       {
         std::string str = mlarray.getname();
         scinrrd->set_filename(str);
@@ -951,7 +951,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
 
         mlArrayTOsciNrrdData(subarray,scinrrd);
 
-        if (scinrrd == 0)
+        if (scinrrd == nullptr)
         {
           throw error_type();
         }
@@ -1184,7 +1184,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
 
         if (mlarray.isfieldCI("name"))
         {
-          if (scinrrd != 0)
+          if (scinrrd != nullptr)
             {
               matlabarray matname;
               matname = mlarray.getfieldCI(0,"name");
@@ -1195,7 +1195,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
         }
         else
         {
-          if (scinrrd != 0)
+          if (scinrrd != nullptr)
             {
               std::string str = mlarray.getname();
               scinrrd->set_filename(str);
@@ -1326,7 +1326,7 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
     centerma.createdoublescalar(static_cast<double>(nrrdptr->axis[p].center));
     axisma.setfield(p,"center",centerma);
 
-    if (nrrdptr->axis[p].label == 0)
+    if (nrrdptr->axis[p].label == nullptr)
     {
       std::ostringstream oss;
       oss << "axis " << p;
@@ -1338,7 +1338,7 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
     }
     axisma.setfield(p,"label",labelma);
 
-    if (nrrdptr->axis[p].units == 0)
+    if (nrrdptr->axis[p].units == nullptr)
     {
       unitma.createstringarray("no unit");
     }

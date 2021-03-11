@@ -55,10 +55,10 @@ class UHexMC : public BaseMC
 			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
                             triangles_(0),
 			   #endif
-                            trisurf_(0),
-                            trisurf_handle_(0),
-                            quadsurf_(0),
-                            quadsurf_handle_(0) { }
+                            trisurf_(nullptr),
+                            trisurf_handle_(nullptr),
+                            quadsurf_(nullptr),
+                            quadsurf_handle_(nullptr) { }
 
   virtual ~UHexMC() {}
 

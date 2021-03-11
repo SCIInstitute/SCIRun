@@ -94,7 +94,7 @@ MeshHandle MeshFactory::CreateMesh(const std::string& type, const MeshConstructi
   return MeshHandle();
 }
 
-MeshRegistry::MeshTypeID::MeshTypeID() : defCtor_(0), ctor_(0)
+MeshRegistry::MeshTypeID::MeshTypeID() : defCtor_(nullptr), ctor_(nullptr)
 {
 }
 

@@ -101,7 +101,7 @@ class SCISHARE LinAlgProgramCode {
       function_(function) {}
 
     LinAlgProgramCode() :
-      function_(0) {}
+      function_(nullptr) {}
 
     // Set the function pointer
     inline void set_function(bool (*function)(LinAlgProgramCode& pc,std::string& err))
@@ -162,7 +162,7 @@ class SCISHARE LinAlgProgramVariable {
 
     // Constructor of the variable
     explicit LinAlgProgramVariable(const std::string& name) :
-      name_(name), handle_(0)
+      name_(name), handle_(nullptr)
       {
       }
 

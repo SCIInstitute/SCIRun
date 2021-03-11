@@ -60,7 +60,7 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams(PortId(0, "Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
+  ASSERT_THROW(InputPort(nullptr,                  Port::ConstructionParams(PortId(0, "Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, ""),         "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, "Matrix"),   ""             , false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
 }

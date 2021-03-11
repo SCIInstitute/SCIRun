@@ -51,8 +51,8 @@ class QuadMC : public BaseMC
                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 			     lines_(0),
 			    #endif
-                             curve_handle_(0),
-                             curve_(0) {}
+                             curve_handle_(nullptr),
+                             curve_(nullptr) {}
     virtual ~QuadMC() {}
 
     void extract( VMesh::Elem::index_type, double );

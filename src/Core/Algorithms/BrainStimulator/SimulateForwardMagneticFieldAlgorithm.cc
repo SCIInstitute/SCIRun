@@ -65,7 +65,7 @@ class CalcFMField
   public:
 
     CalcFMField(const AlgorithmBase* algo) : algo_(algo),
-      np_(-1),efld_(0),ctfld_(0),dipfld_(0),detfld_(0),emsh_(0),ctmsh_(0),dipmsh_(0),detmsh_(0),magfld_(0),magmagfld_(0)
+      np_(-1),efld_(nullptr),ctfld_(nullptr),dipfld_(nullptr),detfld_(nullptr),emsh_(nullptr),ctmsh_(nullptr),dipmsh_(nullptr),detmsh_(nullptr),magfld_(nullptr),magmagfld_(nullptr)
     {
     }
 

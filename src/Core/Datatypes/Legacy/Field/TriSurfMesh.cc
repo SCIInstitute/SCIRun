@@ -388,7 +388,7 @@ VMesh::index_type*
 VTriSurfMesh<MESH>::
 get_elems_pointer() const
 {
-  if (this->mesh_->faces_.size() == 0) return (0);
+  if (this->mesh_->faces_.size() == 0) return (nullptr);
    return (&(this->mesh_->faces_[0]));
 }
 

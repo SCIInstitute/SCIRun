@@ -52,28 +52,28 @@ using namespace SCIRun::MatlabIO;
 // constructor
 // creates on the place holder for the matlabarray
 matlabarray::matlabarray()
-  : m_(0)
+  : m_(nullptr)
 {
 }
 
 // destructor
 matlabarray::~matlabarray()
 {
-  if (m_ != 0)
+  if (m_ != nullptr)
   {	// delete the attached structure if necessary
     m_->ref_--;
     if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;
+    m_ = nullptr;
   }
 }
 
 // copy constructor
 matlabarray::matlabarray(const matlabarray &m)
 {
-  m_ = 0;
+  m_ = nullptr;
 
   // reference the same structure as the matlabarray we are copying
-  if (m.m_ != 0)
+  if (m.m_ != nullptr)
   {
     m_ = m.m_;
     m_->ref_++;
@@ -90,14 +90,14 @@ matlabarray& matlabarray::operator= (const matlabarray &m)
   // if m = m we have to do nothing
   if (this != &m)
   {
-    if (m_ != 0)
+    if (m_ != nullptr)
     {	// delete the attached structure if necessary
       m_->ref_--;
       if (m_->ref_ == 0) { delete m_; }
-      m_ = 0;
+      m_ = nullptr;
     }
 
-    if (m.m_ != 0)
+    if (m.m_ != nullptr)
     {
       m_ = m.m_;
       m_->ref_++;
@@ -117,12 +117,12 @@ matlabarray& matlabarray::operator= (const matlabarray &m)
 void matlabarray::clear()
 {
 
-  if (m_ != 0)
+  if (m_ != nullptr)
   {	// delete the attached structure if necessary
 
     m_->ref_--;
     if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;
+    m_ = nullptr;
   }
 }
 
@@ -132,7 +132,7 @@ void matlabarray::clear()
 
 bool matlabarray::isempty() const
 {
-  if (m_ == 0) return(true);
+  if (m_ == nullptr) return(true);
   if (!issparse()) if (getnumelements() == 0) return(true);
   return(false);
 }
@@ -179,13 +179,13 @@ matlabarray matlabarray::clone() const
 
 matlabarray::mlclass matlabarray::getclass() const
 {
-  if (m_ == 0) return(mlUNKNOWN);
+  if (m_ == nullptr) return(mlUNKNOWN);
   return(m_->class_);
 }
 
 matlabarray::mitype matlabarray::gettype() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in gettype()\n";
     throw internal_error();
@@ -196,7 +196,7 @@ matlabarray::mitype matlabarray::gettype() const
 
 std::string matlabarray::getclassname() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getclassname()\n";
     throw internal_error();
@@ -206,7 +206,7 @@ std::string matlabarray::getclassname() const
 
 void matlabarray::setclassname(const std::string& classname)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setclassname()\n";
     throw internal_error();
@@ -216,7 +216,7 @@ void matlabarray::setclassname(const std::string& classname)
 
 std::string matlabarray::getname() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getname()\n";
     throw internal_error();
@@ -227,7 +227,7 @@ std::string matlabarray::getname() const
 
 void matlabarray::setname(const std::string& name)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setname()\n";
     throw internal_error();
@@ -237,7 +237,7 @@ void matlabarray::setname(const std::string& name)
 
 void matlabarray::setdims(const std::vector<int> &dims)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setdims()\n";
     throw internal_error();
@@ -261,7 +261,7 @@ void matlabarray::setdims(const std::vector<int> &dims)
 
 void matlabarray::settype(matlabarray::mitype type)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in settype()\n";
     throw internal_error();
@@ -271,7 +271,7 @@ void matlabarray::settype(matlabarray::mitype type)
 
 std::vector<int> matlabarray::getdims() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getdims()\n";
     throw internal_error();
@@ -281,7 +281,7 @@ std::vector<int> matlabarray::getdims() const
 
 int matlabarray::getnumdims() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getnumdims()\n";
     throw internal_error();
@@ -293,7 +293,7 @@ int matlabarray::getnumdims() const
 
 int matlabarray::getnumelements() const
 {
-  if (m_ == 0) return(0);
+  if (m_ == nullptr) return(0);
 	if ((m_->class_ == mlSTRUCT)||(m_->class_ == mlOBJECT))
 	{
     if(m_->fieldnames_.size() == 0) return(0);
@@ -313,13 +313,13 @@ int matlabarray::getnumelements() const
 
 int matlabarray::getm() const
 {
-  if (m_ == 0) return(0);
+  if (m_ == nullptr) return(0);
   return(m_->dims_[0]);
 }
 
 int matlabarray::getn() const
 {
-  if (m_ == 0) return(0);
+  if (m_ == nullptr) return(0);
   return(m_->dims_[1]);
 }
 
@@ -330,7 +330,7 @@ int matlabarray::getn() const
 
 int matlabarray::sub2index(const std::vector<int> &vec) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in sub2index()\n";
     throw internal_error();
@@ -349,7 +349,7 @@ int matlabarray::sub2index(const std::vector<int> &vec) const
 
 std::vector<int> matlabarray::index2sub(int index) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in index2sub()\n";
     throw internal_error();
@@ -377,7 +377,7 @@ std::vector<int> matlabarray::index2sub(int index) const
 
 matlabarray matlabarray::getcell(int index) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getcell()\n";
     throw internal_error();
@@ -395,7 +395,7 @@ matlabarray matlabarray::getcell(const std::vector<int> &indexvec) const
 
 void matlabarray::setcell(int index, const matlabarray& m)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setcell()\n";
     throw internal_error();
@@ -416,7 +416,7 @@ void matlabarray::setcell(const std::vector<int> &indexvec, const matlabarray& m
 
 std::vector<std::string> matlabarray::getfieldnames() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getfieldnames()\n";
     throw internal_error();
@@ -428,7 +428,7 @@ std::vector<std::string> matlabarray::getfieldnames() const
 
 int matlabarray::getnumfields() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getnumfields()\n";
     throw internal_error();
@@ -438,7 +438,7 @@ int matlabarray::getnumfields() const
 
 std::string matlabarray::getfieldname(int index) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getfieldname()\n";
     throw internal_error();
@@ -450,7 +450,7 @@ std::string matlabarray::getfieldname(int index) const
 
 int matlabarray::getfieldnameindex(const std::string& fieldname) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getfieldnameindex()\n";
     throw internal_error();
@@ -463,7 +463,7 @@ int matlabarray::getfieldnameindex(const std::string& fieldname) const
 
 int matlabarray::getfieldnameindexCI(const std::string& fieldname) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getfieldnameindexCI()\n";
     throw internal_error();
@@ -476,7 +476,7 @@ int matlabarray::getfieldnameindexCI(const std::string& fieldname) const
 
 void matlabarray::setfieldname(int index,const std::string& fieldname)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setfieldname()\n";
     throw internal_error();
@@ -488,7 +488,7 @@ void matlabarray::setfieldname(int index,const std::string& fieldname)
 
 matlabarray matlabarray::getfield(int index,int fieldnameindex) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getfield()\n";
     throw internal_error();
@@ -532,7 +532,7 @@ matlabarray matlabarray::getfield(const std::vector<int> &indexvec,int fieldname
 
 void matlabarray::setfield(int index,int fieldnameindex,const matlabarray& m)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setfield()\n";
     throw internal_error();
@@ -576,7 +576,7 @@ void matlabarray::setfield(const std::vector<int> &indexvec,int fieldnameindex,c
 
 int matlabarray::addfieldname(const std::string& fieldname)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in addfieldname()\n";
     throw internal_error();
@@ -611,7 +611,7 @@ int matlabarray::addfieldname(const std::string& fieldname)
 
 void matlabarray::removefieldname(int fieldnameindex)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in removefieldname()\n";
     throw internal_error();
@@ -656,7 +656,7 @@ void matlabarray::removefieldname(const std::string& fieldname)
 
 std::string matlabarray::getstring() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getstring()\n";
     throw internal_error();
@@ -666,7 +666,7 @@ std::string matlabarray::getstring() const
 
 void matlabarray::setstring(const std::string& str)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error setstring()\n";
     throw internal_error();
@@ -934,7 +934,7 @@ void matlabarray::createstringarray(const std::string& str)
 
 int matlabarray::getnnz() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getnnz()\n";
     throw internal_error();
@@ -950,7 +950,7 @@ int matlabarray::getnnz() const
 
 matfiledata matlabarray::getpreal()
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getpreal()\n";
     throw internal_error();
@@ -960,7 +960,7 @@ matfiledata matlabarray::getpreal()
 
 matfiledata matlabarray::getpimag()
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getpimag()\n";
     throw internal_error();
@@ -970,7 +970,7 @@ matfiledata matlabarray::getpimag()
 
 matfiledata matlabarray::getprows()
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getprows()\n";
     throw internal_error();
@@ -980,7 +980,7 @@ matfiledata matlabarray::getprows()
 
 matfiledata matlabarray::getpcols()
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getpcols()\n";
     throw internal_error();
@@ -995,7 +995,7 @@ std::string matlabarray::getinfotext() const
 
 std::string matlabarray::getinfotext(const std::string& name) const
 {
-  if (m_ == 0) return(std::string("[EMPTY MATRIX]"));
+  if (m_ == nullptr) return(std::string("[EMPTY MATRIX]"));
 
 	std::ostringstream oss;
 	if (name.size() == 0)
@@ -1059,7 +1059,7 @@ std::string matlabarray::getinfotext(const std::string& name) const
 
 void matlabarray::setcomplex(bool val)
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in setcomplex()\n";
     throw internal_error();
@@ -1070,7 +1070,7 @@ void matlabarray::setcomplex(bool val)
 
 void matlabarray::setlogical(bool val)
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in setlogical()\n";
     throw internal_error();
@@ -1081,7 +1081,7 @@ void matlabarray::setlogical(bool val)
 
 void matlabarray::setglobal(bool val)
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in setglobal()\n";
     throw internal_error();
@@ -1092,61 +1092,61 @@ void matlabarray::setglobal(bool val)
 
 bool matlabarray::iscomplex() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
   return(m_->flags_ & 0x01) != 0;
 }
 
 bool matlabarray::islogical() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return(m_->flags_ & 0x02) != 0;
 }
 
 bool matlabarray::isglobal() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return(m_->flags_ & 0x04) != 0;
 }
 
 bool matlabarray::isnumeric() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return(((m_->class_ == mlSPARSE)||(m_->class_ == mlDENSE)));
 }
 
 bool matlabarray::isstruct() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return(((m_->class_ == mlSTRUCT)||(m_->class_ == mlOBJECT)));
 }
 
 bool matlabarray::iscell() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return((m_->class_ == mlCELL));
 }
 
 bool matlabarray::isclass() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return((m_->class_ == mlOBJECT));
 }
 
 bool matlabarray::isstring() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return((m_->class_ == mlSTRING));
 }
 
 bool matlabarray::isdense() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return((m_->class_ == mlDENSE));
 }
 
 bool matlabarray::issparse() const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return((m_->class_ == mlSPARSE));
 }
 
@@ -1179,7 +1179,7 @@ bool matlabarray::isfieldCI(const std::string& fieldname) const
 
 void matlabarray::permute(const std::vector<int>& permorder)
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in permute()\n";
     throw internal_error();
@@ -1211,7 +1211,7 @@ void matlabarray::permute(const std::vector<int>& permorder)
 
 void matlabarray::transpose()
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in transpose()\n";
     throw internal_error();
@@ -1251,7 +1251,7 @@ void matlabarray::transpose()
 void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vector<int>& permorder)
 {
 	// check whether we can permute this matrix
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in reorder_permute()\n";
     throw internal_error();
@@ -1314,13 +1314,13 @@ void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vecto
 
 bool matlabarray::compare(const std::string& str) const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	if (str == m_->string_) return(true);
 	return(false);
 }
 
 bool matlabarray::compareCI(const std::string& str) const
 {
-	if (m_ == 0) return(false);
+	if (m_ == nullptr) return(false);
 	return boost::iequals(str,m_->string_);
 }

@@ -222,11 +222,11 @@ Tny* SystemCore::serializeActiveSystems()
 {
   // Iterate through all active systems and serialize them out, in order, to
   // a TNY dictionary.
-  Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+  Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
 
   for (SystemItem& item : mSystems)
   {
-    Tny* obj = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("interval"), static_cast<void*>(&item.interval), 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("stagger"), static_cast<void*>(&item.stagger), 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("nextExec"), static_cast<void*>(&item.nextExecutionTime), 0);

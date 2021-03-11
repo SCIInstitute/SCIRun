@@ -135,7 +135,7 @@ int WhatMatrixTypeIsIt(MatrixHandle o)
 TEST(ConvertMatrixTests, EmptyInput)
 {
   ConvertMatrixTypeAlgorithm algo;
-  EXPECT_THROW(algo.run(0), AlgorithmInputException);
+  EXPECT_THROW(algo.run(nullptr), AlgorithmInputException);
   EXPECT_THROW(algo.run(MatrixHandle()), AlgorithmInputException);
 }
 

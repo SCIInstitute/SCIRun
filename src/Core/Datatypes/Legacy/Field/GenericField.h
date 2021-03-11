@@ -160,7 +160,7 @@ class VGenericField : public VField {
       number_of_enodes_ = field->get_basis().number_of_vertices() - number_of_nodes_;
       element_dim_ = field->get_basis().domain_dimension();
       element_dofs_ = field->get_basis().dofs();
-      data_type_ = find_type_name(static_cast<typename FIELD::value_type*>(0));
+      data_type_ = find_type_name(static_cast<typename FIELD::value_type*>(nullptr));
       for (size_t j=0; j<data_type_.size(); j++)
         if(data_type_[j] == '_') data_type_[j] = ' ';
 
@@ -274,7 +274,7 @@ GenericField<Mesh, Basis, FData>::GenericField() :
   Field(),
   mesh_(mesh_handle_type(new mesh_type())),
   fdata_(0),
-  vfield_(0),
+  vfield_(nullptr),
   basis_order_(0),
   mesh_dimensionality_(-1)
 {
@@ -295,7 +295,7 @@ GenericField<Mesh, Basis, FData>::GenericField(const GenericField& copy) :
   mesh_(copy.mesh_),
   fdata_(copy.fdata_),
   basis_(copy.basis_),
-  vfield_(0),
+  vfield_(nullptr),
   basis_order_(copy.basis_order_),
   mesh_dimensionality_(copy.mesh_dimensionality_)
 {
@@ -314,7 +314,7 @@ GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) :
   Field(),
   mesh_(mesh),
   fdata_(0),
-  vfield_(0),
+  vfield_(nullptr),
   basis_order_(0),
   mesh_dimensionality_(-1)
 {
@@ -365,7 +365,7 @@ VMesh*
 GenericField<Mesh, Basis, FData>::vmesh() const
 {
   if (mesh_) return mesh_->vmesh();
-  return (0);
+  return (nullptr);
 }
 
 template <class Mesh, class Basis, class FData>
@@ -403,15 +403,15 @@ const std::string GenericField<Mesh, Basis, FData>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(static_cast<Mesh *>(0));
+    return find_type_name(static_cast<Mesh *>(nullptr));
   }
   else if (n == 2)
   {
-    return find_type_name(static_cast<Basis *>(0));
+    return find_type_name(static_cast<Basis *>(nullptr));
   }
   else
   {
-    return find_type_name(static_cast<FData *>(0));
+    return find_type_name(static_cast<FData *>(nullptr));
   }
 }
 
@@ -422,16 +422,16 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
   static std::string name(type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = SCIRun::get_type_description(static_cast<Mesh*>(0));
-  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Basis*>(0));
-  const TypeDescription *sub3 = SCIRun::get_type_description(static_cast<FData*>(0));
+  const TypeDescription *sub1 = SCIRun::get_type_description(static_cast<Mesh*>(nullptr));
+  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Basis*>(nullptr));
+  const TypeDescription *sub3 = SCIRun::get_type_description(static_cast<FData*>(nullptr));
 
   switch (td) {
   default:
   case FULL_TD_E:
     {
-      static TypeDescription* tdn1 = 0;
-      if (tdn1 == 0) {
+      static TypeDescription* tdn1 = nullptr;
+      if (tdn1 == nullptr) {
 	TypeDescription::td_vec *subs = new TypeDescription::td_vec(3);
 	(*subs)[0] = sub1;
 	(*subs)[1] = sub2;
@@ -443,9 +443,9 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
     }
   case FIELD_NAME_ONLY_E:
     {
-      static TypeDescription* tdn0 = 0;
-      if (tdn0 == 0) {
-	tdn0 = new TypeDescription(name, 0, path, namesp,
+      static TypeDescription* tdn0 = nullptr;
+      if (tdn0 == nullptr) {
+	tdn0 = new TypeDescription(name, nullptr, path, namesp,
 				      TypeDescription::FIELD_E);
       }
       return tdn0;

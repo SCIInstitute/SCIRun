@@ -97,7 +97,7 @@ NewLinAlgEngine::add_output_matrix(const std::string& name)
   OutputMatrix m;
   m.array_name_ = name;
   m.matrix_name_ = tname;
-  m.matrix_ = 0;
+  m.matrix_ = nullptr;
   matrixdata_.push_back(m);
 
   return (true);

@@ -536,7 +536,7 @@ Parser::parse_expression_tree(std::string& expression,
                               std::string& error)
 {
   // Clear handle so what was in it is cleared
-  handle = 0;
+  handle = nullptr;
 
   // Extra check to make sure parentheses levels match and
   // to check whether strings are properly marked
@@ -666,9 +666,9 @@ Parser::parse_expression_tree(std::string& expression,
   for (size_t k=0; k<component_handles.size(); k++)
   {
     component = components[k];
-    ParserNodeHandle pre_function_handle = 0;
-    ParserNodeHandle post_function_handle = 0;
-    ParserNodeHandle subs_function_handle = 0;
+    ParserNodeHandle pre_function_handle = nullptr;
+    ParserNodeHandle post_function_handle = nullptr;
+    ParserNodeHandle subs_function_handle = nullptr;
 
     std::string str;
 
@@ -866,7 +866,7 @@ Parser::parse_expression_tree(std::string& expression,
           nhandle->set_arg(1,component_handles[k2]);
 
           component_handles[k1] = nhandle;
-          component_handles[k2] = 0;
+          component_handles[k2] = nullptr;
           binary_priority[j] = -1;
           break;
         }
@@ -2377,7 +2377,7 @@ Parser::optimize(ParserProgramHandle program,
           std::list<ParserScriptVariableHandle>::iterator it, it_end;
           it = variables.begin();
           it_end = variables.end();
-          ohandle = 0;
+          ohandle = nullptr;
 
           while (it != it_end)
           {

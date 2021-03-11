@@ -1294,8 +1294,8 @@ MatrixHandle SurfaceAndPoints::compute(const bemfield_vector& fields) const
   // In other words the transfer matrix is
   // P_nodes_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf
 
-  VMesh *nodes = 0;
-  VMesh *surface = 0;
+  VMesh *nodes = nullptr;
+  VMesh *surface = nullptr;
 
   for (int i=0; i<2; i++)
   {

@@ -145,8 +145,8 @@ void ShowSplashScreenGui::initSplashScreen()
   QObject::connect( splashTimer_, SIGNAL( timeout() ), splash_, SLOT( close() ));
 }
 
-QSplashScreen* ShowSplashScreenGui::splash_ = 0;
-QTimer* ShowSplashScreenGui::splashTimer_ = 0;
+QSplashScreen* ShowSplashScreenGui::splash_ = nullptr;
+QTimer* ShowSplashScreenGui::splashTimer_ = nullptr;
 
 namespace
 {

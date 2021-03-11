@@ -523,7 +523,7 @@ VMesh::index_type*
 VHexVolMesh<MESH>::
 get_elems_pointer() const
 {
-  if (this->mesh_->cells_.size() == 0) return (0);
+  if (this->mesh_->cells_.size() == 0) return (nullptr);
    return (&(this->mesh_->cells_[0]));
 }
 

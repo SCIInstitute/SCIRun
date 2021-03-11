@@ -223,7 +223,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     return (false);
   }
 
-  NrrdKernel *kern = 0;
+  NrrdKernel *kern = nullptr;
 
   double param[NRRD_KERNEL_PARMS_NUM]; param[0] =  1.0;
   for (int j=1; j<NRRD_KERNEL_PARMS_NUM; j++) param[j] = 0.0;
@@ -265,7 +265,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 
   if (nrrdoffset)
   {
-    info->kernel[0] = 0;
+    info->kernel[0] = nullptr;
     nin->axis[0].min = 0.0;
     nin->axis[0].max = 1.0;
     info->min[0] = 0.0;

@@ -76,7 +76,7 @@ template <class Basis> class PrismVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVPrismVolMesh(MESH*) { return (0); }
+VMesh* CreateVPrismVolMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -2749,7 +2749,7 @@ PrismVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -3623,10 +3623,10 @@ PrismVolMesh<Basis>::io(Piostream &stream)
 template <class Basis>
 const TypeDescription* get_type_description(PrismVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("PrismVolMesh", subs,
@@ -3641,18 +3641,18 @@ template <class Basis>
 const TypeDescription*
 PrismVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((PrismVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((PrismVolMesh<Basis> *)nullptr);
 }
 
 template <class Basis>
 const TypeDescription*
 PrismVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((PrismVolMesh<Basis> *)0);
+      SCIRun::get_type_description((PrismVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -3665,11 +3665,11 @@ template <class Basis>
 const TypeDescription*
 PrismVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((PrismVolMesh<Basis> *)0);
+      SCIRun::get_type_description((PrismVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -3682,11 +3682,11 @@ template <class Basis>
 const TypeDescription*
 PrismVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((PrismVolMesh<Basis> *)0);
+      SCIRun::get_type_description((PrismVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -3699,11 +3699,11 @@ template <class Basis>
 const TypeDescription*
 PrismVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((PrismVolMesh<Basis> *)0);
+      SCIRun::get_type_description((PrismVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

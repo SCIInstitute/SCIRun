@@ -444,7 +444,7 @@ Tensor::get_h_file_path() {
 
 const TypeDescription* Core::Geometry::get_type_description(Tensor*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("Tensor", Tensor::get_h_file_path(),
 				"SCIRun",

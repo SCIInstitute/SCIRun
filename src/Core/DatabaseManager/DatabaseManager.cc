@@ -55,7 +55,7 @@ DatabaseManager::DatabaseManager() :
 	int result = sqlite3_open( ":memory:", &this->private_->database_ );
 	if ( result != SQLITE_OK )
 	{
-		this->private_->database_ = 0;
+		this->private_->database_ = nullptr;
 	}
 	else
 	{
@@ -287,7 +287,7 @@ bool DatabaseManager::save_database( const boost::filesystem::path& database_fil
 
 long long DatabaseManager::get_last_insert_rowid()
 {
-	if ( this->private_->database_ != 0 )
+	if ( this->private_->database_ != nullptr )
 	{
 		return sqlite3_last_insert_rowid( this->private_->database_ );
 	}
@@ -300,7 +300,7 @@ bool DatabaseManager::get_column_metadata( const std::string& table_name,
 										  char const** coll_seq /*= nullptr*/, int* not_null /*= nullptr*/,
 										  int* primary_key /*= nullptr*/, int* auto_inc /*= nullptr */ )
 {
-	if ( this->private_->database_ == 0 )
+	if ( this->private_->database_ == nullptr )
 	{
 		return false;
 	}

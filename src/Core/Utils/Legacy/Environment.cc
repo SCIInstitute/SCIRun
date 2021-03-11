@@ -117,7 +117,7 @@ MacroSubstitute( const std::string& var_value )
 const char *
 SCIRun::sci_getenv( const std::string & key )
 {
-  if (scirun_env.find(key) == scirun_env.end()) return 0;
+  if (scirun_env.find(key) == scirun_env.end()) return nullptr;
   return scirun_env[key].c_str();
 }
 
@@ -159,7 +159,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
           DWORD type;
           // RegGetValue will ensure that string is null-terminated, but only available for
           // WinXP 64-bit professional, Vista and up...
-          LONG code = RegQueryValueEx(version, "InstallPath", 0, &type, (LPBYTE) data, &size);
+          LONG code = RegQueryValueEx(version, "InstallPath", nullptr, &type, (LPBYTE) data, &size);
           if (type == REG_SZ && code == ERROR_SUCCESS) {
             std::string installDir(data);
             // use Unix-style separators
@@ -173,9 +173,9 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
             std::cerr << "Error or unexpected registry value." << std::endl;
             TCHAR* lpMsgBuf;
             FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           0, GetLastError(),
+                           nullptr, GetLastError(),
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                           (LPTSTR) &lpMsgBuf, 0, 0);
+                           (LPTSTR) &lpMsgBuf, 0, nullptr);
             if (lpMsgBuf)
               std::cerr << lpMsgBuf << std::endl;
 
@@ -207,7 +207,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
             bool scirunPackageFound = false;
 
             // Get the class name and the value count.
-            code = RegQueryInfoKey(pack, (LPTSTR) className, &classNameSize, 0, &numSubKeys, &maxSubKeySize,
+            code = RegQueryInfoKey(pack, (LPTSTR) className, &classNameSize, nullptr, &numSubKeys, &maxSubKeySize,
                                    &maxClassNameSize, &numValues, &maxValueName, &maxValueData,
                                    &securityDescriptorSize, &filetime);
             // Enumerate the subkeys, until RegEnumKeyEx fails.
@@ -216,7 +216,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
               for (index = 0; index < numSubKeys; index++)
               {
                 nameSize = KEY_NAME_SIZE;
-                if (RegEnumKeyEx(pack, index, name, &nameSize, 0, 0, 0, &filetime) == ERROR_SUCCESS)
+                if (RegEnumKeyEx(pack, index, name, &nameSize, nullptr, nullptr, nullptr, &filetime) == ERROR_SUCCESS)
                 {
                   if (! scirunPackageFound && std::string(name) == "SCIRun") {
                     scirunPackageFound = true;
@@ -232,9 +232,9 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
               std::cerr << "Error reading SCIRun package data from registry." << std::endl;
               TCHAR* lpMsgBuf;
               FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                             0, GetLastError(),
+                             nullptr, GetLastError(),
                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                             (LPTSTR) &lpMsgBuf, 0, 0);
+                             (LPTSTR) &lpMsgBuf, 0, nullptr);
               if (lpMsgBuf)
                 std::cerr << lpMsgBuf << std::endl;
 
@@ -259,7 +259,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
     TCHAR data[MAX_PATH];
     DWORD size = MAX_PATH;
     DWORD type;
-    int code = RegQueryValueEx(volatileEnvironment, "APPDATA", 0, &type, (LPBYTE) data, &size);
+    int code = RegQueryValueEx(volatileEnvironment, "APPDATA", nullptr, &type, (LPBYTE) data, &size);
     if (type == REG_SZ && code == ERROR_SUCCESS) {
       boost_string_type userAppdata = boost::lexical_cast<boost_string_type>(data);
       // use Unix-style separators
@@ -272,9 +272,9 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
     std::cerr << "Error reading SCIRun application data path from registry." << std::endl;
     TCHAR* lpMsgBuf;
     FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                   0, GetLastError(),
+                   nullptr, GetLastError(),
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                   (LPTSTR) &lpMsgBuf, 0, 0);
+                   (LPTSTR) &lpMsgBuf, 0, nullptr);
     if (lpMsgBuf)
       std::cerr << lpMsgBuf << std::endl;
 

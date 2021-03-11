@@ -65,7 +65,7 @@ class MapFieldDataOntoNodesPAlgo : public Interruptible
 {
   public:
     explicit MapFieldDataOntoNodesPAlgo(unsigned int numProcs) :
-    algo_(0), is_flux_(false),
+    algo_(nullptr), is_flux_(false),
       barrier_("MapFieldDataOntoNodesPAlgo Barrier", numProcs), nproc(numProcs) {}
 
     void parallel(int proc);

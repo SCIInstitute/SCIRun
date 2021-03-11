@@ -398,7 +398,7 @@ Point*
 VPointCloudMesh<MESH>::get_points_pointer() const
 {
   if (this->mesh_->points_.empty())
-    return 0;
+    return nullptr;
 
   return(&(this->mesh_->points_[0]));
 }
@@ -738,7 +738,7 @@ VMesh::index_type*
 VPointCloudMesh<MESH>::
 get_elems_pointer() const
 {
-  return (0);
+  return (nullptr);
 }
 
 

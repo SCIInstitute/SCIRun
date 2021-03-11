@@ -283,7 +283,7 @@ VMesh::index_type*
 VCurveMesh<MESH>::
 get_elems_pointer() const
 {
-  if (this->mesh_->edges_.size() == 0) return (0);
+  if (this->mesh_->edges_.size() == 0) return (nullptr);
    return (&(this->mesh_->edges_[0]));
 }
 

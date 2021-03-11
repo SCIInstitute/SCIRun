@@ -65,7 +65,7 @@ class LatVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVLatVolMesh(MESH*) { return (0); }
+VMesh* CreateVLatVolMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -103,7 +103,7 @@ public:
   struct LatIndex
   {
   public:
-    LatIndex() : i_(0), j_(0), k_(0), mesh_(0) {}
+    LatIndex() : i_(0), j_(0), k_(0), mesh_(nullptr) {}
     LatIndex(const LatVolMesh *m, index_type i, index_type j, index_type k) :
       i_(i), j_(j), k_(k), mesh_(m) {}
 
@@ -1154,10 +1154,10 @@ protected:
 template <class Basis>
 const TypeDescription* get_type_description(LatVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("LatVolMesh", subs,
@@ -1173,7 +1173,7 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
 }
 
 
@@ -1181,11 +1181,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1199,11 +1199,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1217,11 +1217,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1235,11 +1235,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -2484,7 +2484,7 @@ LatVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 

@@ -746,7 +746,7 @@ TEST(SelectSubMatrixTests, Pipe_InputMatrix_through)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), -1000);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), 10000);
 
-  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,0,0));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,nullptr,nullptr));
 
   for (int i = 0; i < result1->rows(); i++)
    for (int j = 0; j < result1->cols(); j++)
@@ -758,14 +758,14 @@ TEST(SelectSubMatrixTests, InputMatrix_empty)
   SelectSubMatrixAlgorithm algo;
 
   DenseMatrixHandle m2;
-  DenseMatrixHandle result2 =  castMatrix::toDense(algo.run(m2,0,0));
+  DenseMatrixHandle result2 =  castMatrix::toDense(algo.run(m2,nullptr,nullptr));
 
   if (result2)
   {
     std::cout << "ERROR (indices null, DenseMatrixHandle empty): output is not null." << std::endl;
   }
 
-  DenseMatrixHandle result3 =  castMatrix::toDense(algo.run(0,0,0));
+  DenseMatrixHandle result3 =  castMatrix::toDense(algo.run(nullptr,nullptr,nullptr));
 
   if (result3)
   {
@@ -932,7 +932,7 @@ TEST(SelectSubMatrixTests, GUI_DenseColumnMatrixRows)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), to);
 
-  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,0,0));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,nullptr,nullptr));
 
   DenseMatrixHandle expected_result(densecolumnmatrix_expectedoutput2());
 

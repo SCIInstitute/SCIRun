@@ -118,13 +118,13 @@ class SCISHARE NullField : public Field
 {
 public:
   explicit NullField() : Field() {}
-  Field* clone() const override { return 0; }
-  Field* deep_clone() const override { return 0; }
+  Field* clone() const override { return nullptr; }
+  Field* deep_clone() const override { return nullptr; }
   MeshHandle mesh() const override { return MeshHandle(); }
-  VMesh* vmesh()   const override { return 0; }
-  VField* vfield() const override { return 0; }
+  VMesh* vmesh()   const override { return nullptr; }
+  VField* vfield() const override { return nullptr; }
   int basis_order() const override { return 0; }
-  const TypeDescription* get_type_description(td_info_e) const override { return 0; }
+  const TypeDescription* get_type_description(td_info_e) const override { return nullptr; }
   std::string dynamic_type_name() const override { return "NullField"; }
 };
 

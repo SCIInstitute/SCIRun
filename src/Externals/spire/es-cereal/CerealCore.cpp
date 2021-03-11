@@ -44,7 +44,7 @@ CerealCore::~CerealCore()
 
 std::tuple<void*, size_t> CerealCore::dumpTny(Tny* tny)
 {
-  void* data = NULL;
+  void* data = nullptr;
   size_t dataSize = Tny_dumps(tny, &data);
   return std::make_tuple(data, dataSize);
 }
@@ -64,7 +64,7 @@ void CerealCore::freeTnyDataPtr(void* ptr)
 Tny* CerealCore::serializeAllComponents()
 {
   // Build dictionary whose keys correspond to the names of the components.
-	Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+	Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
   Tny* cur = root;
   for (auto it = mComponents.begin(); it != mComponents.end(); ++it)
   {
@@ -80,7 +80,7 @@ Tny* CerealCore::serializeAllComponents()
       // When a TNY_OBJ is added, it is deep copied and not moved.
       cur = Tny_add(cur, TNY_OBJ, const_cast<char*>(heap->getComponentName()), serializedHeap, 0);
 
-      if (cur == NULL)
+      if (cur == nullptr)
       {
         std::cerr << "es-cereal: Failed to serialize all components." << std::endl;
         std::cerr << "Failed on component: " << heap->getComponentName() << std::endl;
@@ -100,7 +100,7 @@ Tny* CerealCore::serializeAllComponents()
 Tny* CerealCore::serializeEntity(uint64_t entityID)
 {
   // Build dictionary whose keys correspond to the names of the components.
-	Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+	Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
   Tny* cur = root;
   for (auto it = mComponents.begin(); it != mComponents.end(); ++it)
   {
@@ -116,7 +116,7 @@ Tny* CerealCore::serializeEntity(uint64_t entityID)
       // When a TNY_OBJ is added, it is deep copied and not moved.
       cur = Tny_add(cur, TNY_OBJ, const_cast<char*>(heap->getComponentName()), serializedHeap, 0);
 
-      if (cur == NULL)
+      if (cur == nullptr)
       {
         std::cerr << "es-cereal: Failed to serialize all components." << std::endl;
         std::cerr << "Failed on component: " << heap->getComponentName() << std::endl;
@@ -136,7 +136,7 @@ Tny* CerealCore::serializeEntity(uint64_t entityID)
 // fix this.
 void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 {
-  if (root == NULL)
+  if (root == nullptr)
   {
     std::cerr << "es-cereal: deserializeComponentMerge root is NULL" << std::endl;
     throw std::runtime_error("Tny root NULL");
@@ -199,7 +199,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 // fix this.
 void CerealCore::deserializeComponentCreate(Tny* root)
 {
-  if (root == NULL)
+  if (root == nullptr)
   {
     std::cerr << "es-cereal: deserializeComponentMerge root is NULL" << std::endl;
     throw std::runtime_error("Tny root NULL");

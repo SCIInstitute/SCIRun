@@ -159,7 +159,7 @@ const std::string Property<T>::type_name(int n)
     return nm;
   }
   else
-    return find_type_name( static_cast<T*>(0));
+    return find_type_name( static_cast<T*>(nullptr));
 }
 
 template <class T>

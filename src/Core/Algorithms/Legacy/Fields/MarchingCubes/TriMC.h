@@ -55,8 +55,8 @@ class TriMC : public BaseMC
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
                             //lines_(0),
-                            curve_handle_(0),
-                            curve_(0) {}
+                            curve_handle_(nullptr),
+                            curve_(nullptr) {}
 
     virtual ~TriMC() {}
 

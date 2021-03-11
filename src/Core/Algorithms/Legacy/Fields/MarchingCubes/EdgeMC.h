@@ -54,8 +54,8 @@ class EdgeMC :  public BaseMC
                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 			     points_(0),
 			    #endif
-                             pointcloud_handle_(0),
-                             pointcloud_(0) {}
+                             pointcloud_handle_(nullptr),
+                             pointcloud_(nullptr) {}
 
     virtual ~EdgeMC() {}
 

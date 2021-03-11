@@ -280,7 +280,7 @@ public:
     if (*offset_out + stringLength + 1 > msgSize)
     {
       throw std::runtime_error("Read passed end of buffer");
-      return NULL;
+      return nullptr;
     }
 
     const char* ret = msg + *offset_out;
@@ -292,7 +292,7 @@ public:
 
   static bool write(char* msg, size_t msgSize, size_t* offset_out, const Type& in)
   {
-    if (in != NULL)
+    if (in != nullptr)
     {
       int32_t stringLength = (int)std::strlen(in);
       SerializeType<int32_t>::write(msg, msgSize, offset_out, stringLength);

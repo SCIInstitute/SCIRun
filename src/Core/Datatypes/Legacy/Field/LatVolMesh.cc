@@ -3516,7 +3516,7 @@ template <class MESH>
 Point*
 VStructHexVolMesh<MESH>::get_points_pointer() const
 {
-  if (points_.size() == 0) return (0);
+  if (points_.size() == 0) return (nullptr);
   return (&(points_[0]));
 }
 

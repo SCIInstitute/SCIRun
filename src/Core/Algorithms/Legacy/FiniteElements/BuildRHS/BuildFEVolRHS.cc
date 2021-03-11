@@ -57,7 +57,7 @@ class FEMVolRHSBuilder
   FEMVolRHSBuilder(const AlgorithmBase *algo) :
       algo_(algo), numprocessors_(Parallel::NumCores()),
       barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      mesh_(0), field_(0),
+      mesh_(nullptr), field_(nullptr),
       domain_dimension(0), local_dimension_nodes(0),
       local_dimension_add_nodes(0),
       local_dimension_derivatives(0),

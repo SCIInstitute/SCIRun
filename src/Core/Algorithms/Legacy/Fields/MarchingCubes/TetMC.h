@@ -63,8 +63,8 @@ class TetMC : public BaseMC
 			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
                             triangles_(0),
 			   #endif
-                            trisurf_handle_(0),
-                            trisurf_(0) {}
+                            trisurf_handle_(nullptr),
+                            trisurf_(nullptr) {}
 
     virtual ~TetMC() {}
 

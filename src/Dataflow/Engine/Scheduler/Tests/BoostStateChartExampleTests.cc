@@ -145,7 +145,7 @@ struct Running : IElapsedTime, sc::simple_state< Running, Active >
 {
 public:
   typedef sc::transition< EvStartStop, Stopped > reactions;
-  Running() : startTime_( std::time( 0 ) ) {}
+  Running() : startTime_( std::time( nullptr ) ) {}
   ~Running()
   {
     // Similar to when a derived class object accesses its
@@ -160,7 +160,7 @@ public:
   double ElapsedTime() const override
   {
     return context< Active >().ElapsedTime() +
-      std::difftime( std::time( 0 ), startTime_ );
+      std::difftime( std::time( nullptr ), startTime_ );
   }
 private:
   std::time_t startTime_;

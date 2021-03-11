@@ -677,7 +677,7 @@ void PythonInterpreter::start_terminal()
 
 	wchar_t** argv = new wchar_t*[ 2 ];
   argv[0] = const_cast< wchar_t* >(this->private_->programName());
-	argv[ 1 ] = 0;
+	argv[ 1 ] = nullptr;
 	Py_Main( 1, argv );
 	delete[] argv;
 

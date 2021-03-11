@@ -50,14 +50,14 @@ public:
     }
     catch (const std::exception& e)
     {
-      QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nPlease report an issue describing what caused this message.");
+      QMessageBox::critical(nullptr, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nPlease report an issue describing what caused this message.");
       SCIRun::logCritical("Unhandled exception: {}", e.what());
       SCIRunGuiRunner::reportIssue();
       return false;
     }
     catch (...)
     {
-      QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: please report an issue describing what caused this message.");
+      QMessageBox::critical(nullptr, "Critical error", "Unknown unhandled exception: please report an issue describing what caused this message.");
       SCIRun::logCritical("Unhandled exception: Unknown type");
       SCIRunGuiRunner::reportIssue();
       return false;
@@ -78,13 +78,13 @@ int GuiApplication::run(int argc, const char* argv[])
   }
   catch (std::exception& e)
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
+    QMessageBox::critical(nullptr, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
     logCritical("Unhandled exception: {}", e.what());
     return 1;
   }
   catch (...)
   {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
+    QMessageBox::critical(nullptr, "Critical error", "Unknown unhandled exception: exiting now.");
     logCritical("Unhandled exception: Unknown type");
     return 1;
   }

@@ -727,7 +727,7 @@ Core::Geometry::Point*
 VUnstructuredMesh<MESH>::
 get_points_pointer() const
 {
-  if (this->mesh_->points_.size() == 0) return (0);
+  if (this->mesh_->points_.size() == 0) return (nullptr);
    return (&(this->mesh_->points_[0]));
 }
 

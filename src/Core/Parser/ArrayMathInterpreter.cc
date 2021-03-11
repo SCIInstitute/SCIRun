@@ -234,7 +234,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     {
       // Generate a new program variable where the value is stored
       // This is a source or sink that does not need memory
-      pvhandle.reset(new ArrayMathProgramVariable(name,0));
+      pvhandle.reset(new ArrayMathProgramVariable(name,nullptr));
     }
 
     // Add this variable to the code
@@ -278,7 +278,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     {
       // Generate a new program variable where the value is stored
       // This is a source or sink that does not need memory
-      pvhandle.reset(new ArrayMathProgramVariable(name,0));
+      pvhandle.reset(new ArrayMathProgramVariable(name,nullptr));
     }
 
     // Add this variable to the code
@@ -327,7 +327,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       {
         // Generate a new program variable where the value is stored
         // This is a source or sink that does not need memory
-        pvhandle.reset(new ArrayMathProgramVariable(name,0));
+        pvhandle.reset(new ArrayMathProgramVariable(name,nullptr));
       }
 
       // Add this variable to the code

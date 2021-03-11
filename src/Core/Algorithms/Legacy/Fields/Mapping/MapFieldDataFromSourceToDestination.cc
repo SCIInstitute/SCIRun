@@ -69,7 +69,7 @@ namespace detail
   {
   public:
     explicit MapFieldDataFromSourceToDestinationPAlgoBase(const std::string& name, int nproc) :
-      sfield_(0), dfield_(0), smesh_(0), dmesh_(0), maxdist_(0), algo_(0),
+      sfield_(nullptr), dfield_(nullptr), smesh_(nullptr), dmesh_(nullptr), maxdist_(0), algo_(nullptr),
       barrier_(name, nproc), nproc_(nproc) {}
 
     virtual ~MapFieldDataFromSourceToDestinationPAlgoBase() {}
