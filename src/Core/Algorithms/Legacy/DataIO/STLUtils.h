@@ -30,9 +30,10 @@
 #define CORE_ALGORITHMS_DATAIO_STLUTILS_H 1
 
 /// TODO: use std::unordered_map when porting to SCIRun 5
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/shared_array.hpp>
 
+#include <boost/unordered_map.hpp>
 #include <functional>
 #include <list>
 
@@ -72,7 +73,7 @@ struct SCISHARE Facet
 };
 
 // point(vertex) lookup table
-typedef boost::unordered_map< Geometry::Point, unsigned int, PointHash > PointTable;
+typedef std::unordered_map< Geometry::Point, unsigned int, PointHash > PointTable;
 typedef std::list<Facet> FacetList;
 
 /// compute face normal:

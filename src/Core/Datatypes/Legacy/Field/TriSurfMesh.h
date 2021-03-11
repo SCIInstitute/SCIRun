@@ -56,7 +56,7 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <set>
 #include <future>
@@ -2058,15 +2058,15 @@ protected:
 
   struct edgehash
   {
-    boost::hash<int> hasher_;
+    std::hash<int> hasher_;
     size_t operator()(const std::pair<index_type, index_type> &a) const
     {
       return hasher_(static_cast<int>(hasher_(a.first) + a.second));
     }
   };
 
-  using EdgeMapType = boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
-  using EdgeMapType2 = boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
+  using EdgeMapType = std::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
+  using EdgeMapType2 = std::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
 };
 
 

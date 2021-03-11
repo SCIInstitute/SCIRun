@@ -34,7 +34,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 
 using namespace SCIRun;

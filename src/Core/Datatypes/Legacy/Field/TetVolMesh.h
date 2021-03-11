@@ -57,7 +57,7 @@
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -2548,10 +2548,10 @@ protected:
     }
   };
 
-  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
-  using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
-  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
-  using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
+  using face_ht = std::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_nt = std::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
+  using edge_ht = std::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
+  using edge_nt = std::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
 
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;

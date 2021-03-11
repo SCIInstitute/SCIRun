@@ -32,7 +32,7 @@
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/EdgePairHash.h>
 
