@@ -172,7 +172,6 @@ namespace SCIRun{
               break;
             default:
               throw std::invalid_argument("Selected port was not primary, secondary, or tertiary.");
-              break;
           }
 
           spiltColorMapToTextureAndCoordinates();
@@ -284,7 +283,6 @@ namespace SCIRun{
                 break;
               default:
                 throw std::invalid_argument("Primary color map did not find scalar, vector, or tensor data.");
-                break;
             }
             break;
           case RenderState::InputPort::SECONDARY_PORT:
@@ -301,7 +299,6 @@ namespace SCIRun{
                 break;
               default:
                 throw std::invalid_argument("Secondary color map did not find scalar, vector, or tensor data.");
-                break;
             }
             break;
           case RenderState::InputPort::TERTIARY_PORT:
@@ -318,12 +315,10 @@ namespace SCIRun{
                 break;
               default:
                 throw std::invalid_argument("Tertiary color map did not find scalar, vector, or tensor data.");
-                break;
             }
             break;
           default:
             throw std::invalid_argument("Color map selection was not given a primary, secondary, or tertiary port.");
-            break;
         }
         return colorMapVal;
       }
@@ -364,7 +359,6 @@ namespace SCIRun{
               break;
             default:
               throw std::invalid_argument("Must select a primary, secondary, or tertiary port for color map input.");
-              break;
           }
         }
         // Make sure scalar is not given for rgb conversion
@@ -400,7 +394,6 @@ namespace SCIRun{
                 break;
               default:
                 throw std::invalid_argument("Must select a primary, secondary, or tertiary port for rgb conversion input.");
-                break;
               }
           }
 
@@ -432,7 +425,6 @@ namespace SCIRun{
             break;
           default:
             throw std::invalid_argument("Must select a primary, secondary, or tertiary port for secondary vector input.");
-            break;
           }
       }
 
@@ -482,7 +474,6 @@ namespace SCIRun{
             break;
           default:
             throw std::invalid_argument("Must select a primary, secondary, or tertiary port for selecting color vector.");
-            break;
           }
         return colorVector;
       }
@@ -550,7 +541,6 @@ namespace SCIRun{
           }
           default:
             throw std::invalid_argument("Must select a primary, secondary, or tertiary port for selecting color of node.");
-            break;
           }
         return node_color;
       }
