@@ -57,7 +57,7 @@ using ::testing::Values;
 class JoinFieldsAlgoTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
   }
@@ -140,7 +140,7 @@ public:
   FieldList input;
   FieldHandle output;
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)

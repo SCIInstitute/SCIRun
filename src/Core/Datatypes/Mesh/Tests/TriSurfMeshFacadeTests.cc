@@ -53,7 +53,7 @@ using namespace boost::assign;
 class TriSurfMeshFacadeTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     {
       FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");

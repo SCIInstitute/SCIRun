@@ -52,7 +52,7 @@ using ::testing::Range;
 class ShowFieldScalingTest : public ParameterizedModuleTest<int>
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
@@ -89,7 +89,7 @@ INSTANTIATE_TEST_CASE_P(
 class RescaleColorMapModuleTest : public ModuleTest
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");

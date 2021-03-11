@@ -86,14 +86,14 @@ namespace fs = spire;
 
 namespace
 {
-  static glm::vec4 inverseGammaCorrect(glm::vec4 in)
+  static glm::vec4 inverseGammaCorrect(const glm::vec4& in)
   {
-    return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
+    return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2f)), in.a);
   }
 
-  static glm::vec3 inverseGammaCorrect(glm::vec3 in)
+  static glm::vec3 inverseGammaCorrect(const glm::vec3& in)
   {
-    return glm::pow(in, glm::vec3(2.2));
+    return glm::pow(in, glm::vec3(2.2f));
   }
 
   const std::string widgetSelectFboName = "Selection:FBO:0";

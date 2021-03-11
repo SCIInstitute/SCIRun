@@ -54,7 +54,7 @@ typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
 class ProvenanceManagerTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     controller_.reset(new NiceMock<MockNetworkIO>);
   }

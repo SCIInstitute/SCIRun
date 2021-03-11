@@ -68,7 +68,7 @@ public:
 
 	~SolveLinearSystemTestsAlgoParameterized() {}
 protected:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		auto Afile = TestResources::rootDir() / "Matrices" /  "moritz_A.mat";
 
