@@ -217,7 +217,6 @@ void GlyphBuilder::addGlyph(
     }
     case RenderState::GlyphType::SPRING_GLYPH:
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Spring Geom is not supported yet."));
-      break;
     default:
       if (use_lines)
         glyphs.addLine(p1, p2, node_color, node_color);
@@ -299,14 +298,14 @@ void ShowFieldGlyphs::execute()
 {
   auto pfield = getRequiredInput(PrimaryData);
   auto pcolorMap = getOptionalInput(PrimaryColorMap);
-  boost::optional<boost::shared_ptr<SCIRun::Field>> sfield = getOptionalInput(SecondaryData);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolorMap = getOptionalInput(SecondaryColorMap);
-  boost::optional<boost::shared_ptr<SCIRun::Field>> tfield = getOptionalInput(TertiaryData);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolorMap = getOptionalInput(TertiaryColorMap);
+  auto sfield = getOptionalInput(SecondaryData);
+  auto scolorMap = getOptionalInput(SecondaryColorMap);
+  auto tfield = getOptionalInput(TertiaryData);
+  auto tcolorMap = getOptionalInput(TertiaryColorMap);
 
   if (needToExecute())
   {
-    configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
+    configureInputs(pfield, sfield, tfield);
 
     auto geom = builder_->buildGeometryObject(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap,
                                               this, get_state(), *this, this);
@@ -315,12 +314,9 @@ void ShowFieldGlyphs::execute()
 }
 
 void ShowFieldGlyphs::configureInputs(
-  FieldHandle pfield,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolormap,
-  boost::optional<ColorMapHandle> scolormap,
-  boost::optional<ColorMapHandle> tcolormap)
+    FieldHandle pfield,
+    boost::optional<FieldHandle> sfield,
+    boost::optional<FieldHandle> tfield)
 {
   FieldInformation pfinfo(pfield);
 
@@ -656,10 +652,8 @@ void GlyphBuilder::renderScalars(
         break;
       case RenderState::GlyphType::BOX_GLYPH:
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
-        break;
       case RenderState::GlyphType::AXIS_GLYPH:
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Axis Geom is not supported yet."));
-        break;
       default:
         if (usePoints)
           glyphs.addPoint(points[i], node_color);

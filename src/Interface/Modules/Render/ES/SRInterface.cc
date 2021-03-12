@@ -74,26 +74,26 @@
 #include "comp/ClippingPlaneUniforms.h"
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace Core;
+using namespace Datatypes;
+using namespace Graphics::Datatypes;
+using namespace Geometry;
 
 using namespace std::placeholders;
-using namespace SCIRun::Render;
+using namespace Render;
 
 namespace fs = spire;
 
 namespace
 {
-  static glm::vec4 inverseGammaCorrect(glm::vec4 in)
+  static glm::vec4 inverseGammaCorrect(const glm::vec4& in)
   {
-    return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
+    return glm::vec4(pow(glm::vec3(in), glm::vec3(2.2f)), in.a);
   }
 
-  static glm::vec3 inverseGammaCorrect(glm::vec3 in)
+  static glm::vec3 inverseGammaCorrect(const glm::vec3& in)
   {
-    return glm::pow(in, glm::vec3(2.2));
+    return pow(in, glm::vec3(2.2f));
   }
 
   const std::string widgetSelectFboName = "Selection:FBO:0";
@@ -147,7 +147,7 @@ void SRInterface::runGCOnNextExecution()
       {
         // Generate synchronous filesystem, manually add its static component,
         // then mark it as non-serializable.
-        std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+        std::string filesystemRoot = Application::Instance().executablePath().string();
         filesystemRoot += boost::filesystem::path::preferred_separator;
         fs::StaticFS fileSystem((std::make_shared<fs::FilesystemSync>(filesystemRoot)));
         mCore.addStaticComponent(fileSystem);
@@ -336,7 +336,7 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::applyAutoRotation()
     {
-      if (glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
+      if (length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
       if (tryAutoRotate) mCamera->tryAutoRotate();
     }
 
@@ -479,7 +479,8 @@ void SRInterface::runGCOnNextExecution()
       return widgetUpdater_.currentWidget();
     }
 
-    std::tuple<uint32_t, std::string, std::vector<uint64_t>> SCIRun::Render::SRInterface::addSelectPasses(SCIRun::Graphics::Datatypes::WidgetHandle widget)
+    std::tuple<uint32_t, std::string, std::vector<uint64_t>> SRInterface::addSelectPasses(
+        WidgetHandle widget)
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
       auto shaderMan = sm.lock();
@@ -502,8 +503,7 @@ void SRInterface::runGCOnNextExecution()
         }
 
         const char* selectionShaderName = "Shaders/Selection";
-        GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
-        if (shaderID == 0)
+        if (shaderMan->getIDForAsset(selectionShaderName) == 0)
         {
           const char* vs =
             "uniform mat4 uModelViewProjection;\n"
@@ -531,7 +531,7 @@ void SRInterface::runGCOnNextExecution()
             "  gl_FragColor = fColor;\n"
             "}\n";
 
-          shaderID = shaderMan->addInMemoryVSFS(vs, fs, selectionShaderName);
+          shaderMan->addInMemoryVSFS(vs, fs, selectionShaderName);
         }
         addShaderToEntity(entityID, selectionShaderName);
 
@@ -566,7 +566,7 @@ void SRInterface::runGCOnNextExecution()
       return std::make_tuple(selid, objectName, entityIds);
     }
 
-    void SCIRun::Render::SRInterface::addSelectVertexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan)
+    void SRInterface::addSelectVertexBufferObjects(WidgetHandle widget, std::shared_ptr<ren::VBOMan> vboMan)
     {
       for (const auto& vbo : widget->vbos())
       {
@@ -584,7 +584,7 @@ void SRInterface::runGCOnNextExecution()
       }
     }
 
-    void SCIRun::Render::SRInterface::addSelectIndexBufferObjects(SCIRun::Graphics::Datatypes::WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan)
+    void SRInterface::addSelectIndexBufferObjects(WidgetHandle widget, std::shared_ptr<ren::IBOMan> iboMan)
     {
       for (const auto& ibo : widget->ibos())
       {
@@ -596,7 +596,7 @@ void SRInterface::runGCOnNextExecution()
       }
     }
 
-    GLenum SCIRun::Render::SRInterface::computePrimitiveType(size_t indexSize)
+    GLenum SRInterface::computePrimitiveType(size_t indexSize)
     {
       auto primType = GL_UNSIGNED_SHORT;
       switch (indexSize)
@@ -619,7 +619,7 @@ void SRInterface::runGCOnNextExecution()
       return primType;
     }
 
-    GLenum SCIRun::Render::SRInterface::computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo)
+    GLenum SRInterface::computePrimitive(const SpireIBO& ibo)
     {
       auto primitive = GL_TRIANGLES;
       switch (ibo.prim)
@@ -786,11 +786,11 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       glm::vec3 a4(1.0, 1.0, 1.0);
       return std::max(
         std::max(
-        std::abs(glm::dot(n, a1)),
-        std::abs(glm::dot(n, a2))),
+        std::abs(dot(n, a1)),
+        std::abs(dot(n, a2))),
         std::max(
-        std::abs(glm::dot(n, a3)),
-        std::abs(glm::dot(n, a4))));
+        std::abs(dot(n, a3)),
+        std::abs(dot(n, a4))));
     }
 
     //----------------------------------------------------------------------------------------------
@@ -805,9 +805,9 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         glm::mat4 trans_bb = glm::mat4(1.0f);
         glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
         glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
-        glm::mat4 temp = glm::scale(glm::mat4(1.0f), scale_bb);
+        glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
         trans_bb = temp * trans_bb;
-        temp = glm::translate(glm::mat4(1.0f), center_bb);
+        temp = translate(glm::mat4(1.0f), center_bb);
         trans_bb = temp * trans_bb;
         int index = 0;
         for (const auto& i : clippingPlanes_)
@@ -815,20 +815,20 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           glm::vec3 n3(i.x, i.y, i.z);
           float d = i.d;
           glm::vec4 n(0.0);
-          if (glm::length(n3) > 0.0)
+          if (length(n3) > 0.0)
           {
-            n3 = glm::normalize(n3);
+            n3 = normalize(n3);
             n = glm::vec4(n3, 0.0);
             d *= getMaxProjLength(n3);
           }
           glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
           o.w = 1;
           o = trans_bb * o;
-          n = glm::inverseTranspose(trans_bb) * n;
+          n = inverseTranspose(trans_bb) * n;
           o.w = 0;
           n.w = 0;
-          n = glm::normalize(n);
-          n.w = -glm::dot(o, n);
+          n = normalize(n);
+          n.w = -dot(o, n);
           clippingPlanes->clippingPlanes.push_back(n);
           glm::vec4 control(i.visible ? 1.0 : 0.0,
             i.showFrame ? 1.0 : 0.0,
@@ -962,7 +962,6 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               primType = GL_UNSIGNED_INT;
               logRendererError("Unable to determine index buffer depth.");
               throw std::invalid_argument("Unable to determine index buffer depth.");
-              break;
             }
 
             GLenum primitive = GL_TRIANGLES;
@@ -1056,7 +1055,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
                   std::vector<char> sorted_buffer(ibo.data->getBufferSize());
                   char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-                  char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+                  char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : nullptr;
 
                   if (sbuffer && num_triangles > 0)
                   {
@@ -1171,7 +1170,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               }
 
               {
-                Graphics::Datatypes::SpireSubPass::Uniform uniform;
+                SpireSubPass::Uniform uniform;
                 uniform.name = "uFogSettings";
                 applyFog(uniform);
                 applyUniform(entityID, uniform);
@@ -1355,7 +1354,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       //font texture
       //read in the font data
       bool success = true;
-      auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
+      auto fontPath = Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
       std::ifstream in(fontPath.string(), std::ifstream::binary);
       if (in.fail())
       {
@@ -1531,8 +1530,8 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
             }
             yPos = yLow2 + (orientPosY + 0.5f) * (yHigh2 - yLow2);
 
-            glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(xPos, yPos, -1.5f));
-            glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(orientSize));
+            glm::mat4 invCamTrans = translate(glm::mat4(1.0f), glm::vec3(xPos, yPos, -1.5f));
+            glm::mat4 axesScale = scale(glm::mat4(1.0f), glm::vec3(orientSize));
             glm::mat4 axesTransform = axesScale * axesRot;
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
@@ -1551,74 +1550,74 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
             // X Axis (dark)
             {
-              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+              glm::mat4 xform = rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
               GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // X Axis
             {
-              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+              glm::mat4 xform = rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
               GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Y Axis (dark)
             {
-              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 xform = rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Y Axis
             {
-              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 xform = rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
               GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Z Axis (dark)
@@ -1629,33 +1628,33 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             // Z Axis
             {
               // No rotation at all
-              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 xform = rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              const GLfloat* ptr = value_ptr(worldToProj);
               GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
               glm::mat4 objectSpace = finalTrafo;
-              ptr = glm::value_ptr(objectSpace);
+              ptr = value_ptr(objectSpace);
               GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, nullptr));
             }
 
             mArrowAttribs.unbind();
@@ -1703,7 +1702,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    void SRInterface::applyMatFactors(SpireSubPass::Uniform& uniform)
     {
       if (uniform.name == "uAmbientColor")
         uniform.data = inverseGammaCorrect(glm::vec4(mMatAmbient));
@@ -1714,7 +1713,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    void SRInterface::applyFog(SpireSubPass::Uniform& uniform)
     {
       if (uniform.name == "uFogSettings")
       {
@@ -1728,7 +1727,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         uniform.data = inverseGammaCorrect(mFogColor);
       }
 
-      uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
+      uniform.type = SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1763,7 +1762,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       viewVector.z = cos(inclination) * cos(azimuth);
       viewVector.x = cos(inclination) * sin(azimuth);
       viewVector.y = sin(inclination);
-      mLightDirectionView[index] = glm::normalize(viewVector);
+      mLightDirectionView[index] = normalize(viewVector);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1810,7 +1809,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       }
     }
 
-std::ostream& SCIRun::Render::operator<<(std::ostream& o, const glm::mat4& m)
+std::ostream& Render::operator<<(std::ostream& o, const glm::mat4& m)
 {
   o << "{" << m[0].x << ",\t" << m[0].y << ",\t" << m[0].z << ",\t" << m[0].w << "}\n"
     << "{" << m[1].x << ",\t" << m[1].y << ",\t" << m[1].z << ",\t" << m[1].w << "}\n"

@@ -53,7 +53,7 @@ FieldList LoadAllCasesInputField()
    if (!(i==31 || i==47 || i==55 || i==59 || i==61 || i==62))
    {
     auto file = (TestResources::rootDir() / "Fields/refinetetmeshlocally/all57outof64case_input/").string() + std::to_string(i) + ".mat";
-    FieldHandle field = MatlabField_reader(0, file.c_str());
+    FieldHandle field = MatlabField_reader(nullptr, file.c_str());
     result.push_back(field);
    }
   }
@@ -70,7 +70,7 @@ FieldList LoadAllCasesResultField()
     auto str = file.string();
     str.append(std::to_string(i));
     str.append(".mat");
-    result.push_back(MatlabField_reader(0, str.c_str()));
+    result.push_back(MatlabField_reader(nullptr, str.c_str()));
   }
 
   return result;

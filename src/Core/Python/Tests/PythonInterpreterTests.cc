@@ -53,7 +53,7 @@ using namespace TestUtils;
 class FieldConversionTests : public testing::Test
 {
 protected:
-  virtual void SetUp() override
+  void SetUp() override
   {
   #ifdef WIN32
   #ifndef DEBUG

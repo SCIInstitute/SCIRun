@@ -48,11 +48,11 @@ class SCISHARE VField {
 public:
 
   VField() :
-    field_(0),
-    mesh_(0),
-    pm_(0),
-    vmesh_(0),
-    vfdata_(0),
+    field_(nullptr),
+    mesh_(nullptr),
+    pm_(nullptr),
+    vmesh_(nullptr),
+    vfdata_(nullptr),
     basis_order_(0),
     number_of_nodes_(0),
     number_of_enodes_(0),

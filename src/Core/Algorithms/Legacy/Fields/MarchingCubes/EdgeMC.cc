@@ -77,7 +77,7 @@ void EdgeMC::reset( int /*n*/, bool build_field,bool build_geom,bool transparenc
   geomHandle_ = points_;
  #endif
 
-  pointcloud_ = 0;
+  pointcloud_ = nullptr;
   if (build_field_)
   {
     FieldInformation fi("PointCloudMesh",0,"double");

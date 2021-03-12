@@ -172,7 +172,7 @@ namespace SCIRun {
   template <class VECTOR>
   inline double d_volume(const VECTOR& derivs)
   {
-    return(d_volume_type(derivs,static_cast<typename VECTOR::value_type*>(0)));
+    return(d_volume_type(derivs,static_cast<typename VECTOR::value_type*>(nullptr)));
   }
 
   template <class ElemBasis, class ElemData>
@@ -197,7 +197,7 @@ namespace SCIRun {
 
   /// area calculation on points
   template <class VECTOR1, class VECTOR2>
-    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)
+    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point*)
   {
     const unsigned int dvsize = derivs.size();
 
@@ -217,7 +217,7 @@ namespace SCIRun {
   template<class VECTOR1, class VECTOR2>
   inline double d_area(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1)
   {
-    return(d_area_type(derivs,dv0,dv1,static_cast<typename VECTOR1::value_type*>(0)));
+    return(d_area_type(derivs,dv0,dv1,static_cast<typename VECTOR1::value_type*>(nullptr)));
   }
 
 
@@ -287,7 +287,7 @@ namespace SCIRun {
 
   /// arc length calculation on points
    template <class VECTOR1, class VECTOR2>
-  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)
+  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point*)
   {
     const unsigned int dvsize = dv.size();
 
@@ -308,7 +308,7 @@ namespace SCIRun {
   template <class VECTOR1, class VECTOR2>
   inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv)
   {
-    return(d_arc_length_type(derivs,dv,static_cast<typename VECTOR1::value_type*>(0)));
+    return(d_arc_length_type(derivs,dv,static_cast<typename VECTOR1::value_type*>(nullptr)));
   }
 
 
@@ -708,7 +708,7 @@ namespace SCIRun {
   template <class VECTOR>
   inline double check_zero(const VECTOR& derivs,double epsilon = 1e-7)
   {
-    return(check_zero_type(derivs,static_cast<typename VECTOR::value_type*>(0),epsilon));
+    return(check_zero_type(derivs,static_cast<typename VECTOR::value_type*>(nullptr),epsilon));
   }
 
 }}}

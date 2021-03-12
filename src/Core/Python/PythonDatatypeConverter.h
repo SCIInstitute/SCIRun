@@ -118,18 +118,18 @@ namespace SCIRun
       {
       public:
         explicit DenseMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "dense matrix"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "dense matrix"; }
       };
 
       class SCISHARE SparseRowMatrixExtractor : public DatatypePythonExtractor
       {
       public:
         explicit SparseRowMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "sparse matrix"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "sparse matrix"; }
       private:
         static std::set<std::string> validKeys_;
       };
@@ -138,9 +138,9 @@ namespace SCIRun
       {
       public:
         explicit FieldExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "field"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "field"; }
       };
 
       SCISHARE std::string pyDenseMatrixLabel();

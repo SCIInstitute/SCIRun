@@ -69,7 +69,7 @@ class StructCurveMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVStructCurveMesh(MESH* mesh) { return (0); }
+VMesh* CreateVStructCurveMesh(MESH* mesh) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -100,7 +100,7 @@ public:
   StructCurveMesh();
   explicit StructCurveMesh(size_type n);
   StructCurveMesh(const StructCurveMesh &copy);
-  virtual StructCurveMesh *clone() const { return new StructCurveMesh(*this); }
+StructCurveMesh *clone() const override { return new StructCurveMesh(*this); }
   virtual ~StructCurveMesh()
   {
     DEBUG_DESTRUCTOR("StructCurveMesh")
@@ -108,11 +108,13 @@ public:
 
   /// get the mesh statistics
   double get_cord_length() const;
-  virtual Core::Geometry::BBox get_bounding_box() const;
-  virtual void transform(const Core::Geometry::Transform &t);
+Core::Geometry::BBox get_bounding_box() const override;
+void transform(const Core::Geometry::Transform &t) override;
 
-  virtual bool get_dim(std::vector<size_type>&) const;
-  virtual void set_dim(std::vector<size_type> dims) {
+bool get_dim(std::vector<size_type>&) const override;
+
+void set_dim(std::vector<size_type> dims) override
+  {
     ScanlineMesh<Basis>::ni_ = dims[0];
 
     points_.resize(dims[0]);
@@ -123,7 +125,7 @@ public:
     ScanlineMesh<Basis>::vmesh_.reset(CreateVStructCurveMesh(this));
   }
 
-  virtual int topology_geometry() const
+int topology_geometry() const override
   {
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
@@ -783,7 +785,7 @@ public:
   }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual
   /// interface ! These are currently different as they serve different
@@ -794,7 +796,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
 
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructCurveMesh<Basis>(); }
@@ -805,8 +807,8 @@ public:
 
   std::vector<Core::Geometry::Point>& get_points() { return (points_); }
 
-  virtual bool synchronize(mask_type sync);
-  virtual bool unsynchronize(mask_type sync);
+bool synchronize(mask_type sync) override;
+bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   double get_epsilon() const;
@@ -1181,7 +1183,7 @@ StructCurveMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -1190,10 +1192,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(StructCurveMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("StructCurveMesh", subs,
@@ -1209,7 +1211,7 @@ template <class Basis>
 const TypeDescription*
 StructCurveMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((StructCurveMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructCurveMesh<Basis> *)nullptr);
 }
 
 

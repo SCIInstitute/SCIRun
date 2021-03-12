@@ -45,7 +45,7 @@ public:
   std::string toString(std::string prefix) const;
 
   void executeWithoutAdvancingClock();
-  void execute(double constantFrameTime);
+  void execute(double constantFrameTime) override;
   void setBackgroundColor(float r, float g, float b, float a);
   void runGCOnNextExecution(){runGC = true;}
   bool hasShaderPromise() const;

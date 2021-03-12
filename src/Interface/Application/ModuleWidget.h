@@ -255,8 +255,8 @@ private Q_SLOTS:
   void showReplaceWithWidget();
   void toggleProgrammableInputPort();
 protected:
-  virtual void enterEvent(QEvent* event) override;
-  virtual void leaveEvent(QEvent* event) override;
+  void enterEvent(QEvent* event) override;
+  void leaveEvent(QEvent* event) override;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:
   boost::shared_ptr<PortWidgetManager> ports_;

@@ -43,14 +43,14 @@ namespace SCIRun {
       {
       public:
         HardCodedModuleFactory();
-        virtual Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const override;
-        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) const override;
-        virtual void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
-        virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
-        virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
-        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
-        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
-        virtual bool moduleImplementationExists(const std::string& name) const override;
+        Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const override;
+        Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) const override;
+        void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
+        void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
+        void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
+        const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
+        const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
+        bool moduleImplementationExists(const std::string& name) const override;
       private:
         Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;

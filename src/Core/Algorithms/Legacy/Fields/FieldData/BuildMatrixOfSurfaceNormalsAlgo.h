@@ -46,7 +46,7 @@ namespace Fields {
   public:
 			BuildMatrixOfSurfaceNormalsAlgo();
 			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
-			virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+			AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
 
 }}}}

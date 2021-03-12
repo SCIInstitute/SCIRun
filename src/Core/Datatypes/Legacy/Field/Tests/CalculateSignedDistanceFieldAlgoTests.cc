@@ -43,7 +43,7 @@ using namespace boost::assign;
 class CalculateSignedDistanceFieldAlgoTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     /// @todo: needs a surface, I know that much...
   }

@@ -46,6 +46,6 @@ void PlaceholderModule::setStateDefaults()
 
 void PlaceholderModule::execute()
 {
-  auto name = get_state()->getValue(Variables::Filename).toString();
+  const auto name = get_state()->getValue(Variables::Filename).toString();
   error("This is a placeholder module for the missing module " + name + ".");
 }

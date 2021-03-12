@@ -44,8 +44,8 @@ class SCISHARE PrintDatatypeDialog : public ModuleDialogGeneric,
 public:
   PrintDatatypeDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+    QWidget* parent = nullptr);
+        void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
     void pullAndDisplayInfo();
 };

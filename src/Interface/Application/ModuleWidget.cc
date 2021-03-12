@@ -131,30 +131,30 @@ class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 public:
   ModuleWidgetDisplay() : subnetButton_(new QPushButton("Subnet"))
   { }
-  virtual void setupFrame(QStackedWidget* stacked) override;
-  virtual void setupTitle(const QString& name) override;
-  virtual void setupProgressBar() override;
-  virtual void setupSpecial() override;
-  virtual void setupButtons(bool hasUI, QObject* module) override;
-  virtual void setupIcons() override;
-  virtual QAbstractButton* getOptionsButton() const override;
-  virtual QAbstractButton* getExecuteButton() const override;
-  virtual QAbstractButton* getHelpButton() const override;
-  virtual QAbstractButton* getLogButton() const override;
-  virtual void setStatusColor(const QString& color) override;
-  virtual QPushButton* getModuleActionButton() const override;
-  virtual QAbstractButton* getSubnetButton() const override;
+  void setupFrame(QStackedWidget* stacked) override;
+  void setupTitle(const QString& name) override;
+  void setupProgressBar() override;
+  void setupSpecial() override;
+  void setupButtons(bool hasUI, QObject* module) override;
+  void setupIcons() override;
+  QAbstractButton* getOptionsButton() const override;
+  QAbstractButton* getExecuteButton() const override;
+  QAbstractButton* getHelpButton() const override;
+  QAbstractButton* getLogButton() const override;
+  void setStatusColor(const QString& color) override;
+  QPushButton* getModuleActionButton() const override;
+  QAbstractButton* getSubnetButton() const override;
 
-  virtual QProgressBar* getProgressBar() const override;
+  QProgressBar* getProgressBar() const override;
 
-  virtual void setupSubnetWidgets() override;
+  void setupSubnetWidgets() override;
 
-  virtual int getTitleWidth() const override;
-  virtual QLabel* getTitle() const override;
+  int getTitleWidth() const override;
+  QLabel* getTitle() const override;
   QGroupBox* getButtonGroup() const override;
 
-  virtual void startExecuteMovie() override;
-  virtual void stopExecuteMovie() override;
+  void startExecuteMovie() override;
+  void stopExecuteMovie() override;
 
 private:
   QAbstractButton* subnetButton_;

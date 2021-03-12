@@ -48,9 +48,9 @@ namespace SCIRun
         QWidget* parent = nullptr);
       ~BasicPlotterDialog();
     public Q_SLOTS:
-      virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
+      void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
     protected:
-      virtual void pullSpecial() override;
+      void pullSpecial() override;
       virtual void plotData();
 
       class PlotDialog* plotDialog_ {nullptr};

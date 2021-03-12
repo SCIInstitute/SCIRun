@@ -68,72 +68,72 @@ class BasicSession : public SessionInterface
 public:
   explicit BasicSession(SessionBackEndHandle backEnd) : backEnd_(backEnd) {}
 
-  virtual void beginSession()
+  void beginSession() override
   {
     backEnd_->consume("", "Session begins.");
   }
 
-  virtual void endSession()
+  void endSession() override
   {
     backEnd_->consume("", "Session ends.");
   }
 
-  virtual void recordSystemDetails()
+  void recordSystemDetails() override
   {
     // TODO
   }
 
-  virtual void networkFileLoaded()
+  void networkFileLoaded() override
   {
     // TODO
   }
 
-  virtual void networkFileSaved()
+  void networkFileSaved() override
   {
     // TODO
   }
 
-  virtual void networkEdited(/*EditDescription*/)
+  void networkEdited(/*EditDescription*/) override
   {
     // TODO
   }
 
-  virtual void executionStarted()
+  void executionStarted() override
   {
     // TODO
   }
 
-  virtual void executionFinished()
+  void executionFinished() override
   {
     // TODO
   }
 
-  virtual void moduleExecutionStarted(/*ModuleId*/)
+  void moduleExecutionStarted(/*ModuleId*/) override
   {
     // TODO
   }
 
-  virtual void moduleExecutionFinished(/*ModuleId*/)
+  void moduleExecutionFinished(/*ModuleId*/) override
   {
     // TODO
   }
 
-  virtual void recordStateVariable(/*ModuleId, Variable*/)
+  void recordStateVariable(/*ModuleId, Variable*/) override
   {
     // TODO
   }
 
-  virtual void fileRead(/*ModuleId, filename*/)
+  void fileRead(/*ModuleId, filename*/) override
   {
     // TODO
   }
 
-  virtual void fileWritten(/*ModuleId, filename*/)
+  void fileWritten(/*ModuleId, filename*/) override
   {
     // TODO
   }
 
-  virtual void externalProgramAccessed()
+  void externalProgramAccessed() override
   {
     // TODO
   }
@@ -144,20 +144,20 @@ private:
 class NullSession : public SessionInterface
 {
 public:
-  virtual void beginSession() {}
-  virtual void endSession() {}
-  virtual void recordSystemDetails() {}
-  virtual void networkFileLoaded() {}
-  virtual void networkFileSaved() {}
-  virtual void networkEdited(/*EditDescription*/) {}
-  virtual void executionStarted() {}
-  virtual void executionFinished() {}
-  virtual void moduleExecutionStarted(/*ModuleId*/) {}
-  virtual void moduleExecutionFinished(/*ModuleId*/) {}
-  virtual void recordStateVariable(/*ModuleId, Variable*/) {}
-  virtual void fileRead(/*ModuleId, filename*/) {}
-  virtual void fileWritten(/*ModuleId, filename*/) {}
-  virtual void externalProgramAccessed() {}
+  void beginSession() override {}
+  void endSession() override {}
+  void recordSystemDetails() override {}
+  void networkFileLoaded() override {}
+  void networkFileSaved() override {}
+  void networkEdited(/*EditDescription*/) override {}
+  void executionStarted() override {}
+  void executionFinished() override {}
+  void moduleExecutionStarted(/*ModuleId*/) override {}
+  void moduleExecutionFinished(/*ModuleId*/) override {}
+  void recordStateVariable(/*ModuleId, Variable*/) override {}
+  void fileRead(/*ModuleId, filename*/) override {}
+  void fileWritten(/*ModuleId, filename*/) override {}
+  void externalProgramAccessed() override {}
 };
 
 class SessionFile : public SessionBackEnd
@@ -167,7 +167,8 @@ public:
     locale_(stream_.getloc(), new boost::posix_time::time_facet("%x %X")), mutex_("sessionFile")
   {
   }
-  virtual void consume(const std::string& statement, const std::string& message)
+
+  void consume(const std::string& statement, const std::string& message) override
   {
     Guard g(mutex_.get());
     namespace pt = boost::posix_time;
@@ -191,7 +192,7 @@ private:
 class SessionDB : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement, const std::string& message)
+  void consume(const std::string& /*statement*/, const std::string& /*message*/) override
   {
     // TODO
   }
@@ -215,7 +216,8 @@ public:
     std::string error;
     db_.save_database(file_, error);
   }
-  virtual void consume(const std::string& statement, const std::string& message)
+
+  void consume(const std::string& statement, const std::string& message) override
   {
     if (!insertRow(statement + " / " + message))
       std::cout << "problem inserting row" << std::endl;
@@ -247,7 +249,7 @@ private:
 class CompositeSessionBackEnd : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement, const std::string& message)
+  void consume(const std::string& statement, const std::string& message) override
   {
     for (const auto& backEnd : backEnds_)
     {

@@ -57,15 +57,15 @@ using SceneFunc = std::function<QGraphicsScene*()>;
 class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
 public:
-  virtual SCIRun::Dataflow::Networks::PortId id() const override = 0;
-  virtual size_t nconnections() const override = 0;
-  virtual std::string get_typename() const override = 0;
-  virtual std::string get_portname() const override = 0;
-  virtual bool isInput() const override = 0;
-  virtual bool isDynamic() const override = 0;
-  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
-  virtual size_t getIndex() const override = 0;
-  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
+  SCIRun::Dataflow::Networks::PortId id() const override = 0;
+  size_t nconnections() const override = 0;
+  std::string get_typename() const override = 0;
+  std::string get_portname() const override = 0;
+  bool isInput() const override = 0;
+  bool isDynamic() const override = 0;
+  SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
+  size_t getIndex() const override = 0;
+  boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
@@ -79,8 +79,8 @@ public:
 protected:
   static const int DEFAULT_WIDTH = 11;
   explicit PortWidgetBase(QWidget* parent);
-  virtual QSize sizeHint() const override;
-  virtual void paintEvent(QPaintEvent* event) override;
+  QSize sizeHint() const override;
+  void paintEvent(QPaintEvent* event) override;
   bool isHighlighted_;
   SceneFunc getScene_;
 };
@@ -99,32 +99,32 @@ public:
   virtual ~PortWidget();
 
   QString name() const { return name_; }
-  virtual QColor color() const override { return color_; }
-  virtual bool isInput() const override { return isInput_; }
-  virtual bool isDynamic() const override { return isDynamic_; }
+  QColor color() const override { return color_; }
+  bool isInput() const override { return isInput_; }
+  bool isDynamic() const override { return isDynamic_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
 
   virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() { return this; }
 
-  virtual size_t nconnections() const override;
-  virtual std::string get_typename() const override;
-  virtual std::string get_portname() const override;
-  virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
-  virtual size_t getIndex() const override;
+  size_t nconnections() const override;
+  std::string get_typename() const override;
+  std::string get_portname() const override;
+  Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
+  size_t getIndex() const override;
   void setIndex(size_t i);
   Dataflow::Networks::PortId realId() const { return portId_; }
 
-  virtual SCIRun::Dataflow::Networks::PortId id() const override;
+  SCIRun::Dataflow::Networks::PortId id() const override;
 
   void toggleLight();
   void turn_on_light();
   void turn_off_light();
-  virtual bool isLightOn() const override { return lightOn_; }
+  bool isLightOn() const override { return lightOn_; }
   void connectToSubnetPort(PortWidget* subnetPort);
 
   void setHighlight(bool on, bool individual = false);
-  virtual void setPositionObject(PositionProviderPtr provider) override;
+  void setPositionObject(PositionProviderPtr provider) override;
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);
@@ -153,14 +153,14 @@ public:
 
   const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
 
-  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
+  boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
   QGraphicsTextItem* makeNameLabel() const;
 
   const std::set<ConnectionLine*>& connections() const { return connections_; }
 
 protected:
-  virtual void moveEvent(QMoveEvent * event) override;
+  void moveEvent(QMoveEvent * event) override;
 
 public Q_SLOTS:
   void makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
@@ -180,9 +180,9 @@ Q_SIGNALS:
   void highlighted(bool highlighted);
   void incomingConnectionStateChange(bool disabled, int index);
 protected:
-  virtual void mousePressEvent(QMouseEvent* event) override;
-  virtual void mouseReleaseEvent(QMouseEvent* event) override;
-  virtual void mouseMoveEvent(QMouseEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
   template <typename Func, typename Pred>
@@ -226,18 +226,18 @@ class BlankPort : public PortWidgetBase
 {
 public:
   explicit BlankPort(QWidget* parent);
-  virtual SCIRun::Dataflow::Networks::PortId id() const override;
-  virtual size_t nconnections() const override { return 0; }
-  virtual std::string get_typename() const override { return ""; }
-  virtual std::string get_portname() const override { return "<Blank>"; }
-  virtual bool isInput() const override { return false; }
-  virtual bool isDynamic() const override { return false; }
-  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;// { return "<Blank>"; }
-  virtual size_t getIndex() const override { return 0; }
-  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
+  SCIRun::Dataflow::Networks::PortId id() const override;
+  size_t nconnections() const override { return 0; }
+  std::string get_typename() const override { return ""; }
+  std::string get_portname() const override { return "<Blank>"; }
+  bool isInput() const override { return false; }
+  bool isDynamic() const override { return false; }
+  SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;// { return "<Blank>"; }
+  size_t getIndex() const override { return 0; }
+  boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
 
-  virtual QColor color() const override;
-  virtual bool isLightOn() const override { return false; }
+  QColor color() const override;
+  bool isLightOn() const override { return false; }
 };
 
 class InputPortWidget : public PortWidget
@@ -276,7 +276,7 @@ class SubnetInputPortWidget : public InputPortWidget
 {
 public:
   SubnetInputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
-  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+  Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
 private:
   Dataflow::Networks::PortDescriptionInterface* realPort_;
 };
@@ -285,7 +285,7 @@ class SubnetOutputPortWidget : public OutputPortWidget
 {
 public:
   SubnetOutputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
-  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+  Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
 private:
   Dataflow::Networks::PortDescriptionInterface* realPort_;
 };

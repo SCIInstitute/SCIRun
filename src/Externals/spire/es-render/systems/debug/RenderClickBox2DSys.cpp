@@ -158,7 +158,7 @@ public:
           xformToUse, camera.front().data, time.front().globalTime);
 
       GL(glDrawElements(mIBO.primMode, mIBO.numPrims,
-                        mIBO.primType, 0));
+                        mIBO.primType, nullptr));
     }
   }
 };

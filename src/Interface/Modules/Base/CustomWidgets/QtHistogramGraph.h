@@ -73,12 +73,12 @@ namespace SCIRun
     protected:
       /// PAINTEVENT:
       /// Overloaded call that redraws the histogram plot
-      virtual void paintEvent(QPaintEvent *event);
+      void paintEvent(QPaintEvent *event) override;
 
     public:
-      virtual void mousePressEvent(QMouseEvent* e);
+      void mousePressEvent(QMouseEvent* e) override;
 
-      virtual void mouseMoveEvent(QMouseEvent* e);
+      void mouseMoveEvent(QMouseEvent* e) override;
 
     private:
       Core::Math::Histogram histogram_;

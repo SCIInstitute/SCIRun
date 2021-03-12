@@ -67,7 +67,7 @@ class CerealHeap : public spire::ComponentContainer<T>, public ComponentSerializ
     static yes impl( V* );
     static no  impl(...);
 
-    enum { value = sizeof( impl( static_cast<U*>(0) ) ) == sizeof(yes) };
+    enum { value = sizeof( impl( static_cast<U*>(nullptr) ) ) == sizeof(yes) };
   };
 
   /// Has getname function implementation
@@ -82,7 +82,7 @@ class CerealHeap : public spire::ComponentContainer<T>, public ComponentSerializ
     static yes impl( V* );
     static no  impl(...);
 
-    enum { value = sizeof( impl( static_cast<U*>(0) ) ) == sizeof(yes) };
+    enum { value = sizeof( impl( static_cast<U*>(nullptr) ) ) == sizeof(yes) };
   };
 
 public:
@@ -95,7 +95,7 @@ public:
                   "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
     // Build component array.
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
 
@@ -133,7 +133,7 @@ public:
       return nullptr;
     }
 
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
 
@@ -164,7 +164,7 @@ public:
     static_assert( has_member_serialize<T>::value,
                   "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
     s.prepareForNewComponent();
@@ -286,7 +286,7 @@ private:
 
         // Check to see if __cindex exists inside of the dictionary.
         int trueIndex = 0;
-        if (Tny_get(obj, "__cindex") != NULL)
+        if (Tny_get(obj, "__cindex") != nullptr)
         {
           int32_t serializedIndex = 0;
           CerealSerializeType<int32_t>::in(obj, "__cindex", componentIndex);

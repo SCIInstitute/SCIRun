@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         AddLinkedNodesToLinearSystem();
-        virtual void setStateDefaults() override {}
-        virtual void execute() override;
+        void setStateDefaults() override {}
+        void execute() override;
 
         INPUT_PORT(0, LHS, SparseRowMatrix);
         INPUT_PORT(1, RHS, DenseColumnMatrix);

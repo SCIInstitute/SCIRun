@@ -224,7 +224,7 @@ public:
                                   geom.front().stride);
 
     GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                      ibo.front().primType, 0));
+                      ibo.front().primType, nullptr));
 
     shaders::unbindPreappliedAttrib(geom.front().appliedAttribs,
                                     static_cast<size_t>(geom.front().attribSize));

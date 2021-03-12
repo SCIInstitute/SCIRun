@@ -64,8 +64,8 @@ namespace Visualization {
   {
   public:
     ShowString();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, String, String);
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)

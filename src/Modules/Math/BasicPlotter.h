@@ -61,8 +61,8 @@ namespace SCIRun {
       {
       public:
         BasicPlotter();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT(0, InputMatrix, DenseMatrix);
 

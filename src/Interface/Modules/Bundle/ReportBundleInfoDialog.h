@@ -44,8 +44,8 @@ class SCISHARE ReportBundleInfoDialog : public ModuleDialogGeneric,
 public:
   ReportBundleInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+    QWidget* parent = nullptr);
+        void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
     void pullAndDisplayInfo();
 };

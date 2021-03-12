@@ -56,7 +56,7 @@ namespace SCIRun {
           static const AlgorithmOutputName DistanceField;
           static const AlgorithmOutputName ValueField;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }}}}

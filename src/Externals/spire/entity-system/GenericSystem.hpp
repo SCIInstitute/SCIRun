@@ -913,7 +913,7 @@ public:
 
   /// This function should be overriden and return true for all components
   /// which may be optional.
-  virtual bool isComponentOptional(uint64_t templateID) override {return false;}
+  bool isComponentOptional(uint64_t templateID) override {return false;}
 
   /// This function gets called before we start walking components from the
   /// walkComponents function.

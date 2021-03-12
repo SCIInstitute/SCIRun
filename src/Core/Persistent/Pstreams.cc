@@ -70,7 +70,7 @@ namespace SCIRun {
   BinaryPiostream::BinaryPiostream(const std::string& filename, Direction dir,
     const int& v, LoggerHandle pr)
     : Piostream(dir, v, filename, pr),
-    fp_(0)
+    fp_(nullptr)
   {
     if (v == -1) // no version given so use PERSISTENT_VERSION
       version_ = PERSISTENT_VERSION;
@@ -153,7 +153,7 @@ namespace SCIRun {
 BinaryPiostream::BinaryPiostream(int fd, Direction dir, const int& v,
                                  LoggerHandle pr)
   : Piostream(dir, v, "", pr),
-    fp_(0)
+    fp_(nullptr)
 {
   if (v == -1) // No version given so use PERSISTENT_VERSION.
     version_ = PERSISTENT_VERSION;
@@ -786,7 +786,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
 {
   if (dir==Read)
   {
-    ostr=0;
+    ostr=nullptr;
     istr=new std::ifstream(filename.c_str());
     if (!istr)
     {
@@ -819,7 +819,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
   }
   else
   {
-    istr=0;
+    istr=nullptr;
     ostr = new std::ofstream(filename.c_str(), std::ios_base::binary | std::ios_base::out);
     std::ostream& out=*ostr;
     if (!out)
@@ -837,7 +837,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
 TextPiostream::TextPiostream(std::istream *strm, LoggerHandle pr)
   : Piostream(Read, -1, "", pr),
     istr(strm),
-    ostr(0),
+    ostr(nullptr),
     ownstreams_p_(false)
 {
   char hdr[12];
@@ -867,7 +867,7 @@ TextPiostream::TextPiostream(std::istream *strm, LoggerHandle pr)
 
 TextPiostream::TextPiostream(std::ostream *strm, LoggerHandle pr)
   : Piostream(Write, -1, "", pr),
-    istr(0),
+    istr(nullptr),
     ostr(strm),
     ownstreams_p_(false)
 {
@@ -1726,7 +1726,7 @@ TextPiostream::eof() {
 FastPiostream::FastPiostream(const std::string& filename, Direction dir,
                              LoggerHandle pr)
   : Piostream(dir, -1, filename, pr),
-    fp_(0)
+    fp_(nullptr)
 {
   if (dir==Read)
   {
@@ -1792,7 +1792,7 @@ FastPiostream::FastPiostream(const std::string& filename, Direction dir,
 
 FastPiostream::FastPiostream(int fd, Direction dir, LoggerHandle pr)
 : Piostream(dir, -1, "", pr),
-fp_(0)
+fp_(nullptr)
 {
   if (dir==Read)
   {

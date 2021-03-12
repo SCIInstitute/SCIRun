@@ -46,7 +46,7 @@ namespace SCIRun {
         using AlgoMakerMap = std::map<std::string, NamedAlgoMaker>;
 
         HardCodedAlgorithmFactory();
-        virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const;
+        SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const override;
         size_t numAlgorithms() const { return factoryMap_.size(); }
         AlgoMakerMap::const_iterator begin() const { return factoryMap_.cbegin(); }
         AlgoMakerMap::const_iterator end() const { return factoryMap_.cend(); }

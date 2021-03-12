@@ -129,12 +129,11 @@ namespace Networks {
     //! Interface from xml reading to tcl.
     //! this could be virtualized and used to interface with another gui type.
     void gui_add_module_at_position(const std::string &mod_id,
-                                    const std::string &package,
-                                    const std::string &category,
-                                    const std::string &module,
-                                    const std::string &version,
-                                    const std::string &x,
-                                    const std::string &y);
+        const std::string &package,
+        const std::string &category,
+        const std::string &module,
+        const std::string &x,
+        const std::string &y);
 
     void gui_add_connection(const std::string &con_id,
                             const std::string &from_id, const std::string &from_port,

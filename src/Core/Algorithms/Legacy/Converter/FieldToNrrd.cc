@@ -92,7 +92,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -119,7 +119,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -144,7 +144,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -169,7 +169,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -193,7 +193,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[0] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -218,7 +218,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[0] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -308,7 +308,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -349,7 +349,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -389,7 +389,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -429,7 +429,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -468,7 +468,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -507,7 +507,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -616,7 +616,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -660,7 +660,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -704,7 +704,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -747,7 +747,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -790,7 +790,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);

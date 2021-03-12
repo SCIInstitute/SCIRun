@@ -52,7 +52,7 @@ namespace SCIRun
         explicit G3DToFieldReader(Logging::LoggerHandle log);
         bool read(const std::string& filename, FieldHandle& field_handle);
         bool write(const std::string& filename, const FieldHandle& field);
-        virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
+        AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
 
       private:
         Logging::LoggerHandle log_;

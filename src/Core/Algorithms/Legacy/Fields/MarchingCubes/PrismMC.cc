@@ -76,7 +76,7 @@ void PrismMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpar
   geomHandle_ = triangles_;
  #endif
 
-  trisurf_ = 0;
+  trisurf_ = nullptr;
   if (build_field_)
   {
     FieldInformation fi("TriSurfMesh",basis_order_,"double");

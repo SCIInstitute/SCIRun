@@ -106,7 +106,7 @@ void matfile::mfwrite(void *buffer,int elsize,int size)
 	FILE *fptr;
 	fptr = m_->fptr_;
 
-    if (fptr == 0) return;
+    if (fptr == nullptr) return;
     if (static_cast<int>(fwrite(buffer,elsize,size,fptr)) != size) throw io_error();
     if (ferror(fptr)) throw io_error();
 }
@@ -116,7 +116,7 @@ void matfile::mfwrite(void *buffer,int elsize,int size,int offset)
     FILE *fptr;
   	fptr = m_->fptr_;
 
-	  if (fptr == 0) return;
+	  if (fptr == nullptr) return;
     if (fseek(fptr,offset,SEEK_SET) != 0) throw io_error();
     if (ferror(fptr)) throw io_error();
     if (static_cast<int>(fwrite(buffer,elsize,size,fptr)) != size) throw io_error();
@@ -125,12 +125,12 @@ void matfile::mfwrite(void *buffer,int elsize,int size,int offset)
 
 void matfile::mfread(void *buffer,int elsize,int size)
 {
-	if (m_->fcmpbuffer_ == 0)
+	if (m_->fcmpbuffer_ == nullptr)
 	{
 		FILE *fptr;
 		fptr = m_->fptr_;
 
-		if (fptr == 0) return;
+		if (fptr == nullptr) return;
 		if (static_cast<int>(fread(buffer,elsize,size,fptr)) != size) throw io_error();
 		if (ferror(fptr)) throw io_error();
 		if (m_->byteswap_) mfswapbytes(buffer,elsize,size);
@@ -146,12 +146,12 @@ void matfile::mfread(void *buffer,int elsize,int size)
 
 void matfile::mfread(void *buffer,int elsize,int size,int offset)
 {
-	if (m_->fcmpbuffer_ == 0)
+	if (m_->fcmpbuffer_ == nullptr)
 	{
 		FILE *fptr;
 		fptr = m_->fptr_;
 
-		if (fptr == 0) return;
+		if (fptr == nullptr) return;
 		if (fseek(fptr,offset,SEEK_SET) != 0) throw io_error();
 		if (ferror(fptr)) throw io_error();
 		if (static_cast<int>(fread(buffer,elsize,size,fptr)) != size) throw io_error();
@@ -176,7 +176,7 @@ void matfile::mfwriteheader()
 {
 	short endian = 19785;	// In characters this is 'MI'
 
-    if (m_->fptr_ == 0) return;
+    if (m_->fptr_ == nullptr) return;
     mfwrite(static_cast<void *>(&(m_->headertext_[0])),sizeof(char),116,0);
 	  mfwrite(static_cast<void *>(&(m_->subsysdata_[0])),sizeof(int32_t),2,116);
     mfwrite(static_cast<void *>(&(m_->version_)),sizeof(short),1,124);
@@ -210,11 +210,11 @@ void matfile::mfreadheader()
 
 // constructors
 matfile::matfile()
-    : m_(0)
+    : m_(nullptr)
 {
 	m_ = new mxfile;
-	m_->fptr_ = 0;
-	m_->fcmpbuffer_ = 0;
+	m_->fptr_ = nullptr;
+	m_->fcmpbuffer_ = nullptr;
 	m_->fcmpsize_ = 0;
 	m_->byteswap_ = 0;
 	m_->ref_ = 1;
@@ -222,10 +222,10 @@ matfile::matfile()
 }
 
 matfile::matfile(const std::string& filename,const std::string& mode)
-    : m_(0)
+    : m_(nullptr)
 {
 	m_ = new mxfile;
-	m_->fptr_ = 0;
+	m_->fptr_ = nullptr;
 	m_->byteswap_ = 0;
 	m_->ref_ = 1;
 	m_->compressmode_ = false;
@@ -242,7 +242,7 @@ matfile::~matfile()
 		if (m_->fptr_) close();
 		delete m_;
 	}
-	m_ = 0;
+	m_ = nullptr;
 }
 
 // copy and assignment operators
@@ -257,7 +257,7 @@ matfile& matfile::operator= (const matfile &mf)
 {
     if (this != &mf)
     {
-		if (m_ != 0)
+		if (m_ != nullptr)
 		{
 			m_->ref_--;
 			if (m_->ref_ == 0)
@@ -265,7 +265,7 @@ matfile& matfile::operator= (const matfile &mf)
 				if (m_->fptr_) close();
 				delete m_;
 			}
-			m_ = 0;
+			m_ = nullptr;
 		}
         m_ = mf.m_;
         m_->ref_++;
@@ -366,23 +366,23 @@ void matfile::open(const std::string& filename,const std::string& mode)
     }
     catch (...)
     {
-        if (m_->fptr_) { fclose(m_->fptr_); m_->fptr_ = 0; }
+        if (m_->fptr_) { fclose(m_->fptr_); m_->fptr_ = nullptr; }
         throw;
     }
 }
 
 void matfile::close()
 {
-    if (m_->fptr_ == 0) return;	// file is already closed
+    if (m_->fptr_ == nullptr) return;	// file is already closed
     try
     {
         while (m_->ptrstack_.size()) { m_->ptrstack_.pop();}	// empty pointer stack
         if (iswriteaccess()) mfwriteheader();
-        fclose(m_->fptr_); m_->fptr_ = 0;
+        fclose(m_->fptr_); m_->fptr_ = nullptr;
     }
     catch (...)
     {	// if writeheader failed, force the std::FILE to close
-        if (m_->fptr_) { fclose(m_->fptr_); m_->fptr_ = 0; }
+        if (m_->fptr_) { fclose(m_->fptr_); m_->fptr_ = nullptr; }
         throw;
     }
 
@@ -420,7 +420,7 @@ void matfile::rewind()
     }
 
   m_->compressmode_ = false;
-	m_->fcmpbuffer_ = 0;
+	m_->fcmpbuffer_ = nullptr;
 	m_->fcmpsize_ = 0;
 }
 
@@ -509,14 +509,14 @@ bool matfile::opencompression()
 	// Currently we assume there is no compression block in another
 	// compression block (this does not make sense anyway) and
 	// according to MATLAB's description will not be generated neither
-	if (m_->fcmpbuffer_ != 0) throw compression_error();
+	if (m_->fcmpbuffer_ != nullptr) throw compression_error();
 
 	// Get the size and position of the compressed data
 	int compressblockoffset = m_->curptr_.datptr;
 	int compressblocksize = m_->curptr_.size;
 
 	// Make sure we are not in compressed mode
-	m_->fcmpbuffer_ = 0;
+	m_->fcmpbuffer_ = nullptr;
 
 	// Create a new buffer structure
 	compressbuffer cmpbuffer;
@@ -541,12 +541,12 @@ bool matfile::opencompression()
 	}
 
 	// We still need to uncompress the block
-	if (m_->fcmpbuffer_ == 0)
+	if (m_->fcmpbuffer_ == nullptr)
 	{
 		// We need to decompress the buffer
-		char *sourcebuffer = 0;
+		char *sourcebuffer = nullptr;
 		matfiledata destbuffer;
-		int32_t *destbufferheader = 0;
+		int32_t *destbufferheader = nullptr;
 		int destlen = 0;
 
 		// We do some dynamic allocation here, if this fails the function
@@ -609,19 +609,19 @@ bool matfile::opencompression()
 			m_->fcmpcount_ = 0;
 
 			// free the remaining buffers
-			if (sourcebuffer != 0) delete[] sourcebuffer;
-			sourcebuffer = 0;
-			if (destbufferheader != 0) delete[] destbufferheader;
-			destbufferheader = 0;
+			if (sourcebuffer != nullptr) delete[] sourcebuffer;
+			sourcebuffer = nullptr;
+			if (destbufferheader != nullptr) delete[] destbufferheader;
+			destbufferheader = nullptr;
 
 		}
 		catch(...)
 		{   // clean up
 			// if (destbuffer != 0) delete[] destbuffer;
-			if (sourcebuffer != 0) delete[] sourcebuffer;
-			sourcebuffer = 0;
-			if (destbufferheader != 0) delete[] destbufferheader;
-			destbufferheader = 0;
+			if (sourcebuffer != nullptr) delete[] sourcebuffer;
+			sourcebuffer = nullptr;
+			if (destbufferheader != nullptr) delete[] destbufferheader;
+			destbufferheader = nullptr;
 			throw;
 		}
 	}
@@ -658,7 +658,7 @@ void matfile::closecompression()
 
     m_->ptrstack_.pop();
     m_->curptr_ = parptr;
-    m_->fcmpbuffer_ = 0;
+    m_->fcmpbuffer_ = nullptr;
     m_->fcmpsize_ = 0;
     m_->fcmpoffset_ = 0;
     m_->fcmpcount_ = 0;

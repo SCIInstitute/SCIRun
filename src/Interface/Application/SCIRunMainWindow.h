@@ -116,11 +116,11 @@ public Q_SLOTS:
   void setSaveBeforeExecute(int state);
   void reportIssue();
 protected:
-  virtual void closeEvent(QCloseEvent* event) override;
-  virtual void keyPressEvent(QKeyEvent *event) override;
-  virtual void keyReleaseEvent(QKeyEvent *event) override;
-  virtual void showEvent(QShowEvent* event) override;
-  virtual void hideEvent(QHideEvent* event) override;
+  void closeEvent(QCloseEvent* event) override;
+  void keyPressEvent(QKeyEvent *event) override;
+  void keyReleaseEvent(QKeyEvent *event) override;
+  void showEvent(QShowEvent* event) override;
+  void hideEvent(QHideEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;

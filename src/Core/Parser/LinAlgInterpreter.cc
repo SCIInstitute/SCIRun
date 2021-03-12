@@ -482,7 +482,7 @@ namespace SCIRun {
 
   bool LinAlgProgram::add_sink(const std::string& name)
   {
-    LinAlgProgramSource ps; ps.set_matrix(0);
+    LinAlgProgramSource ps; ps.set_matrix(nullptr);
     output_sinks_[name] = ps;
     return (true);
   }

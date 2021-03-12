@@ -237,7 +237,7 @@ void NrrdData::io(Piostream& stream)
         nrrd_fname_ = path + nrrd_fname_.substr(2,nrrd_fname_.length());
       }
 
-      if (nrrdLoad(nrrd_, nrrd_fname_.c_str(), 0))
+      if (nrrdLoad(nrrd_, nrrd_fname_.c_str(), nullptr))
       {
         // Need to upgrade error reporting
         char *err = biffGet(NRRD);
@@ -486,7 +486,7 @@ void NrrdData::io(Piostream& stream)
       }
       Pio(stream, root);
 
-      NrrdIoState *no = 0;
+      NrrdIoState *no = nullptr;
       TextPiostream *text = dynamic_cast<TextPiostream*>(&stream);
       if (text)
       {

@@ -37,7 +37,7 @@ namespace Gui {
   class GuiGlobalCommandFactory : public Core::Commands::GlobalCommandFactory
   {
   public:
-    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const override;
+    Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const override;
   };
 
 }

@@ -51,7 +51,7 @@ using ::testing::Values;
 class ConvertMeshToPointCloudMeshAlgoTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
   }
@@ -91,7 +91,7 @@ public:
   }
 
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
 

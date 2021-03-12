@@ -45,7 +45,7 @@ class SCISHARE ConvertMeshToTetVolMeshAlgo : public AlgorithmBase
     }
 
     bool run(FieldHandle input, FieldHandle& output) const;
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     static AlgorithmInputName HexOrLatVol;
     static AlgorithmOutputName TetVol;

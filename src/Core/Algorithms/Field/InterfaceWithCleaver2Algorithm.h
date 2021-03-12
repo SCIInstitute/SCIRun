@@ -60,7 +60,7 @@ namespace Fields {
     static const AlgorithmOutputName BackgroundFieldUsed;
 
     AlgorithmOutput runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
   };
 
 }}}}

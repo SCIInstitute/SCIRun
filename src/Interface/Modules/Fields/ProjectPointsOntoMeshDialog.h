@@ -44,9 +44,9 @@ class SCISHARE ProjectPointsOntoMeshDialog : public ModuleDialogGeneric,
 public:
   ProjectPointsOntoMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 private Q_SLOTS:
     void push();
 };

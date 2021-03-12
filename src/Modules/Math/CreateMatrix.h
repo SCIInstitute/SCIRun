@@ -51,8 +51,8 @@ namespace Math {
   {
   public:
     CreateMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     OUTPUT_PORT(0, EnteredMatrix, DenseMatrix);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };

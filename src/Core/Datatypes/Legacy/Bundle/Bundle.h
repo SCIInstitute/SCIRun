@@ -46,7 +46,7 @@ class SCISHARE Bundle : public Datatype
   public:
     Bundle();
 
-    virtual Bundle* clone() const;
+    Bundle* clone() const override;
 
     bool empty() const;
     size_t size() const;
@@ -80,7 +80,7 @@ class SCISHARE Bundle : public Datatype
     UnderlyingMapType::const_iterator end() const { return bundle_.end(); }
 
     /// For writing bundles to file
-    virtual void io(Piostream&);
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -201,7 +201,7 @@ class SCISHARE Bundle : public Datatype
     /// Get the type of a handle (for BundleInfo)
     std::string    getHandleType(int index);
 #endif
-    virtual std::string dynamic_type_name() const { return type_id.type; }
+    std::string dynamic_type_name() const override { return type_id.type; }
 
 private:
 

@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         CalcTMP();
-        virtual void setStateDefaults() override {}
-        virtual void execute() override;
+        void setStateDefaults() override {}
+        void execute() override;
 
         INPUT_PORT(0, Amplitude, Matrix);
         INPUT_PORT(1, Depolarization_Time, Matrix);

@@ -43,7 +43,7 @@ namespace Gui {
   public Q_SLOTS:
     virtual void popUpParserHelp();
   protected:
-    explicit ModuleDialogWithParserHelp(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
+    explicit ModuleDialogWithParserHelp(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
     void connectParserHelpButton(QPushButton* button);
   private:
     QDialog* help_;
@@ -53,7 +53,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    ParserHelpDialog(QWidget* parent = 0);
+    ParserHelpDialog(QWidget* parent = nullptr);
   private Q_SLOTS:
     void searchText();
     void resetFormatting(const QString& text);

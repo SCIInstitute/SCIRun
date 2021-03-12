@@ -58,7 +58,7 @@ namespace Datatypes {
   {
   public:
     /// @todo: need to look up pattern for creating "end" iterators.
-    explicit SmartMeshIterator(VirtualMeshType* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
+    explicit SmartMeshIterator(VirtualMeshType* vmesh = nullptr, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
     {
       ENSURE_NOT_NULL(vmesh, "virtual mesh");
       if (!isEnd)

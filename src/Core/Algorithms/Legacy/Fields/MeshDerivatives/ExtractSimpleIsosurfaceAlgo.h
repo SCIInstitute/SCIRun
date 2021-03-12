@@ -56,7 +56,7 @@ public:
 
   bool run(FieldHandle input, const std::vector<double>& isovalues, FieldHandle& output) const;
 
-  AlgorithmOutput run(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

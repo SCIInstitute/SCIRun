@@ -44,7 +44,7 @@ namespace Fields {
 
   public:
     CalculateMeshCenterAlgo();
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
 
 }}}}

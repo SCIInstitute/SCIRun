@@ -99,7 +99,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
 //-----------------------------------------------------------------------------
 // Code segment class, all the function calls are based on this class
 // providing the program with input and output variables all located in one
-// piece of memory. Although this class points to auxilary memory block,
+// piece of memory. Although this class points to auxiliary memory block,
 // an effort is made to store them all in the same array, to minimize
 // page swapping
 
@@ -111,7 +111,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
       function_(function), index_(0), size_(1) {}
 
     ArrayMathProgramCode() :
-      function_(0), index_(0), size_(1) {}
+      index_(0), size_(1) {}
 
     inline void set_function(ArrayMathFunctionPtr function)
     {
@@ -272,31 +272,31 @@ class SCISHARE ArrayMathProgramSource {
 
   public:
     ArrayMathProgramSource() :
-      vmesh_(0), vfield_(0), matrix_(0), bool_array_(0), int_array_(0), double_array_(0) {}
+      vmesh_(nullptr), vfield_(nullptr), matrix_(nullptr), bool_array_(nullptr), int_array_(nullptr), double_array_(nullptr) {}
 
       void    set_vmesh(VMesh* vmesh)    { vmesh_ = vmesh; }
       VMesh*  get_vmesh()   const             { return (vmesh_); }
-      bool    is_vmesh() const                { return (vmesh_ != 0); }
+      bool    is_vmesh() const                { return (vmesh_ != nullptr); }
 
       void    set_vfield(VField* vfield) { vfield_ = vfield; }
       VField* get_vfield() const               { return (vfield_); }
-      bool    is_vfield() const                { return (vfield_ != 0); }
+      bool    is_vfield() const                { return (vfield_ != nullptr); }
 
       void    set_matrix(Core::Datatypes::MatrixHandle matrix) { matrix_ = matrix; }
       Core::Datatypes::MatrixHandle get_matrix()  const             { return (matrix_); }
-      bool    is_matrix()  const              { return (matrix_ != 0); }
+      bool    is_matrix()  const              { return (matrix_ != nullptr); }
 
       void    set_bool_array(std::vector<bool>* array) { bool_array_ = array; }
       std::vector<bool>* get_bool_array() const   { return (bool_array_); }
-      bool    is_bool_array()  const             { return (bool_array_ != 0); }
+      bool    is_bool_array()  const             { return (bool_array_ != nullptr); }
 
       void    set_int_array(std::vector<int>* array)  { int_array_ = array; }
       std::vector<int>* get_int_array()  const   { return (int_array_); }
-      bool    is_int_array()   const             { return (int_array_ != 0); }
+      bool    is_int_array()   const             { return (int_array_ != nullptr); }
 
       void    set_double_array(std::vector<double>* array)  { double_array_ = array; }
       std::vector<double>* get_double_array() const { return (double_array_); }
-      bool    is_double_array()   const            { return (double_array_ != 0); }
+      bool    is_double_array()   const            { return (double_array_ != nullptr); }
 
   private:
     VMesh*    vmesh_;
@@ -382,7 +382,7 @@ class SCISHARE ArrayMathProgramSource {
 
     // Central buffer for all parameters
     double* create_buffer(size_t size)
-    { buffer_.resize(size); return buffer_.empty() ? 0 : (&(buffer_[0])); }
+    { buffer_.resize(size); return buffer_.empty() ? nullptr : (&(buffer_[0])); }
 
     // Set variables which we use as temporal information structures
     /// @todo: need to remove them at some point

@@ -107,7 +107,7 @@ namespace SCIRun
       class SCISHARE NullCommand : public ParameterizedCommand
       {
       public:
-        virtual bool execute() override { return true; }
+        bool execute() override { return true; }
       };
 
       SCISHARE std::string mostRecentFileCode();

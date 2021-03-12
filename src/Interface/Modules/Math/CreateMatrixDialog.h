@@ -47,7 +47,7 @@ public:
 public Q_SLOTS:
   void moduleExecuted() override;
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
   void hideEvent(QHideEvent* event) override;
 
 private Q_SLOTS:

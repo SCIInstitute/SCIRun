@@ -33,7 +33,7 @@ namespace spire {
 
 ComponentSerialize::~ComponentSerialize()
 {
-  if (mTnyRoot != NULL && mDeserializing == false)
+  if (mTnyRoot != nullptr && mDeserializing == false)
   {
     Tny_free(mTnyRoot);
   }
@@ -48,12 +48,12 @@ void ComponentSerialize::prepareForNewComponent(int32_t componentIndex)
 
   mLastIndex = -1;
 
-  if (mTnyRoot != NULL && mDeserializing == false)
+  if (mTnyRoot != nullptr && mDeserializing == false)
   {
     Tny_free(mTnyRoot);
   }
 
-  mTnyRoot = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+  mTnyRoot = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
 
   if (componentIndex != -1)
   {
@@ -71,7 +71,7 @@ Tny* ComponentSerialize::getSerializedObject()
 Tny* ComponentSerialize::getTypeHeader()
 {
   // Build the type header (order is important!)
-  Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+  Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
 
   for (HeaderItem& item : mHeader)
   {

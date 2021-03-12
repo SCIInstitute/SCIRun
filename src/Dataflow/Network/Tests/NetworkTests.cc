@@ -49,7 +49,7 @@ using ::testing::NiceMock;
 class NetworkTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
@@ -58,7 +58,7 @@ protected:
     moduleFactory_.reset(new MockModuleFactory);
   }
 
-  virtual void TearDown()
+  void TearDown() override
   {
     moduleFactory_.reset();
     sf_.reset();

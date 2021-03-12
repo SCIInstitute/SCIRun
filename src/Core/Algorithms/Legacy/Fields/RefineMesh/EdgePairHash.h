@@ -29,7 +29,7 @@
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun{
@@ -43,12 +43,12 @@ namespace SCIRun{
         {
           size_t operator()(const edgepair_t &a) const
           {
-            boost::hash<size_t> h;
+            std::hash<size_t> h;
             return h((a.first << 3) ^ a.second);
           }
         };
 
-        typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+        typedef std::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
 
       }
     }

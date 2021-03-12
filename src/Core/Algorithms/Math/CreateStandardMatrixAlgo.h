@@ -60,7 +60,7 @@ namespace SCIRun{
                 public:
                     CreateStandardMatrixAlgo();
 
-                    AlgorithmOutput run(const AlgorithmInput& input) const;
+                    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
                     Datatypes::DenseMatrixHandle generateMatrix(const std::string& matrixType, int row, int col) const;
 

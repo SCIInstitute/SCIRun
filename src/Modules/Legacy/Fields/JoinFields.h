@@ -46,8 +46,8 @@ namespace SCIRun {
       public:
         JoinFields();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT_DYNAMIC(0, InputFields, Field);

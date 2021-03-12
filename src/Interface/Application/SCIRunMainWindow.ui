@@ -1067,7 +1067,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>*Import 4.x network file...</string>
+    <string>Import 4.x network file...</string>
    </property>
   </action>
   <action name="helpActionModuleFuzzySearch_">

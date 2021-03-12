@@ -37,8 +37,8 @@ namespace Visualization {
   {
   public:
     ShowOrientationAxes();
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputGeom, GeometryObject);

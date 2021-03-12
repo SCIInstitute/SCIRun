@@ -90,10 +90,10 @@ namespace SCIRun
       public:
         SimpleSource();
         ~SimpleSource();
-        virtual void cacheData(Core::Datatypes::DatatypeHandle data) override;
-        virtual void send(DatatypeSinkInterfaceHandle receiver) const override;
-        virtual bool hasData() const override;
-        virtual std::string describeData() const override;
+        void cacheData(Core::Datatypes::DatatypeHandle data) override;
+        void send(DatatypeSinkInterfaceHandle receiver) const override;
+        bool hasData() const override;
+        std::string describeData() const override;
 
         static void clearAllSources();
       protected:

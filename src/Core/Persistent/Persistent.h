@@ -69,8 +69,8 @@ public:
   PersistentTypeID(const std::string& type,
                      const std::string& parent,
                      PersistentMaker0 maker,
-                     Persistent* (*bc_maker1)() = 0,
-                     Persistent* (*bc_maker2)() = 0);
+                     Persistent* (*bc_maker1)() = nullptr,
+                     Persistent* (*bc_maker2)() = nullptr);
   std::string type;
   std::string parent;
   PersistentMaker0 maker;
@@ -78,13 +78,13 @@ public:
   Persistent* (*bc_maker2)();
 };
 
-typedef boost::shared_ptr<PersistentTypeID> PersistentTypeIDPtr;
-typedef boost::shared_ptr<Piostream> PiostreamPtr;
+  using PersistentTypeIDPtr = boost::shared_ptr<PersistentTypeID>;
+  using PiostreamPtr = boost::shared_ptr<Piostream>;
 
 SCISHARE PiostreamPtr auto_istream(const std::string& filename,
-                                   Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
+                                   Core::Logging::LoggerHandle pr = nullptr);
 SCISHARE PiostreamPtr auto_ostream(const std::string& filename, const std::string& type,
-                                 Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
+                                 Core::Logging::LoggerHandle pr = nullptr);
 
 
 //----------------------------------------------------------------------
@@ -208,18 +208,18 @@ class SCISHARE Persistent {
     static void add_class(const std::string& type,
                           const std::string& parent,
                           Persistent* (*maker)(),
-                          Persistent* (*bc_maker1)() = 0,
-                          Persistent* (*bc_maker2)() = 0);
+                          Persistent* (*bc_maker1)() = nullptr,
+                          Persistent* (*bc_maker2)() = nullptr);
 
     static void add_mesh_class(const std::string& type,
                           Persistent* (*maker)(),
-                          Persistent* (*bc_maker1)() = 0,
-                          Persistent* (*bc_maker2)() = 0);
+                          Persistent* (*bc_maker1)() = nullptr,
+                          Persistent* (*bc_maker2)() = nullptr);
 
     static void add_field_class(const std::string& type,
                           Persistent* (*maker)(),
-                          Persistent* (*bc_maker1)() = 0,
-                          Persistent* (*bc_maker2)() = 0);
+                          Persistent* (*bc_maker1)() = nullptr,
+                          Persistent* (*bc_maker2)() = nullptr);
   private:
     // Mutex protecting the list, these are in the class so they will be
     // initialized before any of the static functions can be called
@@ -269,7 +269,7 @@ void PioImpl(Piostream& stream, boost::shared_ptr<T>& data, const PersistentType
 */
 
 template<class T>
-inline void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
@@ -282,7 +282,7 @@ inline void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::e
 }
 
 template<class T>
-inline void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
@@ -295,7 +295,7 @@ inline void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::
 }
 
 template<class T>
-inline void Pio(Piostream& stream, T* data, size_type sz)
+void Pio(Piostream& stream, T* data, size_type sz)
 {
   if (!stream.block_io(data, sizeof(T), sz))
   {
@@ -305,7 +305,7 @@ inline void Pio(Piostream& stream, T* data, size_type sz)
 }
 
 template <typename Size>
-inline void Pio_size(Piostream& stream, Size& size)
+void Pio_size(Piostream& stream, Size& size)
 {
   long long temp = static_cast<long long>(size);
   stream.io(temp);
@@ -313,7 +313,7 @@ inline void Pio_size(Piostream& stream, Size& size)
 }
 
 template <typename Index>
-inline void Pio_index(Piostream& stream, Index& index)
+void Pio_index(Piostream& stream, Index& index)
 {
   long long temp = static_cast<long long>(index);
   stream.io(temp);
