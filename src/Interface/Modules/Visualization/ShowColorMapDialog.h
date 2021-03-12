@@ -46,7 +46,7 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
   QColor text_color_;
   QDoubleSpinBox r_,g_,b_;
 private Q_SLOTS:

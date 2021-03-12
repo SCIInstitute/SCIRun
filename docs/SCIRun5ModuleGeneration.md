@@ -349,10 +349,10 @@ class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
 public:
   @ModuleName@Dialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
     //this function would be from pulling data from module,
     // usually to change the UI.
-  virtual void pull() override;
+  void pull() override;
 };
 }}
  #endif
@@ -373,7 +373,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 @ModuleName@Dialog::@ModuleName@Dialog(const std::string& name,
   ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
+  QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
@@ -739,7 +739,7 @@ class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
 public:
   TestModuleSimpleUIDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 }}
 #endif
@@ -758,7 +758,7 @@ using namespace SCIRun::Modules::StringManip;
 
 TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name,
   ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
+  QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
@@ -1065,7 +1065,7 @@ namespace SCIRun {
 		public:
 			SortMatrixDialog(const std::string& name,
 						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
+						QWidget* parent = nullptr);
 		};
 }}
 #endif
@@ -1084,7 +1084,7 @@ using namespace SCIRun::Core::Algorithms;
 
 SortMatrixDialog::SortMatrixDialog(const std::string& name,
                 ModuleStateHandle state,
-         QWidget* parent/* = 0*/)
+         QWidget* parent/* = nullptr*/)
          : ModuleDialogGeneric(state, parent)
 {
          setupUi(this);
@@ -1173,7 +1173,7 @@ AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const
   {
     //TODO implement something with sparse
     error("SortMatrix: Currently only works with dense matrices");
-    output[Variables::OutputMatrix] = 0;
+    output[Variables::OutputMatrix] = nullptr;
     return output;
   }
   auto mat  = castMatrix::toDense (input_matrix);

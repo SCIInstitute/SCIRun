@@ -47,7 +47,7 @@ namespace Datatypes {
     explicit Scalar(const ScalarValue& val) : value_(val) {}
     ScalarValue value() const { return value_; }
     virtual double doubleValue() const = 0;
-    virtual std::string dynamic_type_name() const override { return "Scalar"; }
+    std::string dynamic_type_name() const override { return "Scalar"; }
   protected:
     ScalarValue value_;
   };
@@ -56,7 +56,7 @@ namespace Datatypes {
   {
   public:
     explicit Double(double value) : Scalar(value) {}
-    virtual Scalar* clone() const override { return new Double(toDouble()); }
+    Scalar* clone() const override { return new Double(toDouble()); }
     double toDouble() const;
     double doubleValue() const override { return toDouble(); }
   };
@@ -65,7 +65,7 @@ namespace Datatypes {
   {
   public:
     explicit Int32(int value) : Scalar(value) {}
-    virtual Scalar* clone() const override { return new Int32(toInt()); }
+    Scalar* clone() const override { return new Int32(toInt()); }
     int toInt() const;
     double doubleValue() const override { return static_cast<double>(toInt()); }
   };

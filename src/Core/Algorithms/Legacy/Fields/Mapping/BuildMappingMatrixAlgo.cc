@@ -64,8 +64,8 @@ namespace detail
   {
   public:
     BuildMappingMatrixPAlgoBase(const std::string& barrierName, int nproc) :
-      sfield_(0), dfield_(0), smesh_(0), dmesh_(0), rr_(0), cc_(0), vv_(0),
-      maxdist_(0), algo_(0), nproc_(nproc),
+      sfield_(nullptr), dfield_(nullptr), smesh_(nullptr), dmesh_(nullptr), rr_(nullptr), cc_(nullptr), vv_(nullptr),
+      maxdist_(0), algo_(nullptr), nproc_(nproc),
       barrier_(barrierName, nproc) {}
     VField* sfield_;
     VField* dfield_;

@@ -457,7 +457,7 @@ public:
     { return (0.0); }
 
   /// Get the geometrical size of topological mesh components
-  virtual double get_size(Node::index_type i) const { return 0.0; }
+  virtual double get_size(Node::index_type) const { return 0.0; }
   virtual double get_size(Edge::index_type i) const;
   virtual double get_size(Face::index_type i) const;
   virtual double get_size(Cell::index_type i) const;

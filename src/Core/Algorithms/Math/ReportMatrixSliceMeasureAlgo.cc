@@ -53,7 +53,7 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run(const AlgorithmInput& input) c
   {
     //TODO implement something with sparse
     error("ReportMatrixSliceMeasure: Currently only works with dense matrices");
-    output[Variables::OutputMatrix] = 0;
+    output[Variables::OutputMatrix] = nullptr;
     return output;
   }
   auto mat  = castMatrix::toDense (input_matrix);

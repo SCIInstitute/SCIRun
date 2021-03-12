@@ -93,15 +93,15 @@ namespace
   {
   public:
     InstanceCountIdGenerator() : instanceCount_(0) {}
-    virtual int makeId(const std::string& /*name*/) override final
+    int makeId(const std::string& /*name*/) override final
     {
       return instanceCount_++;
     }
-    virtual bool takeId(const std::string& name, int id) override final
+    bool takeId(const std::string& name, int id) override final
     {
       return false;
     }
-    virtual void reset() override final
+    void reset() override final
     {
       instanceCount_ = 0;
     }

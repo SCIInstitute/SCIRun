@@ -53,7 +53,7 @@ namespace State {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int)
     {
       ar & boost::serialization::make_nvp("stateMap", stateMap_);
     }
@@ -67,20 +67,20 @@ namespace boost {
   namespace serialization {
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameterName& apn, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameterName& apn, const unsigned int)
     {
       ar & boost::serialization::make_nvp("name", apn.name_);
     }
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int)
     {
       ar & boost::serialization::make_nvp("name", ap.nameForXml().name_);
       ar & boost::serialization::make_nvp("value", ap.valueForXml());
     }
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgoOption& opt, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgoOption& opt, const unsigned int)
     {
       ar & boost::serialization::make_nvp("option", opt.option_);
       ar & boost::serialization::make_nvp("options", opt.options_);

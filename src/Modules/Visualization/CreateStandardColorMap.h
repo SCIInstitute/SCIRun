@@ -65,8 +65,8 @@ namespace SCIRun
         CONVERTED_VERSION_OF_MODULE(CreateStandardColorMaps)
       public:
         CreateStandardColorMap();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         OUTPUT_PORT(0, ColorMapObject, ColorMap);
 

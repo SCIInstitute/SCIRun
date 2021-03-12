@@ -80,7 +80,7 @@ namespace Datatypes {
     struct SCISHARE MeshTypeID
     {
       MeshTypeID();
-      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = 0);
+      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = nullptr);
 
       std::string type_;
       MeshDefaultConstructor defCtor_;

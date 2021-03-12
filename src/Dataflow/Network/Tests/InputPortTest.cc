@@ -47,7 +47,7 @@ using ::testing::DefaultValue;
 class InputPortTest : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());

@@ -49,12 +49,6 @@ SET(Dataflow_Modules_DataIO_SRCS
   StreamACQFileFromDisk.cc
 )
 
-IF (HAVE_HDF5)
-  SET(Dataflow_Modules_DataIO_SRCS ${Dataflow_Modules_DataIO_SRCS}
-    ReadHDF5File.cc
-    WriteHDF5DumpFile.cc)
-ENDIF(HAVE_HDF5)
-
 SCIRUN_ADD_LIBRARY(Dataflow_Modules_DataIO ${Dataflow_Modules_DataIO_SRCS})
 
 TARGET_LINK_LIBRARIES(Dataflow_Modules_DataIO
@@ -81,11 +75,6 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_DataIO
   ${SCI_TEEM_LIBRARY}
   ${SLIVR_LIBRARY}
 )
-
-IF (HAVE_HDF5)
-  TARGET_LINK_LIBRARIES(Dataflow_Modules_DataIO
-    ${HDF5_LIBRARY})
-ENDIF(HAVE_HDF5)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_DataIO)

@@ -45,7 +45,7 @@ template <typename T>
 bool tny8In(Tny* root, const char* name, T& v)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_CHAR)
     {
@@ -69,7 +69,7 @@ template <typename T>
 bool tny32In(Tny* root, const char* name, T& v)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_INT32)
     {
@@ -93,7 +93,7 @@ template <typename T>
 bool tny64In(Tny* root, const char* name, T& v)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_INT64)
     {
@@ -116,7 +116,7 @@ bool tny64In(Tny* root, const char* name, T& v)
 bool inBool(Tny* root, const char* name, bool& ch)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_CHAR)
     {
@@ -165,7 +165,7 @@ Tny* outDouble(Tny* root, const char* name, const double& v)  {return tnyGeneric
 bool inBinary(Tny* root, const char* name, void* data, size_t size)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_BIN)
     {
@@ -223,12 +223,12 @@ Tny* outString(Tny* root, const char* name, const char* str)
 bool inBinaryMalloc(Tny* root, const char* name, void** data)
 {
   Tny* obj = Tny_get(root, name);
-  if (obj != NULL)
+  if (obj != nullptr)
   {
     if (obj->type == TNY_BIN)
     {
       *data = std::malloc(obj->size);
-      if (*data != NULL)
+      if (*data != nullptr)
       {
         std::memcpy(*data, obj->value.ptr, obj->size);
         return true;
@@ -267,7 +267,7 @@ template <typename T>
 Tny* tnyGenericOutArray(Tny* root, const T& v, TnyType type)
 {
   T* ptr = const_cast<T*>(&v);
-  return Tny_add(root, type, NULL, static_cast<void*>(ptr), 0);
+  return Tny_add(root, type, nullptr, static_cast<void*>(ptr), 0);
 }
 
 template <typename T>
@@ -379,7 +379,7 @@ Tny* inBinaryArray(Tny* root, void* data, size_t size)
 Tny* outBinaryArray(Tny* root, const void* data, size_t size)
 {
   void* ptr = const_cast<void*>(data);
-  return Tny_add(root, TNY_BIN, NULL, ptr, size);
+  return Tny_add(root, TNY_BIN, nullptr, ptr, size);
 }
 
 Tny* inStringArray(Tny* root, char* str, size_t maxSize)
@@ -398,7 +398,7 @@ Tny* inBinaryMallocArray(Tny* root, void** data)
   if (root->type == TNY_BIN)
   {
     *data = std::malloc(root->size);
-    if (*data != NULL)
+    if (*data != nullptr)
       std::memcpy(*data, root->value.ptr, root->size);
     else
       std::cerr << "es-cereal: Failed to allocate memory for size " << root->size << std::endl;

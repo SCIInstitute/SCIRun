@@ -25,40 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef INTERFACE_MODULES_SHOW_FIELD_H
 #define INTERFACE_MODULES_SHOW_FIELD_H
 
-#include "Interface/Modules/Visualization/ui_ShowField.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Visualization/ui_ShowField.h"
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-	namespace Gui {
+namespace Gui {
 
-		class SCISHARE ShowFieldDialog : public ModuleDialogGeneric,
-			public Ui::ShowFieldDialog
-		{
-			Q_OBJECT
+  class SCISHARE ShowFieldDialog : public ModuleDialogGeneric, public Ui::ShowFieldDialog
+  {
+    Q_OBJECT
 
-		public:
-			ShowFieldDialog(const std::string& name,
-				SCIRun::Dataflow::Networks::ModuleStateHandle state,
-				QWidget* parent = 0);
-			virtual void createStartupNote() override;
-		protected:
-			virtual void pullSpecial() override;
-		private Q_SLOTS:
-			void push();
-			void pushColor();
-      void assignDefaultMeshColor();
-      void assignDefaultTextColor();
-		private:
-			QColor defaultMeshColor_;
-      QColor defaultTextColor_;
-		};
+   public:
+    ShowFieldDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    void createStartupNote() override;
 
-	}
+   protected:
+    void pullSpecial() override;
+   private Q_SLOTS:
+    void push();
+    void pushColor();
+    void assignDefaultMeshColor();
+    void assignDefaultTextColor();
+
+   private:
+    QColor defaultMeshColor_;
+    QColor defaultTextColor_;
+  };
+
+}
 }
 
 #endif

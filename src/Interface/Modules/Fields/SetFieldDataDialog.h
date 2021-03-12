@@ -44,7 +44,7 @@ class SCISHARE SetFieldDataDialog : public ModuleDialogGeneric,
 public:
   SetFieldDataDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 
 }

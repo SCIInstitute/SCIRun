@@ -42,7 +42,7 @@ namespace General {
   public:
     std::string describe(const Datatypes::DatatypeHandle& data) const;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return AlgorithmOutput(); }
+    AlgorithmOutput run(const AlgorithmInput& input) const override { return AlgorithmOutput(); }
   };
 
 }}}}

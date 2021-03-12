@@ -42,7 +42,7 @@ namespace SCIRun
       Q_OBJECT
 
     public:
-      ShortcutsInterface(QWidget *parent = 0);
+      ShortcutsInterface(QWidget *parent = nullptr);
     private:
       void updateFontsAndText();
     };

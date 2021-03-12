@@ -55,7 +55,7 @@ template<class MESH>
 class VImageMesh : public VMeshShared<MESH> {
   public:
 
-    virtual bool is_imagemesh()  override         { return (true); }
+    bool is_imagemesh()  override         { return (true); }
 
     explicit VImageMesh(MESH* mesh) : VMeshShared<MESH>(mesh)
     {
@@ -69,12 +69,12 @@ class VImageMesh : public VMeshShared<MESH> {
       DEBUG_DESTRUCTOR("VImageMesh")
     }
 
-    virtual void size(VMesh::Node::size_type& size) const override;
-    virtual void size(VMesh::ENode::size_type& size) const override;
-    virtual void size(VMesh::Edge::size_type& size) const override;
-    virtual void size(VMesh::Face::size_type& size) const override;
-    virtual void size(VMesh::Elem::size_type& size) const override;
-    virtual void size(VMesh::DElem::size_type& size) const override;
+    void size(VMesh::Node::size_type& size) const override;
+    void size(VMesh::ENode::size_type& size) const override;
+    void size(VMesh::Edge::size_type& size) const override;
+    void size(VMesh::Face::size_type& size) const override;
+    void size(VMesh::Elem::size_type& size) const override;
+    void size(VMesh::DElem::size_type& size) const override;
 
     virtual void get_nodes(VMesh::Node::array_type& nodes,
                            VMesh::Edge::index_type i) const override;
@@ -127,25 +127,25 @@ class VImageMesh : public VMeshShared<MESH> {
                             VMesh::Elem::index_type i) const override;
 
     /// Get the center of a certain mesh element
-    virtual void get_center(Point &point, VMesh::Node::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::ENode::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Edge::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Face::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::Elem::index_type i) const override;
-    virtual void get_center(Point &point, VMesh::DElem::index_type i) const override;
+    void get_center(Point &point, VMesh::Node::index_type i) const override;
+    void get_center(Point &point, VMesh::ENode::index_type i) const override;
+    void get_center(Point &point, VMesh::Edge::index_type i) const override;
+    void get_center(Point &point, VMesh::Face::index_type i) const override;
+    void get_center(Point &point, VMesh::Elem::index_type i) const override;
+    void get_center(Point &point, VMesh::DElem::index_type i) const override;
 
     /// Get the centers of a series of nodes
-    virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
-    virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
+    void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
+    void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
 
-    virtual double get_size(VMesh::Node::index_type i) const override;
-    virtual double get_size(VMesh::Edge::index_type i) const override;
-    virtual double get_size(VMesh::Face::index_type i) const override;
-    virtual double get_size(VMesh::Elem::index_type i) const override;
-    virtual double get_size(VMesh::DElem::index_type i) const override;
+    double get_size(VMesh::Node::index_type i) const override;
+    double get_size(VMesh::Edge::index_type i) const override;
+    double get_size(VMesh::Face::index_type i) const override;
+    double get_size(VMesh::Elem::index_type i) const override;
+    double get_size(VMesh::DElem::index_type i) const override;
 
-    virtual bool locate(VMesh::Node::index_type &i, const Point &point) const override;
-    virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
+    bool locate(VMesh::Node::index_type &i, const Point &point) const override;
+    bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
     virtual bool locate(VMesh::Elem::index_type &i,
                         VMesh::coords_type &coords,
                         const Point &point) const override;
@@ -229,14 +229,14 @@ class VImageMesh : public VMeshShared<MESH> {
                                      VMesh::Elem::index_type idx,
                                      double* Ji) const override;
 
-    virtual double  scaled_jacobian_metric(const VMesh::Elem::index_type) const override;
-    virtual double  jacobian_metric(const VMesh::Elem::index_type) const override;
+    double  scaled_jacobian_metric(const VMesh::Elem::index_type) const override;
+    double  jacobian_metric(const VMesh::Elem::index_type) const override;
 
-    virtual void get_dimensions(VMesh::dimension_type& dims) override;
-    virtual void get_elem_dimensions(VMesh::dimension_type& dims) override;
+    void get_dimensions(VMesh::dimension_type& dims) override;
+    void get_elem_dimensions(VMesh::dimension_type& dims) override;
 
-    virtual Transform get_transform() const override;
-    virtual void set_transform(const Transform& t) override;
+    Transform get_transform() const override;
+    void set_transform(const Transform& t) override;
 
     virtual void get_interpolate_weights(const Point& point,
                                          VMesh::ElemInterpolate& ei,
@@ -2003,8 +2003,8 @@ template<class MESH>
 class VStructQuadSurfMesh : public VImageMesh<MESH> {
 public:
 
-  virtual bool is_structquadsurfmesh() { return (true); }
-  virtual bool is_imagemesh()          { return (false); }
+  bool is_structquadsurfmesh() override { return (true); }
+  bool is_imagemesh() override { return (false); }
 
   /// constructor and descructor
   VStructQuadSurfMesh(MESH* mesh) :
@@ -2075,125 +2075,125 @@ public:
 
 
   /// Get the center of a certain mesh element
-  virtual void get_center(Point &point, VMesh::Node::index_type i) const;
-  virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Face::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
-  virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
+  void get_center(Point &point, VMesh::Node::index_type i) const override;
+  void get_center(Point &point, VMesh::ENode::index_type i) const override;
+  void get_center(Point &point, VMesh::Edge::index_type i) const override;
+  void get_center(Point &point, VMesh::Face::index_type i) const override;
+  void get_center(Point &point, VMesh::Elem::index_type i) const override;
+  void get_center(Point &point, VMesh::DElem::index_type i) const override;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
+  void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
+  void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
 
-  virtual double get_size(VMesh::Node::index_type i) const;
-  virtual double get_size(VMesh::Edge::index_type i) const;
-  virtual double get_size(VMesh::Face::index_type i) const;
-  virtual double get_size(VMesh::Elem::index_type i) const;
-  virtual double get_size(VMesh::DElem::index_type i) const;
+  double get_size(VMesh::Node::index_type i) const override;
+  double get_size(VMesh::Edge::index_type i) const override;
+  double get_size(VMesh::Face::index_type i) const override;
+  double get_size(VMesh::Elem::index_type i) const override;
+  double get_size(VMesh::DElem::index_type i) const override;
 
-  virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i,
+  bool locate(VMesh::Node::index_type &i, const Point &point) const override;
+  bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
+  bool locate(VMesh::Elem::index_type &i,
                       VMesh::coords_type& coords,
-                      const Point &point) const;
+                      const Point &point) const override;
 
-  virtual bool find_closest_node(double& pdist, Point &result,
+  bool find_closest_node(double& pdist, Point &result,
                                  VMesh::Node::index_type& elem,
-                                 const Point &p) const;
+                                 const Point &p) const override;
 
-  virtual bool find_closest_node(double& pdist, Point &result,
+  bool find_closest_node(double& pdist, Point &result,
                                  VMesh::Node::index_type& elem,
                                  const Point &p,
-                                 double maxdist) const;
+                                 double maxdist) const override;
 
-  virtual bool find_closest_elem(double& pdist,
+  bool find_closest_elem(double& pdist,
                                  Point &result,
                                  VMesh::coords_type& coords,
                                  VMesh::Elem::index_type& elem,
-                                 const Point &p) const;
+                                 const Point &p) const override;
 
-  virtual bool find_closest_elem(double& pdist,
+  bool find_closest_elem(double& pdist,
                                  Point &result,
                                  VMesh::coords_type& coords,
                                  VMesh::Elem::index_type& elem,
                                  const Point &p,
-                                 double maxdist) const;
+                                 double maxdist) const override;
 
-  virtual bool find_closest_elems(double& pdist, Point &result,
+  bool find_closest_elems(double& pdist, Point &result,
                                   VMesh::Elem::array_type& elems,
-                                  const Point &p) const;
+                                  const Point &p) const override;
 
-  virtual bool get_coords(VMesh::coords_type &coords, const Point &point,
-                                              VMesh::Elem::index_type i) const;
-  virtual void interpolate(Point &p,
+  bool get_coords(VMesh::coords_type &coords, const Point &point,
+                                              VMesh::Elem::index_type i) const override;
+  void interpolate(Point &p,
                            const VMesh::coords_type &coords,
-                           VMesh::Elem::index_type i) const;
-  virtual void minterpolate(std::vector<Point> &p,
+                           VMesh::Elem::index_type i) const override;
+  void minterpolate(std::vector<Point> &p,
                             const std::vector<VMesh::coords_type> &coords,
-                            VMesh::Elem::index_type i) const;
+                            VMesh::Elem::index_type i) const override;
 
-  virtual void derivate(VMesh::dpoints_type &p, const VMesh::coords_type &coords,
-                                              VMesh::Elem::index_type i) const;
+  void derivate(VMesh::dpoints_type &p, const VMesh::coords_type &coords,
+                                              VMesh::Elem::index_type i) const override;
 
-  virtual void set_point(const Point &p, VMesh::Node::index_type i);
+  void set_point(const Point &p, VMesh::Node::index_type i) override;
 
-  virtual Point* get_points_pointer() const;
+  Point* get_points_pointer() const override;
 
-  virtual void get_random_point(Point &p,
+  void get_random_point(Point &p,
                                 VMesh::Elem::index_type i,
-                                FieldRNG &rng) const;
+                                FieldRNG &rng) const override;
 
-  virtual double det_jacobian(const VMesh::coords_type& coords,
-                              VMesh::Elem::index_type idx) const;
+  double det_jacobian(const VMesh::coords_type& coords,
+                              VMesh::Elem::index_type idx) const override;
 
-  virtual void jacobian(const VMesh::coords_type& coords,
+  void jacobian(const VMesh::coords_type& coords,
                         VMesh::Elem::index_type idx,
-                        double* J) const;
+                        double* J) const override;
 
-  virtual double  inverse_jacobian(const VMesh::coords_type& coords,
+  double  inverse_jacobian(const VMesh::coords_type& coords,
                                    VMesh::Elem::index_type idx,
-                                   double* Ji) const;
+                                   double* Ji) const override;
 
-  virtual double scaled_jacobian_metric(const VMesh::Elem::index_type idx) const;
-  virtual double jacobian_metric(const VMesh::Elem::index_type idx) const;
+  double scaled_jacobian_metric(const VMesh::Elem::index_type idx) const override;
+  double jacobian_metric(const VMesh::Elem::index_type idx) const override;
 
 
-  virtual void get_interpolate_weights(const Point& point,
+  void get_interpolate_weights(const Point& point,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_interpolate_weights(const VMesh::coords_type& coords,
+  void get_interpolate_weights(const VMesh::coords_type& coords,
                                        VMesh::Elem::index_type elem,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<Point>& point,
+  void get_minterpolate_weights(const std::vector<Point>& point,
                                        VMesh::MultiElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
+  void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
                                         VMesh::Elem::index_type elem,
                                         VMesh::MultiElemInterpolate& ei,
-                                        int basis_order) const;
+                                        int basis_order) const override;
 
-  virtual void get_gradient_weights(const Point& point,
+  void get_gradient_weights(const Point& point,
                                     VMesh::ElemGradient& eg,
-                                    int basis_order) const;
+                                    int basis_order) const override;
 
-  virtual void get_gradient_weights(const VMesh::coords_type& coords,
+  void get_gradient_weights(const VMesh::coords_type& coords,
                                     VMesh::Elem::index_type elem,
                                     VMesh::ElemGradient& eg,
-                                    int basis_order) const;
+                                    int basis_order) const override;
 
-  virtual void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
+  void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
                                      VMesh::Elem::index_type elem,
                                      VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;
+                                     int basis_order) const override;
 
-  virtual void get_mgradient_weights(const std::vector<Point>& point,
+  void get_mgradient_weights(const std::vector<Point>& point,
                                      VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;
+                                     int basis_order) const override;
 
 protected:
   template <class INDEX>
@@ -2613,7 +2613,7 @@ Point*
 VStructQuadSurfMesh<MESH>::
 get_points_pointer() const
 {
-  if (points_.size() == 0) return (0);
+  if (points_.size() == 0) return (nullptr);
   return (&(points_[0]));
 }
 

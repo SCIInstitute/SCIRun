@@ -58,7 +58,7 @@ namespace SCIRun {
         class MockModuleStateFactory : public ModuleStateInterfaceFactory
         {
         public:
-          virtual ModuleStateInterface* make_state(const std::string& name) const
+          ModuleStateInterface* make_state(const std::string& name) const override
           {
             return new ::testing::NiceMock<MockModuleState>;
           }

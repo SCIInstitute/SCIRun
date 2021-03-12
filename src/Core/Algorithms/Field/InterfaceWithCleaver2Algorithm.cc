@@ -276,7 +276,7 @@ namespace detail
           }
           else
           {
-            THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "float field is NULL pointer");
+            THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "float field is null pointer");
           }
         }
         else

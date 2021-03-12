@@ -38,7 +38,7 @@
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <Core/Logging/Log.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -85,7 +85,7 @@ GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 bool
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
-  typedef boost::unordered_multimap<index_type,pointtype> pointhash_map_type;
+  typedef std::unordered_multimap<index_type,pointtype> pointhash_map_type;
 
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   using namespace Parameters;

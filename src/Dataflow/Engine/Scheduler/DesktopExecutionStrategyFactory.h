@@ -40,8 +40,8 @@ namespace Engine {
   {
   public:
     explicit DesktopExecutionStrategyFactory(const boost::optional<std::string>& threadMode);
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const;
-    virtual ExecutionStrategyHandle createDefault() const;
+    ExecutionStrategyHandle create(ExecutionStrategy::Type type) const override;
+    ExecutionStrategyHandle createDefault() const override;
   private:
     boost::optional<std::string> threadMode_;
     ExecutionStrategyHandle serial_, parallel_, dynamic_;

@@ -173,7 +173,7 @@ namespace
   {
   public:
     HardCodedPythonTestCommand(const std::string& script, bool enabled) : script_(script), enabled_(enabled) {}
-    virtual bool execute() override
+    bool execute() override
     {
       if (!enabled_)
         return false;
@@ -193,7 +193,7 @@ namespace
   class HardCodedPythonFactory : public NetworkEventCommandFactory
   {
   public:
-    virtual CommandHandle create(NetworkEventCommands type) const override
+    CommandHandle create(NetworkEventCommands type) const override
     {
       const auto& prefs = Preferences::Instance();
       switch (type)

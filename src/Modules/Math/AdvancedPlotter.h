@@ -50,8 +50,8 @@ namespace SCIRun {
       {
       public:
         LinePlotter();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT_DYNAMIC(0, IndependentVariable, DenseMatrix);
         INPUT_PORT_DYNAMIC(1, DependentVariables, DenseMatrix);

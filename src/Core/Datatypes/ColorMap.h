@@ -52,7 +52,7 @@ namespace Datatypes {
       const bool invert = false, const double rescale_scale = 0.5, const double rescale_shift = 1.0,
       const std::vector<double>& alphaPoints = {});
 
-    virtual ColorMap* clone() const override;
+    ColorMap* clone() const override;
 
     std::vector<ColorRGB> getColorData() const {return colorData_;}
     std::string getColorMapName() const {return nameInfo_;}
@@ -71,7 +71,7 @@ namespace Datatypes {
     double valueToIndex(Core::Geometry::Tensor &tensor) const;
     double valueToIndex(const Core::Geometry::Vector &vector) const;
 
-    virtual std::string dynamic_type_name() const override { return "ColorMap"; }
+    std::string dynamic_type_name() const override { return "ColorMap"; }
 
   private:
     ///<< Internal functions.

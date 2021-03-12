@@ -66,7 +66,7 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
 
   if( config_path )
   {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_LOCAL_APPDATA, 0, 0, dir ) ) )
+    if ( SUCCEEDED( SHGetFolderPath( nullptr, CSIDL_LOCAL_APPDATA, nullptr, 0, dir ) ) )
     {
       user_dir = boost::filesystem::path( dir );
       return true;
@@ -79,7 +79,7 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
   }
   else
   {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, 0, 0, dir ) ) )
+    if ( SUCCEEDED( SHGetFolderPath( nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, dir ) ) )
     {
       user_dir = boost::filesystem::path( dir );
       return true;

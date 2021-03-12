@@ -58,7 +58,7 @@ namespace SCIRun
       class SCISHARE NullCommandFactory : public NetworkEventCommandFactory
       {
       public:
-        virtual CommandHandle create(NetworkEventCommands) const override;
+        CommandHandle create(NetworkEventCommands) const override;
       };
 
       typedef boost::shared_ptr<GlobalCommandFactory> GlobalCommandFactoryHandle;

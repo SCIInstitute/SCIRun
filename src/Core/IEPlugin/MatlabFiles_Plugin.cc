@@ -58,7 +58,7 @@ SCIRun::MatlabMatrix_reader(LoggerHandle pr, const char *filename)
   std::string dummytext;
 
   // Define the output handle
-  MatrixHandle mh = 0;
+  MatrixHandle mh = nullptr;
 
   try
   {
@@ -84,7 +84,7 @@ SCIRun::MatlabMatrix_reader(LoggerHandle pr, const char *filename)
   }
   catch (...)
   {
-    mh = 0;
+    mh = nullptr;
   }
 
   return(mh);
@@ -135,7 +135,7 @@ SCIRun::MatlabNrrd_reader(LoggerHandle pr, const char *filename)
   std::string dummytext;
   NrrdDataHandle mh;
 
-  mh = 0;
+  mh = nullptr;
 
   try
   {
@@ -162,7 +162,7 @@ SCIRun::MatlabNrrd_reader(LoggerHandle pr, const char *filename)
   catch (...)
   {
     // If something went wrong
-    mh = 0;
+    mh = nullptr;
   }
 
   return(mh);
@@ -239,7 +239,7 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
   catch (...)
   {
     // Something went wrong...
-    mh = 0;
+    mh = nullptr;
   }
 
   return(mh);

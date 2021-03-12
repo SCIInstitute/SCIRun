@@ -230,8 +230,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dsize == 0) return;
       if (size() == 0) return;
       if (dsize > size()) dsize = size();	// limit casting and copying to amount of data we have
@@ -289,8 +289,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dim1 == 0) return;
       if (dim2 == 0) return;
       if (size() == 0) return;
@@ -363,8 +363,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dim1 == 0) return;
       if (dim2 == 0) return;
       if (dim3 == 0) return;
@@ -442,7 +442,7 @@ namespace SCIRun
       int dsize = size();
       vec.resize(dsize);
 
-      if (databuffer() == 0) { vec.resize(0); return; }
+      if (databuffer() == nullptr) { vec.resize(0); return; }
       if (size() == 0) { vec.resize(0); return; };
 
       switch (type())
@@ -498,7 +498,7 @@ namespace SCIRun
       // direct access to the data
 
       T val = 0;
-      if (databuffer() == 0) throw out_of_range();
+      if (databuffer() == nullptr) throw out_of_range();
       if (index >= size()) throw out_of_range();
 
       switch (type())
@@ -551,7 +551,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dsize*elsize(dtype),dtype);
 
@@ -610,7 +610,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dim1*dim2*elsize(dtype),dtype);
 
@@ -675,7 +675,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dim1*dim2*dim3*elsize(dtype),dtype);
 

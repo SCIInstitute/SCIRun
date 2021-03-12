@@ -49,7 +49,7 @@ class SCISHARE AlignMeshBoundingBoxesAlgo : public AlgorithmBase
     static AlgorithmOutputName OutputField;
     static AlgorithmOutputName TransformMatrix;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

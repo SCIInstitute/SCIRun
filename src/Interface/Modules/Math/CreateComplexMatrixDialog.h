@@ -45,7 +45,7 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 
 private Q_SLOTS:
   void pushMatrixToState(int state);

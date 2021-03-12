@@ -61,7 +61,7 @@ FieldHandle SCIRun::VtkToTriSurfField_reader(LoggerHandle pr, const char *filena
 
 FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   std::string fac_fn(filename);
   std::string pts_fn(filename);
@@ -471,7 +471,7 @@ FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filen
 
 FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   FieldInformation fi("TriSurfMesh", "TriLinearLgn", "double");
   result = CreateField(fi);
@@ -482,7 +482,7 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
 
   if (instr.fail()) {
     if (pr) pr->error("could not open file " + std::string(filename));
-    return 0;
+    return nullptr;
   }
 
   unsigned int line = 1;
@@ -517,7 +517,7 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
       std::ostringstream oss;
       oss << "parsing error:" << type << ": at line: " << line;
       if (pr) pr->error(oss.str());
-      return 0;
+      return nullptr;
     }
     line++;
   }

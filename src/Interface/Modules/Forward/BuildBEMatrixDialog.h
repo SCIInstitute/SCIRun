@@ -46,9 +46,9 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
 public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
+  void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 private Q_SLOTS:
   void pullNames();
   void pullFieldTypes();

@@ -62,10 +62,10 @@ class HexMC : public BaseMC
                            #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 			    triangles_(0),
 			   #endif
-                            trisurf_(0),
-                            trisurf_handle_(0),
-                            quadsurf_(0),
-                            quadsurf_handle_(0) {}
+                            trisurf_(nullptr),
+                            trisurf_handle_(nullptr),
+                            quadsurf_(nullptr),
+                            quadsurf_handle_(nullptr) {}
 
     virtual ~HexMC() {}
 
@@ -73,8 +73,8 @@ class HexMC : public BaseMC
     void extract_c( VMesh::Elem::index_type, double);
     void extract_n( VMesh::Elem::index_type, double);
 
-    virtual void reset( int, bool build_field, bool build_geom, bool transparency );
-    virtual FieldHandle get_field(double val);
+    void reset( int, bool build_field, bool build_geom, bool transparency ) override;
+    FieldHandle get_field(double val) override;
 
   private:
 

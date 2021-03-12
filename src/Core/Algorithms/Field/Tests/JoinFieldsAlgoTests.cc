@@ -57,7 +57,7 @@ using ::testing::Values;
 class JoinFieldsAlgoTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
   }
@@ -140,7 +140,7 @@ public:
   FieldList input;
   FieldHandle output;
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
@@ -150,7 +150,8 @@ protected:
     algo_.set(JoinFieldsAlgo::MakeNoData,      std::get<3>(GetParam()));
     algo_.set(JoinFieldsAlgo::Tolerance,       std::get<4>(GetParam()));
   }
-  virtual void TearDown(){ }
+
+  void TearDown() override { }
 };
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)

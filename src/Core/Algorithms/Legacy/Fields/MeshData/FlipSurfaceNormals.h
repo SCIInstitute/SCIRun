@@ -44,7 +44,7 @@ class SCISHARE FlipSurfaceNormalsAlgo : public AlgorithmBase
 
     /// Flip normals in input mesh
     bool run(FieldHandle& input, FieldHandle& output) const;
-	virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

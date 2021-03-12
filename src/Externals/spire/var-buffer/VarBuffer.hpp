@@ -81,7 +81,7 @@ public:
   void clear();
 
   /// Retrieves raw buffer contents.
-  char* getBuffer()         {return mBuffer.empty() ? 0 : &mBuffer[0];}
+  char* getBuffer()         {return mBuffer.empty() ? nullptr : &mBuffer[0];}
 
   /// Retrieves the current size of the buffer (size of all data currently
   /// written to the buffer).

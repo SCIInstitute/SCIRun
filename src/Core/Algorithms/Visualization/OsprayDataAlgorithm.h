@@ -66,7 +66,7 @@ namespace SCIRun
         {
         public:
           OsprayDataAlgorithm();
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
           Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle addSphere(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;

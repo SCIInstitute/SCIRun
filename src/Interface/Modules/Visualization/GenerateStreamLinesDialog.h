@@ -44,7 +44,7 @@ class SCISHARE GenerateStreamLinesDialog : public ModuleDialogGeneric,
 public:
   GenerateStreamLinesDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 private:
   GuiStringTranslationMap streamlineMethod_;
 };

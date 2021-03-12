@@ -415,7 +415,7 @@ HexTricubicHmt<T>::type_name(int n)
     static const std::string nm("HexTricubicHmt");
     return nm;
   } else {
-    return find_type_name((T *)0);
+    return find_type_name((T *)nullptr);
   }
 }
 
@@ -429,9 +429,9 @@ template <class T>
 const SCIRun::TypeDescription*
   get_type_description(Core::Basis::HexTricubicHmt<T> *)
 {
-  static SCIRun::TypeDescription* td = 0;
+  static SCIRun::TypeDescription* td = nullptr;
   if(!td){
-    const SCIRun::TypeDescription *sub = get_type_description((T*)0);
+    const SCIRun::TypeDescription *sub = get_type_description((T*)nullptr);
     SCIRun::TypeDescription::td_vec *subs = new SCIRun::TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new SCIRun::TypeDescription("HexTricubicHmt", subs,

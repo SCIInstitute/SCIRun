@@ -87,7 +87,7 @@ namespace SCIRun {
       ColorMapPreviewPoint(qreal x, qreal y);
       QPointF center() const { return center_; }
     protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event)
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override
       {
         //qDebug() << "ColorMapPreviewPoint clicked.";
         ////if (event->buttons() & Qt::LeftButton && event->modifiers() != Qt::ShiftModifier)
@@ -122,9 +122,9 @@ namespace SCIRun {
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
-      virtual void mousePressEvent(QMouseEvent* event) override;
-      virtual void mouseMoveEvent(QMouseEvent* event) override;
-      virtual void mouseReleaseEvent(QMouseEvent* event) override;
+      void mousePressEvent(QMouseEvent* event) override;
+      void mouseMoveEvent(QMouseEvent* event) override;
+      void mouseReleaseEvent(QMouseEvent* event) override;
     private:
       void removeDefaultLine();
       void drawAlphaPolyline();
@@ -147,7 +147,7 @@ namespace SCIRun {
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
     protected:
-      virtual void pullSpecial() override;
+      void pullSpecial() override;
     private Q_SLOTS:
       void selectCustomColorMin();
       void selectCustomColorMax();

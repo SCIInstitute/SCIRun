@@ -71,7 +71,7 @@ namespace SCIRun
       {
       public:
         explicit matfileerror(const std::string& msg = "") : msg_(msg) {}
-        virtual const char* what() const NOEXCEPT override
+        const char* what() const NOEXCEPT override
         { return msg_.c_str(); }
       private:
         std::string msg_;

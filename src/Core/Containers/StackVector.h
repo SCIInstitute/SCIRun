@@ -58,7 +58,7 @@ public:
   {
     this->fill(v);
   }
-  void resize(size_t size, const value_type& val = value_type())
+  void resize(size_t size)
   {
     size_ = size;
     //not sure what to do here. semantics is different, but SCIRun 4 probably overruns buffers all the time anyway...

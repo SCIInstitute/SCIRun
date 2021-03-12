@@ -42,7 +42,7 @@ namespace Gui {
 
   public:
     ShowMeshBoundingBoxDialog(const std::string& name,
-      SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+      SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
   };
 }}
 

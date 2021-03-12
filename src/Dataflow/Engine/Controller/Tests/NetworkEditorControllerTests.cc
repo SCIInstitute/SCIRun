@@ -70,7 +70,7 @@ public:
 class NetworkEditorControllerTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<ModuleHandle>::Set(ModuleHandle());
     DefaultValue<ConnectionId>::Set(ConnectionId(""));

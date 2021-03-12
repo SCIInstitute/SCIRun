@@ -41,7 +41,7 @@ namespace Console {
   {
   public:
     LoadFileCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   // private:
   //   int index_ = 0;
   };
@@ -49,63 +49,63 @@ namespace Console {
   class SCISHARE SaveFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>, public Commands::SaveFileCommandHelper
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     QuitAfterExecuteCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     QuitCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintHelpCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE InteractiveModeCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintModulesCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
    class SCISHARE SetupDataDirectoryCommand : public Core::Commands::ConsoleCommand
    {
    public:
-     virtual bool execute() override;
+     bool execute() override;
    };
 
 }}}

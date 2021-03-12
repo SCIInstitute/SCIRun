@@ -450,7 +450,7 @@ public:
     mComponents.emplace_back(sequence, component);
   }
 
-  virtual std::string describe() const override
+  std::string describe() const override
   {
     std::ostringstream ostr;
     ostr << "ComponentContainer(): " << "\n";

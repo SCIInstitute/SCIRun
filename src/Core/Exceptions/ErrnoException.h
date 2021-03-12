@@ -53,8 +53,8 @@ public:
   ErrnoException(const std::string&, int err, const char* file, int line);
   ErrnoException(const ErrnoException&);
   virtual ~ErrnoException() NOEXCEPT;
-  virtual const char* message() const;
-  virtual const char* type() const;
+  const char* message() const override;
+  const char* type() const override;
 
   int getErrno() const;
 protected:

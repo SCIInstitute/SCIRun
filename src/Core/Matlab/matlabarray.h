@@ -479,37 +479,37 @@ private:
 
 template<class T> inline void matlabarray::getnumericarray(T *data,int size) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->preal_.getandcast(data,size);
 }
 
 template<class T> inline void matlabarray::getimagnumericarray(T *data,int size) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->pimag_.getandcast(data,size);
 }
 
 template<class T> inline void matlabarray::getnumericarray(T **data,int dim1,int dim2) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2);
 }
 
 template<class T> inline void matlabarray::getimagnumericarray(T **data,int dim1,int dim2) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2);
 }
 
 template<class T> inline void matlabarray::getnumericarray(T ***data,int dim1,int dim2,int dim3) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2,dim3);
 }
 
 template<class T> inline void matlabarray::getimagnumericarray(T ***data,int dim1,int dim2,int dim3) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2,dim3);
 }
 
@@ -517,20 +517,20 @@ template<class T> inline void matlabarray::getimagnumericarray(T ***data,int dim
 
 template<class T> inline void matlabarray::getnumericarray(std::vector<T> &vec) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->preal_.getandcastvector(vec);
 }
 
 template<class T> inline void matlabarray::getimagnumericarray(std::vector<T> &vec) const
 {
-  if(m_ == 0) throw empty_matlabarray();
+  if(m_ == nullptr) throw empty_matlabarray();
   m_->pimag_.getandcastvector(vec);
 }
 
 
 template<class T> inline void matlabarray::setnumericarray(const T *data,int size,const std::vector<int> &dims)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T*,int,vector<int>)\n";
     throw internal_error();
@@ -546,7 +546,7 @@ template<class T> inline void matlabarray::setnumericarray(const T *data,int siz
 
 template<class T> inline void matlabarray::setnumericarray(const T *data,int size,const std::vector<int> &dims,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T*,int,vector<int>,mitype)\n";
     throw internal_error();
@@ -564,7 +564,7 @@ template<class T> inline void matlabarray::setnumericarray(const T *data,int siz
 
 template<class T> inline void matlabarray::setnumericarray(const T *data,int size)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T*,int)\n";
     throw internal_error();
@@ -580,7 +580,7 @@ template<class T> inline void matlabarray::setnumericarray(const T *data,int siz
 
 template<class T> inline void matlabarray::setnumericarray(const T *data,int size,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T*,int,mitype)\n";
     throw internal_error();
@@ -595,7 +595,7 @@ template<class T> inline void matlabarray::setnumericarray(const T *data,int siz
 
 template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,const std::vector<int> &dims)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T*,int,vector<int>)\n";
     throw internal_error();
@@ -611,7 +611,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T *data,int
 
 template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,const std::vector<int> &dims,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T*,int,vector<int>,mitype)\n";
     throw internal_error();
@@ -630,7 +630,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T *data,int
 
 template<class T> inline void matlabarray::setnumericarray(const T **data,int dim1, int dim2)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T**,int,int)\n";
     throw internal_error();
@@ -646,7 +646,7 @@ template<class T> inline void matlabarray::setnumericarray(const T **data,int di
 
 template<class T> inline void matlabarray::setnumericarray(const T **data,int dim1, int dim2 ,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T**,int,int,mitype)\n";
     throw internal_error();
@@ -662,7 +662,7 @@ template<class T> inline void matlabarray::setnumericarray(const T **data,int di
 
 template<class T> inline void matlabarray::setimagnumericarray(const T **data,int dim1, int dim2)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T**,int,int)\n";
     throw internal_error();
@@ -678,7 +678,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T **data,in
 
 template<class T> inline void matlabarray::setimagnumericarray(const T **data,int dim1, int dim2 ,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T**,int,int,mitype)\n";
     throw internal_error();
@@ -695,7 +695,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T **data,in
 
 template<class T> inline void matlabarray::setnumericarray(const T ***data,int dim1, int dim2, int dim3)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T***,int,int,int)\n";
     throw internal_error();
@@ -711,7 +711,7 @@ template<class T> inline void matlabarray::setnumericarray(const T ***data,int d
 
 template<class T> inline void matlabarray::setnumericarray(const T ***data,int dim1, int dim2, int dim3 ,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(T***,int,int,int,mitype)\n";
     throw internal_error();
@@ -727,7 +727,7 @@ template<class T> inline void matlabarray::setnumericarray(const T ***data,int d
 
 template<class T> inline void matlabarray::setimagnumericarray(const T ***data,int dim1, int dim2, int dim3)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T***,int,int,int)\n";
     throw internal_error();
@@ -743,7 +743,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T ***data,i
 
 template<class T> inline void matlabarray::setimagnumericarray(const T ***data,int dim1, int dim2, int dim3 ,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T***,int,int,int,mitype)\n";
     throw internal_error();
@@ -762,7 +762,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T ***data,i
 
 template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T*,int)\n";
     throw internal_error();
@@ -778,7 +778,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T *data,int
 
 template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(T*,int, mitype)\n";
     throw internal_error();
@@ -796,7 +796,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const T *data,int
 
 template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(vector<T>,vector<int>)\n";
     throw internal_error();
@@ -814,7 +814,7 @@ template<class T> inline void matlabarray::setnumericarray(const std::vector<T> 
 
 template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(vector<T>,vector<int>,mitype)\n";
     throw internal_error();
@@ -832,7 +832,7 @@ template<class T> inline void matlabarray::setnumericarray(const std::vector<T> 
 
 template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(vector<T>)\n";
     throw internal_error();
@@ -849,7 +849,7 @@ template<class T> inline void matlabarray::setnumericarray(const std::vector<T> 
 
 template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setnumericarray(vector<T>,mitype)\n";
     throw internal_error();
@@ -865,7 +865,7 @@ template<class T> inline void matlabarray::setnumericarray(const std::vector<T> 
 
 template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec,const std::vector<int> &dims)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(vector<T>,vector<int>)\n";
     throw internal_error();
@@ -883,7 +883,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const std::vector
 
 template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec, const std::vector<int> &dims,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(vector<T>,vector<int>,mitype)\n";
     throw internal_error();
@@ -901,7 +901,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const std::vector
 
 template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(vector<T>)\n";
     throw internal_error();
@@ -917,7 +917,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const std::vector
 
 template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec,mitype type)
 {
-  if(m_ == 0)
+  if(m_ == nullptr)
   {
     std::cerr << "internal error in setimagnumericarray(vector<T>,mitype)\n";
     throw internal_error();
@@ -933,7 +933,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const std::vector
 
 template<class T> inline void matlabarray::getrowsarray(T *rows,int size) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getrowsarray(T*,int)\n";
     throw internal_error();
@@ -944,7 +944,7 @@ template<class T> inline void matlabarray::getrowsarray(T *rows,int size) const
 
 template<class T> inline void matlabarray::setrowsarray(T *rows,int size)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setrowsarray(T*,int)\n";
     throw internal_error();
@@ -955,7 +955,7 @@ template<class T> inline void matlabarray::setrowsarray(T *rows,int size)
 
 template<class T>  inline void matlabarray::getcolsarray(T *cols,int size) const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in getcolsarray(T*,int)\n";
     throw internal_error();
@@ -966,7 +966,7 @@ template<class T>  inline void matlabarray::getcolsarray(T *cols,int size) const
 
 template<class T>  inline void matlabarray::setcolsarray(T *cols,int size)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in setcolsarray(T*,int)\n";
     throw internal_error();

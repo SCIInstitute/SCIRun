@@ -44,8 +44,8 @@ namespace Math {
   {
   public:
     SolveLinearSystem();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, LHS, Matrix);
     INPUT_PORT(1, RHS, Matrix);

@@ -50,7 +50,7 @@ class SCISHARE CalculateVectorMagnitudesAlgo : public AlgorithmBase
 
     static AlgorithmOutputName ScalarField;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

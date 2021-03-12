@@ -1267,7 +1267,7 @@ NewArrayMathEngine::add_output_matrix(const std::string& name)
   OutputMatrix m;
   m.array_name_ = name;
   m.matrix_name_ = tname;
-  m.matrix_ = 0;
+  m.matrix_ = nullptr;
   m.size_ = 0;
   matrixdata_.push_back(m);
 
@@ -1309,7 +1309,7 @@ NewArrayMathEngine::add_output_matrix(const std::string& name,
   OutputMatrix m;
   m.array_name_ = name;
   m.matrix_name_ = tname;
-  m.matrix_ = 0;
+  m.matrix_ = nullptr;
   m.size_ = 0;
   matrixdata_.push_back(m);
 
@@ -1824,8 +1824,8 @@ void
 NewArrayMathEngine::clear()
 {
   // Reset all values
-  pprogram_ = 0;
-  mprogram_ = 0;
+  pprogram_ = nullptr;
+  mprogram_ = nullptr;
 
   pre_expression_.clear();
   expression_.clear();

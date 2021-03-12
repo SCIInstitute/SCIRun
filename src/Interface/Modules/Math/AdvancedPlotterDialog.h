@@ -47,7 +47,7 @@ namespace SCIRun
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
     protected:
-      virtual void plotData() override;
+      void plotData() override;
     };
   }
 }

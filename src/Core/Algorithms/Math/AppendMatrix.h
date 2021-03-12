@@ -48,7 +48,7 @@ namespace Math {
     Outputs run(const Inputs& input, const Parameters& params) const;
     bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params) const;
     AppendMatrixAlgorithm();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
     static const AlgorithmInputName InputMatrices;
   };
 

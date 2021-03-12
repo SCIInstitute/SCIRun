@@ -56,8 +56,8 @@ namespace SCIRun {
 			{
 				public:
 					SetSubmatrix();
-					virtual void setStateDefaults() override;
-					virtual void execute() override;
+					void setStateDefaults() override;
+					void execute() override;
 
 					INPUT_PORT(0, InputMatrix, Matrix);
 					INPUT_PORT(1, Input_Submatrix, Matrix);

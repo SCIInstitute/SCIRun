@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Console;
 class NothingCommand : public ConsoleCommand
 {
 public:
-  virtual bool execute() override { return true; }
+  bool execute() override { return true; }
 };
 
 CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const

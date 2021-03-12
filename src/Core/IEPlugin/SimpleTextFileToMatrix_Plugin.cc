@@ -183,7 +183,7 @@ bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, c
   }
 
   double* dataptr = dense->data();
-  if (dataptr == 0)
+  if (dataptr == nullptr)
   {
     if (pr) pr->error("Empty matrix detected");
     return(false);

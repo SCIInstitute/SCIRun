@@ -53,7 +53,7 @@ class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
     static AlgorithmOutputName TDCSMatrix;
 
   bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output) const;
-  virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 			}}}}

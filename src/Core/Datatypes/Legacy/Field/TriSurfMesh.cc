@@ -44,7 +44,7 @@ template<class MESH>
 class VTriSurfMesh : public VUnstructuredMesh<MESH> {
 public:
 
-  virtual bool is_trisurfmesh()        { return (true); }
+  bool is_trisurfmesh() override { return (true); }
 
   /// constructor and destructor
   VTriSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh)
@@ -56,73 +56,73 @@ public:
     DEBUG_DESTRUCTOR("VTriSurfMesh")
   }
 
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Edge::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Face::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::DElem::index_type i) const;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Edge::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Face::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Elem::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Face::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Elem::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::DElem::index_type i) const;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Face::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Elem::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::DElem::index_type i) const override;
 
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Node::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Face::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::DElem::index_type i) const;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Node::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Face::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Elem::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Node::index_type i) const;
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Edge::index_type i) const;
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::DElem::index_type i) const;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::Node::index_type i) const override;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::Edge::index_type i) const override;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::Elem::index_type i) const override;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Node::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Edge::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Face::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::DElem::index_type i) const;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Node::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Edge::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Face::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Node::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Edge::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Face::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Elem::index_type i) const;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Node::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Edge::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Face::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Elem::index_type i) const override;
 
-  virtual void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Elem::index_type);
+  void set_nodes(VMesh::Node::array_type&,
+                         VMesh::Elem::index_type) override;
 
-  virtual void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Face::index_type);
+  void set_nodes(VMesh::Node::array_type&,
+                         VMesh::Face::index_type) override;
 
 
-  virtual void insert_node_into_elem(VMesh::Elem::array_type& newelems,
+  void insert_node_into_elem(VMesh::Elem::array_type& newelems,
                                      VMesh::Node::index_type& newnode,
                                      VMesh::Elem::index_type  elem,
-                                     Point& point);
+                                     Point& point) override;
 
-  virtual VMesh::index_type* get_elems_pointer() const;
-  virtual boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
-  virtual boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
+  VMesh::index_type* get_elems_pointer() const override;
+  boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() override { return this->mesh_->elem_grid_; }
+  boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() override { return this->mesh_->node_grid_; }
 
 };
 
@@ -388,7 +388,7 @@ VMesh::index_type*
 VTriSurfMesh<MESH>::
 get_elems_pointer() const
 {
-  if (this->mesh_->faces_.size() == 0) return (0);
+  if (this->mesh_->faces_.size() == 0) return (nullptr);
    return (&(this->mesh_->faces_[0]));
 }
 

@@ -53,15 +53,15 @@ namespace impl
   class TransposeMatrix : public Matrix::Visitor
   {
   public:
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
+    void visit(DenseMatrixGeneric<double>& dense) override
     {
       dense.transposeInPlace();
     }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
+    void visit(SparseRowMatrixGeneric<double>& sparse) override
     {
       sparse = sparse.transpose();
     }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
+    void visit(DenseColumnMatrixGeneric<double>& column) override
     {
       column = column.transpose();
     }

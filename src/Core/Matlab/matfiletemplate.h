@@ -59,7 +59,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
       if (dsize == 0) return;
       if (size() == 0) return;
       if (dsize > size()) dsize = size();	// limit casting and copying to amount of data we have
@@ -231,7 +231,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dsize*elsize(dtype),dtype);
 

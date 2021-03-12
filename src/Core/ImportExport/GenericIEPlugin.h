@@ -74,15 +74,15 @@ template <class Data>
 class IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
 {
 public:
-  virtual std::string pluginname() const override { return pluginname_; }
-  virtual std::string fileExtension() const override { return fileextension_; }
-  virtual std::string fileMagic() const override { return filemagic_; }
-  virtual bool hasReader() const override { return filereader_ != nullptr; }
-  virtual bool hasWriter() const override { return filewriter_ != nullptr; }
+  std::string pluginname() const override { return pluginname_; }
+  std::string fileExtension() const override { return fileextension_; }
+  std::string fileMagic() const override { return filemagic_; }
+  bool hasReader() const override { return filereader_ != nullptr; }
+  bool hasWriter() const override { return filewriter_ != nullptr; }
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
-  virtual bool equals(const GenericIEPluginInterface<Data>& other) const override;
+  boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  bool equals(const GenericIEPluginInterface<Data>& other) const override;
 
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,

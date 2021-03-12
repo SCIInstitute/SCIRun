@@ -187,7 +187,7 @@ SCIRun::Vector_get_h_file_path()
 
 const TypeDescription* SCIRun::Core::Geometry::get_type_description(Vector*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("Vector", Vector_get_h_file_path(),
 				"SCIRun", TypeDescription::DATA_E);

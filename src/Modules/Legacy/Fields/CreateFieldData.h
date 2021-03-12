@@ -48,8 +48,8 @@ namespace SCIRun {
       public:
         CreateFieldData();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputField, Field);

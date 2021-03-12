@@ -77,7 +77,7 @@ namespace SCIRun {
     bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field, Datatypes::MatrixHandle& interpolant );
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field,

@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         InsertFieldsIntoBundle();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
