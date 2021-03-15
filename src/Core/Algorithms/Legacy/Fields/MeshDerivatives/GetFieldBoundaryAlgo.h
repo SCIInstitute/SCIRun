@@ -53,7 +53,7 @@ public:
   /// Without mapping
   bool run(FieldHandle input, FieldHandle& output) const;
 
-  AlgorithmOutput run(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

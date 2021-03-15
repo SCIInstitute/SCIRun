@@ -81,7 +81,7 @@ namespace Networks {
       InputsChangedCheckerHandle inputsChanged,
       StateChangedCheckerHandle stateChanged,
       OutputPortsCachedCheckerHandle outputsCached);
-    virtual bool needToExecute() const override;
+    bool needToExecute() const override;
   private:
     InputsChangedCheckerHandle inputsChanged_;
     StateChangedCheckerHandle stateChanged_;
@@ -92,7 +92,7 @@ namespace Networks {
   {
   public:
     explicit InputsChangedCheckerImpl(const Module& module);
-    virtual bool inputsChanged() const override;
+    bool inputsChanged() const override;
   private:
     const Module& module_;
   };
@@ -101,7 +101,7 @@ namespace Networks {
   {
   public:
     explicit StateChangedCheckerImpl(const Module& module);
-    virtual bool newStatePresent() const override;
+    bool newStatePresent() const override;
   private:
     const Module& module_;
   };
@@ -110,7 +110,7 @@ namespace Networks {
   {
   public:
     explicit OutputPortsCachedCheckerImpl(const Module& module);
-    virtual bool outputPortsCached() const override;
+    bool outputPortsCached() const override;
   private:
     const Module& module_;
   };

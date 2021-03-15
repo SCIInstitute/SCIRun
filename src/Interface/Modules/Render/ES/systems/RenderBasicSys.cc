@@ -255,7 +255,7 @@ public:
 
     geom.front().attribs.bind();
 
-    GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims, ibo.front().primType, 0));
+    GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims, ibo.front().primType, nullptr));
 
     if (!depthMask)
     {

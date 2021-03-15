@@ -43,7 +43,7 @@
 #include <locale>
 
 /// TODO: use std::unordered_map when porting to SCIRun 5
-//#include <boost/unordered_map.hpp>
+//#include <unordered_map>
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;

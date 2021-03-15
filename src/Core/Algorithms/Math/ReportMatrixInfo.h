@@ -46,7 +46,7 @@ namespace Math {
     Outputs runImpl(const Inputs& input) const;
     static std::string summarize(const Outputs& info);
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
 
 }}}}

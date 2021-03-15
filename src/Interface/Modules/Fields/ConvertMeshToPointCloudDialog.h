@@ -43,7 +43,7 @@ namespace SCIRun {
     public:
       ConvertMeshToPointCloudDialog(const std::string& name,
                                     SCIRun::Dataflow::Networks::ModuleStateHandle
-                                    state, QWidget* parent = 0);
+                                    state, QWidget* parent = nullptr);
     private:
       GuiStringTranslationMap streamlineMethod_;
     };

@@ -151,7 +151,7 @@ TEST(BundleTests, CanGetElementsByName)
 {
   Bundle bundle;
   const std::string name = "foo";
-  FieldHandle f(new NullField(name));
+  FieldHandle f(new NullField());
   bundle.set(name, f);
   ASSERT_TRUE(bundle.isField(name));
   auto field = bundle.getField(name);

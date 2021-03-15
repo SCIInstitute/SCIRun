@@ -310,7 +310,7 @@ AlgorithmStatusReporter::AlgorithmStatusReporter()
 #if DEBUG
   setUpdaterFunc(defaultUpdaterFunc_);
 #else
-  setUpdaterFunc([](double x) {});
+  setUpdaterFunc([](double) {});
 #endif
 }
 

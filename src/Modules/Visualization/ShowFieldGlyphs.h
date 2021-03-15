@@ -40,14 +40,14 @@ namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowFieldGlyphs : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort < GeometryPortTag >,
-        public Core::Thread::Interruptible
+      class SCISHARE ShowFieldGlyphs final : public Dataflow::Networks::GeometryGeneratingModule,
+                                             public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
+                                             public Has1OutputPort<GeometryPortTag>,
+                                             public Core::Thread::Interruptible
       {
       public:
         ShowFieldGlyphs();
-        virtual void execute() override;
+        void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
         // Mesh Color
@@ -108,18 +108,15 @@ namespace SCIRun {
         INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        virtual void setStateDefaults() override;
+        void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
         void configureInputs(
-          FieldHandle pfield,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<Core::Datatypes::ColorMapHandle> pcolormap,
-          boost::optional<Core::Datatypes::ColorMapHandle> scolormap,
-          boost::optional<Core::Datatypes::ColorMapHandle> tcolormap);
+            FieldHandle pfield,
+            boost::optional<FieldHandle> sfield,
+            boost::optional<FieldHandle> tfield);
         RenderState::InputPort getInput(const std::string &port_name);
         void setSuperquadricEmphasis(int emphasis);
 

@@ -94,7 +94,7 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
     bool MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output);
 
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   private:
     Core::Logging::LoggerHandle pr_;
 };

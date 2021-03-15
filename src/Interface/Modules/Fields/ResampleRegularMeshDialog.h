@@ -44,7 +44,7 @@ class SCISHARE ResampleRegularMeshDialog : public ModuleDialogGeneric,
 public:
   ResampleRegularMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 private Q_SLOTS:
   void setGaussianWidgetsEnabled(const QString& label);
 };

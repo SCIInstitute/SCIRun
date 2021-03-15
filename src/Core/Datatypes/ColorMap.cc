@@ -44,6 +44,7 @@ using namespace SCIRun::Core::Logging;
 
 const static std::vector<ColorRGB> grayscaleData = {{0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}};
 
+/*
 const static std::vector<ColorRGB> orangeTintData = {{0.0784314, 0.0392157, 0}, {1, 0.960784, 0.921569}};
 
 const static std::vector<ColorRGB> redTintData = {{0.0784314, 0, 0}, {1, 0.921569, 0.921569}};
@@ -57,7 +58,7 @@ const static std::vector<ColorRGB> cyanTintData = {{0, 0.0784314, 0.0784314}, {0
 const static std::vector<ColorRGB> blueTintData = {{0, 0, 0.0784314}, {0.921569, 0.921569, 1}};
 
 const static std::vector<ColorRGB> purpleTintData = {{0.0392157, 0, 0.0784314}, {0.960784, 0.921569, 1}};
-
+*/
 const static std::vector<ColorRGB> bpSeismicData = {{0.000000, 0.000000, 1.000000}, {1.000000, 1.000000, 1.000000}, {1.000000, 0.000000, 0.000000}};
 
 const static std::vector<ColorRGB> donData = {{0, 0.352941, 1}, {0.2, 0.407843, 1}, {0.403922, 0.458824, 1}, {0.65098, 0.513725, 0.960784}, {0.709804, 0.509804, 0.847059}, {0.752941, 0.505882, 0.729412}, {0.772549, 0.501961, 0.67451}, {0.901961, 0.494118, 0.384314}, {0.941176, 0.494118, 0.192157}, {1, 0.521569, 0}};
@@ -104,13 +105,6 @@ const static std::map<std::string, const std::vector<ColorRGB>*> standardColorMa
   { "Rainbow", &rainbowData},
   { "Old Rainbow", &oldRainbowData},
   { "Grayscale", &grayscaleData},
-  //{ "Red Tint", &redTintData},
-  //{ "Orange Tint", &orangeTintData},
-  //{ "Yellow Tint", &yellowTintData},
-  //{ "Green Tint", &greenTintData},
-  //{ "Cyan Tint", &cyanTintData},
-  //{ "Blue Tint", &blueTintData},
-  //{ "Purple Tint", &purpleTintData},
   { "Blackbody", &blackbodyData},
   { "Darkhue", &darkhueData},
   { "Lighthue", &lighthueData},
@@ -132,11 +126,13 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
   const double &shift, const bool &invert, const double &rescale_scale, const double &rescale_shift,
   const std::vector<double>& alphaPoints)
 {
-  const std::vector<ColorRGB>* colorData = &rainbowData;
+  auto colorData = &rainbowData;
 
-  auto entry = standardColorMaps.find(name);
-  if (entry != standardColorMaps.end()) colorData = entry->second;
-  else logError("Color map name not implemented/recognized. Returning Rainbow.");
+  const auto entry = standardColorMaps.find(name);
+  if (entry != standardColorMaps.end()) 
+    colorData = entry->second;
+  else 
+    logError("Color map name not implemented/recognized. Returning Rainbow.");
 
   return boost::make_shared<ColorMap>(*colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
 }
@@ -218,8 +214,7 @@ inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double
   ColorRGB c1 = v[std::min(index + 1, segments)];
   m = m - index;
 
-  ColorRGB out = ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
-  return out;
+  return ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
 }
 
 double ColorMap::alpha(double transformedValue) const
@@ -229,12 +224,12 @@ double ColorMap::alpha(double transformedValue) const
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;
-  if(i == 0)
+  if (i == 0)
   {
     endx = alphaLookup_[0];
     starty = endy = alphaLookup_[1];
   }
-  else if(i == alphaLookup_.size())
+  else if (i == alphaLookup_.size())
   {
     startx = alphaLookup_[i - 2];
     endy = starty = alphaLookup_[i - 1];
@@ -255,7 +250,7 @@ double ColorMap::alpha(double transformedValue) const
 ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
 {
   double a = alpha(transformed);
-  return ColorRGB(colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a);
+  return {colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a};
 }
 
 ColorRGB ColorMap::getColorMapVal(double v) const
@@ -301,8 +296,6 @@ double ColorMap::valueToIndex(Tensor &tensor) const
   return getTransformedValue(magnitude);
 }
 
-
-
 //TODO: heavily refactor
 ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
 {
@@ -314,7 +307,7 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
 
-  for(auto &color : *colorData)
+  for(auto& color : *colorData)
   {
     colorList.push_back(color.r());
     colorList.push_back(color.g());

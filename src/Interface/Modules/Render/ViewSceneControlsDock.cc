@@ -609,7 +609,7 @@ void VisibleItemManager::updateVisible(QTreeWidgetItem* item, int column)
 class FixMacCheckBoxes : public QStyledItemDelegate
 {
 public:
-  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override
   {
     QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
     refToNonConstOption.showDecorationSelected = false;

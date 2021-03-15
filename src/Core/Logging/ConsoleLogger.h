@@ -43,12 +43,12 @@ namespace SCIRun
       class SCISHARE ConsoleLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const override;
-        virtual void warning(const std::string& msg) const override;
-        virtual void remark(const std::string& msg) const override;
-        virtual void status(const std::string& msg) const override;
-        virtual bool errorReported() const override { return errorReported_; }
-        virtual void setErrorFlag(bool flag) override { errorReported_ = flag; }
+        void error(const std::string& msg) const override;
+        void warning(const std::string& msg) const override;
+        void remark(const std::string& msg) const override;
+        void status(const std::string& msg) const override;
+        bool errorReported() const override { return errorReported_; }
+        void setErrorFlag(bool flag) override { errorReported_ = flag; }
       private:
         mutable bool errorReported_{ false };
       };
@@ -56,12 +56,12 @@ namespace SCIRun
       class SCISHARE NullLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const override {}
-        virtual void warning(const std::string& msg) const override {}
-        virtual void remark(const std::string& msg) const override {}
-        virtual void status(const std::string& msg) const override {}
-        virtual bool errorReported() const override { return false; }
-        virtual void setErrorFlag(bool flag) override {}
+        void error(const std::string&) const override {}
+        void warning(const std::string&) const override {}
+        void remark(const std::string&) const override {}
+        void status(const std::string&) const override {}
+        bool errorReported() const override { return false; }
+        void setErrorFlag(bool) override {}
       };
     }
   }

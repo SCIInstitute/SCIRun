@@ -138,7 +138,7 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
   {
     info << "Axis " << i << ":\n";
     std::string labelstr;
-    if (nh->getNrrd()->axis[i].label == 0 ||
+    if (!nh->getNrrd()->axis[i].label ||
         std::string(nh->getNrrd()->axis[i].label).length() == 0)
     {
       labelstr = "---";

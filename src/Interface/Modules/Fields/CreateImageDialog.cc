@@ -47,6 +47,11 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addDoubleSpinBoxManager(padPercentageSpinBox_, CreateImageModule::PadPercent);
 
   addComboBoxManager(mode_, CreateImageModule::Mode);
+  // these don't really do anything with the module, or they are broken. Fix will require module code refactoring
+  mode_->setVisible(false);
+  modeLabel_->setVisible(false);
+  index_->setVisible(false);
+  indexLabel_->setVisible(false);
 
   addComboBoxManager(axis_, CreateImageModule::Axis);
 
@@ -59,17 +64,22 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addDoubleSpinBoxManager(normalZ_, CreateImageModule::NormalZ);
 
   addDoubleSpinBoxManager(position_, CreateImageModule::Position);
-  connect(mode_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
+  connect(axis_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
 
   addComboBoxManager(dataLocation_, CreateImageModule::DataLocation);
 }
 
 void CreateImageDialog::enableWidgets(const QString& mode)
 {
-  index_->setReadOnly(mode!="Auto");
+  const auto useCustom = mode == "Custom";
+  for (auto& spinBox : { centerX_, centerY_, centerZ_, normalX_, normalY_, normalZ_ })
+  {
+    spinBox->setEnabled(useCustom);
+  }
+  position_->setEnabled(!useCustom);
 }
 
 void CreateImageDialog::pullSpecial()
 {
-  enableWidgets(QString::fromStdString(state_->getValue(CreateImageModule::Mode).toString()));
+  enableWidgets(QString::fromStdString(state_->getValue(CreateImageModule::Axis).toString()));
 }

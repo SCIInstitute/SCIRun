@@ -42,8 +42,8 @@ namespace Matlab {
   {
   public:
     ImportMatricesFromMatlab();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, Matrix1, Matrix);
     OUTPUT_PORT(1, Matrix2, Matrix);
@@ -59,9 +59,9 @@ namespace Matlab {
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
   protected:
-    virtual void postStateChangeInternalSignalHookup() override;
-    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const override;
-    virtual int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const override;
+    void postStateChangeInternalSignalHookup() override;
+    SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const override;
+    int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const override;
   };
 }}}
 

@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -74,7 +74,7 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output field");
 
   auto facade(input->mesh()->getFacade());
-  boost::unordered_map<Point, unsigned int, PointHash> pointFreq;
+  std::unordered_map<Point, unsigned int, PointHash> pointFreq;
   for (const auto& node : facade->nodes())
   {
     pointFreq[node.point()]++;

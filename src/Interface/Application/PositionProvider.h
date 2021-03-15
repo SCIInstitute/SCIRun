@@ -63,7 +63,7 @@ class ProxyWidgetPosition : public PositionProvider
 {
 public:
   explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset = QPointF());
-  virtual QPointF currentPosition() const override;
+  QPointF currentPosition() const override;
 private:
   QGraphicsProxyWidget* widget_;
   QPointF offset_;
@@ -73,7 +73,7 @@ class MidpointPositionerFromPorts : public PositionProvider
 {
 public:
   MidpointPositionerFromPorts(NeedsScenePositionProvider* p1, NeedsScenePositionProvider* p2);
-  virtual QPointF currentPosition() const override;
+  QPointF currentPosition() const override;
 private:
   NeedsScenePositionProvider *p1_, *p2_;
 };
@@ -82,7 +82,7 @@ class PassThroughPositioner : public PositionProvider
 {
 public:
   explicit PassThroughPositioner(const QGraphicsProxyWidget* widget);
-  virtual QPointF currentPosition() const override;
+  QPointF currentPosition() const override;
 private:
   const QGraphicsProxyWidget* widget_;
 };
@@ -91,7 +91,7 @@ class LambdaPositionProvider : public PositionProvider
 {
 public:
   explicit LambdaPositionProvider(std::function<QPointF()> pointFunc) : pointFunc_(pointFunc) {}
-  virtual QPointF currentPosition() const override { return pointFunc_(); }
+  QPointF currentPosition() const override { return pointFunc_(); }
 private:
   std::function<QPointF()> pointFunc_;
 };

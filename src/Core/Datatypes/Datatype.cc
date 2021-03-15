@@ -37,11 +37,11 @@ Datatype::Datatype() {}
 
 Datatype::~Datatype() {}
 
-Datatype::Datatype(const Datatype& other)
+Datatype::Datatype(const Datatype&)
 {
 }
 
-Datatype& Datatype::operator=(const Datatype& rhs)
+Datatype& Datatype::operator=(const Datatype&)
 {
   return *this;
 }

@@ -69,7 +69,7 @@ protected:
 
 /// -------- INPUTS TESTS ------------ ///
 /*
-// NULL fwd matrix + NULL measure data
+// null fwd matrix + null measure data
 TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDNullData)
 {
   // create inputs
@@ -99,7 +99,7 @@ TEST_F(TikhonovFunctionalTest, loadIDFwdMatrixANDNullData)
 
 }
 
-// NULL fwd matrix + RANF measured data
+// null fwd matrix + RANF measured data
 TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDRandData)
 {
   // create inputs

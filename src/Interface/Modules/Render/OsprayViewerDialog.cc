@@ -126,8 +126,6 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
   uint32_t ind[3] = { 0, 1, 2};
 
-  //renderer_->addModelToGroup(1, tvp, tvc, NULL, ind, 3, 1);
-  //renderer_->addInstaceOfGroup();
   #endif
 }
 
@@ -186,7 +184,8 @@ void OsprayViewerDialog::addToolBar()
 
 void OsprayViewerDialog::adjustToolbar()
 {
-  adjustToolbarForHighResolution(toolBar_);
+  if (toolBar_)
+    adjustToolbarForHighResolution(toolBar_);
 }
 
 void OsprayViewerDialog::addConfigurationButton()

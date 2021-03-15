@@ -114,7 +114,7 @@ namespace ren {
 
       GL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat,
         textureWidth, textureHeight, 0,
-        format, type, 0));
+        format, type, nullptr));
 
       // Simply update mGLToName and mNameToGL. The fulfillment system will
       // handle everything else.
@@ -248,7 +248,7 @@ namespace ren {
     GL(glBindTexture(GL_TEXTURE_2D, tex.glid));
     GL(glTexImage2D(GL_TEXTURE_2D, 0, tex.internalFormat,
       textureWidth, textureHeight, 0,
-      tex.format, tex.type, 0));
+      tex.format, tex.type, nullptr));
     tex.textureWidth = textureWidth;
     tex.textureHeight = textureHeight;
     return true;

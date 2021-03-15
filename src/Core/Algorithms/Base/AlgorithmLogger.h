@@ -45,12 +45,12 @@ namespace Algorithms {
     Core::Logging::LoggerHandle getLogger() const { return logger_; }
 
     /// functions for the algorithm, so it can forward errors if needed
-    virtual void error(const std::string& error) const;
-    virtual bool errorReported() const;
-    virtual void setErrorFlag(bool flag);
-    virtual void warning(const std::string& warning) const;
-    virtual void remark(const std::string& remark) const;
-    virtual void status(const std::string& status) const;
+    void error(const std::string& error) const override;
+    bool errorReported() const override;
+    void setErrorFlag(bool flag) override;
+    void warning(const std::string& warning) const override;
+    void remark(const std::string& remark) const override;
+    void status(const std::string& status) const override;
   private:
     Core::Logging::LoggerHandle logger_;
     Core::Logging::LoggerHandle defaultLogger_;

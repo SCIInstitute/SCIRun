@@ -65,10 +65,10 @@ class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
   public:
     ElectrodeCoilSetup();
 
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
-    virtual bool hasDynamicPorts() const override { return true; }
+    bool hasDynamicPorts() const override { return true; }
 
     INPUT_PORT(0, SCALP_SURF, Field);
     INPUT_PORT(1, LOCATIONS, Matrix);

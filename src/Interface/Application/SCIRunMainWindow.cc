@@ -42,7 +42,6 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -227,6 +226,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   makeFilterButtonMenu();
 
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(prefsWindow_->screenshotPathPushButton_, SIGNAL(clicked()), this, SLOT(setScreenshotDirectoryFromGUI()));
   //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
@@ -328,10 +328,10 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
   actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
-	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-		"QHeaderView::section { background: rgb(66,66,69);} "
-		);
+  moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
+	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+	  "QHeaderView::section { background: rgb(66,66,69);} "
+	  );
 
   hideNonfunctioningWidgets();
 

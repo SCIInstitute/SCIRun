@@ -60,7 +60,7 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Parallel.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <set>
 
@@ -80,7 +80,7 @@ template <class Basis> class HexVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVHexVolMesh(MESH*) { return (0); }
+VMesh* CreateVHexVolMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -420,22 +420,22 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual HexVolMesh *clone() const { return new HexVolMesh(*this); }
+  HexVolMesh *clone() const override { return new HexVolMesh(*this); }
 
   /// Destructor
   virtual ~HexVolMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get()); }
+  VMesh* vmesh() override { return (vmesh_.get()); }
 
-  MeshFacadeHandle getFacade() const
+  MeshFacadeHandle getFacade() const override
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+  int basis_order() override { return (basis_.polynomial_order()); }
 
   /// Topological dimension
   virtual int dimensionality() const { return 3; }
@@ -469,8 +469,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask);
-  virtual bool unsynchronize(mask_type sync);
+  bool synchronize(mask_type mask) override;
+  bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   /// Get the basis class.
@@ -1479,7 +1479,7 @@ public:
   }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+  void io(Piostream&) override;
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
@@ -1489,12 +1489,12 @@ public:
 
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return hexvolmesh_typeid.type; }
+  std::string dynamic_type_name() const override { return hexvolmesh_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
   /// Persistent IO
-  virtual const TypeDescription *get_type_description() const;
+  const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -2756,10 +2756,10 @@ protected:
     }
   };
 
-  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
-  using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
-  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
-  using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
+  using face_ht = std::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_nt = std::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
+  using edge_ht = std::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
+  using edge_nt = std::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
 
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;
@@ -3034,7 +3034,7 @@ HexVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -3950,10 +3950,10 @@ HexVolMesh<Basis>::io(Piostream &stream)
 template <class Basis>
 const TypeDescription* get_type_description(HexVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("HexVolMesh", subs,
@@ -3968,18 +3968,18 @@ template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((HexVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((HexVolMesh<Basis> *)nullptr);
 }
 
 template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -3992,11 +3992,11 @@ template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -4009,11 +4009,11 @@ template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -4026,11 +4026,11 @@ template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

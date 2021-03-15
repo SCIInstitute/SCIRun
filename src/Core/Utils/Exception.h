@@ -48,7 +48,7 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
-    virtual const char* what() const NOEXCEPT override;
+    const char* what() const NOEXCEPT override;
     std::string typeName() const;
   };
 

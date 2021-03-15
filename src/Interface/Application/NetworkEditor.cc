@@ -160,6 +160,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
+  // = [](const QString& s) { logCritical("Gui info: {}", s.toStdString()); };
 QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
 static const int macModulePositionWorkaroundTimerValue = 5;
@@ -585,7 +586,8 @@ void NetworkEditor::logViewerDims(const QString& msg)
 
   const auto rect = sceneRect();
   const auto itemBound = scene_->itemsBoundingRect();
-  viewUpdateFunc_(msg + tr(" sceneRect topLeft %1,%2 bottomRight %3,%4")
+  viewUpdateFunc_(msg);
+  viewUpdateFunc_(tr(" sceneRect topLeft %1,%2 bottomRight %3,%4")
     .arg(rect.topLeft().x())
     .arg(rect.topLeft().y())
     .arg(rect.bottomRight().x())
@@ -953,7 +955,7 @@ void NetworkEditor::updateViewport()
 
 void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 {
-	if (event->button() != Qt::LeftButton)
+	if (event->button() != Qt::LeftButton && event->button() != Qt::NoButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
   if (auto cL = getSingleConnectionSelected())
@@ -986,23 +988,20 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
+  //logViewerDims("mouseReleaseEvent 0:");
+
   if (modulesSelectedByCL_)
   {
     unselectConnectionGroup();
     Q_EMIT modified();
   }
   modulesSelectedByCL_ = false;
+
+  //logViewerDims("mouseReleaseEvent 1:");
+
   QGraphicsView::mouseReleaseEvent(event);
 
-  logViewerDims("mouseReleaseEvent:");
-}
-
-void NetworkEditor::alignViewport()
-{
-  auto visibleRect = scene_->itemsBoundingRect();
-  visibleRect.adjust(-20, -20, 20, 20);
-  setSceneRect(visibleRect);
-  miniview_->setSceneRect(visibleRect);
+  //logViewerDims("mouseReleaseEvent 2:");
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
@@ -2201,17 +2200,17 @@ namespace
       setAcceptHoverEvents(true);
     }
   protected:
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
+    void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
     {
       setPen(QPen(pen().color(), 5));
     }
 
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
     {
       setPen(QPen(pen().color(), 3));
     }
 
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
       QMenu menu;
       auto autoDisplay = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
@@ -2425,7 +2424,6 @@ FloatingTextItem::FloatingTextItem(const QString& text, std::function<void()> ac
 FloatingTextItem::~FloatingTextItem()
 {
   --instanceCounter_;
-  delete rect_;
 }
 
 void FloatingTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

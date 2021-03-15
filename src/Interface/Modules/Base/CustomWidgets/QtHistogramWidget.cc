@@ -332,7 +332,7 @@ void QtHistogramWidget::set_bar_visibility()
 
 void QtHistogramWidget::hide_threshold_bars()
 {
-  if( this->private_->min_bar_ != 0 && this->private_->min_bar_ != 0 )
+  if( this->private_->min_bar_ != nullptr && this->private_->min_bar_ != nullptr )
   {
     this->private_->min_bar_->hide();
     this->private_->max_bar_->hide();
@@ -341,7 +341,7 @@ void QtHistogramWidget::hide_threshold_bars()
 
 void QtHistogramWidget::show_threshold_bars()
 {
-  if( this->private_->min_bar_ != 0 && this->private_->min_bar_ != 0 )
+  if( this->private_->min_bar_ != nullptr && this->private_->min_bar_ != nullptr )
   {
     this->private_->min_bar_->show();
     this->private_->max_bar_->show();

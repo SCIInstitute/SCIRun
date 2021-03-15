@@ -88,11 +88,12 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
   int32_t numVBOElements = 0;
-  double resolution = 1. / static_cast<double>(cm->getColorMapResolution());
+  const double resolution = 1. / static_cast<double>(cm->getColorMapResolution());
   //show colormap does not rescale colors, so reset them. we want to see the whole colormap on the scale.
   ColorMap new_map(cm->getColorData(), cm->getColorMapName(), cm->getColorMapResolution(),
     cm->getColorMapShift(), cm->getColorMapInvert(), 1., 0.);
-  for (double i = 0.; std::abs(i - 1.) > 0.000001; i += resolution) {
+  for (double i = 0.; std::abs(i - 1.) > 0.000001; i += resolution)
+  {
     ColorRGB col = new_map.valueToColor(i);
     uint32_t offset = static_cast<uint32_t>(points.size());
     points.push_back(Vector(0., i, 0.001));
@@ -126,7 +127,8 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   for (auto a : indices) iboBuffer->write(a);
 
-  for (size_t i = 0; i < points.size(); i++) {
+  for (size_t i = 0; i < points.size(); i++)
+  {
     vboBuffer->write(static_cast<float>(points[i].x()));
     vboBuffer->write(static_cast<float>(points[i].y()));
     vboBuffer->write(static_cast<float>(points[i].z()));
@@ -223,14 +225,16 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
-    std::stringstream line;
+    std::stringstream lineStream;
     sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
-    line << str2 << " " << state->getValue(Units).toString();
-    Vector shift((displaySide == 0) ?
-      (xTrans > 50 ? -(textSize*strlen(line.str().c_str())) : dash_size) : 0.,
-      (displaySide == 0) ?
-      0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
+    lineStream << str2 << " " << state->getValue(Units).toString();
+    const auto line = lineStream.str();
     bool ds = displaySide == 0;
+    Vector shift(ds ?
+      (xTrans > 50 ? -(textSize * line.size()) : dash_size) : 0.,
+      ds ?
+      0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
+
     bool full = displayLength == 1;
     bool half1 = displayLength == 0;
     double bar_buffer = 0.1;
@@ -241,7 +245,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
       + yTrans / 50.;
     Vector trans(x_trans, y_trans, 0.0);
 
-    textBuilder_.printString(line.str(), trans, shift, geomId, *geom);
+    textBuilder_.printString(line, trans, shift, geomId, *geom);
   }
 
   return geom;

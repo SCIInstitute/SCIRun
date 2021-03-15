@@ -30,7 +30,7 @@ namespace ospray {
     {
       std::string filename = fileName.str();
       // Look for the volume data file at the given path.
-      FILE *file = NULL;
+      FILE *file = nullptr;
       FileName fn = fileName;
       bool gzipped = fn.ext() == "gz";
       if (gzipped) {

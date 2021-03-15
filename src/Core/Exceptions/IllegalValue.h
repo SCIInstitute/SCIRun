@@ -53,8 +53,8 @@ namespace SCIRun {
     IllegalValue(const std::string&, const T& value);
     IllegalValue(const IllegalValue&);
     virtual ~IllegalValue() NOEXCEPT;
-    virtual const char* message() const;
-    virtual const char* type() const;
+    const char* message() const override;
+    const char* type() const override;
   protected:
   private:
     std::string message_;

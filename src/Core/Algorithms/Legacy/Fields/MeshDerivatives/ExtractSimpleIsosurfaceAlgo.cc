@@ -38,7 +38,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;

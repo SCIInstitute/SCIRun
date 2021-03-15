@@ -156,9 +156,9 @@ NrrdIEPlugin::NrrdIEPlugin(const std::string& pname,
 
 NrrdIEPlugin::~NrrdIEPlugin()
 {
-  if (matrix_plugin_table == NULL)
+  if (!matrix_plugin_table)
   {
-    std::cerr << "WARNING: NrrdIEPlugin.cc: ~NrrdIEPlugin(): matrix_plugin_table is NULL\n";
+    std::cerr << "WARNING: NrrdIEPlugin.cc: ~NrrdIEPlugin(): matrix_plugin_table is null\n";
     std::cerr << "         For: " << pluginname << "\n";
     return;
   }
@@ -201,13 +201,14 @@ NrrdIEPlugin::operator==(const NrrdIEPlugin &other) const
 void
 NrrdIEPluginManager::get_importer_list(std::vector<std::string> &results)
 {
-  if (matrix_plugin_table == NULL) return;
+  if (!matrix_plugin_table)
+    return;
 
   nrrdIEPluginMutex.lock();
   std::map<std::string, NrrdIEPlugin *>::const_iterator itr = matrix_plugin_table->begin();
   while (itr != matrix_plugin_table->end())
   {
-    if ((*itr).second->fileReader_ != NULL)
+    if ((*itr).second->fileReader_)
     {
       results.push_back((*itr).first);
     }
@@ -220,13 +221,14 @@ NrrdIEPluginManager::get_importer_list(std::vector<std::string> &results)
 void
 NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
 {
-  if (matrix_plugin_table == NULL) return;
+  if (!matrix_plugin_table)
+    return;
 
   nrrdIEPluginMutex.lock();
   auto itr = matrix_plugin_table->begin();
   while (itr != matrix_plugin_table->end())
   {
-    if ((*itr).second->fileWriter_ != NULL)
+    if ((*itr).second->fileWriter_)
     {
       results.push_back((*itr).first);
     }
@@ -239,7 +241,8 @@ NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
 NrrdIEPlugin *
 NrrdIEPluginManager::get_plugin(const std::string &name)
 {
-  if (matrix_plugin_table == NULL) return NULL;
+  if (!matrix_plugin_table)
+    return nullptr;
 
   // Should check for invalid name.
   auto loc = matrix_plugin_table->find(name);

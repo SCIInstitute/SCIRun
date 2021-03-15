@@ -45,9 +45,9 @@ class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
     ShowStringDialog(const std::string& name,
       SCIRun::Dataflow::Networks::ModuleStateHandle state,
       QWidget* parent = nullptr);
-    virtual void createStartupNote() override;
+    void createStartupNote() override;
   protected:
-    virtual void pullSpecial() override;
+    void pullSpecial() override;
   private Q_SLOTS:
     void getColor();
   private:

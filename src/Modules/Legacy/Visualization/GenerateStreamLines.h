@@ -44,8 +44,8 @@ namespace SCIRun {
       {
       public:
         GenerateStreamLines();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT(0, Vector_Field, Field);
         INPUT_PORT(1, Seed_Points, Field);

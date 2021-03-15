@@ -134,7 +134,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       }
 
       std::string shaderName;
-      if (Tny_get(doc, "shader") != NULL)
+      if (Tny_get(doc, "shader") != nullptr)
       {
         // Set shader name appropriately.
         spire::CerealSerializeType<std::string>::in(doc, "shader", shaderName);

@@ -60,7 +60,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
       addParameter(GenerateBasis, false);
     }
 
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}

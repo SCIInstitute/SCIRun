@@ -41,7 +41,7 @@ namespace SCIRun {
       class SCISHARE BasicParallelExecutionStrategy : public ExecutionStrategy
       {
       public:
-        virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
+        void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
       };
 
     }

@@ -63,7 +63,7 @@ class SCISHARE BuildFESurfRHSAlgo : public AlgorithmBase
   public:
    BuildFESurfRHSAlgo() {}
    bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mat_output) const;
-   virtual AlgorithmOutput run(const AlgorithmInput &) const;
+   AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}

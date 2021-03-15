@@ -57,7 +57,7 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase, public Core::Thread
     static const AlgorithmInputName ElemLink;
     static const AlgorithmOutputName BoundaryField;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
 };

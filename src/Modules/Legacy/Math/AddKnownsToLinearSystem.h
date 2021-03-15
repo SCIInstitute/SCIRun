@@ -44,8 +44,8 @@ namespace SCIRun {
       {
       public:
         AddKnownsToLinearSystem();
-        virtual void setStateDefaults() override {}
-        virtual void execute() override;
+        void setStateDefaults() override {}
+        void execute() override;
 
         INPUT_PORT(0, LHS_Matrix, SparseRowMatrix);
         INPUT_PORT(1, RHS_Vector, DenseMatrix);

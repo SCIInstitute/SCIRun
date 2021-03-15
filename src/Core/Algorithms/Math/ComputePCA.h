@@ -48,7 +48,7 @@ namespace SCIRun {
                     static AlgorithmOutputName PrincipalValues;
                     static AlgorithmOutputName RightPrincipalMatrix;
                     void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle& LeftPrinMat, Datatypes::DenseMatrixHandle& PrinVals, Datatypes::DenseMatrixHandle& RightPrinMat) const;
-                    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+                    AlgorithmOutput run(const AlgorithmInput& input) const override;
                     static Datatypes::DenseMatrix centerData(Datatypes::MatrixHandle input_matrix);
                 };
 

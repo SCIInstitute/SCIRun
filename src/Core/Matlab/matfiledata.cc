@@ -60,10 +60,10 @@
 using namespace SCIRun::MatlabIO;
 
 matfiledata::matfiledata()
-  : m_(0), ptr_(0)
+  : m_(nullptr), ptr_(nullptr)
 {
   m_ = new mxdata;
-  m_->dataptr_ = 0;
+  m_->dataptr_ = nullptr;
   m_->owndata_ = false;
   m_->bytesize_ = 0;
   m_->type_ = miUNKNOWN;
@@ -71,10 +71,10 @@ matfiledata::matfiledata()
 }
 
 matfiledata::matfiledata(matfiledata::mitype type)
-  : m_(0) , ptr_(0)
+  : m_(nullptr) , ptr_(nullptr)
 {
   m_ = new mxdata;
-  m_->dataptr_ = 0;
+  m_->dataptr_ = nullptr;
   m_->owndata_ = false;
   m_->bytesize_ = 0;
   m_->type_ = type;
@@ -83,7 +83,7 @@ matfiledata::matfiledata(matfiledata::mitype type)
 
 matfiledata::~matfiledata()
 {
-  if (m_ != 0)
+  if (m_ != nullptr)
   {
     clearptr();
   }
@@ -91,34 +91,34 @@ matfiledata::~matfiledata()
 
 void matfiledata::clear()
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in clear()\n";
     throw internal_error();
   }
-  if ((m_->dataptr_ != 0)&&(m_->owndata_ == true)) delete[] static_cast<char *>(m_->dataptr_);
+  if ((m_->dataptr_ != nullptr)&&(m_->owndata_ == true)) delete[] static_cast<char *>(m_->dataptr_);
   m_->owndata_ = false;
-  m_->dataptr_ = 0;
+  m_->dataptr_ = nullptr;
   m_->bytesize_ = 0;
   m_->type_ = miUNKNOWN;
 }
 
 void matfiledata::clearptr()
 {
-  if (m_ == 0) return;
+  if (m_ == nullptr) return;
   m_->ref_--;
   if (m_->ref_ == 0)
   {
     clear();
     delete m_;
   }
-  m_ = 0;
-  ptr_ = 0;
+  m_ = nullptr;
+  ptr_ = nullptr;
 }
 
 matfiledata::matfiledata(const matfiledata &mfd)
 {
-  m_ = 0;
+  m_ = nullptr;
   m_ = mfd.m_;
   ptr_ = mfd.ptr_;
   m_->ref_++;
@@ -138,12 +138,12 @@ matfiledata& matfiledata::operator= (const matfiledata &mfd)
 
 void matfiledata::newdatabuffer(int bytesize,mitype type)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in newdatabuffer()\n";
     throw internal_error();
   }
-  if (m_->dataptr_ != 0) clear();
+  if (m_->dataptr_ != nullptr) clear();
   if (m_->type_ != miMATRIX)
   {
     if (bytesize > 0)
@@ -154,7 +154,7 @@ void matfiledata::newdatabuffer(int bytesize,mitype type)
   }
   m_->type_ = type;
   m_->owndata_ = true;
-  ptr_ = 0;
+  ptr_ = nullptr;
 }
 
 
@@ -170,7 +170,7 @@ matfiledata matfiledata::clone() const
 
 void *matfiledata::databuffer() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in databuffer()\n";
     throw internal_error();
@@ -181,7 +181,7 @@ void *matfiledata::databuffer() const
 
 void matfiledata::setType(mitype type)
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in type()\n";
     throw internal_error();
@@ -191,7 +191,7 @@ void matfiledata::setType(mitype type)
 
 int matfiledata::bytesize() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in bytesize()\n";
     throw internal_error();
@@ -202,7 +202,7 @@ int matfiledata::bytesize() const
 
 matfiledata::mitype matfiledata::type() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in type()\n";
     throw internal_error();
@@ -231,7 +231,7 @@ int matfiledata::elsize(matfiledata::mitype type) const
 
 int matfiledata::elsize() const
 {
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in elsize()\n";
     throw internal_error();
@@ -241,7 +241,7 @@ int matfiledata::elsize() const
 
 int matfiledata::size() const
 {
-  if (m_ == 0)
+  if (m_ == nullptr)
   {
     std::cerr << "internal error in size()\n";
     throw internal_error();
@@ -342,8 +342,8 @@ int matfiledata::putstringarray(const std::vector<std::string>& vec)
 // in case of a void just copy the data (no conversion)
 void matfiledata::getdata(void *dataptr,int dbytesize) const
 {
-  if (databuffer() == 0) return;
-  if (dataptr  == 0) return;
+  if (databuffer() == nullptr) return;
+  if (dataptr  == nullptr) return;
 	if (dbytesize == 0) return;
 	if (size() == 0) return;
   if (dbytesize > bytesize()) dbytesize = bytesize();	// limit casting and copying to amount of data we have
@@ -354,7 +354,7 @@ void matfiledata::getdata(void *dataptr,int dbytesize) const
 void matfiledata::putdata(const void *dataptr,int dbytesize,mitype type)
 {
 	clear();
-	if (dataptr == 0) return;
+	if (dataptr == nullptr) return;
 
 	newdatabuffer(dbytesize,type);
 	if (dbytesize > bytesize()) dbytesize = bytesize();
@@ -376,12 +376,12 @@ matfiledata matfiledata::reorder(const std::vector<int> &newindices)
 
 	matfiledata newbuffer;
 
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in reorder()\n";
     throw internal_error();
 	}
-  if (databuffer() == 0) return(newbuffer);
+  if (databuffer() == nullptr) return(newbuffer);
 	if (bytesize() == 0) return(newbuffer);
 
 	// generate a new buffer and calculate the new size
@@ -457,7 +457,7 @@ void matfiledata::ptrset(void *ptr)
 
 void matfiledata::ptrclear()
 {
-	ptr_ = 0;
+	ptr_ = nullptr;
 }
 
 // slightly different version using C style arguments
@@ -468,12 +468,12 @@ matfiledata matfiledata::reorder(int *newindices,int dsize)
 
 	matfiledata newbuffer;
 
-	if (m_ == 0)
+	if (m_ == nullptr)
   {
     std::cerr << "internal error in reorder()\n";
     throw internal_error();
 	}
-  if (databuffer() == 0) return(newbuffer);
+  if (databuffer() == nullptr) return(newbuffer);
 	if (bytesize() == 0) return(newbuffer);
 
 	// generate a new buffer and calculate the new size

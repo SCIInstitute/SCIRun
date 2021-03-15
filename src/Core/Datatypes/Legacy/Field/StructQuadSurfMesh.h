@@ -72,7 +72,7 @@ class StructQuadSurfMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVStructQuadSurfMesh(MESH* mesh) { return (0); }
+VMesh* CreateVStructQuadSurfMesh(MESH* mesh) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -105,7 +105,8 @@ public:
   StructQuadSurfMesh();
   StructQuadSurfMesh(size_type x, size_type y);
   StructQuadSurfMesh(const StructQuadSurfMesh<Basis> &copy);
-  virtual StructQuadSurfMesh *clone() const
+
+StructQuadSurfMesh *clone() const override
   { return new StructQuadSurfMesh<Basis>(*this); }
   virtual ~StructQuadSurfMesh()
   {
@@ -113,11 +114,13 @@ public:
   }
 
   /// get the mesh statistics
-  virtual Core::Geometry::BBox get_bounding_box() const;
-  virtual void transform(const Core::Geometry::Transform &t);
+Core::Geometry::BBox get_bounding_box() const override;
+void transform(const Core::Geometry::Transform &t) override;
 
-  virtual bool get_dim(std::vector<size_type>&) const;
-  virtual void set_dim(std::vector<size_type> dims) {
+bool get_dim(std::vector<size_type>&) const override;
+
+void set_dim(std::vector<size_type> dims) override
+  {
     ImageMesh<Basis>::ni_ = dims[0];
     ImageMesh<Basis>::nj_ = dims[1];
 
@@ -130,7 +133,7 @@ public:
     ImageMesh<Basis>::vmesh_.reset(CreateVStructQuadSurfMesh(this));
   }
 
-  virtual int topology_geometry() const
+int topology_geometry() const override
   {
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
@@ -944,7 +947,7 @@ public:
 
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
@@ -952,13 +955,13 @@ public:
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
 
-  virtual bool synchronize(mask_type sync);
-  virtual bool unsynchronize(mask_type sync);
+bool synchronize(mask_type sync) override;
+bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1643,7 +1646,7 @@ StructQuadSurfMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -1652,10 +1655,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(StructQuadSurfMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("StructQuadSurfMesh", subs,
@@ -1671,7 +1674,7 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)nullptr);
 }
 
 
@@ -1679,11 +1682,11 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1697,11 +1700,11 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1715,11 +1718,11 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1733,11 +1736,11 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

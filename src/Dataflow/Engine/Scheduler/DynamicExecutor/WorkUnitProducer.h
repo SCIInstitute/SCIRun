@@ -57,7 +57,7 @@ namespace SCIRun {
             //log_.setVerbose(shouldLog_);
           }
 
-          virtual void enqueueReadyModules() const
+          void enqueueReadyModules() const override
           {
             Core::Thread::Guard g(enqueueLock_->get());
             if (!isDone())
@@ -120,7 +120,7 @@ namespace SCIRun {
             //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }
 
-          bool isDone() const
+          bool isDone() const override
           {
             return doneCount_ >= numModules_;
           }

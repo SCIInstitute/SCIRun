@@ -47,52 +47,52 @@ namespace Gui {
   {
   public:
     LoadFileCommandGui();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
   {
   public:
     QuitAfterExecuteCommandGui();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class QuitCommandGui : public Core::Commands::GuiCommand
   {
   public:
     QuitCommandGui();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ShowMainWindowGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SetupDataDirectoryCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ShowSplashScreenGui : public Core::Commands::GuiCommand
   {
   public:
     ShowSplashScreenGui();
-    virtual bool execute() override;
+    bool execute() override;
   private:
     static void initSplashScreen();
     static QSplashScreen* splash_;

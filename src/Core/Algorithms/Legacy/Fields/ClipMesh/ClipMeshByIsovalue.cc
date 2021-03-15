@@ -35,7 +35,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <algorithm>
 #include <set>
@@ -94,8 +94,8 @@ namespace detail
     }
   };
 
-  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> node_hash_type;
-  typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+  typedef std::unordered_map<VField::index_type, VMesh::Node::index_type> node_hash_type;
+  typedef std::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
 
   bool operator==(const edgepair_t &a, const edgepair_t &b)
   {
@@ -132,7 +132,7 @@ namespace detail
     }
   };
 
-  typedef boost::unordered_map<facetriple_t, VMesh::Node::index_type, facetriplehash> face_hash_type;
+  typedef std::unordered_map<facetriple_t, VMesh::Node::index_type, facetriplehash> face_hash_type;
 
 }
 
@@ -1000,7 +1000,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // Create a map to help differentiate between new nodes created for
   // the inserted sheet, and the nodes on the stair stepped boundary.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> clipped_to_original_nodemap;
-  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
+  typedef std::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
 
   hash_type nodemap;
 

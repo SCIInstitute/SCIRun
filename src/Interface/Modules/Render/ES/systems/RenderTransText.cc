@@ -340,7 +340,7 @@ public:
             rlistTrafo, camera.front().data, time.front().globalTime);
 
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
     else
@@ -348,7 +348,7 @@ public:
       if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
       {
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
       else
       {
@@ -362,12 +362,12 @@ public:
         GL(glUniform1f(fdToggleLoc, 1.0f));
         glCullFace(GL_BACK);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
 
         GL(glUniform1f(fdToggleLoc, 0.0f));
         glCullFace(GL_FRONT);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
 

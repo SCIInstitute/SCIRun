@@ -76,8 +76,8 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
   {
     //TODO implement something with sparse
     error("BooleanCompare: Currently only works with dense matrices");
-    output[Variables::OutputMatrix] = 0;
-    output[Variables::Solution] = 0;
+    output[Variables::OutputMatrix] = nullptr;
+    output[Variables::Solution] = nullptr;
     return output;
   }
 
@@ -495,7 +495,7 @@ bool BooleanCompareAlgo::return_value(MatrixHandle& out_matrix,std::string resul
   if (result_statement == "first") out_matrix = first;
   else if (result_statement == "second") out_matrix = second;
   else if (result_statement == "third") out_matrix = possout;
-  else if (result_statement == "null" || result_statement == "quit") out_matrix = 0;
+  else if (result_statement == "null" || result_statement == "quit") out_matrix = nullptr;
   else return false;
 
   return true;

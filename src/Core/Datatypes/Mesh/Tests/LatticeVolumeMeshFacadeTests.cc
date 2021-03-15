@@ -45,7 +45,7 @@ using namespace boost::assign;
 class LatticeVolumeMeshFacadeTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     int basisOrder = 1;
     FieldInformation lfi("LatVolMesh", basisOrder, "double");

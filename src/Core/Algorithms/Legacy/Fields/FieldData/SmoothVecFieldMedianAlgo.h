@@ -42,7 +42,7 @@ namespace SCIRun {
         class SCISHARE SmoothVecFieldMedianAlgo : public AlgorithmBase
         {
         public:
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
 
           bool runImpl(FieldHandle input, FieldHandle& output) const;
         };

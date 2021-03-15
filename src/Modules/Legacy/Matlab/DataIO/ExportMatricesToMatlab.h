@@ -55,8 +55,8 @@ namespace Matlab {
   {
   public:
     ExportMatricesToMatlab();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
     INPUT_PORT(1, Filename, String);
     HAS_DYNAMIC_PORTS

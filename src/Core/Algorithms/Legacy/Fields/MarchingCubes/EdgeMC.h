@@ -54,14 +54,14 @@ class EdgeMC :  public BaseMC
                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 			     points_(0),
 			    #endif
-                             pointcloud_handle_(0),
-                             pointcloud_(0) {}
+                             pointcloud_handle_(nullptr),
+                             pointcloud_(nullptr) {}
 
     virtual ~EdgeMC() {}
 
     void extract( VMesh::Elem::index_type, double );
-    virtual void reset( int, bool build_field, bool build_geom, bool transparency );
-    virtual FieldHandle get_field(double val);
+   void reset( int, bool build_field, bool build_geom, bool transparency ) override;
+   FieldHandle get_field(double val) override;
 
   private:
 

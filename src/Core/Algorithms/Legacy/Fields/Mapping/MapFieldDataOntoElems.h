@@ -54,7 +54,7 @@ namespace SCIRun {
           static const AlgorithmInputName Destination;
           static const AlgorithmInputName Weights;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }

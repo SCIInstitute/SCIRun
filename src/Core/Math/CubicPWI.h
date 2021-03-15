@@ -78,8 +78,8 @@ public:
   CubicPWI();
   CubicPWI(const Array1<double>&, const Array1<double>&);
 
-  bool set_data(const Array1<double>&, const Array1<double>&);
-  inline bool get_value(double, double&);
+  bool set_data(const Array1<double>&, const Array1<double>&) override;
+  inline bool get_value(double, double&) override;
 
 private:
   Array1<QUAT> p;
@@ -102,10 +102,10 @@ public:
   Cubic3DPWI() {};
   Cubic3DPWI(const Array1<double>&, const Array1<T>&);
 
-  bool set_data(const Array1<double>&, const Array1<T>&);
+  bool set_data(const Array1<double>&, const Array1<T>&) override;
   bool set_data(const Array1<double>&, const Array1<T>&,
     const Array1<Core::Geometry::Vector>&);
-  inline bool get_value(double, T&);
+  inline bool get_value(double, T&) override;
 
 private:
   Array1<QUAT> X;

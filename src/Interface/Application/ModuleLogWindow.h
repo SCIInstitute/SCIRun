@@ -46,7 +46,7 @@ class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 	Q_OBJECT
 
 public:
-  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   QString name() const { return moduleName_; }
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
@@ -68,12 +68,12 @@ class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
 public:
   explicit ModuleLogger(ModuleLogWindow* window);
   ~ModuleLogger();
-  virtual void error(const std::string& msg) const override;
-  virtual void warning(const std::string& msg) const override;
-  virtual void remark(const std::string& msg) const override;
-  virtual void status(const std::string& msg) const override;
-  virtual bool errorReported() const override { return errorReported_; }
-  virtual void setErrorFlag(bool flag) override { errorReported_ = flag; }
+  void error(const std::string& msg) const override;
+  void warning(const std::string& msg) const override;
+  void remark(const std::string& msg) const override;
+  void status(const std::string& msg) const override;
+  bool errorReported() const override { return errorReported_; }
+  void setErrorFlag(bool flag) override { errorReported_ = flag; }
 
 Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color) const;

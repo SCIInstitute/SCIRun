@@ -37,7 +37,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -65,7 +65,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
   /// Define types we need for mapping
-  using hash_map_type = boost::unordered_map<index_type,index_type,IndexHash>;
+  using hash_map_type = std::unordered_map<index_type,index_type,IndexHash>;
 
   hash_map_type node_map;
   hash_map_type elem_map;
@@ -308,7 +308,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
   /// Define types we need for mapping
-  using hash_map_type = boost::unordered_map<index_type,index_type,IndexHash>;
+  using hash_map_type = std::unordered_map<index_type,index_type,IndexHash>;
 
   hash_map_type node_map;
   hash_map_type elem_map;

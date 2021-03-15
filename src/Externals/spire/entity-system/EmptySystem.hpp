@@ -70,7 +70,7 @@ public:
     return std::vector<uint64_t>();
   }
 
-  virtual bool isComponentOptional(uint64_t /* component */) override
+  bool isComponentOptional(uint64_t /* component */) override
   {
     return false;
   }

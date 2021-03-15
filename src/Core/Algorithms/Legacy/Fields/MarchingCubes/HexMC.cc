@@ -82,8 +82,8 @@ void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transpare
   geomHandle_ = triangles_;
  #endif
 
-  trisurf_ = 0;
-  quadsurf_ = 0;
+  trisurf_ = nullptr;
+  quadsurf_ = nullptr;
   if (build_field_)
   {
     if (basis_order_ == 0)

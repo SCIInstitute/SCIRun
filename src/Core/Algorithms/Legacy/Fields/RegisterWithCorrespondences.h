@@ -61,7 +61,7 @@ public:
 	static const AlgorithmInputName Correspondences2;
   static const AlgorithmOutputName TransformMatrix;
 
-	AlgorithmOutput run(const AlgorithmInput& input) const;
+	AlgorithmOutput run(const AlgorithmInput& input) const override;
 
 private:
   Datatypes::DenseMatrixHandle runMorph(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;

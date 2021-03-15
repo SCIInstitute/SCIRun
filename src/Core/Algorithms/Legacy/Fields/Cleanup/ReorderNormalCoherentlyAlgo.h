@@ -48,7 +48,7 @@ namespace SCIRun {
             FieldHandle& outputField,
             Datatypes::DenseColumnMatrixHandle& outputMatrix)const;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
       }
     }

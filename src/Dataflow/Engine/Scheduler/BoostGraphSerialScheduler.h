@@ -42,7 +42,7 @@ namespace Engine {
   class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
   {
   public:
-    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
+    ModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const override;
   };
 
 }}}

@@ -514,7 +514,7 @@ public:
 
 	BoxKDTree()
   {
-		children[0] = children[1] = NULL;
+		children[0] = children[1] = nullptr;
 	}
 	~BoxKDTree()
   {
@@ -524,7 +524,7 @@ public:
 
 	BoxKDTree(const std::vector<OBJECT> &iobjects, const DISTBOXCLASS &boxclass, int axis=0) {
 
-		children[0] = children[1] = NULL;
+		children[0] = children[1] = nullptr;
 
 		ReBuild(iobjects, boxclass, axis);
 	}
@@ -533,7 +533,7 @@ public:
 
 		if (children[0]) delete children[0];
 		if (children[1]) delete children[1];
-		children[0] = children[1] = NULL;
+		children[0] = children[1] = nullptr;
 
 		objects = iobjects;
 
