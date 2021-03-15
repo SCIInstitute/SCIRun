@@ -34,14 +34,6 @@ namespace SCIRun
 {
   namespace Render
   {
-    enum class MouseButton
-    {
-      MOUSE_NONE,
-      MOUSE_LEFT,
-      MOUSE_RIGHT,
-      MOUSE_MIDDLE,
-    };
-
     enum class MouseMode
     {
       MOUSE_OLDSCIRUN,

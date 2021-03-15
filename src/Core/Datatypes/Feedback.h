@@ -26,60 +26,65 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Color.h
-
-#ifndef CORE_DATATYPES_COLORRGB_H
-#define CORE_DATATYPES_COLORRGB_H
+#ifndef CORE_DATATYPES_FEEDBACK_H
+#define CORE_DATATYPES_FEEDBACK_H
 
 #include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/Algorithms/Base/Variable.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
+// These will give different types of widget movement through ViewScene.
+// To use rotation and scaling, an origin point must be given.
+enum WidgetMovement
+{
+  NONE,
+  TRANSLATE,
+  ROTATE,
+  SCALE,
+  TRANSLATE_AXIS,
+  TRANSLATE_AXIS_HALF,
+  TRANSLATE_AXIS_REVERSE,
+  SCALE_UNIDIRECTIONAL,
+  SCALE_AXIS,
+  SCALE_AXIS_HALF,
+  SCALE_AXIS_UNIDIRECTIONAL,
+};
 
-  class SCISHARE ColorRGB
+struct EnumClassHash
+{
+  template <typename T> std::size_t operator()(T t) const
   {
-  private:
-    double r_, g_, b_, a_;
-  public:
-    ColorRGB();
-    explicit ColorRGB(const std::string& rgb);
-    explicit ColorRGB(double v);
-    ColorRGB(double r, double g, double b);
-    ColorRGB(double r, double g, double b, double a);
-    explicit ColorRGB(unsigned int rgbHexValue);
-    //adjust alpha while copying
-    //ColorRGB(const ColorRGB& color, double a);
+    return static_cast<std::size_t>(t);
+  }
+};
 
-    // These equality operations should use floating point comparisons.
-    bool operator==(const ColorRGB& c) const {
-      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_)&&(a_==c.a_));
-    }
+enum class MouseButton { NONE = 0, LEFT, MIDDLE, RIGHT, STATE_COUNT };
 
-    bool operator!=(const ColorRGB& c) const {
-      return !(*this == c);
-    }
+struct SCISHARE ViewSceneFeedback : ModuleFeedback
+{
+  Geometry::Transform transform;
+  MouseButton buttonClicked;
+  WidgetMovement movementType;
+  std::string selectionName;
+  std::tuple<int,int> windowSize;
 
-    /// \todo Add normalization function to normalize 0 - 255 to 0 - 1.0.
-    ///       useful when reading colors from strings.
+  bool matchesWithModuleId(const std::string& modId) const;
+};
 
-    double r() const {return r_;}
-    double g() const {return g_;}
-    double b() const {return b_;}
-    double a() const {return a_;}
-
-    std::string toString() const;
-  };
-
-  typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
-
-  SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
+struct SCISHARE MeshComponentSelectionFeedback : ModuleFeedback
+{
+  MeshComponentSelectionFeedback() {}
+  MeshComponentSelectionFeedback(const std::string& mod, const std::string& comp, bool sel) :
+    moduleId(mod), component(comp), selected(sel) {}
+  std::string moduleId;
+  std::string component;
+  bool selected {false};
+};
 }}}
-
 
 #endif

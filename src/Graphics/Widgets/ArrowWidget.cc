@@ -27,16 +27,17 @@
 
 
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace Core;
+using namespace Core::Datatypes;
+using namespace Graphics::Datatypes;
+using namespace Core::Geometry;
 
 namespace detail
 {

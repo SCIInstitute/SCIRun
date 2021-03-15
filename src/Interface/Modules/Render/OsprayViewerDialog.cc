@@ -39,6 +39,7 @@
 #include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
 #include "Interface/Modules/Render/ViewOspraySceneConfig.h"
 
+#include <Core/Datatypes/Feedback.h>
 #include "Core/Datatypes/Color.h"
 #include "Core/Logging/Log.h"
 #endif
@@ -396,12 +397,12 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 #endif
 }
 
-SCIRun::Render::MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
+MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
-  auto btn = SCIRun::Render::MouseButton::MOUSE_NONE;
-  if      (event->buttons() & Qt::LeftButton)  btn = SCIRun::Render::MouseButton::MOUSE_LEFT;
-  else if (event->buttons() & Qt::RightButton) btn = SCIRun::Render::MouseButton::MOUSE_RIGHT;
-  else if (event->buttons() & Qt::MidButton)   btn = SCIRun::Render::MouseButton::MOUSE_MIDDLE;
+  auto btn = MouseButton::NONE;
+  if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
+  else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
+  else if (event->buttons() & Qt::MidButton)   btn = MouseButton::MIDDLE;
   return btn;
 }
 

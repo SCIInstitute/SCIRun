@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Widgets_WidgetParameters_H
 #define Graphics_Graphics_Widgets_WidgetParameters_H
 
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
@@ -110,23 +111,6 @@ namespace SCIRun
         size_t widget_num, widget_iter;
       };
 
-      // These will give different types of widget movement through ViewScene.
-      // To use rotation and scaling, an origin point must be given.
-      enum WidgetMovement
-      {
-        NONE,
-        TRANSLATE,
-        ROTATE,
-        SCALE,
-        TRANSLATE_AXIS,
-        TRANSLATE_AXIS_HALF,
-        TRANSLATE_AXIS_REVERSE,
-        SCALE_UNIDIRECTIONAL,
-        SCALE_AXIS,
-        SCALE_AXIS_HALF,
-        SCALE_AXIS_UNIDIRECTIONAL
-      };
-
       // Whether a widget's movement can be propagated using a shared transform calculator.
       enum class WidgetMovementSharing
       {
@@ -134,11 +118,11 @@ namespace SCIRun
         UNIQUE
       };
 
-      using WidgetMovementFamilyMap = std::map<WidgetMovement, WidgetMovementSharing>;
+      using WidgetMovementFamilyMap = std::map<Core::Datatypes::WidgetMovement, WidgetMovementSharing>;
 
       struct SCISHARE WidgetMovementFamily
       {
-        WidgetMovement base;
+        Core::Datatypes::WidgetMovement base;
         WidgetMovementFamilyMap propagated;
       };
 
@@ -154,16 +138,16 @@ namespace SCIRun
       class SCISHARE WidgetMovementFamilyBuilder
       {
       public:
-        explicit WidgetMovementFamilyBuilder(WidgetMovement base) : base_(base) {}
-        WidgetMovementFamilyBuilder& sharedMovements(std::initializer_list<WidgetMovement> moves);
-        WidgetMovementFamilyBuilder& uniqueMovements(std::initializer_list<WidgetMovement> moves);
+        explicit WidgetMovementFamilyBuilder(Core::Datatypes::WidgetMovement base) : base_(base) {}
+        WidgetMovementFamilyBuilder& sharedMovements(std::initializer_list<Core::Datatypes::WidgetMovement> moves);
+        WidgetMovementFamilyBuilder& uniqueMovements(std::initializer_list<Core::Datatypes::WidgetMovement> moves);
         WidgetMovementFamily build() const { return { base_, wmf_ }; }
       private:
-        WidgetMovement base_;
+        Core::Datatypes::WidgetMovement base_;
         WidgetMovementFamilyMap wmf_;
       };
 
-      SCISHARE WidgetMovementFamily singleMovementWidget(WidgetMovement base);
+      SCISHARE WidgetMovementFamily singleMovementWidget(Core::Datatypes::WidgetMovement base);
 
       struct SCISHARE WidgetBaseParameters
       {
@@ -187,8 +171,8 @@ namespace SCIRun
       {
       public:
         virtual ~WidgetEvent() {}
-        virtual WidgetMovement baseMovement() const = 0;
-        virtual void move(WidgetBase* widget, WidgetMovement moveType) const = 0;
+        virtual Core::Datatypes::WidgetMovement baseMovement() const = 0;
+        virtual void move(WidgetBase* widget, Core::Datatypes::WidgetMovement moveType) const = 0;
       };
 
       using WidgetEventPtr = SharedPointer<WidgetEvent>;
@@ -198,7 +182,7 @@ namespace SCIRun
       public:
         WidgetMovementMediator() {}
 
-        void registerObserver(WidgetMovement clickedMovement, WidgetBase* observer, WidgetMovement observerMovement)
+        void registerObserver(Core::Datatypes::WidgetMovement clickedMovement, WidgetBase* observer, Core::Datatypes::WidgetMovement observerMovement)
         {
           observers_[clickedMovement][observerMovement].push_back(observer);
         }
@@ -208,8 +192,8 @@ namespace SCIRun
         glm::mat4 latestTransform() const;
 
       private:
-        using SubwidgetMovementMap = std::map<WidgetMovement, std::vector<WidgetBase*>>;
-        std::map<WidgetMovement, SubwidgetMovementMap> observers_;
+        using SubwidgetMovementMap = std::map<Core::Datatypes::WidgetMovement, std::vector<WidgetBase*>>;
+        std::map<Core::Datatypes::WidgetMovement, SubwidgetMovementMap> observers_;
       };
 
       class SCISHARE InputTransformMapper

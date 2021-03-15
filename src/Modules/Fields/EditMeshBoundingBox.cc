@@ -30,9 +30,11 @@
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Fields/EditMeshBoundingBox.h>
@@ -58,7 +60,6 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
   firstRun_ = true;
   widgetMoved_ = true;
-  widgetAxesRotated_ = false;
 }
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
@@ -69,8 +70,7 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
     if (vsf.matchesWithModuleId(id()))
     {
       widgetMoved_ = true;
-      // adjustGeometryFromTransform(vsf.buttonClicked, vsf.movementType, vsf.transform);
-      adjustGeometryFromTransform(vsf.transform);
+      adjustGeometryFromTransform(vsf.transform, vsf.movementType);
       enqueueExecuteAgain(true);
     }
   }
@@ -80,30 +80,50 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackTrans)
+void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackTrans, const WidgetMovement& movementType)
 {
-  // TODO implement feedback info of mouse button and widget movement type for rotating bounding box around field
-  // if(btn == MouseButton::RIGHT && move == WidgetMovement::ROTATE)
-    // widgetAxesRotated_ = true;
-  // else
-  // {
-  fieldTrans_ = feedbackTrans * fieldTrans_;
-  trans_ = feedbackTrans * trans_;
-  trans_.orthogonalize();
-  // }
-  // if(move == WidgetMovement::ROTATE)
-  // {
-    // widgetAxes_ = feedbackTrans * widgetAxes_;
-    // widgetAxes_.orthogonalize();
-  // }
-  // else if(move == WidgetMovement::TRANSLATE || move == WidgetMovement::TRANSLATE_AXIS)
-  // {
+  switch(movementType)
+  {
+    case WidgetMovement::SCALE:
+    {
+      // Need to strip translation from scaling
+      auto temp = feedbackTrans;
+      temp.set_translation(0);
+
+      widgetScale_ = temp * widgetScale_;
+      widgetScale_.orthogonalize();
+      break;
+    }
+    case WidgetMovement::ROTATE:
+    {
+      // Need to strip translation from rotation
+      auto temp = feedbackTrans;
+      temp.set_translation(0);
+
+      widgetRotation_ = temp * widgetRotation_;
+      widgetRotation_.orthogonalize();
+      break;
+    }
+    case WidgetMovement::TRANSLATE:
+      widgetTranslation_ += feedbackTrans.get_translation();
+      break;
+    default:
+      break;
+  }
+
+  setOutputParameters();
+}
+
+void EditMeshBoundingBox::setOutputParameters()
+{
   auto state = get_state();
-  auto pos = trans_.get_translation();
-  state->setValue(OutputCenterX, pos.x());
-  state->setValue(OutputCenterY, pos.y());
-  state->setValue(OutputCenterZ, pos.z());
-  // }
+  state->setValue(OutputCenterX, widgetTranslation_.x());
+  state->setValue(OutputCenterY, widgetTranslation_.y());
+  state->setValue(OutputCenterZ, widgetTranslation_.z());
+  auto vecs = widgetScale_.get_transformation_vectors();
+  state->setValue(OutputSizeX, vecs[0].norm());
+  state->setValue(OutputSizeY, vecs[1].norm());
+  state->setValue(OutputSizeZ, vecs[2].norm());
 }
 
 void EditMeshBoundingBox::clearVals()
@@ -122,8 +142,10 @@ void EditMeshBoundingBox::setStateDefaults()
 {
   clearVals();
   auto state = get_state();
-  state->setValue(TransformMatrix, VariableList());
-  state->setValue(FieldTransformMatrix, VariableList());
+  state->setValue(ScaleTransformMatrix, VariableList());
+  state->setValue(RotationTransformMatrix, VariableList());
+  state->setValue(TranslationPoint, VariableList());
+  state->setValue(InverseFieldTransformMatrix, VariableList());
   state->setValue(DataSaved, false);
   state->setValue(Scale, 1.0);
   state->setValue(OldScale, 1.0);
@@ -173,8 +195,6 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
 
   if(inputsChanged() || inputResetRequested)
     resetToInputField();
-  if (widgetAxesRotated_)
-    changeAxesOrientation(field);
   if (firstRun_ && state->getValue(DataSaved).toBool())
   {
     loadFromParameters();
@@ -186,12 +206,20 @@ void EditMeshBoundingBox::updateState(FieldHandle field)
     setOutputCenter();
   else if (transient_value_cast<bool>(state->getTransientValue(ResetCenter)))
     resetOutputCenter();
+  if(transient_value_cast<bool>(state->getTransientValue(SetOutputSize)))
+    setOutputSize();
+  else if (transient_value_cast<bool>(state->getTransientValue(ResetSize)))
+    resetOutputSize();
 }
 
 void EditMeshBoundingBox::sendOutputPorts()
 {
-  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(trans_)));
-  outputField_->vmesh()->transform(fieldTrans_);
+  auto widgetTrans = (widgetRotation_ * widgetScale_);
+  widgetTrans.set_translation(widgetTranslation_);
+  auto fieldTrans = widgetTrans * inputFieldInverse_;
+
+  outputField_->vmesh()->transform(fieldTrans);
+  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(widgetTrans)));
   sendOutput(OutputField, outputField_);
 
   generateGeomsList();
@@ -201,41 +229,34 @@ void EditMeshBoundingBox::sendOutputPorts()
 
 void EditMeshBoundingBox::resetToInputField()
 {
-  trans_ = Transform();
-  fieldTrans_ = Transform();
-  widgetAxes_ = Transform();
+  auto state = get_state();
+  widgetRotation_ = Transform();
+  widgetScale_ = Transform();
   eigvecs_.resize(mDIMENSIONS);
   eigvecs_[0] = Vector(1,0,0);
   eigvecs_[1] = Vector(0,1,0);
   eigvecs_[2] = Vector(0,0,1);
-  get_state()->setTransientValue(ResetToInput, false);
-  // TODO put back obbox
-  // computeWidgetBox(outputField_->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1], eigvecs_[2]));
+
+  state->setTransientValue(ResetToInput, false);
   computeWidgetBox(outputField_->vmesh()->get_bounding_box());
+
   ogPos_ = pos_;
-  trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
+  widgetTranslation_ = pos_;
+  auto trans = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
+  ogScale_ = Vector(eigvals_[0], eigvals_[1], eigvals_[2]);
+  widgetScale_.pre_scale(Vector(eigvals_[0], eigvals_[1], eigvals_[2]));
+
+  inputFieldInverse_ = Transform(trans);
+  inputFieldInverse_.invert();
+
   updateInputFieldAttributes();
 
-  auto state = get_state();
   state->setValue(OutputCenterX, ogPos_.x());
   state->setValue(OutputCenterY, ogPos_.y());
   state->setValue(OutputCenterZ, ogPos_.z());
-}
-
-void EditMeshBoundingBox::changeAxesOrientation(FieldHandle field)
-{
-  for(auto &eigvec : eigvecs_)
-    eigvec = widgetAxes_ * eigvec;
-  widgetAxes_ = Transform();
-
-  auto fh = FieldHandle(field->deep_clone());
-  fh->vmesh()->transform(fieldTrans_);
-  // TODO put back obbox
-  // computeWidgetBox(fh->vmesh()->get_oriented_bounding_box(eigvecs_[0], eigvecs_[1],
-  // eigvecs_[2]));
-  computeWidgetBox(outputField_->vmesh()->get_bounding_box());
-  trans_ = Transform(trans_.get_translation(), eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-  widgetAxesRotated_ = false;
+  state->setValue(OutputSizeX, ogScale_.x());
+  state->setValue(OutputSizeY, ogScale_.y());
+  state->setValue(OutputSizeZ, ogScale_.z());
 }
 
 // Sets the translation vector in the homogeneous matrices
@@ -244,15 +265,10 @@ void EditMeshBoundingBox::setOutputCenter()
   auto state = get_state();
   state->setTransientValue(SetOutputCenter, false);
 
-  trans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble());
-  trans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble());
-  trans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble());
+  widgetTranslation_ = Point(state->getValue(OutputCenterX).toDouble(),
+                              state->getValue(OutputCenterY).toDouble(),
+                              state->getValue(OutputCenterZ).toDouble());
 
-  // Vector multiplication with Transform only does rotation, not translation
-  auto rotatedPositionVec = fieldTrans_ * Vector(ogPos_);
-  fieldTrans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble() - rotatedPositionVec[0]);
-  fieldTrans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble() - rotatedPositionVec[1]);
-  fieldTrans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble() - rotatedPositionVec[2]);
 }
 
 void EditMeshBoundingBox::resetOutputCenter()
@@ -260,14 +276,33 @@ void EditMeshBoundingBox::resetOutputCenter()
   auto state = get_state();
   state->setTransientValue(ResetCenter, false);
 
-  for(int iDim = 0; iDim < mDIMENSIONS; ++iDim)
-  {
-    trans_.set_mat_val(iDim, 3, ogPos_[iDim]);
-    fieldTrans_.set_mat_val(iDim, 3, 0);
-  }
+  widgetTranslation_ = ogPos_;
   state->setValue(OutputCenterX, ogPos_.x());
   state->setValue(OutputCenterY, ogPos_.y());
   state->setValue(OutputCenterZ, ogPos_.z());
+}
+
+void EditMeshBoundingBox::setOutputSize()
+{
+  auto state = get_state();
+  state->setTransientValue(SetOutputSize, false);
+
+  widgetScale_ = Transform();
+  widgetScale_.post_scale(Vector(state->getValue(OutputSizeX).toDouble(),
+                                 state->getValue(OutputSizeY).toDouble(),
+                                 state->getValue(OutputSizeZ).toDouble()));
+}
+
+void EditMeshBoundingBox::resetOutputSize()
+{
+  auto state = get_state();
+  state->setTransientValue(ResetSize, false);
+
+  widgetScale_ = Transform();
+  widgetScale_.pre_scale(ogScale_);
+  state->setValue(OutputSizeX, ogScale_.x());
+  state->setValue(OutputSizeY, ogScale_.y());
+  state->setValue(OutputSizeZ, ogScale_.z());
 }
 
 std::string EditMeshBoundingBox::convertForLabel(double coord)
@@ -276,7 +311,6 @@ std::string EditMeshBoundingBox::convertForLabel(double coord)
 }
 
 
-// void EditMeshBoundingBox::computeWidgetBox(const OrientedBBox& box)
 void EditMeshBoundingBox::computeWidgetBox(const BBox& box)
 {
   bbox_ = box;
@@ -316,21 +350,12 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box)
   eigvals_[2] = diag.z() * 0.5;
 }
 
-namespace
-{
-  void checkForVerySmall(double& size)
-  {
-    const auto VERY_SMALL = 1e-12;
-    if (size < VERY_SMALL) size = 1.0;
-  }
-}
-
 void EditMeshBoundingBox::generateGeomsList()
 {
   geoms_.clear();
   auto bbox = WidgetFactory::createBoundingBox({*this, "EMBB"},
-    {{get_state()->getValue(Scale).toDouble(), "no-color", trans_.get_translation(), bbox_, resolution_},
-    {trans_.get_translation(), trans_.get_rotation()}});
+    {{get_state()->getValue(Scale).toDouble(), "no-color", widgetTranslation_, bbox_, resolution_},
+    {widgetTranslation_, (widgetRotation_ * widgetScale_).get_transformation_vectors()}});
   auto bboxWidget = boost::dynamic_pointer_cast<CompositeWidget>(bbox);
   geoms_.insert(geoms_.end(), bboxWidget->subwidgetBegin(), bboxWidget->subwidgetEnd());
 }
@@ -338,8 +363,12 @@ void EditMeshBoundingBox::generateGeomsList()
 void EditMeshBoundingBox::loadFromParameters()
 {
   auto state = get_state();
-  trans_ = transformFromString(state->getValue(TransformMatrix).toString());
-  fieldTrans_ = transformFromString(state->getValue(FieldTransformMatrix).toString());
+  widgetScale_ = transformFromString(state->getValue(ScaleTransformMatrix).toString());
+  widgetRotation_ = transformFromString(state->getValue(RotationTransformMatrix).toString());
+  widgetTranslation_ =
+pointFromString(state->getValue(TranslationPoint).toString());
+  inputFieldInverse_ = transformFromString(state->getValue(InverseFieldTransformMatrix).toString());
+  setOutputParameters();
 }
 
 void EditMeshBoundingBox::updateInputFieldAttributes()
@@ -348,21 +377,28 @@ void EditMeshBoundingBox::updateInputFieldAttributes()
   state->setValue(InputCenterX, convertForLabel(ogPos_[0]));
   state->setValue(InputCenterY, convertForLabel(ogPos_[1]));
   state->setValue(InputCenterZ, convertForLabel(ogPos_[2]));
-  state->setValue(InputSizeX, convertForLabel(eigvals_[0]));
-  state->setValue(InputSizeY, convertForLabel(eigvals_[1]));
-  state->setValue(InputSizeZ, convertForLabel(eigvals_[2]));
+  state->setValue(InputSizeX, convertForLabel(ogScale_[0]));
+  state->setValue(InputSizeY, convertForLabel(ogScale_[1]));
+  state->setValue(InputSizeZ, convertForLabel(ogScale_[2]));
 }
 
 void EditMeshBoundingBox::saveToParameters()
 {
   auto state = get_state();
-  state->setValue(TransformMatrix, trans_.get_string());
-  state->setValue(FieldTransformMatrix, fieldTrans_.get_string());
+  state->setValue(ScaleTransformMatrix, widgetScale_.get_string());
+  state->setValue(RotationTransformMatrix, widgetRotation_.get_string());
+  state->setValue(TranslationPoint, widgetTranslation_.get_string());
+  state->setValue(InverseFieldTransformMatrix, inputFieldInverse_.get_string());
   state->setValue(DataSaved, true);
 }
 
-const AlgorithmParameterName EditMeshBoundingBox::TransformMatrix("TransformMatrix");
-const AlgorithmParameterName EditMeshBoundingBox::FieldTransformMatrix("FieldTransformMatrix");
+const AlgorithmParameterName EditMeshBoundingBox::ScaleTransformMatrix("ScaleTransformMatrix");
+const AlgorithmParameterName
+EditMeshBoundingBox::RotationTransformMatrix("RotationTransformMatrix");
+const AlgorithmParameterName
+EditMeshBoundingBox::TranslationPoint("TranslationPoint");
+const AlgorithmParameterName
+EditMeshBoundingBox::InverseFieldTransformMatrix("InverseFieldTransformMatrix");
 const AlgorithmParameterName EditMeshBoundingBox::ResetToInput("ResetToInput");
 const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");
 const AlgorithmParameterName EditMeshBoundingBox::ResetSize("ResetSize");

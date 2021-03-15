@@ -47,3 +47,10 @@ TEST(VectorTests, CanScale)
   EXPECT_EQ(Vector(2,2,2), p2);
   EXPECT_EQ(Vector(2,2,2), 2 * p);
 }
+
+TEST(VectorTests, Norm)
+{
+  const static auto epsilon = 2e-12;
+  Vector p(1,1,1);
+  EXPECT_NEAR(std::sqrt(3), p.norm(), epsilon);
+}

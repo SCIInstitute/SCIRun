@@ -52,8 +52,12 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
-        static const Core::Algorithms::AlgorithmParameterName TransformMatrix;
         static const Core::Algorithms::AlgorithmParameterName FieldTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName ScaleTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName RotationTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName TranslationPoint;
+        static const Core::Algorithms::AlgorithmParameterName InverseFieldTransformMatrix;
+
         static const Core::Algorithms::AlgorithmParameterName ResetToInput;
         static const Core::Algorithms::AlgorithmParameterName ResetSize;
         static const Core::Algorithms::AlgorithmParameterName ResetCenter;
@@ -100,7 +104,6 @@ namespace SCIRun {
 
       private:
         void clearVals();
-        // void computeWidgetBox(const Core::Geometry::OrientedBBox& box);
         void computeWidgetBox(const Core::Geometry::BBox& box);
         void buildGeometryObject();
         void updateState(FieldHandle field);
@@ -109,13 +112,17 @@ namespace SCIRun {
         void changeAxesOrientation(FieldHandle field);
         void setOutputCenter();
         void resetOutputCenter();
+        void setOutputSize();
+        void resetOutputSize();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustGeometryFromTransform(const Core::Geometry::Transform& feedbackTrans);
+        void adjustGeometryFromTransform(const Core::Geometry::Transform& feedbackTrans,
+                                         const Core::Datatypes::WidgetMovement& movementType);
         void generateGeomsList();
         void saveToParameters();
         void loadFromParameters();
         std::string convertForLabel(double coord);
         void updateInputFieldAttributes();
+        void setOutputParameters();
 
         Core::Geometry::BBox bbox_;
         Core::Geometry::Point pos_;
@@ -127,10 +134,11 @@ namespace SCIRun {
 
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         Core::Geometry::Point ogPos_;
-        Core::Geometry::Transform trans_;
-        Core::Geometry::Transform widgetAxes_;
-        Core::Geometry::Transform widgetAxesOrthonormal_;
-        Core::Geometry::Transform fieldTrans_;
+        Core::Geometry::Vector ogScale_;
+        Core::Geometry::Transform inputFieldInverse_;
+        Core::Geometry::Transform widgetScale_;
+        Core::Geometry::Transform widgetRotation_;
+        Core::Geometry::Point widgetTranslation_;
         bool widgetMoved_;
         bool widgetAxesRotated_;
         bool firstRun_;

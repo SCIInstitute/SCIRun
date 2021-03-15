@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/WidgetParameters.h>
@@ -79,7 +80,7 @@ namespace SCIRun
 
       protected:
         WidgetList widgets_;
-        void registerAllSiblingWidgetsForEvent(WidgetHandle selected, WidgetMovement movement);
+        void registerAllSiblingWidgetsForEvent(WidgetHandle selected, Core::Datatypes::WidgetMovement movement);
       };
 
       using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
@@ -87,7 +88,7 @@ namespace SCIRun
       template <int MovementEventType>
       struct propagatesEvent
       {
-        static const WidgetMovement to = static_cast<WidgetMovement>(MovementEventType);
+        static const Core::Datatypes::WidgetMovement to = static_cast<Core::Datatypes::WidgetMovement>(MovementEventType);
       };
 
       struct TransformPropagationProxy
@@ -95,7 +96,7 @@ namespace SCIRun
         std::function<void(WidgetHandle)> registrationApplier;
       };
 
-      SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, WidgetMovement movement);
+      SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, Core::Datatypes::WidgetMovement movement);
       SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget);
       using TheseWidgets = std::vector<WidgetHandle>;
       SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, const TheseWidgets& widgets);

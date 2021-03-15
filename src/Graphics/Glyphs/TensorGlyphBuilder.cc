@@ -343,7 +343,7 @@ void TensorGlyphBuilder::generateBox(GlyphConstructor& constructor)
   computeTransforms();
 
   std::vector<Vector> box_points = generateBoxPoints();
-  std::vector<Vector> normals = rotate_.get_rotation();
+  std::vector<Vector> normals = rotate_.get_rotation_vectors();
   if(flatTensor_)
     for(int d = 0; d < DIMENSIONS_; ++d)
       normals[d] = zeroNorm_;

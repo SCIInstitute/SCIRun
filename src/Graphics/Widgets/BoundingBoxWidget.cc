@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Color.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>

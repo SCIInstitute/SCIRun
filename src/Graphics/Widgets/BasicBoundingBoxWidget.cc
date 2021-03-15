@@ -26,12 +26,14 @@
 */
 
 
+#include <Core/Datatypes/Feedback.h>
 #include <Graphics/Widgets/BasicBoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace Graphics::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
 
 
 BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& gen,

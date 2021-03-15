@@ -29,6 +29,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>

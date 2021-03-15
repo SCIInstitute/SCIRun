@@ -55,6 +55,7 @@
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/BBox.h>
 
 using namespace SCIRun;

@@ -43,6 +43,7 @@
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Core/Application/Preferences/Preferences.h>
 
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -66,22 +67,6 @@ WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const S
 }
 
 glm::mat4 WidgetUpdateService::getStaticCameraViewProjection() { return transformer_->getStaticCameraViewProjection(); }
-
-namespace
-{
-  WidgetInteraction yetAnotherEnumConversion(MouseButton btn)
-  {
-    switch (btn)
-    {
-    case MouseButton::MOUSE_LEFT:
-      return WidgetInteraction::CLICK;
-    case MouseButton::MOUSE_RIGHT:
-      return WidgetInteraction::RIGHT_CLICK;
-    default:
-      return WidgetInteraction::CLICK;
-    }
-  }
-}
 
 void WidgetUpdateService::setCurrentWidget(WidgetHandle w)
 {
@@ -152,7 +137,7 @@ WidgetTransformEvent::WidgetTransformEvent(ObjectTransformer* transformer,
   impl_->calcFamily_ = calcFamily;
 }
 
-Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
+WidgetMovement WidgetTransformEvent::baseMovement() const
 {
   return impl_->calcFamily_->baseMovement();
 }
