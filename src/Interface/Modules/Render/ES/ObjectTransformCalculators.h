@@ -217,7 +217,7 @@ class SCISHARE ObjectAxisTranslationCalculator : public ObjectTransformCalculato
       gen::Transform computeTransform(int x, int y) const override;
       Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::TRANSLATE; }
     private:
-      glm::mat4 invViewProj_;
+      glm::mat4 invViewProj_ {1.0};
       glm::vec2 initialPosition_;
       glm::vec3 axis_;
       float w_;

@@ -328,7 +328,7 @@ namespace SCIRun {
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
-      Core::Datatypes::WidgetMovement       movementType_;
+      Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
       int                                   clippingPlaneIndex_           {0};
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
