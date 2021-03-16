@@ -86,7 +86,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
   }
 
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
 
@@ -188,7 +188,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
   }
 
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
 
@@ -313,7 +313,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
   }
 
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
 
@@ -440,7 +440,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
   }
 
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
 

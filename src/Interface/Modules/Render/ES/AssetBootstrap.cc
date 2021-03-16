@@ -52,7 +52,7 @@ public:
 
   static const char* getName() {return "scirun:AssetBootstrap";}
 
-  void execute(spire::ESCoreBase& baseCore)
+  void execute(spire::ESCoreBase& baseCore) override
   {
     // Dynamic cast core into our core so that we have access to the systems
     // factory.

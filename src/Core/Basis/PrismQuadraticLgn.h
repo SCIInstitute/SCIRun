@@ -227,7 +227,7 @@ PrismQuadraticLgn<T>::type_name(int n)
     static const std::string nm("PrismQuadraticLgn");
     return nm;
   } else {
-    return find_type_name((T *)0);
+    return find_type_name((T *)nullptr);
   }
 }
 
@@ -240,9 +240,9 @@ PrismQuadraticLgn<T>::type_name(int n)
 template <class T>
 const TypeDescription* get_type_description(Core::Basis::PrismQuadraticLgn<T> *)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
+    const TypeDescription *sub = get_type_description((T*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("PrismQuadraticLgn", subs,

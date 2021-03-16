@@ -44,8 +44,8 @@ namespace Math {
   {
   public:
     BooleanCompare();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, MatrixA, Matrix);
     INPUT_PORT(1, MatrixB, Matrix);

@@ -50,7 +50,7 @@ using ::testing::Range;
 class ShowColorMapModuleTest : public ModuleTest
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
     showColorMap = makeModule("ShowColorMap");

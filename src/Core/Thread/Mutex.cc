@@ -26,9 +26,11 @@
 */
 
 
+#include <thread>
+//#include <iostream>
+#include <chrono>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Thread;
 
@@ -46,12 +48,53 @@ void Mutex::unlock()
   impl_.unlock();
 }
 
-void Interruptible::checkForInterruption()
+Stoppable::Stoppable() :
+  exitSignal(new std::promise<void>),
+  futureObj(exitSignal->get_future())
 {
-  boost::this_thread::interruption_point();
-  //#ifdef WIN32 // this is working on Mac, but not Windows.
-  //std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
-  //std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
-  //std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
-  //#endif
+}
+
+Stoppable::Stoppable(Stoppable&& obj) :
+  exitSignal(std::move(obj.exitSignal)),
+  futureObj(std::move(obj.futureObj))
+{
+}
+
+Stoppable& Stoppable::operator=(Stoppable && obj)
+{
+  exitSignal = std::move(obj.exitSignal);
+  futureObj = std::move(obj.futureObj);
+  return *this;
+}
+
+void Stoppable::resetStoppability()
+{
+  exitSignal.reset(new std::promise<void>);
+  futureObj = exitSignal->get_future();
+}
+
+//Checks if thread is requested to stop
+bool Stoppable::stopRequested() const
+{
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << "?";
+
+  auto timedout = futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout;
+  //std::cout << "\t" << std::boolalpha << !timedout << std::endl;
+    // checks if value in future object is available
+  return !timedout;
+}
+
+// Request the thread to stop by setting value in promise object
+void Stoppable::sendStopRequest()
+{
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+  exitSignal->set_value();
+}
+
+void SCIRun::Core::Thread::checkForInterruption(const Stoppable* stoppable)
+{
+  if (stoppable && stoppable->stopRequested())
+  {
+    throw ThreadStopped();
+  }
 }

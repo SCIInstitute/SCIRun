@@ -115,12 +115,12 @@ Field::io(Piostream& stream)
 std::string Field::type_name() const { return type_id.type; }
 
 // initialize the static member type_id
-PersistentTypeID Field::type_id("Field", "Datatype", 0);
+PersistentTypeID Field::type_id("Field", "Datatype", nullptr);
 
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
-Mutex *FieldTypeIDMutex = 0;
-static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = 0;
+Mutex *FieldTypeIDMutex = nullptr;
+static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = nullptr;
 
 FieldTypeID::FieldTypeID(const std::string&type,
                          FieldHandle (*field_maker)(),
@@ -129,13 +129,13 @@ FieldTypeID::FieldTypeID(const std::string&type,
     field_maker(field_maker),
     field_maker_mesh(field_maker_mesh)
 {
-  if (FieldTypeIDMutex == 0)
+  if (FieldTypeIDMutex == nullptr)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
-    if (FieldTypeIDTable == 0)
+    if (FieldTypeIDTable == nullptr)
     {
       FieldTypeIDTable = new std::map<std::string,FieldTypeID*>;
     }
@@ -169,7 +169,7 @@ SCIRun::CreateField(const std::string& type, MeshHandle mesh)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
     auto it = FieldTypeIDTable->find(type);
     if (it != FieldTypeIDTable->end())
@@ -192,7 +192,7 @@ SCIRun::CreateField(const std::string& type)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
     std::map<std::string,FieldTypeID*>::iterator it;
     it = FieldTypeIDTable->find(type);

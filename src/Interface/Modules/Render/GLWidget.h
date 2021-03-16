@@ -41,12 +41,8 @@
 #ifndef Q_MOC_RUN
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/GLContext.h>
-#include <Interface/Modules/Render/QtGLContext.h>
-
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #endif
-//#include <QtOpenGL/QGLWidget>
 #include <QOpenGLWidget>
 
 namespace SCIRun {
@@ -81,14 +77,14 @@ public Q_SLOTS:
   void updateRenderer();
 
 protected:
-  virtual void mousePressEvent(QMouseEvent* event);
-  virtual void mouseMoveEvent(QMouseEvent* event);
-  virtual void mouseReleaseEvent(QMouseEvent* event);
-  virtual void wheelEvent(QWheelEvent* event);
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-  void closeEvent(QCloseEvent *evt);
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void wheelEvent(QWheelEvent* event) override;
+  void initializeGL() override;
+  void paintGL() override;
+  void resizeGL(int width, int height) override;
+  void closeEvent(QCloseEvent *evt) override;
 
 private:
   Render::RendererPtr                   graphics_          {};  ///< Interface to spire.

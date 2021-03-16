@@ -25,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <cmath>
+#include <algorithm>
+#include <Core/Math/MiscMath.h>
 #include <Core/Utils/Exception.h>
 #include <gtest/gtest.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -33,13 +34,10 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <iostream>
-#include <sstream>
 
 using namespace ::testing;
 
-const static float epsilon = 0.2e-5;
+const static float epsilon = 0.2e-5f;
 
 TEST(GLMTests, CameraTransform)
 {

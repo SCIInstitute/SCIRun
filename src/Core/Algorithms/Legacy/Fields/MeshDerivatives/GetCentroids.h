@@ -46,7 +46,7 @@ namespace Fields {
     GetCentroids();
 
     /// run the algorithm
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
 
 }}}}

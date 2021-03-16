@@ -76,7 +76,7 @@ bc_maker2(bc_maker2)
   Persistent::add_class(type, parent, maker, bc_maker1, bc_maker2);
 }
 
-PersistentTypeID::PersistentTypeID() : maker(0), bc_maker1(0), bc_maker2(0) {}
+PersistentTypeID::PersistentTypeID() : maker(nullptr), bc_maker1(nullptr), bc_maker2(nullptr) {}
 
 //----------------------------------------------------------------------
 Persistent::~Persistent()
@@ -93,8 +93,8 @@ Piostream::Piostream(Direction dir, int version, const std::string &name,
   : dir(dir),
     version_(version),
     err(false),
-    outpointers(0),
-    inpointers(0),
+    outpointers(nullptr),
+    inpointers(nullptr),
     current_pointer_id(1),
     have_peekname_(false),
     reporter_(pr),
@@ -212,7 +212,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
   {
     int have_data;
     int pointer_id;
-    data = 0;
+    data = nullptr;
     emit_pointer(have_data, pointer_id);
 
 #if DEBUG
@@ -231,9 +231,9 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
 //      std::cerr << "in here: "<< in_name<<", "<< want_name<<std::endl;
 #endif
 
-      Persistent* (*maker)() = 0;
-      Persistent* (*bc_maker1)() = 0;
-      Persistent* (*bc_maker2)() = 0;
+      Persistent* (*maker)() = nullptr;
+      Persistent* (*bc_maker1)() = nullptr;
+      Persistent* (*bc_maker2)() = nullptr;
 
       /// @todo ULTRA HACKY CODE
       if (in_name == "Manager")
@@ -419,7 +419,7 @@ auto_istream(const std::string& filename, LoggerHandle pr)
   // Determine endianness of file.
   int file_endian, version;
 
-  if (!Piostream::readHeader(pr, filename, hdr, 0, version, file_endian))
+  if (!Piostream::readHeader(pr, filename, hdr, nullptr, version, file_endian))
   {
     if (pr) pr->error("Cannot parse header of file: " + filename);
     else std::cerr << "ERROR - Cannot parse header of file: " << filename << std::endl;
@@ -643,18 +643,18 @@ void Pio_index(Piostream& stream, index_type* data,
 
 //----------------------------------------------------------------------
 
-Mutex* Persistent::persistent_mutex_ = 0;
-Persistent::MapStringPersistentID* Persistent::persistent_table_ = 0;
+Mutex* Persistent::persistent_mutex_ = nullptr;
+Persistent::MapStringPersistentID* Persistent::persistent_table_ = nullptr;
 
 void
 Persistent::initialize()
 {
-  if (0 == persistent_mutex_)
+  if (nullptr == persistent_mutex_)
   {
     persistent_mutex_ = new Mutex("Persistent Mutex");
   }
 
-  if (0 == persistent_table_)
+  if (nullptr == persistent_table_)
   {
     persistent_table_ = new MapStringPersistentID;
   }

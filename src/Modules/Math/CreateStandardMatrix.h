@@ -42,8 +42,8 @@ namespace SCIRun{
             {
             public:
                 CreateStandardMatrix();
-                virtual void execute();
-                virtual void setStateDefaults();
+                void execute() override;
+                void setStateDefaults() override;
 
 
                 //INPUT_PORT(0,InputMatrix, Matrix);

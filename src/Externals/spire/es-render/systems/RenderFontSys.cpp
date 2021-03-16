@@ -210,7 +210,7 @@ public:
                                   renFont.stride);
 
     GL(glDrawElements(renFont.primMode, renFont.numPrims,
-                      renFont.primType, 0));
+                      renFont.primType, nullptr));
 
     shaders::unbindPreappliedAttrib(renFont.appliedAttribs,
                                     static_cast<size_t>(renFont.attribSize));

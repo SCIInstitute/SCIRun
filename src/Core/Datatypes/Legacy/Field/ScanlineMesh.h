@@ -76,7 +76,7 @@ class ScanlineMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVScanlineMesh(MESH* mesh) { return (0); }
+VMesh* CreateVScanlineMesh(MESH* mesh) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -227,21 +227,22 @@ public:
 
     compute_jacobian();
   }
-  virtual ScanlineMesh *clone() const { return new ScanlineMesh(*this); }
+
+ScanlineMesh *clone() const override { return new ScanlineMesh(*this); }
   virtual ~ScanlineMesh()
   {
     DEBUG_DESTRUCTOR("ScanlineMesh")
   }
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get()); }
+VMesh* vmesh() override { return (vmesh_.get()); }
 
-  virtual MeshFacadeHandle getFacade() const
+MeshFacadeHandle getFacade() const override
   {
      return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
-  virtual int basis_order() { return basis_.polynomial_order(); }
+int basis_order() override { return basis_.polynomial_order(); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -427,8 +428,8 @@ public:
   /// Synchronize functions, as there is nothing to synchronize, these
   /// functions always succeed
 
-  virtual bool synchronize(mask_type /*sync*/) { return (true); }
-  virtual bool unsynchronize(mask_type /*sync*/) { return (true); }
+bool synchronize(mask_type /*sync*/) override { return (true); }
+bool unsynchronize(mask_type /*sync*/) override { return (true); }
   bool clear_synchronization() { return (true); }
 
   /// Get the local coordinates for a certain point within an element
@@ -610,18 +611,18 @@ public:
   double get_epsilon() const;
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.
   static PersistentTypeID scanline_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return scanline_typeid.type; }
+std::string dynamic_type_name() const override { return scanline_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1107,7 +1108,7 @@ ScanlineMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -1223,10 +1224,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(ScanlineMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("ScanlineMesh", subs,
@@ -1242,7 +1243,7 @@ template <class Basis>
 const TypeDescription*
 ScanlineMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((ScanlineMesh *)0);
+  return SCIRun::get_type_description((ScanlineMesh *)nullptr);
 }
 
 
@@ -1250,11 +1251,11 @@ template <class Basis>
 const TypeDescription*
 ScanlineMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ScanlineMesh<Basis> *)0);
+      SCIRun::get_type_description((ScanlineMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1268,11 +1269,11 @@ template <class Basis>
 const TypeDescription*
 ScanlineMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ScanlineMesh<Basis> *)0);
+      SCIRun::get_type_description((ScanlineMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1286,11 +1287,11 @@ template <class Basis>
 const TypeDescription*
 ScanlineMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ScanlineMesh<Basis> *)0);
+      SCIRun::get_type_description((ScanlineMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1304,11 +1305,11 @@ template <class Basis>
 const TypeDescription*
 ScanlineMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ScanlineMesh<Basis> *)0);
+      SCIRun::get_type_description((ScanlineMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

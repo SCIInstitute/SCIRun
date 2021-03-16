@@ -47,7 +47,7 @@ class SCISHARE BuildNodeLinkAlgo : public AlgorithmBase
 
     bool run(Datatypes::MatrixHandle nodeDomain, Datatypes::MatrixHandle& nodeLink) const;
 
-		virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}

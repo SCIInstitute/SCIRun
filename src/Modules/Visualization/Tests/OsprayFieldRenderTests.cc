@@ -72,7 +72,7 @@ public:
       throw init_error;
   }
 protected:
-  virtual void SetUp() override
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(false);
     auto size = GetParam();

@@ -82,8 +82,8 @@ namespace Networks {
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
     virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
-    virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
-    virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
+    virtual void portAddedSlot(const ModuleId&, const PortId&) {}
+    virtual void portRemovedSlot(const ModuleId&, const PortId&) {}
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
     virtual void enqueueExecuteAgain(bool upstream) = 0;
     virtual const MetadataMap& metadata() const = 0;
@@ -93,6 +93,7 @@ namespace Networks {
     virtual bool isImplementationDisabled() const = 0;
     virtual void setProgrammableInputPortEnabled(bool enable) = 0;
     virtual bool checkForVirtualConnection(const ModuleInterface& downstream) const = 0;
+    virtual void disconnectStateListeners() = 0;
   };
 
   class SCISHARE ModuleInterface :

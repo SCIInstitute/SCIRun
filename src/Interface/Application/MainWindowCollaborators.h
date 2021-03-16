@@ -30,7 +30,6 @@
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
 #ifndef Q_MOC_RUN
-#include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
@@ -38,8 +37,6 @@
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
 #include <QLineEdit>
@@ -62,7 +59,7 @@ namespace Gui {
   public:
     explicit TextEditAppender(QTextEdit* text) : text_(text) {}
     void log(const QString& message) const;
-    virtual void log4(const std::string& message) const override;
+    void log4(const std::string& message) const override;
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;
@@ -190,7 +187,7 @@ namespace Gui {
     QWizardPage* createConnectionChoicePage();
     QWizardPage* createDocPage();
     QWizardPage* createOtherSettingsPage();
-    QLineEdit* pathWidget_;
+    QLineEdit* pathWidget_{};
     bool showPrefs_{ false };
   };
 

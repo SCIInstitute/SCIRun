@@ -98,7 +98,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
 {
   if (!input_matrix || input_matrix->nrows()==0 || input_matrix->ncols()==0)
   {
-    remark(" No valid inputs: input matrix or row,column matrix contain NULL pointer ");
+    remark(" No valid inputs: input matrix or row,column matrix contain null pointer ");
     return MatrixHandle();
   }
 

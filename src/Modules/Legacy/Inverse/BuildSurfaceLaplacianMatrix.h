@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         BuildSurfaceLaplacianMatrix();
-        virtual void setStateDefaults() override {}
-        virtual void execute() override;
+        void setStateDefaults() override {}
+        void execute() override;
 
         INPUT_PORT(0, Source, Field);
         OUTPUT_PORT(0, ResultMatrix, Matrix);

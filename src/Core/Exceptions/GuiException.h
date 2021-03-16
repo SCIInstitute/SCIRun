@@ -48,8 +48,8 @@ class GuiException : public Exception {
 public:
   GuiException(const std::string& msg) : msg_(msg) { stacktrace_ = 0; }
   virtual ~GuiException() NOEXCEPT {}
-  virtual const char* message() const { return msg_.c_str(); }
-  virtual const char* type() const { return "GuiException"; }
+  const char* message() const override { return msg_.c_str(); }
+  const char* type() const override { return "GuiException"; }
 protected:
 private:
   std::string msg_;

@@ -136,7 +136,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
   else
     ofield->copy_values(ifield);
 
-  std::vector<VMesh*> objmesh(objField.size(),0);
+  std::vector<VMesh*> objmesh(objField.size(),nullptr);
 
   if(ofield->basis_order()==0)
   {

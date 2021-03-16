@@ -44,7 +44,7 @@ class SCISHARE ClipVolumeByIsovalueDialog : public ModuleDialogGeneric,
 public:
   ClipVolumeByIsovalueDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 
 }

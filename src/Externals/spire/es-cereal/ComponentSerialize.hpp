@@ -185,6 +185,14 @@ public:
   virtual const char* getComponentName() const = 0;
 };
 
+class RepetitiveMessageTracker
+{
+public:
+  static bool hasPostedFor(const std::string& className, int glIdNumber, const std::string& objectName);
+private:
+  static std::map<std::string, std::map<int, std::map<std::string, bool>>> tracking_;
+};
+
 } // namespace spire
 
 #endif

@@ -27,9 +27,7 @@
 
 
 #include <iostream>
-#include <stdexcept>
 #include <Interface/qt_include.h>
-#include <boost/bind.hpp>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Connection.h>
@@ -47,7 +45,7 @@ using namespace SCIRun::Core::Logging;
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
 
@@ -73,7 +71,7 @@ public:
 class CubicBezierDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
     QPointF start = from;
@@ -103,7 +101,7 @@ public:
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
     path.moveTo(from);
@@ -247,7 +245,7 @@ namespace SCIRun
     class ConnectionLineNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem*, const QGraphicsTextItem*, NotePosition) const override
+      QPointF relativeNotePosition(QGraphicsItem*, const QGraphicsTextItem*, NotePosition) const override
       {
         return QPointF(0,0);
       }
@@ -271,13 +269,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
     fromPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL FROM PORT: {}", id_.id_);
+    LOG_DEBUG("Null FROM PORT: {}", id_.id_);
   if (toPort_)
   {
     toPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL TO PORT: {}", id_.id_);
+    LOG_DEBUG("Null TO PORT: {}", id_.id_);
 
   if (fromPort_ && toPort_)
   {

@@ -52,7 +52,7 @@ namespace SCIRun {
 
           bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
       }
     }

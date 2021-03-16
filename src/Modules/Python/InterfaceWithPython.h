@@ -71,21 +71,21 @@ namespace SCIRun
       {
       public:
         InterfaceWithPython();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
-        INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
-        INPUT_PORT_DYNAMIC(1, InputField, Field);
-        INPUT_PORT_DYNAMIC(2, InputString, String);
-        OUTPUT_PORT(0, PythonMatrix1, Matrix);
-        OUTPUT_PORT(1, PythonMatrix2, Matrix);
-        OUTPUT_PORT(2, PythonMatrix3, Matrix);
-        OUTPUT_PORT(3, PythonField1, Field);
-        OUTPUT_PORT(4, PythonField2, Field);
-        OUTPUT_PORT(5, PythonField3, Field);
-        OUTPUT_PORT(6, PythonString1, String);
-        OUTPUT_PORT(7, PythonString2, String);
-        OUTPUT_PORT(8, PythonString3, String);
+        INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix)
+        INPUT_PORT_DYNAMIC(1, InputField, Field)
+        INPUT_PORT_DYNAMIC(2, InputString, String)
+        OUTPUT_PORT(0, PythonMatrix1, Matrix)
+        OUTPUT_PORT(1, PythonMatrix2, Matrix)
+        OUTPUT_PORT(2, PythonMatrix3, Matrix)
+        OUTPUT_PORT(3, PythonField1, Field)
+        OUTPUT_PORT(4, PythonField2, Field)
+        OUTPUT_PORT(5, PythonField3, Field)
+        OUTPUT_PORT(6, PythonString1, String)
+        OUTPUT_PORT(7, PythonString2, String)
+        OUTPUT_PORT(8, PythonString3, String)
 
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
 

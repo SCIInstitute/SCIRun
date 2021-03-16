@@ -44,13 +44,13 @@ namespace Datatypes {
     explicit String(const std::string& s = "");
 
     const std::string& value() const { return value_; }
-    virtual String* clone() const override { return new String(*this); }
+    String* clone() const override { return new String(*this); }
 
     //! Persistent representation
-    virtual void io(Piostream&) override;
+    void io(Piostream&) override;
     static PersistentTypeID type_id_obj;
     static PersistentTypeID type_id_func();
-    virtual std::string dynamic_type_name() const override;
+    std::string dynamic_type_name() const override;
     std::string type_name() const;
 
   private:

@@ -123,6 +123,7 @@ namespace Networks {
     boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
     boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
     boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) override final;
+    void disconnectStateListeners() override final;
     void addPortConnection(const boost::signals2::connection& con) override final;
     Core::Algorithms::AlgorithmHandle getAlgorithm() const override final;
     void setLogger(Core::Logging::LoggerHandle log) override final;
@@ -132,7 +133,7 @@ namespace Networks {
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
     void setProgrammableInputPortEnabled(bool enable) override final;
-    bool checkForVirtualConnection(const ModuleInterface& downstream) const override { return false; }
+    bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
     void setInfoStrings(const ModuleDescription& desc);
     static const int TraitFlags;
@@ -181,7 +182,7 @@ namespace Networks {
     virtual void postStateChangeInternalSignalHookup();
 
 /*** protected Dev-interface ****/
-    virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
+    void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
     virtual void removeInputPort(const PortId& id);

@@ -49,7 +49,7 @@ class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
     /// run the algorithm
     bool run(FieldHandle input, FieldHandle& output) const;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

@@ -163,7 +163,7 @@ bool DataIOAlgo::readNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
       if (!nrrd) return (false);
 
       NrrdData::lock_teem();
-      if (nrrdLoad(nrrd->getNrrd(), airStrdup(filename.c_str()), 0))
+      if (nrrdLoad(nrrd->getNrrd(), airStrdup(filename.c_str()), nullptr))
       {
         char *err = biffGetDone(NRRD);
         error("Could not read nrrd '" + filename + "' because teem crashed for the following reason: " + err);

@@ -38,7 +38,7 @@
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <Core/Logging/Log.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -46,6 +46,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 
 ALGORITHM_PARAMETER_DEF(Fields, MinRange);
 ALGORITHM_PARAMETER_DEF(Fields, MaxRange);
@@ -65,8 +66,8 @@ struct pointtype
   bool hasneighbor;
 };
 
-AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
-AlgorithmOutputName GetDomainBoundaryAlgo::BoundaryField("BoundaryField");
+const AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
+const AlgorithmOutputName GetDomainBoundaryAlgo::BoundaryField("BoundaryField");
 
 GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 {
@@ -84,7 +85,7 @@ GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 bool
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
-  typedef boost::unordered_multimap<index_type,pointtype> pointhash_map_type;
+  typedef std::unordered_multimap<index_type,pointtype> pointhash_map_type;
 
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   using namespace Parameters;
@@ -218,7 +219,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
-      checkForInterruption();
+      checkForInterruption(this);
 
       bool neighborexist = false;
       bool includeface = false;
@@ -331,7 +332,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         onodes.resize(inodes.size());
         for (size_t q=0; q< onodes.size(); q++)
         {
-          checkForInterruption();
+          checkForInterruption(this);
           a = inodes[q];
 
           std::pair<pointhash_map_type::iterator,pointhash_map_type::iterator> lit;
@@ -405,7 +406,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
-      checkForInterruption();
+      checkForInterruption(this);
 
       bool neighborexist = false;
       bool includeface = false;
@@ -515,7 +516,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
         for (size_t q=0; q< onodes.size(); q++)
         {
-          checkForInterruption();
+          checkForInterruption(this);
           a = inodes[q];
           if (node_map[a] == -1)
           {

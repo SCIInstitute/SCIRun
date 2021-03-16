@@ -26,49 +26,17 @@
 */
 
 
-#include <es-log/trace-log.h>
 #include <QtGui>
-#include <functional>
-#include <boost/bind.hpp>
-#include <boost/assign.hpp>
-#include <boost/assign/std/vector.hpp>
-#include <boost/algorithm/string.hpp>
-#include <Core/Utils/Legacy/MemoryUtil.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
-#include <Interface/Application/ShortcutsInterface.h>
-#include <Interface/Application/TreeViewCollaborators.h>
-#include <Interface/Application/MainWindowCollaborators.h>
-#include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-#include <Interface/Application/NetworkExecutionProgressBar.h>
-#include <Interface/Application/DialogErrorControl.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
-#include <Interface/Application/ModuleWizard/ModuleWizard.h>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
-#include <Dataflow/Engine/Controller/ProvenanceManager.h>
-#include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
-#include <Core/Logging/Log.h>
-#include <Core/Thread/Parallel.h>
-#include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Utils/CurrentFileName.h>
 
-#ifdef BUILD_WITH_PYTHON
-#include <Interface/Application/PythonConsoleWidget.h>
-#include <Core/Python/PythonInterpreter.h>
-#endif
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -133,4 +101,16 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
     QSettings settings;
     settings.setValue("dataDirectory", QString::fromStdString(Preferences::Instance().dataDirectory().string()));
   }
+}
+
+void SCIRunMainWindow::setScreenshotDirectoryFromGUI()
+{
+	auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().parent_path().string()));
+	setScreenshotDirectory(dir);
+
+	{
+		QSettings settings;
+		settings.setValue("screenshotDirectory", QString::fromStdString(Preferences::Instance().screenshotDirectory().string()));
+	}
+
 }

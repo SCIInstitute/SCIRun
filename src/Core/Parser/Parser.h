@@ -506,7 +506,7 @@ class ParserScriptFunction
     ParserScriptVariableHandle get_input_var(size_t j) const
     {
       if (j < input_variables_.size()) return (input_variables_[j]);
-      return (ParserScriptVariableHandle(0));
+      return (ParserScriptVariableHandle(nullptr));
     }
 
     void set_input_var(size_t j, ParserScriptVariableHandle& handle)

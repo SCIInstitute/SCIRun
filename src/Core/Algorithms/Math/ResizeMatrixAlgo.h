@@ -48,7 +48,7 @@ namespace SCIRun
               {
               public:
                 ResizeMatrixAlgo();
-                AlgorithmOutput run(const AlgorithmInput& input) const;
+                AlgorithmOutput run(const AlgorithmInput& input) const override;
               };
             }
         }

@@ -45,7 +45,7 @@ class SCISHARE ShowAndEditDipolesDialog : public ModuleDialogGeneric,
 public:
   ShowAndEditDipolesDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 private:
   Dataflow::Networks::ModuleStateHandle state_;
   private Q_SLOTS:

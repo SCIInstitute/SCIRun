@@ -131,11 +131,11 @@ FData3d<Data, Msh>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
   else
   {
-    return find_type_name(static_cast<Msh *>(0));
+    return find_type_name(static_cast<Msh *>(nullptr));
   }
 }
 
@@ -148,12 +148,12 @@ FData3d<Data, Msh>::get_type_description(int n) const
   static std::string name(type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(nullptr));
 
   if (n == -1) {
-    static TypeDescription* tdn1 = 0;
-    if (tdn1 == 0) {
+    static TypeDescription* tdn1 = nullptr;
+    if (tdn1 == nullptr) {
       TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
       (*subs)[0] = sub1;
       (*subs)[1] = sub2;
@@ -163,9 +163,9 @@ FData3d<Data, Msh>::get_type_description(int n) const
     return tdn1;
   }
   else if(n == 0) {
-    static TypeDescription* tdn0 = 0;
-    if (tdn0 == 0) {
-      tdn0 = new TypeDescription(name, 0, path, namesp,
+    static TypeDescription* tdn0 = nullptr;
+    if (tdn0 == nullptr) {
+      tdn0 = new TypeDescription(name, nullptr, path, namesp,
 				    TypeDescription::CONTAINER_E);
     }
     return tdn0;
@@ -183,11 +183,11 @@ get_type_description(FData3d<Data, Msh>*)
   static std::string name(FData3d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Msh*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0) {
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr) {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;
@@ -277,11 +277,11 @@ FData2d<Data, Msh>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
   else
   {
-    return find_type_name(static_cast<Msh *>(0));
+    return find_type_name(static_cast<Msh *>(nullptr));
   }
 }
 
@@ -292,11 +292,11 @@ get_type_description(FData2d<Data, Msh>*)
   static std::string name(FData2d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0) {
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr) {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;
@@ -369,7 +369,7 @@ FData1d<Data>::type_name(int n)
   }
   else
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
 }
 
@@ -380,10 +380,10 @@ get_type_description(FData1d<Data>*)
   static std::string name(FData1d<Data>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0)
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr)
   {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub1;

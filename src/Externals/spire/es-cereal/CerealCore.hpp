@@ -106,7 +106,7 @@ public:
     Tny* val = heap->serializeValue(*this, value, entityID, componentIndex);
 
     // Add val to a dictionary which contains the component's name.
-    Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+    Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
     root = Tny_add(root, TNY_OBJ, const_cast<char*>(heap->getComponentName()), val, 0);
 
     // Get rid of value since a deep copy was made.

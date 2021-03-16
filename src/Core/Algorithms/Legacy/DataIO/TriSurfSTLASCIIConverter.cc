@@ -56,7 +56,7 @@ class AsciiConverterPrivate
 {
 public:
 //  // point(vertex) lookup table
-//  typedef boost::unordered_map< Point, unsigned int, PointHash > PointTable;
+//  typedef std::unordered_map< Point, unsigned int, PointHash > PointTable;
 //  typedef std::list<Facet> FacetList;
 
   explicit AsciiConverterPrivate(LoggerHandle pr)

@@ -46,11 +46,12 @@ boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(co
 ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
 {
   if (!filter)
-    return additionalFilter;
-  if (!additionalFilter)
+    return additionalFilter_;
+  if (!additionalFilter_)
     return filter;
 
-  return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
+  auto additional = additionalFilter_;
+  return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
 }
 
 ExecutionQueueManager::ExecutionQueueManager() :
@@ -73,12 +74,13 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
     currentExecutor_ = factory->createDefault();
 }
 
-void ExecutionQueueManager::start()
+void ExecutionQueueManager::startExecution()
 {
-  executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
+  resetStoppability();
+  executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
 
-boost::shared_ptr<boost::thread> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -90,7 +92,7 @@ boost::shared_ptr<boost::thread> ExecutionQueueManager::enqueueContext(Execution
   if (contextReady)
   {
     if (!executionLaunchThread_)
-      start();
+      startExecution();
     somethingToExecute_.conditionBroadcast();
   }
   return executionLaunchThread_;
@@ -104,6 +106,10 @@ void ExecutionQueueManager::executeTopContext()
     while (0 == contextCount_)
     {
       somethingToExecute_.wait(lock);
+      if (stopRequested())
+      {
+        return;
+      }
     }
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
     {
@@ -121,11 +127,13 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
   }
 }
 
-void ExecutionQueueManager::stop()
+void ExecutionQueueManager::stopExecution()
 {
   if (executionLaunchThread_)
   {
-    executionLaunchThread_->interrupt();
+    sendStopRequest();
+    somethingToExecute_.conditionBroadcast();
+    executionLaunchThread_->join();
     executionLaunchThread_.reset();
   }
 }

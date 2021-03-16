@@ -57,7 +57,7 @@ namespace Fields {
 
     FieldHandle run(FieldHandle input,const FieldList& objField)const;
 
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 
 
   };

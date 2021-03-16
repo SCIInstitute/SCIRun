@@ -59,7 +59,7 @@ class SCISHARE BooleanCompareAlgo : public AlgorithmBase
 
   public:
     BooleanCompareAlgo();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, std::string valoptA, std::string& cond_statement, int& cond_state) const;
   bool return_check(int& cond_state, Datatypes::DenseMatrixHandle& cond_matrix, Datatypes::MatrixHandle& out_matrix, std::string then_result, std::string else_result, Datatypes::MatrixHandle matrixa, Datatypes::MatrixHandle matrixb, Datatypes::MatrixHandle possout) const;

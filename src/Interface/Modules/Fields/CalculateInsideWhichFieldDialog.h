@@ -44,9 +44,9 @@ class SCISHARE CalculateInsideWhichFieldDialog : public ModuleDialogGeneric,
 public:
   CalculateInsideWhichFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 private Q_SLOTS:
   void setUseNanForUnassignedValues(int state);
 };

@@ -57,6 +57,8 @@ namespace Gui
 
   QGraphicsEffect* blurEffect(double radius = 2);
 
+  bool allowModificationSignalConnection();
+
   inline QAction* separatorAction(QWidget* parent)
   {
     auto sep = new QAction(parent);

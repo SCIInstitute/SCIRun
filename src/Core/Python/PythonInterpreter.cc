@@ -41,7 +41,7 @@
 #include <boost/preprocessor.hpp>
 #include <string>
 #include <vector>
-#include <boost/thread/condition_variable.hpp>
+#include <condition_variable>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
@@ -99,7 +99,7 @@ public:
 
 	// Condition variable to make sure the PythonInterpreter thread has
 	// completed initialization before continuing the main thread.
-	boost::condition_variable thread_condition_variable_;
+	std::condition_variable thread_condition_variable_;
 private:
   // The name of the executable
   std::vector< wchar_t > program_name_;
@@ -601,7 +601,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	catch ( ... ) {}
 
 	// If an error happened during compilation, print the error message
-	if ( PyErr_Occurred() != NULL )
+	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
 	}
@@ -611,7 +611,7 @@ void PythonInterpreter::run_script( const std::string& script )
 		boost::python::dict local_var;
 		PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr() );
 		Py_XDECREF( result );
-		if ( PyErr_Occurred() != NULL )
+		if ( PyErr_Occurred() )
 		{
 			PyErr_Print();
 		}
@@ -677,7 +677,7 @@ void PythonInterpreter::start_terminal()
 
 	wchar_t** argv = new wchar_t*[ 2 ];
   argv[0] = const_cast< wchar_t* >(this->private_->programName());
-	argv[ 1 ] = 0;
+	argv[ 1 ] = nullptr;
 	Py_Main( 1, argv );
 	delete[] argv;
 

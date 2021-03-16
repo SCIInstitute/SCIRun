@@ -428,7 +428,6 @@ namespace Gui {
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
     QRectF visibleRect() const;
-    void alignViewport();
     void deleteImpl(QList<QGraphicsItem*> items);
     QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
     void deselectAll();
@@ -483,12 +482,15 @@ namespace Gui {
     std::map<std::string, QString> subnetNameMap_;
 
     template <typename Func>
-    void tailRecurse(Func func)
+    void tailRecurse(Func p)
     {
+      //TODO: needs C++17. Will enable later on Mac when subnets are closer to working.
+      #ifdef _WIN32
       for (auto& child : childrenNetworks_)
       {
-        func(child.second->get());
+        std::invoke(p, child.second->get());
       }
+      #endif
     }
 
     static NetworkEditor* inEditingContext_;

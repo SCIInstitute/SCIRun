@@ -336,9 +336,9 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
     }
   }
 
-  output_field_[iso*nproc+proc] = 0;
-  output_interpolant_matrix_[iso*nproc+proc] = 0;
-  output_parent_cell_matrix_[iso*nproc+proc] = 0;
+  output_field_[iso*nproc+proc] = nullptr;
+  output_interpolant_matrix_[iso*nproc+proc] = nullptr;
+  output_parent_cell_matrix_[iso*nproc+proc] = nullptr;
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    output_geometry_[iso*nproc+proc] = 0;

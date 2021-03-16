@@ -67,7 +67,7 @@ namespace SCIRun
       virtual void externalProgramAccessed() = 0;
     };
 
-    typedef boost::shared_ptr<SessionInterface> SessionHandle;
+    typedef std::shared_ptr<SessionInterface> SessionHandle;
 
     // File or db.
     class SCISHARE SessionBackEnd
@@ -77,7 +77,7 @@ namespace SCIRun
       virtual void consume(const std::string& statement, const std::string& message) = 0;
     };
 
-    typedef boost::shared_ptr<SessionBackEnd> SessionBackEndHandle;
+    typedef std::shared_ptr<SessionBackEnd> SessionBackEndHandle;
 
     class SCISHARE SessionBuilder
     {

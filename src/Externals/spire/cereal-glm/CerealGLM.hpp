@@ -73,7 +73,7 @@ public:
   }
   static Tny* out(Tny* root, const char* name, const glm::vec3& v)
   {
-    Tny* obj = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     obj = CST_detail::outFloatArray(obj, v.x);
     obj = CST_detail::outFloatArray(obj, v.y);
@@ -123,7 +123,7 @@ public:
   }
   static Tny* out(Tny* root, const char* name, const glm::vec4& v)
   {
-    Tny* obj = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     obj = CST_detail::outFloatArray(obj, v.x);
     obj = CST_detail::outFloatArray(obj, v.y);
@@ -175,7 +175,7 @@ public:
   }
   static Tny* out(Tny* root, const char* name, const glm::mat4& m)
   {
-    Tny* obj = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     obj = CST_detail::outFloatArray(obj, m[0][0]); obj = CST_detail::outFloatArray(obj, m[1][0]); obj = CST_detail::outFloatArray(obj, m[2][0]); obj = CST_detail::outFloatArray(obj, m[3][0]);
     obj = CST_detail::outFloatArray(obj, m[0][1]); obj = CST_detail::outFloatArray(obj, m[1][1]); obj = CST_detail::outFloatArray(obj, m[2][1]); obj = CST_detail::outFloatArray(obj, m[3][1]);
@@ -227,7 +227,7 @@ public:
   }
   static Tny* out(Tny* root, const char* name, const glm::mat3& m)
   {
-    Tny* obj = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     obj = CST_detail::outFloatArray(obj, m[0][0]); obj = CST_detail::outFloatArray(obj, m[1][0]); obj = CST_detail::outFloatArray(obj, m[2][0]);
     obj = CST_detail::outFloatArray(obj, m[0][1]); obj = CST_detail::outFloatArray(obj, m[1][1]); obj = CST_detail::outFloatArray(obj, m[2][1]);

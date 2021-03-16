@@ -46,7 +46,7 @@ namespace SCIRun {
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
     protected:
-      virtual void pullSpecial() override;
+      void pullSpecial() override;
     private Q_SLOTS:
       void spinBoxClicked(int value);
       void sliderIndexChanged();

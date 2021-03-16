@@ -39,7 +39,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
 HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
-  noteEditor_(QString::fromStdString(name), positionAdjustable, 0)
+  noteEditor_(QString::fromStdString(name), positionAdjustable, nullptr)
 {
   noteEditor_.setStyleSheet(scirunStylesheet());
 }

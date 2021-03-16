@@ -52,8 +52,8 @@ namespace Teem {
   {
   public:
     ConvertNrrdToMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, Data, NrrdDataType);
     INPUT_PORT(1, Rows, NrrdDataType);

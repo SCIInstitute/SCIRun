@@ -167,7 +167,7 @@ namespace ren {
       tex.textureHeight = npixely;
       GL(glTexImage2D(fbo.textureType, 0, tex.internalFormat,
         tex.textureWidth, tex.textureHeight, 0,
-        tex.format, tex.type, 0));
+        tex.format, tex.type, nullptr));
       //modify
       contTex->modifyIndex(tex, compTex.second, 0);
     }

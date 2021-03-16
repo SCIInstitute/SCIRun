@@ -50,6 +50,7 @@ namespace SCIRun {
           MOCK_METHOD1(connectStateChanged, boost::signals2::connection(state_changed_sig_t::slot_function_type));
           MOCK_METHOD2(connectSpecificStateChanged, boost::signals2::connection(const Name&, state_changed_sig_t::slot_function_type));
           MOCK_METHOD0(fireTransientStateChangeSignal, void());
+          MOCK_METHOD0(disconnectAll, void());
         };
 
         typedef boost::shared_ptr<MockModuleState> MockModuleStatePtr;
@@ -57,7 +58,7 @@ namespace SCIRun {
         class MockModuleStateFactory : public ModuleStateInterfaceFactory
         {
         public:
-          virtual ModuleStateInterface* make_state(const std::string& name) const
+          ModuleStateInterface* make_state(const std::string& name) const override
           {
             return new ::testing::NiceMock<MockModuleState>;
           }

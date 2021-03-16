@@ -59,7 +59,7 @@ class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
 
     /// Algorithm Functions
     FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
-    virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 } /// namespace SCIRunAlgo

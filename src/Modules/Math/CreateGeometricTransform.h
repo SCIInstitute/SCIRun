@@ -85,7 +85,7 @@ namespace Math {
   {
   public:
     CreateGeometricTransform();
-    virtual void execute() override;
+    void execute() override;
 
     void setStateDefaults() override;
 

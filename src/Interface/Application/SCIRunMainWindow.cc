@@ -27,22 +27,14 @@
 
 
 #include <es-log/trace-log.h>
-#include <Interface/qt_include.h>
-#include <functional>
-#include <boost/bind.hpp>
-#include <boost/assign.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
-#include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
@@ -50,28 +42,19 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
-#include <Interface/Application/ModuleWizard/ModuleWizard.h>
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
-#include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include <Core/Thread/Parallel.h>
-#include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
-#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
-
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -243,6 +226,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   makeFilterButtonMenu();
 
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(prefsWindow_->screenshotPathPushButton_, SIGNAL(clicked()), this, SLOT(setScreenshotDirectoryFromGUI()));
   //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
@@ -344,10 +328,10 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
   actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
-	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-		"QHeaderView::section { background: rgb(66,66,69);} "
-		);
+  moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
+	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+	  "QHeaderView::section { background: rgb(66,66,69);} "
+	  );
 
   hideNonfunctioningWidgets();
 

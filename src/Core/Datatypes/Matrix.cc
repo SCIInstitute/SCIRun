@@ -56,7 +56,7 @@ void MatrixIOBase::io(Piostream& stream)
   stream.end_class();
 }
 
-PersistentTypeID MatrixIOBase::type_id("MatrixIOBase", "Datatype", 0);
+PersistentTypeID MatrixIOBase::type_id("MatrixIOBase", "Datatype", nullptr);
 
 
 BinaryVisitor::BinaryVisitor(MatrixHandle operand) : typeCode_(matrixIs::typeCode(operand)) {}

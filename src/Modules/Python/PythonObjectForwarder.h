@@ -35,7 +35,6 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Python/PythonDatatypeConverter.h>
-#include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Modules/Python/share.h>
 
@@ -80,7 +79,7 @@ namespace SCIRun
               valueOption = state->getTransientValue(transientKey);
 
               tries++;
-              boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
+              std::this_thread::sleep_for(std::chrono::milliseconds(waitTime_));
             }
 
             Datatypes::DatatypeHandle output;
@@ -178,8 +177,8 @@ namespace SCIRun
       {
       public:
         PythonObjectForwarder();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         OUTPUT_PORT(0, PythonMatrix, Matrix);
         OUTPUT_PORT(1, PythonField, Field);
         OUTPUT_PORT(2, PythonString, String);

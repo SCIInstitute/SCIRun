@@ -71,11 +71,11 @@ PrintMatrixIntoString::execute()
 {
   std::string   format, output;
 
-  MatrixHandle currentmatrix = 0;
+  MatrixHandle currentmatrix;
   int inputport = 0;
   index_type matrixindex = 0;
   double       datavalue = 0;
-  double*      dataptr = 0;
+  double*      dataptr = nullptr;
   bool         lastport = false;
   bool         lastdata = false;
   bool         isformat = false;

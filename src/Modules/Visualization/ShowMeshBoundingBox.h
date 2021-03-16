@@ -37,13 +37,13 @@ namespace Modules {
 namespace Visualization {
   class ShowMeshBoundingBoxImpl;
 
-  class SCISHARE ShowMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
-    public Has1InputPort<FieldPortTag>, public Has1OutputPort<GeometryPortTag>
+  class SCISHARE ShowMeshBoundingBox final : public Dataflow::Networks::GeometryGeneratingModule,
+                                             public Has1InputPort<FieldPortTag>, public Has1OutputPort<GeometryPortTag>
   {
   public:
     ShowMeshBoundingBox();
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputGeom, GeometryObject);

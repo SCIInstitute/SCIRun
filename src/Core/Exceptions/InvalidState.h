@@ -48,11 +48,11 @@
 namespace SCIRun {
   class SCISHARE InvalidState : public Exception {
   public:
-    InvalidState(const std::string&, const char* file = 0, int line = -1);
+    InvalidState(const std::string&, const char* file = nullptr, int line = -1);
     InvalidState(const InvalidState&);
     virtual ~InvalidState() NOEXCEPT;
-    virtual const char* message() const;
-    virtual const char* type() const;
+    const char* message() const override;
+    const char* type() const override;
   protected:
   private:
     std::string message_;

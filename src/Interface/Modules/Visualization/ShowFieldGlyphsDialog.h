@@ -43,11 +43,11 @@ namespace SCIRun {
     public:
       ShowFieldGlyphsDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
-      virtual void createStartupNote() override;
+        QWidget* parent = nullptr);
+      void createStartupNote() override;
 
     protected:
-      virtual void pullSpecial() override;
+      void pullSpecial() override;
 
     private Q_SLOTS:
       void push();

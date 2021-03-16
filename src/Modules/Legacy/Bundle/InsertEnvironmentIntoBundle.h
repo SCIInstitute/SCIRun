@@ -42,8 +42,8 @@ namespace Bundles {
   {
   public:
     InsertEnvironmentIntoBundle();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    void execute() override;
+    void setStateDefaults() override {}
     OUTPUT_PORT(0, Environment, Bundle);
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)

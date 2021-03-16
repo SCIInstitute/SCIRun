@@ -66,7 +66,7 @@ class CalculateDistanceFieldP : public Interruptible
 {
   public:
     CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const AlgorithmBase* algo) :
-      imesh(imesh), objmesh(objmesh), objfield(0), ofield(ofield), vfield(0), algo_(algo) {}
+      imesh(imesh), objmesh(objmesh), objfield(nullptr), ofield(ofield), vfield(nullptr), algo_(algo) {}
 
     CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield, VField*  ofield, VField* vfield, const AlgorithmBase* algo) :
       imesh(imesh), objmesh(objmesh), objfield(objfield), ofield(ofield), vfield(vfield), algo_(algo)  {}

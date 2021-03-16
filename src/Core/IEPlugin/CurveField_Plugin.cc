@@ -50,7 +50,7 @@ bool CurveFieldToTextBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const 
 
 FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   std::string pts_fn(filename);
   std::string edge_fn(filename);

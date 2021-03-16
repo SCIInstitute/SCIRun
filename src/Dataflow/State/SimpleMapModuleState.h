@@ -45,17 +45,18 @@ namespace State {
     SimpleMapModuleState(SimpleMapModuleState&& rhs);
     SimpleMapModuleState(const SimpleMapModuleState& rhs);
     SimpleMapModuleState& operator=(const SimpleMapModuleState& rhs);
-    virtual const Value getValue(const Name& name) const override;
-    virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) override;
-    virtual bool containsKey(const Name& name) const override;
-    virtual Keys getKeys() const override;
-    virtual SCIRun::Dataflow::Networks::ModuleStateHandle clone() const override;
-    virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
-    virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
+    const Value getValue(const Name& name) const override;
+    void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) override;
+    bool containsKey(const Name& name) const override;
+    Keys getKeys() const override;
+    SCIRun::Dataflow::Networks::ModuleStateHandle clone() const override;
+    boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
+    boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
 
-    virtual TransientValueOption getTransientValue(const Name& name) const override;
-    virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) override;
-    virtual void fireTransientStateChangeSignal() override;
+    TransientValueOption getTransientValue(const Name& name) const override;
+    void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) override;
+    void fireTransientStateChangeSignal() override;
+    void disconnectAll() override;
 
   protected:
     typedef std::map<Name, Value> StateMap;
@@ -65,6 +66,7 @@ namespace State {
     state_changed_sig_t stateChangedSignal_;
     std::map<Name, state_changed_sig_t> specificStateChangeSignalMap_;
     std::string name_;
+    std::vector<boost::signals2::connection> generalStateConnections_, specificStateConnections_;
   private:
     void print() const;
   };
@@ -72,7 +74,7 @@ namespace State {
   class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Dataflow::Networks::ModuleStateInterfaceFactory
   {
   public:
-    virtual SCIRun::Dataflow::Networks::ModuleStateInterface* make_state(const std::string& name) const;
+    SCIRun::Dataflow::Networks::ModuleStateInterface* make_state(const std::string& name) const override;
   };
 
 }}}

@@ -43,9 +43,9 @@ class SCISHARE GetMatricesFromBundleDialog : public ModuleDialogGeneric, public 
 public:
   GetMatricesFromBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
 private:
   std::vector<std::string> matrixNames_;
 };

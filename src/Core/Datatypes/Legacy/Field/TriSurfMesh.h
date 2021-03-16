@@ -56,10 +56,10 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <boost/thread.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <set>
+#include <future>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
@@ -76,7 +76,7 @@ template<class MESH> class TriSurfMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
+VMesh* CreateVTriSurfMesh(MESH*) { return (nullptr); }
 
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 /// Declare that these can be found in a library that is already
@@ -301,19 +301,19 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual TriSurfMesh *clone() const { return new TriSurfMesh(*this); }
+TriSurfMesh *clone() const override { return new TriSurfMesh(*this); }
 
-  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
   /// Destructor
   virtual ~TriSurfMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get()); }
+VMesh* vmesh() override { return (vmesh_.get()); }
 
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   /// Topological dimension
   virtual int dimensionality() const { return 2; }
@@ -345,8 +345,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask);
-  virtual bool unsynchronize(mask_type mask);
+bool synchronize(mask_type mask) override;
+bool unsynchronize(mask_type mask) override;
   bool clear_synchronization();
 
   /// Get the basis class.
@@ -1379,16 +1379,16 @@ public:
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
 
   /// This ID is created as soon as this class will be instantiated
   static PersistentTypeID trisurf_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
+std::string dynamic_type_name() const override { return trisurf_typeid.type; }
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -2058,15 +2058,15 @@ protected:
 
   struct edgehash
   {
-    boost::hash<int> hasher_;
+    std::hash<int> hasher_;
     size_t operator()(const std::pair<index_type, index_type> &a) const
     {
       return hasher_(static_cast<int>(hasher_(a.first) + a.second));
     }
   };
 
-  using EdgeMapType = boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
-  using EdgeMapType2 = boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
+  using EdgeMapType = std::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
+  using EdgeMapType2 = std::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
 };
 
 
@@ -2099,7 +2099,7 @@ TriSurfMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -2450,7 +2450,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
@@ -2464,7 +2464,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NORMALS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -2478,7 +2478,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::ELEM_NEIGHBORS_E)
@@ -2492,7 +2492,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -2506,7 +2506,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -2520,7 +2520,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -2534,7 +2534,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   // Wait until threads are done
@@ -3832,10 +3832,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(TriSurfMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("TriSurfMesh", subs,
@@ -3851,7 +3851,7 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
 }
 
 
@@ -3859,11 +3859,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3877,11 +3877,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3895,11 +3895,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3913,11 +3913,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

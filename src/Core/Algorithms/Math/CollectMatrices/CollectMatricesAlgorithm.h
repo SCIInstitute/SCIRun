@@ -49,14 +49,14 @@ namespace Math {
     public:
       virtual Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const = 0;
       virtual Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const = 0;
-      virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not needed for now"; }
+      AlgorithmOutput run(const AlgorithmInput&) const override { throw "not needed for now"; }
     };
 
     class SCISHARE CollectDenseMatricesAlgorithm : public CollectMatricesAlgorithmBase
     {
     public:
-      virtual Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
-      virtual Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
+      Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
+      Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
     private:
       void copy_matrix(Datatypes::MatrixHandle mh, Datatypes::DenseMatrix& out) const;
     };
@@ -64,8 +64,8 @@ namespace Math {
     class SCISHARE CollectSparseRowMatricesAlgorithm : public CollectMatricesAlgorithmBase
     {
     public:
-      virtual Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
-      virtual Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
+      Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
+      Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
     private:
       void check_args(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const;
       void copy_shifted_contents(Datatypes::SparseRowMatrixHandle sparse,

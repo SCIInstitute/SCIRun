@@ -47,7 +47,7 @@ namespace internal
   class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
   {
   public:
-    explicit EigenMatrixFromScirunAsciiFormatConverter(const Utility::ProgressReporter* reporter = 0);
+    explicit EigenMatrixFromScirunAsciiFormatConverter(const Utility::ProgressReporter* reporter = nullptr);
     Core::Datatypes::MatrixHandle make(const std::string& matFile);
 
     Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);

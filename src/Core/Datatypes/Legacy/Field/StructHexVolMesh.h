@@ -77,7 +77,7 @@ class StructHexVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (0); }
+VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -110,7 +110,7 @@ public:
   StructHexVolMesh();
   StructHexVolMesh(size_type i, size_type j, size_type k);
   StructHexVolMesh(const StructHexVolMesh<Basis> &copy);
-  virtual StructHexVolMesh *clone() const override { return new StructHexVolMesh<Basis>(*this); }
+  StructHexVolMesh *clone() const override { return new StructHexVolMesh<Basis>(*this); }
   virtual ~StructHexVolMesh()
   {
     DEBUG_DESTRUCTOR("StructHexVolMesh")
@@ -213,11 +213,11 @@ public:
   friend class ElemData;
 
   /// get the mesh statistics
-  virtual Core::Geometry::BBox get_bounding_box() const override;
-  virtual void transform(const Core::Geometry::Transform &t) override;
+  Core::Geometry::BBox get_bounding_box() const override;
+  void transform(const Core::Geometry::Transform &t) override;
 
-  virtual bool get_dim(std::vector<size_type>&) const override;
-  virtual void set_dim(const std::vector<size_type>& dims) override {
+  bool get_dim(std::vector<size_type>&) const override;
+  void set_dim(const std::vector<size_type>& dims) override {
     LatVolMesh<Basis>::ni_ = dims[0];
     LatVolMesh<Basis>::nj_ = dims[1];
     LatVolMesh<Basis>::nk_ = dims[2];
@@ -230,7 +230,7 @@ public:
     LatVolMesh<Basis>::vmesh_.reset(CreateVStructHexVolMesh(this));
   }
 
-  virtual int topology_geometry() const override
+  int topology_geometry() const override
   {
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
@@ -765,19 +765,19 @@ public:
   double get_epsilon() const
   { return (epsilon_); }
 
-  virtual bool synchronize(mask_type) override;
-  virtual bool unsynchronize(mask_type) override;
+  bool synchronize(mask_type) override;
+  bool unsynchronize(mask_type) override;
   bool clear_synchronization();
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&) override;
+  void io(Piostream&) override;
   static PersistentTypeID structhexvol_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const override;
+  const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1921,7 +1921,7 @@ StructHexVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -1929,10 +1929,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(StructHexVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("StructHexVolMesh", subs,
@@ -1948,7 +1948,7 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructHexVolMesh<Basis> *)nullptr);
 }
 
 
@@ -1956,11 +1956,11 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((StructHexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1974,11 +1974,11 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((StructHexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1992,11 +1992,11 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((StructHexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -2010,11 +2010,11 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((StructHexVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

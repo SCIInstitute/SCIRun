@@ -48,7 +48,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
 // initialize the static member type_id
-PersistentTypeID Mesh::type_id("Mesh", "Datatype", 0);
+PersistentTypeID Mesh::type_id("Mesh", "Datatype", nullptr);
 
 Mesh::Mesh(const Mesh& copy) : Core::Datatypes::Datatype(copy)
 { DEBUG_CONSTRUCTOR("Mesh");  }
@@ -57,26 +57,26 @@ namespace
 {
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
-Mutex *MeshTypeIDMutex = 0;
-static std::map<std::string,MeshTypeID*>* MeshTypeIDTable = 0;
+Mutex *MeshTypeIDMutex = nullptr;
+static std::map<std::string,MeshTypeID*>* MeshTypeIDTable = nullptr;
 }
 
 MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
     type(type),
     mesh_maker(mesh_maker),
-    latvol_maker(0),
-    image_maker(0),
-    scanline_maker(0),
-    structhexvol_maker(0),
-    structquadsurf_maker(0),
-    structcurve_maker(0)
+    latvol_maker(nullptr),
+    image_maker(nullptr),
+    scanline_maker(nullptr),
+    structhexvol_maker(nullptr),
+    structquadsurf_maker(nullptr),
+    structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -113,18 +113,18 @@ MeshTypeID::MeshTypeID(const std::string&type,
   type(type),
   mesh_maker(mesh_maker),
   latvol_maker(latvol_maker),
-  image_maker(0),
-  scanline_maker(0),
-  structhexvol_maker(0),
-  structquadsurf_maker(0),
-  structcurve_maker(0)
+  image_maker(nullptr),
+  scanline_maker(nullptr),
+  structhexvol_maker(nullptr),
+  structquadsurf_maker(nullptr),
+  structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -159,19 +159,19 @@ MeshTypeID::MeshTypeID(const std::string&type,
 						 const Point& max) ) :
   type(type),
   mesh_maker(mesh_maker),
-  latvol_maker(0),
+  latvol_maker(nullptr),
   image_maker(image_maker),
-  scanline_maker(0),
-  structhexvol_maker(0),
-  structquadsurf_maker(0),
-  structcurve_maker(0)
+  scanline_maker(nullptr),
+  structhexvol_maker(nullptr),
+  structquadsurf_maker(nullptr),
+  structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -201,19 +201,19 @@ MeshTypeID::MeshTypeID(const std::string&type,
 						    const Point& max) ) :
   type(type),
   mesh_maker(mesh_maker),
-  latvol_maker(0),
-  image_maker(0),
+  latvol_maker(nullptr),
+  image_maker(nullptr),
   scanline_maker(scanline_maker),
-  structhexvol_maker(0),
-  structquadsurf_maker(0),
-  structcurve_maker(0)
+  structhexvol_maker(nullptr),
+  structquadsurf_maker(nullptr),
+  structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -244,19 +244,19 @@ MeshTypeID::MeshTypeID(const std::string&type,
 							size_type z) ) :
   type(type),
   mesh_maker(mesh_maker),
-  latvol_maker(0),
-  image_maker(0),
-  scanline_maker(0),
+  latvol_maker(nullptr),
+  image_maker(nullptr),
+  scanline_maker(nullptr),
   structhexvol_maker(structhexvol_maker),
-  structquadsurf_maker(0),
-  structcurve_maker(0)
+  structquadsurf_maker(nullptr),
+  structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -285,19 +285,19 @@ MeshTypeID::MeshTypeID(const std::string&type,
 							  size_type y) ) :
   type(type),
   mesh_maker(mesh_maker),
-  latvol_maker(0),
-  image_maker(0),
-  scanline_maker(0),
-  structhexvol_maker(0),
+  latvol_maker(nullptr),
+  image_maker(nullptr),
+  scanline_maker(nullptr),
+  structhexvol_maker(nullptr),
   structquadsurf_maker(structquadsurf_maker),
-  structcurve_maker(0)
+  structcurve_maker(nullptr)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -328,19 +328,19 @@ MeshTypeID::MeshTypeID(const std::string& type,
 		       MeshHandle (*structcurve_maker)(size_type x) ) :
   type(type),
   mesh_maker(mesh_maker),
-  latvol_maker(0),
-  image_maker(0),
-  scanline_maker(0),
-  structhexvol_maker(0),
-  structquadsurf_maker(0),
+  latvol_maker(nullptr),
+  image_maker(nullptr),
+  scanline_maker(nullptr),
+  structhexvol_maker(nullptr),
+  structquadsurf_maker(nullptr),
   structcurve_maker(structcurve_maker)
 {
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
-  if (MeshTypeIDTable == 0)
+  Guard lock(MeshTypeIDMutex->get());
+  if (MeshTypeIDTable == nullptr)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
@@ -413,7 +413,7 @@ Mesh::type_name(int n)
 VMesh*
 Mesh::vmesh()
 {
-  return (0);
+  return (nullptr);
 }
 
 
@@ -423,16 +423,16 @@ SCIRun::CreateMesh(const std::string& type)
 {
   MeshHandle handle;
 
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->mesh_maker != 0)
+    if ((*it).second->mesh_maker != nullptr)
     {
       handle = (*it).second->mesh_maker();
     }
@@ -447,16 +447,16 @@ SCIRun::CreateMesh(const std::string& type,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->latvol_maker != 0)
+    if ((*it).second->latvol_maker != nullptr)
     {
       handle = (*it).second->latvol_maker(x,y,z,min,max);
     }
@@ -471,16 +471,16 @@ SCIRun::CreateMesh(const std::string& type,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->image_maker != 0)
+    if ((*it).second->image_maker != nullptr)
     {
       handle = (*it).second->image_maker(x,y,min,max);
     }
@@ -494,16 +494,16 @@ SCIRun::CreateMesh(const std::string& type, size_type x,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->scanline_maker != 0)
+    if ((*it).second->scanline_maker != nullptr)
     {
       handle = (*it).second->scanline_maker(x,min,max);
     }
@@ -517,20 +517,20 @@ SCIRun::CreateMesh(const std::string& type,
 	   size_type x, size_type y, size_type z)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->structhexvol_maker != 0)
+    if ((*it).second->structhexvol_maker != nullptr)
     {
       handle = (*it).second->structhexvol_maker(x,y,z);
     }
-    if ((*it).second->latvol_maker != 0)
+    if ((*it).second->latvol_maker != nullptr)
     {
       handle = (*it).second->latvol_maker(x,y,z,Point(0,0,0),Point(1,1,1));
     }
@@ -543,20 +543,20 @@ MeshHandle
 SCIRun::CreateMesh(const std::string& type, size_type x, size_type y)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->structquadsurf_maker != 0)
+    if ((*it).second->structquadsurf_maker != nullptr)
     {
       handle = (*it).second->structquadsurf_maker(x,y);
     }
-    if ((*it).second->image_maker != 0)
+    if ((*it).second->image_maker != nullptr)
     {
       handle = (*it).second->image_maker(x,y,Point(0,0,0),Point(1,1,0));
     }
@@ -569,20 +569,20 @@ MeshHandle
 SCIRun::CreateMesh(const std::string& type, size_type x)
 {
   MeshHandle handle;
-  if (MeshTypeIDMutex == NULL)
+  if (!MeshTypeIDMutex)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
+  Guard lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end())
   {
-    if ((*it).second->structcurve_maker != 0)
+    if ((*it).second->structcurve_maker != nullptr)
     {
       handle = (*it).second->structcurve_maker(x);
     }
-    if ((*it).second->scanline_maker != 0)
+    if ((*it).second->scanline_maker != nullptr)
     {
       handle = (*it).second->scanline_maker(x,Point(0,0,0),Point(1,0,0));
     }

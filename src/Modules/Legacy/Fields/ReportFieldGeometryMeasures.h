@@ -59,8 +59,8 @@ namespace SCIRun {
       public:
         ReportFieldGeometryMeasures();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, Output_Measures, Matrix);

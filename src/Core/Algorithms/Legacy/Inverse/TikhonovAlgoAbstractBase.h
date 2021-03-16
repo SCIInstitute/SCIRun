@@ -94,7 +94,7 @@ namespace Inverse {
 		};
 
 		TikhonovAlgoAbstractBase();
-		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+		AlgorithmOutput run(const AlgorithmInput &) const override;
 
 		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda,int& lambda_index );
     double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input,  SCIRun::Core::Datatypes::DenseMatrixHandle& lambdamatrix, int& lambda_index ) const;
