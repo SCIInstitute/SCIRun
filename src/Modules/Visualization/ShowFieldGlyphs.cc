@@ -551,7 +551,6 @@ void GlyphBuilder::renderVectors(
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
-    checkForInterruption(interruptible);
     Vector v, pinputVector; Point p2, p3; double radius;
 
     pinputVector = portHandler_->getPrimaryVector(indices[i]);
@@ -636,7 +635,6 @@ void GlyphBuilder::renderScalars(
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
-    checkForInterruption(interruptible);
 
     double v = portHandler_->getPrimaryScalar(indices[i]);
     ColorRGB node_color = portHandler_->getNodeColor(indices[i]);
@@ -732,8 +730,6 @@ void GlyphBuilder::renderTensors(
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
-    checkForInterruption(interruptible);
-
     Tensor t = portHandler_->getPrimaryTensor(indices[i]);
 
     double eigen1, eigen2, eigen3;

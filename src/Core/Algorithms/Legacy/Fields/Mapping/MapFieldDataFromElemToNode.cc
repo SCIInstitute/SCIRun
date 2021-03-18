@@ -86,7 +86,7 @@ bool
   {
     while (it != eit)
     {
-      checkForInterruption(algo);
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -111,7 +111,7 @@ bool
   {
     while (it != eit)
     {
-      checkForInterruption(algo);
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -139,7 +139,7 @@ bool
   {
     while (it != eit)
     {
-      checkForInterruption(algo);
+
       mesh->get_elems(elems, *it);
       size_t nsize = elems.size();
       DATA val(0);
@@ -167,7 +167,7 @@ bool
   {
     while (it != eit)
     {
-      checkForInterruption(algo);
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -192,7 +192,7 @@ bool
     std::vector<DATA> valarray;
     while (it != eit)
     {
-      checkForInterruption(algo);
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       valarray.resize(nsize);

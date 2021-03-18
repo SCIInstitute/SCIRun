@@ -123,7 +123,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
     Point p; Vector val; Vector norm;
     for (VMesh::Node::index_type idx=start; idx<end; idx++)
     {
-      checkForInterruption();
       omesh->get_center(p,idx);
       omesh->get_normal(norm,idx);
       datasource->get_data(val,p);
@@ -139,7 +138,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; double val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -151,7 +149,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Vector val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -163,7 +160,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Tensor val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -381,7 +377,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
       return (false);
     }
   }
-  
+
   if (fi.is_pointcloud() && (mappingModel == "interpolateddata" || mappingModel == "closestinterpolateddata"))
   {
     warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2155");
