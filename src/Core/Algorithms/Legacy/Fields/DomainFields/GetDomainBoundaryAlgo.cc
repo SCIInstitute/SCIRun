@@ -219,7 +219,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
-      checkForInterruption(this);
+
 
       bool neighborexist = false;
       bool includeface = false;
@@ -332,7 +332,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         onodes.resize(inodes.size());
         for (size_t q=0; q< onodes.size(); q++)
         {
-          checkForInterruption(this);
+
           a = inodes[q];
 
           std::pair<pointhash_map_type::iterator,pointhash_map_type::iterator> lit;
@@ -406,7 +406,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
-      checkForInterruption(this);
+
 
       bool neighborexist = false;
       bool includeface = false;
@@ -516,7 +516,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
         for (size_t q=0; q< onodes.size(); q++)
         {
-          checkForInterruption(this);
+
           a = inodes[q];
           if (node_map[a] == -1)
           {

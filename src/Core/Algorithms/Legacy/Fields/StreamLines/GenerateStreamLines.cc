@@ -260,7 +260,7 @@ namespace detail
       // Try to find the streamline for each seed point.
       for (VMesh::Node::index_type idx = from; idx < to; ++idx)
       {
-        checkForInterruption();
+        
         seed_mesh_->get_point(BI.seed_, idx);
 
         // Is the seed point inside the field?

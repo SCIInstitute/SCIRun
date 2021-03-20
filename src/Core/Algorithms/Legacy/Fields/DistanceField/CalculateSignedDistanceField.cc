@@ -73,7 +73,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-          checkForInterruption(this);
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
 
@@ -140,7 +140,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -158,7 +158,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
@@ -224,7 +224,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -242,7 +242,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-          checkForInterruption(this);
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
@@ -308,7 +308,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_evalue(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -338,7 +338,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-          checkForInterruption(this);
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
 
@@ -405,7 +405,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_value(val,idx);
           if (objfield->is_scalar())
           {
@@ -442,7 +442,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
-          checkForInterruption(this);
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
@@ -509,7 +509,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_value(val,idx);
           if (objfield->is_scalar())
           {
@@ -546,7 +546,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-          checkForInterruption(this);
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
@@ -612,7 +612,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption(this);
+
           ofield->set_evalue(val,idx);
           if (objfield->is_scalar())
           {
