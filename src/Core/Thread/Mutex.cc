@@ -90,11 +90,3 @@ void Stoppable::sendStopRequest()
   //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
   exitSignal->set_value();
 }
-
-void SCIRun::Core::Thread::checkForInterruption(const Stoppable* stoppable)
-{
-  if (stoppable && stoppable->stopRequested())
-  {
-    throw ThreadStopped();
-  }
-}

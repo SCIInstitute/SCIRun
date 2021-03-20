@@ -93,7 +93,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -110,7 +110,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -127,7 +127,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -166,7 +166,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -181,7 +181,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -196,7 +196,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -220,7 +220,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -236,7 +236,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -252,7 +252,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -276,7 +276,7 @@ class CalculateDistanceFieldP : public Interruptible
           double scalar;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -291,7 +291,7 @@ class CalculateDistanceFieldP : public Interruptible
           Vector vec;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -306,7 +306,7 @@ class CalculateDistanceFieldP : public Interruptible
           Tensor tensor;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);

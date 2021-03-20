@@ -60,8 +60,6 @@ namespace Core
 
     using Interruptible = Stoppable;
 
-    SCISHARE void checkForInterruption(const Stoppable* stoppable = nullptr);
-
     struct SCISHARE ThreadStopped : virtual ExceptionBase
     {};
   }
