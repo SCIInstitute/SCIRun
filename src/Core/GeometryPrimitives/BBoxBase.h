@@ -35,19 +35,20 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
+
 class SCISHARE BBoxBase
 {
 protected:
- Point cmin_;
- Point cmax_;
- bool is_valid_;
+  Point cmin_;
+  Point cmax_;
+  bool is_valid_;
 public:
   explicit BBoxBase(bool valid);
   BBoxBase(bool valid, const Point& cmin, const Point& cmax);
   virtual ~BBoxBase() {}
-  inline bool valid() const { return is_valid_; }
-  inline void set_valid(bool v) { is_valid_ = v; }
-  inline void reset() { is_valid_ = false; }
+  bool valid() const { return is_valid_; }
+  void setValid(bool v) { is_valid_ = v; }
+  void reset() { is_valid_ = false; }
   virtual void extend(const Point& p) = 0;
   virtual void extend(double val) = 0;
   virtual Vector diagonal() const = 0;
@@ -55,6 +56,7 @@ public:
   virtual Point get_max() const = 0;
   virtual Point center() const = 0;
 };
+
 }}}
 
 #endif
