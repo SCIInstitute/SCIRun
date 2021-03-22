@@ -33,7 +33,7 @@
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxReal)
+TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxReal)
 {
   StubGeometryIDGenerator idGen;
 
@@ -50,7 +50,7 @@ TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxReal)
   //FAIL() << "todo";
 }
 
-TEST(BasicBoundingBoxWidgetTest, CanCreateSingleBoxStubbed)
+TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxStubbed)
 {
   StubGeometryIDGenerator idGen;
 
