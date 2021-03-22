@@ -232,3 +232,16 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     return nullptr;
   }
 }
+
+Graphics::Datatypes::WidgetInteraction SCIRun::Render::yetAnotherEnumConversion(Core::Datatypes::MouseButton btn)
+{
+  switch (btn)
+  {
+    case Core::Datatypes::MouseButton::LEFT:
+      return Graphics::Datatypes::WidgetInteraction::CLICK;
+    case Core::Datatypes::MouseButton::RIGHT:
+      return Graphics::Datatypes::WidgetInteraction::RIGHT_CLICK;
+    default:
+      return Graphics::Datatypes::WidgetInteraction::CLICK;
+  }
+}
