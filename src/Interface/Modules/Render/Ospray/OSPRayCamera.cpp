@@ -64,8 +64,8 @@ void OSPRayCamera::mousePress(float x, float y, MouseButton btn)
 {
   switch(btn)
   {
-    case MouseButton::MOUSE_LEFT:
-    case MouseButton::MOUSE_RIGHT:
+    case MouseButton::LEFT:
+    case MouseButton::RIGHT:
       lookat_.doReferenceDown(glm::vec2(x, -y));
     break;
 
@@ -77,13 +77,13 @@ void OSPRayCamera::mouseMove(float x, float y, MouseButton btn)
 {
   switch (btn)
   {
-  case MouseButton::MOUSE_LEFT:
+  case MouseButton::LEFT:
     lookat_.doRotation(glm::vec2(x, -y));
     pos_ = lookat_.getPos();
     up_ = lookat_.getUp();
     break;
 
-  case MouseButton::MOUSE_RIGHT:
+  case MouseButton::RIGHT:
     lookat_.doPan(glm::vec2(x, -y));
     pos_ = lookat_.getPos();
     target_ = lookat_.getTarget();

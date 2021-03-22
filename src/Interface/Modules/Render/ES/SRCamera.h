@@ -32,9 +32,11 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
+#include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <arc-look-at/ArcLookAt.hpp>
 #include <Interface/Modules/Render/share.h>
+#include <Core/Datatypes/Feedback.h>
 
 namespace SCIRun{
   namespace Render{
@@ -52,10 +54,10 @@ namespace SCIRun{
       void setAsOrthographic(float halfWidth, float halfHeight);
 
       /// Handle mouse down.
-      void mouseDownEvent(MouseButton btn, const glm::vec2 &pos);
+      void mouseDownEvent(Core::Datatypes::MouseButton btn, const glm::vec2 &pos);
 
       /// Handle mouse movement.
-      void mouseMoveEvent(MouseButton btn, const glm::vec2 &pos);
+      void mouseMoveEvent(Core::Datatypes::MouseButton btn, const glm::vec2 &pos);
 
       /// Handle mouse wheel event.
       void mouseWheelEvent(int32_t delta, int zoomSpeed);

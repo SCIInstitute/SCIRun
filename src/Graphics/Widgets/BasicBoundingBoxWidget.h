@@ -25,40 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Feedback.h>
-#include <arc-look-at/ArcLookAt.hpp>
-#include <glm/glm.hpp>
-#include <ospray/ospray.h>
-#include <Interface/Modules/Render/Ospray/share.h>
 
-namespace SCIRun { namespace Render {
+#ifndef Graphics_Widgets_BasicBoundingBoxWidget_H
+#define Graphics_Widgets_BasicBoundingBoxWidget_H
 
-class SCISHARE OSPRayCamera
-{
-public:
-  OSPRayCamera();
-  ~OSPRayCamera();
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/share.h>
 
-  void mousePress(float x, float y, Core::Datatypes::MouseButton btn);
-  void mouseMove(float x, float y, Core::Datatypes::MouseButton btn);
-  void mouseRelease();
-  void mouseWheel(int delta);
+namespace SCIRun {
+  namespace Graphics {
+    namespace Datatypes {
 
-  OSPCamera getOSPCamera();
-
-  void setAspect(float aspect) {aspect_ = aspect;}
-
-private:
-  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
-  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
-  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
-  float aspect_     { 1.0f};
-  float fovy_       {60.0f};
-  float aperture_   {0.0f};
-
-  spire::ArcLookAt lookat_ {       };
-  OSPCamera camera_        {nullptr};
-
-};
-
-} /*Render*/ } /*SCIRun*/
+      class SCISHARE BasicBoundingBoxWidget : public WidgetBase
+      {
+      public:
+        BasicBoundingBoxWidget(const GeneralWidgetParameters& gen, BasicBoundingBoxParameters params);
+      };
+    }
+  }
+}
+#endif

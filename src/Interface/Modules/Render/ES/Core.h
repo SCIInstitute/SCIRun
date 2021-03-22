@@ -36,11 +36,11 @@ namespace SCIRun {
 namespace Render {
 
 /// Entity system core sitting on top of Acorn.
-  class ESCore : public spire::Acorn
+  class ESCore final : public spire::Acorn
 {
 public:
   ESCore();
-  virtual ~ESCore();
+  ~ESCore() override;
 
   std::string toString(std::string prefix) const;
 
@@ -50,12 +50,14 @@ public:
   void runGCOnNextExecution(){runGC = true;}
   bool hasShaderPromise() const;
 
+  ESCore(const ESCore&) = delete;
+  ESCore& operator=(const ESCore&) = delete;
 private:
   bool hasGeomPromise() const;
 
   spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
   double          mCurrentTime;     ///< Current system time calculated from constant frame time.
-  bool            runGC;
+  bool            runGC {false};
   float           r_, g_, b_, a_;
 };
 

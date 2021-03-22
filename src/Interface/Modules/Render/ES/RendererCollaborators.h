@@ -29,8 +29,10 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERCOLLABORATORS_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERCOLLABORATORS_H
 
+#include <Core/Datatypes/Feedback.h>
 #include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
+#include <Graphics/Widgets/WidgetParameters.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/ObjectTransformCalculators.h>
@@ -118,7 +120,7 @@ namespace SCIRun
 
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
-      void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
+      void setButtonPushed(Core::Datatypes::MouseButton b) { buttonPushed_ = b; }
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; }
@@ -137,12 +139,28 @@ namespace SCIRun
 
       Graphics::Datatypes::WidgetHandle currentWidget_;
       SharedPointer<WidgetTransformEvent> event_;
-      Render::MouseButton buttonPushed_;
+      Core::Datatypes::MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {1.0f};
     };
+
+    namespace
+    {
+      Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(Core::Datatypes::MouseButton btn)
+      {
+        switch (btn)
+        {
+          case Core::Datatypes::MouseButton::LEFT:
+            return Graphics::Datatypes::WidgetInteraction::CLICK;
+          case Core::Datatypes::MouseButton::RIGHT:
+            return Graphics::Datatypes::WidgetInteraction::RIGHT_CLICK;
+          default:
+            return Graphics::Datatypes::WidgetInteraction::CLICK;
+        }
+  }
+    }
 
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
   }

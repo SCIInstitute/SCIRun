@@ -27,6 +27,7 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Datatypes/Feedback.h>
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/ConeWidget.h>
 #include <Graphics/Widgets/CylinderWidget.h>
@@ -36,6 +37,7 @@
 #include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
 
 using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 TEST(ArrowWidgetTest, CanCreateSingleArrowReal)

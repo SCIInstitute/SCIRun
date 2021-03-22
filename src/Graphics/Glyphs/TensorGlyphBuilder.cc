@@ -236,6 +236,24 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlyphConstructor& constructo
   double A = linear ? pPower : lPower;
   double B = linear ? lPower : pPower;
 
+  generateSuperquadricSurfacePrivate(constructor, A, B);
+}
+
+void TensorGlyphBuilder::generateSuperquadricSurface(GlyphConstructor& constructor, double A, double B)
+{
+  makeTensorPositive();
+  computeTransforms();
+  postScaleTransorms();
+  computeSinCosTable(false);
+  generateSuperquadricSurfacePrivate(constructor, A, B);
+}
+
+void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B)
+{
+  double cl = t_.linearCertainty();
+  double cp = t_.planarCertainty();
+  bool linear = cl >= cp;
+
   double normalA = 2.0-A;
   double normalB = 2.0-B;
 
@@ -325,7 +343,7 @@ void TensorGlyphBuilder::generateBox(GlyphConstructor& constructor)
   computeTransforms();
 
   std::vector<Vector> box_points = generateBoxPoints();
-  std::vector<Vector> normals = rotate_.get_rotation();
+  std::vector<Vector> normals = rotate_.get_rotation_vectors();
   if(flatTensor_)
     for(int d = 0; d < DIMENSIONS_; ++d)
       normals[d] = zeroNorm_;

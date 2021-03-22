@@ -25,40 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Feedback.h>
-#include <arc-look-at/ArcLookAt.hpp>
-#include <glm/glm.hpp>
-#include <ospray/ospray.h>
-#include <Interface/Modules/Render/Ospray/share.h>
+#include <Graphics/Widgets/BasicBoundingBoxWidget.h>
+#include <Graphics/Widgets/GlyphFactory.h>
 
-namespace SCIRun { namespace Render {
+using namespace SCIRun;
+using namespace Graphics::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
 
-class SCISHARE OSPRayCamera
+
+BasicBoundingBoxWidget::BasicBoundingBoxWidget(const GeneralWidgetParameters& gen,
+  BasicBoundingBoxParameters params)
+  : WidgetBase({gen.base.idGenerator, "BasicBoundingBox",
+      {
+        { WidgetInteraction::CLICK,
+            singleMovementWidget(WidgetMovement::TRANSLATE) }
+      }
+    })
 {
-public:
-  OSPRayCamera();
-  ~OSPRayCamera();
-
-  void mousePress(float x, float y, Core::Datatypes::MouseButton btn);
-  void mouseMove(float x, float y, Core::Datatypes::MouseButton btn);
-  void mouseRelease();
-  void mouseWheel(int delta);
-
-  OSPCamera getOSPCamera();
-
-  void setAspect(float aspect) {aspect_ = aspect;}
-
-private:
-  glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
-  glm::vec3 target_ {0.0f, 0.0f, 0.0f};
-  glm::vec3 up_     {0.0f, 1.0f, 0.0f};
-  float aspect_     { 1.0f};
-  float fovy_       {60.0f};
-  float aperture_   {0.0f};
-
-  spire::ArcLookAt lookat_ {       };
-  OSPCamera camera_        {nullptr};
-
-};
-
-} /*Render*/ } /*SCIRun*/
+  name_ = gen.glyphMaker->basicBox(params, *this);
+}

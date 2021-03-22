@@ -114,6 +114,29 @@ Vector SCIRun::Graphics::Datatypes::getScaleFlipVector(const MultiTransformParam
   return {};
 }
 
+Vector SCIRun::Graphics::Datatypes::getAxisVector(const MultiTransformParameters& ts)
+{
+  auto scIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t)
+  { return std::dynamic_pointer_cast<AxisTransformParameters>(t) != nullptr; });
+  if (scIter != ts.end())
+  {
+    auto sc = std::dynamic_pointer_cast<AxisTransformParameters>(*scIter);
+    return sc->scaleAxis;
+  }
+  return {};
+}
+
+size_t SCIRun::Graphics::Datatypes::getAxisIndex(const MultiTransformParameters& ts)
+{
+  auto scIter = std::find_if(ts.begin(), ts.end(), [](TransformParametersPtr t) { return std::dynamic_pointer_cast<AxisScaling>(t) != nullptr; });
+  if (scIter != ts.end())
+  {
+    auto sc = std::dynamic_pointer_cast<AxisScaling>(*scIter);
+    return sc->scaleAxisIndex;
+  }
+  return {};
+}
+
 TransformPropagationProxy SCIRun::Graphics::Datatypes::operator<<(WidgetHandle widget, WidgetMovement movement)
 {
   return { [=](WidgetHandle other) { widget->registerObserver(movement, other.get(), movement); } };

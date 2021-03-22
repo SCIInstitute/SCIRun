@@ -33,6 +33,9 @@
 #include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
+using namespace SCIRun;
+using namespace Core::Datatypes;
+
 namespace SCIRun {
   namespace Render {
 
@@ -94,9 +97,9 @@ namespace SCIRun {
       switch (screenParameters_->getMouseMode())
       {
         case MouseMode::MOUSE_OLDSCIRUN:
-          if (btn == MouseButton::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(pos);
-          if (btn == MouseButton::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(pos);
-          if (btn == MouseButton::MOUSE_MIDDLE && !lockRotation_)
+          if (btn == MouseButton::LEFT && !lockPanning_)    mArcLookAt->doPan(pos);
+          if (btn == MouseButton::RIGHT && !lockZoom_)      mArcLookAt->doZoom(pos);
+          if (btn == MouseButton::MIDDLE && !lockRotation_)
           {
             mArcLookAt->doRotation(pos);
             mouseMoveVec = avFac * (pos - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
@@ -110,7 +113,7 @@ namespace SCIRun {
           break;
 
         case MouseMode::MOUSE_NEWSCIRUN:
-          if (btn == MouseButton::MOUSE_LEFT && !lockRotation_)
+          if (btn == MouseButton::LEFT && !lockRotation_)
           {
             mArcLookAt->doRotation(pos);
             mouseMoveVec = avFac * (pos - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
@@ -121,7 +124,7 @@ namespace SCIRun {
               autoRotateVec = mouseMoveVec;
             lastMousePos = pos;
           }
-          if (btn == MouseButton::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(pos);
+          if (btn == MouseButton::RIGHT && !lockPanning_)   mArcLookAt->doPan(pos);
           break;
       }
       setClippingPlanes();

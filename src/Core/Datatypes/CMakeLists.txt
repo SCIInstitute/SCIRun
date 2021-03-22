@@ -41,6 +41,7 @@ SET(Core_Datatypes_SRCS
   SparseRowMatrixFromMap.cc
   String.cc
   MetadataObject.cc
+  Feedback.cc
 )
 
 SET(Core_Datatypes_HEADERS
@@ -72,7 +73,8 @@ SET(Core_Datatypes_HEADERS
   SparseRowMatrix.h
   SparseRowMatrixFromMap.h
   String.h
-)
+  Feedback.h
+  )
 
 SCIRUN_ADD_LIBRARY(Core_Datatypes
   ${Core_Datatypes_HEADERS}

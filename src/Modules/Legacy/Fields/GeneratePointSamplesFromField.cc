@@ -37,6 +37,7 @@
 ///
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -239,6 +240,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
         auto seed = SphereWidgetBuilder(*this)
           .tag(widgetName(i))
+          .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
           .scale(scale)
           .defaultColor("Color(0.5,0.5,0.5)")
           .origin(location)
@@ -260,6 +262,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     {
       auto seed = SphereWidgetBuilder(*this)
         .tag(widgetName(counter++) + std::string(moveCount_, ' '))
+        .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
         .scale(scale)
         .defaultColor("Color(0.5,0.5,0.5)")
         .origin(oldWidget->position())
