@@ -271,7 +271,7 @@ namespace SCIRun {
       void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
-      void updatClippingPlaneDisplay();
+      void updateClippingPlaneDisplay();
       void buildGeomClippingPlanes();
       void buildGeometryClippingPlane(int index, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 

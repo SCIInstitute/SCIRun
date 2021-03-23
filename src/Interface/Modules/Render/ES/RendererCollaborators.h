@@ -146,22 +146,7 @@ namespace SCIRun
       glm::mat4 widgetTransform_ {1.0f};
     };
 
-    namespace
-    {
-      Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(Core::Datatypes::MouseButton btn)
-      {
-        switch (btn)
-        {
-          case Core::Datatypes::MouseButton::LEFT:
-            return Graphics::Datatypes::WidgetInteraction::CLICK;
-          case Core::Datatypes::MouseButton::RIGHT:
-            return Graphics::Datatypes::WidgetInteraction::RIGHT_CLICK;
-          default:
-            return Graphics::Datatypes::WidgetInteraction::CLICK;
-        }
-  }
-    }
-
+    SCISHARE Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(Core::Datatypes::MouseButton btn);
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
   }
 }

@@ -61,13 +61,13 @@ TEST_F(ScalingTest, CanScaleHorizontalFromOrigin)
 
   auto t = scaler.computeTransform(10, 0);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
-  expected[0] = glm::vec4{-0.3229167461395264,	0.645833432674408,	0.6458333134651184,	0};
-  expected[1] = glm::vec4{0.6458333134651184,	-0.3229167461395264,	0.645833432674408,	0};
-  expected[2] = glm::vec4{0.645833432674408,	0.6458333134651184,	-0.3229167461395264,	0};
+  expected[0] = glm::vec4{0.9687501192092896,	0.,	0.,	0};
+  expected[1] = glm::vec4{0.,	0.9687501192092896,	0.,	0};
+  expected[2] = glm::vec4{0.,	0.,	0.9687501192092896,	0};
   expected[3] = glm::vec4{0,	0,	0,	1};
+
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
 
   EXPECT_TRUE(t.transform == expected);
 }
@@ -84,14 +84,14 @@ TEST_F(ScalingTest, CanScaleVerticalFromOrigin)
 
   auto t = scaler.computeTransform(1, 10);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
 
-  expected[0] = glm::vec4{-0.3322917520999908,	0.6645834445953369,	0.6645833253860474,	0};
-  expected[1] = glm::vec4{0.6645833253860474,	-0.3322917520999908,	0.6645834445953369,	0};
-  expected[2] = glm::vec4{0.6645834445953369,	0.6645833253860474,	-0.3322917520999908,	0};
+  expected[0] = glm::vec4{0.996874988079071,	0.,	0.,	0};
+  expected[1] = glm::vec4{0.,	0.996874988079071,	0.,	0};
+  expected[2] = glm::vec4{0.,	0.,	0.996874988079071,	0};
   expected[3] = glm::vec4{0,	0,	0,	1};
+
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
 
   EXPECT_TRUE(t.transform == expected);
 }
@@ -108,13 +108,13 @@ TEST_F(ScalingTest, CanScaleThroughFlipAxis)
 
   auto t = scaler.computeTransform(10, 10);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
-  expected[0] = glm::vec4{-0.322916716337204,	0.6458333730697632,	0.6458332538604736,	0};
-  expected[1] = glm::vec4{0.6458332538604736,	-0.322916716337204,	0.6458333730697632,	0};
-  expected[2] = glm::vec4{0.6458333730697632,	0.6458332538604736,	-0.322916716337204,	0};
+  expected[0] = glm::vec4{0.9687500596046448,	0.,	0.,	0};
+  expected[1] = glm::vec4{0.,	0.9687500596046448,	0.,	0};
+  expected[2] = glm::vec4{0.,	0.,	0.9687500596046448,	0};
   expected[3] = glm::vec4{0,	0,	0,	1};
+
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
 
   EXPECT_TRUE(t.transform == expected);
 }
@@ -131,13 +131,13 @@ TEST_F(ScalingTest, CanScaleArbitraryFromOrigin)
 
   auto t = scaler.computeTransform(-12, 42);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   glm::mat4 expected;
-  expected[0] = glm::vec4{-0.3458333909511566,	0.6916667222976685,	0.6916666030883789,	0};
-  expected[1] = glm::vec4{0.6916666030883789,	-0.3458333909511566,	0.6916667222976685,	0};
-  expected[2] = glm::vec4{0.6916667222976685,	0.6916666030883789,	-0.3458333909511566,	0};
+  expected[0] = glm::vec4{1.037500143051147,	0.,	0.,	0};
+  expected[1] = glm::vec4{0.,	1.037500143051147,	0.,	0};
+  expected[2] = glm::vec4{0.,	0.,	1.037500143051147,	0};
   expected[3] = glm::vec4{0,	0,	0,	1};
+
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
 
   EXPECT_TRUE(t.transform == expected);
 }
@@ -154,14 +154,14 @@ TEST_F(ScalingTest, CanScaleArbitraryFromArbitrary)
 
   auto t = scaler.computeTransform(-30, 10);
 
-  //std::cout << std::setprecision(16) << t.transform << std::endl;
-
   // almost identity matrix...
   glm::mat4 expected;
   expected[0] = glm::vec4{0.9999999403953552,	0,	0,	0};
   expected[1] = glm::vec4{0,	0.9999999403953552,	0,	0};
   expected[2] = glm::vec4{0,	0,	0.9999999403953552,	0};
   expected[3] = glm::vec4{5.960464477539062e-08,	1.192092895507812e-07,	2.384185791015625e-07,	1};
+
+  //std::cout << std::setprecision(16) << t.transform << std::endl << expected << std::endl;
 
   EXPECT_TRUE(t.transform == expected);
 }

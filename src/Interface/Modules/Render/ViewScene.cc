@@ -1880,11 +1880,11 @@ bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::restoreObjColor()
 {
-  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+  LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
-  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+  LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
 
   widgetColorChanger_.reset();
 }
@@ -1904,7 +1904,7 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
     clippingPlanes_[clippingPlaneIndex_].visible,
     clippingPlanes_[clippingPlaneIndex_].showFrame,
     clippingPlanes_[clippingPlaneIndex_].reverseNormal);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1914,7 +1914,7 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneVisible(clippingPlanes_[clippingPlaneIndex_].visible);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1925,7 +1925,7 @@ void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneFrameOn(clippingPlanes_[clippingPlaneIndex_].showFrame);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1935,7 +1935,7 @@ void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->reverseClippingPlaneNormal(clippingPlanes_[clippingPlaneIndex_].reverseNormal);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1945,7 +1945,7 @@ void ViewSceneDialog::setClippingPlaneX(int index)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneX(clippingPlanes_[clippingPlaneIndex_].x);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1955,7 +1955,7 @@ void ViewSceneDialog::setClippingPlaneY(int index)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneY(clippingPlanes_[clippingPlaneIndex_].y);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1965,7 +1965,7 @@ void ViewSceneDialog::setClippingPlaneZ(int index)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneZ(clippingPlanes_[clippingPlaneIndex_].z);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1975,7 +1975,7 @@ void ViewSceneDialog::setClippingPlaneD(int index)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneD(clippingPlanes_[clippingPlaneIndex_].d);
-  updatClippingPlaneDisplay();
+  updateClippingPlaneDisplay();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1985,7 +1985,7 @@ void ViewSceneDialog::useClipChecked(bool value)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::updatClippingPlaneDisplay()
+void ViewSceneDialog::updateClippingPlaneDisplay()
 {
   mConfigurationDock->updatePlaneControlDisplay(
     clippingPlanes_[clippingPlaneIndex_].x,
@@ -2025,7 +2025,8 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& plane, const BBox& bbox)
 {
-  if (!bbox.valid()) return;
+  if (!bbox.valid())
+    return;
   Vector diag(bbox.diagonal());
   Point c(bbox.center());
   Vector n(plane.x, plane.y, plane.z);

@@ -144,7 +144,7 @@ namespace SCIRun
       bool hasObject(const std::string& object) override;
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects) override;
-      Core::Geometry::BBox getSceneBox() override {return mSceneBBox;}
+      Core::Geometry::BBox getSceneBox() override { return sceneBBox_; }
       void cleanupSelect() override;
 
       bool hasShaderPromise() const override;
@@ -239,7 +239,7 @@ namespace SCIRun
 
       int                                 axesFailCount_      {0};
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
-      Core::Geometry::BBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
+      Core::Geometry::BBox				        sceneBBox_ {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
 
       ESCore                              mCore               {};       // Entity system core.
