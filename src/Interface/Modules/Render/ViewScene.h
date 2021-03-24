@@ -43,6 +43,7 @@
 #include <atomic>
 #include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/share.h>
+#include <Core/Datatypes/Feedback.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
@@ -70,8 +71,8 @@ namespace SCIRun {
       void adjustToolbar() override;
 
       static ViewSceneManager viewSceneManager;
-      void inputMouseDownHelper(Render::MouseButton btn, float x, float y);
-      void inputMouseMoveHelper(Render::MouseButton btn, float x, float y);
+      void inputMouseDownHelper(Core::Datatypes::MouseButton btn, float x, float y);
+      void inputMouseMoveHelper(Core::Datatypes::MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
@@ -261,8 +262,8 @@ namespace SCIRun {
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
       bool canSelectWidget();
-      bool tryWidgetSelection(int x, int y, Render::MouseButton button);
-      void selectObject(const int x, const int y, Render::MouseButton button);
+      bool tryWidgetSelection(int x, int y, Core::Datatypes::MouseButton button);
+      void selectObject(const int x, const int y, Core::Datatypes::MouseButton button);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
@@ -270,7 +271,7 @@ namespace SCIRun {
       void updateCursor();
 
       //---------------- Clipping Planes -----------------------------------------------------------
-      void updatClippingPlaneDisplay();
+      void updateClippingPlaneDisplay();
       void buildGeomClippingPlanes();
       void buildGeometryClippingPlane(int index, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
@@ -327,6 +328,7 @@ namespace SCIRun {
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
+      Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
       int                                   clippingPlaneIndex_           {0};
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
@@ -368,7 +370,7 @@ namespace SCIRun {
       const int QUATERNION_SIZE_ = 4;
     };
 
-    Render::MouseButton getSpireButton(QMouseEvent* event);
+    Core::Datatypes::MouseButton getSpireButton(QMouseEvent* event);
 
   } // namespace Gui
 } // namespace SCIRun

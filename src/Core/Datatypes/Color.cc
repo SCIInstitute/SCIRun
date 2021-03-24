@@ -96,9 +96,3 @@ std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const Color
   out << "Color(" << color.r() << "," << color.g() << "," << color.b() << ")";
   return out;
 }
-
-bool ViewSceneFeedback::matchesWithModuleId(const std::string& modId) const
-{
-  auto toMatch = GeometryObject::delimiter + modId + GeometryObject::delimiter;
-  return selectionName.find(toMatch) != std::string::npos;
-}

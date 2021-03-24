@@ -29,23 +29,27 @@
 SET(Graphics_Widgets_SRCS
   Widget.cc
   WidgetFactory.cc
+  BasicBoundingBoxWidget.cc
   BoundingBoxWidget.cc
   SphereWidget.cc
   CylinderWidget.cc
   ConeWidget.cc
   DiskWidget.cc
   ArrowWidget.cc
+  SuperquadricWidget.cc
   GlyphFactory.cc
 )
 
 SET(Graphics_Widgets_HEADERS
   Widget.h
   WidgetFactory.h
+  BasicBoundingBoxWidget.h
   BoundingBoxWidget.h
   SphereWidget.h
   CylinderWidget.h
   ConeWidget.h
   ArrowWidget.h
+  SuperquadricWidget.h
   GlyphFactory.h
   WidgetParameters.h
   WidgetBuilders.h

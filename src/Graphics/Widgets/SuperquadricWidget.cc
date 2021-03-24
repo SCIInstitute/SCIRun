@@ -25,44 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
 
-#include <Graphics/Widgets/BasicBoundingBoxWidget.h>
-#include <Graphics/Widgets/Tests/WidgetTestingUtility.h>
+#include <Graphics/Widgets/SuperquadricWidget.h>
+#include <Graphics/Widgets/GlyphFactory.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Graphics::Datatypes;
-using namespace SCIRun::Core::Geometry;
 
-TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxReal)
+SuperquadricWidget::SuperquadricWidget(const GeneralWidgetParameters& gen,
+                           SuperquadricParameters params)
+  : WidgetBase({gen.base.idGenerator, "SuperquadricWidget::" + gen.base.tag, gen.base.mapping})
 {
-  StubGeometryIDGenerator idGen;
-
-  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
-  {
-    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
-    {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}
-  });
-
-  EXPECT_EQ(Point(0,2,1), box.position());
-  EXPECT_EQ("bounding_box_cylinders102-21201021041001021-241-261", box.name());
-
-
-  //FAIL() << "todo";
-}
-
-TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxStubbed)
-{
-  StubGeometryIDGenerator idGen;
-
-  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
-  {
-    {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
-    {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}
-  });
-
-  EXPECT_EQ(Point(0,2,1), box.position());
-  EXPECT_EQ("__basicBox__0", box.name());
-
-
-  //FAIL() << "todo";
+  name_ = gen.glyphMaker->superquadric(params, *this);
+  setPosition(params.point);
 }

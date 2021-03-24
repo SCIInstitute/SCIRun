@@ -23,16 +23,17 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-
+   */
 
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/OrientedBBox.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/Widget.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
@@ -46,12 +47,21 @@ namespace SCIRun {
         public Has3OutputPorts < FieldPortTag, GeometryPortTag, MatrixPortTag >
       {
       public:
+        static const int mDIMENSIONS = 3;
         EditMeshBoundingBox();
         void execute() override;
         void setStateDefaults() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName ScaleTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName RotationTransformMatrix;
+        static const Core::Algorithms::AlgorithmParameterName TranslationPoint;
+        static const Core::Algorithms::AlgorithmParameterName InverseFieldTransformMatrix;
+
+        static const Core::Algorithms::AlgorithmParameterName ResetToInput;
         static const Core::Algorithms::AlgorithmParameterName ResetSize;
         static const Core::Algorithms::AlgorithmParameterName ResetCenter;
+        static const Core::Algorithms::AlgorithmParameterName DataSaved;
         //Input Field Attributes
         static const Core::Algorithms::AlgorithmParameterName InputCenterX;
         static const Core::Algorithms::AlgorithmParameterName InputCenterY;
@@ -70,6 +80,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
         //Widget Scale/Mode
         static const Core::Algorithms::AlgorithmParameterName Scale;
+        static const Core::Algorithms::AlgorithmParameterName OldScale;
         static const Core::Algorithms::AlgorithmParameterName ScaleChanged;
         static const Core::Algorithms::AlgorithmParameterName NoTranslation;
         static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
@@ -92,16 +103,45 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
-        void executeImpl(FieldHandle f);
-        void clear_vals();
-        void update_input_attributes(FieldHandle);
-        void computeWidgetBox(const Core::Geometry::BBox& box) const;
-        Graphics::Datatypes::GeometryHandle buildGeometryObject();
+        void clearVals();
+        void computeWidgetBox(const Core::Geometry::BBox& box);
+        void buildGeometryObject();
+        void updateState(FieldHandle field);
+        void sendOutputPorts();
+        void resetToInputField();
+        void changeAxesOrientation(FieldHandle field);
+        void setOutputCenter();
+        void resetOutputCenter();
+        void setOutputSize();
+        void resetOutputSize();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
+        void adjustGeometryFromTransform(const Core::Geometry::Transform& feedbackTrans,
+                                         const Core::Datatypes::WidgetMovement& movementType);
+        void generateGeomsList();
+        void saveToParameters();
+        void loadFromParameters();
+        std::string convertForLabel(double coord);
+        void updateInputFieldAttributes();
+        void setOutputParameters();
 
-        boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
+        Core::Geometry::BBox bbox_;
+        Core::Geometry::Point pos_;
+        std::vector<Core::Geometry::Vector> eigvecs_;
+        std::vector<double> eigvals_;
+        FieldHandle outputField_;
+        int widgetNum_{0};
+        int resolution_ = 20;
+
+        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+        Core::Geometry::Point ogPos_;
+        Core::Geometry::Vector ogScale_;
+        Core::Geometry::Transform inputFieldInverse_;
+        Core::Geometry::Transform widgetScale_;
+        Core::Geometry::Transform widgetRotation_;
+        Core::Geometry::Point widgetTranslation_;
         bool widgetMoved_;
+        bool widgetAxesRotated_;
+        bool firstRun_;
       };
     }
   }

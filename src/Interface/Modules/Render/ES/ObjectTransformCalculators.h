@@ -29,6 +29,7 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_OBJECTTRANSFORMCALCULATORS_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_OBJECTTRANSFORMCALCULATORS_H
 
+#include <Core/Datatypes/Feedback.h>
 #include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -44,7 +45,7 @@ namespace SCIRun
     {
     public:
       virtual ~ObjectTransformCalculator() {}
-      virtual Graphics::Datatypes::WidgetMovement movementType() const = 0;
+      virtual Core::Datatypes::WidgetMovement movementType() const = 0;
       virtual gen::Transform computeTransform(int x, int y) const = 0;
     };
 
@@ -69,7 +70,7 @@ namespace SCIRun
     {
     public:
       ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);
-      ObjectTransformCalculatorPtr create(Graphics::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetBase* baseWidget) const;
+      ObjectTransformCalculatorPtr create(Core::Datatypes::WidgetMovement movement, Graphics::Datatypes::WidgetBase* baseWidget) const;
     private:
       BasicRendererObjectProvider* brop_;
       glm::vec2 initPos_;
@@ -83,8 +84,8 @@ namespace SCIRun
     {
     public:
       explicit TransformCalculatorFamily(const Graphics::Datatypes::WidgetMovementFamily& movements, ObjectTransformCalculatorFactoryPtr factory);
-      Graphics::Datatypes::WidgetMovement baseMovement() const { return movements_.base; }
-      ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement movement);
+      Core::Datatypes::WidgetMovement baseMovement() const { return movements_.base; }
+      ObjectTransformCalculatorPtr calcFor(Graphics::Datatypes::WidgetBase* widget, Core::Datatypes::WidgetMovement movement);
     private:
       Graphics::Datatypes::WidgetMovementFamily movements_;
       ObjectTransformCalculatorFactoryPtr factory_;
@@ -96,8 +97,8 @@ namespace SCIRun
     public:
       WidgetTransformEvent(ObjectTransformer* transformer, std::shared_ptr<TransformCalculatorFamily> calcFamily);
       ~WidgetTransformEvent();
-      Graphics::Datatypes::WidgetMovement baseMovement() const override;
-      void move(Graphics::Datatypes::WidgetBase* widget, Graphics::Datatypes::WidgetMovement moveType) const override;
+      Core::Datatypes::WidgetMovement baseMovement() const override;
+      void move(Graphics::Datatypes::WidgetBase* widget, Core::Datatypes::WidgetMovement moveType) const override;
       void transformAt(int x, int y);
       glm::mat4 getTransformFor(Graphics::Datatypes::WidgetHandle w) const;
     private:
@@ -125,7 +126,7 @@ namespace SCIRun
       };
       ObjectTranslationCalculator(const BasicRendererObjectProvider* s, const Params& t);
       gen::Transform computeTransform(int x, int y) const override;
-      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::TRANSLATE; }
+      Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::TRANSLATE; }
     private:
       glm::vec2 initialPosition_;
       float w_;
@@ -144,12 +145,13 @@ namespace SCIRun
       };
       explicit ObjectScaleCalculator(const BasicRendererObjectProvider* s, const Params& p);
       gen::Transform computeTransform(int x, int y) const override;
-      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::SCALE; }
+      Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::SCALE; }
     private:
       glm::vec3 originView_;
       float projectedW_;
       glm::vec3 flipAxisWorld_;
-      glm::vec3 originToSpos_;
+      glm::vec3 originToInitialSpos_;
+      float originToInitialSposLength_;
       glm::vec3 originWorld_;
     };
 
@@ -164,11 +166,61 @@ namespace SCIRun
       };
       explicit ObjectRotationCalculator(const BasicRendererObjectProvider* s, const Params& p);
       gen::Transform computeTransform(int x, int y) const override;
-      Graphics::Datatypes::WidgetMovement movementType() const override { return Graphics::Datatypes::ROTATE; }
+      Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::ROTATE; }
     private:
       glm::vec3 originWorld_;
       float initialW_;
       std::shared_ptr<spire::ArcBall>	widgetBall_;
+    };
+
+    class SCISHARE ObjectScaleAxisCalculator : public ObjectTransformCalculatorBase
+    {
+    public:
+      struct SCISHARE Params
+      {
+        glm::vec2 initialPosition_;
+        float w_;
+        glm::vec3 flipAxisWorld_;
+        glm::vec3 originWorld_;
+        glm::vec3 axis_;
+        size_t scaleAxisIndex_;
+        glm::mat4 scaleTrans_;
+      };
+      explicit ObjectScaleAxisCalculator(const BasicRendererObjectProvider* s, const Params &p);
+      gen::Transform computeTransform(int x, int y) const override;
+      Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::ROTATE; }
+      void setMultiplier(double multiplier);
+    private:
+      glm::mat4 scaleTrans_;
+      glm::vec3 axis_;
+      glm::vec3 originView_;
+      glm::vec3 originWorld_;
+      glm::vec3 flipAxisWorld_;
+      glm::vec3 originToInitialSpos_;
+      double multiplier_;
+      float projectedW_;
+      float originToInitialSposLength_;
+      size_t scaleAxisIndex_;
+    };
+
+class SCISHARE ObjectAxisTranslationCalculator : public ObjectTransformCalculatorBase
+    {
+    public:
+      struct SCISHARE Params
+      {
+        glm::mat4 viewProj;
+        glm::vec2 initialPosition_;
+        glm::vec3 axis_;
+        float w_;
+      };
+      ObjectAxisTranslationCalculator(const BasicRendererObjectProvider* s, const Params& t);
+      gen::Transform computeTransform(int x, int y) const override;
+      Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::TRANSLATE; }
+    private:
+      glm::mat4 invViewProj_ {1.0};
+      glm::vec2 initialPosition_;
+      glm::vec3 axis_;
+      float w_;
     };
   }
 }

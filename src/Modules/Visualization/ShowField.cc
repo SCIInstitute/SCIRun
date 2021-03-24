@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -598,9 +599,6 @@ void GeometryBuilder::renderFacesLinear(
 
     while (facesLeftInThisPass > 0)
     {
-      if (stoppable_->stopRequested())
-        throw "stopped";
-
       mesh->get_nodes(nodes, *fiter);
 
       for(size_t i = 0; i < numNodesPerFace; ++i)
@@ -877,9 +875,6 @@ void GeometryBuilder::renderNodes(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    if (stoppable_->stopRequested())
-      throw "stopped";
-
     Point p;
     mesh->get_point(p, *eiter);
     //coloring options
@@ -974,9 +969,6 @@ void GeometryBuilder::renderEdges(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    if (stoppable_->stopRequested())
-      throw "stopped";
-
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 

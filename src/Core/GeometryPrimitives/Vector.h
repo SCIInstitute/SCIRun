@@ -108,6 +108,7 @@ class Vector
     inline Vector operator-(const Vector&) const;
     inline Vector operator-(const Point&) const;
     inline Vector& operator-=(const Vector&);
+    inline double norm() const;
     inline double normalize();
     inline double safe_normalize();
     inline Vector getArbitraryTangent() const;
@@ -236,10 +237,15 @@ inline Vector Max(const Vector &v1, const Vector &v2)
 
 SCISHARE void Pio( Piostream&, Vector& );
 
+inline double Vector::norm() const
+{
+  return std::sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
+}
+
 inline
   double Vector::safe_normalize()
 {
-  double l = std::sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
+  double l = norm();
   if (l > 0.0)
   {
     d_[0]/=l;
@@ -454,7 +460,7 @@ inline double Vector::w() const
 inline
 double Vector::normalize()
 {
-  double l=sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
+  double l = norm();
   if (l > 0.0)
   {
     d_[0]/=l;

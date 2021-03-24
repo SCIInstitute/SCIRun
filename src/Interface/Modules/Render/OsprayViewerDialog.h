@@ -34,6 +34,7 @@
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/share.h>
 
 
@@ -43,7 +44,6 @@ namespace SCIRun {
 namespace Render {
   class QOSPRayWidget;
   class OSPRayRenderer;
-  enum class MouseButton;
 }
 
 namespace Gui {
@@ -100,7 +100,7 @@ private:
   void addToolbarButton(QPushButton* button);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
-  Render::MouseButton getRenderButton(QMouseEvent* event);
+  Core::Datatypes::MouseButton getRenderButton(QMouseEvent* event);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 

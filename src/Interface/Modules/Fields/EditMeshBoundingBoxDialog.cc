@@ -124,7 +124,6 @@ void EditMeshBoundingBoxDialog::userSetWidget()
   }
   else if (button.startsWith("resetAll"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetToInput, true);
   }
 }

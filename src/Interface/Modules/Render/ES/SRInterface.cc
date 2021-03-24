@@ -780,10 +780,10 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     double SRInterface::getMaxProjLength(const glm::vec3 &n)
     {
-      glm::vec3 a1(-1.0, 1.0, -1.0);
-      glm::vec3 a2(-1.0, 1.0, 1.0);
-      glm::vec3 a3(1.0, 1.0, -1.0);
-      glm::vec3 a4(1.0, 1.0, 1.0);
+      static const glm::vec3 a1(-1.0, 1.0, -1.0);
+      static const glm::vec3 a2(-1.0, 1.0, 1.0);
+      static const glm::vec3 a3(1.0, 1.0, -1.0);
+      static const glm::vec3 a4(1.0, 1.0, 1.0);
       return std::max(
         std::max(
         std::abs(dot(n, a1)),
@@ -796,15 +796,15 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateClippingPlanes()
     {
-      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
-      if (clippingPlanes)
+      auto* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      if (clippingPlanes && sceneBBox_.valid())
       {
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
         //boundbox transformation
         glm::mat4 trans_bb = glm::mat4(1.0f);
-        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
-        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
+        glm::vec3 scale_bb(sceneBBox_.x_length() / 2.0, sceneBBox_.y_length() / 2.0, sceneBBox_.z_length() / 2.0);
+        glm::vec3 center_bb(sceneBBox_.center().x(), sceneBBox_.center().y(), sceneBBox_.center().z());
         glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
         trans_bb = temp * trans_bb;
         temp = translate(glm::mat4(1.0f), center_bb);
@@ -1085,12 +1085,12 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           if (auto shaderMan = sm.lock())
           {
             RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
-            mSceneBBox.reset();
+            sceneBBox_.reset();
             for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
             {
               if (it->mBBox.valid())
               {
-                mSceneBBox.extend(it->mBBox);
+                sceneBBox_.extend(it->mBBox);
               }
             }
 
@@ -1192,7 +1192,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               mCore.addComponent(entityID, pass);
             }
           }
-          mCamera->setSceneBoundingBox(mSceneBBox);
+          mCamera->setSceneBoundingBox(sceneBBox_);
         }
       }
       DEBUG_LOG_LINE_INFO
@@ -1717,7 +1717,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     {
       if (uniform.name == "uFogSettings")
       {
-        float radius = mSceneBBox.diagonal().length() * 2.0;
+        float radius = sceneBBox_.diagonal().length() * 2.0;
         float start = radius * mFogStart;
         float end = radius * mFogEnd;
         uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);

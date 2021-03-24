@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Core/Datatypes/Feedback.h>
 #include <arc-look-at/ArcLookAt.hpp>
 #include <glm/glm.hpp>
 #include <ospray/ospray.h>
@@ -33,16 +33,14 @@
 
 namespace SCIRun { namespace Render {
 
-enum class MouseButton;
-
 class SCISHARE OSPRayCamera
 {
 public:
   OSPRayCamera();
   ~OSPRayCamera();
 
-  void mousePress(float x, float y, MouseButton btn);
-  void mouseMove(float x, float y, MouseButton btn);
+  void mousePress(float x, float y, Core::Datatypes::MouseButton btn);
+  void mouseMove(float x, float y, Core::Datatypes::MouseButton btn);
   void mouseRelease();
   void mouseWheel(int delta);
 

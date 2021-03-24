@@ -147,7 +147,7 @@ void SCIRun::Core::Geometry::Pio(Piostream &stream, BBox & box)
 
   if(stream.reading())
   {
-    box.set_valid(tmp);
+    box.setValid(tmp);
     if (tmp)
     {
       box.extend(min);

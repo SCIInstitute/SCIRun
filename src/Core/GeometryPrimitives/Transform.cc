@@ -767,7 +767,7 @@ void Transform::orthonormalize()
 
 void Transform::gram_schmidt(bool normalize)
 {
-  auto vecs = get_rotation();
+  auto vecs = get_transformation_vectors();
   double vals[3];
   // Get eigenvalues and normalize eigenvectors
   for(int i = 0; i < 3; i++)
@@ -946,19 +946,36 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
-std::vector<Vector> Transform::get_rotation() const
+std::vector<Vector> Transform::get_transformation_vectors() const
 {
   std::vector<Vector> column_vectors(3);
   for(int i = 0; i < 3; i++)
-  {
     column_vectors[i] = Vector(mat[0][i], mat[1][i], mat[2][i]);
-  }
   return column_vectors;
+}
+
+std::vector<Vector> Transform::get_rotation_vectors() const
+{  auto vecs = get_transformation_vectors();
+  for (int i = 0; i < 3; ++i)
+    vecs[i].normalize();
+  return vecs;
 }
 
 Point Transform::get_translation() const
 {
   return Point(mat[0][3], mat[1][3], mat[2][3]);
+}
+
+void Transform::set_translation(double d)
+{
+  for (int i = 0; i < 3; ++i)
+    this->set_mat_val(i, 3, d);
+}
+
+void Transform::set_translation(const Point& v)
+{
+  for (int i = 0; i < 3; ++i)
+    this->set_mat_val(i, 3, v[i]);
 }
 
 Point

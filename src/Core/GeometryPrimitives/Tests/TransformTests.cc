@@ -183,7 +183,7 @@ TEST(TransformTests, LoadIdentity)
 TEST(TransformTests, GetRotation)
 {
   Transform t(testPos, testRot[0], testRot[1], testRot[2]);
-  auto rot = t.get_rotation();
+  auto rot = t.get_transformation_vectors();
   for(int i = 0; i < 3; ++i)
     EXPECT_EQ(testRot[i], rot[i]);
 }
@@ -195,11 +195,27 @@ TEST(TransformTests, GetPosition)
   EXPECT_EQ(testPos, pos);
 }
 
+TEST(TransformTests, SetPositionDouble)
+{
+  Transform t;
+  t.set_translation(2.3);
+  auto pos = t.get_translation();
+  EXPECT_EQ(Point(2.3, 2.3, 2.3), pos);
+}
+
+TEST(TransformTests, SetPositionPoint)
+{
+  Transform t;
+  t.set_translation(testPos);
+  auto pos = t.get_translation();
+  EXPECT_EQ(testPos, pos);
+}
+
 TEST(TransformTests, Orthogonalize)
 {
   Transform t(testPos, testRot[0], testRot[1], testRot[2]);
   t.orthogonalize();
-  auto rot = t.get_rotation();
+  auto rot = t.get_transformation_vectors();
 
   EXPECT_NEAR(0.0, Dot(rot[0], rot[1]), errorOfMargin);
   EXPECT_NEAR(0.0, Dot(rot[0], rot[2]), errorOfMargin);
@@ -212,7 +228,7 @@ TEST(TransformTests, Orthonormalize)
 {
   Transform t(testPos, testRot[0], testRot[1], testRot[2]);
   t.orthonormalize();
-  auto rot = t.get_rotation();
+  auto rot = t.get_transformation_vectors();
 
   EXPECT_NEAR(0.0, Dot(rot[0], rot[1]), errorOfMargin);
   EXPECT_NEAR(0.0, Dot(rot[0], rot[2]), errorOfMargin);
@@ -254,7 +270,7 @@ TEST(TransformTests, MultplicationTransform)
   Transform t1(testPos, testRot[0], testRot[1], testRot[2]);
   Transform t2(Point(0,0,0), Vector(1,0,0), Vector(0,2,0), Vector(0,0,3));
   Transform t3 = t2 * t1;
-  auto vecs = t3.get_rotation();
+  auto vecs = t3.get_transformation_vectors();
   for(int i = 0; i < 3; ++i)
     EXPECT_EQ(vecs[i], Vector(testRot[i].x(), testRot[i].y() * 2, testRot[i].z() * 3));
 }

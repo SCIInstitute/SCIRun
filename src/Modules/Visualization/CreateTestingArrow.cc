@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/CreateTestingArrow.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>

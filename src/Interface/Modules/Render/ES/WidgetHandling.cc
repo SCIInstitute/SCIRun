@@ -43,6 +43,7 @@
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Core/Application/Preferences/Preferences.h>
 
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -66,22 +67,6 @@ WidgetUpdateService::WidgetUpdateService(ObjectTransformer* transformer, const S
 }
 
 glm::mat4 WidgetUpdateService::getStaticCameraViewProjection() { return transformer_->getStaticCameraViewProjection(); }
-
-namespace
-{
-  WidgetInteraction yetAnotherEnumConversion(MouseButton btn)
-  {
-    switch (btn)
-    {
-    case MouseButton::MOUSE_LEFT:
-      return WidgetInteraction::CLICK;
-    case MouseButton::MOUSE_RIGHT:
-      return WidgetInteraction::RIGHT_CLICK;
-    default:
-      return WidgetInteraction::CLICK;
-    }
-  }
-}
 
 void WidgetUpdateService::setCurrentWidget(WidgetHandle w)
 {
@@ -152,14 +137,14 @@ WidgetTransformEvent::WidgetTransformEvent(ObjectTransformer* transformer,
   impl_->calcFamily_ = calcFamily;
 }
 
-Graphics::Datatypes::WidgetMovement WidgetTransformEvent::baseMovement() const
+WidgetMovement WidgetTransformEvent::baseMovement() const
 {
   return impl_->calcFamily_->baseMovement();
 }
 
 void WidgetTransformEvent::move(WidgetBase* widget, WidgetMovement moveType) const
 {
-  if (widget)
+  if (widget && moveType)
   {
     auto calc = impl_->calcFamily_->calcFor(widget, moveType);
     auto transform = calc->computeTransform(impl_->x_, impl_->y_);
@@ -222,7 +207,41 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
     return boost::make_shared<ObjectScaleCalculator>(brop_, p);
   }
+  case WidgetMovement::SCALE_AXIS:
+  {
+    ObjectScaleAxisCalculator::Params p;
+    p.initialPosition_ = initPos_;
+    p.w_ = initW_;
+    auto widgetTransformParameters = baseWidget->transformParameters();
+    p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
+    p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
+    p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
+    p.scaleAxisIndex_ = getAxisIndex(widgetTransformParameters);
+    return boost::make_shared<ObjectScaleAxisCalculator>(brop_, p);
+  }
+  case WidgetMovement::TRANSLATE_AXIS:
+  {
+    ObjectAxisTranslationCalculator::Params p;
+    p.initialPosition_ = initPos_;
+    p.w_ = initW_;
+    auto widgetTransformParameters = baseWidget->transformParameters();
+    p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
+    return boost::make_shared<ObjectAxisTranslationCalculator>(brop_, p);
+  }
   default:
     return nullptr;
+  }
+}
+
+Graphics::Datatypes::WidgetInteraction SCIRun::Render::yetAnotherEnumConversion(Core::Datatypes::MouseButton btn)
+{
+  switch (btn)
+  {
+    case Core::Datatypes::MouseButton::LEFT:
+      return Graphics::Datatypes::WidgetInteraction::CLICK;
+    case Core::Datatypes::MouseButton::RIGHT:
+      return Graphics::Datatypes::WidgetInteraction::RIGHT_CLICK;
+    default:
+      return Graphics::Datatypes::WidgetInteraction::CLICK;
   }
 }

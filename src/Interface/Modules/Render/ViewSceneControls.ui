@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
+    <width>704</width>
     <height>662</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>567</width>
+    <width>704</width>
     <height>662</height>
    </size>
   </property>
@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -792,6 +792,12 @@
            </item>
            <item>
             <widget class="QCheckBox" name="showPlaneFrameCheckBox_">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>BROKEN: See issue https://github.com/SCIInstitute/SCIRun/issues/2248</string>
+             </property>
              <property name="accessibleDescription">
               <string/>
              </property>
