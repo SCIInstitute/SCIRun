@@ -403,32 +403,6 @@ public:
     }
   }
 
-  static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir )
-  {
-    return;
-#if SCIRUN4_CODE_TO_BE_CONVERTED_LATER //probably never, may not need this
-#ifndef _WIN32
-    std::string sciruntcl_package("sciruntcl");
-    sciruntcl_package += SCIRUN_TCL_PACKAGE_VERSION;
-    if ( bfs::exists( testdir / "lib" / sciruntcl_package ) )
-    {
-      objdir = testdir;
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-    else if ( bfs::exists( testdir / ".." / "lib" / sciruntcl_package ) )
-    {
-      objdir = testdir / "..";
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-    else if ( bfs::exists( testdir / ".." / ".." / "lib" / sciruntcl_package) )
-    {
-      objdir = testdir / ".." / "..";
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-#endif
-#endif
-  }
-
   static void test_and_set_various_source_dirs(const bfs::path& testdir, bfs::path& srcdir)
   {
     if ( bfs::exists( testdir / "src" ) )
@@ -501,7 +475,6 @@ SCIRun::create_sci_environment(char **env, const char *execname)
   {
     bfs::path full_name(execname);
     bfs::path testdir = full_name.parent_path();
-    SciEnvironmentBuilder::set_obj_dir_non_windows(testdir, objdir);
     SciEnvironmentBuilder::test_and_set_various_source_dirs(testdir, srcdir);
   }
 

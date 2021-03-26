@@ -503,7 +503,7 @@ bool unsynchronize(mask_type sync) override;
   /// Get the determinant of the jacobian, which is the local volume of an element
   /// and is intended to help with the integration of functions over an element.
   template<class VECTOR, class INDEX>
-  double det_jacobian(const VECTOR& coords, INDEX idx) const
+  double det_jacobian(const VECTOR&, INDEX) const
   {
     return (1.0);
   }

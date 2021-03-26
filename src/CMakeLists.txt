@@ -558,7 +558,7 @@ MACRO(SCIRUN_ADD_LIBRARY library)
     # target_compile_options(${library} PRIVATE /W4 /WX)
   else()
     # TODO:
-    #target_compile_options(${library} PRIVATE -Wunused-parameter)
+    target_compile_options(${library} PRIVATE -Wunused-parameter)
         #eventually: -Wall -Wextra -pedantic -Werror)
     # to fix: -Wunused-parameter
   endif()
