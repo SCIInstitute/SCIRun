@@ -539,7 +539,7 @@ class VImageMesh : public VMeshShared<MESH> {
 
     template<class ARRAY, class INDEX>
     inline void
-    inv_jacobian(const ARRAY& coords, INDEX idx, double* Ji) const
+    inv_jacobian(const ARRAY&, INDEX, double* Ji) const
     {
       double* inverse_jacobian = this->mesh_->inverse_jacobian_;
       Ji[0] = inverse_jacobian[0];

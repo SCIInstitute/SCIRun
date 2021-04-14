@@ -384,8 +384,7 @@ Mesh::basis_order()
 
 const int MESHBASE_VERSION = 2;
 
-void
-Mesh::io(Piostream& stream)
+void Mesh::io(Piostream& stream)
 {
   if (stream.reading() && stream.peek_class() == "MeshBase")
   {
@@ -399,10 +398,8 @@ Mesh::io(Piostream& stream)
   stream.end_class();
 }
 
-const std::string
-Mesh::type_name(int n)
+const std::string Mesh::type_name(int)
 {
-  ASSERT(n >= -1 && n <= 0);
   static const std::string name = "Mesh";
   return name;
 }
@@ -410,8 +407,7 @@ Mesh::type_name(int n)
 /// This function should be overloaded with the actual function that
 /// retrieves the virtual interface. This function is thread safe, but
 /// is not const as it deals with handles which will alter ref counts.
-VMesh*
-Mesh::vmesh()
+VMesh* Mesh::vmesh()
 {
   return (nullptr);
 }

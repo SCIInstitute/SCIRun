@@ -329,10 +329,10 @@ public:
     }
   }
 
+#ifdef _WIN32
   static void try_get_working_windows_directories(bfs::path& objdir, bfs::path& srcdir, bfs::path& appdata,
     bfs::path& thirdpartydir, std::string& packages)
   {
-#ifdef _WIN32
     getWin32RegistryValues(objdir, srcdir, appdata, thirdpartydir, packages);
     if (! bfs::is_directory(appdata)) {
       try {
@@ -349,8 +349,8 @@ public:
         std::cerr << __FILE__ << ", " << __LINE__ << ": create_directory failed in create_sci_environment(..)" << std::endl;
       }
     }
-#endif
   }
+#endif
 
   static void append_directory(std::string& objdir, const char* execname, const std::string& executable_name)
   {
@@ -493,8 +493,9 @@ SCIRun::create_sci_environment(char **env, const char *execname)
 
   bfs::path appdata;
   std::string packages = LOAD_PACKAGE;
+#ifdef _WIN32
   SciEnvironmentBuilder::try_get_working_windows_directories(objdir, srcdir, appdata, thirdpartydir, packages);
-
+#endif
   std::string executable_name = "scirun";
   SciEnvironmentBuilder::set_object_directory(execname, objdir, executable_name);
 

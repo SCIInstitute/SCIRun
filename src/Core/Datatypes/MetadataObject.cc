@@ -34,7 +34,7 @@ using namespace SCIRun;
 
 MetadataObject::MetadataObject(const std::string& programData) : programData_(programData) {}
 
-void MetadataObject::process(const std::string& modId)
+void MetadataObject::process(const std::string&)
 {
   //logCritical("Processing metadata object [modId={}] program data: \n{}", modId, programData_);
 }
