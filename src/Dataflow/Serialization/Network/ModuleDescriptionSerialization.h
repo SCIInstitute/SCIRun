@@ -46,7 +46,7 @@ namespace Networks {
   {
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(package_name_);
       ar & BOOST_SERIALIZATION_NVP(category_name_);
@@ -63,7 +63,7 @@ namespace Networks {
   {
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_.id_);
       ar & boost::serialization::make_nvp("port1_", out_.portId_);
@@ -85,7 +85,7 @@ namespace boost {
   namespace serialization {
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int /*version*/)
     {
       ar & boost::serialization::make_nvp("name", pid.name);
       ar & boost::serialization::make_nvp("id", pid.id);

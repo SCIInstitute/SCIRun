@@ -506,7 +506,7 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
 
 void GlyphBuilder::renderVectors(
   ModuleStateHandle state,
-  Interruptible* interruptible,
+  Interruptible* /*interruptible*/,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
@@ -603,7 +603,7 @@ void GlyphBuilder::renderVectors(
 
 void GlyphBuilder::renderScalars(
   ModuleStateHandle state,
-  Interruptible* interruptible,
+  Interruptible* /*interruptible*/,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)

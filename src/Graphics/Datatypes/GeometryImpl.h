@@ -263,7 +263,7 @@ namespace SCIRun {
 
         bool isClippable() const {return isClippable_;}
 
-        void setColorMap(const std::string& name) { }
+        //void setColorMap(const std::string&) { }
         boost::optional<std::string> colorMap() const { return mColorMap; }
 
       private:

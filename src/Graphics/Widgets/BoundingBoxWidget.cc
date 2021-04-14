@@ -300,7 +300,7 @@ std::vector<WidgetHandle> BBoxDataHandler::getEdgesParrallelToFace(int f)
 
 void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
                                     const CommonWidgetParameters& params,
-                                    WidgetBase& widget)
+                                    WidgetBase& /*widget*/)
 {
   const static double cylinderRadius = 1;
 

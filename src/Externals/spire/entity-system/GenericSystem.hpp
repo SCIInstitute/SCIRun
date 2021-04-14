@@ -885,7 +885,7 @@ public:
                      const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& componentArrays,
                      const std::array<int, sizeof...(Ts)>& componentSizes,
                      const std::array<int, sizeof...(Ts)>& indices,
-                     const std::array<bool, sizeof...(Ts)>& componentOptional,
+                     const std::array<bool, sizeof...(Ts)>& /*componentOptional*/,
                      const std::array<bool, sizeof...(Ts)>& componentStatic,
                      std::array<int, sizeof...(Ts)>& nextIndices,
                      std::tuple<ComponentGroup<Ts>...>& input,
@@ -913,15 +913,15 @@ public:
 
   /// This function should be overriden and return true for all components
   /// which may be optional.
-  bool isComponentOptional(uint64_t templateID) override {return false;}
+  bool isComponentOptional(uint64_t) override {return false;}
 
   /// This function gets called before we start walking components from the
   /// walkComponents function.
-  virtual void preWalkComponents(ESCoreBase& core)            {}
+  virtual void preWalkComponents(ESCoreBase&)            {}
 
   /// This function gets called after we finish walking components from the
   /// walkComponents function.
-  virtual void postWalkComponents(ESCoreBase& core)           {}
+  virtual void postWalkComponents(ESCoreBase&)           {}
 };
 
 namespace optional_components_impl
