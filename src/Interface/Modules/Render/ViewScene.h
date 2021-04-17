@@ -71,7 +71,7 @@ namespace SCIRun {
       void adjustToolbar() override;
 
       static ViewSceneManager viewSceneManager;
-      void inputMouseDownHelper(Core::Datatypes::MouseButton btn, float x, float y);
+      void inputMouseDownHelper(float x, float y);
       void inputMouseMoveHelper(Core::Datatypes::MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
@@ -230,7 +230,7 @@ namespace SCIRun {
       void focusOutEvent(QFocusEvent* event) override;
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
-      void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void contextMenuEvent(QContextMenuEvent*) override {}
 
 
     private:

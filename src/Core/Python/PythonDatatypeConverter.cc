@@ -74,7 +74,7 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
 
 struct NumberVisitor : boost::static_visitor<Variable::Value>
 {
-  
+
 };
 
 struct ValueVisitor : boost::static_visitor<Variable::Value>
@@ -92,12 +92,12 @@ public:
 
   Variable::Value operator()(const int& v) const
   {
-    return convertNumber(v, NumberType::Int);
+    return convertNumber(NumberType::Int);
   }
 
   Variable::Value operator()(const double& v) const
   {
-    return convertNumber(v, NumberType::Double);
+    return convertNumber(NumberType::Double);
   }
 
   Variable::Value operator()(const bool& v) const
@@ -145,7 +145,7 @@ public:
       THROW_INVALID_ARGUMENT("The input python object is not a list.");
   }
 
-  Variable::Value convertNumber(const Variable::Value& val, NumberType returnType) const
+  Variable::Value convertNumber(NumberType returnType) const
   {
     auto classname = getClassName(object_);
     if (classname == "int")

@@ -435,7 +435,7 @@ QSet<typename Iter::value_type> toSet(Iter b, Iter e)
 }
 #endif
 
-QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> items) const
+QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*>) const
 {
   throw "not implemented";
 #if 0
@@ -841,7 +841,7 @@ bool SubnetModuleConnector::signalFromSubnet(QObject* sender) const
   return qobject_cast<NetworkEditorControllerGuiProxy*>(sender)->activeNetwork() == subnet_;
 }
 
-void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHandle module)
+void SubnetModuleConnector::moduleAddedToSubnet(const std::string&, ModuleHandle module)
 {
   if (signalFromSubnet(sender()) && subnet_->containsModule(module->id().id_))
   {

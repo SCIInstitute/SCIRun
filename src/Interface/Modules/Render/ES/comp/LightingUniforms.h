@@ -59,7 +59,7 @@ struct LightingUniforms
   void applyUniform(const std::vector<glm::vec3>& lightDirs,
     const std::vector<glm::vec3>& lightColors) const;
 
-  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize&, uint64_t /* entityID */)
   {
     return false;
   }

@@ -487,7 +487,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #endif
 
-void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index)
+void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int)
 {
   auto frame = this;
   int pixelWidth = display->getTitleWidth();

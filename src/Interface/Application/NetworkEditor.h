@@ -490,6 +490,8 @@ namespace Gui {
       {
         std::invoke(p, child.second->get());
       }
+      #else
+      (void)p;
       #endif
     }
 

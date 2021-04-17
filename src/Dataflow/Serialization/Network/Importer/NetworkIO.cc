@@ -95,58 +95,6 @@ LegacyNetworkIO::get_mod_id(const std::string& id)
   return (id == sn) ? sn : mmap[id];
 }
 
-std::string
-LegacyNetworkIO::gui_push_subnet_ctx()
-{
-  std::string cmmd = "set sn_ctx $Subnet(Loading)";
-  //std::string s = TCLInterface::eval(cmmd);
-  return cmmd;
-}
-
-
-void
-LegacyNetworkIO::gui_pop_subnet_ctx(const std::string& ctx)
-{
-  std::string cmmd = "set Subnet(Loading) " + ctx;
-  //simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
-#if 0
-  --sn_ctx_;
-  netid_to_modid_.pop();
-  netid_to_conid_.pop();
-  #endif
-}
-
-void
-LegacyNetworkIO::gui_add_subnet_at_position(const std::string &mod_id,
-const std::string &module,
-const std::string& x,
-const std::string &y)
-{
-  #if 0
-  ++sn_count_;
-  // map the subnet to a local var before we push maps.
-  id_map_t &mmap = netid_to_modid_.top();
-
-  std::ostringstream snic;
-  snic << "SubnetIcon" << sn_count_;
-  mmap[mod_id] = snic.str();
-
-  netid_to_modid_.push(id_map_t());
-  netid_to_conid_.push(id_map_t());
-
-  std::ostringstream cmmd;
-
-  cmmd << "set Subnet(Loading) [makeSubnetEditorWindow "
-    << sn_ctx_ << " " << x  << " " << y << "]";
-  TCLInterface::eval(cmmd.str());
-  ++sn_ctx_;
-
-  std::ostringstream cmmd1;
-  cmmd1 << "set Subnet(Subnet" << sn_count_ << "_Name) \"" << module << "\"";
-  TCLInterface::eval(cmmd1.str());
-  #endif
-}
-
 namespace
 {
   bool isPlaceholderModule(const std::string& name)
@@ -532,7 +480,7 @@ namespace
     return 1;
   };
 
-  ValueConverter throwAway = [](const std::string& s) { return 0; };
+  ValueConverter throwAway = [](const std::string&) { return 0; };
   ValueConverter negateBool = [](const std::string& s)
   {
     if (s == "1") return 0;
@@ -756,7 +704,7 @@ NetworkIO::gui_call_mod_post_read(const std::string &mod_id)
 
 void
 LegacyNetworkIO::gui_set_module_note(const std::string &mod_id, const std::string &pos,
-const std::string &col, const std::string &note)
+  const std::string&, const std::string &note)
 {
   if (!xmlData_)
     return;
@@ -803,8 +751,8 @@ int LegacyNetworkIO::getNotePosition(const std::string& position) const
 }
 
 void
-LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
-const std::string &col, const std::string &note)
+LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string&,
+const std::string&, const std::string& note)
 {
   std::string stripBraces(note.begin() + 1, note.end() - 1);
   NoteXML noteXml(stripBraces, 0, stripBraces);
@@ -875,20 +823,14 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
 
           if (do_subnet)
           {
-            std::string old_ctx = gui_push_subnet_ctx();
-            gui_add_subnet_at_position(mid, mname, x, y);
 
-            ASSERT(network_node != 0);
-            process_network_node(network_node);
-            gui_pop_subnet_ctx(old_ctx);
           }
           else
           {
             std::string package = std::string(to_char_ptr(package_att->children->content));
             std::string category = std::string(to_char_ptr(category_att->children->content));
 
-            gui_add_module_at_position(mid, package, category,
-                mname, x, y);
+            gui_add_module_at_position(mid, package, category, mname, x, y);
           }
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("network"))

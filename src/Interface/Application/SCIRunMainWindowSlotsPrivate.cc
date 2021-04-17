@@ -267,12 +267,12 @@ void SCIRunMainWindow::setGlobalPortCaching(bool enable)
   SimpleSink::setGlobalPortCachingFlag(enable);
 }
 
-void SCIRunMainWindow::readDefaultNotePosition(int index)
+void SCIRunMainWindow::readDefaultNotePosition(int)
 {
   Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
 }
 
-void SCIRunMainWindow::readDefaultNoteSize(int index)
+void SCIRunMainWindow::readDefaultNoteSize(int)
 {
   Q_EMIT defaultNoteSizeChanged(defaultNotePositionGetter_->size()); //TODO: unit test.
 }
@@ -352,7 +352,7 @@ public:
 private:
   friend class boost::serialization::access;
   template <class Archive>
-  void serialize(Archive& ar, const unsigned int version)
+  void serialize(Archive& ar, const unsigned int)
   {
     ar & BOOST_SERIALIZATION_NVP(fragments);
   }
@@ -564,7 +564,7 @@ void SCIRunMainWindow::launchPythonWizard()
 #endif
 }
 
-void SCIRunMainWindow::adjustModuleDock(int state)
+void SCIRunMainWindow::adjustModuleDock(int)
 {
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);

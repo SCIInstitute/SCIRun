@@ -220,7 +220,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixH
 }
 
 
-DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const double angle, const std::vector<double>& normal) const
+DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const std::vector<double>& normal) const
 {
   DenseMatrixHandle result(new DenseMatrix(3, 3));
 
@@ -387,7 +387,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           coil_vector.push_back(coil_ny[i]);
           coil_vector.push_back(coil_nz[i]);
 
-          rotation_matrix1 = make_rotation_matrix(angle, coil_vector);
+          rotation_matrix1 = make_rotation_matrix(coil_vector);
 
           if (angle != 0) /// test it !
           {
@@ -609,7 +609,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
 }
 
 
-boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp_mesh, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness, VariableHandle table) const
+boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp_mesh, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const
 {
   int nr_elc_sponge_triangles = 0, num_valid_electrode_definition = 0, nr_elc_sponge_triangles_on_scalp = 0;
   std::vector<double> field_values, field_values_elc_on_scalp;
@@ -688,8 +688,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       axis.push_back(norm[2]);
       double angle = elc_angle_rotation[i];
       DenseMatrixHandle rotation_matrix, rotation_matrix1, rotation_matrix2;
-      rotation_matrix1 = make_rotation_matrix(angle, axis);
-      if (elc_angle_rotation[i] != 0)
+      rotation_matrix1 = make_rotation_matrix(axis);
+      if (angle != 0)
       {
         rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
         rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
@@ -1696,7 +1696,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 
   if (t1 == t2 && t1 == t3 && t1 == t4 && t1 == t5 && t14 > 0 && t1 > 0)
   {
-    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field, table_output) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness, table_output);
+    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field, table_output) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness);
     valid_tdcs = true;
   }
 

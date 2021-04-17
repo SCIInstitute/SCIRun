@@ -54,7 +54,7 @@ namespace SCIRun{
       void setAsOrthographic(float halfWidth, float halfHeight);
 
       /// Handle mouse down.
-      void mouseDownEvent(Core::Datatypes::MouseButton btn, const glm::vec2 &pos);
+      void mouseDownEvent(const glm::vec2 &pos);
 
       /// Handle mouse movement.
       void mouseMoveEvent(Core::Datatypes::MouseButton btn, const glm::vec2 &pos);

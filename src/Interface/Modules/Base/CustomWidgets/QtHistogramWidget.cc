@@ -240,7 +240,7 @@ void QtHistogramWidget::set_max( double max )
   //  "border-top: 2px solid rgb( " INTERFACE_ACCENT_COLOR " );" ) );
 }
 
-void QtHistogramWidget::handle_left_button_click( int lower_location )
+void QtHistogramWidget::handle_left_button_click( int )
 {
   return;
 /*
@@ -255,7 +255,7 @@ void QtHistogramWidget::handle_left_button_click( int lower_location )
   this->private_->lower_threshold_->setCurrentValue( current_value );*/
 }
 
-void QtHistogramWidget::handle_right_button_click( int upper_location )
+void QtHistogramWidget::handle_right_button_click( int )
 {
   return;
 

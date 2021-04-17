@@ -336,7 +336,7 @@ void BBoxDataHandler::makeCylinders(const GeneralWidgetParameters& gen,
 
 void BBoxDataHandler::makeCornerSuperquadrics(const GeneralWidgetParameters& gen,
                                               const CommonWidgetParameters& params,
-                                              WidgetBase& widget)
+                                              WidgetBase&)
 {
   const static double cornerSphereRadius = 1.5;
   const static double cornerEmphasis = 0.4;
@@ -361,7 +361,7 @@ void BBoxDataHandler::makeCornerSuperquadrics(const GeneralWidgetParameters& gen
 
 void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
                                       const CommonWidgetParameters& params,
-                                      WidgetBase& widget)
+                                      WidgetBase&)
 {
   const static double faceSphereRadius = 1.5;
 
@@ -382,7 +382,7 @@ void BBoxDataHandler::makeFaceSpheres(const GeneralWidgetParameters& gen,
 
 void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
                                     const CommonWidgetParameters& params,
-                                    WidgetBase& widget)
+                                    WidgetBase&)
 {
   const static double diskDiameterScale = 1.0;
   const static double diskLengthScale = 2.5;

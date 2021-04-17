@@ -73,7 +73,7 @@ namespace SCIRun
     class SCISHARE SRObject
     {
     public:
-      SRObject(const std::string& name, const glm::mat4& objToWorld,
+      SRObject(const std::string& name,
         const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
         mName(name),
         mBBox(bbox),

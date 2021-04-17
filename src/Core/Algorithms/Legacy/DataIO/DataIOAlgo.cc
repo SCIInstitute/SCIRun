@@ -629,7 +629,7 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
 }
 #endif
 
-AlgorithmOutput DataIOAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput DataIOAlgo::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 }

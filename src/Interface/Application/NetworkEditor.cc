@@ -233,7 +233,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
 #endif
 }
 
-void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
+void NetworkEditor::connectionAddedQueued(const ConnectionDescription&)
 {
   //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }

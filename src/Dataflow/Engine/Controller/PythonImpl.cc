@@ -323,12 +323,12 @@ namespace
       ports_.clear();
     }
   private:
-    void portAddedSlot(const ModuleId& mid, const PortId& pid)
+    void portAddedSlot(const ModuleId&, const PortId&)
     {
       setupInputs();
     }
 
-    void portRemovedSlot(const ModuleId& mid, const PortId& pid)
+    void portRemovedSlot(const ModuleId&, const PortId&)
     {
       setupInputs();
     }
@@ -536,7 +536,7 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
   return modules_[m->id().id_];
 }
 
-void PythonImpl::pythonModuleAddedSlot(const std::string& modId, ModuleHandle m, ModuleCounter)
+void PythonImpl::pythonModuleAddedSlot(const std::string&, ModuleHandle m, ModuleCounter)
 {
   auto pyM = boost::make_shared<PyModuleImpl>(m, nec_);
   modules_[pyM->id()] = pyM;

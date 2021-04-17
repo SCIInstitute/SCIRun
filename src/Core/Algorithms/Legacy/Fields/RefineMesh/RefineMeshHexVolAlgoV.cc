@@ -1556,7 +1556,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
 	return (true);
 }
 
-AlgorithmOutput RefineMeshHexVolAlgoV::run(const AlgorithmInput& input) const
+AlgorithmOutput RefineMeshHexVolAlgoV::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 }

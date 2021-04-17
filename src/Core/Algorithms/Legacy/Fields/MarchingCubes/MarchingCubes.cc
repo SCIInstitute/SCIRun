@@ -152,8 +152,8 @@ template <class TESSELATOR>
 bool
 MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
                         FieldHandle& output,
-                        MatrixHandle& node_interpolant,
-                        MatrixHandle& elem_interpolant)
+                        MatrixHandle&,
+                        MatrixHandle&)
 {
   algo_ = algo;
 

@@ -41,8 +41,7 @@ namespace General {
   {
   public:
     std::string describe(const Datatypes::DatatypeHandle& data) const;
-
-    AlgorithmOutput run(const AlgorithmInput& input) const override { return AlgorithmOutput(); }
+    AlgorithmOutput run(const AlgorithmInput&) const override { return AlgorithmOutput(); }
   };
 
 }}}}

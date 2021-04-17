@@ -72,9 +72,9 @@ namespace SCIRun
       virtual void setLockPanning(bool lock) = 0;
       virtual void setLockRotation(bool lock) = 0;
       virtual bool hasShaderPromise() const = 0;
-      virtual void widgetMouseMove(Core::Datatypes::MouseButton btn, int x, int y) = 0;
+      virtual void widgetMouseMove(int x, int y) = 0;
       virtual void widgetMouseUp() = 0;
-      virtual void inputMouseDown(Core::Datatypes::MouseButton btn, float x, float y) = 0;
+      virtual void inputMouseDown(float x, float y) = 0;
       virtual void inputMouseMove(Core::Datatypes::MouseButton btn, float x, float y) = 0;
       virtual void inputMouseUp() = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;

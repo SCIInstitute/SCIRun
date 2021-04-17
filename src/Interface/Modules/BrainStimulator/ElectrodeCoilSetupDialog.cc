@@ -291,7 +291,7 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
   connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
 }
 
-void ElectrodeCoilSetupDialog::pushComboBoxChange(int index)
+void ElectrodeCoilSetupDialog::pushComboBoxChange(int)
 {
   auto name = qobject_cast<QComboBox*>(sender())->currentText();
   push();

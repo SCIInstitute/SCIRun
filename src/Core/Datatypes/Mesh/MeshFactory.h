@@ -36,7 +36,6 @@
 #include <Core/Utils/TypeIDTable.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-//#include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/share.h>
 
@@ -59,7 +58,7 @@ namespace Datatypes {
 
   class SCISHARE MeshFactory : boost::noncopyable
   {
-    CORE_SINGLETON( MeshFactory );
+    CORE_SINGLETON( MeshFactory )
 
   public:
     //MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
@@ -74,7 +73,7 @@ namespace Datatypes {
 
   class SCISHARE MeshRegistry : boost::noncopyable
   {
-    CORE_SINGLETON( MeshRegistry );
+    CORE_SINGLETON( MeshRegistry )
   public:
 
     struct SCISHARE MeshTypeID

@@ -81,9 +81,9 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void widgetMouseMove(Core::Datatypes::MouseButton btn, int x, int y) override;
+      void widgetMouseMove(int x, int y) override;
       void widgetMouseUp() override;
-      void inputMouseDown(Core::Datatypes::MouseButton btn, float x, float y) override;
+      void inputMouseDown(float x, float y) override;
       void inputMouseMove(Core::Datatypes::MouseButton btn, float x, float y) override;
       void inputMouseUp() override;
       void inputMouseWheel(int32_t delta) override;

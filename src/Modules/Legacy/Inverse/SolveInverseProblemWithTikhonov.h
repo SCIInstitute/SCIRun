@@ -46,18 +46,17 @@ namespace Inverse {
 	{
 	public:
 		SolveInverseProblemWithTikhonov();
-                void execute() override;
-                void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
+		INPUT_PORT(0, ForwardMatrix, DenseMatrix)
+		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix)
+		INPUT_PORT(2, MeasuredPotentials, DenseMatrix)
+		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix)
 
-		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
-		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
-		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
-		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
-
-		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
-		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
-		OUTPUT_PORT(2, RegInverse, DenseMatrix);
+		OUTPUT_PORT(0, InverseSolution, DenseMatrix)
+		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix)
+		OUTPUT_PORT(2, RegInverse, DenseMatrix)
 
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 

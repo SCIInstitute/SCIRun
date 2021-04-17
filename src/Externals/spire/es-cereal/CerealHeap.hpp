@@ -159,7 +159,7 @@ public:
 
   /// Returns the Tny* dictionary containing value's serialized contents.
   /// for the given entityID and componentIndex.
-  Tny* serializeValue(spire::ESCoreBase& core, T& value, uint64_t entityID, int32_t componentIndex)
+  Tny* serializeValue(spire::ESCoreBase& core, T& value, uint64_t entityID, int32_t)
   {
     static_assert( has_member_serialize<T>::value,
                   "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );

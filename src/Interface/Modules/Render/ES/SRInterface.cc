@@ -198,7 +198,7 @@ void SRInterface::runGCOnNextExecution()
 
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::widgetMouseMove(MouseButton btn, int x, int y)
+    void SRInterface::widgetMouseMove(int x, int y)
     {
       widgetUpdater_.updateWidget(x, y);
     }
@@ -210,11 +210,11 @@ void SRInterface::runGCOnNextExecution()
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseDown(MouseButton btn, float x, float y)
+    void SRInterface::inputMouseDown(float x, float y)
     {
       autoRotateVector = glm::vec2(0.0, 0.0);
       tryAutoRotate = false;
-      mCamera->mouseDownEvent(btn, glm::vec2{x,y});
+      mCamera->mouseDownEvent(glm::vec2{x,y});
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1077,8 +1077,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           }
 
           RENDERER_LOG("Add default identity transform to the object globally (instead of per-pass)");
-          glm::mat4 xform;
-          mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->colorMap(), port));
+          mSRObjects.push_back(SRObject(objectName, bbox, obj->colorMap(), port));
           SRObject& elem = mSRObjects.back();
 
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
