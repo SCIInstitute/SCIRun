@@ -79,7 +79,7 @@ void GlyphGeom::addComet(const Point& p1, const Point& p2, double radius, int re
   builder.generateComet(constructor_, radius, sphere_extrusion);
 }
 
-void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& color, bool normalize)
+void GlyphGeom::addBox(const Point& center, Dyadic3DTensor& t, double scale, ColorRGB& color, bool normalize)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setColor(color);
@@ -90,7 +90,7 @@ void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& c
   builder.generateBox(constructor_);
 }
 
-void GlyphGeom::addEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize)
+void GlyphGeom::addEllipsoid(const Point& center, Dyadic3DTensor& t, double scale, int resolution, const ColorRGB& color, bool normalize)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setResolution(resolution);
@@ -102,7 +102,7 @@ void GlyphGeom::addEllipsoid(const Point& center, Tensor& t, double scale, int r
   builder.generateEllipsoid(constructor_, false);
 }
 
-void GlyphGeom::addSuperquadricTensor(const Point& center, Tensor& t, double scale, int resolution,
+void GlyphGeom::addSuperquadricTensor(const Point& center, Dyadic3DTensor& t, double scale, int resolution,
                                       const ColorRGB& color, bool normalize, double emphasis)
 {
   TensorGlyphBuilder builder(t, center);
@@ -111,18 +111,16 @@ void GlyphGeom::addSuperquadricTensor(const Point& center, Tensor& t, double sca
   if (normalize)
     builder.normalizeTensor();
   builder.scaleTensor(scale);
-  builder.makeTensorPositive();
   builder.generateSuperquadricTensor(constructor_, emphasis);
 }
 
-void GlyphGeom::addSuperquadricSurface(const Point& center, Tensor& t, double scale, int resolution,
+void GlyphGeom::addSuperquadricSurface(const Point& center, Dyadic3DTensor& t, double scale, int resolution,
                                        const ColorRGB& color, double A, double B)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setResolution(resolution);
   builder.setColor(color);
   builder.scaleTensor(scale);
-  builder.makeTensorPositive();
   builder.generateSuperquadricSurface(constructor_, A, B);
 }
 

@@ -779,21 +779,22 @@ void GlyphBuilder::renderTensors(
     // Render as order 2 or 3 tensor
     else
     {
+      auto newT = Dyadic3DTensor(t.xx(), t.xy(), t.xz(), t.yy(), t.yz(), t.zz());
       switch (renState.mGlyphType)
       {
         case RenderState::GlyphType::BOX_GLYPH:
-          glyphs.addBox(points[i], t, scale, node_color, normalizeGlyphs);
+          glyphs.addBox(points[i], newT, scale, node_color, normalizeGlyphs);
           break;
         case RenderState::GlyphType::ELLIPSOID_GLYPH:
-          glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+          glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
           break;
         case RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH:
         {
           double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
           if(emphasis > 0.0)
-            glyphs.addSuperquadricTensor(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            glyphs.addSuperquadricTensor(points[i], newT, scale, resolution, node_color, normalizeGlyphs, emphasis);
           else
-            glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+            glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
         }
         default:
           break;

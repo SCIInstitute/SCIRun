@@ -31,7 +31,7 @@
 
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Math/TrigTable.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
@@ -61,11 +61,11 @@ public:
                 bool render_cone_base);
   void addSphere(const Core::Geometry::Point& p, double radius, int resolution,
                  const Core::Datatypes::ColorRGB& color);
-  void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale,
+  void addBox(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
               Core::Datatypes::ColorRGB& color, bool normalize);
-  void addEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale,
+  void addEllipsoid(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
                     int resolution, const Core::Datatypes::ColorRGB& color, bool normalize);
-  void addSuperquadricTensor(const Core::Geometry::Point& center, Core::Geometry::Tensor& t,
+  void addSuperquadricTensor(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
                              double scale, int resolution, const Core::Datatypes::ColorRGB& color,
                              bool normalize, double emphasis);
   void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
@@ -101,7 +101,7 @@ public:
   void addNeedle(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
                  const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
   void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
-  void addSuperquadricSurface(const Core::Geometry::Point& center, Core::Geometry::Tensor& t,
+  void addSuperquadricSurface(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
                               double scale, int resolution, const Core::Datatypes::ColorRGB& color,
                               double A, double B);
   void generateSphere(const Core::Geometry::Point& center, double radius, int resolution,

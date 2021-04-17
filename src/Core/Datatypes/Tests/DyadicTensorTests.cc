@@ -36,8 +36,9 @@ using namespace SCIRun;
 using namespace Core::Datatypes;
 using namespace ::testing;
 
-std::vector<std::vector<double>> stdEigvecs = {{1.6, 0.9, 4.3}, {4.0, 6.4, 7}, {6, 34, 1}};
-const std::string eigvecsString = "[1.6 0.9 4.3 4 6.4 7 6 34 1]";
+std::vector<std::vector<double>> stdEigvecs = {{2.2, 0, 0}, {0, 5.3, 0}, {0, 0, 3}};
+std::vector<double> stdEigvals = {2.2, 5.3, 3};
+const std::string eigvecsString = "[2.2 0 0 0 5.3 0 0 0 3]";
 
 std::vector<Eigen::Vector3d> getEigvecs()
 {
@@ -47,7 +48,12 @@ std::vector<Eigen::Vector3d> getEigvecs()
   return eigvecs;
 }
 
-TEST(Dyadic3DTensorTest, ConstructTensorWithEigenColumnMatrices1)
+Eigen::Vector3d getEigvals()
+{
+  return Eigen::Map<Eigen::Vector3d>(stdEigvals.data());
+}
+
+TEST(Dyadic3DTensorTest, ConstructTensorWithEigenVectors1)
 {
   Dyadic3DTensor t(getEigvecs());
   std::stringstream ss;
@@ -55,7 +61,7 @@ TEST(Dyadic3DTensorTest, ConstructTensorWithEigenColumnMatrices1)
   ASSERT_EQ(eigvecsString, ss.str());
 }
 
-TEST(Dyadic3DTensorTest, ConstructTensorWithEigenColumnMatrices2)
+TEST(Dyadic3DTensorTest, ConstructTensorWithEigenVectors2)
 {
   auto eigvecs = getEigvecs();
   Dyadic3DTensor t(eigvecs[0], eigvecs[1], eigvecs[2]);
@@ -130,29 +136,55 @@ TEST(DyadicTensorTest, MoveConstructor)
 TEST(Dyadic3DTensorTest, LinearCertainty)
 {
   Dyadic3DTensor t(
-      Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 5, 0}), Eigen::Vector3d({0, 0, 2}));
+      Eigen::Vector3d({1, 5, 2}));
+  t.setDescendingRHSOrder();
   ASSERT_EQ(3.0 / 8.0, t.linearCertainty());
 }
 
 TEST(Dyadic3DTensorTest, PlanarCertainty)
 {
   Dyadic3DTensor t(
-      Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 5, 0}), Eigen::Vector3d({0, 0, 2}));
+      Eigen::Vector3d({1, 5, 2}));
+  t.setDescendingRHSOrder();
   ASSERT_EQ(1.0 / 4.0, t.planarCertainty());
 }
 
 TEST(Dyadic3DTensorTest, SphericalCertainty)
 {
   Dyadic3DTensor t(
-      Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 5, 0}), Eigen::Vector3d({0, 0, 2}));
+      Eigen::Vector3d({1, 5, 2}));
+  t.setDescendingRHSOrder();
   ASSERT_EQ(3.0 / 8.0, t.sphericalCertainty());
 }
 
 TEST(Dyadic3DTensorTest, CertaintySum)
 {
   Dyadic3DTensor t(
-      Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 5, 0}), Eigen::Vector3d({0, 0, 2}));
+      Eigen::Vector3d({1, 5, 2}));
+  t.setDescendingRHSOrder();
   ASSERT_EQ(1.0, t.linearCertainty() + t.planarCertainty() + t.sphericalCertainty());
+}
+
+
+TEST(Dyadic3DTensorTest, AnisotropicDeviatoric)
+{
+  Dyadic3DTensor t(Eigen::Vector3d({3,4,2}));
+  Dyadic3DTensor expected(Eigen::Vector3d({0,1,-1}));
+
+  ASSERT_TRUE(t.anisotropicDeviatoric() == expected);
+}
+
+TEST(Dyadic3DTensorTest, Mode)
+{
+  const static double epsilon = 1.0e-8;
+  Dyadic3DTensor t(Eigen::Vector3d({3,3,0}));
+  ASSERT_NEAR(t.mode(), -1.0, epsilon);
+}
+
+TEST(Dyadic3DTensorTest, TraceMode)
+{
+  Dyadic3DTensor t(Eigen::Vector3d({3,3,0}));
+  ASSERT_EQ(t.trace(), 6.0);
 }
 
 TEST(DyadicTensorTest, CanConstructWithMatrix)
@@ -171,27 +203,21 @@ TEST(DyadicTensorTest, CanConstructWithMatrix)
   ASSERT_EQ("[1 2 3 2 4 5 3 5 6]", ss.str());
 }
 
-TEST(DyadicTensorTest, ConstructTensorWithEigenVectors)
+TEST(DyadicTensorTest, CanConstructWithVector1)
 {
-  std::vector<Eigen::Vector4d> eigvecs = {
-      Eigen::Vector4d(), Eigen::Vector4d(), Eigen::Vector4d(), Eigen::Vector4d()};
-  int n = 0;
-  for (int i = 0; i < 4; ++i)
-    for (int j = 0; j < 4; ++j)
-      eigvecs[i][j] = ++n;
-  Dyadic4DTensor t(eigvecs);
-  std::stringstream ss;
-  ss << t;
+  auto v = Eigen::Vector2d({3,4});
+  Dyadic2DTensor t(v);
+}
 
-  ASSERT_EQ("[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]", ss.str());
+TEST(DyadicTensorTest, CanConstructWithVector2)
+{
+  Dyadic2DTensor t(Eigen::Vector2d({3,4}));
 }
 
 TEST(DyadicTensorTest, StringConversion)
 {
-  std::vector<Eigen::Vector3d> vecs = {
-      Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 2, 0}), Eigen::Vector3d({0, 0, 3})};
   Dyadic3DTensor t(getEigvecs());
-  DyadicTensorGeneric<double, 3> t2(vecs);
+  DyadicTensorGeneric<double, 3> t2(Eigen::Vector3d({1,2,3}));
 
   std::stringstream ss;
   ss << t;
@@ -204,6 +230,7 @@ TEST(DyadicTensorTest, GetEigenvalues)
   std::vector<Eigen::Vector3d> vecs = {
       Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 2, 0}), Eigen::Vector3d({0, 0, 3})};
   Dyadic3DTensor t(vecs);
+  t.setDescendingRHSOrder();
   auto eigvals = t.getEigenvalues();
   ASSERT_EQ(3.0, eigvals[0]);
   ASSERT_EQ(2.0, eigvals[1]);
@@ -219,6 +246,7 @@ TEST(DyadicTensorTest, GetEigenvectors)
       vecs[i][j] = (i == j) ? i + 1 : 0;
 
   Dyadic3DTensor t(vecs);
+  t.setDescendingOrder();
   auto eigvecs = t.getEigenvectors();
 
   ASSERT_EQ(Eigen::Vector3d({0, 0, 1}), eigvecs[0]);
@@ -235,6 +263,7 @@ TEST(DyadicTensorTest, GetEigenvector)
       vecs[i][j] = (i == j) ? i + 1 : 0;
 
   Dyadic3DTensor t(vecs);
+  t.setDescendingRHSOrder();
 
   ASSERT_EQ(Eigen::Vector3d({0, 1, 0}), t.getEigenvector(1));
 }
@@ -256,20 +285,18 @@ TEST(DyadicTensorTest, Equivalent)
   ASSERT_TRUE(t2 != t3);
 }
 
-TEST(DyadicTensorTest, DISABLED_DifferentDimensionsNotEquivalent)
+TEST(DyadicTensorTest, DifferentDimensionsNotEquivalent)
 {
   Dyadic3DTensor t(
-      {Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 1, 0}), Eigen::Vector3d({0, 0, 1})});
-  Dyadic4DTensor t2({Eigen::Vector4d({1, 0, 0, 0}), Eigen::Vector4d({0, 1, 0, 0}),
-      Eigen::Vector4d({0, 0, 1, 0}), Eigen::Vector4d({0, 0, 0, 1})});
-
+      Eigen::Vector3d({1, 1, 1}));
+  Dyadic4DTensor t2(Eigen::Vector4d({1, 1, 1, 1}));
   ASSERT_TRUE(t != t2);
 }
 
 TEST(DyadicTensorTest, EqualsOperatorTensor)
 {
   Dyadic3DTensor t(
-      {Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 1, 0}), Eigen::Vector3d({0, 0, 1})});
+      Eigen::Vector3d({1, 1, 1}));
   Dyadic3DTensor t2 = t;
 
   ASSERT_TRUE(t == t2);
@@ -282,21 +309,18 @@ TEST(DyadicTensorTest, EqualsOperatorTensor)
 TEST(DyadicTensorTest, EqualsOperatorDouble)
 {
   Dyadic3DTensor t(
-      {Eigen::Vector3d({1, 0, 0}), Eigen::Vector3d({0, 1, 0}), Eigen::Vector3d({0, 0, 1})});
-  Dyadic3DTensor t2(
-      {Eigen::Vector3d({5, 5, 5}), Eigen::Vector3d({5, 5, 5}), Eigen::Vector3d({5, 5, 5})});
+      Eigen::Vector3d({1, 1, 1}));
 
   t = 5;
-
-  ASSERT_TRUE(t == t2);
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      ASSERT_EQ(t(i, j), 5);
 }
 
 TEST(DyadicTensorTest, PlusEqualsTensorOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({8, 11}), Eigen::Vector2d({9, 9})});
-
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3})); Dyadic2DTensor t2(Eigen::Vector2d({4, 3}));
+  Dyadic2DTensor expected(Eigen::Vector2d({6, 6}));
   Dyadic2DTensor result = t;
   result += t2;
 
@@ -306,10 +330,9 @@ TEST(DyadicTensorTest, PlusEqualsTensorOperator)
 // Coefficient wise multiplication
 TEST(DyadicTensorTest, MultiplyTensorOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({12, 24}), Eigen::Vector2d({20, 18})});
-
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3}));
+  Dyadic2DTensor t2(Eigen::Vector2d({4, 3}));
+  Dyadic2DTensor expected(Eigen::Vector2d({8, 9}));
   Dyadic2DTensor result = t * t2;
 
   ASSERT_TRUE(expected == result);
@@ -318,8 +341,8 @@ TEST(DyadicTensorTest, MultiplyTensorOperator)
 // Coefficient wise multiplication
 TEST(DyadicTensorTest, MultiplyDoubleOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor expected({Eigen::Vector2d({6, 24}), Eigen::Vector2d({15, 9})});
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3}));
+  Dyadic2DTensor expected(Eigen::Vector2d({6, 9}));
 
   Dyadic2DTensor result = t * 3.0;
 
@@ -327,10 +350,33 @@ TEST(DyadicTensorTest, MultiplyDoubleOperator)
 }
 
 // Coefficient wise multiplication
+// TEST(DyadicTensorTest, DivideTensorOperator)
+// {
+//   Dyadic2DTensor t(Eigen::Vector2d({6, 9}));
+//   Dyadic2DTensor t2(Eigen::Vector2d({4, 3}));
+//   Dyadic2DTensor expected(Eigen::Vector2d({1.5, 3}));
+
+//   Dyadic2DTensor result = t / t2;
+
+//   ASSERT_TRUE(expected == result);
+// }
+
+// Coefficient wise multiplication
+TEST(DyadicTensorTest, DivideDoubleOperator)
+{
+  Dyadic2DTensor t(Eigen::Vector2d({6, 9}));
+  Dyadic2DTensor expected(Eigen::Vector2d({2, 3}));
+
+  Dyadic2DTensor result = t / 3.0;
+
+  ASSERT_TRUE(expected == result);
+}
+
+// Coefficient wise multiplication
 TEST(DyadicTensorTest, MultiplyDoubleReverseOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor expected({Eigen::Vector2d({6, 24}), Eigen::Vector2d({15, 9})});
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3}));
+  Dyadic2DTensor expected(Eigen::Vector2d({6, 9}));
 
   Dyadic2DTensor result = 3.0 * t;
 
@@ -340,9 +386,7 @@ TEST(DyadicTensorTest, MultiplyDoubleReverseOperator)
 // Coefficient wise multiplication
 TEST(DyadicTensorTest, MultiplyEqualsTensorOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({12, 24}), Eigen::Vector2d({20, 18})});
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3})); Dyadic2DTensor t2(Eigen::Vector2d({6, 6})); Dyadic2DTensor expected(Eigen::Vector2d({12, 18}));
 
   Dyadic2DTensor result = t;
   result *= t2;
@@ -353,10 +397,9 @@ TEST(DyadicTensorTest, MultiplyEqualsTensorOperator)
 // Analog Equivalent of matrix multiplication
 TEST(DyadicTensorTest, Contraction)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({27, 57}), Eigen::Vector2d({38, 50})});
-
+  Dyadic2DTensor t(Eigen::Vector2d({2, 3}));
+  Dyadic2DTensor t2(Eigen::Vector2d({6, 6}));
+  Dyadic2DTensor expected(Eigen::Vector2d({12, 18}));
   Dyadic2DTensor result = t.contract(t2);
 
   ASSERT_TRUE(expected == result);
@@ -364,10 +407,9 @@ TEST(DyadicTensorTest, Contraction)
 
 TEST(DyadicTensorTest, MinusOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({-4, 5}), Eigen::Vector2d({1, -3})});
-
+  Dyadic2DTensor t(Eigen::Vector2d({2, 6}));
+  Dyadic2DTensor t2(Eigen::Vector2d({6, 3}));
+  Dyadic2DTensor expected(Eigen::Vector2d({-4, 3}));
   Dyadic2DTensor result = t - t2;
 
   ASSERT_TRUE(expected == result);
@@ -375,9 +417,7 @@ TEST(DyadicTensorTest, MinusOperator)
 
 TEST(DyadicTensorTest, MinusEqualsOperator)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({2, 8}), Eigen::Vector2d({5, 3})});
-  Dyadic2DTensor t2({Eigen::Vector2d({6, 3}), Eigen::Vector2d({4, 6})});
-  Dyadic2DTensor expected({Eigen::Vector2d({-4, 5}), Eigen::Vector2d({1, -3})});
+  Dyadic2DTensor t(Eigen::Vector2d({2, 6})); Dyadic2DTensor t2(Eigen::Vector2d({6, 3})); Dyadic2DTensor expected(Eigen::Vector2d({-4, 3}));
 
   Dyadic2DTensor result = t;
   result -= t2;
@@ -387,20 +427,19 @@ TEST(DyadicTensorTest, MinusEqualsOperator)
 
 TEST(DyadicTensorTest, FrobeniusNorm)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({3, 0}), Eigen::Vector2d({0, 6})});
-  ASSERT_EQ(std::sqrt(45), t.frobeniusNorm());
+  Dyadic2DTensor t(Eigen::Vector2d({3, 6})); ASSERT_EQ(std::sqrt(45), t.frobeniusNorm());
 }
 
 TEST(DyadicTensorTest, MaxNorm)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({3, 0}), Eigen::Vector2d({0, 6})});
+  Dyadic2DTensor t(Eigen::Vector2d({3, 6}));
   ASSERT_EQ(6, t.maxNorm());
 }
 
 TEST(DyadicTensorTest, SetEigens)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({3, 0}), Eigen::Vector2d({0, 6})});
-  std::vector<double> eigvals = {3, 4};
+  Dyadic2DTensor t(Eigen::Vector2d({3, 6}));
+  Eigen::Vector2d eigvals = {3, 4};
   std::vector<Eigen::Vector2d> eigvecs = {Eigen::Vector2d({0, 1}), Eigen::Vector2d({1, 0})};
   t.setEigens(eigvecs, eigvals);
   ASSERT_EQ(eigvals, t.getEigenvalues());
@@ -409,8 +448,13 @@ TEST(DyadicTensorTest, SetEigens)
 
 TEST(DyadicTensorTest, SetEigensFail1)
 {
-  Dyadic2DTensor t({Eigen::Vector2d({3, 0}), Eigen::Vector2d({0, 6})});
-  ASSERT_ANY_THROW(t.setEigens({Eigen::Vector2d({0, 1}), Eigen::Vector2d({1, 0})}, {3, 4, 5}));
+  Dyadic2DTensor t(Eigen::Vector2d({3, 6})); ASSERT_ANY_THROW(t.setEigens({Eigen::Vector2d({0, 1}), Eigen::Vector2d({1, 0})}, {3, 4, 5}));
+}
+
+TEST(DyadicTensorTest, SetEigensFail2)
+{
+  std::vector<double> v = {3, 4, 5};
+  Dyadic2DTensor t(Eigen::Vector2d({3, 6})); ASSERT_ANY_THROW(t.setEigens({Eigen::Vector2d({0, 1}), Eigen::Vector2d({1, 0})}, v));
 }
 
 TEST(DyadicTensorTest, EigenSolver)
