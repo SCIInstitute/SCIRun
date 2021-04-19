@@ -79,7 +79,9 @@
 #endif
 
 #pragma GCC diagnostic ignored "-Wformat-security"
+#pragma GCC diagnostic ignored "-Wself-assign"
 #pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#pragma GCC diagnostic ignored "-Wunneeded-internal-declaration"
 
 #define UNBOUNDED (1 << 30)
 #define TODO 								\
