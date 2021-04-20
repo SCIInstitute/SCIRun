@@ -54,6 +54,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Render;
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent)

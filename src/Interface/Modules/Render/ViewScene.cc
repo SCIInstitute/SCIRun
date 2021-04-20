@@ -1449,7 +1449,8 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   mouseButtonPressed_ = false;
 }
 
-
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {

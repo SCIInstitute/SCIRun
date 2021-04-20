@@ -1869,6 +1869,9 @@ namespace
   const double scaleFactor = 1.15;
 }
 
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
   logViewerDims("pre-zoom: ");

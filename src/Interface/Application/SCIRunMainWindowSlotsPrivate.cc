@@ -358,6 +358,9 @@ private:
   }
 };
 
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 void SCIRunMainWindow::importFragmentList()
 {
   auto filename = QFileDialog::getOpenFileName(this, "Import Network Fragments...", latestNetworkDirectory_.path(), "*.srn5fragment");

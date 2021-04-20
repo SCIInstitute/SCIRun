@@ -292,6 +292,9 @@ void PythonConsoleEdit::replace_command_buffer(const QString& text)
   c.insertText(text);
 }
 
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 void PythonConsoleEdit::issue_command()
 {
   QString command = this->command_buffer();
