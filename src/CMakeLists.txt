@@ -562,7 +562,7 @@ MACRO(SCIRUN_ADD_LIBRARY library)
       target_compile_options(${library} PRIVATE -Wall -Werror -Wunused-parameter -Winfinite-recursion)
           #eventually: -Wall -Wextra -pedantic -Werror)
     else()
-      target_compile_options(${library} PRIVATE -Wall -Werror -Wunused-parameter)
+      target_compile_options(${library} PRIVATE -Wall -Wunused-parameter)
     endif()
   endif()
 
