@@ -100,7 +100,7 @@ private:
   void addToolbarButton(QPushButton* button);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
-  Core::Datatypes::MouseButton getRenderButton(QMouseEvent* event);
+  MouseButton getRenderButton(QMouseEvent* event);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 

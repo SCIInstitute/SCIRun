@@ -75,7 +75,7 @@ namespace SCIRun
       virtual void widgetMouseMove(int x, int y) = 0;
       virtual void widgetMouseUp() = 0;
       virtual void inputMouseDown(float x, float y) = 0;
-      virtual void inputMouseMove(Core::Datatypes::MouseButton btn, float x, float y) = 0;
+      virtual void inputMouseMove(MouseButton btn, float x, float y) = 0;
       virtual void inputMouseUp() = 0;
       virtual void inputMouseWheel(int32_t delta) = 0;
       virtual void setMouseMode(MouseMode mode) = 0;
@@ -113,7 +113,7 @@ namespace SCIRun
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;
       virtual void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) = 0;
-      virtual void setWidgetInteractionMode(Core::Datatypes::MouseButton btn) = 0;
+      virtual void setWidgetInteractionMode(MouseButton btn) = 0;
       virtual Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) = 0;
       virtual void setClippingPlaneIndex(int index) = 0;
       virtual void setClippingPlaneFrameOn(bool value) = 0;

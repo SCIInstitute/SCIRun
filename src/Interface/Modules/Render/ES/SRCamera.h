@@ -57,7 +57,7 @@ namespace SCIRun{
       void mouseDownEvent(const glm::vec2 &pos);
 
       /// Handle mouse movement.
-      void mouseMoveEvent(Core::Datatypes::MouseButton btn, const glm::vec2 &pos);
+      void mouseMoveEvent(MouseButton btn, const glm::vec2 &pos);
 
       /// Handle mouse wheel event.
       void mouseWheelEvent(int32_t delta, int zoomSpeed);

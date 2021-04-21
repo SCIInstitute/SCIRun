@@ -45,6 +45,7 @@
 #include <QOpenGLContext>
 #include <gl-platform/GLPlatform.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
@@ -61,7 +62,7 @@ using namespace SCIRun::Modules::Render;
 
 namespace SCIRun {
 namespace Gui {
-  enum WidgetColor
+  enum class WidgetColor
   {
     RED,
     GREEN,

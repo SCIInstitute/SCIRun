@@ -42,6 +42,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Dataflow/Network/Module.h>
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #define TETLIBRARY   // Required definition for use of tetgen library
 #include <tetgen.h>
 
