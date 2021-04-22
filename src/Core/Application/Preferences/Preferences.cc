@@ -99,6 +99,8 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
     auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + forwardSlashPath + "\"";
     PythonInterpreter::Instance().run_string(setDataDir);
   }
+#else
+  (void)runPython;
 #endif
 }
 
@@ -146,4 +148,3 @@ void Preferences::setDataPath(const std::string& dirs)
   std::transform(paths.begin(), paths.end(), std::back_inserter(dataPath_), [](const std::string& p) { return boost::filesystem::path(p); });
   AlgorithmParameterHelper::setDataPath(dataPath_);
 }
-
