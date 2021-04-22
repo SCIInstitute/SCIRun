@@ -82,6 +82,7 @@
 #pragma GCC diagnostic ignored "-Wself-assign"
 #pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
 #pragma GCC diagnostic ignored "-Wunneeded-internal-declaration"
+#pragma GCC diagnostic ignored "-Wtautological-compare"
 
 #define UNBOUNDED (1 << 30)
 #define TODO 								\
