@@ -237,6 +237,7 @@ PythonInterpreter::~PythonInterpreter()
 bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 {
 #if defined(BUILD_HEADLESS) && defined(__APPLE__)
+  (void)commandLine;
   return true;
 #else
   const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
