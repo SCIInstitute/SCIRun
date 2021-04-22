@@ -47,24 +47,25 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName JoinFieldsAlgo::MergeNodes("merge_nodes");
-AlgorithmParameterName JoinFieldsAlgo::MergeElems("merge_elems");
-AlgorithmParameterName JoinFieldsAlgo::Tolerance("tolerance");
-AlgorithmParameterName JoinFieldsAlgo::MatchNodeValues("match_node_values");
-AlgorithmParameterName JoinFieldsAlgo::MakeNoData("make_no_data");
+ALGORITHM_PARAMETER_DEF(Fields, merge_nodes);
+ALGORITHM_PARAMETER_DEF(Fields, merge_elems);
+ALGORITHM_PARAMETER_DEF(Fields, tolerance);
+ALGORITHM_PARAMETER_DEF(Fields, match_node_values);
+ALGORITHM_PARAMETER_DEF(Fields, make_no_data);
+ALGORITHM_PARAMETER_DEF(Fields, ForcePointCloud);
 
 JoinFieldsAlgo::JoinFieldsAlgo()
 {
   /// Merge duplicate nodes?
-  addParameter(MergeNodes, true);
+  addParameter(Parameters::merge_nodes, true);
   /// Merge duplicate elements?
-  addParameter(MergeElems, false);
+  addParameter(Parameters::merge_elems, false);
   /// Tolerance for merging duplicate nodes?
-  addParameter(Tolerance, 1e-6);
+  addParameter(Parameters::tolerance, 1e-6);
   /// Only merge nodes whose value is the same
-  addParameter(MatchNodeValues, false);
+  addParameter(Parameters::match_node_values, false);
   /// Create a field with no data
-  addParameter(MakeNoData, false);
+  addParameter(Parameters::make_no_data, false);
 }
 
 bool
@@ -81,12 +82,12 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     return (false);
   }
 
-  bool match_node_values = get(MatchNodeValues).toBool();
-  bool make_no_data = get(MakeNoData).toBool();
-  bool merge_nodes = get(MergeNodes).toBool();
-  bool merge_elems = get(MergeElems).toBool();
+  bool match_node_values = get(Parameters::match_node_values).toBool();
+  bool make_no_data = get(Parameters::make_no_data).toBool();
+  bool merge_nodes = get(Parameters::merge_nodes).toBool();
+  bool merge_elems = get(Parameters::merge_elems).toBool();
 
-  double tol = get(Tolerance).toDouble();
+  double tol = get(Parameters::tolerance).toDouble();
   const double tol2 = tol*tol;
 
   // Check whether mesh types are the same

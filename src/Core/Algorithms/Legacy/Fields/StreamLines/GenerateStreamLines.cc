@@ -260,7 +260,7 @@ namespace detail
       // Try to find the streamline for each seed point.
       for (VMesh::Node::index_type idx = from; idx < to; ++idx)
       {
-        
+
         seed_mesh_->get_point(BI.seed_, idx);
 
         // Is the seed point inside the field?
@@ -433,9 +433,9 @@ namespace detail
       if (!outputs_[j]) return false;
     }
     JoinFieldsAlgo join;
-    join.set(JoinFieldsAlgo::MergeNodes, false);
+    join.set(Parameters::merge_nodes, false);
     if (IntegrationMethod::CellWalk == method_)
-      join.set(JoinFieldsAlgo::Tolerance, 1e-8);
+      join.set(Parameters::tolerance, 1e-8);
     join.runImpl(outputs_, output);
 
     return true;

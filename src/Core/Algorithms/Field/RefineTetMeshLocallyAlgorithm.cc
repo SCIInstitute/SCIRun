@@ -928,8 +928,8 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input, SparseR
 
   JoinFieldsAlgo joinfields_algo; /// use joinfields to get rid of extra nodes and duplicated elements
 
-  joinfields_algo.set(JoinFieldsAlgo::MergeNodes, true);
-  joinfields_algo.set(JoinFieldsAlgo::MergeElems, true);
+  joinfields_algo.set(Parameters::merge_nodes, true);
+  joinfields_algo.set(Parameters::merge_elems, true);
   FieldList input_list; /// need input_list only for joinfields
   input_list.push_back(result);
   input_list.push_back(result);
