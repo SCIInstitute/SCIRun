@@ -28,6 +28,7 @@
 
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
 

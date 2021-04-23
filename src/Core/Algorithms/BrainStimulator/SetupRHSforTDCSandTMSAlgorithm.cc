@@ -277,8 +277,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  }
 
  SplitFieldByConnectedRegionAlgo algo;
- algo.set(Parameters::SortDomainBySize, false);
- algo.set(Parameters::SortAscending, false);
+ algo.set(Fields::Parameters::SortDomainBySize, false);
+ algo.set(Fields::Parameters::SortAscending, false);
  std::vector<FieldHandle> result = algo.run(elc_tri_surf);
 
  if (result.size()<=0)
@@ -625,8 +625,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   SplitFieldByDomainAlgo algo2;
   algo2.setLogger(getLogger());
   FieldList output;
-  algo2.set(SplitFieldByDomainAlgo::SortBySize, true);
-  algo2.set(SplitFieldByDomainAlgo::SortAscending, false);
+  algo2.set(Fields::Parameters::SortBySize, true);
+  algo2.set(Fields::Parameters::SortAscending, false);
   algo2.runImpl(result[k], output);
 
   bool found_sponge_surface=false;
@@ -656,8 +656,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   } else
   {
     SplitFieldByConnectedRegionAlgo algo3;
-    algo3.set(Parameters::SortDomainBySize, true);
-    algo3.set(Parameters::SortAscending, false);
+    algo3.set(Fields::Parameters::SortDomainBySize, true);
+    algo3.set(Fields::Parameters::SortAscending, false);
     std::vector<FieldHandle> result3 = algo3.run(output[electrode_surface]);
     if (result3.size()>1)
     {

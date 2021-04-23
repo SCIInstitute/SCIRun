@@ -834,8 +834,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           SplitFieldByDomainAlgo algo_splitfieldbydomain;
           algo_splitfieldbydomain.setLogger(getLogger());
           FieldList scalp_elc_sphere;
-          algo_splitfieldbydomain.set(Parameters::SortBySize, true);
-          algo_splitfieldbydomain.set(Parameters::SortAscending, false);
+          algo_splitfieldbydomain.set(Fields::Parameters::SortBySize, true);
+          algo_splitfieldbydomain.set(Fields::Parameters::SortAscending, false);
           algo_splitfieldbydomain.runImpl(scalp, scalp_elc_sphere);
 
           VMesh::Elem::index_type c_ind = 0;
@@ -853,8 +853,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           }
 
           SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-          algo_splitbyconnectedregion.set(Parameters::SortDomainBySize, true);
-          algo_splitbyconnectedregion.set(Parameters::SortAscending, false);
+          algo_splitbyconnectedregion.set(Fields::Parameters::SortDomainBySize, true);
+          algo_splitbyconnectedregion.set(Fields::Parameters::SortAscending, false);
           auto scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
 
           FieldHandle small_scalp_surf;
@@ -876,8 +876,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           if (!small_scalp_surf->vfield()->is_lineardata())
           {
             {
-              convert_field_basis.setOption(Parameters::OutputType, "Linear");
-              convert_field_basis.set(Parameters::BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Linear");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(small_scalp_surf, scalp_linear_data);
             }
           }
@@ -901,16 +901,16 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             FieldHandle sdf_output_linear;
             // convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(Parameters::OutputType, "Linear");
-              convert_field_basis.set(Parameters::BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Linear");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, sdf_output_linear);
             }
 
             /// use clipvolumebyisovalue to get the electrode patch edges right
             FieldHandle clipmeshbyisoval_output;
             ClipMeshByIsovalueAlgo clipmeshbyisoval_algo;
-            clipmeshbyisoval_algo.set(Parameters::ScalarIsoValue, 0.0);
-            clipmeshbyisoval_algo.set(Parameters::LessThanIsoValue, true);
+            clipmeshbyisoval_algo.set(Fields::Parameters::ScalarIsoValue, 0.0);
+            clipmeshbyisoval_algo.set(Fields::Parameters::LessThanIsoValue, true);
             clipmeshbyisoval_algo.run(sdf_output_linear, clipmeshbyisoval_output);
             /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface
             bool found_correct_surface = false;
@@ -935,8 +935,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               }
               if (!found_correct_surface)
               {
-                clipmeshbyisoval_algo.set(Parameters::ScalarIsoValue, 0.0);
-                clipmeshbyisoval_algo.set(Parameters::LessThanIsoValue, false);
+                clipmeshbyisoval_algo.set(Fields::Parameters::ScalarIsoValue, 0.0);
+                clipmeshbyisoval_algo.set(Fields::Parameters::LessThanIsoValue, false);
                 clipmeshbyisoval_algo.run(sdf_output, clipmeshbyisoval_output);
                 if (clipmeshbyisoval_output)
                 {
@@ -967,15 +967,15 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
               // convert the data values (zero's) to elements
               {
-                convert_field_basis.setOption(Parameters::OutputType, "Constant");
-                convert_field_basis.set(Parameters::BuildBasisMapping, false);
+                convert_field_basis.setOption(Fields::Parameters::OutputType, "Constant");
+                convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
                 convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
               }
 
               final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero
               SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion_1;
-              algo_splitbyconnectedregion_1.set(Parameters::SortDomainBySize, true);
-              algo_splitbyconnectedregion_1.set(Parameters::SortAscending, false);
+              algo_splitbyconnectedregion_1.set(Fields::Parameters::SortDomainBySize, true);
+              algo_splitbyconnectedregion_1.set(Fields::Parameters::SortAscending, false);
               result = algo_splitbyconnectedregion_1.run(final_electrode_sponge_surf);
             }
 
@@ -1040,8 +1040,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
             /// convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(Parameters::OutputType, "Constant");
-              convert_field_basis.set(Parameters::BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Constant");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
             }
 
@@ -1085,8 +1085,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             SplitFieldByDomainAlgo algo_splitfieldbydomain;
             algo_splitfieldbydomain.setLogger(getLogger());
             FieldList final_electrode_sponge_surf_domainsplit;
-            algo_splitfieldbydomain.set(Parameters::SortBySize, true);
-            algo_splitfieldbydomain.set(Parameters::SortAscending, false);
+            algo_splitfieldbydomain.set(Fields::Parameters::SortBySize, true);
+            algo_splitfieldbydomain.set(Fields::Parameters::SortAscending, false);
             algo_splitfieldbydomain.runImpl(final_electrode_sponge_surf, final_electrode_sponge_surf_domainsplit);
             found_elc_surf = false;
             FieldHandle find_elc_surf;
@@ -1113,8 +1113,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             }
 
             SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-            algo_splitbyconnectedregion.set(Parameters::SortDomainBySize, true);
-            algo_splitbyconnectedregion.set(Parameters::SortAscending, false);
+            algo_splitbyconnectedregion.set(Fields::Parameters::SortDomainBySize, true);
+            algo_splitbyconnectedregion.set(Fields::Parameters::SortAscending, false);
             result = algo_splitbyconnectedregion.run(find_elc_surf);
           }
 
