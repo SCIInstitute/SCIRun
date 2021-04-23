@@ -834,8 +834,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           SplitFieldByDomainAlgo algo_splitfieldbydomain;
           algo_splitfieldbydomain.setLogger(getLogger());
           FieldList scalp_elc_sphere;
-          algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
-          algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+          algo_splitfieldbydomain.set(Parameters::SortBySize, true);
+          algo_splitfieldbydomain.set(Parameters::SortAscending, false);
           algo_splitfieldbydomain.runImpl(scalp, scalp_elc_sphere);
 
           VMesh::Elem::index_type c_ind = 0;
@@ -853,8 +853,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           }
 
           SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-          algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-          algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+          algo_splitbyconnectedregion.set(Parameters::SortDomainBySize, true);
+          algo_splitbyconnectedregion.set(Parameters::SortAscending, false);
           auto scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
 
           FieldHandle small_scalp_surf;
@@ -875,11 +875,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
           if (!small_scalp_surf->vfield()->is_lineardata())
           {
-
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;
             {
-              convert_field_basis.setOption(OutputType, "Linear");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Parameters::OutputType, "Linear");
+              convert_field_basis.set(Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(small_scalp_surf, scalp_linear_data);
             }
           }
@@ -901,18 +899,18 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           if (interpolate_elec_shape)
           {
             FieldHandle sdf_output_linear;
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+            // convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(OutputType, "Linear");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Parameters::OutputType, "Linear");
+              convert_field_basis.set(Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, sdf_output_linear);
             }
 
             /// use clipvolumebyisovalue to get the electrode patch edges right
             FieldHandle clipmeshbyisoval_output;
             ClipMeshByIsovalueAlgo clipmeshbyisoval_algo;
-            clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
-            clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, true);
+            clipmeshbyisoval_algo.set(Parameters::ScalarIsoValue, 0.0);
+            clipmeshbyisoval_algo.set(Parameters::LessThanIsoValue, true);
             clipmeshbyisoval_algo.run(sdf_output_linear, clipmeshbyisoval_output);
             /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface
             bool found_correct_surface = false;
@@ -937,8 +935,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               }
               if (!found_correct_surface)
               {
-                clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
-                clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, false);
+                clipmeshbyisoval_algo.set(Parameters::ScalarIsoValue, 0.0);
+                clipmeshbyisoval_algo.set(Parameters::LessThanIsoValue, false);
                 clipmeshbyisoval_algo.run(sdf_output, clipmeshbyisoval_output);
                 if (clipmeshbyisoval_output)
                 {
@@ -967,17 +965,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
               }
 
-              using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+              // convert the data values (zero's) to elements
               {
-                convert_field_basis.setOption(OutputType, "Constant");
-                convert_field_basis.set(BuildBasisMapping, false);
+                convert_field_basis.setOption(Parameters::OutputType, "Constant");
+                convert_field_basis.set(Parameters::BuildBasisMapping, false);
                 convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
               }
 
               final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero
               SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion_1;
-              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+              algo_splitbyconnectedregion_1.set(Parameters::SortDomainBySize, true);
+              algo_splitbyconnectedregion_1.set(Parameters::SortAscending, false);
               result = algo_splitbyconnectedregion_1.run(final_electrode_sponge_surf);
             }
 
@@ -1040,10 +1038,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
             }
 
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+            /// convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(OutputType, "Constant");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Parameters::OutputType, "Constant");
+              convert_field_basis.set(Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
             }
 
@@ -1391,21 +1389,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
   /// check GUI inputs:
   /// 1) Is there any valid row in the GUI table, so at least one row where both ComboBoxes are set
   ///
-  std::vector<double> elc_prototyp_map;
-  std::vector<double> elc_thickness;
-  std::vector<double> elc_angle_rotation;
-  std::vector<double> elc_x;
-  std::vector<double> elc_y;
-  std::vector<double> elc_z;
+  std::vector<double> elc_prototyp_map, elc_thickness, elc_angle_rotation, elc_x, elc_y, elc_z;
 
-  std::vector<double> coil_prototyp_map;
-  std::vector<double> coil_angle_rotation;
-  std::vector<double> coil_x;
-  std::vector<double> coil_y;
-  std::vector<double> coil_z;
-  std::vector<double> coil_nx;
-  std::vector<double> coil_ny;
-  std::vector<double> coil_nz;
+  std::vector<double> coil_prototyp_map, coil_angle_rotation, coil_x, coil_y, coil_z, coil_nx, coil_ny, coil_nz;
 
   /// The rest of the run function checks the validity of the GUI inputs. If there are not valid (="???") it tries to use the prototype inputs and if valid it calls functions make_tdcs_electrodes or make_tms
   for (int i = 0; i < table.size(); i++)

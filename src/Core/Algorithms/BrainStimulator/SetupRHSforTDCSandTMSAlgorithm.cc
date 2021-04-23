@@ -277,8 +277,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  }
 
  SplitFieldByConnectedRegionAlgo algo;
- algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
- algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+ algo.set(Parameters::SortDomainBySize, false);
+ algo.set(Parameters::SortAscending, false);
  std::vector<FieldHandle> result = algo.run(elc_tri_surf);
 
  if (result.size()<=0)
