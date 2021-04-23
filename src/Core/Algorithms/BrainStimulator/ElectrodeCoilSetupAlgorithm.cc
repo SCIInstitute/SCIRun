@@ -1087,8 +1087,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             SplitFieldByDomainAlgo algo_splitfieldbydomain;
             algo_splitfieldbydomain.setLogger(getLogger());
             FieldList final_electrode_sponge_surf_domainsplit;
-            algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
-            algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+            algo_splitfieldbydomain.set(Parameters::SortBySize, true);
+            algo_splitfieldbydomain.set(Parameters::SortAscending, false);
             algo_splitfieldbydomain.runImpl(final_electrode_sponge_surf, final_electrode_sponge_surf_domainsplit);
             found_elc_surf = false;
             FieldHandle find_elc_surf;
@@ -1115,8 +1115,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             }
 
             SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-            algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-            algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+            algo_splitbyconnectedregion.set(Parameters::SortDomainBySize, true);
+            algo_splitbyconnectedregion.set(Parameters::SortAscending, false);
             result = algo_splitbyconnectedregion.run(find_elc_surf);
           }
 

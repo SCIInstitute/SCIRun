@@ -46,7 +46,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Logging;
 
-ALGORITHM_PARAMETER_DEF(FiniteElements, InputField);
 ALGORITHM_PARAMETER_DEF(FiniteElements, BoundaryField);
 ALGORITHM_PARAMETER_DEF(FiniteElements, RHSMatrix);
 
@@ -295,7 +294,7 @@ bool BuildFESurfRHSAlgo::run(FieldHandle input, FieldHandle& output,  MatrixHand
 
 AlgorithmOutput BuildFESurfRHSAlgo::run(const AlgorithmInput& input) const
 {
-  auto input_field = input.get<Field>(Parameters::InputField);
+  auto input_field = input.get<Field>(Variables::InputField);
 
   FieldHandle out;
   MatrixHandle rhs;

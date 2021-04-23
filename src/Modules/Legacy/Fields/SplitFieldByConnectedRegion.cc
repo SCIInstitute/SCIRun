@@ -56,8 +56,8 @@ SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
 
 void SplitFieldByConnectedRegion::setStateDefaults()
 {
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortAscending());
+ setStateBoolFromAlgo(Parameters::SortDomainBySize);
+ setStateBoolFromAlgo(Parameters::SortAscending);
 }
 
 void SplitFieldByConnectedRegion::execute()
@@ -66,8 +66,8 @@ void SplitFieldByConnectedRegion::execute()
 
  if (needToExecute())
   {
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
+    setAlgoBoolFromState(Parameters::SortDomainBySize);
+    setAlgoBoolFromState(Parameters::SortAscending);
 
     auto output = algo().run(make_input((InputField, input_field)));
 

@@ -53,7 +53,6 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace FiniteElements {
 
-ALGORITHM_PARAMETER_DECL(InputField);
 ALGORITHM_PARAMETER_DECL(BoundaryField);
 ALGORITHM_PARAMETER_DECL(RHSMatrix);
 
