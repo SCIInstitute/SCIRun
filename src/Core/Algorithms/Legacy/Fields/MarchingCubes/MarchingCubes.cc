@@ -58,8 +58,8 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
-using namespace SCIRun::Core::Algorithm::Fields;
-using namespace SCIRun::Core::Algorithm::Fields::Math;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
 
 MarchingCubesAlgo::MarchingCubesAlgo()
 {
