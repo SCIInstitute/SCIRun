@@ -44,4 +44,6 @@ GeneratePointSamplesFromFieldDialog::GeneratePointSamplesFromFieldDialog(const s
 
   addDoubleSpinBoxManager(seedSizeDoubleSpinBox_, Parameters::ProbeScale);
   addSpinBoxManager(numberOfSeedsSpinBox_, Parameters::NumSeeds);
+  addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxScale);
+  addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxScale);
 }

@@ -65,6 +65,8 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToNode);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToElement);
+ALGORITHM_PARAMETER_DEF(Fields, BBoxSize);
+ALGORITHM_PARAMETER_DEF(Fields, UseBBoxSize);
 
 namespace SCIRun
 {
@@ -82,7 +84,7 @@ namespace SCIRun
         int widgetid_;
         double l2norm_;
         bool color_changed_;
-        GeometryHandle buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
+        GeometryHandle buildWidgetObject(FieldHandle field, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
         RenderState getWidgetRenderState(ModuleStateHandle state);
         Transform previousTransform_;
       };
@@ -167,6 +169,8 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
   state->setValue(SnapToNode, false);
   state->setValue(SnapToElement, false);
+  state->setValue(Parameters::BBoxSize, 0.1);
+  state->setValue(Parameters::UseBBoxSize, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
@@ -181,6 +185,17 @@ Point GenerateSinglePointProbeFromField::currentLocation() const
 void GenerateSinglePointProbeFromField::execute()
 {
   auto ifieldOption = getOptionalInput(InputField);
+
+  // First, the total needs to be scaled to half since we need the radius instead of the diameter
+  // Second, we want to divide by 3 to get the average of the bbox lengths
+  const static double SCALE_CORRECTION = 1.0 / 6.0;
+  double fieldScale = 0.0;
+  if (ifieldOption)
+  {
+    auto bbox = ifieldOption->get()->vmesh()->get_bounding_box();
+    fieldScale = SCALE_CORRECTION * (bbox.x_length() + bbox.y_length() + bbox.z_length());
+  }
+
   if (needToExecute())
   {
     auto field = GenerateOutputField(ifieldOption);
@@ -189,7 +204,7 @@ void GenerateSinglePointProbeFromField::execute()
     auto index = GenerateIndex();
     sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
-    auto geom = impl_->buildWidgetObject(field, get_state(), *this);
+    auto geom = impl_->buildWidgetObject(field, fieldScale, get_state(), *this);
     sendOutput(GeneratedWidget, geom);
   }
 }
@@ -468,13 +483,17 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   return index;
 }
 
-GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
+GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
   using namespace Parameters;
-  double radius = state->getValue(ProbeSize).toDouble();
   auto mesh = field->vmesh();
-  mesh->synchronize(Mesh::NODES_E);
+  double radius;
+  if (state->getValue(UseBBoxSize).toBool())
+    radius = fieldScale * state->getValue(BBoxSize).toDouble();
+  else
+    radius = state->getValue(ProbeSize).toDouble();
 
+  mesh->synchronize(Mesh::NODES_E);
   // todo: quicker way to get a single point
   VMesh::Node::iterator eiter;
   mesh->begin(eiter);
