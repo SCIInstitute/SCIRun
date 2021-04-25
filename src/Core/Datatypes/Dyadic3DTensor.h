@@ -42,6 +42,7 @@ namespace Core {
      public:
       using parent = DyadicTensorGeneric<Number, 3>;
       using VectorType = Eigen::Matrix<Number, 3, 1>;
+      using SizeType = long;
       Dyadic3DTensorGeneric() : parent() {}
       using parent::parent;
       using parent::operator=;
@@ -59,8 +60,8 @@ namespace Core {
 
       Dyadic3DTensorGeneric(const Dyadic3DTensorGeneric<Number>& other) : parent()
       {
-        for (long i = 0; i < DIM_; ++i)
-          for (long j = 0; j < DIM_; ++j)
+        for (SizeType i = 0; i < DIM_; ++i)
+          for (SizeType j = 0; j < DIM_; ++j)
             (*this)(i, j) = other(i, j);
         if (other.haveEigens_)
         {
@@ -158,7 +159,7 @@ namespace Core {
       }
 
      private:
-      const size_t DIM_ = 3;
+      const SizeType DIM_ = 3;
     };
 
     template <typename Indexable>

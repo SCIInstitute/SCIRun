@@ -51,14 +51,15 @@ namespace Core {
       using MatrixType = Eigen::Matrix<Number, Dim, Dim>;
       static const size_t MANDEL_SIZE_ = Dim + (Dim*Dim-Dim)/2;
       using MandelVector = Eigen::Matrix<Number, MANDEL_SIZE_, 1>;
+      using SizeType = long;
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 
       explicit DyadicTensorGeneric(Number val) : parent()
       {
         ordering_ = OrderState::NONE;
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
+        for (SizeType i = 0; i < Dim; ++i)
+          for (SizeType j = 0; j < Dim; ++j)
             (*this)(i, j) = (i == j) ? val : 0;
       }
 
@@ -119,39 +120,38 @@ namespace Core {
       DyadicTensorGeneric(const parent& other) : parent()
       {
         ordering_ = OrderState::NONE;
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
-            (*this)(getIndex(i), getIndex(j)) = other(getIndex(i), getIndex(j));
+        for (SizeType i = 0; i < Dim; ++i)
+          for (SizeType j = 0; j < Dim; ++j)
+            (*this)(i, j) = other(i, j);
       }
 
       explicit DyadicTensorGeneric(const MatrixType& mat)
       {
         ordering_ = OrderState::NONE;
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
+        for (SizeType i = 0; i < Dim; ++i)
+          for (SizeType j = 0; j < Dim; ++j)
+          {
             if (mat(i, j) != mat(j, i)) THROW_INVALID_ARGUMENT("Input matrix must be symmetric.");
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
-            (*this)(getIndex(i), getIndex(j)) = mat(getIndex(i), getIndex(j));
+            (*this)(i, j) = mat(i, j);
+          }
       }
       DyadicTensorGeneric(MandelVector man)
       {
-std::sqrt(2);
         static const Number sqrt2 = std::sqrt(2);
-        for (size_t i = Dim; i < MANDEL_SIZE_; ++i)
+        for (SizeType i = Dim; i < MANDEL_SIZE_; ++i)
           man(i) /= sqrt2;
 
-        int topLeftRow = 0;
-        int topLeftColumn = 0;
-        int bottomRightRow = Dim-1;
-        int bottomRightColumn = Dim-1;
-        int topRightRow = 0;
-        int topRightColumn = Dim-1;
+        SizeType topLeftRow = 0;
+        SizeType topLeftColumn = 0;
+        SizeType bottomRightRow = Dim-1;
+        SizeType bottomRightColumn = Dim-1;
+        SizeType topRightRow = 0;
+        SizeType topRightColumn = Dim-1;
 
-        int index = 0;
+        SizeType index = 0;
         while (index < (MANDEL_SIZE_-1))
         {
-          int i, j;
+          SizeType i, j;
           // Add diagonal
           i = topLeftRow;
           j = topLeftColumn;
@@ -214,9 +214,9 @@ std::sqrt(2);
       {
         auto otherTensor = static_cast<TensorType>(other);
         if (Dim != otherTensor.dimension(0) || Dim != otherTensor.dimension(1)) return false;
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
-            if ((*this)(getIndex(i), getIndex(j)) != otherTensor(getIndex(i), getIndex(j))) return false;
+        for (SizeType i = 0; i < Dim; ++i)
+          for (SizeType j = 0; j < Dim; ++j)
+            if ((*this)(i, j) != otherTensor(i, j)) return false;
         return true;
       }
 
@@ -270,13 +270,13 @@ std::sqrt(2);
       MatrixType asMatrix() const
       {
         MatrixType mat;
-        for (size_t i = 0; i < Dim; ++i)
-          for (size_t j = 0; j < Dim; ++j)
-            mat(getIndex(i), getIndex(j)) = (*this)(getIndex(i), getIndex(j));
+        for (SizeType i = 0; i < Dim; ++i)
+          for (SizeType j = 0; j < Dim; ++j)
+            mat(i, j) = (*this)(i, j);
         return mat;
       }
 
-      VectorType getEigenvector(int index) const
+      VectorType getEigenvector(SizeType index) const
       {
         if (!haveEigens_) buildEigens();
         return eigvecs_[index];
@@ -288,7 +288,7 @@ std::sqrt(2);
         return eigvecs_;
       }
 
-      Number getEigenvalue(int index) const
+      Number getEigenvalue(SizeType index) const
       {
         if (!haveEigens_) buildEigens();
         return eigvals_[index];
@@ -304,11 +304,11 @@ std::sqrt(2);
           std::ostream& os, const TensorType& other)
       {
         os << '[';
-        for (size_t i = 0; i < other.getDimension1(); ++i)
-          for (size_t j = 0; j < other.getDimension2(); ++j)
+        for (SizeType i = 0; i < other.getDimension1(); ++i)
+          for (SizeType j = 0; j < other.getDimension2(); ++j)
           {
             if (i + j != 0) os << ' ';
-            os << other(other.getIndex(j), other.getIndex(i));
+            os << other(j, i);
           }
         os << ']';
 
@@ -320,9 +320,9 @@ std::sqrt(2);
       {
         char bracket;
         is >> bracket;
-        for (size_t i = 0; i < other.getDimension1(); ++i)
-          for (size_t j = 0; j < other.getDimension2(); ++j)
-            is >> other(other.getIndex(j), other.getIndex(i));
+        for (SizeType i = 0; i < other.getDimension1(); ++i)
+          for (SizeType j = 0; j < other.getDimension2(); ++j)
+            is >> other(j, i);
         is >> bracket;
 
         return is;
@@ -330,21 +330,21 @@ std::sqrt(2);
 
       TensorType& operator=(const Number& v)
       {
-        for (size_t i = 0; i < getDimension1(); ++i)
-          for (size_t j = 0; j < getDimension2(); ++j)
-            (*this)(getIndex(i), getIndex(j)) = v;
+        for (SizeType i = 0; i < getDimension1(); ++i)
+          for (SizeType j = 0; j < getDimension2(); ++j)
+            (*this)(i, j) = v;
         haveEigens_ = false;
         return *this;
       }
 
-      size_t getDimension1() const { return Dim; }
-      size_t getDimension2() const { return Dim; }
+      SizeType getDimension1() const { return Dim; }
+      SizeType getDimension2() const { return Dim; }
 
       VectorType getNormalizedEigenvalues()
       {
         auto eigvals = getEigenvalues();
         auto fro = frobeniusNorm();
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           eigvals[i] /= fro;
         return eigvals;
       }
@@ -359,7 +359,7 @@ std::sqrt(2);
       {
         if (!haveEigens_) buildEigens();
         auto maxVal = (std::numeric_limits<Number>::min)();
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           maxVal = (std::max)(maxVal, eigvals_[i]);
         return maxVal;
       }
@@ -401,7 +401,7 @@ std::sqrt(2);
       {
         if (!haveEigens_) buildEigens();
         MatrixType V;
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           V.col(i) = eigvecs_[i];
         return V;
       }
@@ -420,7 +420,7 @@ std::sqrt(2);
       }
 
      protected:
-      const int RANK_ = 2;
+      const SizeType RANK_ = 2;
       mutable std::vector<VectorType> eigvecs_;
       mutable VectorType eigvals_;
       mutable bool haveEigens_ = false;
@@ -436,11 +436,11 @@ std::sqrt(2);
         eigvals_.resize(Dim);
         eigvecs_.resize(Dim);
 
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
         {
           eigvals_[i] = vals(Dim-1-i);
           eigvecs_[i] = VectorType(Dim);
-          for (size_t j = 0; j < Dim; ++j)
+          for (SizeType j = 0; j < Dim; ++j)
             eigvecs_[i][j] = vecs(j, Dim-1-i);
         }
 
@@ -452,7 +452,7 @@ std::sqrt(2);
         if (!haveEigens_) buildEigens();
         typedef std::pair<Number, VectorType> EigPair;
         std::vector<EigPair> sortList(Dim);
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           sortList[i] = std::make_pair(eigvals_[i], eigvecs_[i]);
 
         // sort by descending order of eigenvalues
@@ -461,20 +461,20 @@ std::sqrt(2);
 
         auto sortedEigsIter = sortList.begin();
 
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           std::tie(eigvals_[i], eigvecs_[i]) = *sortedEigsIter++;
       }
 
       void setEigenvaluesFromEigenvectors() const
       {
         eigvals_ = VectorType(Dim);
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           eigvals_[i] = eigvecs_[i].norm();
       }
 
       void normalizeEigenvectors() const
       {
-        for (size_t i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
           eigvecs_[i] /= eigvals_[i];
       }
 
@@ -496,7 +496,7 @@ std::sqrt(2);
 
        auto eigvals = getEigenvalues();
        auto eigvecs = getEigenvectors();
-       for (size_t i = 0; i < Dim; ++i)
+       for (SizeType i = 0; i < Dim; ++i)
        {
          eigvals[i] = std::abs(eigvals[i]);
          if (eigvals[i] <= zeroThreshold) eigvals[i] = 0;
@@ -528,25 +528,25 @@ std::sqrt(2);
        auto D = eigvals_.asDiagonal();
        auto V = this->getEigenvectorsAsMatrix();
        auto mat = V * (D * V.transpose());
-       for (size_t i = 0; i < Dim; ++i)
-         for (size_t j = 0; j < Dim; ++j)
-           (*this)(getIndex(j), getIndex(i)) = mat(j, i);
+       for (SizeType i = 0; i < Dim; ++i)
+         for (SizeType j = 0; j < Dim; ++j)
+           (*this)(j, i) = mat(j, i);
       }
 
       MandelVector mandel() const
       {
-        int topLeftRow = 0;
-        int topLeftColumn = 0;
-        int bottomRightRow = Dim-1;
-        int bottomRightColumn = Dim-1;
-        int topRightRow = 0;
-        int topRightColumn = Dim-1;
+        SizeType topLeftRow = 0;
+        SizeType topLeftColumn = 0;
+        SizeType bottomRightRow = Dim-1;
+        SizeType bottomRightColumn = Dim-1;
+        SizeType topRightRow = 0;
+        SizeType topRightColumn = Dim-1;
 
         MandelVector man;
-        int index = 0;
+        SizeType index = 0;
         while (index < (MANDEL_SIZE_-1))
         {
-          int i, j;
+          SizeType i, j;
           // Add diagonal
           i = topLeftRow;
           j = topLeftColumn;
@@ -574,7 +574,7 @@ std::sqrt(2);
         }
 
         static const Number sqrt2 = std::sqrt(2);
-        for (size_t i = Dim; i < MANDEL_SIZE_; ++i)
+        for (SizeType i = Dim; i < MANDEL_SIZE_; ++i)
           man(i) *= sqrt2;
         return man;
       }
@@ -605,10 +605,10 @@ std::sqrt(2);
         if (eigvals_.size() != Dim)
           THROW_INVALID_ARGUMENT("The number of input vectors must be " + std::to_string(Dim));
         eigvecs_.resize(Dim);
-        for (int i = 0; i < Dim; ++i)
+        for (SizeType i = 0; i < Dim; ++i)
         {
           eigvecs_[i] = VectorType();
-          for (int j = 0; j < Dim; ++j)
+          for (SizeType j = 0; j < Dim; ++j)
           {
             eigvecs_[i][j] = 0.0;
             (*this)(i,j) = 0.0;
@@ -618,7 +618,7 @@ std::sqrt(2);
         }
       }
 
-      void assertEigenSize(size_t vecDim, size_t valDim)
+      void assertEigenSize(SizeType vecDim, SizeType valDim)
       {
         if (vecDim != Dim)
           THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + std::to_string(eigvecs_.size()));
@@ -633,7 +633,6 @@ std::sqrt(2);
        DESCENDING_RHS
      };
      mutable OrderState ordering_;
-     long int getIndex(size_t i) const { return static_cast<long int>(i); }
     };
   }
 }
