@@ -483,7 +483,7 @@ namespace Core {
      void forceRightHandedCoordinateSystem() const
      {
        if (!haveEigens_) buildEigens();
-       const static auto epsilon = pow(2, -52);
+       const static auto epsilon = std::pow(2, -52);
        auto rightHandedEigvec2 = eigvecs_[0].cross(eigvecs_[1]);
        if ((rightHandedEigvec2).dot(eigvecs_[2]) < epsilon) eigvecs_[2] = rightHandedEigvec2;
        ordering_ = OrderState::DESCENDING_RHS;
