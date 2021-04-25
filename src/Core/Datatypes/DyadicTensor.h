@@ -66,7 +66,7 @@ namespace Core {
       {
         ordering_ = OrderState::NONE;
         if (eigvecs.size() != Dim)
-          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + std::to_string(Dim));
         setEigenVectors(eigvecs);
       }
 
@@ -74,7 +74,7 @@ namespace Core {
       {
         ordering_ = OrderState::NONE;
         if (eigvecs.size() != Dim)
-          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + std::to_string(Dim));
         setEigenVectors(eigvecs);
       }
 
@@ -603,7 +603,7 @@ std::sqrt(2);
       {
         ordering_ = OrderState::NONE;
         if (eigvals_.size() != Dim)
-          THROW_INVALID_ARGUMENT("The number of input vectors must be " + Dim);
+          THROW_INVALID_ARGUMENT("The number of input vectors must be " + std::to_string(Dim));
         eigvecs_.resize(Dim);
         for (int i = 0; i < Dim; ++i)
         {
@@ -621,9 +621,9 @@ std::sqrt(2);
       void assertEigenSize(size_t vecDim, size_t valDim)
       {
         if (vecDim != Dim)
-          THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + eigvecs_.size());
+          THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + std::to_string(eigvecs_.size()));
         if (valDim != Dim)
-          THROW_INVALID_ARGUMENT("The number of input eigvals must be " + eigvals_.size());
+          THROW_INVALID_ARGUMENT("The number of input eigvals must be " + std::to_string(eigvals_.size()));
       }
 
      enum OrderState
