@@ -479,7 +479,6 @@ namespace Core {
       }
 
     public:
-
      // An arbitrary eigenvector is flipped if the coordinate system is left handed
      void forceRightHandedCoordinateSystem() const
      {
