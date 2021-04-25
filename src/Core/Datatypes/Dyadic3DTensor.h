@@ -53,14 +53,14 @@ namespace Core {
       explicit Dyadic3DTensorGeneric(const std::initializer_list<VectorType>& eigvecs) : parent()
       {
         if (eigvecs.size() != DIM_)
-          THROW_INVALID_ARGUMENT("The number of input parameters must be " + DIM_);
+          THROW_INVALID_ARGUMENT("The number of input parameters must be " + std::to_string(DIM_));
         parent::setEigenVectors(eigvecs);
       }
 
       Dyadic3DTensorGeneric(const Dyadic3DTensorGeneric<Number>& other) : parent()
       {
-        for (size_t i = 0; i < DIM_; ++i)
-          for (size_t j = 0; j < DIM_; ++j)
+        for (long i = 0; i < DIM_; ++i)
+          for (long j = 0; j < DIM_; ++j)
             (*this)(i, j) = other(i, j);
         if (other.haveEigens_)
         {
