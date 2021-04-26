@@ -74,7 +74,7 @@ template <class Basis> class QuadSurfMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVQuadSurfMesh(MESH* mesh) { return (nullptr); }
+VMesh* CreateVQuadSurfMesh(MESH*) { return (nullptr); }
 
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
 /// These declarations are needed for a combined dynamic compilation as
@@ -496,7 +496,7 @@ bool unsynchronize(mask_type mask) override;
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_edge,
                        unsigned int div_per_unit) const
   {
@@ -507,7 +507,7 @@ bool unsynchronize(mask_type mask) override;
   /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_face,
                        unsigned int div_per_unit) const
   {
@@ -840,7 +840,7 @@ bool unsynchronize(mask_type mask) override;
   }
 
   template<class INDEX>
-  double inscribed_circumscribed_radius_metric(INDEX idx) const
+  double inscribed_circumscribed_radius_metric(INDEX) const
   {
     return (0.0);
   }

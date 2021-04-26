@@ -43,7 +43,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InsertFieldsIntoBundleDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   //qDebug() << "updateFromPortChange" << portId.c_str() << type;
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)

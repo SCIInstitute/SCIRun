@@ -337,7 +337,7 @@ void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse,
 }
 
 void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-  double numTicks, double lineWidth, const QString& unit)
+  double numTicks, double, const QString& unit)
 {
   showScaleBarTextGroupBox_->setChecked(visible);
   fontSizeSpinBox_->setValue(fontSize);

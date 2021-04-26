@@ -210,7 +210,7 @@ int Network::errorCode() const
   return errorCode_;
 }
 
-void Network::incrementErrorCode(const ModuleId& moduleId)
+void Network::incrementErrorCode(const ModuleId&)
 {
   errorCode_++;
   /// @todo: store errored modules in a list or something

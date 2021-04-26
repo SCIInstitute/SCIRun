@@ -758,12 +758,12 @@ public:
   struct RecurseExecute<TupleIndex>
   {
     static bool exec(ESCoreBase& core, GenericSystem<GroupComponents, Ts...>* ptr,
-                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& componentArrays,
-                     const std::array<int, sizeof...(Ts)>& componentSizes,
-                     const std::array<int, sizeof...(Ts)>& indices,
-                     const std::array<bool, sizeof...(Ts)>& componentOptional,
-                     const std::array<bool, sizeof...(Ts)>& componentStatic,
-                     std::array<int, sizeof...(Ts)>& nextIndices,
+                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& /*componentArrays*/,
+                     const std::array<int, sizeof...(Ts)>& /*componentSizes*/,
+                     const std::array<int, sizeof...(Ts)>& /*indices*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentOptional*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentStatic*/,
+                     std::array<int, sizeof...(Ts)>& /*nextIndices*/,
                      std::tuple<Ts*...>& input,
                      uint64_t targetSequence)
     {
@@ -882,12 +882,12 @@ public:
   struct GroupExecute<TupleIndex>
   {
     static bool exec(ESCoreBase& core, GenericSystem<GroupComponents, Ts...>* ptr,
-                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& componentArrays,
-                     const std::array<int, sizeof...(Ts)>& componentSizes,
-                     const std::array<int, sizeof...(Ts)>& indices,
-                     const std::array<bool, sizeof...(Ts)>& componentOptional,
-                     const std::array<bool, sizeof...(Ts)>& componentStatic,
-                     std::array<int, sizeof...(Ts)>& nextIndices,
+                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& /*componentArrays*/,
+                     const std::array<int, sizeof...(Ts)>& /*componentSizes*/,
+                     const std::array<int, sizeof...(Ts)>& /*indices*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentOptional*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentStatic*/,
+                     std::array<int, sizeof...(Ts)>& /*nextIndices*/,
                      std::tuple<ComponentGroup<Ts>...>& input,
                      uint64_t targetSequence)
     {
@@ -898,14 +898,14 @@ public:
   };
 
   // Non-grouped version of execute.
-  virtual void execute(ESCoreBase&, uint64_t, const Ts*... vs)
+  virtual void execute(ESCoreBase&, uint64_t, const Ts*...)
   {
     std::cerr << "entity-system: Unimplmented system execute." << std::endl;
     throw std::runtime_error("entity-system: Unimplemented system execute.");
   }
 
   // Grouped version of execute.
-  virtual void groupExecute(ESCoreBase&, uint64_t, const ComponentGroup<Ts>&... groups)
+  virtual void groupExecute(ESCoreBase&, uint64_t, const ComponentGroup<Ts>&... /*groups*/)
   {
     std::cerr << "entity-system: Unimplmented system group execute." << std::endl;
     throw std::runtime_error("entity-system: Unimplemented system group execute.");
@@ -913,15 +913,15 @@ public:
 
   /// This function should be overriden and return true for all components
   /// which may be optional.
-  bool isComponentOptional(uint64_t templateID) override {return false;}
+  bool isComponentOptional(uint64_t) override { return false; }
 
   /// This function gets called before we start walking components from the
   /// walkComponents function.
-  virtual void preWalkComponents(ESCoreBase& core)            {}
+  virtual void preWalkComponents(ESCoreBase&)            {}
 
   /// This function gets called after we finish walking components from the
   /// walkComponents function.
-  virtual void postWalkComponents(ESCoreBase& core)           {}
+  virtual void postWalkComponents(ESCoreBase&)           {}
 };
 
 namespace optional_components_impl
@@ -942,7 +942,7 @@ struct OptionalCompImpl<RT, RTs...>
 template <>
 struct OptionalCompImpl<>
 {
-  static bool exec(uint64_t templateID)  {return false;}
+  static bool exec(uint64_t)  {return false;}
 };
 } // namespace optional_components_impl
 

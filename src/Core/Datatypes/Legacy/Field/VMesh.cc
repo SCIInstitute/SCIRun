@@ -392,25 +392,25 @@ VMesh::get_edge(Edge::index_type&, Node::array_type&) const
 }
 
 void
-VMesh::set_nodes(Node::array_type& array, Edge::index_type idx)
+VMesh::set_nodes(Node::array_type& /*array*/, Edge::index_type)
 {
   ASSERTFAIL("VMesh interface: set_nodes(Node::array_type,Edge::index_type) has not been implemented");
 }
 
 void
-VMesh::set_nodes(Node::array_type& array, Face::index_type idx)
+VMesh::set_nodes(Node::array_type& /*array*/, Face::index_type)
 {
   ASSERTFAIL("VMesh interface: set_nodes(Node::array_type,Face::index_type) has not been implemented");
 }
 
 void
-VMesh::set_nodes(Node::array_type& array, Cell::index_type idx)
+VMesh::set_nodes(Node::array_type& /*array*/, Cell::index_type)
 {
   ASSERTFAIL("VMesh interface: set_nodes(Node::array_type,Cell::index_type) has not been implemented");
 }
 
 void
-VMesh::set_nodes(Node::array_type& array, Elem::index_type idx)
+VMesh::set_nodes(Node::array_type& /*array*/, Elem::index_type)
 {
   ASSERTFAIL("VMesh interface: set_nodes(Node::array_type,Elem::index_type) has not been implemented");
 }
@@ -501,7 +501,7 @@ VMesh::get_size(VMesh::DElem::index_type) const
 }
 
 double
-VMesh::get_size(VMesh::Node::array_type& array) const
+VMesh::get_size(VMesh::Node::array_type& ) const
 {
   ASSERTFAIL("VMesh interface: size(Node::array_type) has not been implemented");
 }
@@ -565,7 +565,7 @@ VMesh::find_closest_nodes(std::vector<VMesh::Node::index_type>&, const Point&, d
 }
 
 bool
-VMesh::find_closest_nodes(std::vector<double>& distances,
+VMesh::find_closest_nodes(std::vector<double>&,
                           std::vector<VMesh::Node::index_type>&,
                           const Point&, double) const
 {

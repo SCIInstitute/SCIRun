@@ -40,7 +40,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
-void EdgeMC::reset( int /*n*/, bool build_field,bool build_geom,bool transparency )
+void EdgeMC::reset( int /*n*/, bool build_field,bool build_geom,bool )
 {
   build_field_ = build_field;
   build_geom_ = build_geom;

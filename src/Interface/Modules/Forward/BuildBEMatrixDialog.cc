@@ -104,7 +104,7 @@ QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
   return spin;
 }
 
-void BuildBEMatrixDialog::pushTable(int row, int col)
+void BuildBEMatrixDialog::pushTable(int, int col)
 {
   using namespace TableColumns;
   if (FieldName == col)

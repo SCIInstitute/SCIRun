@@ -149,7 +149,6 @@ namespace SCIRun
     private:
       glm::vec3 originView_;
       float projectedW_;
-      glm::vec3 flipAxisWorld_;
       glm::vec3 originToInitialSpos_;
       float originToInitialSposLength_;
       glm::vec3 originWorld_;
@@ -191,7 +190,6 @@ namespace SCIRun
       Core::Datatypes::WidgetMovement movementType() const override { return Core::Datatypes::ROTATE; }
       void setMultiplier(double multiplier);
     private:
-      glm::mat4 scaleTrans_;
       glm::vec3 axis_;
       glm::vec3 originView_;
       glm::vec3 originWorld_;

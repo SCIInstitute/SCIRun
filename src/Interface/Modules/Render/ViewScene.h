@@ -71,8 +71,8 @@ namespace SCIRun {
       void adjustToolbar() override;
 
       static ViewSceneManager viewSceneManager;
-      void inputMouseDownHelper(Core::Datatypes::MouseButton btn, float x, float y);
-      void inputMouseMoveHelper(Core::Datatypes::MouseButton btn, float x, float y);
+      void inputMouseDownHelper(float x, float y);
+      void inputMouseMoveHelper(MouseButton btn, float x, float y);
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
@@ -230,7 +230,7 @@ namespace SCIRun {
       void focusOutEvent(QFocusEvent* event) override;
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
-      void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void contextMenuEvent(QContextMenuEvent*) override {}
 
 
     private:
@@ -262,8 +262,8 @@ namespace SCIRun {
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
       bool canSelectWidget();
-      bool tryWidgetSelection(int x, int y, Core::Datatypes::MouseButton button);
-      void selectObject(const int x, const int y, Core::Datatypes::MouseButton button);
+      bool tryWidgetSelection(int x, int y, MouseButton button);
+      void selectObject(const int x, const int y, MouseButton button);
       Modules::Render::ViewScene::GeomListPtr getGeomData();
       bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
       void restoreObjColor();
@@ -370,7 +370,7 @@ namespace SCIRun {
       const int QUATERNION_SIZE_ = 4;
     };
 
-    Core::Datatypes::MouseButton getSpireButton(QMouseEvent* event);
+    MouseButton getSpireButton(QMouseEvent* event);
 
   } // namespace Gui
 } // namespace SCIRun

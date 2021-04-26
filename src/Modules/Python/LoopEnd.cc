@@ -62,6 +62,8 @@ LoopEnd::LoopEnd() : Module(staticInfo_)
 #ifdef BUILD_WITH_PYTHON
   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(),
     { Parameters::LoopWhileCondition }));
+#else
+  (void)execCount_;
 #endif
 }
 

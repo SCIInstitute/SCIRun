@@ -200,7 +200,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*this, idname, false));
 
-  geom->setColorMap(cm->getColorMapName());
+  //geom->setColorMap(cm->getColorMapName());
   geom->ibos().push_back(geomIBO);
   geom->vbos().push_back(geomVBO);
   geom->passes().push_back(pass);

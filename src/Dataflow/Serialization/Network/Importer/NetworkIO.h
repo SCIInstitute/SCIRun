@@ -112,8 +112,6 @@ namespace Networks {
     void add_connection_note_color(const std::string &id, const std::string &col);
     void set_port_caching(const std::string &id, const std::string &port,
                           const std::string &val);
-    void push_subnet_scope(const std::string &id, const std::string &name);
-    void pop_subnet_scope();
 
     void process_environment(const xmlNodePtr enode);
     void process_modules_pass1(const xmlNodePtr enode);
@@ -156,13 +154,6 @@ namespace Networks {
     void gui_set_connection_route(const std::string &con_id, const std::string &route);
     void gui_open_module_gui(const std::string &mod_id);
     int getNotePosition(const std::string& position) const;
-
-    void gui_add_subnet_at_position(const std::string &mod_id,
-                                    const std::string &module,
-                                    const std::string& x,
-                                    const std::string &y);
-    std::string gui_push_subnet_ctx();
-    void gui_pop_subnet_ctx(const std::string& ctx);
 
     void listModuleIdMapping();
 

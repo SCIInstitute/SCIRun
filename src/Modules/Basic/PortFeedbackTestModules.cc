@@ -72,6 +72,6 @@ void PortFeedbackReceiver::execute()
 
 }
 
-void PortFeedbackReceiver::processFeedback(const ModuleFeedback& var)
+void PortFeedbackReceiver::processFeedback(const ModuleFeedback&)
 {
 }

@@ -235,7 +235,7 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_typ
   }
 }
 
-bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &/*mapping*/) const
 {
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
@@ -688,7 +688,7 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_typ
   }
 }
 
-bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &) const
 {
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
@@ -947,7 +947,7 @@ class ClipMeshByIsovalueAlgoHex
 
 };
 
-bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &) const
 {
   // Do marching cubes
   FieldHandle tri_field;

@@ -43,7 +43,7 @@ InsertMatricesIntoBundleDialog::InsertMatricesIntoBundleDialog(const std::string
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertMatricesIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InsertMatricesIntoBundleDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;

@@ -43,7 +43,7 @@ InsertStringsIntoBundleDialog::InsertStringsIntoBundleDialog(const std::string& 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertStringsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InsertStringsIntoBundleDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;

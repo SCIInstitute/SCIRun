@@ -76,7 +76,7 @@ class ScanlineMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVScanlineMesh(MESH* mesh) { return (nullptr); }
+VMesh* CreateVScanlineMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.

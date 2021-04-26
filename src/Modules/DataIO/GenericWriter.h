@@ -72,7 +72,7 @@ protected:
   //GuiInt			confirm_once_;
 
   virtual bool useCustomExporter(const std::string& filename) const = 0;
-  virtual bool call_exporter(const std::string &filename) { return false; }
+  virtual bool call_exporter(const std::string& /*filename*/) { return false; }
 
   virtual bool overwrite() { return true; } /// @todo
 };

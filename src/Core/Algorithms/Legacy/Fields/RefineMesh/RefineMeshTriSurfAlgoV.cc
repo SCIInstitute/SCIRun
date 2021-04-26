@@ -369,7 +369,7 @@ RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   return (true);
 }
 
-AlgorithmOutput RefineMeshTriSurfAlgoV::run(const AlgorithmInput& input) const
+AlgorithmOutput RefineMeshTriSurfAlgoV::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 }

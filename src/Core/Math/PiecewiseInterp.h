@@ -141,7 +141,7 @@ inline int PiecewiseInterp<T>::get_interval(double w)
 template<class T>
 inline bool PiecewiseInterp<T>::fill_data(const Array1<double>& pts)
 {
-  for (int i = 1; i < pts.size(); i++)
+  for (size_t i = 1; i < pts.size(); i++)
   {
     if ((pts[i] - pts[i-1]) < 1e-7)
     {

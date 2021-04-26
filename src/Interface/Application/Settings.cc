@@ -177,7 +177,7 @@ struct Stringifier<QStringList>
 template <typename T>
 struct Stringifier<QList<T>>
 {
-  std::string operator()(const QList<T>& t) const
+  std::string operator()(const QList<T>&) const
   {
     return "<list>";
   }
@@ -186,7 +186,7 @@ struct Stringifier<QList<T>>
 template <>
 struct Stringifier<QByteArray>
 {
-  std::string operator()(const QByteArray& t) const
+  std::string operator()(const QByteArray&) const
   {
     return "<byte array>";
   }

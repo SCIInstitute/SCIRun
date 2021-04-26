@@ -223,7 +223,7 @@ Module::Module(const ModuleLookupInfo& info,
   impl_ = boost::make_shared<ModuleImpl>(this, info, hasUi, stateFactory);
 
   setLogger(DefaultModuleFactories::defaultLogger_);
-  setUpdaterFunc([](double x) {});
+  setUpdaterFunc([](double) {});
 
   LOG_TRACE("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
 

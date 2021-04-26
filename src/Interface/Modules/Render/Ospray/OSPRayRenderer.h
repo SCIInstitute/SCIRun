@@ -35,7 +35,7 @@
 
 #include "OSPRayDataManager.h"
 #include "OSPRayCamera.h"
-#include "Core/Datatypes/Geometry.h"
+#include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Ospray/share.h>
 
 namespace SCIRun { namespace Render {

@@ -44,6 +44,7 @@
 #include "Core/Logging/Log.h"
 #endif
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -54,6 +55,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Render;
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent)
@@ -122,9 +124,9 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
 
-  float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
-  float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-  uint32_t ind[3] = { 0, 1, 2};
+  //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+  //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+  //uint32_t ind[3] = { 0, 1, 2};
 
   #endif
 }
@@ -431,6 +433,9 @@ void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
   renderer_->mouseRelease();
   #endif
 }
+
+//TODO:
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
 {

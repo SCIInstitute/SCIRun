@@ -101,7 +101,7 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
   }
 }
 
-void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InterfaceWithPythonDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
