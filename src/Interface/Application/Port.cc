@@ -174,7 +174,7 @@ namespace SCIRun {
           qDebug() << "action not found:" << compatibleModules();
       }
 
-      void showEvent(QShowEvent* event) override
+      void showEvent(QShowEvent*) override
       {
         QPoint p = pos();
         QRect geo = parent_->geometry();
@@ -257,7 +257,7 @@ boost::optional<ConnectionId> PortWidget::firstConnectionId() const
   return c ? c->id() : boost::optional<ConnectionId>();
 }
 
-void PortWidgetBase::paintEvent(QPaintEvent* event)
+void PortWidgetBase::paintEvent(QPaintEvent*)
 {
   QSize size = sizeHint();
   resize(size);

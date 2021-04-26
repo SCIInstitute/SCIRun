@@ -503,7 +503,7 @@ bool unsynchronize(mask_type sync) override;
   /// Get the determinant of the jacobian, which is the local volume of an element
   /// and is intended to help with the integration of functions over an element.
   template<class VECTOR, class INDEX>
-  double det_jacobian(const VECTOR& coords, INDEX idx) const
+  double det_jacobian(const VECTOR&, INDEX) const
   {
     return (1.0);
   }
@@ -512,7 +512,7 @@ bool unsynchronize(mask_type sync) override;
   /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR, class INDEX>
-  void jacobian(const VECTOR& coords, INDEX idx, double* J) const
+  void jacobian(const VECTOR&, INDEX, double* J) const
   {
     J[0] = 1.0;
     J[1] = 0.0;
@@ -546,19 +546,19 @@ bool unsynchronize(mask_type sync) override;
 
 
   template<class INDEX>
-  double scaled_jacobian_metric(INDEX idx) const
+  double scaled_jacobian_metric(INDEX) const
   {
     return (0.0);
   }
 
   template<class INDEX>
-  double jacobian_metric(INDEX idx) const
+  double jacobian_metric(INDEX) const
   {
     return (0.0);
   }
 
   template<class INDEX>
-  double inscribed_circumscribed_radius_metric(INDEX idx) const
+  double inscribed_circumscribed_radius_metric(INDEX) const
   {
     return (0.0);
   }
@@ -1252,13 +1252,13 @@ protected:
   }
 
   template <class ARRAY, class INDEX>
-  void get_edges_from_elem(ARRAY edges,INDEX idx)
+  void get_edges_from_elem(ARRAY edges,INDEX)
   {
     edges.resize(0);
   }
 
   template <class ARRAY, class INDEX>
-  inline void set_nodes_by_elem(ARRAY &array, INDEX idx)
+  inline void set_nodes_by_elem(ARRAY&, INDEX)
   {
   }
 

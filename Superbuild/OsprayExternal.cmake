@@ -27,6 +27,9 @@
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(ospray_GIT_TAG "origin/scirun-build-2.4")
 
+set(ospray_DEPENDENCIES)
+LIST(APPEND ospray_DEPENDENCIES GLM_external)
+
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Ospray_external
@@ -41,6 +44,7 @@ ExternalProject_Add(Ospray_external
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
+    -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)

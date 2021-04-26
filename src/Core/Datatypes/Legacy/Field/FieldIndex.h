@@ -106,14 +106,14 @@ struct CellIndex : public FieldIndexBase<T> {
 //
 template <class T>
 std::vector<CellIndex<T> >
-operator*(const std::vector<CellIndex<T> >& r, double &) {
+operator*(const std::vector<CellIndex<T>>& r, double &) {
   ASSERTFAIL("FieldIndex.h Bogus operator");
   return r;
 }
 
 template <class T>
 std::vector<CellIndex<T> >
-operator+=(const std::vector<CellIndex<T> >& l, const std::vector<CellIndex<T> >& r) {
+operator+=(const std::vector<CellIndex<T> >& l, const std::vector<CellIndex<T>>&) {
   ASSERTFAIL("FieldIndex.h Bogus operator");
   return l;
 }

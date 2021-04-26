@@ -56,7 +56,7 @@ public:
   void keyPressEvent(QKeyEvent* e) override;
   //virtual void focusOutEvent( QFocusEvent* e );
 
-  const int document_end();
+  int document_end();
   QString& command_buffer();
   void update_command_buffer();
   void replace_command_buffer(const QString& text);
@@ -260,7 +260,7 @@ void PythonConsoleEdit::keyPressEvent(QKeyEvent* e)
   }
 }
 
-const int PythonConsoleEdit::document_end()
+int PythonConsoleEdit::document_end()
 {
   QTextCursor c(this->document());
   c.movePosition(QTextCursor::End);
@@ -291,6 +291,9 @@ void PythonConsoleEdit::replace_command_buffer(const QString& text)
   c.setCharFormat(char_format);
   c.insertText(text);
 }
+
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 void PythonConsoleEdit::issue_command()
 {

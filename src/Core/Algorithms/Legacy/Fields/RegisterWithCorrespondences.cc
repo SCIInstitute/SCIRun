@@ -48,8 +48,9 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
 
-static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
+static void printMatrix(const DenseMatrix& /*m*/, const std::string& tag = "tag")
 {
+  (void)tag;
 #if 0
   std::cout << tag << std::endl;
   std::cout << "Size: " << m.nrows() << " x " << m.ncols() << std::endl;
@@ -1056,7 +1057,7 @@ bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors
   return true;
 }
 
-bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
+bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh*, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it, itp;

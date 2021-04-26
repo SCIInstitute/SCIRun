@@ -1650,7 +1650,7 @@ Parser::split_subs(std::string& expression,
                    std::vector<std::string>& start_args,
                    std::vector<std::string>& step_args,
                    std::vector<std::string>& end_args,
-                   std::string& varname)
+                   std::string&)
 {
   // Get the size of the srting we need to scan
   size_t esize = expression.size();

@@ -59,7 +59,7 @@ BuildDerivedNrrdWithGageDialog::BuildDerivedNrrdWithGageDialog(const std::string
   addLineEditManager(ddNumParm3LineEdit_, Parameters::DDNumParm3);
 }
 
-void BuildDerivedNrrdWithGageDialog::updateDescriptionLabel(const QString& item)
+void BuildDerivedNrrdWithGageDialog::updateDescriptionLabel(const QString&)
 {
   //TODO
 }

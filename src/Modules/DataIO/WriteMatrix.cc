@@ -104,7 +104,7 @@ void WriteMatrix::execute()
 
 }
 
-bool WriteMatrix::useCustomExporter(const std::string& filename) const
+bool WriteMatrix::useCustomExporter(const std::string& /*filename*/) const
 {
   auto ft = cstate()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteMatrix with filetype {}", ft);

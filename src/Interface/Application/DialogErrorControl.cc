@@ -31,19 +31,22 @@
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
-DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
-{
 
+DialogErrorControl::DialogErrorControl(QWidget*) : counter_(0)
+{
 }
+
 bool DialogErrorControl::showDialog()
 {
   return Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= MAX_DIALOGS_SHOWN;
 }
+
 void DialogErrorControl::resetCounter()
 {
-		counter_ = 0;
+	counter_ = 0;
 }
+
 void DialogErrorControl::increaseCounter()
 {
-		++counter_;
+	++counter_;
 }

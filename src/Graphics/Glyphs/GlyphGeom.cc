@@ -157,7 +157,7 @@ void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int res
 }
 
 void GlyphGeom::addTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius, int resolution,
-                        const ColorRGB& color1, const ColorRGB& color2)
+                        const ColorRGB& color1, const ColorRGB&)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);

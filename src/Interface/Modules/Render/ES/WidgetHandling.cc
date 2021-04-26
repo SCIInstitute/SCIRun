@@ -233,13 +233,13 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
   }
 }
 
-Graphics::Datatypes::WidgetInteraction SCIRun::Render::yetAnotherEnumConversion(Core::Datatypes::MouseButton btn)
+Graphics::Datatypes::WidgetInteraction SCIRun::Render::yetAnotherEnumConversion(MouseButton btn)
 {
   switch (btn)
   {
-    case Core::Datatypes::MouseButton::LEFT:
+    case MouseButton::LEFT:
       return Graphics::Datatypes::WidgetInteraction::CLICK;
-    case Core::Datatypes::MouseButton::RIGHT:
+    case MouseButton::RIGHT:
       return Graphics::Datatypes::WidgetInteraction::RIGHT_CLICK;
     default:
       return Graphics::Datatypes::WidgetInteraction::CLICK;

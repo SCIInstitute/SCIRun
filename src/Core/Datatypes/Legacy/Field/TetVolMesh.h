@@ -528,7 +528,7 @@ public:
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned which_edge,
                        unsigned div_per_unit) const
   {
@@ -539,7 +539,7 @@ public:
   /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned which_face,
                        unsigned div_per_unit) const
   {

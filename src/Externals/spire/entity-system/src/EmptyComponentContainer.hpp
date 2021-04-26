@@ -43,7 +43,7 @@ public:
 
   std::string toString(std::string prefix) const override {return prefix + "  EMPTY\n";}
 
-  void renormalize(bool stableSort) override {}
+  void renormalize(bool) override {}
   uint64_t getLowerSequence() const override {return 0;}
   uint64_t getUpperSequence() const override {return 0;}
   uint64_t getNumComponents() const override {return 0;}

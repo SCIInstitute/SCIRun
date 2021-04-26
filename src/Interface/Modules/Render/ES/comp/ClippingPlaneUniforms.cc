@@ -99,7 +99,7 @@ namespace SCIRun {
       }
     }
 
-    void ClippingPlaneUniforms::applyUniforms(const glm::mat4 &transform,
+    void ClippingPlaneUniforms::applyUniforms(const glm::mat4 &,
       const std::vector<glm::vec4> &clippingPlanes,
       const std::vector<glm::vec4> &clippingPlaneCtrls) const
     {

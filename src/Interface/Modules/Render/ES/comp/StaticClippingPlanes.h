@@ -51,7 +51,7 @@ namespace SCIRun {
 
       static const char* getName() { return "StaticClippingPlanes"; }
 
-      bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
+      bool serialize(spire::ComponentSerialize&, uint64_t /* entityID */)
       {
         //s.serialize("clipping_planes", clippingPlanes);
         return true;

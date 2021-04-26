@@ -81,10 +81,10 @@ namespace SCIRun
       //       them and provide quick object feedback.
 
       //---------------- Input ---------------------------------------------------------------------
-      void widgetMouseMove(Core::Datatypes::MouseButton btn, int x, int y) override;
+      void widgetMouseMove(int x, int y) override;
       void widgetMouseUp() override;
-      void inputMouseDown(Core::Datatypes::MouseButton btn, float x, float y) override;
-      void inputMouseMove(Core::Datatypes::MouseButton btn, float x, float y) override;
+      void inputMouseDown(float x, float y) override;
+      void inputMouseMove(MouseButton btn, float x, float y) override;
       void inputMouseUp() override;
       void inputMouseWheel(int32_t delta) override;
       void setMouseMode(MouseMode mode) override {mMouseMode = mode;}
@@ -122,7 +122,7 @@ namespace SCIRun
       GLenum computePrimitiveType(size_t indexSize);
       GLenum computePrimitive(const SCIRun::Graphics::Datatypes::SpireIBO & ibo);
       glm::mat4 getWidgetTransform() override { return widgetUpdater_.widgetTransform(); }
-      void setWidgetInteractionMode(Core::Datatypes::MouseButton btn) override;
+      void setWidgetInteractionMode(MouseButton btn) override;
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;

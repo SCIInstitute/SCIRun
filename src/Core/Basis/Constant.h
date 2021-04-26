@@ -102,8 +102,8 @@ public:
   /// return: coords gives parametric coordinates of the approximation.
   /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
-  void approx_edge(const unsigned edge,
-                   const unsigned div_per_unit,
+  void approx_edge(const unsigned,
+                   const unsigned,
                    VECTOR& coords) const
   {
     coords.resize(0);
@@ -113,8 +113,8 @@ public:
   /// return: coords gives parametric coordinates at the approximation point.
   /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
-  void approx_face(const unsigned face,
-                   const unsigned div_per_unit,
+  void approx_face(const unsigned,
+                   const unsigned,
                    VECTOR &coords) const
   {
     coords.resize(0);
@@ -160,7 +160,7 @@ public:
 
   /// Get the weights for doing an interpolation
   template <class VECTOR>
-  void get_weights(const VECTOR &coords, double *w) const
+  void get_weights(const VECTOR&, double *w) const
   {
     w[0]=1;
   }

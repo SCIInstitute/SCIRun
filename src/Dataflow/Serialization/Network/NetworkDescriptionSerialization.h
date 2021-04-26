@@ -53,7 +53,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(module);
       ar & BOOST_SERIALIZATION_NVP(state);
@@ -70,7 +70,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(noteHTML);
       ar & BOOST_SERIALIZATION_NVP(noteText);
@@ -123,7 +123,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(modules);
       ar & BOOST_SERIALIZATION_NVP(connections);
@@ -179,7 +179,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(networks);
     }

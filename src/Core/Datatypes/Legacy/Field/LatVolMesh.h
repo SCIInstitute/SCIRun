@@ -147,8 +147,7 @@ public:
     NodeIndex() : LatIndex() {}
     NodeIndex(const LatVolMesh *m, size_type i, size_type j, size_type k)
       : LatIndex(m, i,j,k) {}
-    static std::string type_name(int i=-1) {
-      ASSERT(i < 1);
+    static std::string type_name() {
       return LatVolMesh<Basis>::type_name(-1) + "::NodeIndex";
     }
   };
@@ -795,7 +794,7 @@ bool unsynchronize(mask_type /*sync*/) override { return (true); }
   /// Get the determinant of the jacobian, which is the local volume of an element
   /// and is intended to help with the integration of functions over an element.
   template<class VECTOR>
-  double det_jacobian(const VECTOR& coords, typename Elem::index_type idx) const
+  double det_jacobian(const VECTOR&, typename Elem::index_type) const
   {
     return (det_jacobian_);
   }
@@ -804,7 +803,7 @@ bool unsynchronize(mask_type /*sync*/) override { return (true); }
   /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR>
-  void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
+  void jacobian(const VECTOR&, typename Elem::index_type, double* J) const
   {
     J[0] = jacobian_[0];
     J[1] = jacobian_[1];

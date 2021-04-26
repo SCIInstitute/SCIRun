@@ -107,7 +107,7 @@ void GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked()
     Q_EMIT executeFromStateChangeTriggered();
 }
 
-void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int value)
+void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int)
 {
   auto spinBox = qobject_cast<QSpinBox*>(sender());
   bool reexecute = false;

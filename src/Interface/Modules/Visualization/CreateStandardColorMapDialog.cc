@@ -213,7 +213,7 @@ void CreateStandardColorMapDialog::setShiftSpinner(int i)
   shiftSpin_->setValue(static_cast<double>(i) / 100.);
 }
 
-void CreateStandardColorMapDialog::onInvertCheck(bool b)
+void CreateStandardColorMapDialog::onInvertCheck(bool)
 {
   updateColorMapPreview();
 }
@@ -270,7 +270,7 @@ void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
   }
 }
 
-void ColormapPreview::mouseReleaseEvent(QMouseEvent* event)
+void ColormapPreview::mouseReleaseEvent(QMouseEvent*)
 {
   alphaManager_.pushToState();
 }

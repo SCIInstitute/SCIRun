@@ -45,6 +45,7 @@
 #include <QOpenGLContext>
 #include <gl-platform/GLPlatform.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
@@ -61,7 +62,7 @@ using namespace SCIRun::Modules::Render;
 
 namespace SCIRun {
 namespace Gui {
-  enum WidgetColor
+  enum class WidgetColor
   {
     RED,
     GREEN,
@@ -1140,7 +1141,7 @@ void ViewSceneDialog::frameFinished()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
+void ViewSceneDialog::sendGeometryFeedbackToState(int, int, const std::string& selName)
 {
   auto spire = mSpire.lock();
   auto trans = spire->getWidgetTransform();
@@ -1255,19 +1256,21 @@ void ViewSceneDialog::resizingDone()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::inputMouseDownHelper(MouseButton btn, float x, float y)
+void ViewSceneDialog::inputMouseDownHelper(float x, float y)
 {
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire)
+    return;
 
-  spire->inputMouseDown(btn, x, y);
+  spire->inputMouseDown(x, y);
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire)
+    return;
 
   spire->inputMouseMove(btn, x, y);
 }
@@ -1348,7 +1351,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 
   if (selectedWidget_)
   {
-    spire->widgetMouseMove(btn, x_window, y_window);
+    spire->widgetMouseMove(x_window, y_window);
   }
   else if(!shiftdown_)
   {
@@ -1405,7 +1408,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
 
     for (auto vsd : viewScenesToUpdate)
-      vsd->inputMouseDownHelper(btn, x_ss, y_ss);
+      vsd->inputMouseDownHelper(x_ss, y_ss);
   }
   previousWidgetInfo_->setMousePosition(event->x(), event->y());
 }
@@ -1447,13 +1450,15 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   mouseButtonPressed_ = false;
 }
 
-
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {
   if (!selectedWidget_)
   {
-    for(auto vsd : viewScenesToUpdate) vsd->inputMouseWheelHelper(event->delta());
+    for (auto vsd : viewScenesToUpdate)
+      vsd->inputMouseWheelHelper(event->delta());
   }
 }
 
@@ -1481,13 +1486,13 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   }
 }
 
-void ViewSceneDialog::focusOutEvent(QFocusEvent* event)
+void ViewSceneDialog::focusOutEvent(QFocusEvent*)
 {
   shiftdown_ = false;
   updateCursor();
 }
 
-void ViewSceneDialog::focusInEvent(QFocusEvent* event)
+void ViewSceneDialog::focusInEvent(QFocusEvent*)
 {
   updateCursor();
 }
@@ -1653,12 +1658,12 @@ void ViewSceneDialog::unlockAllTriggered()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::autoViewOnLoadChecked(bool value)
+void ViewSceneDialog::autoViewOnLoadChecked(bool)
 {
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::useOrthoViewChecked(bool value)
+void ViewSceneDialog::useOrthoViewChecked(bool)
 {
 }
 
@@ -2690,7 +2695,7 @@ void ViewSceneDialog::assignBackgroundColor()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
+void ViewSceneDialog::setTransparencySortTypeContinuous(bool)
 {
   auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
@@ -2698,7 +2703,7 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
+void ViewSceneDialog::setTransparencySortTypeUpdate(bool)
 {
   auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
@@ -2706,7 +2711,7 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setTransparencySortTypeLists(bool index)
+void ViewSceneDialog::setTransparencySortTypeLists(bool)
 {
   auto spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);

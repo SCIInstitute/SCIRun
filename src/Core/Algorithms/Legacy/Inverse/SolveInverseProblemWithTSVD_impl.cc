@@ -57,7 +57,13 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 /////// prealocate Matrices for inverse compuation
 ///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
 ///////////////////////////////////////////////////////////////////
-void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
+void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const DenseMatrix&,
+  const DenseMatrix& measuredData_ ,
+  const DenseMatrix&,
+  const DenseMatrix&,
+  const DenseMatrix& matrixU_,
+  const DenseMatrix& singularValues_,
+  const DenseMatrix& matrixV_)
 {
 
 		// alocate U and V matrices
@@ -80,11 +86,14 @@ void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::C
 
 }
 
-void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const
+  DenseMatrix& forwardMatrix_, const DenseMatrix& measuredData_ ,
+  const DenseMatrix&,
+  const DenseMatrix&)
 {
 
 	    // Compute the SVD of the forward matrix
-	        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> SVDdecomposition( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
+	        Eigen::JacobiSVD<DenseMatrix::EigenBase> SVDdecomposition( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
 		// alocate the left and right singular vectors and the singular values
 			svd_MatrixU = SVDdecomposition.matrixU();
@@ -101,7 +110,7 @@ void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::C
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
+DenseMatrix SolveInverseProblemWithTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
 {
 
     // prealocate matrices
@@ -130,7 +139,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTSVD_impl::computeIn
 
     // output solutions
     //   if (inverseCalculation)
-    //       inverseMatrix_.reset( new SCIRun::Core::Datatypes::DenseMatrix(tempInverse) );
+    //       inverseMatrix_.reset( new DenseMatrix(tempInverse) );
 
         return solution;
 }
@@ -138,7 +147,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTSVD_impl::computeIn
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns a string of lambdas from which the L-curve is computed
 //////////////////////////////////////////////////////////////////////
-std::vector<double> SolveInverseProblemWithTSVD_impl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
+std::vector<double> SolveInverseProblemWithTSVD_impl::computeLambdaArray( double lambdaMin, double, int nLambda ) const
 {
 	std::vector<double> lambdaArray(nLambda,0.0);
 	const double lam_step = 1;

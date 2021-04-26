@@ -103,12 +103,12 @@ public:
   static int polynomial_order() { return -1; }
 
   template <class VECTOR>
-  void get_weights(const VECTOR &coords, unsigned int elem,  double *w) const
+  void get_weights(const VECTOR &, unsigned int ,  double *) const
   {
   }
 
   template <class VECTOR>
-  void get_derivate_weights(const VECTOR &coords, unsigned int elem, double *w) const
+  void get_derivate_weights(const VECTOR &, unsigned int , double *) const
   {
   }
 
