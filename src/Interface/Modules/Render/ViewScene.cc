@@ -507,30 +507,25 @@ void ViewSceneDialog::addConfigurationDock()
   setupMaterials();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setupMaterials()
 {
   double ambient = state_->getValue(Parameters::Ambient).toDouble();
   double diffuse = state_->getValue(Parameters::Diffuse).toDouble();
   double specular = state_->getValue(Parameters::Specular).toDouble();
   double shine = state_->getValue(Parameters::Shine).toDouble();
-  //double emission = state_->getValue(Modules::Render::ViewScene::Emission1).toDouble();
-  bool fogOn = state_->getValue(Modules::Render::ViewScene::FogOn).toBool();
-  bool objectsOnly = state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool();
-  bool useBGColor = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+  bool fogOn = state_->getValue(Parameters::FogOn).toBool();
+  bool useBGColor = state_->getValue(Parameters::UseBGColor).toBool();
   double fogStart = state_->getValue(Modules::Render::ViewScene::FogStart).toDouble();
   double fogEnd = state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble();
   auto colorStr = state_->getValue(Modules::Render::ViewScene::FogColor).toString();
 
   ColorRGB color(colorStr);
-  fogColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-                     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-                     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+  fogColor_ = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
 
   mConfigurationDock->setFogColorLabel(fogColor_);
 
   mConfigurationDock->setMaterialTabValues(ambient, diffuse, specular, shine,
-                                           0.0, fogOn, objectsOnly,
+                                           0.0, fogOn, false,
                                            useBGColor, fogStart, fogEnd);
 
   setAmbientValue(ambient);
@@ -538,7 +533,7 @@ void ViewSceneDialog::setupMaterials()
   setSpecularValue(specular);
   setShininessValue(shine);
   //setEmissionValue(emission);
-  setFogOnVisibleObjects(objectsOnly);
+  //setFogOnVisibleObjects(objectsOnly);
   setFogUseBGColor(useBGColor);
   setFogStartValue(fogStart);
   setFogEndValue(fogEnd);
@@ -983,9 +978,7 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
   if (!rgb.empty())
   {
     ColorRGB color(rgb);
-    newColor = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+    newColor = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
   }
   else
   {
@@ -2538,7 +2531,6 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
 //---------------- Materials -----------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setAmbientValue(double value)
 {
   state_->setValue(Parameters::Ambient, value);
@@ -2546,7 +2538,6 @@ void ViewSceneDialog::setAmbientValue(double value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setDiffuseValue(double value)
 {
   state_->setValue(Parameters::Diffuse, value);
@@ -2554,7 +2545,6 @@ void ViewSceneDialog::setDiffuseValue(double value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setSpecularValue(double value)
 {
   state_->setValue(Parameters::Specular, value);
@@ -2562,7 +2552,6 @@ void ViewSceneDialog::setSpecularValue(double value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setShininessValue(double value)
 {
   const static int maxSpecExp = 40;
@@ -2574,21 +2563,12 @@ void ViewSceneDialog::setShininessValue(double value)
 }
 
 //--------------------------------------------------------------------------------------------------
-// void ViewSceneDialog::setEmissionValue(double value)
-// {
-//   state_->setValue(Modules::Render::ViewScene::Emission1, value);
-// }
-
-
-
-//--------------------------------------------------------------------------------------------------
 //---------------- Fog -----------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFogOn(bool value)
 {
-  state_->setValue(Modules::Render::ViewScene::FogOn, value);
+  state_->setValue(Parameters::FogOn, value);
   if (value)
     setFog(FogFactor::FOG_INTENSITY, 1.0);
   else
@@ -2596,16 +2576,14 @@ void ViewSceneDialog::setFogOn(bool value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setFogOnVisibleObjects(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::ObjectsOnly, value);
-}
+// void ViewSceneDialog::setFogOnVisibleObjects(bool value)
+// {
+//   state_->setValue(Parameters::ObjectsOnly, value);
+// }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFogUseBGColor(bool value)
 {
-  state_->setValue(Modules::Render::ViewScene::UseBGColor, value);
+  state_->setValue(Parameters::UseBGColor, value);
   if (value)
     setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
   else
@@ -2613,7 +2591,6 @@ void ViewSceneDialog::setFogUseBGColor(bool value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::assignFogColor()
 {
   QString title = windowTitle() + " Choose fog color";
@@ -2624,7 +2601,7 @@ void ViewSceneDialog::assignFogColor()
     mConfigurationDock->setFogColorLabel(fogColor_);
     state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
   }
-  bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+  bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
   if (!useBg)
   {
     setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
@@ -2632,7 +2609,6 @@ void ViewSceneDialog::assignFogColor()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFogStartValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogStart, value);
@@ -2640,7 +2616,6 @@ void ViewSceneDialog::setFogStartValue(double value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFogEndValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogEnd, value);
@@ -2648,7 +2623,6 @@ void ViewSceneDialog::setFogEndValue(double value)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setMaterialFactor(MatFactor factor, double value)
 {
   auto spire = mSpire.lock();
@@ -2656,7 +2630,6 @@ void ViewSceneDialog::setMaterialFactor(MatFactor factor, double value)
     spire->setMaterialFactor(factor, value);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFog(FogFactor factor, double value)
 {
   auto spire = mSpire.lock();
@@ -2664,7 +2637,6 @@ void ViewSceneDialog::setFog(FogFactor factor, double value)
     spire->setFog(factor, value);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setFogColor(const glm::vec4 &color)
 {
   auto spire = mSpire.lock();
@@ -2672,13 +2644,10 @@ void ViewSceneDialog::setFogColor(const glm::vec4 &color)
     spire->setFogColor(color/255.0f);
 }
 
-
-
 //--------------------------------------------------------------------------------------------------
 //---------------- Misc. ---------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::assignBackgroundColor()
 {
   QString title = windowTitle() + " Choose background color";
@@ -2690,7 +2659,7 @@ void ViewSceneDialog::assignBackgroundColor()
     state_->setValue(Parameters::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
-    bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+    bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
     if (useBg)
       setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
     else
@@ -2699,7 +2668,6 @@ void ViewSceneDialog::assignBackgroundColor()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeContinuous(bool)
 {
   auto spire = mSpire.lock();
@@ -2707,7 +2675,6 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeUpdate(bool)
 {
   auto spire = mSpire.lock();
@@ -2715,7 +2682,6 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeLists(bool)
 {
   auto spire = mSpire.lock();
@@ -2723,7 +2689,6 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool)
   updateAllGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::screenshotClicked()
 {
   takeScreenshot();

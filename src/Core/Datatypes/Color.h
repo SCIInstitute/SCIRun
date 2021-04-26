@@ -65,13 +65,14 @@ namespace Datatypes {
       return !(*this == c);
     }
 
-    /// \todo Add normalization function to normalize 0 - 255 to 0 - 1.0.
-    ///       useful when reading colors from strings.
-
     double r() const {return r_;}
     double g() const {return g_;}
     double b() const {return b_;}
     double a() const {return a_;}
+
+    int redNormalized() const;
+    int greenNormalized() const;
+    int blueNormalized() const;
 
     std::string toString() const;
   };

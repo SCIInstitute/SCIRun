@@ -60,6 +60,9 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(Specular);
         ALGORITHM_PARAMETER_DECL(Shine);
         ALGORITHM_PARAMETER_DECL(Emission); // not connected
+        ALGORITHM_PARAMETER_DECL(FogOn);
+        ALGORITHM_PARAMETER_DECL(ObjectsOnly); // not connected
+        ALGORITHM_PARAMETER_DECL(UseBGColor);
 
         // save/load confirmed, uses standard widget managers.
 
@@ -99,9 +102,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName FogOn;
-    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
-    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
     static const Core::Algorithms::AlgorithmParameterName FogStart;
     static const Core::Algorithms::AlgorithmParameterName FogEnd;
     static const Core::Algorithms::AlgorithmParameterName FogColor;

@@ -193,7 +193,6 @@ namespace SCIRun {
 
       //---------------- Fog Tools -----------------------------------------------------------------
       void setFogOn(bool value);
-      void setFogOnVisibleObjects(bool value);
       void setFogUseBGColor(bool value);
       void assignFogColor();
       void setFogStartValue(double value);

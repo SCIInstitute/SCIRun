@@ -76,6 +76,9 @@ ALGORITHM_PARAMETER_DEF(Render, Diffuse);
 ALGORITHM_PARAMETER_DEF(Render, Specular);
 ALGORITHM_PARAMETER_DEF(Render, Shine);
 ALGORITHM_PARAMETER_DEF(Render, Emission);
+ALGORITHM_PARAMETER_DEF(Render, FogOn);
+ALGORITHM_PARAMETER_DEF(Render, ObjectsOnly);
+ALGORITHM_PARAMETER_DEF(Render, UseBGColor);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -102,9 +105,9 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Specular, 0.3);
   state->setValue(Parameters::Shine, 0.5);
   state->setValue(Parameters::Emission, 0.0); // not connected yet
-  state->setValue(FogOn, false);
-  state->setValue(ObjectsOnly, true);
-  state->setValue(UseBGColor, true);
+  state->setValue(Parameters::FogOn, false);
+  state->setValue(Parameters::ObjectsOnly, true);
+  state->setValue(Parameters::UseBGColor, true);
   state->setValue(FogStart, 0.0);
   state->setValue(FogEnd, 0.71);
   state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
@@ -315,9 +318,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::FogOn("FogOn");
-const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
-const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");
 const AlgorithmParameterName ViewScene::FogStart("FogStart");
 const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
 const AlgorithmParameterName ViewScene::FogColor("FogColor");
