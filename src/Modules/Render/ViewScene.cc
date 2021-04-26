@@ -71,6 +71,11 @@ ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
 ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
+ALGORITHM_PARAMETER_DEF(Render, Ambient);
+ALGORITHM_PARAMETER_DEF(Render, Diffuse);
+ALGORITHM_PARAMETER_DEF(Render, Specular);
+ALGORITHM_PARAMETER_DEF(Render, Shine);
+ALGORITHM_PARAMETER_DEF(Render, Emission);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -91,12 +96,12 @@ ViewScene::~ViewScene()
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Ambient, 0.2);
-  state->setValue(Diffuse, 1.0);
-  state->setValue(Specular, 0.3);
-  state->setValue(Shine, 0.5);
-  state->setValue(Emission, 0.0);
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Ambient, 0.2);
+  state->setValue(Parameters::Diffuse, 1.0);
+  state->setValue(Parameters::Specular, 0.3);
+  state->setValue(Parameters::Shine, 0.5);
+  state->setValue(Parameters::Emission, 0.0); // not connected yet
   state->setValue(FogOn, false);
   state->setValue(ObjectsOnly, true);
   state->setValue(UseBGColor, true);
@@ -145,7 +150,7 @@ void ViewScene::setStateDefaults()
   state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(HasNewGeometry, false);
-  
+
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
@@ -310,12 +315,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
-const AlgorithmParameterName ViewScene::Ambient("Ambient");
-const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
-const AlgorithmParameterName ViewScene::Specular("Specular");
-const AlgorithmParameterName ViewScene::Shine("Shine");
-const AlgorithmParameterName ViewScene::Emission("Emission");
 const AlgorithmParameterName ViewScene::FogOn("FogOn");
 const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
 const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");

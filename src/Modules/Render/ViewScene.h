@@ -32,6 +32,8 @@
 #include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
+//TODO: split out header with shared state keys.
+#include <Modules/Render/OsprayViewer.h>
 #include <Modules/Render/share.h>
 
 namespace SCIRun
@@ -42,12 +44,27 @@ namespace SCIRun
     {
       namespace Render
       {
+        // these are transient state keys for right now
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(VSMutex);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+        // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
+
+        // save/load confirmed. Need refactoring to standard push/pull model.
+        //ALGORITHM_PARAMETER_DECL(BackgroundColor); -->in OsprayViewer.h
+        ALGORITHM_PARAMETER_DECL(Ambient);
+        ALGORITHM_PARAMETER_DECL(Diffuse);
+        ALGORITHM_PARAMETER_DECL(Specular);
+        ALGORITHM_PARAMETER_DECL(Shine);
+        ALGORITHM_PARAMETER_DECL(Emission); // not connected
+
+        // save/load confirmed, uses standard widget managers.
+
+
+        // save/load has issues.
       }
     }
   }
@@ -82,12 +99,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    static const Core::Algorithms::AlgorithmParameterName Ambient;
-    static const Core::Algorithms::AlgorithmParameterName Diffuse;
-    static const Core::Algorithms::AlgorithmParameterName Specular;
-    static const Core::Algorithms::AlgorithmParameterName Shine;
-    static const Core::Algorithms::AlgorithmParameterName Emission;
     static const Core::Algorithms::AlgorithmParameterName FogOn;
     static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
     static const Core::Algorithms::AlgorithmParameterName UseBGColor;

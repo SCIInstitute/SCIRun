@@ -368,7 +368,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   mSpire = RendererWeakPtr(mGLWidget->getSpire());
 
   //Set background Color
-  auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
+  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
   bgColor_ = checkColorSetting(colorStr, Qt::black);
 
   {
@@ -510,11 +510,11 @@ void ViewSceneDialog::addConfigurationDock()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setupMaterials()
 {
-  double ambient = state_->getValue(Modules::Render::ViewScene::Ambient).toDouble();
-  double diffuse = state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble();
-  double specular = state_->getValue(Modules::Render::ViewScene::Specular).toDouble();
-  double shine = state_->getValue(Modules::Render::ViewScene::Shine).toDouble();
-  double emission = state_->getValue(Modules::Render::ViewScene::Emission).toDouble();
+  double ambient = state_->getValue(Parameters::Ambient).toDouble();
+  double diffuse = state_->getValue(Parameters::Diffuse).toDouble();
+  double specular = state_->getValue(Parameters::Specular).toDouble();
+  double shine = state_->getValue(Parameters::Shine).toDouble();
+  //double emission = state_->getValue(Modules::Render::ViewScene::Emission1).toDouble();
   bool fogOn = state_->getValue(Modules::Render::ViewScene::FogOn).toBool();
   bool objectsOnly = state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool();
   bool useBGColor = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
@@ -530,14 +530,14 @@ void ViewSceneDialog::setupMaterials()
   mConfigurationDock->setFogColorLabel(fogColor_);
 
   mConfigurationDock->setMaterialTabValues(ambient, diffuse, specular, shine,
-                                           emission, fogOn, objectsOnly,
+                                           0.0, fogOn, objectsOnly,
                                            useBGColor, fogStart, fogEnd);
 
   setAmbientValue(ambient);
   setDiffuseValue(diffuse);
   setSpecularValue(specular);
   setShininessValue(shine);
-  setEmissionValue(emission);
+  //setEmissionValue(emission);
   setFogOnVisibleObjects(objectsOnly);
   setFogUseBGColor(useBGColor);
   setFogStartValue(fogStart);
@@ -1003,20 +1003,21 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateAllGeometries()
 {
-  //If a render parameter changes we must update all of the geometries by removing and readding them.
-  //This must be foreced because the IDs will not have changed
+  // If a render parameter changes we must update all of the geometries by removing and readding them.
+  // This must be forced because the IDs will not have changed
   newGeometryValue(true);
 
   auto spire = mSpire.lock();
-  if (!spire) return;
+  if (!spire)
+    return;
   spire->runGCOnNextExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateModifiedGeometries()
 {
-  //if we are looking for a new geoetry the ID will have changed therefore we can find the
-  //geometries that have changed and only remove those
+  // if we are looking for a new geometry the ID will have changed therefore we can find the
+  // geometries that have changed and only remove those
   newGeometryValue(false);
 
   auto spire = mSpire.lock();
@@ -1028,11 +1029,14 @@ void ViewSceneDialog::updateModifiedGeometries()
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false);
-  if(mGLWidget->isVisible() && mGLWidget->isValid()) mGLWidget->requestFrame();
-  else                                               unblockExecution();
+  if (mGLWidget->isVisible() && mGLWidget->isValid())
+    mGLWidget->requestFrame();
+  else
+    unblockExecution();
 
   auto spire = mSpire.lock();
-  if (!spire) return;
+  if (!spire)
+    return;
   spire->runGCOnNextExecution();
 }
 
@@ -1047,7 +1051,8 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   auto spire = mSpire.lock();
   if (!spire) return;
 
-  if(!mGLWidget->isValid()) return;
+  if (!mGLWidget->isValid())
+    return;
   spire->setContext(mGLWidget->context());
 
   if(forceAllObjectsToUpdate)
@@ -2536,7 +2541,7 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setAmbientValue(double value)
 {
-  state_->setValue(Modules::Render::ViewScene::Ambient, value);
+  state_->setValue(Parameters::Ambient, value);
   setMaterialFactor(MatFactor::MAT_AMBIENT, value);
   updateAllGeometries();
 }
@@ -2544,7 +2549,7 @@ void ViewSceneDialog::setAmbientValue(double value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setDiffuseValue(double value)
 {
-  state_->setValue(Modules::Render::ViewScene::Diffuse, value);
+  state_->setValue(Parameters::Diffuse, value);
   setMaterialFactor(MatFactor::MAT_DIFFUSE, value);
   updateAllGeometries();
 }
@@ -2552,7 +2557,7 @@ void ViewSceneDialog::setDiffuseValue(double value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setSpecularValue(double value)
 {
-  state_->setValue(Modules::Render::ViewScene::Specular, value);
+  state_->setValue(Parameters::Specular, value);
   setMaterialFactor(MatFactor::MAT_SPECULAR, value);
   updateAllGeometries();
 }
@@ -2562,17 +2567,17 @@ void ViewSceneDialog::setShininessValue(double value)
 {
   const static int maxSpecExp = 40;
   const static int minSpecExp = 1;
-  state_->setValue(Modules::Render::ViewScene::Shine, value);
+  state_->setValue(Parameters::Shine, value);
   //taking square of value makes the ui a little more intuitive in my opinion
   setMaterialFactor(MatFactor::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
   updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setEmissionValue(double value)
-{
-  state_->setValue(Modules::Render::ViewScene::Emission, value);
-}
+// void ViewSceneDialog::setEmissionValue(double value)
+// {
+//   state_->setValue(Modules::Render::ViewScene::Emission1, value);
+// }
 
 
 
@@ -2682,7 +2687,7 @@ void ViewSceneDialog::assignBackgroundColor()
   {
     bgColor_ = newColor;
     mConfigurationDock->setSampleColor(bgColor_);
-    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
+    state_->setValue(Parameters::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
     bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();

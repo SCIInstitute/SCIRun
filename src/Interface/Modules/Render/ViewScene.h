@@ -190,7 +190,6 @@ namespace SCIRun {
       void setDiffuseValue(double value);
       void setSpecularValue(double value);
       void setShininessValue(double value);
-      void setEmissionValue(double value);
 
       //---------------- Fog Tools -----------------------------------------------------------------
       void setFogOn(bool value);

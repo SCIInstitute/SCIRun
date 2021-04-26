@@ -18203,9 +18203,9 @@ xmlSchemaCheckElemPropsCorrect(xmlSchemaParserCtxtPtr pctxt,
 
 	/*
 	* SPEC (2) "If there is a {value constraint}, the canonical lexical
-	* representation of its value must be �valid� with respect to the
+	* representation of its value must be ·valid· with respect to the
 	* {type definition} as defined in Element Default Valid (Immediate)
-	* (�3.3.6)."
+	* (§3.3.6)."
 	*/
 	if (typeDef == NULL) {
 	    xmlSchemaPErr(pctxt, elemDecl->node,

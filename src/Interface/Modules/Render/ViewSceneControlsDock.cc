@@ -158,7 +158,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
   connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
   connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
-  connect(emissionDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setEmissionValue(double)));
+  //connect(emissionDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setEmissionValue(double)));
+  emissionDoubleSpinBox_->setEnabled(false);
   connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
   connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
   connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
@@ -321,14 +322,14 @@ void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
   fogColorLabel_->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double,
   bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
 {
   ambientDoubleSpinBox_->setValue(ambient);
   diffuseDoubleSpinBox_->setValue(diffuse);
   specularDoubleSpinBox_->setValue(specular);
   shininessDoubleSpinBox_->setValue(shine);
-  emissionDoubleSpinBox_->setValue(emission);
+  //emissionDoubleSpinBox_->setValue(emission);
   fogGroupBox_->setChecked(fogVisible);
   fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
   fogUseBGColorCheckBox_->setChecked(useBGColor);
