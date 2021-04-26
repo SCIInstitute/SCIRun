@@ -59,7 +59,7 @@ void QtHistogramGraph::reset_histogram( )
   this->update();
 }
 
-void QtHistogramGraph::paintEvent(QPaintEvent * event )
+void QtHistogramGraph::paintEvent(QPaintEvent*)
 {
   QStyleOption opt;
   opt.init(this);

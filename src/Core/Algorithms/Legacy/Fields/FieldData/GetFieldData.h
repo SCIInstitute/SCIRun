@@ -61,9 +61,9 @@ namespace SCIRun {
           template <class ValueType>
           bool GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<Datatypes::DenseMatrixGeneric<ValueType>>& output) const;
           template <class MatrixReturnType>
-          bool GetVectorFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const { return false; }
+          bool GetVectorFieldDataV(FieldHandle, boost::shared_ptr<MatrixReturnType>&) const { return false; }
           template <class MatrixReturnType>
-          bool GetTensorFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const { return false; }
+          bool GetTensorFieldDataV(FieldHandle, boost::shared_ptr<MatrixReturnType>&) const { return false; }
         };
 
       }

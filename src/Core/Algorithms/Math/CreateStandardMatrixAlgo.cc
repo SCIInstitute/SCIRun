@@ -58,7 +58,7 @@ CreateStandardMatrixAlgo::CreateStandardMatrixAlgo()
   addParameter(Parameters::StartPointer,0.0);
 }
 
-AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput&) const
 {
   //pull parameter from UI
   std::string matrixType=getOption(Parameters::MatrixType);

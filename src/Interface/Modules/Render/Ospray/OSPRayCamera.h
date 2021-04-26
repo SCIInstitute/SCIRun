@@ -39,8 +39,8 @@ public:
   OSPRayCamera();
   ~OSPRayCamera();
 
-  void mousePress(float x, float y, Core::Datatypes::MouseButton btn);
-  void mouseMove(float x, float y, Core::Datatypes::MouseButton btn);
+  void mousePress(float x, float y, MouseButton btn);
+  void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
   void mouseWheel(int delta);
 

@@ -36,6 +36,9 @@
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
+  //TODO: relocate
+  enum class MouseButton { NONE = 0, LEFT, MIDDLE, RIGHT };
+
 namespace Core {
 namespace Datatypes {
 // These will give different types of widget movement through ViewScene.
@@ -62,8 +65,6 @@ struct EnumClassHash
     return static_cast<std::size_t>(t);
   }
 };
-
-enum class MouseButton { NONE = 0, LEFT, MIDDLE, RIGHT, STATE_COUNT };
 
 struct SCISHARE ViewSceneFeedback : ModuleFeedback
 {

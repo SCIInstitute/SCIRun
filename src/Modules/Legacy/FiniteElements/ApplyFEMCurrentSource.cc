@@ -112,7 +112,7 @@ void ApplyFEMCurrentSource::setStateDefaults()
 bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
   FieldHandle source,
   DenseColumnMatrixHandle& rhs,
-  SparseRowMatrixHandle& weights)
+  SparseRowMatrixHandle& /*weights*/)
 {
   if (!field)
   {

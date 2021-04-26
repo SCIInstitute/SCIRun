@@ -49,9 +49,9 @@ namespace SCIRun {
         void execute() override;
         HAS_DYNAMIC_PORTS
 
-        INPUT_PORT(0, InputBundle, Bundle);
-        INPUT_PORT_DYNAMIC(1, InputFields, Field);
-        OUTPUT_PORT(0, OutputBundle, Bundle);
+        INPUT_PORT(0, InputBundle, Bundle)
+        INPUT_PORT_DYNAMIC(1, InputFields, Field)
+        OUTPUT_PORT(0, OutputBundle, Bundle)
 
         static const Core::Algorithms::AlgorithmParameterName BundleName;
         static const Core::Algorithms::AlgorithmParameterName NumFields;

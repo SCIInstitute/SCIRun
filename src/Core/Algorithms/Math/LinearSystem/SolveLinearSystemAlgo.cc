@@ -1080,7 +1080,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0,
                            DenseColumnMatrixHandle& x,
-                           DenseColumnMatrixHandle& convergence) const
+                           DenseColumnMatrixHandle& /*convergence*/) const
 {
   ScopedAlgorithmStatusReporter ssr(this, "SolveLinearSystem");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");

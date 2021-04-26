@@ -71,7 +71,7 @@ namespace SCIRun
 
     class SCISHARE Preferences : boost::noncopyable
     {
-	    CORE_SINGLETON( Preferences );
+	    CORE_SINGLETON( Preferences )
 
     private:
 	    Preferences();

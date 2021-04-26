@@ -38,7 +38,7 @@
 #include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 
 template <class Data>
@@ -322,7 +322,7 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
 }
 
 template <class Data>
-std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
+std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* = nullptr)
 {
   return "";
 }
@@ -380,7 +380,7 @@ std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 }
 
 template <class Data>
-std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* = nullptr)
 {
   return "";
 }

@@ -57,7 +57,7 @@ namespace Datatypes {
     ///Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, size_t nnz) : EigenBase(nrows, ncols)
     {
-      if (rowCounter[nrows] != nnz)
+      if (rowCounter[nrows] != static_cast<index_type>(nnz))
         THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
       std::vector<Triplet> triplets;
       triplets.reserve(nnz);
@@ -81,7 +81,7 @@ namespace Datatypes {
 
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, const T* data, size_t nnz) : EigenBase(nrows, ncols)
     {
-      if (rowCounter[nrows] != nnz)
+      if (rowCounter[nrows] != static_cast<index_type>(nnz))
         THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
       std::vector<Triplet> triplets;
       triplets.reserve(nnz);

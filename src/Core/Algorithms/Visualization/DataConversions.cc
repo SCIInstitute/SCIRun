@@ -41,7 +41,7 @@ bool valToColor(const Vector &v, Core::Datatypes::ColorRGB &c)
 }
 
 template <>
-bool valToColor(const Tensor &t, Core::Datatypes::ColorRGB &c)
+bool valToColor(const Tensor &, Core::Datatypes::ColorRGB &)
 {
   /// get_eigenvectors was not implemented in Tensor. Can't identify colors.
   // Tensor tt = t;
@@ -72,7 +72,7 @@ bool valToDouble(const Vector &data_in, double &data_out)
 }
 
 template <>
-bool valToDouble(const Tensor &data_in, double &data_out)
+bool valToDouble(const Tensor &, double &)
 {
   // Tensor t = data_in;
   // double v1, v2, v3;
@@ -95,7 +95,7 @@ bool valToVector(const Vector &data_in, Vector &data_out)
 }
 
 template <>
-bool valToVector(const Tensor &data_in, Vector &data_out)
+bool valToVector(const Tensor &, Vector &)
 {
   // Tensor t = data_in;
   // double v1, v2, v3;

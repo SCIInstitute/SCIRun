@@ -52,7 +52,7 @@ gen::Transform ObjectTranslationCalculator::computeTransform(int x, int y) const
 }
 
 ObjectScaleCalculator::ObjectScaleCalculator(const BasicRendererObjectProvider* s, const Params& p) : ObjectTransformCalculatorBase(s),
-  flipAxisWorld_(p.flipAxisWorld_), originWorld_(p.originWorld_)
+  originWorld_(p.originWorld_)
 {
   // Get transforms
   auto view = service_->camera().getWorldToView();
@@ -156,8 +156,11 @@ gen::Transform ObjectRotationCalculator::computeTransform(int x, int y) const
 }
 
 ObjectScaleAxisCalculator::ObjectScaleAxisCalculator(const BasicRendererObjectProvider* s, const Params& p)
-  : ObjectTransformCalculatorBase(s), flipAxisWorld_(p.flipAxisWorld_),
-    originWorld_(p.originWorld_), axis_(p.axis_), scaleAxisIndex_(p.scaleAxisIndex_)
+  : ObjectTransformCalculatorBase(s),
+    axis_(p.axis_),
+    originWorld_(p.originWorld_),
+    flipAxisWorld_(p.flipAxisWorld_),
+    scaleAxisIndex_(p.scaleAxisIndex_)
 {
   // Get transforms
   auto view = service_->camera().getWorldToView();
@@ -194,7 +197,7 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
   float initLen = glm::length(scaleAxisView);
   float scaling_factor = glm::dot(shiftedOriginToCurrentSpos/initLen, scaleAxisView/initLen);
   //scaling_factor = (multiplier_ * scaling_factor) + (1.0-multiplier_;
- 
+
   // Flip if negative to avoid inverted normals
   glm::mat4 flip;
   bool negativeScale = scaling_factor < 0.0;
@@ -223,7 +226,8 @@ gen::Transform ObjectScaleAxisCalculator::computeTransform(int x, int y) const
 }
 
 ObjectAxisTranslationCalculator::ObjectAxisTranslationCalculator(const BasicRendererObjectProvider* s, const Params& p)
-  : ObjectTransformCalculatorBase(s), axis_(p.axis_), initialPosition_(p.initialPosition_), w_(p.w_)
+  : ObjectTransformCalculatorBase(s), initialPosition_(p.initialPosition_),
+  axis_(p.axis_), w_(p.w_)
 {}
 
 gen::Transform ObjectAxisTranslationCalculator::computeTransform(int x, int y) const

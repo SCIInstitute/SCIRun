@@ -59,7 +59,7 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
   py::object operator()(const std::string& v) const { return py::object(v); }
   py::object operator()(const double& v) const { return py::object(v); }
   py::object operator()(const bool& v) const { return py::object(v); }
-  py::object operator()(const AlgoOption& v) const
+  py::object operator()(const AlgoOption&) const
   {
     THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
   }
@@ -70,11 +70,6 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
       pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
     return std::move(pyList);
   }
-};
-
-struct NumberVisitor : boost::static_visitor<Variable::Value>
-{
-  
 };
 
 struct ValueVisitor : boost::static_visitor<Variable::Value>
@@ -90,17 +85,17 @@ public:
     Double
   };
 
-  Variable::Value operator()(const int& v) const
+  Variable::Value operator()(const int&) const
   {
-    return convertNumber(v, NumberType::Int);
+    return convertNumber(NumberType::Int);
   }
 
-  Variable::Value operator()(const double& v) const
+  Variable::Value operator()(const double&) const
   {
-    return convertNumber(v, NumberType::Double);
+    return convertNumber(NumberType::Double);
   }
 
-  Variable::Value operator()(const bool& v) const
+  Variable::Value operator()(const bool&) const
   {
     if (getClassName(object_) == "bool")
     {
@@ -111,7 +106,7 @@ public:
       THROW_INVALID_ARGUMENT("The input python object is not a boolean.");
   }
 
-  Variable::Value operator()(const std::string& v) const
+  Variable::Value operator()(const std::string&) const
   {
     if (getClassName(object_) == "str")
     {
@@ -122,7 +117,7 @@ public:
       THROW_INVALID_ARGUMENT("The input python object is not a string.");
   }
 
-  Variable::Value operator()(const AlgoOption& v) const
+  Variable::Value operator()(const AlgoOption&) const
   {
     // All variables using AlgoOption go to the string operator so this is never reached
     THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
@@ -145,7 +140,7 @@ public:
       THROW_INVALID_ARGUMENT("The input python object is not a list.");
   }
 
-  Variable::Value convertNumber(const Variable::Value& val, NumberType returnType) const
+  Variable::Value convertNumber(NumberType returnType) const
   {
     auto classname = getClassName(object_);
     if (classname == "int")
@@ -184,7 +179,7 @@ public:
 };
 
 template <class T>
-py::list toPythonList(const DenseMatrixGeneric<T>& dense)
+py::list toPythonListDense(const DenseMatrixGeneric<T>& dense)
 {
   py::list list;
   for (int i = 0; i < dense.nrows(); ++i)
@@ -198,7 +193,7 @@ py::list toPythonList(const DenseMatrixGeneric<T>& dense)
 }
 
 template <class T>
-py::dict toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+py::dict toPythonListSparse(const SparseRowMatrixGeneric<T>& sparse)
 {
   py::list rows, columns, values;
 
@@ -300,13 +295,13 @@ py::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 
 py::list SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
 {
-  if (matrix) return ::toPythonList(*matrix);
+  if (matrix) return ::toPythonListDense(*matrix);
   return {};
 }
 
 py::dict SCIRun::Core::Python::convertMatrixToPython(SparseRowMatrixHandle matrix)
 {
-  if (matrix) return ::toPythonList(*matrix);
+  if (matrix) return ::toPythonListSparse(*matrix);
   return {};
 }
 

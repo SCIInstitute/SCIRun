@@ -81,7 +81,7 @@ namespace SCIRun {
                               static_cast<float>(screenParameters_->getScreenHeightPixels());}
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::mouseDownEvent(MouseButton btn, const glm::vec2& pos)
+    void SRCamera::mouseDownEvent(const glm::vec2& pos)
     {
       mArcLookAt->doReferenceDown(pos);
       lastMousePos  = pos;

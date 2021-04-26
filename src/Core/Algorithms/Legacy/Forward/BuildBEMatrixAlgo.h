@@ -103,9 +103,6 @@ namespace SCIRun {
             const Geometry::Vector&,
             const Geometry::Vector&,
             unsigned int,
-            Datatypes::DenseMatrix&,
-            double,
-            double,
             Datatypes::DenseMatrix& );
 
           static double get_new_auto_g( const Geometry::Vector&,
@@ -118,7 +115,6 @@ namespace SCIRun {
             Datatypes::DenseMatrixHandle&,
             double,
             double,
-            double,
             const std::vector<double>& );
 
           static void make_cross_G_allocate(VMesh*, VMesh*, Datatypes::DenseMatrixHandle&);
@@ -127,14 +123,12 @@ namespace SCIRun {
             Datatypes::DenseMatrixHandle&,
             double,
             double,
-            double,
             const std::vector<double>& );
 
           static void make_auto_G_allocate(VMesh*, Datatypes::DenseMatrixHandle&);
 
           static void make_auto_P( VMesh*,
             Datatypes::DenseMatrixHandle&,
-            double,
             double,
             double );
 
@@ -146,7 +140,6 @@ namespace SCIRun {
           static void make_cross_P( VMesh*,
             VMesh*,
             Datatypes::DenseMatrixHandle&,
-            double,
             double,
             double );
 

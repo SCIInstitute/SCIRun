@@ -56,7 +56,7 @@ typedef boost::shared_ptr<ApplicationPrivate> ApplicationPrivateHandle;
 
 class SCISHARE Application : boost::noncopyable
 {
-	CORE_SINGLETON( Application );
+	CORE_SINGLETON( Application )
 
 private:
 	Application();

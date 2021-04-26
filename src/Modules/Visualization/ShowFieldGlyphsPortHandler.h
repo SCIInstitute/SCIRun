@@ -90,7 +90,6 @@ namespace SCIRun{
      public:
         ShowFieldGlyphsPortHandler(
                     const Dataflow::Networks::Module* mod_,
-                    Dataflow::Networks::ModuleStateHandle state,
                     const RenderState renState,
                     FieldHandle pf,
                     boost::optional<FieldHandle> sf,

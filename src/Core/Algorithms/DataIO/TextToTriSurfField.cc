@@ -457,7 +457,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
   return MeshHandle();
 }
 
-AlgorithmOutput TextToTriSurfFieldAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput TextToTriSurfFieldAlgorithm::run(const AlgorithmInput&) const
 {
   throw 2;
 }

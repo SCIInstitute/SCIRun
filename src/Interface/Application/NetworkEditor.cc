@@ -233,7 +233,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
 #endif
 }
 
-void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
+void NetworkEditor::connectionAddedQueued(const ConnectionDescription&)
 {
   //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }
@@ -1868,6 +1868,9 @@ namespace
   const double maxScale = 2.0;
   const double scaleFactor = 1.15;
 }
+
+//TODO!!!
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
