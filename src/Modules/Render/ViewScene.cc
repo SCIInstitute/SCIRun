@@ -83,6 +83,14 @@ ALGORITHM_PARAMETER_DEF(Render, FogStart);
 ALGORITHM_PARAMETER_DEF(Render, FogEnd);
 ALGORITHM_PARAMETER_DEF(Render, FogColor);
 ALGORITHM_PARAMETER_DEF(Render, ShowScaleBar);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarUnitValue);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLength);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarHeight);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarMultiplier);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarNumTicks);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineWidth);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
+ALGORITHM_PARAMETER_DEF(Render, Lighting);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -116,14 +124,14 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::FogEnd, 0.71);
   state->setValue(Parameters::FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
   state->setValue(Parameters::ShowScaleBar, false);
-  state->setValue(ScaleBarUnitValue, std::string("mm"));
-  state->setValue(ScaleBarLength, 1.0);
-  state->setValue(ScaleBarHeight, 1.0);
-  state->setValue(ScaleBarMultiplier, 1.0);
-  state->setValue(ScaleBarNumTicks, 11);
-  state->setValue(ScaleBarLineWidth, 1.0);
-  state->setValue(ScaleBarFontSize, 8);
-  state->setValue(Lighting, true);
+  state->setValue(Parameters::ScaleBarUnitValue, std::string("mm"));
+  state->setValue(Parameters::ScaleBarLength, 1.0);
+  state->setValue(Parameters::ScaleBarHeight, 1.0);
+  state->setValue(Parameters::ScaleBarMultiplier, 1.0);
+  state->setValue(Parameters::ScaleBarNumTicks, 11);
+  state->setValue(Parameters::ScaleBarLineWidth, 1.0);
+  state->setValue(Parameters::ScaleBarFontSize, 8);
+  state->setValue(Parameters::Lighting, true);
   state->setValue(ShowBBox, false);
   state->setValue(UseClip, true);
   state->setValue(BackCull, false);
@@ -322,14 +330,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
-const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
-const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
-const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
-const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
-const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
-const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
-const AlgorithmParameterName ViewScene::Lighting("Lighting");
 const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
 const AlgorithmParameterName ViewScene::UseClip("UseClip");
 const AlgorithmParameterName ViewScene::Stereo("Stereo");

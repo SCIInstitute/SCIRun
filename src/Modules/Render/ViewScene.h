@@ -67,12 +67,23 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(FogEnd);
         ALGORITHM_PARAMETER_DECL(FogColor);
         ALGORITHM_PARAMETER_DECL(ShowScaleBar);  // issues with how/when it is shown
+        ALGORITHM_PARAMETER_DECL(ScaleBarUnitValue);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLength);
+        ALGORITHM_PARAMETER_DECL(ScaleBarHeight);
+        ALGORITHM_PARAMETER_DECL(ScaleBarMultiplier);
+        ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
+        ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
 
 
         // save/load confirmed, uses standard widget managers.
 
 
         // save/load has issues.
+
+
+        // not used--GUI hidden/never implemented
+        ALGORITHM_PARAMETER_DECL(Lighting);
       }
     }
   }
@@ -107,14 +118,8 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
-    static const Core::Algorithms::AlgorithmParameterName Lighting;
+
+
     static const Core::Algorithms::AlgorithmParameterName ShowBBox;
     static const Core::Algorithms::AlgorithmParameterName UseClip;
     static const Core::Algorithms::AlgorithmParameterName Stereo;

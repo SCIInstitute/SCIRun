@@ -682,7 +682,6 @@ void ViewSceneDialog::addViewBarButton()
   addToolbarButton(viewBarBtn_);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addControlLockButton()
 {
   controlLock_ = new QPushButton();
@@ -717,7 +716,6 @@ void ViewSceneDialog::addControlLockButton()
   toggleLockColor(false);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setupClippingPlanes()
 {
   const int numClippingPlanes = 6;
@@ -735,19 +733,18 @@ void ViewSceneDialog::setupClippingPlanes()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setupScaleBar()
 {
-  if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
+  if (state_->getValue(Parameters::ScaleBarUnitValue).toString() != "")
   {
     scaleBar_.visible = state_->getValue(Parameters::ShowScaleBar).toBool();
-    scaleBar_.unit = state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString();
-    scaleBar_.length = state_->getValue(Modules::Render::ViewScene::ScaleBarLength).toDouble();
-    scaleBar_.height = state_->getValue(Modules::Render::ViewScene::ScaleBarHeight).toDouble();
-    scaleBar_.multiplier = state_->getValue(Modules::Render::ViewScene::ScaleBarMultiplier).toDouble();
-    scaleBar_.numTicks = state_->getValue(Modules::Render::ViewScene::ScaleBarNumTicks).toInt();
-    scaleBar_.lineWidth = state_->getValue(Modules::Render::ViewScene::ScaleBarLineWidth).toDouble();
-    scaleBar_.fontSize = state_->getValue(Modules::Render::ViewScene::ScaleBarFontSize).toInt();
+    scaleBar_.unit = state_->getValue(Parameters::ScaleBarUnitValue).toString();
+    scaleBar_.length = state_->getValue(Parameters::ScaleBarLength).toDouble();
+    scaleBar_.height = state_->getValue(Parameters::ScaleBarHeight).toDouble();
+    scaleBar_.multiplier = state_->getValue(Parameters::ScaleBarMultiplier).toDouble();
+    scaleBar_.numTicks = state_->getValue(Parameters::ScaleBarNumTicks).toInt();
+    scaleBar_.lineWidth = state_->getValue(Parameters::ScaleBarLineWidth).toDouble();
+    scaleBar_.fontSize = state_->getValue(Parameters::ScaleBarFontSize).toInt();
   }
   else
   {
@@ -762,7 +759,6 @@ void ViewSceneDialog::setupScaleBar()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraState()
 {
   pullCameraDistance();
@@ -770,12 +766,13 @@ void ViewSceneDialog::pullCameraState()
   pullCameraRotation();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraRotation()
 {
-  if(pushingCameraState_) return;
+  if (pushingCameraState_)
+    return;
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire)
+    return;
 
   glm::quat q;
   auto rotVariable = state_->getValue(Modules::Render::ViewScene::CameraRotation);
@@ -948,30 +945,6 @@ void ViewSceneDialog::adjustToolbar()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setupRenderTabValues()
-{
-  auto valueSet = state_->getValue(Modules::Render::ViewScene::Lighting).toString();
-  if (!valueSet.empty())
-  {
-    mConfigurationDock->setRenderTabValues(
-      state_->getValue(Modules::Render::ViewScene::Lighting).toBool(),
-      state_->getValue(Modules::Render::ViewScene::ShowBBox).toBool(),
-      state_->getValue(Modules::Render::ViewScene::UseClip).toBool(),
-      state_->getValue(Modules::Render::ViewScene::BackCull).toBool(),
-      state_->getValue(Modules::Render::ViewScene::DisplayList).toBool(),
-      state_->getValue(Modules::Render::ViewScene::Stereo).toBool(),
-      state_->getValue(Modules::Render::ViewScene::StereoFusion).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::PolygonOffset).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::TextOffset).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::FieldOfView).toInt());
-  }
-  else
-  {
-    mConfigurationDock->setRenderTabValues(true, false, true, false, false, false, 0.4, 0.0, 0.0, 20);
-  }
-}
-
-//--------------------------------------------------------------------------------------------------
 QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 {
   QColor newColor;
@@ -986,8 +959,6 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
   }
   return newColor;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- New Geometry --------------------------------------------------------------------
@@ -2157,49 +2128,49 @@ void ViewSceneDialog::setScaleBarVisible(bool value)
 void ViewSceneDialog::setScaleBarFontSize(int value)
 {
   scaleBar_.fontSize = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+  state_->setValue(Parameters::ScaleBarFontSize, value);
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
 {
   scaleBar_.unit = text.toStdString();
-  state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+  state_->setValue(Parameters::ScaleBarUnitValue, text.toStdString());
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLength(double value)
 {
   scaleBar_.length = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+  state_->setValue(Parameters::ScaleBarLength, value);
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarHeight(double value)
 {
   scaleBar_.height = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+  state_->setValue(Parameters::ScaleBarHeight, value);
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarMultiplier(double value)
 {
   scaleBar_.multiplier = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+  state_->setValue(Parameters::ScaleBarMultiplier, value);
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarNumTicks(int value)
 {
   scaleBar_.numTicks = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+  state_->setValue(Parameters::ScaleBarNumTicks, value);
   setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
-  state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+  state_->setValue(Parameters::ScaleBarLineWidth, value);
   setScaleBar();
 }
 
@@ -2480,12 +2451,6 @@ void ViewSceneDialog::setLight3Inclination(int value)
   state_->setValue(Modules::Render::ViewScene::Light3Inclination, value);
   auto spire = mSpire.lock();
   spire->setLightInclination(3, value / 180.0f * PI - PI / 2.0f);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::lightingChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::Lighting, value);
 }
 
 //--------------------------------------------------------------------------------------------------

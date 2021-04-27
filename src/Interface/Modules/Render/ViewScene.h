@@ -183,7 +183,6 @@ namespace SCIRun {
       void toggleLight3(bool value);
       void setLight3Azimuth(int value);
       void setLight3Inclination(int value);
-      void lightingChecked(bool value);
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
@@ -212,7 +211,7 @@ namespace SCIRun {
 
 
     protected:
-      //---------------- Intitilization ------------------------------------------------------------
+      //---------------- Intitialization ------------------------------------------------------------
       void pullSpecial() override;
 
       //---------------- Input ---------------------------------------------------------------------
@@ -232,13 +231,12 @@ namespace SCIRun {
 
 
     private:
-      //---------------- Intitilization ------------------------------------------------------------
+      //---------------- Intitialization ------------------------------------------------------------
       void addToolBar();
       void setupClippingPlanes();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
-      void setupRenderTabValues();
       void addAutoViewButton();
       void addScreenshotButton();
       void addQuickScreenshotButton();
