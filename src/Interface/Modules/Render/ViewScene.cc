@@ -515,9 +515,9 @@ void ViewSceneDialog::setupMaterials()
   double shine = state_->getValue(Parameters::Shine).toDouble();
   bool fogOn = state_->getValue(Parameters::FogOn).toBool();
   bool useBGColor = state_->getValue(Parameters::UseBGColor).toBool();
-  double fogStart = state_->getValue(Modules::Render::ViewScene::FogStart).toDouble();
-  double fogEnd = state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble();
-  auto colorStr = state_->getValue(Modules::Render::ViewScene::FogColor).toString();
+  double fogStart = state_->getValue(Parameters::FogStart).toDouble();
+  double fogEnd = state_->getValue(Parameters::FogEnd).toDouble();
+  auto colorStr = state_->getValue(Parameters::FogColor).toString();
 
   ColorRGB color(colorStr);
   fogColor_ = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
@@ -740,7 +740,7 @@ void ViewSceneDialog::setupScaleBar()
 {
   if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
   {
-    scaleBar_.visible = state_->getValue(Modules::Render::ViewScene::ShowScaleBar).toBool();
+    scaleBar_.visible = state_->getValue(Parameters::ShowScaleBar).toBool();
     scaleBar_.unit = state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString();
     scaleBar_.length = state_->getValue(Modules::Render::ViewScene::ScaleBarLength).toDouble();
     scaleBar_.height = state_->getValue(Modules::Render::ViewScene::ScaleBarHeight).toDouble();
@@ -2147,15 +2147,13 @@ void ViewSceneDialog::setDefaultOrientPos()
 //---------------- Scale Bar -----------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarVisible(bool value)
 {
   scaleBar_.visible = value;
-  state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+  state_->setValue(Parameters::ShowScaleBar, value);
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarFontSize(int value)
 {
   scaleBar_.fontSize = value;
@@ -2163,7 +2161,6 @@ void ViewSceneDialog::setScaleBarFontSize(int value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
 {
   scaleBar_.unit = text.toStdString();
@@ -2171,7 +2168,6 @@ void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarLength(double value)
 {
   scaleBar_.length = value;
@@ -2179,7 +2175,6 @@ void ViewSceneDialog::setScaleBarLength(double value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarHeight(double value)
 {
   scaleBar_.height = value;
@@ -2187,7 +2182,6 @@ void ViewSceneDialog::setScaleBarHeight(double value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarMultiplier(double value)
 {
   scaleBar_.multiplier = value;
@@ -2195,7 +2189,6 @@ void ViewSceneDialog::setScaleBarMultiplier(double value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarNumTicks(int value)
 {
   scaleBar_.numTicks = value;
@@ -2203,7 +2196,6 @@ void ViewSceneDialog::setScaleBarNumTicks(int value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
@@ -2211,7 +2203,6 @@ void ViewSceneDialog::setScaleBarLineWidth(double value)
   setScaleBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setScaleBar()
 {
   if (scaleBar_.visible)
@@ -2222,7 +2213,6 @@ void ViewSceneDialog::setScaleBar()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateScaleBarLength()
 {
   auto spire = mSpire.lock();
@@ -2250,7 +2240,7 @@ void ViewSceneDialog::updateScaleBarLength()
 //--------------------------------------------------------------------------------------------------
 GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 {
-  const int    numTicks = scaleBar_.numTicks;
+  const int numTicks = scaleBar_.numTicks;
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
   glm::vec4 color(1.0);
@@ -2269,7 +2259,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   double text_len = 0.0;
   if (textBuilder_.isReady())
     text_len = std::get<0>(textBuilder_.getStringDims(oneline));
-  text_len += 5;//add a 5-pixel gap
+  text_len += 5; //add a 5-pixel gap
 
   std::vector<Vector> points;
   std::vector<uint32_t> indices;
@@ -2370,8 +2360,6 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   return geom;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Lights --------------------------------------------------------------------------
@@ -2599,7 +2587,7 @@ void ViewSceneDialog::assignFogColor()
   {
     fogColor_ = newColor;
     mConfigurationDock->setFogColorLabel(fogColor_);
-    state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
+    state_->setValue(Parameters::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
   }
   bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
   if (!useBg)
@@ -2611,14 +2599,14 @@ void ViewSceneDialog::assignFogColor()
 
 void ViewSceneDialog::setFogStartValue(double value)
 {
-  state_->setValue(Modules::Render::ViewScene::FogStart, value);
+  state_->setValue(Parameters::FogStart, value);
   setFog(FogFactor::FOG_START, value);
   updateAllGeometries();
 }
 
 void ViewSceneDialog::setFogEndValue(double value)
 {
-  state_->setValue(Modules::Render::ViewScene::FogEnd, value);
+  state_->setValue(Parameters::FogEnd, value);
   setFog(FogFactor::FOG_END, value);
   updateAllGeometries();
 }

@@ -79,6 +79,10 @@ ALGORITHM_PARAMETER_DEF(Render, Emission);
 ALGORITHM_PARAMETER_DEF(Render, FogOn);
 ALGORITHM_PARAMETER_DEF(Render, ObjectsOnly);
 ALGORITHM_PARAMETER_DEF(Render, UseBGColor);
+ALGORITHM_PARAMETER_DEF(Render, FogStart);
+ALGORITHM_PARAMETER_DEF(Render, FogEnd);
+ALGORITHM_PARAMETER_DEF(Render, FogColor);
+ALGORITHM_PARAMETER_DEF(Render, ShowScaleBar);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -108,10 +112,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::FogOn, false);
   state->setValue(Parameters::ObjectsOnly, true);
   state->setValue(Parameters::UseBGColor, true);
-  state->setValue(FogStart, 0.0);
-  state->setValue(FogEnd, 0.71);
-  state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
-  state->setValue(ShowScaleBar, false);
+  state->setValue(Parameters::FogStart, 0.0);
+  state->setValue(Parameters::FogEnd, 0.71);
+  state->setValue(Parameters::FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(Parameters::ShowScaleBar, false);
   state->setValue(ScaleBarUnitValue, std::string("mm"));
   state->setValue(ScaleBarLength, 1.0);
   state->setValue(ScaleBarHeight, 1.0);
@@ -318,10 +322,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::FogStart("FogStart");
-const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
-const AlgorithmParameterName ViewScene::FogColor("FogColor");
-const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
 const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
 const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
 const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");

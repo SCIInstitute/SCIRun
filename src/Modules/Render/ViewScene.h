@@ -63,6 +63,11 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(FogOn);
         ALGORITHM_PARAMETER_DECL(ObjectsOnly); // not connected
         ALGORITHM_PARAMETER_DECL(UseBGColor);
+        ALGORITHM_PARAMETER_DECL(FogStart);
+        ALGORITHM_PARAMETER_DECL(FogEnd);
+        ALGORITHM_PARAMETER_DECL(FogColor);
+        ALGORITHM_PARAMETER_DECL(ShowScaleBar);  // issues with how/when it is shown
+
 
         // save/load confirmed, uses standard widget managers.
 
@@ -102,10 +107,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName FogStart;
-    static const Core::Algorithms::AlgorithmParameterName FogEnd;
-    static const Core::Algorithms::AlgorithmParameterName FogColor;
-    static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
