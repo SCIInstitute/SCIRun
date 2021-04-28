@@ -100,6 +100,22 @@ ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
 // ALGORITHM_PARAMETER_DEF(Render, PolygonOffset);
 // ALGORITHM_PARAMETER_DEF(Render, TextOffset);
 // ALGORITHM_PARAMETER_DEF(Render, FieldOfView);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightOn);
+ALGORITHM_PARAMETER_DEF(Render, Light1On);
+ALGORITHM_PARAMETER_DEF(Render, Light2On);
+ALGORITHM_PARAMETER_DEF(Render, Light3On);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightColor);
+ALGORITHM_PARAMETER_DEF(Render, Light1Color);
+ALGORITHM_PARAMETER_DEF(Render, Light2Color);
+ALGORITHM_PARAMETER_DEF(Render, Light3Color);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightAzimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light1Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light2Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light3Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightInclination);
+ALGORITHM_PARAMETER_DEF(Render, Light1Inclination);
+ALGORITHM_PARAMETER_DEF(Render, Light2Inclination);
+ALGORITHM_PARAMETER_DEF(Render, Light3Inclination);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -150,22 +166,22 @@ void ViewScene::setStateDefaults()
   // state->setValue(Parameters::PolygonOffset, 0.0);
   // state->setValue(Parameters::TextOffset, 0.0);
   // state->setValue(Parameters::FieldOfView, 20);
-  state->setValue(HeadLightOn, true);
-  state->setValue(Light1On, false);
-  state->setValue(Light2On, false);
-  state->setValue(Light3On, false);
-  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(HeadLightAzimuth, 180);
-  state->setValue(Light1Azimuth, 180);
-  state->setValue(Light2Azimuth, 180);
-  state->setValue(Light3Azimuth, 180);
-  state->setValue(HeadLightInclination, 90);
-  state->setValue(Light1Inclination, 90);
-  state->setValue(Light2Inclination, 90);
-  state->setValue(Light3Inclination, 90);
+  state->setValue(Parameters::HeadLightOn, true);
+  state->setValue(Parameters::Light1On, false);
+  state->setValue(Parameters::Light2On, false);
+  state->setValue(Parameters::Light3On, false);
+  state->setValue(Parameters::HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::HeadLightAzimuth, 180);
+  state->setValue(Parameters::Light1Azimuth, 180);
+  state->setValue(Parameters::Light2Azimuth, 180);
+  state->setValue(Parameters::Light3Azimuth, 180);
+  state->setValue(Parameters::HeadLightInclination, 90);
+  state->setValue(Parameters::Light1Inclination, 90);
+  state->setValue(Parameters::Light2Inclination, 90);
+  state->setValue(Parameters::Light3Inclination, 90);
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
@@ -339,23 +355,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-
-const AlgorithmParameterName ViewScene::HeadLightOn("HeadLightOn");
-const AlgorithmParameterName ViewScene::Light1On("Light1On");
-const AlgorithmParameterName ViewScene::Light2On("Light2On");
-const AlgorithmParameterName ViewScene::Light3On("Light3On");
-const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
-const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
-const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
-const AlgorithmParameterName ViewScene::Light3Color("Light3Color");
-const AlgorithmParameterName ViewScene::HeadLightAzimuth("HeadLightAzimuth");
-const AlgorithmParameterName ViewScene::Light1Azimuth("Light1Azimuth");
-const AlgorithmParameterName ViewScene::Light2Azimuth("Light2Azimuth");
-const AlgorithmParameterName ViewScene::Light3Azimuth("Light3Azimuth");
-const AlgorithmParameterName ViewScene::HeadLightInclination("HeadLightInclination");
-const AlgorithmParameterName ViewScene::Light1Inclination("Light1Inclination");
-const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
-const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
 const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
 const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
 const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");

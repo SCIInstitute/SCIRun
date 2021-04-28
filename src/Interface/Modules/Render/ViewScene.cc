@@ -880,25 +880,25 @@ void ViewSceneDialog::pushCameraRotation()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setInitialLightValues()
 {
-  auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();
+  auto light0str = state_->getValue(Parameters::HeadLightColor).toString();
   QColor light0 = checkColorSetting(light0str, Qt::white);
-  int headlightAzimuth = state_->getValue(Modules::Render::ViewScene::HeadLightAzimuth).toInt();
-  int headlightInclination = state_->getValue(Modules::Render::ViewScene::HeadLightInclination).toInt();
+  int headlightAzimuth = state_->getValue(Parameters::HeadLightAzimuth).toInt();
+  int headlightInclination = state_->getValue(Parameters::HeadLightInclination).toInt();
 
-  auto light1str = state_->getValue(Modules::Render::ViewScene::Light1Color).toString();
+  auto light1str = state_->getValue(Parameters::Light1Color).toString();
   QColor light1 = checkColorSetting(light1str, Qt::white);
-  int light1Azimuth = state_->getValue(Modules::Render::ViewScene::Light1Azimuth).toInt();
-  int light1Inclination = state_->getValue(Modules::Render::ViewScene::Light1Inclination).toInt();
+  int light1Azimuth = state_->getValue(Parameters::Light1Azimuth).toInt();
+  int light1Inclination = state_->getValue(Parameters::Light1Inclination).toInt();
 
-  auto light2str = state_->getValue(Modules::Render::ViewScene::Light2Color).toString();
+  auto light2str = state_->getValue(Parameters::Light2Color).toString();
   QColor light2 = checkColorSetting(light2str, Qt::white);
-  int light2Azimuth = state_->getValue(Modules::Render::ViewScene::Light2Azimuth).toInt();
-  int light2Inclination = state_->getValue(Modules::Render::ViewScene::Light2Inclination).toInt();
+  int light2Azimuth = state_->getValue(Parameters::Light2Azimuth).toInt();
+  int light2Inclination = state_->getValue(Parameters::Light2Inclination).toInt();
 
-  auto light3str = state_->getValue(Modules::Render::ViewScene::Light3Color).toString();
+  auto light3str = state_->getValue(Parameters::Light3Color).toString();
   QColor light3 = checkColorSetting(light3str, Qt::white);
-  int light3Azimuth = state_->getValue(Modules::Render::ViewScene::Light2Azimuth).toInt();
-  int light3Inclination = state_->getValue(Modules::Render::ViewScene::Light2Inclination).toInt();
+  int light3Azimuth = state_->getValue(Parameters::Light2Azimuth).toInt();
+  int light3Inclination = state_->getValue(Parameters::Light2Inclination).toInt();
 
   auto spire = mSpire.lock();
   if (spire)
@@ -920,14 +920,13 @@ void ViewSceneDialog::setInitialLightValues()
     spire->setLightColor(2, light2.redF(), light2.greenF(), light2.blueF());
     spire->setLightColor(3, light3.redF(), light3.greenF(), light3.blueF());
 
-    spire->setLightOn(0, state_->getValue(Modules::Render::ViewScene::HeadLightOn).toBool());
-    spire->setLightOn(1, state_->getValue(Modules::Render::ViewScene::Light1On).toBool());
-    spire->setLightOn(2, state_->getValue(Modules::Render::ViewScene::Light2On).toBool());
-    spire->setLightOn(3, state_->getValue(Modules::Render::ViewScene::Light3On).toBool());
+    spire->setLightOn(0, state_->getValue(Parameters::HeadLightOn).toBool());
+    spire->setLightOn(1, state_->getValue(Parameters::Light1On).toBool());
+    spire->setLightOn(2, state_->getValue(Parameters::Light2On).toBool());
+    spire->setLightOn(3, state_->getValue(Parameters::Light3On).toBool());
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullSpecial()
 {
   auto show = state_->getValue(Modules::Render::ViewScene::ShowViewer).toBool();
@@ -938,13 +937,11 @@ void ViewSceneDialog::pullSpecial()
   pulledSavedVisibility_ = true;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::adjustToolbar()
 {
   adjustToolbarForHighResolution(mToolBar);
 }
 
-//--------------------------------------------------------------------------------------------------
 QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 {
   QColor newColor;
@@ -964,7 +961,6 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //---------------- New Geometry --------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateAllGeometries()
 {
   // If a render parameter changes we must update all of the geometries by removing and readding them.
@@ -2274,16 +2270,16 @@ void ViewSceneDialog::setLightColor(int index)
   switch (index)
   {
   case 0:
-    state_->setValue(Modules::Render::ViewScene::HeadLightColor, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::HeadLightColor, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
     break;
   case 1:
-    state_->setValue(Modules::Render::ViewScene::Light1Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light1Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
     break;
   case 2:
-    state_->setValue(Modules::Render::ViewScene::Light2Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light2Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
     break;
   case 3:
-    state_->setValue(Modules::Render::ViewScene::Light3Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light3Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
     break;
   default:
     return;
@@ -2305,7 +2301,7 @@ const static float PI = 3.1415926f;
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setHeadLightAzimuth(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::HeadLightAzimuth, value);
+  state_->setValue(Parameters::HeadLightAzimuth, value);
   auto spire = mSpire.lock();
   spire->setLightAzimuth(0, value / 180.0f * PI - PI);
 }
@@ -2313,7 +2309,7 @@ void ViewSceneDialog::setHeadLightAzimuth(int value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setHeadLightInclination(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::HeadLightInclination, value);
+  state_->setValue(Parameters::HeadLightInclination, value);
   auto spire = mSpire.lock();
   spire->setLightInclination(0, value / 180.0f * PI - PI / 2.0f);
 }
@@ -2327,7 +2323,7 @@ void ViewSceneDialog::toggleLight1(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight1Azimuth(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light1Azimuth, value);
+  state_->setValue(Parameters::Light1Azimuth, value);
   auto spire = mSpire.lock();
   spire->setLightAzimuth(1, value / 180.0f * PI - PI);
 }
@@ -2335,7 +2331,7 @@ void ViewSceneDialog::setLight1Azimuth(int value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight1Inclination(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light1Inclination, value);
+  state_->setValue(Parameters::Light1Inclination, value);
   auto spire = mSpire.lock();
   spire->setLightInclination(1, value / 180.0f * PI - PI / 2.0f);
 }
@@ -2349,7 +2345,7 @@ void ViewSceneDialog::toggleLight2(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight2Azimuth(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light2Azimuth, value);
+  state_->setValue(Parameters::Light2Azimuth, value);
   auto spire = mSpire.lock();
   spire->setLightAzimuth(2, value / 180.0f * PI - PI);
 }
@@ -2357,7 +2353,7 @@ void ViewSceneDialog::setLight2Azimuth(int value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight2Inclination(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light2Inclination, value);
+  state_->setValue(Parameters::Light2Inclination, value);
   auto spire = mSpire.lock();
   spire->setLightInclination(2, value / 180.0f * PI - PI / 2.0f);
 }
@@ -2371,7 +2367,7 @@ void ViewSceneDialog::toggleLight3(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight3Azimuth(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light3Azimuth, value);
+  state_->setValue(Parameters::Light3Azimuth, value);
   auto spire = mSpire.lock();
   spire->setLightAzimuth(3, value / 180.0f * PI - PI);
 }
@@ -2379,7 +2375,7 @@ void ViewSceneDialog::setLight3Azimuth(int value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLight3Inclination(int value)
 {
-  state_->setValue(Modules::Render::ViewScene::Light3Inclination, value);
+  state_->setValue(Parameters::Light3Inclination, value);
   auto spire = mSpire.lock();
   spire->setLightInclination(3, value / 180.0f * PI - PI / 2.0f);
 }
@@ -2390,16 +2386,16 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
   switch (index)
   {
   case 0:
-    state_->setValue(Modules::Render::ViewScene::HeadLightOn, value);
+    state_->setValue(Parameters::HeadLightOn, value);
     break;
   case 1:
-    state_->setValue(Modules::Render::ViewScene::Light1On, value);
+    state_->setValue(Parameters::Light1On, value);
     break;
   case 2:
-    state_->setValue(Modules::Render::ViewScene::Light2On, value);
+    state_->setValue(Parameters::Light2On, value);
     break;
   case 3:
-    state_->setValue(Modules::Render::ViewScene::Light3On, value);
+    state_->setValue(Parameters::Light3On, value);
     break;
   default:
     return;

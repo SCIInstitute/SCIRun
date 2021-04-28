@@ -80,7 +80,22 @@ namespace SCIRun
 
 
         // save/load has issues.
-
+        ALGORITHM_PARAMETER_DECL(HeadLightOn);
+        ALGORITHM_PARAMETER_DECL(Light1On);
+        ALGORITHM_PARAMETER_DECL(Light2On);
+        ALGORITHM_PARAMETER_DECL(Light3On);
+        ALGORITHM_PARAMETER_DECL(HeadLightColor);
+        ALGORITHM_PARAMETER_DECL(Light1Color);
+        ALGORITHM_PARAMETER_DECL(Light2Color);
+        ALGORITHM_PARAMETER_DECL(Light3Color);
+        ALGORITHM_PARAMETER_DECL(HeadLightAzimuth);
+        ALGORITHM_PARAMETER_DECL(Light1Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light2Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light3Azimuth);
+        ALGORITHM_PARAMETER_DECL(HeadLightInclination);
+        ALGORITHM_PARAMETER_DECL(Light1Inclination);
+        ALGORITHM_PARAMETER_DECL(Light2Inclination);
+        ALGORITHM_PARAMETER_DECL(Light3Inclination);
 
         // not used--GUI hidden/never implemented
         //ALGORITHM_PARAMETER_DECL(Lighting);
@@ -93,6 +108,7 @@ namespace SCIRun
         // ALGORITHM_PARAMETER_DECL(PolygonOffset);
         // ALGORITHM_PARAMETER_DECL(TextOffset);
         // ALGORITHM_PARAMETER_DECL(FieldOfView);
+
       }
     }
   }
@@ -127,22 +143,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
-    static const Core::Algorithms::AlgorithmParameterName Light1On;
-    static const Core::Algorithms::AlgorithmParameterName Light2On;
-    static const Core::Algorithms::AlgorithmParameterName Light3On;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
-    static const Core::Algorithms::AlgorithmParameterName Light1Color;
-    static const Core::Algorithms::AlgorithmParameterName Light2Color;
-    static const Core::Algorithms::AlgorithmParameterName Light3Color;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightAzimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light1Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light2Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light3Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightInclination;
-    static const Core::Algorithms::AlgorithmParameterName Light1Inclination;
-    static const Core::Algorithms::AlgorithmParameterName Light2Inclination;
-    static const Core::Algorithms::AlgorithmParameterName Light3Inclination;
     static const Core::Algorithms::AlgorithmParameterName ShowViewer;
     static const Core::Algorithms::AlgorithmParameterName CameraDistance;
     static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
