@@ -84,6 +84,15 @@ namespace SCIRun
 
         // not used--GUI hidden/never implemented
         ALGORITHM_PARAMETER_DECL(Lighting);
+        ALGORITHM_PARAMETER_DECL(ShowBBox);
+        ALGORITHM_PARAMETER_DECL(UseClip);
+        ALGORITHM_PARAMETER_DECL(Stereo);
+        ALGORITHM_PARAMETER_DECL(BackCull);
+        ALGORITHM_PARAMETER_DECL(DisplayList);
+        ALGORITHM_PARAMETER_DECL(StereoFusion);
+        ALGORITHM_PARAMETER_DECL(PolygonOffset);
+        ALGORITHM_PARAMETER_DECL(TextOffset);
+        ALGORITHM_PARAMETER_DECL(FieldOfView);
       }
     }
   }
@@ -118,17 +127,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-
-
-    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
-    static const Core::Algorithms::AlgorithmParameterName UseClip;
-    static const Core::Algorithms::AlgorithmParameterName Stereo;
-    static const Core::Algorithms::AlgorithmParameterName BackCull;
-    static const Core::Algorithms::AlgorithmParameterName DisplayList;
-    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
-    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
-    static const Core::Algorithms::AlgorithmParameterName TextOffset;
-    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
     static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
     static const Core::Algorithms::AlgorithmParameterName Light1On;
     static const Core::Algorithms::AlgorithmParameterName Light2On;

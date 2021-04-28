@@ -91,6 +91,15 @@ ALGORITHM_PARAMETER_DEF(Render, ScaleBarNumTicks);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineWidth);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
 ALGORITHM_PARAMETER_DEF(Render, Lighting);
+ALGORITHM_PARAMETER_DEF(Render, ShowBBox);
+ALGORITHM_PARAMETER_DEF(Render, UseClip);
+ALGORITHM_PARAMETER_DEF(Render, Stereo);
+ALGORITHM_PARAMETER_DEF(Render, BackCull);
+ALGORITHM_PARAMETER_DEF(Render, DisplayList);
+ALGORITHM_PARAMETER_DEF(Render, StereoFusion);
+ALGORITHM_PARAMETER_DEF(Render, PolygonOffset);
+ALGORITHM_PARAMETER_DEF(Render, TextOffset);
+ALGORITHM_PARAMETER_DEF(Render, FieldOfView);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -132,15 +141,15 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ScaleBarLineWidth, 1.0);
   state->setValue(Parameters::ScaleBarFontSize, 8);
   state->setValue(Parameters::Lighting, true);
-  state->setValue(ShowBBox, false);
-  state->setValue(UseClip, true);
-  state->setValue(BackCull, false);
-  state->setValue(DisplayList, false);
-  state->setValue(Stereo, false);
-  state->setValue(StereoFusion, 0.4);
-  state->setValue(PolygonOffset, 0.0);
-  state->setValue(TextOffset, 0.0);
-  state->setValue(FieldOfView, 20);
+  state->setValue(Parameters::ShowBBox, false);
+  state->setValue(Parameters::UseClip, true);
+  state->setValue(Parameters::BackCull, false);
+  state->setValue(Parameters::DisplayList, false);
+  state->setValue(Parameters::Stereo, false);
+  state->setValue(Parameters::StereoFusion, 0.4);
+  state->setValue(Parameters::PolygonOffset, 0.0);
+  state->setValue(Parameters::TextOffset, 0.0);
+  state->setValue(Parameters::FieldOfView, 20);
   state->setValue(HeadLightOn, true);
   state->setValue(Light1On, false);
   state->setValue(Light2On, false);
@@ -330,15 +339,7 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
-const AlgorithmParameterName ViewScene::UseClip("UseClip");
-const AlgorithmParameterName ViewScene::Stereo("Stereo");
-const AlgorithmParameterName ViewScene::BackCull("BackCull");
-const AlgorithmParameterName ViewScene::DisplayList("DisplayList");
-const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
-const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
-const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
-const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");
+
 const AlgorithmParameterName ViewScene::HeadLightOn("HeadLightOn");
 const AlgorithmParameterName ViewScene::Light1On("Light1On");
 const AlgorithmParameterName ViewScene::Light2On("Light2On");

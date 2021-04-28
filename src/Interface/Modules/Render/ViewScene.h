@@ -109,11 +109,8 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void autoViewOnLoadChecked(bool value);
       void viewAxisSelected(const QString& name);
       void viewVectorSelected(const QString& name);
-      void setFieldOfView(int value);
-      void useOrthoViewChecked(bool value);
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
       void adjustZoomSpeed(int value);
@@ -123,10 +120,6 @@ namespace SCIRun {
       void lockAllTriggered();
       void unlockAllTriggered();
       void toggleLockColor(bool locked);
-      void stereoChecked(bool value);
-      void setStereoFusion(int value);
-      void setPolygonOffset(int value);
-      void setTextOffset(int value);
       void setAutoRotateSpeed(double speed);
       void autoRotateRight();
       void autoRotateLeft();
@@ -148,7 +141,6 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
-      void useClipChecked(bool value);
 
       //---------------- Orietation Glyph ----------------------------------------------------------
       void showOrientationChecked(bool value);
@@ -205,9 +197,6 @@ namespace SCIRun {
       void screenshotClicked();
       void quickScreenshotClicked();
       void saveNewGeometryChanged(int state);
-      void showBBoxChecked(bool value);
-      void useBackCullChecked(bool value);
-      void displayListChecked(bool value);
 
 
     protected:

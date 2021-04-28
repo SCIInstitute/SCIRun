@@ -1568,12 +1568,6 @@ void ViewSceneDialog::adjustZoomSpeed(int value)
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setFieldOfView(int value)
-{
-  state_->setValue(Modules::Render::ViewScene::FieldOfView, value);
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::toggleLockColor(bool locked)
 {
   QString color = locked ? "red" : "rgb(66,66,69)";
@@ -1626,51 +1620,12 @@ void ViewSceneDialog::unlockAllTriggered()
   toggleLockColor(false);
 }
 
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::autoViewOnLoadChecked(bool)
-{
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::useOrthoViewChecked(bool)
-{
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::stereoChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::Stereo, value);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setStereoFusion(int value)
-{
-  double fusion = value / 100;
-  state_->setValue(Modules::Render::ViewScene::StereoFusion, fusion);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setPolygonOffset(int value)
-{
-  double offset = value / 100;
-  state_->setValue(Modules::Render::ViewScene::PolygonOffset, offset);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setTextOffset(int value)
-{
-  double offset = value / 100;
-  state_->setValue(Modules::Render::ViewScene::TextOffset, offset);
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setAutoRotateSpeed(double speed)
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateSpeed(speed);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateRight()
 {
   auto spire = mSpire.lock();
@@ -1678,7 +1633,6 @@ void ViewSceneDialog::autoRotateRight()
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateLeft()
 {
   auto spire = mSpire.lock();
@@ -1686,7 +1640,6 @@ void ViewSceneDialog::autoRotateLeft()
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateUp()
 {
   auto spire = mSpire.lock();
@@ -1694,15 +1647,12 @@ void ViewSceneDialog::autoRotateUp()
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoRotateDown()
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(0.0, -1.0));
   pushCameraState();
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Widgets -------------------------------------------------------------------------
@@ -1756,7 +1706,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
   return objList;
 }
 
-SCIRun::Modules::Render::ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
+ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
 {
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
@@ -1834,7 +1784,6 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
     updateModifiedGeometries();
 }
 
-//--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
 {
   auto geomData = getGeomData();
@@ -1851,7 +1800,6 @@ bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
   return false;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
@@ -1867,7 +1815,6 @@ void ViewSceneDialog::restoreObjColor()
 //---------------- Clipping Planes -----------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
   clippingPlaneIndex_ = index;
@@ -1881,7 +1828,6 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneVisible(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].visible = value;
@@ -1891,7 +1837,6 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
   updateModifiedGeometries();
@@ -1902,7 +1847,6 @@ void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
@@ -1912,7 +1856,6 @@ void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneX(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
@@ -1922,7 +1865,6 @@ void ViewSceneDialog::setClippingPlaneX(int index)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneY(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
@@ -1932,7 +1874,6 @@ void ViewSceneDialog::setClippingPlaneY(int index)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneZ(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
@@ -1942,7 +1883,6 @@ void ViewSceneDialog::setClippingPlaneZ(int index)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneD(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
@@ -1952,13 +1892,6 @@ void ViewSceneDialog::setClippingPlaneD(int index)
   updateClippingPlaneDisplay();
 }
 
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::useClipChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::UseClip, value);
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateClippingPlaneDisplay()
 {
   mConfigurationDock->updatePlaneControlDisplay(
@@ -1978,7 +1911,6 @@ void ViewSceneDialog::updateClippingPlaneDisplay()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeomClippingPlanes()
 {
   auto spire = mSpire.lock();
@@ -1996,7 +1928,6 @@ void ViewSceneDialog::buildGeomClippingPlanes()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeometryClippingPlane(int index, const glm::vec4& plane, const BBox& bbox)
 {
   if (!bbox.valid())
@@ -2739,22 +2670,4 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::showBBoxChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::ShowBBox, value);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::useBackCullChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::BackCull, value);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::displayListChecked(bool value)
-{
-  state_->setValue(Modules::Render::ViewScene::DisplayList, value);
 }
