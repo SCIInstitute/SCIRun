@@ -1244,6 +1244,7 @@ void ModuleWidget::makeOptionsDialog()
       if (highResolutionExpandFactor_ > 1 && isViewScene_)
         dialog_->adjustToolbar();
 
+      qDebug() << "pull call";
       dialog_->pull();
     }
   }

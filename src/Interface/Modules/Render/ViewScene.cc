@@ -344,6 +344,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   gid_(new DialogIdGenerator(name)),
   name_(name)
 {
+  qDebug() << __FILE__ << __LINE__ << name.c_str();
   //lock
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -415,15 +416,13 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   resizeTimer_.setSingleShot(true);
   connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
-  resize(1000, 1000);
 
-  QSize qs = QSize(300, 100);
-  resize(qs);
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   addToolBar();
   glLayout->addWidget(mGLWidget);
   glLayout->update();
-  resize(qs);
+  //resize(qs);
 
   viewSceneManager.addViewScene(this);
   //viewSceneManager.moveViewSceneToGroup(this, 0);
@@ -929,10 +928,19 @@ void ViewSceneDialog::setInitialLightValues()
 
 void ViewSceneDialog::pullSpecial()
 {
-  auto show = state_->getValue(Modules::Render::ViewScene::ShowViewer).toBool();
+  qDebug() << "pullSpecial" << name_.c_str() << pulledSavedVisibility_;
+  if (!pulledSavedVisibility_)
+  {
+    auto show = state_->getValue(Parameters::ShowViewer).toBool();
 
-  if (show && parentWidget())
-    parentWidget()->show();
+    if (show && parentWidget())
+    {
+      parentWidget()->show();
+      QSize qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+      qDebug() << "read size from state:" << qs;
+      resize(qs);
+    }
+  }
 
   pulledSavedVisibility_ = true;
 }
@@ -1143,6 +1151,7 @@ void ViewSceneDialog::runDelayedGC()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
+  qDebug() << __FILE__ << __LINE__ << "showEvent" << name_.c_str();
   if (!shown_)
   {
     autoViewClicked();
@@ -1152,24 +1161,27 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
   if (pulledSavedVisibility_)
   {
     ScopedWidgetSignalBlocker ssb(this);
-    state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
+    qDebug() << __FILE__ << __LINE__ << "setting ShowViewer to true" << name_.c_str();
+    state_->setValue(Parameters::ShowViewer, true);
   }
 
-  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-  ModuleDialogGeneric::showEvent(evt);
-
   updateModifiedGeometriesAndSendScreenShot();
+
+  ModuleDialogGeneric::showEvent(evt);
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
+  qDebug() << __FILE__ << __LINE__ << "hideEvent" << name_.c_str();
+
   mConfigurationDock->setVisible(false);
 
   if (pulledSavedVisibility_)
   {
     ScopedWidgetSignalBlocker ssb(this);
-    state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
+    qDebug() << __FILE__ << __LINE__ << "setting ShowViewer to false" << name_.c_str();
+    state_->setValue(Parameters::ShowViewer, false);
   }
 
   ModuleDialogGeneric::hideEvent(evt);
@@ -1182,8 +1194,16 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // multi-threaded. It is likely we will run into the same issue in the
   // future. Kept for future reference.
   //glLayout->removeWidget(mGLWidget);
+
+  //state_->setValue(Parameters::ShowViewer, isVisible());
+  state_->setValue(Parameters::WindowSizeX, size().width());
+  state_->setValue(Parameters::WindowSizeY, size().height());
+  qDebug() << "saving window #s:" << name_.c_str() <<
+    state_->getValue(Parameters::ShowViewer).toBool() <<
+    isVisible() <<
+    parentWidget()->isVisible() << size() << parentWidget()->pos();
+
   mGLWidget->close();
-  state_->setValue(Modules::Render::ViewScene::ShowViewer, isVisible());
   ModuleDialogGeneric::closeEvent(evt);
 }
 
@@ -1199,20 +1219,19 @@ void ViewSceneDialog::viewBarButtonClicked()
   mUpVectorBox->clear();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
   mConfigurationDock->setVisible(!mConfigurationDock->isVisible());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
   resizeTimer_.start(400);
+  //qDebug() << __FILE__ << __LINE__ << "resizeEvent" << event->size();
+
   ModuleDialogGeneric::resizeEvent(event);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::resizingDone()
 {
   ViewSceneFeedback vsf;

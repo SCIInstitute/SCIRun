@@ -77,7 +77,9 @@ namespace SCIRun
 
 
         // save/load confirmed, uses standard widget managers.
-
+        ALGORITHM_PARAMETER_DECL(ShowViewer);
+        ALGORITHM_PARAMETER_DECL(WindowSizeX);
+        ALGORITHM_PARAMETER_DECL(WindowSizeY);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);
@@ -143,7 +145,6 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName ShowViewer;
     static const Core::Algorithms::AlgorithmParameterName CameraDistance;
     static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
     static const Core::Algorithms::AlgorithmParameterName CameraLookAt;

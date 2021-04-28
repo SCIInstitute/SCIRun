@@ -116,6 +116,9 @@ ALGORITHM_PARAMETER_DEF(Render, HeadLightInclination);
 ALGORITHM_PARAMETER_DEF(Render, Light1Inclination);
 ALGORITHM_PARAMETER_DEF(Render, Light2Inclination);
 ALGORITHM_PARAMETER_DEF(Render, Light3Inclination);
+ALGORITHM_PARAMETER_DEF(Render, ShowViewer);
+ALGORITHM_PARAMETER_DEF(Render, WindowSizeX);
+ALGORITHM_PARAMETER_DEF(Render, WindowSizeY);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -182,7 +185,9 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light1Inclination, 90);
   state->setValue(Parameters::Light2Inclination, 90);
   state->setValue(Parameters::Light3Inclination, 90);
-  state->setValue(ShowViewer, false);
+  state->setValue(Parameters::ShowViewer, false);
+  state->setValue(Parameters::WindowSizeX, 200);
+  state->setValue(Parameters::WindowSizeY, 200);
   state->setValue(CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
   state->setTransientValue(TimeExecutionFinished, 0, false);
@@ -355,7 +360,6 @@ void ViewScene::processMeshComponentSelection()
   }
 }
 
-const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
 const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
 const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");
 const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
