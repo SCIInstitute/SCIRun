@@ -83,16 +83,16 @@ namespace SCIRun
 
 
         // not used--GUI hidden/never implemented
-        ALGORITHM_PARAMETER_DECL(Lighting);
-        ALGORITHM_PARAMETER_DECL(ShowBBox);
-        ALGORITHM_PARAMETER_DECL(UseClip);
-        ALGORITHM_PARAMETER_DECL(Stereo);
-        ALGORITHM_PARAMETER_DECL(BackCull);
-        ALGORITHM_PARAMETER_DECL(DisplayList);
-        ALGORITHM_PARAMETER_DECL(StereoFusion);
-        ALGORITHM_PARAMETER_DECL(PolygonOffset);
-        ALGORITHM_PARAMETER_DECL(TextOffset);
-        ALGORITHM_PARAMETER_DECL(FieldOfView);
+        //ALGORITHM_PARAMETER_DECL(Lighting);
+        //ALGORITHM_PARAMETER_DECL(ShowBBox);
+        // ALGORITHM_PARAMETER_DECL(UseClip);
+        // ALGORITHM_PARAMETER_DECL(Stereo);
+        // ALGORITHM_PARAMETER_DECL(BackCull);
+        // ALGORITHM_PARAMETER_DECL(DisplayList);
+        // ALGORITHM_PARAMETER_DECL(StereoFusion);
+        // ALGORITHM_PARAMETER_DECL(PolygonOffset);
+        // ALGORITHM_PARAMETER_DECL(TextOffset);
+        // ALGORITHM_PARAMETER_DECL(FieldOfView);
       }
     }
   }
