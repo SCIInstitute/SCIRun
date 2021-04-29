@@ -936,13 +936,21 @@ void ViewSceneDialog::pullSpecial()
     if (show && parentWidget())
     {
       parentWidget()->show();
-      QSize qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
-      qDebug() << "read size from state:" << qs;
-      resize(qs);
     }
-  }
 
-  pulledSavedVisibility_ = true;
+    QSize qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+    qDebug() << "read size from state:" << qs;
+    resize(qs);
+
+    if (parentWidget())
+    {
+      auto x = state_->getValue(Parameters::WindowPositionX).toInt();
+      auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+      parentWidget()->move(x,y);
+    }
+
+    pulledSavedVisibility_ = true;
+  }
 }
 
 void ViewSceneDialog::adjustToolbar()
@@ -1198,6 +1206,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   //state_->setValue(Parameters::ShowViewer, isVisible());
   state_->setValue(Parameters::WindowSizeX, size().width());
   state_->setValue(Parameters::WindowSizeY, size().height());
+  state_->setValue(Parameters::WindowPositionX, parentWidget()->pos().x());
+  state_->setValue(Parameters::WindowPositionY, parentWidget()->pos().y());
   qDebug() << "saving window #s:" << name_.c_str() <<
     state_->getValue(Parameters::ShowViewer).toBool() <<
     isVisible() <<

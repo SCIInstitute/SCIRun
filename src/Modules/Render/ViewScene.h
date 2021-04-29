@@ -80,6 +80,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ShowViewer);
         ALGORITHM_PARAMETER_DECL(WindowSizeX);
         ALGORITHM_PARAMETER_DECL(WindowSizeY);
+        ALGORITHM_PARAMETER_DECL(WindowPositionX);
+        ALGORITHM_PARAMETER_DECL(WindowPositionY);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);
