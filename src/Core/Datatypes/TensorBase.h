@@ -28,16 +28,8 @@
 #ifndef CORE_DATATYPES_TENSOR_BASE_H
 #define CORE_DATATYPES_TENSOR_BASE_H
 
-#pragma GCC diagnostic warning "-Wunused-parameter"
 #include <unsupported/Eigen/CXX11/Tensor>
-#pragma GCC diagnostic error "-Wunused-parameter"
-
 #include <Core/Datatypes/share.h>
-
-#ifndef NOMINMAX
-#define min(x,y) ((x) < (y) ? (x) : (y))
-#define max(x,y) ((x) > (y) ? (x) : (y))
-#endif
 
 namespace SCIRun {
 namespace Core {
