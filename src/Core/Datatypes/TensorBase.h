@@ -32,8 +32,12 @@
 #include <unsupported/Eigen/CXX11/Tensor>
 #pragma GCC diagnostic error "-Wunused-parameter"
 
-#include <unsupported/Eigen/CXX11/Tensor>
 #include <Core/Datatypes/share.h>
+
+#ifndef NOMINMAX
+#define min(x,y) ((x) < (y) ? (x) : (y))
+#define max(x,y) ((x) > (y) ? (x) : (y))
+#endif
 
 namespace SCIRun {
 namespace Core {
