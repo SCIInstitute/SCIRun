@@ -1244,7 +1244,6 @@ void ModuleWidget::makeOptionsDialog()
       if (highResolutionExpandFactor_ > 1 && isViewScene_)
         dialog_->adjustToolbar();
 
-      qDebug() << "pull call";
       dialog_->pull();
     }
   }
@@ -1320,6 +1319,7 @@ void ModuleWidget::toggleOptionsDialog()
       dockable_->activateWindow();
       if (isViewScene_)
       {
+        //TODO: figure out why this was needed.
         //dockable_->setFloating(true);
       }
       colorOptionsButton(true);

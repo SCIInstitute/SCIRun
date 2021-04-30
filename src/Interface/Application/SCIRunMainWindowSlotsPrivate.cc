@@ -78,12 +78,10 @@ using namespace SCIRun::Core::Algorithms;
 
 void SCIRunMainWindow::saveNetwork()
 {
-  qDebug() << __FUNCTION__;
   if (currentFile_.isEmpty())
     saveNetworkAs();
   else
     saveNetworkFile(currentFile_);
-  qDebug() << "~" << __FUNCTION__;
 }
 
 void SCIRunMainWindow::saveNetworkAs()
@@ -916,7 +914,6 @@ void SCIRunMainWindow::launchNewInstance()
 
 void SCIRunMainWindow::maxCoreValueChanged(int value)
 {
-  qDebug() << __FUNCTION__ << value;
   Core::Thread::Parallel::SetMaximumCores(value);
 }
 

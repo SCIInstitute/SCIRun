@@ -344,7 +344,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   gid_(new DialogIdGenerator(name)),
   name_(name)
 {
-  qDebug() << __FILE__ << __LINE__ << name.c_str();
   //lock
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -428,7 +427,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 ViewSceneDialog::~ViewSceneDialog()
 {
-  qDebug() << __FUNCTION__;
   viewSceneManager.removeViewScene(this);
 }
 
@@ -475,7 +473,7 @@ void ViewSceneDialog::addToolBar()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addConfigurationButton()
 {
-  QPushButton* configurationButton = new QPushButton();
+  auto configurationButton = new QPushButton();
   configurationButton->setToolTip("Open/Close Configuration Menu");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
@@ -552,7 +550,7 @@ void ViewSceneDialog::addAutoViewButton()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addScreenshotButton()
 {
-  QPushButton* screenshotButton = new QPushButton(this);
+  auto screenshotButton = new QPushButton(this);
   screenshotButton->setToolTip("Take Screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
@@ -563,7 +561,7 @@ void ViewSceneDialog::addScreenshotButton()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addQuickScreenshotButton()
 {
-  QPushButton* quickScreenshotButton = new QPushButton(this);
+  auto quickScreenshotButton = new QPushButton(this);
   quickScreenshotButton->setToolTip("Take Quick Screenshot");
   quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
   quickScreenshotButton->setShortcut(Qt::Key_F12);
@@ -922,25 +920,26 @@ void ViewSceneDialog::setInitialLightValues()
 
 void ViewSceneDialog::pullSpecial()
 {
-  qDebug() << "pullSpecial" << name_.c_str() << pulledSavedVisibility_;
   if (!pulledSavedVisibility_)
   {
-    auto show = state_->getValue(Parameters::ShowViewer).toBool();
+    const auto show = state_->getValue(Parameters::ShowViewer).toBool();
 
     if (show && parentWidget())
     {
       parentWidget()->show();
     }
 
-    QSize qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
-    qDebug() << "read size from state:" << qs;
-    resize(qs);
+    if (parentWidget())
+    {
+      const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+      parentWidget()->resize(qs);
+    }
 
     if (parentWidget())
     {
-      auto x = state_->getValue(Parameters::WindowPositionX).toInt();
-      auto y = state_->getValue(Parameters::WindowPositionY).toInt();
-      parentWidget()->move(x,y);
+      const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
+      const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+      parentWidget()->move(x, y);
     }
 
     pulledSavedVisibility_ = true;
@@ -974,7 +973,7 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 
 void ViewSceneDialog::updateAllGeometries()
 {
-  // If a render parameter changes we must update all of the geometries by removing and readding them.
+  // If a render parameter changes we must update all of the geometries by removing and reading them.
   // This must be forced because the IDs will not have changed
   newGeometryValue(true);
 
@@ -1145,16 +1144,8 @@ void ViewSceneDialog::runDelayedGC()
   delayGC = false;
 }
 
-
-
-//--------------------------------------------------------------------------------------------------
-//---------------- Input ---------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-  qDebug() << __FILE__ << __LINE__ << "showEvent" << name_.c_str();
   if (!shown_)
   {
     autoViewClicked();
@@ -1164,7 +1155,6 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
   if (pulledSavedVisibility_)
   {
     ScopedWidgetSignalBlocker ssb(this);
-    qDebug() << __FILE__ << __LINE__ << "setting ShowViewer to true" << name_.c_str();
     state_->setValue(Parameters::ShowViewer, true);
   }
 
@@ -1173,24 +1163,19 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
   ModuleDialogGeneric::showEvent(evt);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
-  qDebug() << __FILE__ << __LINE__ << "hideEvent" << name_.c_str();
-
   mConfigurationDock->setVisible(false);
 
   if (pulledSavedVisibility_)
   {
     ScopedWidgetSignalBlocker ssb(this);
-    qDebug() << __FILE__ << __LINE__ << "setting ShowViewer to false" << name_.c_str();
     state_->setValue(Parameters::ShowViewer, false);
   }
 
   ModuleDialogGeneric::hideEvent(evt);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
   // NOTE: At one point this was required because the renderer was
@@ -1202,7 +1187,6 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   ModuleDialogGeneric::closeEvent(evt);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
 {
   hideViewBar_ = !hideViewBar_;
@@ -1222,7 +1206,6 @@ void ViewSceneDialog::configurationButtonClicked()
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
   resizeTimer_.start(400);
-  qDebug() << __FILE__ << __LINE__ << "resizeEvent" << event->size();
 
   ModuleDialogGeneric::resizeEvent(event);
 }
@@ -1237,10 +1220,10 @@ void ViewSceneDialog::resizingDone()
   state_->setValue(Parameters::WindowSizeY, size().height());
   state_->setValue(Parameters::WindowPositionX, parentWidget()->pos().x());
   state_->setValue(Parameters::WindowPositionY, parentWidget()->pos().y());
-  qDebug() << "saving window #s:" << name_.c_str() <<
-    state_->getValue(Parameters::ShowViewer).toBool() <<
-    isVisible() <<
-    parentWidget()->isVisible() << size() << parentWidget()->pos();
+  //qDebug() << "saving window #s:" << name_.c_str() <<
+  //  state_->getValue(Parameters::ShowViewer).toBool() <<
+  //  isVisible() <<
+  //  parentWidget()->isVisible() << size() << parentWidget()->pos();
 }
 
 //--------------------------------------------------------------------------------------------------
