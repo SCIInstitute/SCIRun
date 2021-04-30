@@ -390,7 +390,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     spire->setBackgroundColor(bgColor_);
   }
 
-  pullCameraState();
   setInitialLightValues();
 
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
@@ -788,15 +787,14 @@ void ViewSceneDialog::pullCameraRotation()
   }
 
   spire->setCameraRotation(q);
-  pushCameraRotation();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraLookAt()
 {
-  if(pushingCameraState_) return;
+  if (pushingCameraState_) return;
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire) return;
 
   auto lookAtVariable = state_->getValue(Modules::Render::ViewScene::CameraLookAt);
   if (lookAtVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
@@ -813,23 +811,19 @@ void ViewSceneDialog::pullCameraLookAt()
       THROW_INVALID_ARGUMENT("CameraLookAt must have " + std::to_string(DIMENSIONS_) + " values. "
                              + std::to_string(lookAt.size()) + " values were provided.");
   }
-
-  pushCameraLookAt();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraDistance()
 {
-  if(pushingCameraState_) return;
+  if (pushingCameraState_) return;
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire) return;
 
   double distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
   double distanceMin = state_->getValue(Modules::Render::ViewScene::CameraDistanceMinimum).toDouble();
   distance = std::max(std::abs(distance), distanceMin);
   spire->setCameraDistance(distance);
-
-  pushCameraDistance();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -951,6 +945,7 @@ void ViewSceneDialog::pullSpecial()
 
     pulledSavedVisibility_ = true;
   }
+  pullCameraState();
 }
 
 void ViewSceneDialog::adjustToolbar()

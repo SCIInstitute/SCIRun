@@ -1320,7 +1320,7 @@ void ModuleWidget::toggleOptionsDialog()
       dockable_->activateWindow();
       if (isViewScene_)
       {
-        dockable_->setFloating(true);
+        //dockable_->setFloating(true);
       }
       colorOptionsButton(true);
     }
