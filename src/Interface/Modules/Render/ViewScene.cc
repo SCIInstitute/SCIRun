@@ -421,7 +421,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   addToolBar();
   glLayout->addWidget(mGLWidget);
   glLayout->update();
-  //resize(qs);
 
   viewSceneManager.addViewScene(this);
   //viewSceneManager.moveViewSceneToGroup(this, 0);
@@ -429,6 +428,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 ViewSceneDialog::~ViewSceneDialog()
 {
+  qDebug() << __FUNCTION__;
   viewSceneManager.removeViewScene(this);
 }
 
@@ -1198,16 +1198,6 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // future. Kept for future reference.
   //glLayout->removeWidget(mGLWidget);
 
-  //state_->setValue(Parameters::ShowViewer, isVisible());
-  state_->setValue(Parameters::WindowSizeX, size().width());
-  state_->setValue(Parameters::WindowSizeY, size().height());
-  state_->setValue(Parameters::WindowPositionX, parentWidget()->pos().x());
-  state_->setValue(Parameters::WindowPositionY, parentWidget()->pos().y());
-  qDebug() << "saving window #s:" << name_.c_str() <<
-    state_->getValue(Parameters::ShowViewer).toBool() <<
-    isVisible() <<
-    parentWidget()->isVisible() << size() << parentWidget()->pos();
-
   mGLWidget->close();
   ModuleDialogGeneric::closeEvent(evt);
 }
@@ -1232,7 +1222,7 @@ void ViewSceneDialog::configurationButtonClicked()
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
   resizeTimer_.start(400);
-  //qDebug() << __FILE__ << __LINE__ << "resizeEvent" << event->size();
+  qDebug() << __FILE__ << __LINE__ << "resizeEvent" << event->size();
 
   ModuleDialogGeneric::resizeEvent(event);
 }
@@ -1242,6 +1232,15 @@ void ViewSceneDialog::resizingDone()
   ViewSceneFeedback vsf;
   vsf.windowSize = std::make_tuple(size().width(), size().height());
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+
+  state_->setValue(Parameters::WindowSizeX, size().width());
+  state_->setValue(Parameters::WindowSizeY, size().height());
+  state_->setValue(Parameters::WindowPositionX, parentWidget()->pos().x());
+  state_->setValue(Parameters::WindowPositionY, parentWidget()->pos().y());
+  qDebug() << "saving window #s:" << name_.c_str() <<
+    state_->getValue(Parameters::ShowViewer).toBool() <<
+    isVisible() <<
+    parentWidget()->isVisible() << size() << parentWidget()->pos();
 }
 
 //--------------------------------------------------------------------------------------------------

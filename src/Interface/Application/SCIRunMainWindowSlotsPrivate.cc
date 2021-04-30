@@ -78,10 +78,12 @@ using namespace SCIRun::Core::Algorithms;
 
 void SCIRunMainWindow::saveNetwork()
 {
+  qDebug() << __FUNCTION__;
   if (currentFile_.isEmpty())
     saveNetworkAs();
   else
     saveNetworkFile(currentFile_);
+  qDebug() << "~" << __FUNCTION__;
 }
 
 void SCIRunMainWindow::saveNetworkAs()
