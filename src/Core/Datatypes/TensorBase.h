@@ -28,6 +28,10 @@
 #ifndef CORE_DATATYPES_TENSOR_BASE_H
 #define CORE_DATATYPES_TENSOR_BASE_H
 
+#pragma GCC diagnostic warning "-Wunused-parameter"
+#include <unsupported/Eigen/CXX11/Tensor>
+#pragma GCC diagnostic error "-Wunused-parameter"
+
 #include <unsupported/Eigen/CXX11/Tensor>
 #include <Core/Datatypes/share.h>
 
