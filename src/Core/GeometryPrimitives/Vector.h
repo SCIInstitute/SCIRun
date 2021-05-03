@@ -251,12 +251,12 @@ inline double Vector::length2() const
 
 inline double Vector::minComponent() const
 {
-  return std::min({d_[0], d_[1], d_[2]});
+  return (std::min)({d_[0], d_[1], d_[2]});
 }
 
 inline double Vector::maxComponent() const
 {
-  return std::max({d_[0], d_[1], d_[2]});
+  return (std::max)({d_[0], d_[1], d_[2]});
 }
 
 inline Vector Vector::operator/(const double d) const
