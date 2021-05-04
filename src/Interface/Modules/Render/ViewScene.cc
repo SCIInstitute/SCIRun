@@ -864,7 +864,7 @@ void ViewSceneDialog::pushCameraRotation()
   if(!spire) return;
 
   auto q = spire->getCameraRotation();
-  state_->setValue(Modules::Render::ViewScene::CameraRotation, makeAnonymousVariableList(q[0], q[1], q[2], q[3]));
+  state_->setValue(Modules::Render::ViewScene::CameraRotation, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
   pushingCameraState_ = false;
 }
 
