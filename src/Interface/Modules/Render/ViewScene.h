@@ -207,6 +207,7 @@ namespace SCIRun {
       void showEvent(QShowEvent* evt) override;
       void hideEvent(QHideEvent* evt) override;
       void resizeEvent(QResizeEvent *event) override;
+      void moveEvent(QMoveEvent* event) override;
       void mousePressEvent(QMouseEvent* event) override;
       void mouseReleaseEvent(QMouseEvent* event) override;
       void mouseMoveEvent(QMouseEvent* event) override;

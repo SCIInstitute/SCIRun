@@ -1226,7 +1226,13 @@ void ViewSceneDialog::resizingDone()
   //  parentWidget()->isVisible() << size() << parentWidget()->pos();
 }
 
-//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::moveEvent(QMoveEvent* event)
+{
+  qDebug() << "moveEvent" << event->pos() << parentWidget()->pos();
+  ModuleDialogGeneric::moveEvent(event);
+}
+
+
 void ViewSceneDialog::inputMouseDownHelper(float x, float y)
 {
   auto spire = mSpire.lock();
@@ -1236,7 +1242,6 @@ void ViewSceneDialog::inputMouseDownHelper(float x, float y)
   spire->inputMouseDown(x, y);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
 {
   auto spire = mSpire.lock();
@@ -1246,7 +1251,6 @@ void ViewSceneDialog::inputMouseMoveHelper(MouseButton btn, float x, float y)
   spire->inputMouseMove(btn, x, y);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::inputMouseUpHelper()
 {
   auto spire = mSpire.lock();
@@ -1256,7 +1260,6 @@ void ViewSceneDialog::inputMouseUpHelper()
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
 {
   auto spire = mSpire.lock();
@@ -1272,13 +1275,11 @@ void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes)
 {
   viewScenesToUpdate.assign(scenes.begin(), scenes.end());
 }
 
-//--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::tryWidgetSelection(int x, int y, MouseButton button)
 {
   bool widgetSelected = false;
@@ -1292,7 +1293,6 @@ bool ViewSceneDialog::tryWidgetSelection(int x, int y, MouseButton button)
   return widgetSelected;
 }
 
-//------------------------------------------------------------------------------
 MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
 {
   auto btn = MouseButton::NONE;
@@ -1306,7 +1306,6 @@ MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
   return btn;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
   if (!clickedInViewer(event))
@@ -1362,6 +1361,7 @@ bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  qDebug() << __FILE__ << __LINE__;
   if (!clickedInViewer(event))
     return;
 
@@ -2461,11 +2461,6 @@ void ViewSceneDialog::setFogOn(bool value)
     setFog(FogFactor::FOG_INTENSITY, 0.0);
   updateAllGeometries();
 }
-
-// void ViewSceneDialog::setFogOnVisibleObjects(bool value)
-// {
-//   state_->setValue(Parameters::ObjectsOnly, value);
-// }
 
 void ViewSceneDialog::setFogUseBGColor(bool value)
 {

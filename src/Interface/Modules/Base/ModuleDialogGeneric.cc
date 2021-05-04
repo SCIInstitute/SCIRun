@@ -1074,3 +1074,15 @@ void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
     Q_EMIT closeButtonClicked();
   }
 }
+
+void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
+{
+  qDebug() << "dock widget move event" << e->pos();
+  QDockWidget::moveEvent(e);
+}
+
+ModuleDialogDockWidget::~ModuleDialogDockWidget()
+{
+  
+}
+
