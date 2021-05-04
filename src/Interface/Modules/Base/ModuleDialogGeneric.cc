@@ -76,7 +76,7 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
   }
 }
 
-void ModuleDialogGeneric::setDockable(QDockWidget* dock)
+void ModuleDialogGeneric::setDockable(ModuleDialogDockWidget* dock)
 {
   dock_ = dock;
 }
@@ -1083,6 +1083,5 @@ void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
 
 ModuleDialogDockWidget::~ModuleDialogDockWidget()
 {
-  
-}
 
+}
