@@ -70,10 +70,6 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    ~ModuleDialogDockWidget() override
-
-
-    ;
     using QDockWidget::QDockWidget;
   protected:
     void moveEvent(QMoveEvent* e) override;
@@ -83,7 +79,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    virtual ~ModuleDialogGeneric();
+    ~ModuleDialogGeneric() override;
     bool isPulling() const { return pulling_; }
     QAction* getExecuteAction() { return executeAction_; }
     QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
@@ -97,6 +93,7 @@ namespace Gui {
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
+    virtual void postMoveEventCallback(const QPoint&) {}
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI

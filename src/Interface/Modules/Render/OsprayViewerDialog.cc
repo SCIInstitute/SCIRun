@@ -403,7 +403,7 @@ MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
-  else if (event->buttons() & Qt::MidButton)   btn = MouseButton::MIDDLE;
+  else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
 }
 

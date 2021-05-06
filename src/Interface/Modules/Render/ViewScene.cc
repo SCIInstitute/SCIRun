@@ -939,6 +939,7 @@ void ViewSceneDialog::pullSpecial()
     {
       const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
       const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+      qDebug() << "moving to " << x << y;
       parentWidget()->move(x, y);
     }
 
@@ -1218,20 +1219,18 @@ void ViewSceneDialog::resizingDone()
 
   state_->setValue(Parameters::WindowSizeX, size().width());
   state_->setValue(Parameters::WindowSizeY, size().height());
-  state_->setValue(Parameters::WindowPositionX, parentWidget()->pos().x());
-  state_->setValue(Parameters::WindowPositionY, parentWidget()->pos().y());
   //qDebug() << "saving window #s:" << name_.c_str() <<
   //  state_->getValue(Parameters::ShowViewer).toBool() <<
   //  isVisible() <<
   //  parentWidget()->isVisible() << size() << parentWidget()->pos();
 }
 
-void ViewSceneDialog::moveEvent(QMoveEvent* event)
+void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
 {
-  qDebug() << "moveEvent" << event->pos() << parentWidget()->pos();
-  ModuleDialogGeneric::moveEvent(event);
+  qDebug() << "postMoveEventCallback" << p;
+  state_->setValue(Parameters::WindowPositionX, p.x());
+  state_->setValue(Parameters::WindowPositionY, p.y());
 }
-
 
 void ViewSceneDialog::inputMouseDownHelper(float x, float y)
 {
@@ -1300,7 +1299,7 @@ MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
     btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton)
     btn = MouseButton::RIGHT;
-  else if (event->buttons() & Qt::MidButton)
+  else if (event->buttons() & Qt::MiddleButton)
     btn = MouseButton::MIDDLE;
 
   return btn;
@@ -1361,7 +1360,6 @@ bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  qDebug() << __FILE__ << __LINE__;
   if (!clickedInViewer(event))
     return;
 

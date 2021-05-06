@@ -1054,9 +1054,9 @@ std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>
 
 void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
 {
-  for (auto& child : toolbar->children())
+  for (const auto& child : toolbar->children())
   {
-    auto button = qobject_cast<QPushButton*>(child);
+    auto* button = qobject_cast<QPushButton*>(child);
     if (button)
     {
       button->setFixedSize(button->size() * 2);
@@ -1077,11 +1077,10 @@ void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
 
 void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
 {
-  qDebug() << "dock widget move event" << e->pos();
   QDockWidget::moveEvent(e);
-}
-
-ModuleDialogDockWidget::~ModuleDialogDockWidget()
-{
-
+  auto* moduleDialog = qobject_cast<ModuleDialogGeneric*>(widget());
+  if (moduleDialog)
+  {
+    moduleDialog->postMoveEventCallback(e->pos());
+  }
 }
