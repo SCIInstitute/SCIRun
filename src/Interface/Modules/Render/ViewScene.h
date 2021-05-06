@@ -324,6 +324,7 @@ namespace SCIRun {
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                            {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
 
+      boost::optional<QPoint> savedPos_;
       QColor                                bgColor_                      {};
       QColor                                fogColor_                     {};
       ScaleBar                              scaleBar_                     {};

@@ -937,10 +937,15 @@ void ViewSceneDialog::pullSpecial()
 
     if (parentWidget())
     {
-      const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
-      const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
-      qDebug() << "moving to " << x << y;
-      parentWidget()->move(x, y);
+      if (savedPos_)
+      {
+        parentWidget()->move(*savedPos_);
+      }
+      else
+      {
+        const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
+        const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+      }
     }
 
     pulledSavedVisibility_ = true;
@@ -1227,7 +1232,9 @@ void ViewSceneDialog::resizingDone()
 
 void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
 {
-  qDebug() << "postMoveEventCallback" << p;
+  if (!savedPos_)
+    savedPos_ = QPoint{ state_->getValue(Parameters::WindowPositionX).toInt(),
+      state_->getValue(Parameters::WindowPositionY).toInt() };
   state_->setValue(Parameters::WindowPositionX, p.x());
   state_->setValue(Parameters::WindowPositionY, p.y());
 }
