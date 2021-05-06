@@ -933,6 +933,7 @@ void ViewSceneDialog::pullSpecial()
     {
       const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
       parentWidget()->resize(qs);
+      parentWidget()->resize(qs + QSize(1,1));
     }
 
     if (parentWidget())
@@ -945,6 +946,7 @@ void ViewSceneDialog::pullSpecial()
       {
         const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
         const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+        parentWidget()->move(x, y);
       }
     }
 
