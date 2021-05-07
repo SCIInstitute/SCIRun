@@ -57,12 +57,12 @@ Mutex ViewScene::mutex_("ViewScene");
 ViewScene::ScopedExecutionReporter::ScopedExecutionReporter(ModuleStateHandle state)
   : state_(state)
 {
-  state_->setValue(IsExecuting, true);
+  state_->setValue(Parameters::IsExecuting, true);
 }
 
 ViewScene::ScopedExecutionReporter::~ScopedExecutionReporter()
 {
-  state_->setValue(IsExecuting, false);
+  state_->setValue(Parameters::IsExecuting, false);
 }
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
@@ -125,15 +125,18 @@ ALGORITHM_PARAMETER_DEF(Render, IsFloating);
 ALGORITHM_PARAMETER_DEF(Render, CameraDistance);
 ALGORITHM_PARAMETER_DEF(Render, CameraDistanceMinimum);
 ALGORITHM_PARAMETER_DEF(Render, CameraLookAt);
-ALGORITHM_PARAMETER_DEF(Render, CameraRotation1);
+ALGORITHM_PARAMETER_DEF(Render, CameraRotation);
+ALGORITHM_PARAMETER_DEF(Render, IsExecuting);
+ALGORITHM_PARAMETER_DEF(Render, TimeExecutionFinished);
+ALGORITHM_PARAMETER_DEF(Render, HasNewGeometry);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
-  INITIALIZE_PORT(GeneralGeom);
-  INITIALIZE_PORT(ScreenshotDataRed);
-  INITIALIZE_PORT(ScreenshotDataGreen);
-  INITIALIZE_PORT(ScreenshotDataBlue);
+  INITIALIZE_PORT(GeneralGeom)
+  INITIALIZE_PORT(ScreenshotDataRed)
+  INITIALIZE_PORT(ScreenshotDataGreen)
+  INITIALIZE_PORT(ScreenshotDataBlue)
 
   get_state()->setTransientValue(Parameters::VSMutex, &screenShotMutex_, true);
 }
@@ -199,12 +202,12 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::WindowPositionY, 200);
   state->setValue(Parameters::IsFloating, true);
   state->setValue(Parameters::CameraDistance, 3.0);
-  state->setValue(IsExecuting, false);
-  state->setTransientValue(TimeExecutionFinished, 0, false);
+  state->setValue(Parameters::IsExecuting, false);
+  state->setTransientValue(Parameters::TimeExecutionFinished, 0, false);
   state->setValue(Parameters::CameraDistanceMinimum, 1e-10);
   state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
-  state->setValue(Parameters::CameraRotation1, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
-  state->setValue(HasNewGeometry, false);
+  state->setValue(Parameters::CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(Parameters::HasNewGeometry, false);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
@@ -335,8 +338,8 @@ void ViewScene::execute()
     }
   }
 #endif
-  state->setValue(HasNewGeometry, true);
-  state->setTransientValue(TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+  state->setValue(Parameters::HasNewGeometry, true);
+  state->setTransientValue(Parameters::TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
 }
 
 unsigned long ViewScene::getCurrentTimeSinceEpoch()
@@ -368,7 +371,3 @@ void ViewScene::processMeshComponentSelection()
     sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }
-
-const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");
-const AlgorithmParameterName ViewScene::TimeExecutionFinished("TimeExecutionFinished");
-const AlgorithmParameterName ViewScene::HasNewGeometry("HasNewGeometry");

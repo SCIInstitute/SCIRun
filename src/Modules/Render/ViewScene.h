@@ -49,6 +49,11 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(VSMutex);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+
+        ALGORITHM_PARAMETER_DECL(IsExecuting);
+        ALGORITHM_PARAMETER_DECL(TimeExecutionFinished);
+        ALGORITHM_PARAMETER_DECL(HasNewGeometry);
+
         // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
@@ -88,7 +93,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(CameraDistance);
         ALGORITHM_PARAMETER_DECL(CameraDistanceMinimum);
         ALGORITHM_PARAMETER_DECL(CameraLookAt);
-        ALGORITHM_PARAMETER_DECL(CameraRotation1);
+        ALGORITHM_PARAMETER_DECL(CameraRotation);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);
@@ -153,11 +158,6 @@ namespace Render {
     ~ViewScene() override;
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
-
-
-    static const Core::Algorithms::AlgorithmParameterName IsExecuting;
-    static const Core::Algorithms::AlgorithmParameterName TimeExecutionFinished;
-    static const Core::Algorithms::AlgorithmParameterName HasNewGeometry;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject)
     OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix)

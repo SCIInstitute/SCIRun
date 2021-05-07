@@ -394,7 +394,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometriesAndSendScreenShot()));
 
-  state->connectSpecificStateChanged(Parameters::CameraRotation1,[this](){Q_EMIT cameraRotationChangeForwarder();});
+  state->connectSpecificStateChanged(Parameters::CameraRotation,[this](){Q_EMIT cameraRotationChangeForwarder();});
   connect(this, SIGNAL(cameraRotationChangeForwarder()), this, SLOT(pullCameraRotation()));
 
   state->connectSpecificStateChanged(Parameters::CameraLookAt,[this](){Q_EMIT cameraLookAtChangeForwarder();});
@@ -771,9 +771,9 @@ void ViewSceneDialog::pullCameraRotation()
     return;
 
   glm::quat q;
-  auto rotVariable = state_->getValue(Parameters::CameraRotation1);
+  auto rotVariable = state_->getValue(Parameters::CameraRotation);
   if (rotVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
-    q = ViewSceneUtility::stringToQuat(state_->getValue(Parameters::CameraRotation1).toString());
+    q = ViewSceneUtility::stringToQuat(state_->getValue(Parameters::CameraRotation).toString());
   else
   {
     auto rotation = toDoubleVector(rotVariable.toVector());
@@ -864,7 +864,7 @@ void ViewSceneDialog::pushCameraRotation()
   if (!spire) return;
 
   auto q = spire->getCameraRotation();
-  state_->setValue(Parameters::CameraRotation1, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
+  state_->setValue(Parameters::CameraRotation, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
   pushingCameraState_ = false;
 }
 
@@ -1340,20 +1340,20 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  int x_window = event->x() - mGLWidget->pos().x();
-  int y_window = event->y() - mGLWidget->pos().y();
+  const int x_window = event->x() - mGLWidget->pos().x();
+  const int y_window = event->y() - mGLWidget->pos().y();
 
-  auto btn = getSpireButton(event);
+  const auto btn = getSpireButton(event);
 
   if (selectedWidget_)
   {
     spire->widgetMouseMove(x_window, y_window);
   }
-  else if(!shiftdown_)
+  else if (!shiftdown_)
   {
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-    for (auto vsd : viewScenesToUpdate)
+    for (auto* vsd : viewScenesToUpdate)
       vsd->inputMouseMoveHelper(btn, x_ss, y_ss);
   }
   else
@@ -1366,7 +1366,7 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 //--------------------------------------------------------------------------------------------------
 bool ViewSceneDialog::needToWaitForWidgetSelection()
 {
-  auto lastExec = transient_value_cast<unsigned long>(state_->getTransientValue(Modules::Render::ViewScene::TimeExecutionFinished));
+  const auto lastExec = transient_value_cast<unsigned long>(state_->getTransientValue(Parameters::TimeExecutionFinished));
 
   return previousWidgetInfo_->timeSince(lastExec) < delayAfterModuleExecution_
     || previousWidgetInfo_->timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_
@@ -1390,7 +1390,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   if (!clickedInViewer(event))
     return;
 
-  auto btn = getSpireButton(event);
+  const auto btn = getSpireButton(event);
   if (!tryWidgetSelection(event->x(), event->y(), btn))
   {
     auto spire = mSpire.lock();
@@ -1401,7 +1401,6 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
-
 
     for (auto vsd : viewScenesToUpdate)
       vsd->inputMouseDownHelper(x_ss, y_ss);
@@ -1440,7 +1439,8 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   }
   else if (!shiftdown_)
   {
-    for (auto vsd : viewScenesToUpdate) vsd->inputMouseUpHelper();
+    for (auto* vsd : viewScenesToUpdate) 
+      vsd->inputMouseUpHelper();
   }
 
   mouseButtonPressed_ = false;
@@ -1467,6 +1467,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
     shiftdown_ = true;
     updateCursor();
     break;
+  default: ;
   }
 }
 
@@ -1479,6 +1480,7 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
     shiftdown_ = false;
     updateCursor();
     break;
+  default: ;
   }
 }
 
@@ -1508,7 +1510,6 @@ void ViewSceneDialog::updateCursor()
 //---------------- Camera --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::viewAxisSelected(const QString& name)
 {
   mUpVectorBox->clear();
@@ -1531,7 +1532,6 @@ void ViewSceneDialog::viewAxisSelected(const QString& name)
   mUpVectorBox->setEnabled(true);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(const QString& name)
 {
   if (name.isEmpty())
@@ -1548,7 +1548,6 @@ void ViewSceneDialog::viewVectorSelected(const QString& name)
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
   auto spire = mSpire.lock();
@@ -1559,7 +1558,6 @@ void ViewSceneDialog::autoViewClicked()
   pushCameraState();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
   auto spire = mSpire.lock();
@@ -1579,7 +1577,6 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
   mConfigurationDock->updateZoomOptionVisibility();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::invertZoomClicked(bool value)
 {
   auto spire = mSpire.lock();
@@ -1587,14 +1584,12 @@ void ViewSceneDialog::invertZoomClicked(bool value)
   Preferences::Instance().invertMouseZoom.setValue(value);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::adjustZoomSpeed(int value)
 {
   auto spire = mSpire.lock();
   spire->setZoomSpeed(value);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::toggleLockColor(bool locked)
 {
   QString color = locked ? "red" : "rgb(66,66,69)";
@@ -1602,28 +1597,24 @@ void ViewSceneDialog::toggleLockColor(bool locked)
   autoViewButton_->setDisabled(locked);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::lockRotationToggled()
 {
   mGLWidget->setLockRotation(lockRotation_->isChecked());
   toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::lockPanningToggled()
 {
   mGLWidget->setLockPanning(lockPan_->isChecked());
   toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::lockZoomToggled()
 {
   mGLWidget->setLockZoom(lockZoom_->isChecked());
   toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::lockAllTriggered()
 {
   lockRotation_->setChecked(true);
@@ -1635,7 +1626,6 @@ void ViewSceneDialog::lockAllTriggered()
   toggleLockColor(true);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::unlockAllTriggered()
 {
   lockRotation_->setChecked(false);
@@ -1685,7 +1675,6 @@ void ViewSceneDialog::autoRotateDown()
 //---------------- Widgets -------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
   auto name = showFieldName.toStdString();
@@ -1697,8 +1686,7 @@ void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName,
   state_->setTransientValue(Parameters::MeshComponentSelection, sel);
 }
 
-//--------------------------------------------------------------------------------------------------
-static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Render::ViewScene::GeomListPtr geomData, ViewSceneControlsDock* mConfigurationDock)
+static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomListPtr geomData, ViewSceneControlsDock* mConfigurationDock)
 {
   //getting geom list
   std::vector<WidgetHandle> objList;
@@ -1751,7 +1739,7 @@ ViewScene::GeomListPtr ViewSceneDialog::getGeomData()
 
 void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
 {
-  bool geomDataPresent = false;
+  auto geomDataPresent = false;
   {
     LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
     Guard lock(Modules::Render::ViewScene::mutex_.get());
@@ -1760,22 +1748,22 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
     auto spire = mSpire.lock();
     if (!spire) return;
 
-    auto geomData = getGeomData();
+    const auto geomData = getGeomData();
     if (geomData)
     {
       geomDataPresent = true;
       // Search for new widgets if geometry has changed
-      bool newGeometry = state_->getValue(Modules::Render::ViewScene::HasNewGeometry).toBool();
+      const bool newGeometry = state_->getValue(Parameters::HasNewGeometry).toBool();
       if (newGeometry)
       {
         widgetHandles_ = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
-        state_->setValue(Modules::Render::ViewScene::HasNewGeometry, false);
+        state_->setValue(Parameters::HasNewGeometry, false);
       }
 
       // Search for new widget unless mouse and camera wasn't moved
-      auto adjustedX = x - mGLWidget->pos().x();
-      auto adjustedY = y - mGLWidget->pos().y();
-      auto currentCameraTransform = spire->getWorldToProjection();
+      const auto adjustedX = x - mGLWidget->pos().x();
+      const auto adjustedY = y - mGLWidget->pos().y();
+      const auto currentCameraTransform = spire->getWorldToProjection();
       //TODO: extract function
       const bool reuseWidget = !newGeometry && previousWidgetInfo_->hasSameMousePosition(x, y)
         && previousWidgetInfo_->hasSameCameraTansform(currentCameraTransform);
@@ -1813,13 +1801,12 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
 
 bool ViewSceneDialog::checkForSelectedWidget(WidgetHandle widget)
 {
-  auto geomData = getGeomData();
+  const auto geomData = getGeomData();
   if (geomData)
   {
-    auto id = widget->uniqueID();
-    for (auto it = geomData->begin(); it != geomData->end(); ++it)
+    const auto id = widget->uniqueID();
+    for (const auto& obj : *geomData)
     {
-      auto obj = *it;
       if (obj->uniqueID() == id)
         return true;
     }
