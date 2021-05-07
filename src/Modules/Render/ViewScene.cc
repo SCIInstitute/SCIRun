@@ -129,6 +129,12 @@ ALGORITHM_PARAMETER_DEF(Render, CameraRotation);
 ALGORITHM_PARAMETER_DEF(Render, IsExecuting);
 ALGORITHM_PARAMETER_DEF(Render, TimeExecutionFinished);
 ALGORITHM_PARAMETER_DEF(Render, HasNewGeometry);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneEnabled);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneNormalReversed);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneX);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneY);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneZ);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneD);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -208,6 +214,13 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(Parameters::CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(Parameters::HasNewGeometry, false);
+
+  state->setValue(Parameters::ClippingPlaneEnabled, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneNormalReversed, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneX, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneY, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneZ, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneD, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

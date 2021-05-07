@@ -79,6 +79,12 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
         ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
         ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneEnabled);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneNormalReversed);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneX);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneY);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneZ);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneD);
 
 
         // save/load confirmed, uses standard widget managers.
