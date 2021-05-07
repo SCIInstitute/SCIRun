@@ -784,7 +784,6 @@ void ViewSceneDialog::pullCameraRotation()
                              " values. " + std::to_string(rotation.size()) + " values were provided.");
   }
 
-  qDebug() << name_.c_str() << "setCameraRotation" << q.w << q.x << q.y << q.z;
   spire->setCameraRotation(q);
 }
 
@@ -866,7 +865,6 @@ void ViewSceneDialog::pushCameraRotation()
 
   auto q = spire->getCameraRotation();
   state_->setValue(Parameters::CameraRotation1, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
-  qDebug() << name_.c_str() << "pushCameraRotation" << q.w << q.x << q.y << q.z;
   pushingCameraState_ = false;
 }
 
@@ -924,6 +922,8 @@ void ViewSceneDialog::pullSpecial()
 {
   if (!pulledSavedVisibility_)
   {
+    pullCameraState();
+
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
 
     if (show && parentWidget())
@@ -961,8 +961,6 @@ void ViewSceneDialog::pullSpecial()
     }
 
     pulledSavedVisibility_ = true;
-
-    pullCameraState();
   }
 }
 
