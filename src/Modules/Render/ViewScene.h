@@ -77,12 +77,18 @@ namespace SCIRun
 
 
         // save/load confirmed, uses standard widget managers.
+
+        // save/load confirmed, uses pullSpecial.
         ALGORITHM_PARAMETER_DECL(ShowViewer);
         ALGORITHM_PARAMETER_DECL(WindowSizeX);
         ALGORITHM_PARAMETER_DECL(WindowSizeY);
         ALGORITHM_PARAMETER_DECL(WindowPositionX);
         ALGORITHM_PARAMETER_DECL(WindowPositionY);
         ALGORITHM_PARAMETER_DECL(IsFloating);
+        ALGORITHM_PARAMETER_DECL(CameraDistance);
+        ALGORITHM_PARAMETER_DECL(CameraDistanceMinimum);
+        ALGORITHM_PARAMETER_DECL(CameraLookAt);
+        ALGORITHM_PARAMETER_DECL(CameraRotation1);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);
@@ -148,10 +154,7 @@ namespace Render {
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName CameraDistance;
-    static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
-    static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
-    static const Core::Algorithms::AlgorithmParameterName CameraRotation;
+
     static const Core::Algorithms::AlgorithmParameterName IsExecuting;
     static const Core::Algorithms::AlgorithmParameterName TimeExecutionFinished;
     static const Core::Algorithms::AlgorithmParameterName HasNewGeometry;

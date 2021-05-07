@@ -122,6 +122,10 @@ ALGORITHM_PARAMETER_DEF(Render, WindowSizeY);
 ALGORITHM_PARAMETER_DEF(Render, WindowPositionX);
 ALGORITHM_PARAMETER_DEF(Render, WindowPositionY);
 ALGORITHM_PARAMETER_DEF(Render, IsFloating);
+ALGORITHM_PARAMETER_DEF(Render, CameraDistance);
+ALGORITHM_PARAMETER_DEF(Render, CameraDistanceMinimum);
+ALGORITHM_PARAMETER_DEF(Render, CameraLookAt);
+ALGORITHM_PARAMETER_DEF(Render, CameraRotation1);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -194,12 +198,12 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::WindowPositionX, 200);
   state->setValue(Parameters::WindowPositionY, 200);
   state->setValue(Parameters::IsFloating, true);
-  state->setValue(CameraDistance, 3.0);
+  state->setValue(Parameters::CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
   state->setTransientValue(TimeExecutionFinished, 0, false);
-  state->setValue(CameraDistanceMinimum, 1e-10);
-  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
-  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(Parameters::CameraDistanceMinimum, 1e-10);
+  state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(Parameters::CameraRotation1, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(HasNewGeometry, false);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
@@ -209,7 +213,7 @@ void ViewScene::setStateDefaults()
 void ViewScene::fireTransientStateChangeSignalForGeomData()
 {
   //this is gross but I dont see any other way to fire the signal associated with geom data
-  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  const auto transient = get_state()->getTransientValue(Parameters::GeomData);
   auto geoms = transient_value_cast<GeomListPtr>(transient);
   get_state()->setTransientValue(Parameters::GeomData, geoms, true);
 }
@@ -230,7 +234,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 
 void ViewScene::updateTransientList()
 {
-  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  const auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
   auto geoms = transient_value_cast<GeomListPtr>(transient);
   if (!geoms)
@@ -275,7 +279,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
 
-    auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    const auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
@@ -283,11 +287,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     }
 
     {
-      auto iport = getInputPort(pid);
+      const auto iport = getInputPort(pid);
       auto connectedModuleId = iport->connectedModuleId();
       if (connectedModuleId->find("ShowField") != std::string::npos)
       {
-        auto state = iport->stateFromConnectedModule();
+        const auto state = iport->stateFromConnectedModule();
         syncMeshComponentFlags(*connectedModuleId, state);
       }
     }
@@ -322,10 +326,9 @@ void ViewScene::execute()
   Guard lock(screenShotMutex_.get());
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    ModuleStateInterface::TransientValueOption screenshotDataOption;
-    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+    const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
-      auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+      const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
       if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
       if (screenshotData.blue) sendOutput(ScreenshotDataBlue, screenshotData.blue);
@@ -345,8 +348,8 @@ unsigned long ViewScene::getCurrentTimeSinceEpoch()
 void ViewScene::processViewSceneObjectFeedback()
 {
   //TODO: match ID of touched geom object with port id, and send that info back too.
-  auto state = get_state();
-  auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
   //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
   if (newInfo)
   {
@@ -357,19 +360,15 @@ void ViewScene::processViewSceneObjectFeedback()
 
 void ViewScene::processMeshComponentSelection()
 {
-  auto state = get_state();
-  auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
   if (newInfo)
   {
-    auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
+    const auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
     sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }
 
-const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
-const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");
-const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
-const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
 const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");
 const AlgorithmParameterName ViewScene::TimeExecutionFinished("TimeExecutionFinished");
 const AlgorithmParameterName ViewScene::HasNewGeometry("HasNewGeometry");

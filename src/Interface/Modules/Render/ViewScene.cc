@@ -394,13 +394,13 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometriesAndSendScreenShot()));
 
-  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraRotation,[this](){Q_EMIT cameraRotationChangeForwarder();});
+  state->connectSpecificStateChanged(Parameters::CameraRotation1,[this](){Q_EMIT cameraRotationChangeForwarder();});
   connect(this, SIGNAL(cameraRotationChangeForwarder()), this, SLOT(pullCameraRotation()));
 
-  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraLookAt,[this](){Q_EMIT cameraLookAtChangeForwarder();});
+  state->connectSpecificStateChanged(Parameters::CameraLookAt,[this](){Q_EMIT cameraLookAtChangeForwarder();});
   connect(this, SIGNAL(cameraLookAtChangeForwarder()), this, SLOT(pullCameraLookAt()));
 
-  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraDistance,[this](){Q_EMIT cameraDistnaceChangeForwarder();});
+  state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistnaceChangeForwarder();});
   connect(this, SIGNAL(cameraDistnaceChangeForwarder()), this, SLOT(pullCameraDistance()));
 
   state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
@@ -771,9 +771,9 @@ void ViewSceneDialog::pullCameraRotation()
     return;
 
   glm::quat q;
-  auto rotVariable = state_->getValue(Modules::Render::ViewScene::CameraRotation);
+  auto rotVariable = state_->getValue(Parameters::CameraRotation1);
   if (rotVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
-    q = ViewSceneUtility::stringToQuat(state_->getValue(Modules::Render::ViewScene::CameraRotation).toString());
+    q = ViewSceneUtility::stringToQuat(state_->getValue(Parameters::CameraRotation1).toString());
   else
   {
     auto rotation = toDoubleVector(rotVariable.toVector());
@@ -784,6 +784,7 @@ void ViewSceneDialog::pullCameraRotation()
                              " values. " + std::to_string(rotation.size()) + " values were provided.");
   }
 
+  qDebug() << name_.c_str() << "setCameraRotation" << q.w << q.x << q.y << q.z;
   spire->setCameraRotation(q);
 }
 
@@ -794,7 +795,7 @@ void ViewSceneDialog::pullCameraLookAt()
   auto spire = mSpire.lock();
   if (!spire) return;
 
-  auto lookAtVariable = state_->getValue(Modules::Render::ViewScene::CameraLookAt);
+  auto lookAtVariable = state_->getValue(Parameters::CameraLookAt);
   if (lookAtVariable.value().type() == typeid(std::string)) // Legacy interpreter for networks that have this stored as string
   {
     auto lookAtPoint = pointFromString(lookAtVariable.toString());
@@ -818,8 +819,8 @@ void ViewSceneDialog::pullCameraDistance()
   auto spire = mSpire.lock();
   if (!spire) return;
 
-  double distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
-  double distanceMin = state_->getValue(Modules::Render::ViewScene::CameraDistanceMinimum).toDouble();
+  double distance = state_->getValue(Parameters::CameraDistance).toDouble();
+  double distanceMin = state_->getValue(Parameters::CameraDistanceMinimum).toDouble();
   distance = std::max(std::abs(distance), distanceMin);
   spire->setCameraDistance(distance);
 }
@@ -839,7 +840,7 @@ void ViewSceneDialog::pushCameraDistance()
   auto spire = mSpire.lock();
   if(!spire) return;
 
-  state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
+  state_->setValue(Parameters::CameraDistance, (double)spire->getCameraDistance());
   pushingCameraState_ = false;
 }
 
@@ -852,7 +853,7 @@ void ViewSceneDialog::pushCameraLookAt()
 
   auto v = spire->getCameraLookAt();
   auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
-  state_->setValue(Modules::Render::ViewScene::CameraLookAt, lookAt);
+  state_->setValue(Parameters::CameraLookAt, lookAt);
   pushingCameraState_ = false;
 }
 
@@ -861,10 +862,11 @@ void ViewSceneDialog::pushCameraRotation()
 {
   pushingCameraState_ = true;
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire) return;
 
   auto q = spire->getCameraRotation();
-  state_->setValue(Modules::Render::ViewScene::CameraRotation, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
+  state_->setValue(Parameters::CameraRotation1, makeAnonymousVariableList(q.w, q.x, q.y, q.z));
+  qDebug() << name_.c_str() << "pushCameraRotation" << q.w << q.x << q.y << q.z;
   pushingCameraState_ = false;
 }
 
@@ -938,24 +940,30 @@ void ViewSceneDialog::pullSpecial()
 
     if (parentWidget())
     {
-      if (savedPos_)
-      {
-        parentWidget()->move(*savedPos_);
-      }
-      else
-      {
-        const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
-        const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
-        parentWidget()->move(x, y);
-      }
       auto dock = qobject_cast<QDockWidget*>(parentWidget());
+      const auto isFloating = state_->getValue(Parameters::IsFloating).toBool();
       if (dock)
-        dock->setFloating(state_->getValue(Parameters::IsFloating).toBool());
+        dock->setFloating(isFloating);
+
+      if (isFloating)
+      {
+        if (savedPos_)
+        {
+          parentWidget()->move(*savedPos_);
+        }
+        else
+        {
+          const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
+          const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+          parentWidget()->move(x, y);
+        }
+      }
     }
 
     pulledSavedVisibility_ = true;
+
+    pullCameraState();
   }
-  pullCameraState();
 }
 
 void ViewSceneDialog::adjustToolbar()
@@ -1237,11 +1245,13 @@ void ViewSceneDialog::resizingDone()
 
 void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
 {
-  if (pulling_)
-    return;
   if (!savedPos_)
     savedPos_ = QPoint{ state_->getValue(Parameters::WindowPositionX).toInt(),
       state_->getValue(Parameters::WindowPositionY).toInt() };
+
+  if (pulling_)
+    return;
+  
   state_->setValue(Parameters::WindowPositionX, p.x());
   state_->setValue(Parameters::WindowPositionY, p.y());
 }
@@ -1290,7 +1300,7 @@ void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
     scaleBarGeom_ = buildGeometryScaleBar();
     updateModifiedGeometries();
   }
-  state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
+  state_->setValue(Parameters::CameraDistance, (double)spire->getCameraDistance());
 }
 
 void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes)
