@@ -121,6 +121,7 @@ ALGORITHM_PARAMETER_DEF(Render, WindowSizeX);
 ALGORITHM_PARAMETER_DEF(Render, WindowSizeY);
 ALGORITHM_PARAMETER_DEF(Render, WindowPositionX);
 ALGORITHM_PARAMETER_DEF(Render, WindowPositionY);
+ALGORITHM_PARAMETER_DEF(Render, IsFloating);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -192,6 +193,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::WindowSizeY, 200);
   state->setValue(Parameters::WindowPositionX, 200);
   state->setValue(Parameters::WindowPositionY, 200);
+  state->setValue(Parameters::IsFloating, true);
   state->setValue(CameraDistance, 3.0);
   state->setValue(IsExecuting, false);
   state->setTransientValue(TimeExecutionFinished, 0, false);

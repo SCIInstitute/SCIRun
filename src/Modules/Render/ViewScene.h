@@ -82,6 +82,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(WindowSizeY);
         ALGORITHM_PARAMETER_DECL(WindowPositionX);
         ALGORITHM_PARAMETER_DECL(WindowPositionY);
+        ALGORITHM_PARAMETER_DECL(IsFloating);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);

@@ -948,6 +948,9 @@ void ViewSceneDialog::pullSpecial()
         const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
         parentWidget()->move(x, y);
       }
+      auto dock = qobject_cast<QDockWidget*>(parentWidget());
+      if (dock)
+        dock->setFloating(state_->getValue(Parameters::IsFloating).toBool());
     }
 
     pulledSavedVisibility_ = true;
@@ -1234,11 +1237,18 @@ void ViewSceneDialog::resizingDone()
 
 void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
 {
+  if (pulling_)
+    return;
   if (!savedPos_)
     savedPos_ = QPoint{ state_->getValue(Parameters::WindowPositionX).toInt(),
       state_->getValue(Parameters::WindowPositionY).toInt() };
   state_->setValue(Parameters::WindowPositionX, p.x());
   state_->setValue(Parameters::WindowPositionY, p.y());
+}
+
+void ViewSceneDialog::setFloatingState(bool isFloating)
+{
+  state_->setValue(Parameters::IsFloating, isFloating);
 }
 
 void ViewSceneDialog::inputMouseDownHelper(float x, float y)

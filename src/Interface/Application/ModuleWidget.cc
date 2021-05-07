@@ -1260,6 +1260,11 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
     Q_EMIT showUIrequested(dialog_);
   }
   dialog_->setButtonBarTitleVisible(!isFloating);
+
+  if (isViewScene_) //ugh
+  {
+    qobject_cast<ViewSceneDialog*>(dialog_)->setFloatingState(isFloating);
+  }
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)

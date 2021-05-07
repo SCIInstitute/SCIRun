@@ -78,6 +78,7 @@ namespace SCIRun {
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
       std::string getName() {return name_;}
       void autoSaveScreenshot();
+      void setFloatingState(bool isFloating);
 
       void postMoveEventCallback(const QPoint& p) override;
 
