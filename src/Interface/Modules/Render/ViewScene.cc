@@ -309,7 +309,7 @@ ViewSceneManager ViewSceneDialog::viewSceneManager;
 //--------------------------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state, QWidget* parent) :
   ModuleDialogGeneric(state, parent),
-  clippingPlaneManager_(new ClippingPlaneManager),
+  clippingPlaneManager_(new ClippingPlaneManager(state)),
   gid_(new DialogIdGenerator(name)),
   name_(name)
 {
@@ -375,7 +375,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
   lockMutex();
 
-  std::string filesystemRoot = Application::Instance().executablePath().string();
+  const std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
@@ -401,7 +401,7 @@ ViewSceneDialog::~ViewSceneDialog()
 //--------------------------------------------------------------------------------------------------
 std::string ViewSceneDialog::toString(std::string prefix) const
 {
-  auto spire = mSpire.lock();
+  const auto spire = mSpire.lock();
 
   std::string output = "VIEW_SCENE:\n";
   prefix += "  ";
@@ -418,10 +418,9 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 
 //--------------------------------------------------------------------------------------------------
-//---------------- Intitilization ------------------------------------------------------------------
+//---------------- Intitialization ------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar()
 {
   mToolBar = new QToolBar(this);
@@ -438,7 +437,6 @@ void ViewSceneDialog::addToolBar()
   addViewBar();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addConfigurationButton()
 {
   auto configurationButton = new QPushButton();
@@ -449,7 +447,6 @@ void ViewSceneDialog::addConfigurationButton()
   addToolbarButton(configurationButton);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addToolbarButton(QPushButton* button)
 {
   button->setFixedSize(35,35);
@@ -457,10 +454,9 @@ void ViewSceneDialog::addToolbarButton(QPushButton* button)
   mToolBar->addWidget(button);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addConfigurationDock()
 {
-  QString name = windowTitle() + " Configuration";
+  const auto name = windowTitle() + " Configuration";
   mConfigurationDock = new ViewSceneControlsDock(name, this);
   mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
@@ -680,7 +676,7 @@ void ViewSceneDialog::addControlLockButton()
   toggleLockColor(false);
 }
 
-ClippingPlaneManager::ClippingPlaneManager() : clippingPlanes_(ClippingPlane::MaxCount)
+ClippingPlaneManager::ClippingPlaneManager(ModuleStateHandle state) : state_(state), clippingPlanes_(ClippingPlane::MaxCount)
 {
   
 }
@@ -803,10 +799,10 @@ void ViewSceneDialog::pushCameraDistance()
 void ViewSceneDialog::pushCameraLookAt()
 {
   pushingCameraState_ = true;
-  auto spire = mSpire.lock();
+  const auto spire = mSpire.lock();
   if(!spire) return;
 
-  auto v = spire->getCameraLookAt();
+  const auto v = spire->getCameraLookAt();
   auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
   state_->setValue(Parameters::CameraLookAt, lookAt);
   pushingCameraState_ = false;
@@ -816,7 +812,7 @@ void ViewSceneDialog::pushCameraLookAt()
 void ViewSceneDialog::pushCameraRotation()
 {
   pushingCameraState_ = true;
-  auto spire = mSpire.lock();
+  const auto spire = mSpire.lock();
   if (!spire) return;
 
   auto q = spire->getCameraRotation();
@@ -956,7 +952,6 @@ void ViewSceneDialog::updateAllGeometries()
   spire->runGCOnNextExecution();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateModifiedGeometries()
 {
   // if we are looking for a new geometry the ID will have changed therefore we can find the
@@ -968,7 +963,6 @@ void ViewSceneDialog::updateModifiedGeometries()
   spire->runGCOnNextExecution();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false);
@@ -983,7 +977,6 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   spire->runGCOnNextExecution();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 {
   DEBUG_LOG_LINE_INFO
@@ -1001,7 +994,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if(forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
 
-  std::vector<QString> displayNames;
   std::vector<std::string> validObjects;
   std::vector<GeometryBaseHandle> allGeoms;
 
@@ -1025,7 +1017,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     allGeoms.push_back(plane);
 
   auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
-  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
+  auto displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
 
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
@@ -1793,36 +1785,50 @@ void ClippingPlaneManager::setActive(int index)
 void ClippingPlaneManager::setActiveX(int index)
 {
   clippingPlanes_[activeIndex_].x = index / 100.0;
+  state_->setValue(Parameters::ClippingPlaneX, sliceWith([](const ClippingPlane& p) { return p.x; }));
+}
+
+VariableList ClippingPlaneManager::sliceWith(std::function<Variable::Value(const ClippingPlane&)> func)
+{
+  VariableList vl;
+  std::transform(clippingPlanes_.begin(), clippingPlanes_.end(), std::back_inserter(vl), [func](const ClippingPlane& c) { return makeVariable("", func(c)); });
+  return vl;
 }
 
 void ClippingPlaneManager::setActiveY(int index)
 {
   clippingPlanes_[activeIndex_].y = index / 100.0;
+  state_->setValue(Parameters::ClippingPlaneY, sliceWith([](const ClippingPlane& p) { return p.y; }));
 }
 
 void ClippingPlaneManager::setActiveZ(int index)
 {
   clippingPlanes_[activeIndex_].z = index / 100.0;
+  state_->setValue(Parameters::ClippingPlaneZ, sliceWith([](const ClippingPlane& p) { return p.z; }));
 }
 
 void ClippingPlaneManager::setActiveD(int index)
 {
   clippingPlanes_[activeIndex_].d = index / 100.0;
+  state_->setValue(Parameters::ClippingPlaneD, sliceWith([](const ClippingPlane& p) { return p.d; }));
 }
 
 void ClippingPlaneManager::setActiveFrameOn(bool frameOn)
 {
   clippingPlanes_[activeIndex_].showFrame = frameOn;
+  //TODO: state_->setValue(Parameters::ClippingPlaneFrameOn, sliceWith([](const ClippingPlane& p) { return p.showFrame; }));
 }
 
 void ClippingPlaneManager::setActiveVisibility(bool visible)
 {
   clippingPlanes_[activeIndex_].visible = visible;
+  state_->setValue(Parameters::ClippingPlaneEnabled, sliceWith([](const ClippingPlane& p) { return p.visible; }));
 }
 
 void ClippingPlaneManager::setActiveNormalReversed(bool normalReversed)
 {
   clippingPlanes_[activeIndex_].reverseNormal = normalReversed;
+  state_->setValue(Parameters::ClippingPlaneNormalReversed, sliceWith([](const ClippingPlane& p) { return p.reverseNormal; }));
 }
 
 void ViewSceneDialog::setClippingPlaneIndex(int index)

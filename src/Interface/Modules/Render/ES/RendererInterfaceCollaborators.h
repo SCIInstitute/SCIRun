@@ -30,7 +30,9 @@
 
 #include <Core/Datatypes/Feedback.h>
 #include <Graphics/Widgets/Widget.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Modules/Render/share.h>
+
 
 namespace SCIRun
 {
@@ -60,7 +62,7 @@ namespace SCIRun
     class SCISHARE ClippingPlaneManager
     {
     public:
-      ClippingPlaneManager();
+      explicit ClippingPlaneManager(Dataflow::Networks::ModuleStateHandle state);
       const std::vector<Core::Datatypes::ClippingPlane>& allPlanes() const { return clippingPlanes_; }
       const Core::Datatypes::ClippingPlane& active() const
       {
@@ -75,8 +77,10 @@ namespace SCIRun
       void setActiveZ(int index);
       void setActiveD(int index);
     private:
+      Dataflow::Networks::ModuleStateHandle state_;
       std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;
       int activeIndex_{ 0 };
+      Core::Algorithms::VariableList sliceWith(std::function<Core::Algorithms::Variable::Value(const Core::Datatypes::ClippingPlane&)> func);
     };
 
     using ClippingPlaneManagerPtr = SharedPointer<ClippingPlaneManager>;
