@@ -28,6 +28,8 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACECOLLABORATORS_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERINTERFACECOLLABORATORS_H
 
+#include <Core/Datatypes/Feedback.h>
+#include <Graphics/Widgets/Widget.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun
@@ -53,6 +55,64 @@ namespace SCIRun
       FOG_INTENSITY,
       FOG_START,
       FOG_END
+    };
+
+    class SCISHARE ClippingPlaneManager
+    {
+    public:
+      ClippingPlaneManager();
+      const std::vector<Core::Datatypes::ClippingPlane>& allPlanes() const { return clippingPlanes_; }
+      const Core::Datatypes::ClippingPlane& active() const
+      {
+        return clippingPlanes_[activeIndex_];
+      }
+      void setActive(int index);
+      void setActiveVisibility(bool visible);
+      void setActiveNormalReversed(bool normalReversed);
+      void setActiveFrameOn(bool frameOn);
+      void setActiveX(int index);
+      void setActiveY(int index);
+      void setActiveZ(int index);
+      void setActiveD(int index);
+    private:
+      std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;
+      int activeIndex_{ 0 };
+    };
+
+    using ClippingPlaneManagerPtr = SharedPointer<ClippingPlaneManager>;
+
+    class SCISHARE PreviousWidgetSelectionInfo
+    {
+    public:
+      PreviousWidgetSelectionInfo() = default;
+      unsigned long timeSince(const std::chrono::system_clock::time_point& time) const;
+      unsigned long timeSince(unsigned long time) const;
+      unsigned long timeSinceWidgetColorRestored() const;
+      unsigned long timeSinceLastSelectionAttempt() const;
+      bool hasSameMousePosition(int x, int y) const;
+      bool hasSameCameraTansform(const glm::mat4& mat) const;
+      bool hasSameWidget(Graphics::Datatypes::WidgetHandle widget) const;
+      void widgetColorRestored();
+      void selectionAttempt();
+      void setCameraTransform(glm::mat4 mat);
+      void setMousePosition(int x, int y);
+      void setFrameIsFinished(bool finished);
+      bool getFrameIsFinished() const;
+      void setPreviousWidget(Graphics::Datatypes::WidgetHandle widget);
+      Graphics::Datatypes::WidgetHandle getPreviousWidget() const;
+      bool hasPreviousWidget() const;
+      void deletePreviousWidget();
+      int getPreviousMouseX() const;
+      int getPreviousMouseY() const;
+    private:
+      unsigned long timeSinceEpoch(const std::chrono::system_clock::time_point& time) const;
+      std::chrono::system_clock::time_point timeWidgetColorRestored_{};
+      std::chrono::system_clock::time_point timeOfLastSelectionAttempt_{};
+      Graphics::Datatypes::WidgetHandle     previousSelectedWidget_;
+      glm::mat4                             previousCameraTransform_{ 0.0 };
+      int                                   lastMousePressEventX_{ 0 };
+      int                                   lastMousePressEventY_{ 0 };
+      bool                                  frameIsFinished_{ false };
     };
   }
 }

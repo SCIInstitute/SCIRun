@@ -30,11 +30,9 @@
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_RENDERERCOLLABORATORS_H
 
 #include <Core/Datatypes/Feedback.h>
-#include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <Graphics/Widgets/WidgetParameters.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
-#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/ObjectTransformCalculators.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -148,6 +146,8 @@ namespace SCIRun
 
     SCISHARE Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(MouseButton btn);
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
+
+
   }
 }
 

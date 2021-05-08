@@ -56,7 +56,6 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
-    class PreviousWidgetSelectionInfo;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -65,7 +64,7 @@ namespace SCIRun {
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
-      ~ViewSceneDialog();
+      ~ViewSceneDialog() override;
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
@@ -86,7 +85,7 @@ namespace SCIRun {
       void newGeometryValueForwarder();
       void cameraRotationChangeForwarder();
       void cameraLookAtChangeForwarder();
-      void cameraDistnaceChangeForwarder();
+      void cameraDistanceChangeForwarder();
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
@@ -225,7 +224,6 @@ namespace SCIRun {
     private:
       //---------------- Intitialization ------------------------------------------------------------
       void addToolBar();
-      void setupClippingPlanes();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
@@ -261,7 +259,7 @@ namespace SCIRun {
       //---------------- Clipping Planes -----------------------------------------------------------
       void updateClippingPlaneDisplay();
       void buildGeomClippingPlanes();
-      void buildGeometryClippingPlane(int index, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
+      void buildGeometryClippingPlane(int index, bool reverseNormal, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
       void updateScaleBarLength();
@@ -281,13 +279,6 @@ namespace SCIRun {
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
-
-      struct ClippingPlane
-      {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
-
       struct ScaleBar
       {
         bool visible;
@@ -297,7 +288,6 @@ namespace SCIRun {
         double projLength;
       };
 
-
       GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
       Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
       QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
@@ -306,7 +296,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
-      PreviousWidgetSelectionInfo*          previousWidgetInfo_           {nullptr};
+      Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
       bool                                  shown_                        {false};
       bool                                  delayGC                       {false};
@@ -317,7 +307,7 @@ namespace SCIRun {
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
-      int                                   clippingPlaneIndex_           {0};
+      
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
       int                                   delayAfterLastSelection_      {50};
@@ -329,7 +319,7 @@ namespace SCIRun {
       QColor                                bgColor_                      {};
       QColor                                fogColor_                     {};
       ScaleBar                              scaleBar_                     {};
-      std::vector<ClippingPlane>            clippingPlanes_               {};
+      Render::ClippingPlaneManagerPtr clippingPlaneManager_;
       class Screenshot*                     screenshotTaker_              {nullptr};
       bool                                  saveScreenshotOnNewGeometry_  {false};
       bool                                  pulledSavedVisibility_        {false};
