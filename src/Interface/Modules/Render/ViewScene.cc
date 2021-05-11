@@ -678,7 +678,7 @@ void ViewSceneDialog::addControlLockButton()
 
 ClippingPlaneManager::ClippingPlaneManager(ModuleStateHandle state) : state_(state), clippingPlanes_(ClippingPlane::MaxCount)
 {
-  
+
 }
 
 void ViewSceneDialog::setupScaleBar()
@@ -912,6 +912,9 @@ void ViewSceneDialog::pullSpecial()
       }
     }
 
+    clippingPlaneManager_->loadFromState();
+    initializeClippingPlaneDisplay();
+
     pulledSavedVisibility_ = true;
   }
 }
@@ -1050,7 +1053,8 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     }
   }
 
-  if (saveScreenshotOnNewGeometry_) screenshotClicked();
+  if (saveScreenshotOnNewGeometry_)
+    screenshotClicked();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1058,14 +1062,15 @@ void ViewSceneDialog::lockMutex()
 {
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if(mutex) mutex->lock();
+  if (mutex)
+    mutex->lock();
 }
 
 void ViewSceneDialog::unblockExecution()
 {
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if(mutex)
+  if (mutex)
   {
     mutex->unlock();
     std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
@@ -1095,14 +1100,15 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int, int, const std::string& s
 
 void ViewSceneDialog::runDelayedGC()
 {
-  if(delayGC)
+  if (delayGC)
   {
     QTimer::singleShot(200, this, SLOT(runDelayedGC()));
   }
   else
   {
     auto spire = mSpire.lock();
-    if (!spire) return;
+    if (!spire)
+      return;
     spire->runGCOnNextExecution();
     delayedGCRequested = false;
   }
@@ -1197,7 +1203,7 @@ void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
 
   if (pulling_)
     return;
-  
+
   state_->setValue(Parameters::WindowPositionX, p.x());
   state_->setValue(Parameters::WindowPositionY, p.y());
 }
@@ -1385,7 +1391,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   }
   else if (!shiftdown_)
   {
-    for (auto* vsd : viewScenesToUpdate) 
+    for (auto* vsd : viewScenesToUpdate)
       vsd->inputMouseUpHelper();
   }
 
@@ -1775,6 +1781,29 @@ void ViewSceneDialog::restoreObjColor()
 //---------------- Clipping Planes -----------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
+void ClippingPlaneManager::loadFromState()
+{
+  qDebug() << "loadFromState:";
+  auto xs = toDoubleVector(state_->getValue(Parameters::ClippingPlaneX).toVector());
+  auto ys = toDoubleVector(state_->getValue(Parameters::ClippingPlaneY).toVector());
+  auto zs = toDoubleVector(state_->getValue(Parameters::ClippingPlaneZ).toVector());
+  auto ds = toDoubleVector(state_->getValue(Parameters::ClippingPlaneD).toVector());
+  auto visible = toBoolVector(state_->getValue(Parameters::ClippingPlaneEnabled).toVector());
+  //auto showFrame = toBoolVector(state_->getValue(Parameters::ClippingPlaneFrameOn).toVector());
+  auto reverseNormal = toBoolVector(state_->getValue(Parameters::ClippingPlaneNormalReversed).toVector());
+  // qDebug() << "Xs:" << xs << "Ys:" << ys << "Zs:" << zs
+  //   << "Ds:" << ds << "visible:" << visible
+  //   //<< "showFrame:" << showFrame
+  //   << "reverseNormal:" << reverseNormal;
+
+  auto p = clippingPlanes_.begin();
+  for (auto&& vals : zip(visible, reverseNormal, xs, ys, zs, ds))
+  {
+    boost::tie(p->visible, p->reverseNormal, p->x, p->y, p->z, p->d) = vals;
+    ++p;
+  }
+}
+
 void ClippingPlaneManager::setActive(int index)
 {
   if (index < 0 || index >= clippingPlanes_.size())
@@ -1831,10 +1860,31 @@ void ClippingPlaneManager::setActiveNormalReversed(bool normalReversed)
   state_->setValue(Parameters::ClippingPlaneNormalReversed, sliceWith([](const ClippingPlane& p) { return p.reverseNormal; }));
 }
 
+void ViewSceneDialog::initializeClippingPlaneDisplay()
+{
+  clippingPlaneManager_->setActive(0);
+
+  const auto& activePlane = clippingPlaneManager_->active();
+  mConfigurationDock->updatePlaneSettingsDisplay(
+    activePlane.visible,
+    activePlane.showFrame,
+    activePlane.reverseNormal);
+  mConfigurationDock->updatePlaneControlDisplay(
+    activePlane.x,
+    activePlane.y,
+    activePlane.z,
+    activePlane.d);
+}
+
 void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
   clippingPlaneManager_->setActive(index);
 
+  doClippingPlanes();
+}
+
+void ViewSceneDialog::doClippingPlanes()
+{
   auto spire = mSpire.lock();
   if (spire)
     spire->updateClippingPlanes();
@@ -2213,7 +2263,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   for (auto a : indices) iboBuffer->write(a);
 
-  for (const auto& point : points) 
+  for (const auto& point : points)
   {
     vboBuffer->write(static_cast<float>(point.x()));
     vboBuffer->write(static_cast<float>(point.y()));

@@ -76,6 +76,7 @@ namespace SCIRun
       void setActiveY(int index);
       void setActiveZ(int index);
       void setActiveD(int index);
+      void loadFromState();
     private:
       Dataflow::Networks::ModuleStateHandle state_;
       std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;

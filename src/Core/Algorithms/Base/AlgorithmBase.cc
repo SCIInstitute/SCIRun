@@ -477,3 +477,8 @@ std::vector<double> Core::Algorithms::toDoubleVector(const Variable::List& list)
 {
   return toTypedVector<double>(list, [](const Variable& v) { return v.toDouble(); });
 }
+
+std::vector<bool> Core::Algorithms::toBoolVector(const Variable::List& list)
+{
+  return toTypedVector<bool>(list, [](const Variable& v) { return v.toBool(); });
+}

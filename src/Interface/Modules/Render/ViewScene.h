@@ -259,6 +259,9 @@ namespace SCIRun {
       //---------------- Clipping Planes -----------------------------------------------------------
       void updateClippingPlaneDisplay();
       void buildGeomClippingPlanes();
+      void initializeClippingPlaneDisplay();
+      void doClippingPlanes();
+      bool initializeClippingPlanes_{false};
       void buildGeometryClippingPlane(int index, bool reverseNormal, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
@@ -307,7 +310,7 @@ namespace SCIRun {
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
-      
+
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
       int                                   delayAfterLastSelection_      {50};

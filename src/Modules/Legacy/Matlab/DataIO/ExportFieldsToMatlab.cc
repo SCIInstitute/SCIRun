@@ -83,7 +83,6 @@ void ExportFieldsToMatlab::execute()
       state->setValue(Variables::Filename, filename);
     }
 
-
     auto filename = state->getValue(Variables::Filename).toFilename();
 
     if (filename.empty())

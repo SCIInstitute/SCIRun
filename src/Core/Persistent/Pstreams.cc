@@ -62,6 +62,10 @@
 #  include <io.h>
 #endif
 
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+//TODO: new one from M1/Big Sur build
+#pragma GCC diagnostic ignored "-Wfortify-source"
+
 using namespace SCIRun::Core::Logging;
 
 namespace SCIRun {
@@ -267,12 +271,7 @@ BinaryPiostream::reset_post_header()
 const char *
 BinaryPiostream::endianness()
 {
-  /// @todo SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //if (airMyEndian == airEndianLittle)
-    return "LIT\n";
-  //else
-    //return "BIG\n";
-
+  return "LIT\n";
 }
 
 
@@ -606,11 +605,7 @@ BinarySwapPiostream::~BinarySwapPiostream()
 const char *
 BinarySwapPiostream::endianness()
 {
-  /// @todo SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //if (airMyEndian == airEndianLittle)
-    return "LIT\n";
-  //else
-    //return "BIG\n";
+  return "LIT\n";
 }
 
 template <class T>
@@ -1760,10 +1755,7 @@ FastPiostream::FastPiostream(const std::string& filename, Direction dir,
     if (version() > 1)
     {
       char hdr[16];
-      //if (airMyEndian == airEndianLittle)
-        sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
-      //else
-        //sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
+      sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
       // write the header
       size_t wrote = fwrite(hdr, sizeof(char), 16, fp_);
       if (wrote != 16)
@@ -1829,10 +1821,7 @@ fp_(nullptr)
     if (version() > 1)
     {
       char hdr[16];
-      //if (airMyEndian == airEndianLittle)
-        sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
-      //else
-        //sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
+      sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
       // write the header
       size_t wrote = fwrite(hdr, sizeof(char), 16, fp_);
       if (wrote != 16)
