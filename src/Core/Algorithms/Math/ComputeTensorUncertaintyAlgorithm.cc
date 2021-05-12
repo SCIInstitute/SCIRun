@@ -129,8 +129,6 @@ FieldHandle ComputeTensorUncertaintyAlgorithmImpl::getMeanTensors() const
 void ComputeTensorUncertaintyAlgorithmImpl::computeMeanTensors()
 {
   meanTensors_ = std::vector<Dyadic3DTensor>(fieldSize_);
-  // auto invariantMethod = get(Parameters::MeanInvariantMethod).toOption();
-  // auto orientationMethod = get(Parameters::MeanOrientationMethod).toOption();
   if (invariantMethod_.option_ == orientationMethod_.option_)
   {
     if (orientationMethod_.option_ == "Matrix Average") {
@@ -177,8 +175,6 @@ void ComputeTensorUncertaintyAlgorithmImpl::computeMeanTensors()
       meanTensors_[t] = Dyadic3DTensor(orientationTensors[t].getEigenvectors(),
                                        invariantTensors[t].getEigenvalues());
       meanTensors_[t].setDescendingRHSOrder();
-      // meanTensors_[t] = invariantTensors[t];
-      // std::cout << "gen mean tensor: " << meanTensors_[t] << "\n";
     }
   }
 }
@@ -243,17 +239,8 @@ Dyadic3DTensor ComputeTensorUncertaintyAlgorithmImpl::computeMeanLinearInvariant
   eigvals(1) = x + y * std::cos((arccosR3 - 2.0 * M_PI) * oneThird);
   eigvals(2) = x + y * std::cos((arccosR3 + 2.0 * M_PI) * oneThird);
 
-  Dyadic3DTensor meanForOrientation = computeMeanLogEuclidean(t);
-  meanForOrientation.setDescendingRHSOrder();
-  std::vector<Eigen::Vector3d> eigvecs = meanForOrientation.getEigenvectors();
-
   // Using axis aligned orientation because this mean method is only for invariants
-  // const static std::vector<Eigen::Vector3d> eigvecs =
-  // { Eigen::Vector3d(1,0,0), Eigen::Vector3d(0,1,0), Eigen::Vector3d(0,0,1) };
-
-  Dyadic3DTensor ret = Dyadic3DTensor(eigvecs, eigvals);
-  // ret.setDescendingRHSOrder();
-  ret.setTensorValues();
+  Dyadic3DTensor ret = Dyadic3DTensor({Eigen::Vector3d({1,0,0}), Eigen::Vector3d({0,1,0}), Eigen::Vector3d({0,0,1})}, eigvals);
   return ret;
 }
 
@@ -273,13 +260,11 @@ Dyadic3DTensor ComputeTensorUncertaintyAlgorithmImpl::computeMeanLogEuclidean(in
   sum /= (double)fieldCount_;
   Eigen::Matrix3d mean = sum.exp();
   Dyadic3DTensor ret = Dyadic3DTensor(mean);
-  // std::cout << "mean from log eucl:\n" << ret << "\n";
   return ret;
 }
 
 ComputeTensorUncertaintyAlgorithmImpl::ComputeTensorUncertaintyAlgorithmImpl()
-{
-}
+{}
 
 void ComputeTensorUncertaintyAlgorithmImpl::computeCovarianceMatrices()
 {
@@ -288,26 +273,14 @@ void ComputeTensorUncertaintyAlgorithmImpl::computeCovarianceMatrices()
   Eigen::Matrix<double, 6, 6> covarianceMat;
   for (size_t t = 0; t < fieldSize_; ++t)
   {
-    // covarianceMatrices_[t] = DyadicTensor<6>();
-    // covarianceMatrices_[t].setZero();
     covarianceMat.fill(0.0);
-
     for (size_t f = 0; f < fieldCount_; ++f)
     {
-      // std::cout << "ten - mean:\n" << tensors_[f][t] - meanTensors_[t] << "\n";
       Eigen::Matrix<double, 6, 1> diffTensor = (tensors_[f][t] - meanTensors_[t]).mandel();
-      // std::cout << "diffT:\n" << diffTensor << "\n";
       covarianceMat += diffTensor * diffTensor.transpose();
-      // Eigen::Matrix<double, 6, 6> covarianceMat = diffTensor * diffTensor.transpose();
     }
     covarianceMat /= static_cast<double>(fieldCount_);
-    // covarianceMatrices_[t] += DyadicTensor<6>(covarianceMat);
-
-    // covarianceMatrices_[t] = covarianceMatrices_[t] / static_cast<double>(fieldCount_);
     covarianceMatrices_[t] = DyadicTensor<6>(covarianceMat);
-    // std::cout << "cov:\n" << covarianceMatrices_[t] << "\n";
-    // std::cout << "cov->mandel:\n" << covarianceMatrices_[t].mandel() << "\n";
-    // std::cout << "cov->mandel->cov:\n" << DyadicTensor<6>(covarianceMatrices_[t].mandel()) << "\n";
   }
 }
 
@@ -407,10 +380,8 @@ void ComputeTensorUncertaintyAlgorithmImpl::getTensors(const FieldList& fields)
     for (size_t v = 0; v < fieldSize_; ++v)
     {
       vfield->get_value(temp, v);
-      std::cout << "og ten:\n" << temp << "\n";
       tensors_[f][v] = scirunTensorToEigenTensor(temp);
-      // tensors_[f][v].setDescendingRHSOrder();
-      std::cout << "new ten:\n" << tensors_[f][v] << "\n";
+      tensors_[f][v].setDescendingRHSOrder();
     }
   }
 }
@@ -459,7 +430,4 @@ AlgorithmOutput ComputeTensorUncertaintyAlgorithm::run(const AlgorithmInput& inp
   output[MeanTensorField] = impl.getMeanTensors();
   output[CovarianceMatrix] = impl.getCovarianceMatrices();
   return output;
-
-  // sendOutputFromAlgorithm(Variable::OutputField, output);
-  // sendOutputFromAlgorithm(Variable::OutputMatrix, output);
 }
