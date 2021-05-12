@@ -35,8 +35,9 @@ using namespace SCIRun;
 using namespace Graphics;
 using namespace Core::Geometry;
 using namespace Core::Datatypes;
+using GGU = GlyphGeomUtility;
 
-TensorGlyphBuilder::TensorGlyphBuilder(const Tensor& t, const Point& center)
+TensorGlyphBuilder::TensorGlyphBuilder(const Dyadic3DTensor& t, const Point& center)
 {
   t_ = t;
   center_ = Point(center);
@@ -47,29 +48,9 @@ void TensorGlyphBuilder::scaleTensor(double scale)
   t_ = t_ * scale;
 }
 
-std::vector<Vector> TensorGlyphBuilder::getEigenVectors()
-{
-  std::vector<Vector> eigvecs(DIMENSIONS_);
-  t_.get_eigenvectors(eigvecs[0], eigvecs[1], eigvecs[2]);
-  return eigvecs;
-}
-
-std::vector<double> TensorGlyphBuilder::getEigenValues()
-{
-  std::vector<double> eigvals(DIMENSIONS_);
-  t_.get_eigenvalues(eigvals[0], eigvals[1], eigvals[2]);
-  return eigvals;
-}
-
 void TensorGlyphBuilder::normalizeTensor()
 {
-  auto eigvecs = getEigenVectors();
-  for (auto& v : eigvecs)
-    v.normalize();
-
-  auto norm = t_.euclidean_norm();
-  t_.set_outside_eigens(eigvecs[0] * norm[0], eigvecs[1] * norm[1], eigvecs[2] * norm[2],
-                        norm[0], norm[1], norm[2]);
+  t_.normalize();
 }
 
 void TensorGlyphBuilder::setColor(const ColorRGB& color)
@@ -97,35 +78,20 @@ void TensorGlyphBuilder::reorderTensorValues(std::vector<Vector>& eigvecs,
     eigvecs[d] = sortList[d].second;
   }
 }
+
 void TensorGlyphBuilder::makeTensorPositive()
 {
   static const double zeroThreshold = 0.000001;
-
-  auto eigvals = getEigenValues();
-  auto eigvecs = getEigenVectors();
-  for (auto& e : eigvals)
-  {
-    e = fabs(e);
-    if(e <= zeroThreshold)
-      e = 0;
-  }
-
-  // These are exactly zero after thresholding
-  flatTensor_ = eigvals[0] == 0 || eigvals[1] == 0 || eigvals[2] == 0;
-
+  t_.makePositive();
+  t_.setDescendingRHSOrder();
+  auto eigvals = t_.getEigenvalues();
+  auto eigvecs = t_.getEigenvectors();
+  flatTensor_ = eigvals[2] < zeroThreshold;
   if (flatTensor_)
-    reorderTensorValues(eigvecs, eigvals);
-
-  for (int d = 0; d < DIMENSIONS_; ++d)
-    if (eigvals[d] == 0)
-    {
-      zeroNorm_ = Cross(eigvecs[(d+1) % DIMENSIONS_], eigvecs[(d+2) % DIMENSIONS_]).normal();
-      eigvecs[d] = zeroNorm_ * eigvals[d];
-      break;
-    }
-
-  t_.set_outside_eigens(eigvecs[0], eigvecs[1], eigvecs[2],
-                        eigvals[0], eigvals[1], eigvals[2]);
+  {
+    Eigen::Vector3d vec = eigvecs[0].cross(eigvecs[1]);
+    zeroNorm_ = Vector(vec[0], vec[1], vec[2]);
+  }
 }
 
 void TensorGlyphBuilder::computeSinCosTable(bool half)
@@ -144,15 +110,18 @@ void TensorGlyphBuilder::computeSinCosTable(bool half)
 
 void TensorGlyphBuilder::computeTransforms()
 {
-  auto eigvecs = getEigenVectors();
+  auto eigvecs = t_.getEigenvectors();
   for (auto& v : eigvecs)
     v.normalize();
-  GlyphGeomUtility::generateTransforms(center_, eigvecs[0], eigvecs[1], eigvecs[2], trans_, rotate_);
+  GlyphGeomUtility::generateTransforms(center_, GGU::EigenVectorToSCIRunVector(eigvecs[0]),
+                                       GGU::EigenVectorToSCIRunVector(eigvecs[1]),
+                                       GGU::EigenVectorToSCIRunVector(eigvecs[2]),
+                                       trans_, rotate_);
 }
 
 void TensorGlyphBuilder::postScaleTransorms()
 {
-  auto eigvals = getEigenValues();
+  auto eigvals = t_.getEigenvalues();
   Vector eigvalsVector(eigvals[0], eigvals[1], eigvals[2]);
 
   trans_.post_scale( Vector(1.0,1.0,1.0) * eigvalsVector);
@@ -164,6 +133,8 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
   computeTransforms();
   postScaleTransorms();
   computeSinCosTable(half);
+  auto eigvals = t_.getEigenvalues();
+  eigvals.inverse();
 
   for (int v = 0; v < nv_ - 1; ++v)
   {
@@ -241,7 +212,6 @@ void TensorGlyphBuilder::generateSuperquadricTensor(GlyphConstructor& constructo
 
 void TensorGlyphBuilder::generateSuperquadricSurface(GlyphConstructor& constructor, double A, double B)
 {
-  makeTensorPositive();
   computeTransforms();
   postScaleTransorms();
   computeSinCosTable(false);
@@ -253,9 +223,6 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
   double cl = t_.linearCertainty();
   double cp = t_.planarCertainty();
   bool linear = cl >= cp;
-
-  double normalA = 2.0-A;
-  double normalB = 2.0-B;
 
   for (int v = 0; v < nv_ - 1; ++v)
   {
@@ -288,8 +255,8 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
         }
         else
         {
-          normal = Vector(evaluateSuperquadricPoint(linear, sinPhi[i], cosPhi[i],
-                                                    sinTheta, cosTheta, normalA, normalB));
+          normal = Vector(evaluateSuperquadricNormal(linear, sinPhi[i], cosPhi[i],
+                                                    sinTheta, cosTheta, A, B));
           normal = rotate_ * normal;
           normal.safe_normalize();
         }
@@ -302,6 +269,40 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
     }
   }
   constructor.popIndicesNTimes(6);
+}
+
+Point TensorGlyphBuilder::evaluateSuperquadricNormal(bool linear, double sinPhi, double cosPhi,
+                                                    double sinTheta, double cosTheta,
+                                                    double A, double B)
+{
+  if (linear)
+    return evaluateSuperquadricNormalLinear(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
+  else
+    return evaluateSuperquadricNormalPlanar(sinPhi, cosPhi, sinTheta, cosTheta, A, B);
+}
+
+// Generate around x-axis
+Point TensorGlyphBuilder::evaluateSuperquadricNormalLinear(double sinPhi, double cosPhi,
+                                                          double sinTheta, double cosTheta,
+                                                          double A, double B)
+{
+  double x, y, z;
+  x =  2.0/B * GGU::spow(cosPhi, 2.0-B);
+  y = -2.0/B * GGU::spow(sinPhi, 2.0-B) * GGU::spow(sinTheta, 2.0-A);
+  z =  2.0/B * GGU::spow(sinPhi, 2.0-B) * GGU::spow(cosTheta, 2.0-A);
+  return Point(x, y, z);
+}
+
+// Generate around z-axis
+Point TensorGlyphBuilder::evaluateSuperquadricNormalPlanar(double sinPhi, double cosPhi,
+                                                          double sinTheta, double cosTheta,
+                                                          double A, double B)
+{
+  double x, y, z;
+  x = 2.0/B * GGU::spow(sinPhi, 2.0-B) * GGU::spow(cosTheta, 2.0-A);
+  y = 2.0/B * GGU::spow(sinPhi, 2.0-B) * GGU::spow(sinTheta, 2.0-A);
+  z = 2.0/B * GGU::spow(cosPhi, 2.0-B);
+  return Point(x, y, z);
 }
 
 Point TensorGlyphBuilder::evaluateSuperquadricPoint(bool linear, double sinPhi, double cosPhi,
@@ -370,7 +371,7 @@ void TensorGlyphBuilder::generateBoxSide(GlyphConstructor& constructor, const Ve
 
 std::vector<Vector> TensorGlyphBuilder::generateBoxPoints()
 {
-  auto eigvals = getEigenValues();
+  auto eigvals = t_.getEigenvalues();
   std::vector<Vector> boxPoints;
 
   for(int x : {-1, 1})
