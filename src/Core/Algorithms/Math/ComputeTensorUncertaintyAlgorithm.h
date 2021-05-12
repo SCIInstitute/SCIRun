@@ -43,7 +43,7 @@ namespace Math {
   {
   public:
     ComputeTensorUncertaintyAlgorithm();
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
     static AlgorithmOutputName MeanTensorField;
     static AlgorithmOutputName CovarianceMatrix;
   };

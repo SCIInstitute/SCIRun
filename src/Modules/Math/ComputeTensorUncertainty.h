@@ -47,7 +47,6 @@ namespace Math {
                                             public Has1InputPort<DynamicPortTag<FieldPortTag>>,
                                             public Has2OutputPorts<FieldPortTag, MatrixPortTag>
   {
-
   public:
     ComputeTensorUncertainty();
     virtual void execute();
