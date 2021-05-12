@@ -45,6 +45,8 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+include(CheckCCompilerFlag)
+
 ########################################################################
 # Build shared libraries by default
 
