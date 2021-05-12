@@ -32,9 +32,18 @@
 #define CORE_UTILS_EXCEPTION_H
 
 #include <stdexcept>
+
+#if defined(__APPLE__) && !defined(__x86_64__)
+#define __x86_64__
+#define SCI_APPLE_M1
+#endif
 #include <boost/exception/all.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/numeric/interval.hpp>
+#ifdef SCI_APPLE_M1
+#undef __x86_64__
+#endif
+
 #include <Core/Utils/share.h>
 
 #define NOEXCEPT noexcept(true)
