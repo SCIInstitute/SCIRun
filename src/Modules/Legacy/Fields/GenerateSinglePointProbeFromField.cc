@@ -84,7 +84,7 @@ namespace SCIRun
         int widgetid_;
         double l2norm_;
         bool color_changed_;
-        GeometryHandle buildWidgetObject(FieldHandle field, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
+          GeometryHandle buildWidgetObject(const boost::optional<boost::shared_ptr<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
         RenderState getWidgetRenderState(ModuleStateHandle state);
         Transform previousTransform_;
       };
@@ -169,7 +169,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
   state->setValue(SnapToNode, false);
   state->setValue(SnapToElement, false);
-  state->setValue(Parameters::BBoxSize, 0.1);
+  state->setValue(Parameters::BBoxSize, 10.0);
   state->setValue(Parameters::UseBBoxSize, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
@@ -204,7 +204,7 @@ void GenerateSinglePointProbeFromField::execute()
     auto index = GenerateIndex();
     sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
-    auto geom = impl_->buildWidgetObject(field, fieldScale, get_state(), *this);
+    auto geom = impl_->buildWidgetObject(ifieldOption, field, fieldScale, get_state(), *this);
     sendOutput(GeneratedWidget, geom);
   }
 }
@@ -483,13 +483,18 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   return index;
 }
 
-GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
+GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(const boost::optional<boost::shared_ptr<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
   using namespace Parameters;
-  auto mesh = field->vmesh();
+  auto mesh = ofield->vmesh();
   double radius;
   if (state->getValue(UseBBoxSize).toBool())
-    radius = fieldScale * state->getValue(BBoxSize).toDouble();
+  {
+    if (ifield)
+      radius = fieldScale * (0.01*state->getValue(BBoxSize).toDouble());
+    else
+      THROW_INVALID_ARGUMENT("A field input must be given to use the Bounding Box scaling percentage.");
+  }
   else
     radius = state->getValue(ProbeSize).toDouble();
 

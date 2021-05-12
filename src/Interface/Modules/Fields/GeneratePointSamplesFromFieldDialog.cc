@@ -46,4 +46,12 @@ GeneratePointSamplesFromFieldDialog::GeneratePointSamplesFromFieldDialog(const s
   addSpinBoxManager(numberOfSeedsSpinBox_, Parameters::NumSeeds);
   addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxScale);
   addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxScale);
+
+  connect(bboxScaleCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleSpinBoxes()));
+}
+
+void GeneratePointSamplesFromFieldDialog::toggleSpinBoxes()
+{
+  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
+  seedSizeDoubleSpinBox_->setEnabled(!seedSizeDoubleSpinBox_->isEnabled());
 }

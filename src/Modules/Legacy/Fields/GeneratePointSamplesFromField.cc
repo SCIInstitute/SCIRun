@@ -122,7 +122,7 @@ void GeneratePointSamplesFromField::setStateDefaults()
   state->setValue(Parameters::NumSeeds, 1);
   state->setValue(Parameters::ProbeScale, 0.23);
   state->setValue(Parameters::PointPositions, VariableList());
-  state->setValue(Parameters::BBoxScale, 0.1);
+  state->setValue(Parameters::BBoxScale, 10.0);
   state->setValue(Parameters::UseBBoxScale, false);
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
@@ -232,7 +232,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   double scale;
   if (state->getValue(Parameters::UseBBoxScale).toBool())
-    scale = fieldScale * state->getValue(Parameters::BBoxScale).toDouble();
+    scale = fieldScale * (0.01*state->getValue(Parameters::BBoxScale).toDouble());
   else
     scale = state->getValue(Parameters::ProbeScale).toDouble();
 
