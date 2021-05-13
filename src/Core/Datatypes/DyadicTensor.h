@@ -135,7 +135,7 @@ namespace Core {
             (*this)(i, j) = mat(i, j);
           }
       }
-      DyadicTensorGeneric(MandelVector man)
+      explicit DyadicTensorGeneric(MandelVector man)
       {
         static const Number sqrt2 = std::sqrt(2);
         for (SizeType i = Dim; i < MANDEL_SIZE_; ++i)
