@@ -625,7 +625,7 @@ namespace Core {
           THROW_INVALID_ARGUMENT("The number of input eigvals must be " + std::to_string(eigvals_.size()));
       }
 
-     enum OrderState
+     enum class OrderState
      {
        NONE,
        DESCENDING,
