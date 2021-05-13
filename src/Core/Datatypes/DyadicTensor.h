@@ -340,7 +340,7 @@ namespace Core {
       SizeType getDimension1() const { return Dim; }
       SizeType getDimension2() const { return Dim; }
 
-      VectorType getNormalizedEigenvalues()
+      VectorType getNormalizedEigenvalues() const
       {
         auto eigvals = getEigenvalues();
         auto fro = frobeniusNorm();
