@@ -302,8 +302,8 @@ namespace SCIRun {
       Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
       bool                                  shown_                        {false};
-      bool                                  delayGC                       {false};
-      bool                                  delayedGCRequested            {false};
+      bool                                  delayGC_                      {false};
+      bool                                  delayedGCRequested_           {false};
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};

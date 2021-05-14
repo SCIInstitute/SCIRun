@@ -994,7 +994,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     return;
   spire->setContext(mGLWidget->context());
 
-  if(forceAllObjectsToUpdate)
+  if (forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
 
   std::vector<std::string> validObjects;
@@ -1100,7 +1100,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int, int, const std::string& s
 
 void ViewSceneDialog::runDelayedGC()
 {
-  if (delayGC)
+  if (delayGC_)
   {
     QTimer::singleShot(200, this, SLOT(runDelayedGC()));
   }
@@ -1110,9 +1110,9 @@ void ViewSceneDialog::runDelayedGC()
     if (!spire)
       return;
     spire->runGCOnNextExecution();
-    delayedGCRequested = false;
+    delayedGCRequested_ = false;
   }
-  delayGC = false;
+  delayGC_ = false;
 }
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
@@ -1783,7 +1783,6 @@ void ViewSceneDialog::restoreObjColor()
 
 void ClippingPlaneManager::loadFromState()
 {
-  qDebug() << "loadFromState:";
   auto xs = toDoubleVector(state_->getValue(Parameters::ClippingPlaneX).toVector());
   auto ys = toDoubleVector(state_->getValue(Parameters::ClippingPlaneY).toVector());
   auto zs = toDoubleVector(state_->getValue(Parameters::ClippingPlaneZ).toVector());
@@ -1972,10 +1971,10 @@ void ViewSceneDialog::updateClippingPlaneDisplay()
 
   buildGeomClippingPlanes();
   newGeometryValue(false);
-  delayGC = true;
-  if (!delayedGCRequested)
+  delayGC_ = true;
+  if (!delayedGCRequested_)
   {
-    delayedGCRequested = true;
+    delayedGCRequested_ = true;
     runDelayedGC();
   }
 }
@@ -2642,7 +2641,6 @@ void ViewSceneDialog::autoSaveScreenshot()
   screenshotTaker_->saveScreenshot(file);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendBugReport()
 {
   QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -2695,7 +2693,6 @@ void ViewSceneDialog::sendBugReport()
 #endif
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::takeScreenshot()
 {
   if (!screenshotTaker_)
@@ -2704,15 +2701,14 @@ void ViewSceneDialog::takeScreenshot()
   screenshotTaker_->takeScreenshot();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::saveNewGeometryChanged(int state)
 {
   saveScreenshotOnNewGeometry_ = state != 0;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
+  // check here for clipping func insertion
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
