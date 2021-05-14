@@ -191,68 +191,57 @@ void PreviousWidgetSelectionInfo::widgetColorRestored()
   timeWidgetColorRestored_ = std::chrono::system_clock::now();
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::selectionAttempt()
 {
   timeOfLastSelectionAttempt_ = std::chrono::system_clock::now();
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::setCameraTransform(glm::mat4 mat)
 {
   previousCameraTransform_ = mat;
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::setMousePosition(int x, int y)
 {
   lastMousePressEventX_ = x;
   lastMousePressEventY_ = y;
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::setFrameIsFinished(bool finished)
 {
   frameIsFinished_ = finished;
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::getFrameIsFinished() const
 {
   return frameIsFinished_;
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSinceWidgetColorRestored() const
 {
   return timeSince(timeWidgetColorRestored_);
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSinceLastSelectionAttempt() const
 {
   return timeSince(timeOfLastSelectionAttempt_);
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::setPreviousWidget(const WidgetHandle widget)
 {
   previousSelectedWidget_ = widget;
 }
 
-//--------------------------------------------------------------------------------------------------
 WidgetHandle PreviousWidgetSelectionInfo::getPreviousWidget() const
 {
   return previousSelectedWidget_;
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasSameWidget(const WidgetHandle widget) const
 {
   return previousSelectedWidget_ == widget;
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
 {
   if (previousSelectedWidget_)
@@ -261,19 +250,16 @@ bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
     return false;
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::deletePreviousWidget()
 {
   previousSelectedWidget_.reset();
 }
 
-//--------------------------------------------------------------------------------------------------
 int PreviousWidgetSelectionInfo::getPreviousMouseX() const
 {
   return lastMousePressEventX_;
 }
 
-//--------------------------------------------------------------------------------------------------
 int PreviousWidgetSelectionInfo::getPreviousMouseY() const
 {
   return lastMousePressEventY_;
@@ -306,7 +292,6 @@ namespace
 
 ViewSceneManager ViewSceneDialog::viewSceneManager;
 
-//--------------------------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state, QWidget* parent) :
   ModuleDialogGeneric(state, parent),
   clippingPlaneManager_(new ClippingPlaneManager(state)),
@@ -398,7 +383,6 @@ ViewSceneDialog::~ViewSceneDialog()
   viewSceneManager.removeViewScene(this);
 }
 
-//--------------------------------------------------------------------------------------------------
 std::string ViewSceneDialog::toString(std::string prefix) const
 {
   const auto spire = mSpire.lock();
@@ -500,7 +484,6 @@ void ViewSceneDialog::setupMaterials()
   setFogOn(fogOn);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addAutoViewButton()
 {
   autoViewButton_ = new QPushButton(this);
@@ -511,7 +494,6 @@ void ViewSceneDialog::addAutoViewButton()
   addToolbarButton(autoViewButton_);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addScreenshotButton()
 {
   auto screenshotButton = new QPushButton(this);
@@ -522,7 +504,6 @@ void ViewSceneDialog::addScreenshotButton()
   addToolbarButton(screenshotButton);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addQuickScreenshotButton()
 {
   auto quickScreenshotButton = new QPushButton(this);
@@ -533,7 +514,6 @@ void ViewSceneDialog::addQuickScreenshotButton()
   addToolbarButton(quickScreenshotButton);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addViewBar()
 {
   mViewBar = new QToolBar(this);
@@ -549,7 +529,6 @@ void ViewSceneDialog::addViewBar()
   addControlLockButton();
 }
 
-//--------------------------------------------------------------------------------------------------
 using V = glm::vec3;
 using P = std::tuple<V, V>;
 using InnerMap = std::map<QString, P>;
@@ -595,7 +574,6 @@ static void initAxisViewParams()
   };
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addViewOptions()
 {
   QLabel* axisLabel = new QLabel();
@@ -632,7 +610,6 @@ void ViewSceneDialog::addViewOptions()
   initAxisViewParams();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::addViewBarButton()
 {
   viewBarBtn_ = new QPushButton();
@@ -739,7 +716,6 @@ void ViewSceneDialog::pullCameraRotation()
   spire->setCameraRotation(q);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraLookAt()
 {
   if (pushingCameraState_) return;
@@ -763,7 +739,6 @@ void ViewSceneDialog::pullCameraLookAt()
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullCameraDistance()
 {
   if (pushingCameraState_) return;
@@ -776,7 +751,6 @@ void ViewSceneDialog::pullCameraDistance()
   spire->setCameraDistance(distance);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraState()
 {
   pushCameraDistance();
@@ -784,7 +758,6 @@ void ViewSceneDialog::pushCameraState()
   pushCameraRotation();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraDistance()
 {
   pushingCameraState_ = true;
@@ -795,7 +768,6 @@ void ViewSceneDialog::pushCameraDistance()
   pushingCameraState_ = false;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraLookAt()
 {
   pushingCameraState_ = true;
@@ -808,7 +780,6 @@ void ViewSceneDialog::pushCameraLookAt()
   pushingCameraState_ = false;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraRotation()
 {
   pushingCameraState_ = true;
@@ -820,7 +791,6 @@ void ViewSceneDialog::pushCameraRotation()
   pushingCameraState_ = false;
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setInitialLightValues()
 {
   auto light0str = state_->getValue(Parameters::HeadLightColor).toString();
@@ -1057,7 +1027,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     screenshotClicked();
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::lockMutex()
 {
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
@@ -1085,7 +1054,6 @@ void ViewSceneDialog::frameFinished()
   previousWidgetInfo_.setFrameIsFinished(true);
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendGeometryFeedbackToState(int, int, const std::string& selName)
 {
   auto spire = mSpire.lock();
@@ -1360,7 +1328,6 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   previousWidgetInfo_.setMousePosition(event->x(), event->y());
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   auto spire = mSpire.lock();
@@ -1400,7 +1367,6 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 
 //TODO!!!
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {
   if (!selectedWidget_)
@@ -1410,7 +1376,6 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 {
   switch (event->key())
@@ -1423,7 +1388,6 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   }
 }
 
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
 {
   switch (event->key())
