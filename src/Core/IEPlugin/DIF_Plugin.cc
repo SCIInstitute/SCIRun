@@ -47,28 +47,15 @@ const char *colors[] = {"cc0000", "00cc00", "0000cc", "cc00cc", "99ff99", "33ccc
 
 namespace SCIRun {
 
-struct IndexHash {
-  static const size_t bucket_size = 4;
-  static const size_t min_buckets = 8;
-
-  size_t operator()(const index_type &idx) const
-  { return (static_cast<size_t>(idx)); }
-
-  bool operator()(const index_type &i1, const index_type &i2) const
-  { return (i1 < i2); }
-};
-
 bool DIF_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
 
 bool DIF_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
 {
   using std::endl;
   //! Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,int,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,int,IndexHash> hash_map_type;
-#endif
+
+  typedef std::unordered_map<index_type,int> hash_map_type;
+
 
   // Get interfaces to mesh and field
   VMesh* mesh = fh->vmesh();

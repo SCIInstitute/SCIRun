@@ -277,8 +277,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  }
 
  SplitFieldByConnectedRegionAlgo algo;
- algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
- algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+ algo.set(Fields::Parameters::SortDomainBySize, false);
+ algo.set(Fields::Parameters::SortAscending, false);
  std::vector<FieldHandle> result = algo.run(elc_tri_surf);
 
  if (result.size()<=0)
@@ -625,8 +625,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   SplitFieldByDomainAlgo algo2;
   algo2.setLogger(getLogger());
   FieldList output;
-  algo2.set(SplitFieldByDomainAlgo::SortBySize, true);
-  algo2.set(SplitFieldByDomainAlgo::SortAscending, false);
+  algo2.set(Fields::Parameters::SortBySize, true);
+  algo2.set(Fields::Parameters::SortAscending, false);
   algo2.runImpl(result[k], output);
 
   bool found_sponge_surface=false;
@@ -656,16 +656,16 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   } else
   {
     SplitFieldByConnectedRegionAlgo algo3;
-    algo3.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-    algo3.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+    algo3.set(Fields::Parameters::SortDomainBySize, true);
+    algo3.set(Fields::Parameters::SortAscending, false);
     std::vector<FieldHandle> result3 = algo3.run(output[electrode_surface]);
     if (result3.size()>1)
     {
-     remark(" This module found two electrode sponge surfaces that are not connected and took the one that has more elements. Visualize the 8th (Field) output to make sure otherwise the simulation could be wrong!");
+      remark(" This module found two electrode sponge surfaces that are not connected and took the one that has more elements. Visualize the 8th (Field) output to make sure otherwise the simulation could be wrong!");
     }
     if (result3.size()==0)
     {
-     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Cannot find any electrode sponge surface. ");
+      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Cannot find any electrode sponge surface. ");
     }
 
     /// create eightht output
@@ -723,7 +723,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   if (node_ind==refnode_number) /// check if ref_node is part of electrode definition throw error, first triangle node of definition
   {
-   THROW_ALGORITHM_PROCESSING_ERROR("Reference node is part of electrode definition. Choose another reference node for given electrode surface mesh. ");
+    THROW_ALGORITHM_PROCESSING_ERROR("Reference node is part of electrode definition. Choose another reference node for given electrode surface mesh. ");
   }
   (*elc_elem_def)(l,0)=node_ind;
   Point pos;
@@ -734,7 +734,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   if (node_ind==refnode_number) /// check if ref_node is part of electrode definition throw error, second triangle node of definition
   {
-   THROW_ALGORITHM_PROCESSING_ERROR("Reference node is part of electrode definition. Choose another reference node for given electrode surface mesh. ");
+    THROW_ALGORITHM_PROCESSING_ERROR("Reference node is part of electrode definition. Choose another reference node for given electrode surface mesh. ");
   }
   (*elc_elem_def)(l,1)=node_ind;
   mesh_vmesh->get_point(pos, node_ind);

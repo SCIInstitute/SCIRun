@@ -41,13 +41,13 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName SplitFieldByDomainAlgo::SortAscending("SortAscending");
-AlgorithmParameterName SplitFieldByDomainAlgo::SortBySize("SortBySize");
+ALGORITHM_PARAMETER_DEF(Fields, SortAscending);
+ALGORITHM_PARAMETER_DEF(Fields, SortBySize);
 
 SplitFieldByDomainAlgo::SplitFieldByDomainAlgo()
 {
-  addParameter(SortBySize, false);
-  addParameter(SortAscending, false);
+  addParameter(Parameters::SortBySize, false);
+  addParameter(Parameters::SortAscending, false);
 }
 
 namespace {
@@ -215,7 +215,7 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
   }
 
 
-  if (get(SortBySize).toBool())
+  if (get(Parameters::SortBySize).toBool())
   {
     std::vector<double> sizes(output.size());
     std::vector<index_type> order(output.size());
@@ -234,7 +234,7 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
       order[j] = j;
     }
 
-    if (get(SortAscending).toBool())
+    if (get(Parameters::SortAscending).toBool())
     {
       std::sort(order.begin(),order.end(),AscSortSizes(sizes));
     }

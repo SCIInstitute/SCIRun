@@ -53,8 +53,6 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(0, InputFields, Field);
         OUTPUT_PORT(0, OutputField, Field);
 
-        static const Core::Algorithms::AlgorithmParameterName ForcePointCloud;
-
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 

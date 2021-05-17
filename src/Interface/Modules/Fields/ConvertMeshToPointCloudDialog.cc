@@ -34,7 +34,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -47,5 +47,5 @@ ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& 
     streamlineMethod_.insert(StringPair("Extract Node Locations", "node"));
     streamlineMethod_.insert(StringPair("Extract Data Locations", "data"));
 
-    addComboBoxManager(option_, Fields::ConvertMeshToPointCloudMeshAlgo::Location,streamlineMethod_);
+    addComboBoxManager(option_, Parameters::Location, streamlineMethod_);
 }

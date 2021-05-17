@@ -405,20 +405,27 @@ public:
 
   static void test_and_set_various_source_dirs(const bfs::path& testdir, bfs::path& srcdir)
   {
-    if ( bfs::exists( testdir / "src" ) )
+    try
     {
-      srcdir = testdir / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      if (bfs::exists(testdir / "src"))
+      {
+        srcdir = testdir / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
+      else if (bfs::exists(testdir / ".." / "src"))
+      {
+        srcdir = testdir / ".." / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
+      else if (bfs::exists(testdir / ".." / ".." / "src"))
+      {
+        srcdir = testdir / ".." / ".." / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
     }
-    else if ( bfs::exists( testdir / ".." / "src" ) )
+    catch (boost::filesystem::filesystem_error&)
     {
-      srcdir = testdir / ".." / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
-    }
-    else if ( bfs::exists( testdir / ".." / ".." / "src" ) )
-    {
-      srcdir = testdir / ".." / ".." / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      // ignore
     }
   }
 

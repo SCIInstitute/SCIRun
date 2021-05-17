@@ -78,6 +78,9 @@ namespace SCIRun {
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
       std::string getName() {return name_;}
       void autoSaveScreenshot();
+      void setFloatingState(bool isFloating);
+
+      void postMoveEventCallback(const QPoint& p) override;
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
@@ -109,11 +112,8 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void autoViewOnLoadChecked(bool value);
       void viewAxisSelected(const QString& name);
       void viewVectorSelected(const QString& name);
-      void setFieldOfView(int value);
-      void useOrthoViewChecked(bool value);
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
       void adjustZoomSpeed(int value);
@@ -123,10 +123,6 @@ namespace SCIRun {
       void lockAllTriggered();
       void unlockAllTriggered();
       void toggleLockColor(bool locked);
-      void stereoChecked(bool value);
-      void setStereoFusion(int value);
-      void setPolygonOffset(int value);
-      void setTextOffset(int value);
       void setAutoRotateSpeed(double speed);
       void autoRotateRight();
       void autoRotateLeft();
@@ -148,7 +144,6 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
-      void useClipChecked(bool value);
 
       //---------------- Orietation Glyph ----------------------------------------------------------
       void showOrientationChecked(bool value);
@@ -183,18 +178,15 @@ namespace SCIRun {
       void toggleLight3(bool value);
       void setLight3Azimuth(int value);
       void setLight3Inclination(int value);
-      void lightingChecked(bool value);
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
       void setDiffuseValue(double value);
       void setSpecularValue(double value);
       void setShininessValue(double value);
-      void setEmissionValue(double value);
 
       //---------------- Fog Tools -----------------------------------------------------------------
       void setFogOn(bool value);
-      void setFogOnVisibleObjects(bool value);
       void setFogUseBGColor(bool value);
       void assignFogColor();
       void setFogStartValue(double value);
@@ -208,13 +200,10 @@ namespace SCIRun {
       void screenshotClicked();
       void quickScreenshotClicked();
       void saveNewGeometryChanged(int state);
-      void showBBoxChecked(bool value);
-      void useBackCullChecked(bool value);
-      void displayListChecked(bool value);
 
 
     protected:
-      //---------------- Intitilization ------------------------------------------------------------
+      //---------------- Intitialization ------------------------------------------------------------
       void pullSpecial() override;
 
       //---------------- Input ---------------------------------------------------------------------
@@ -234,13 +223,12 @@ namespace SCIRun {
 
 
     private:
-      //---------------- Intitilization ------------------------------------------------------------
+      //---------------- Intitialization ------------------------------------------------------------
       void addToolBar();
       void setupClippingPlanes();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
-      void setupRenderTabValues();
       void addAutoViewButton();
       void addScreenshotButton();
       void addQuickScreenshotButton();
@@ -337,6 +325,7 @@ namespace SCIRun {
                                                                            {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                            {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
 
+      boost::optional<QPoint> savedPos_;
       QColor                                bgColor_                      {};
       QColor                                fogColor_                     {};
       ScaleBar                              scaleBar_                     {};

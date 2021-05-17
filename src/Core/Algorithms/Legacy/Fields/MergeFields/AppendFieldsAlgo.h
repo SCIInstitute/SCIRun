@@ -29,30 +29,17 @@
 #ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MERGEFIELDS_APPENDFIELDS_H
 #define CORE_ALGORITHMS_LEGACY_FIELDS_MERGEFIELDS_APPENDFIELDS_H 1
 
-// Datatypes used
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-
-#include <vector>
-
-// Base for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Core {
-namespace Algorithm {
+namespace Algorithms {
 namespace Fields {
-
-using namespace SCIRun;
-using namespace SCIRun::Core::Algorithms;
 
 class SCISHARE AppendFieldsAlgorithm : public AlgorithmBase
 {
   public:
-    // Algorithm Functions
     bool run(const std::vector<FieldHandle>& input, FieldHandle& output) const;
     bool run(std::list<FieldHandle>& input, FieldHandle& output);
     AlgorithmOutput run(const AlgorithmInput& input) const override;
