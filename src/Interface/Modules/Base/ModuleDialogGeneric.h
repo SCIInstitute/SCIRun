@@ -66,15 +66,24 @@ namespace Gui {
     static void setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName);
   };
 
+  class SCISHARE ModuleDialogDockWidget : public QDockWidget
+  {
+    Q_OBJECT
+  public:
+    using QDockWidget::QDockWidget;
+  protected:
+    void moveEvent(QMoveEvent* e) override;
+  };
+
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
     Q_OBJECT
   public:
-    virtual ~ModuleDialogGeneric();
+    ~ModuleDialogGeneric() override;
     bool isPulling() const { return pulling_; }
     QAction* getExecuteAction() { return executeAction_; }
     QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
-    void setDockable(QDockWidget* dock);
+    void setDockable(ModuleDialogDockWidget* dock);
     void updateWindowTitle(const QString& title);
     void setButtonBarTitleVisible(bool visible);
     void setupButtonBar();
@@ -84,6 +93,7 @@ namespace Gui {
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
+    virtual void postMoveEventCallback(const QPoint&) {}
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
@@ -190,7 +200,7 @@ namespace Gui {
     QAction* forceAlwaysExecuteToggleAction_{ nullptr };
     bool collapsed_;
     QString windowTitle_;
-    QDockWidget* dock_{ nullptr };
+    ModuleDialogDockWidget* dock_{ nullptr };
     class ModuleButtonBar* buttonBox_{ nullptr };
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;

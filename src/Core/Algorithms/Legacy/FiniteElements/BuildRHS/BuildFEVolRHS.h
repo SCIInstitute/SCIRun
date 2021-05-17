@@ -56,7 +56,6 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
     BuildFEVolRHSAlgo();
     static AlgorithmInputName Mesh;
     static AlgorithmOutputName RHS;
-    static AlgorithmParameterName vectorTableBasisMatrices();
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;
@@ -65,7 +64,7 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
    Datatypes::DenseMatrixHandle run(FieldHandle input) const;
     AlgorithmOutput run(const AlgorithmInput &) const override;
 private:
-   mutable int generation_;
+   //mutable int generation_;
    mutable Datatypes::MatrixHandle basis_fevolrhs_;
 };
 

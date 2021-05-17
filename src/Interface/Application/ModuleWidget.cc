@@ -26,29 +26,26 @@
 */
 
 
-#include <iostream>
-#include <Interface/qt_include.h>
-#include <QtConcurrent>
 #include "ui_Module.h"
-#include <Core/Logging/Log.h>
-#include <Core/Thread/Interruptible.h>
+#include <iostream>
+#include <QtConcurrent>
 #include <Core/Application/Application.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Application/Preferences/Preferences.h>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/Connection.h>
-
-#include <Interface/Application/ModuleWidget.h>
-#include <Interface/Application/Connection.h>
-#include <Interface/Application/Port.h>
-#include <Interface/Application/PositionProvider.h>
-#include <Interface/Application/ModuleLogWindow.h>
+#include <Interface/qt_include.h>
 #include <Interface/Application/ClosestPortFinder.h>
-#include <Interface/Application/Utility.h>
-#include <Interface/Application/NetworkEditor.h>
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Application/PortWidgetManager.h>
-#include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Application/Connection.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/ModuleLogWindow.h>
+#include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/Port.h>
+#include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO
 #include <Interface/Modules/Render/ViewScene.h>
@@ -1214,7 +1211,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
       connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
       connect(dialog_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
-      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
+      dockable_ = new ModuleDialogDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
@@ -1263,6 +1260,11 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
     Q_EMIT showUIrequested(dialog_);
   }
   dialog_->setButtonBarTitleVisible(!isFloating);
+
+  if (isViewScene_) //ugh
+  {
+    qobject_cast<ViewSceneDialog*>(dialog_)->setFloatingState(isFloating);
+  }
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
@@ -1319,7 +1321,8 @@ void ModuleWidget::toggleOptionsDialog()
       dockable_->activateWindow();
       if (isViewScene_)
       {
-        dockable_->setFloating(true);
+        //TODO: figure out why this was needed.
+        //dockable_->setFloating(true);
       }
       colorOptionsButton(true);
     }

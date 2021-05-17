@@ -27,6 +27,7 @@
 
 
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 
 using namespace SCIRun::Gui;
@@ -40,5 +41,5 @@ MapFieldDataFromNodeToElemDialog::MapFieldDataFromNodeToElemDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
+  addComboBoxManager(methodComboBox_, Core::Algorithms::Variables::Method);
 }

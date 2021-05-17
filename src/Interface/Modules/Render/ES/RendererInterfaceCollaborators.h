@@ -54,12 +54,6 @@ namespace SCIRun
       FOG_START,
       FOG_END
     };
-
-    struct SCISHARE ClippingPlane
-    {
-      bool visible, showFrame, reverseNormal;
-      double x, y, z, d;
-    };
   }
 }
 

@@ -50,12 +50,13 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
 
+  ALGORITHM_PARAMETER_DECL(SortDomainBySize);
+
 class SCISHARE SplitFieldByConnectedRegionAlgo : public AlgorithmBase
 {
 public:
   SplitFieldByConnectedRegionAlgo();
 
-  static AlgorithmInputName InputField;
   static AlgorithmOutputName OutputField1;
   static AlgorithmOutputName OutputField2;
   static AlgorithmOutputName OutputField3;
@@ -65,8 +66,6 @@ public:
   static AlgorithmOutputName OutputField7;
   static AlgorithmOutputName OutputField8;
 
-  static AlgorithmParameterName SortDomainBySize();
-  static AlgorithmParameterName SortAscending();
   std::vector<FieldHandle> run(FieldHandle input) const;
 
   AlgorithmOutput run(const AlgorithmInput& input) const override;

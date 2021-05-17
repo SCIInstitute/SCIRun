@@ -32,6 +32,8 @@
 #include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
+//TODO: split out header with shared state keys.
+#include <Modules/Render/OsprayViewer.h>
 #include <Modules/Render/share.h>
 
 namespace SCIRun
@@ -42,12 +44,93 @@ namespace SCIRun
     {
       namespace Render
       {
+        // these are transient state keys for right now
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(VSMutex);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+
+        ALGORITHM_PARAMETER_DECL(IsExecuting);
+        ALGORITHM_PARAMETER_DECL(TimeExecutionFinished);
+        ALGORITHM_PARAMETER_DECL(HasNewGeometry);
+
+        // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
+
+        // save/load confirmed. Need refactoring to standard push/pull model.
+        //ALGORITHM_PARAMETER_DECL(BackgroundColor); -->in OsprayViewer.h
+        ALGORITHM_PARAMETER_DECL(Ambient);
+        ALGORITHM_PARAMETER_DECL(Diffuse);
+        ALGORITHM_PARAMETER_DECL(Specular);
+        ALGORITHM_PARAMETER_DECL(Shine);
+        ALGORITHM_PARAMETER_DECL(Emission); // not connected
+        ALGORITHM_PARAMETER_DECL(FogOn);
+        ALGORITHM_PARAMETER_DECL(ObjectsOnly); // not connected
+        ALGORITHM_PARAMETER_DECL(UseBGColor);
+        ALGORITHM_PARAMETER_DECL(FogStart);
+        ALGORITHM_PARAMETER_DECL(FogEnd);
+        ALGORITHM_PARAMETER_DECL(FogColor);
+        ALGORITHM_PARAMETER_DECL(ShowScaleBar);  // issues with how/when it is shown
+        ALGORITHM_PARAMETER_DECL(ScaleBarUnitValue);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLength);
+        ALGORITHM_PARAMETER_DECL(ScaleBarHeight);
+        ALGORITHM_PARAMETER_DECL(ScaleBarMultiplier);
+        ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
+        ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneEnabled);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneNormalReversed);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneX);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneY);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneZ);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneD);
+
+
+        // save/load confirmed, uses standard widget managers.
+
+        // save/load confirmed, uses pullSpecial.
+        ALGORITHM_PARAMETER_DECL(ShowViewer);
+        ALGORITHM_PARAMETER_DECL(WindowSizeX);
+        ALGORITHM_PARAMETER_DECL(WindowSizeY);
+        ALGORITHM_PARAMETER_DECL(WindowPositionX);
+        ALGORITHM_PARAMETER_DECL(WindowPositionY);
+        ALGORITHM_PARAMETER_DECL(IsFloating);
+        ALGORITHM_PARAMETER_DECL(CameraDistance);
+        ALGORITHM_PARAMETER_DECL(CameraDistanceMinimum);
+        ALGORITHM_PARAMETER_DECL(CameraLookAt);
+        ALGORITHM_PARAMETER_DECL(CameraRotation);
+
+        // save/load has issues.
+        ALGORITHM_PARAMETER_DECL(HeadLightOn);
+        ALGORITHM_PARAMETER_DECL(Light1On);
+        ALGORITHM_PARAMETER_DECL(Light2On);
+        ALGORITHM_PARAMETER_DECL(Light3On);
+        ALGORITHM_PARAMETER_DECL(HeadLightColor);
+        ALGORITHM_PARAMETER_DECL(Light1Color);
+        ALGORITHM_PARAMETER_DECL(Light2Color);
+        ALGORITHM_PARAMETER_DECL(Light3Color);
+        ALGORITHM_PARAMETER_DECL(HeadLightAzimuth);
+        ALGORITHM_PARAMETER_DECL(Light1Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light2Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light3Azimuth);
+        ALGORITHM_PARAMETER_DECL(HeadLightInclination);
+        ALGORITHM_PARAMETER_DECL(Light1Inclination);
+        ALGORITHM_PARAMETER_DECL(Light2Inclination);
+        ALGORITHM_PARAMETER_DECL(Light3Inclination);
+
+        // not used--GUI hidden/never implemented
+        //ALGORITHM_PARAMETER_DECL(Lighting);
+        //ALGORITHM_PARAMETER_DECL(ShowBBox);
+        // ALGORITHM_PARAMETER_DECL(UseClip);
+        // ALGORITHM_PARAMETER_DECL(Stereo);
+        // ALGORITHM_PARAMETER_DECL(BackCull);
+        // ALGORITHM_PARAMETER_DECL(DisplayList);
+        // ALGORITHM_PARAMETER_DECL(StereoFusion);
+        // ALGORITHM_PARAMETER_DECL(PolygonOffset);
+        // ALGORITHM_PARAMETER_DECL(TextOffset);
+        // ALGORITHM_PARAMETER_DECL(FieldOfView);
+
       }
     }
   }
@@ -78,64 +161,9 @@ namespace Render {
   {
   public:
     ViewScene();
-    ~ViewScene();
+    ~ViewScene() override;
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void setStateDefaults() override;
-
-    static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    static const Core::Algorithms::AlgorithmParameterName Ambient;
-    static const Core::Algorithms::AlgorithmParameterName Diffuse;
-    static const Core::Algorithms::AlgorithmParameterName Specular;
-    static const Core::Algorithms::AlgorithmParameterName Shine;
-    static const Core::Algorithms::AlgorithmParameterName Emission;
-    static const Core::Algorithms::AlgorithmParameterName FogOn;
-    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
-    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
-    static const Core::Algorithms::AlgorithmParameterName FogStart;
-    static const Core::Algorithms::AlgorithmParameterName FogEnd;
-    static const Core::Algorithms::AlgorithmParameterName FogColor;
-    static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
-    static const Core::Algorithms::AlgorithmParameterName Lighting;
-    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
-    static const Core::Algorithms::AlgorithmParameterName UseClip;
-    static const Core::Algorithms::AlgorithmParameterName Stereo;
-    static const Core::Algorithms::AlgorithmParameterName BackCull;
-    static const Core::Algorithms::AlgorithmParameterName DisplayList;
-    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
-    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
-    static const Core::Algorithms::AlgorithmParameterName TextOffset;
-    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
-    static const Core::Algorithms::AlgorithmParameterName Light1On;
-    static const Core::Algorithms::AlgorithmParameterName Light2On;
-    static const Core::Algorithms::AlgorithmParameterName Light3On;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
-    static const Core::Algorithms::AlgorithmParameterName Light1Color;
-    static const Core::Algorithms::AlgorithmParameterName Light2Color;
-    static const Core::Algorithms::AlgorithmParameterName Light3Color;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightAzimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light1Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light2Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName Light3Azimuth;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightInclination;
-    static const Core::Algorithms::AlgorithmParameterName Light1Inclination;
-    static const Core::Algorithms::AlgorithmParameterName Light2Inclination;
-    static const Core::Algorithms::AlgorithmParameterName Light3Inclination;
-    static const Core::Algorithms::AlgorithmParameterName ShowViewer;
-    static const Core::Algorithms::AlgorithmParameterName CameraDistance;
-    static const Core::Algorithms::AlgorithmParameterName CameraDistanceMinimum;
-    static const Core::Algorithms::AlgorithmParameterName CameraLookAt;
-    static const Core::Algorithms::AlgorithmParameterName CameraRotation;
-    static const Core::Algorithms::AlgorithmParameterName IsExecuting;
-    static const Core::Algorithms::AlgorithmParameterName TimeExecutionFinished;
-    static const Core::Algorithms::AlgorithmParameterName HasNewGeometry;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject)
     OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix)

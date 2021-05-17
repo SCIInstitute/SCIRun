@@ -82,22 +82,7 @@ RemoveHexVolSheetAlgo::execute(
     FieldHandle hexfieldh, std::vector<unsigned int> edges,
     FieldHandle& keptfield, FieldHandle& extractedfield )
 {
-#ifdef HAVE_HASH_MAP
-# if defined(__ECC) || defined(_MSC_VER)
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash_compare<unsigned int, std::equal_to<unsigned int> > > hash_type;
-# else
-  typedef hash_map<index_type,
-    VMesh::Node::index_type,
-    hash<unsigned int>,
-    std::equal_to<unsigned int> > hash_type;
-# endif
-#else
-  typedef std::map<index_type,
-    VMesh::Node::index_type,
-    std::less<unsigned int> > hash_type;
-#endif
+  typedef std::unordered_map<index_type, VMesh::Node::index_type> hash_type;
 
   VMesh *original_mesh = hexfieldh->vmesh();
   VMesh *mesh_rep = hexfieldh->vmesh();

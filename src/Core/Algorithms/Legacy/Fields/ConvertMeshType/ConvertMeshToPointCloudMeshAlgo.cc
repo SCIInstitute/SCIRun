@@ -41,13 +41,13 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName ConvertMeshToPointCloudMeshAlgo::Location("Location");
+ALGORITHM_PARAMETER_DEF(Fields, Location);
 
 ConvertMeshToPointCloudMeshAlgo::ConvertMeshToPointCloudMeshAlgo()
 {
   /// Do we want to get the location of the data nodes
   /// or the location of the nodes
-  addOption(Location,"node","node|data");
+  addOption(Parameters::Location,"node","node|data");
 }
 
 bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
@@ -88,7 +88,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
     fo.make_nodata();
 
   /// Check whether we are extracting the element centers or the node centers
-  bool datalocation = getOption(Location) == "data";
+  bool datalocation = getOption(Parameters::Location) == "data";
   // If we extract locations of nodes (no data locations), constant data needs
   // to be voided as we cannot store it anywhere
   if (!datalocation && fi.is_constantdata())

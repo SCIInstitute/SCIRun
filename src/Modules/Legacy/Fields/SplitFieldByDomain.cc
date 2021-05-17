@@ -60,8 +60,8 @@ SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 void SplitFieldByDomain::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(SplitFieldByDomainAlgo::SortBySize, false);
-  state->setValue(SplitFieldByDomainAlgo::SortAscending, false);
+  state->setValue(Parameters::SortBySize, false);
+  state->setValue(Parameters::SortAscending, false);
 }
 
 void SplitFieldByDomain::execute()
@@ -70,8 +70,8 @@ void SplitFieldByDomain::execute()
 
   if (needToExecute())
   {
-    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
-    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
+    setAlgoBoolFromState(Parameters::SortBySize);
+    setAlgoBoolFromState(Parameters::SortAscending);
 
     auto algoOutput = algo().run(withInputData((InputField, input)));
 

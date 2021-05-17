@@ -41,9 +41,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+ALGORITHM_PARAMETER_DEF(Math, SignalToNoiseRatio);
+
 BuildNoiseColumnMatrixAlgorithm::BuildNoiseColumnMatrixAlgorithm()
 {
-	addParameter(SignalToNoiseRatio(),10);
+	addParameter(Parameters::SignalToNoiseRatio, 10.0);
 }
 
 MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) const
@@ -58,7 +60,7 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
   DenseMatrixHandle output(new DenseMatrix(nr, nc));
 	double curr;
 
-	double snr = get(SignalToNoiseRatio()).toDouble();
+	double snr = get(Parameters::SignalToNoiseRatio).toDouble();
 
 	mean /= nr*nc;
 	for(r = 0; r < nr; r++) {
@@ -95,6 +97,3 @@ AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run(const AlgorithmInput& input
 
 	return output;
 }
-
-AlgorithmOutputName BuildNoiseColumnMatrixAlgorithm::ResultMatrix("ResultMatrix");
-AlgorithmParameterName BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio() {return AlgorithmParameterName("SignalToNoiseRatio"); }
