@@ -1848,10 +1848,6 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 
 void ViewSceneDialog::doClippingPlanes()
 {
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
-
   const auto& activePlane = clippingPlaneManager_->active();
   mConfigurationDock->updatePlaneSettingsDisplay(
     activePlane.visible,
@@ -1863,9 +1859,6 @@ void ViewSceneDialog::doClippingPlanes()
 void ViewSceneDialog::setClippingPlaneVisible(bool value)
 {
   clippingPlaneManager_->setActiveVisibility(value);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
@@ -1873,59 +1866,45 @@ void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
   updateModifiedGeometries();
   clippingPlaneManager_->setActiveFrameOn(value);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
 {
   clippingPlaneManager_->setActiveNormalReversed(value);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
 {
   clippingPlaneManager_->setActiveX(index);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneY(int index)
 {
   clippingPlaneManager_->setActiveY(index);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneZ(int index)
 {
   clippingPlaneManager_->setActiveZ(index);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneD(int index)
 {
   clippingPlaneManager_->setActiveD(index);
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
   updateClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::updateClippingPlaneDisplay()
 {
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->updateClippingPlanes();
+
   const auto& activePlane = clippingPlaneManager_->active();
   mConfigurationDock->updatePlaneControlDisplay(
     activePlane.x,
@@ -1934,6 +1913,7 @@ void ViewSceneDialog::updateClippingPlaneDisplay()
     activePlane.d);
 
   buildGeomClippingPlanes();
+
   newGeometryValue(false);
   delayGC_ = true;
   if (!delayedGCRequested_)
