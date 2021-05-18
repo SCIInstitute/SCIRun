@@ -505,8 +505,8 @@ void VisibleItemManager::selectAllClicked()
   {
     auto item = itemList_->topLevelItem(i);
     item->setCheckState(0, Qt::Checked);
-    for (int i = 0; i < item->childCount(); ++i)
-      item->child(i)->setCheckState(0, Qt::Checked);
+    for (int j = 0; j < item->childCount(); ++j)
+      item->child(j)->setCheckState(0, Qt::Checked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
@@ -519,8 +519,8 @@ void VisibleItemManager::deselectAllClicked()
   {
     auto item = itemList_->topLevelItem(i);
     item->setCheckState(0, Qt::Unchecked);
-    for (int i = 0; i < item->childCount(); ++i)
-      item->child(i)->setCheckState(0, Qt::Unchecked);
+    for (int j = 0; j < item->childCount(); ++j)
+      item->child(j)->setCheckState(0, Qt::Unchecked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();

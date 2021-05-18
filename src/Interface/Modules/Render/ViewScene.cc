@@ -325,7 +325,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     auto spire = mSpire.lock();
-    if(!spire)
+    if (!spire)
       return;
 
     if (Preferences::Instance().useNewViewSceneMouseControls)
@@ -402,7 +402,7 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 
 //--------------------------------------------------------------------------------------------------
-//---------------- Intitialization ------------------------------------------------------------------
+//---------------- Initialization ------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
 void ViewSceneDialog::addToolBar()
@@ -423,7 +423,7 @@ void ViewSceneDialog::addToolBar()
 
 void ViewSceneDialog::addConfigurationButton()
 {
-  auto configurationButton = new QPushButton();
+  auto* configurationButton = new QPushButton();
   configurationButton->setToolTip("Open/Close Configuration Menu");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
@@ -496,7 +496,7 @@ void ViewSceneDialog::addAutoViewButton()
 
 void ViewSceneDialog::addScreenshotButton()
 {
-  auto screenshotButton = new QPushButton(this);
+  auto* screenshotButton = new QPushButton(this);
   screenshotButton->setToolTip("Take Screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
@@ -506,7 +506,7 @@ void ViewSceneDialog::addScreenshotButton()
 
 void ViewSceneDialog::addQuickScreenshotButton()
 {
-  auto quickScreenshotButton = new QPushButton(this);
+  auto* quickScreenshotButton = new QPushButton(this);
   quickScreenshotButton->setToolTip("Take Quick Screenshot");
   quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
   quickScreenshotButton->setShortcut(Qt::Key_F12);
@@ -595,7 +595,7 @@ void ViewSceneDialog::addViewOptions()
   mViewBar->addWidget(mDownViewBox);
   mViewBar->addSeparator();
 
-  QLabel* vectorLabel = new QLabel();
+  auto* vectorLabel = new QLabel();
   vectorLabel->setText("Up Vector: ");
   mViewBar->addWidget(vectorLabel);
 
@@ -743,7 +743,8 @@ void ViewSceneDialog::pullCameraDistance()
 {
   if (pushingCameraState_) return;
   auto spire = mSpire.lock();
-  if (!spire) return;
+  if (!spire) 
+    return;
 
   double distance = state_->getValue(Parameters::CameraDistance).toDouble();
   double distanceMin = state_->getValue(Parameters::CameraDistanceMinimum).toDouble();
@@ -761,10 +762,11 @@ void ViewSceneDialog::pushCameraState()
 void ViewSceneDialog::pushCameraDistance()
 {
   pushingCameraState_ = true;
-  auto spire = mSpire.lock();
-  if(!spire) return;
+  const auto spire = mSpire.lock();
+  if (!spire) 
+    return;
 
-  state_->setValue(Parameters::CameraDistance, (double)spire->getCameraDistance());
+  state_->setValue(Parameters::CameraDistance, static_cast<double>(spire->getCameraDistance()));
   pushingCameraState_ = false;
 }
 
@@ -772,10 +774,11 @@ void ViewSceneDialog::pushCameraLookAt()
 {
   pushingCameraState_ = true;
   const auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire) 
+    return;
 
   const auto v = spire->getCameraLookAt();
-  auto lookAt = makeAnonymousVariableList((double)v.x, (double)v.y, (double)v.z);
+  auto lookAt = makeAnonymousVariableList(static_cast<double>(v.x), static_cast<double>(v.y), static_cast<double>(v.z));
   state_->setValue(Parameters::CameraLookAt, lookAt);
   pushingCameraState_ = false;
 }
@@ -958,7 +961,8 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();
-  if (!spire) return;
+  if (!spire) 
+    return;
 
   if (!mGLWidget->isValid())
     return;
@@ -986,10 +990,21 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if (scaleBarGeom_ && scaleBar_.visible)
     allGeoms.push_back(scaleBarGeom_);
 
+  {
+    const auto& activePlane = clippingPlaneManager_->active();
+    mConfigurationDock->updatePlaneControlDisplay(
+      activePlane.x,
+      activePlane.y,
+      activePlane.z,
+      activePlane.d);
+
+    buildGeomClippingPlanes();
+  }
+
   for (auto& plane : clippingPlaneGeoms_)
     allGeoms.push_back(plane);
 
-  auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
+  const auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
   auto displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
 
   int port = 0;
@@ -999,7 +1014,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     auto name = displayNames[port];
     if (mConfigurationDock->visibleItems().isVisible(name))
     {
-      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      const auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && spire->hasObject(obj->uniqueID()))
         validObjects.push_back(obj->uniqueID());
     }
@@ -1014,7 +1029,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     auto name = displayNames[port];
     if (mConfigurationDock->visibleItems().isVisible(name))
     {
-      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      const auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && !spire->hasObject(obj->uniqueID()))
       {
         DEBUG_LOG_LINE_INFO
@@ -1022,6 +1037,8 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
       }
     }
   }
+
+  spire->updateClippingPlanes();
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
@@ -1220,7 +1237,7 @@ void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
     scaleBarGeom_ = buildGeometryScaleBar();
     updateModifiedGeometries();
   }
-  state_->setValue(Parameters::CameraDistance, (double)spire->getCameraDistance());
+  state_->setValue(Parameters::CameraDistance, static_cast<double>(spire->getCameraDistance()));
 }
 
 void ViewSceneDialog::setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes)
@@ -1331,6 +1348,8 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   auto spire = mSpire.lock();
+  if (!spire) 
+    return;
   const bool widgetMoved = spire->getWidgetTransform() != glm::mat4(1.0f);
   if (selectedWidget_)
   {
@@ -1351,8 +1370,6 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     unblockExecution();
     previousWidgetInfo_.setPreviousWidget(selectedWidget_);
     selectedWidget_.reset();
-    auto spire = mSpire.lock();
-    if (!spire) return;
     spire->widgetMouseUp();
     updateCursor();
   }
@@ -1929,6 +1946,8 @@ void ViewSceneDialog::buildGeomClippingPlanes()
   if (!spire)
     return;
   auto* clippingPlanes = spire->getClippingPlanes();
+  if (!clippingPlanes)
+    return;
 
   clippingPlaneGeoms_.clear();
   int index = 0;
@@ -2127,8 +2146,8 @@ void ViewSceneDialog::updateScaleBarLength()
   auto spire = mSpire.lock();
   if (spire)
   {
-    size_t width = spire->getScreenWidthPixels();
-    size_t height = spire->getScreenHeightPixels();
+    const auto width = spire->getScreenWidthPixels();
+    const auto height = spire->getScreenHeightPixels();
 
     glm::vec4 p1(-scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
     glm::vec4 p2(scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
@@ -2136,13 +2155,13 @@ void ViewSceneDialog::updateScaleBarLength()
     matIV[0][0] = 1.0; matIV[0][1] = 0.0; matIV[0][2] = 0.0;
     matIV[1][0] = 0.0; matIV[1][1] = 1.0; matIV[1][2] = 0.0;
     matIV[2][0] = 0.0; matIV[2][1] = 0.0; matIV[2][2] = 1.0;
-    glm::mat4 matProj = spire->getViewToProjection();
+    const auto matProj = spire->getViewToProjection();
     p1 = matProj * matIV * p1;
     p2 = matProj * matIV * p2;
     glm::vec2 p(p1.x / p1.w - p2.x / p2.w, p1.y / p1.w - p2.y / p2.w);
     glm::vec2 pp(p.x*width / 2.0,
       p.y*height / 2.0);
-    scaleBar_.projLength = glm::length(pp);
+    scaleBar_.projLength = length(pp);
   }
 }
 
@@ -2151,19 +2170,16 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   const int numTicks = scaleBar_.numTicks;
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
-  glm::vec4 color(1.0);
-  glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
 
   //figure out text length first
-  size_t text_size = static_cast<size_t>(scaleBar_.fontSize);
+  const auto text_size = static_cast<size_t>(scaleBar_.fontSize);
 
   textBuilder_.initialize(text_size);
 
   //text
   std::stringstream ss;
-  std::string oneline;
   ss << scaleBar_.length * scaleBar_.multiplier << " " << scaleBar_.unit;
-  oneline = ss.str();
+  auto oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isReady())
     text_len = std::get<0>(textBuilder_.getStringDims(oneline));
@@ -2201,8 +2217,8 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
     new spire::VarBuffer(iboSize));
 
-  spire::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  spire::VarBuffer* vboBuffer = vboBufferSPtr.get();
+  auto* iboBuffer = iboBufferSPtr.get();
+  auto* vboBuffer = vboBufferSPtr.get();
 
   for (auto a : indices) iboBuffer->write(a);
 
@@ -2225,8 +2241,8 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   std::vector<SpireVBO::AttributeData> attribs;
   attribs.emplace_back("aPos", 3 * sizeof(float));
   std::vector<SpireSubPass::Uniform> uniforms;
-  uniforms.emplace_back("uTrans", shift);
-  uniforms.emplace_back("uColor", color);
+  uniforms.emplace_back("uTrans", glm::vec4(1.9, 0.1, 0.0, 0.0));
+  uniforms.emplace_back("uColor", glm::vec4(1.0));
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(Point{}, Point{}), true);
 
@@ -2276,7 +2292,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
 void ViewSceneDialog::setLightColor(int index)
 {
-  QColor lightColor(mConfigurationDock->getLightColor(index));
+  const auto lightColor(mConfigurationDock->getLightColor(index));
   switch (index)
   {
   case 0:
