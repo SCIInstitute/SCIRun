@@ -96,3 +96,26 @@ std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const Color
   out << "Color(" << color.r() << "," << color.g() << "," << color.b() << ")";
   return out;
 }
+
+namespace
+{
+  int convertColorValue(double val)
+  {
+    return static_cast<int>(val > 1 ? val : val * 255.0);
+  }
+}
+
+int ColorRGB::redNormalized() const
+{
+  return convertColorValue(r());
+}
+
+int ColorRGB::greenNormalized() const
+{
+  return convertColorValue(g());
+}
+
+int ColorRGB::blueNormalized() const
+{
+  return convertColorValue(b());
+}

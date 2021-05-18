@@ -53,17 +53,15 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace FiniteElements {
 
-ALGORITHM_PARAMETER_DECL(InputField);
 ALGORITHM_PARAMETER_DECL(BoundaryField);
 ALGORITHM_PARAMETER_DECL(RHSMatrix);
 
 class SCISHARE BuildFESurfRHSAlgo : public AlgorithmBase
 {
-
-  public:
-   BuildFESurfRHSAlgo() {}
-   bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mat_output) const;
-   AlgorithmOutput run(const AlgorithmInput &) const override;
+public:
+  BuildFESurfRHSAlgo() {}
+  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mat_output) const;
+  AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}

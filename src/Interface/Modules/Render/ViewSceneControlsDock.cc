@@ -93,16 +93,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
-  connect(lightingCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(lightingChecked(bool)));
-  connect(bboxCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showBBoxChecked(bool)));
-  connect(useClipCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useClipChecked(bool)));
-  connect(stereoCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(stereoChecked(bool)));
-  connect(backCullCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useBackCullChecked(bool)));
-  connect(displayListCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(displayListChecked(bool)));
-  connect(stereoFusionHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setStereoFusion(int)));
-  connect(polygonOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setPolygonOffset(int)));
-  connect(textOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setTextOffset(int)));
-  connect(fieldOfViewHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setFieldOfView(int)));
+
   //-----------Clipping Tab-----------------//
   planeButtonGroup_->setId(plane1RadioButton_, 0);
   planeButtonGroup_->setId(plane2RadioButton_, 1);
@@ -158,16 +149,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
   connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
   connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
-  connect(emissionDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setEmissionValue(double)));
+  emissionDoubleSpinBox_->setDisabled(true);
   connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
   connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
   connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
-  connect(fogOnVisibleObjectsCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOnVisibleObjects(bool)));
+  fogOnVisibleObjectsCheckBox_->setDisabled(true);
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
   connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
   //-----------View Tab-------------------//
-  connect(autoViewOnLoadCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(autoViewOnLoadChecked(bool)));
-  connect(orthoViewCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useOrthoViewChecked(bool)));
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
   connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
@@ -182,7 +171,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
   connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  //connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
   connect(rotateRightButton_, SIGNAL(clicked()), parent, SLOT(autoRotateRight()));
   connect(rotateLeftButton_, SIGNAL(clicked()), parent, SLOT(autoRotateLeft()));
@@ -193,9 +181,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
-  connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
-  connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
@@ -204,34 +189,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   WidgetStyleMixin::tabStyle(tabWidget);
 
   /////Set unused widgets to be not visible
-  ////Clipping tab
-  //tabWidget->removeTab(2);
 
   ///Object Tab
   tabWidget->setCurrentIndex(0);
 
-  ///Render Tab
-  shadeSettingsGroupBox_->setEnabled(false);
-  shadeSettingsGroupBox_->setVisible(false);
-  globalSettingsGroupBox_->setEnabled(false);
-  globalSettingsGroupBox_->setVisible(false);
-  renderSliderFrame_->setEnabled(false);
-  renderSliderFrame_->setVisible(false);
-
-  ///Materials Tab
-  //materialsFrame_->setEnabled(false);
-  //fogGroupBox_->setEnabled(false);
-
   ////View Tab
-  //autoRotateGroupBox_->setEnabled(false);
-  //autoRotateGroupBox_->setVisible(false);
   viewOptionsGroupBox_->setEnabled(false);
   viewOptionsGroupBox_->setVisible(false);
   autoViewOnLoadCheckBox_->setVisible(false);
-  orthoViewCheckBox_->setVisible(false);
-
-  ////Controls Tab
-  transparencyGroupBox_->setVisible(false);
 }
 
 static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
@@ -321,14 +286,13 @@ void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
   fogColorLabel_->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double,
   bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
 {
   ambientDoubleSpinBox_->setValue(ambient);
   diffuseDoubleSpinBox_->setValue(diffuse);
   specularDoubleSpinBox_->setValue(specular);
   shininessDoubleSpinBox_->setValue(shine);
-  emissionDoubleSpinBox_->setValue(emission);
   fogGroupBox_->setChecked(fogVisible);
   fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
   fogUseBGColorCheckBox_->setChecked(useBGColor);
@@ -345,25 +309,8 @@ void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double
   scaleBarHeightDoubleSpinBox_->setValue(height);
   scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
   numTicksSpinBox_->setValue(numTicks);
-  //scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
   scaleBarUnitLineEdit_->setText(unit);
 }
-
-void ViewSceneControlsDock::setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList,
-  bool stereo, double stereoFusion, double polygonOffset, double textOffset, int fov)
-{
-  lightingCheckBox_->setChecked(lighting);
-  bboxCheckBox_->setChecked(bbox);
-  useClipCheckBox_->setChecked(useClip);
-  backCullCheckBox_->setChecked(backCull);
-  displayListCheckBox_->setChecked(displayList);
-  stereoCheckBox_->setChecked(stereo);
-  stereoFusionHorizontalSlider_->setSliderPosition(stereoFusion * 100);
-  polygonOffsetHorizontalSlider_->setSliderPosition(polygonOffset * 100);
-  textOffsetHorizontalSlider_->setSliderPosition(textOffset * 100);
-  fieldOfViewHorizontalSlider_->setSliderPosition(fov);
-}
-
 
 void ViewSceneControlsDock::updateZoomOptionVisibility()
 {

@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -38,6 +39,7 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -113,7 +115,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(Variables::Method, "Average");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -130,7 +132,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
    EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
  }
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Interpolation");
+ algo.setOption(Variables::Method, "Interpolation");
 
  FieldHandle input2=CreateTetMesh2();
 
@@ -152,7 +154,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnElems)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(Variables::Method, "Average");
 
  FieldHandle input=CreateTetMesh1();
 
@@ -169,7 +171,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+ algo.setOption(Variables::Method, "Min");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -194,7 +196,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Max");
+ algo.setOption(Variables::Method, "Max");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -219,7 +221,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Sum");
+ algo.setOption(Variables::Method, "Sum");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -244,7 +246,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Median");
+ algo.setOption(Variables::Method, "Median");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -268,7 +270,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestNone)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "None");
+ algo.setOption(Variables::Method, "None");
 
  FieldHandle input=CreateTetMesh2();
 

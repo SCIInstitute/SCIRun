@@ -28,6 +28,7 @@
 
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
 
@@ -56,8 +57,8 @@ SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
 
 void SplitFieldByConnectedRegion::setStateDefaults()
 {
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortAscending());
+ setStateBoolFromAlgo(Parameters::SortDomainBySize);
+ setStateBoolFromAlgo(Parameters::SortAscending);
 }
 
 void SplitFieldByConnectedRegion::execute()
@@ -66,8 +67,8 @@ void SplitFieldByConnectedRegion::execute()
 
  if (needToExecute())
   {
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
+    setAlgoBoolFromState(Parameters::SortDomainBySize);
+    setAlgoBoolFromState(Parameters::SortAscending);
 
     auto output = algo().run(make_input((InputField, input_field)));
 

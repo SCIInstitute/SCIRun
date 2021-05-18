@@ -40,13 +40,10 @@ namespace SCIRun {
 
 class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase, public Thread::Interruptible
 {
-  public:
-    MapFieldDataFromNodeToElemAlgo();
-
-    static AlgorithmParameterName Method;
-    FieldHandle runImpl(FieldHandle input_field) const;
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-
+public:
+  MapFieldDataFromNodeToElemAlgo();
+  FieldHandle runImpl(FieldHandle input_field) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

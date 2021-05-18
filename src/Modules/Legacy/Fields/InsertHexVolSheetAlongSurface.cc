@@ -1126,56 +1126,7 @@ InsertHexVolSheetAlongSurfaceAlgo::compute_intersections(
     bool add_to_side1,
     bool add_layer )
 {
-#ifdef HAVE_HASH_MAP
-# if defined(__ECC) || defined(_MSC_VER)
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash_compare<unsigned int, std::equal_to<unsigned int> > > hash_type;
-# else
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash<unsigned int>,
-    std::equal_to<unsigned int> > hash_type;
-# endif
-#else
-  typedef std::map<VMesh::index_type,
-    VMesh::index_type,
-    std::less<unsigned int> > hash_type;
-#endif
-
-#ifdef HAVE_HASH_MAP
-# if defined(__ECC) || defined(_MSC_VER)
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash_compare<unsigned int, std::equal_to<unsigned int> > > hash_type2;
-# else
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash<unsigned int>,
-    std::equal_to<unsigned int> > hash_type2;
-# endif
-#else
-  typedef std::map<VMesh::index_type,
-    VMesh::index_type,
-    std::less<unsigned int> > hash_type2;
-#endif
-
-#ifdef HAVE_HASH_MAP
-# if defined(__ECC) || defined(_MSC_VER)
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash_compare<unsigned int, std::equal_to<unsigned int> > > hash_type3;
-# else
-  typedef hash_map<VMesh::index_type,
-    VMesh::index_type,
-    hash<unsigned int>,
-    std::equal_to<unsigned int> > hash_type3;
-# endif
-#else
-  typedef std::map<VMesh::index_type,
-    VMesh::index_type,
-    std::less<unsigned int> > hash_type3;
-#endif
+  typedef std::unordered_map<VMesh::index_type, VMesh::index_type> hash_type;
 
   std::vector<int> crosses(hexmesh.hexes.size(), -1);
   std::vector<int> hexes(hexmesh.hexes.size());

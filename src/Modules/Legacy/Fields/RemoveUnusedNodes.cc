@@ -49,13 +49,11 @@ RemoveUnusedNodes::RemoveUnusedNodes()
 
 void RemoveUnusedNodes::execute()
 {
-
-  auto input = getRequiredInput(RemoveUnusedNodes::InputField);
+  auto input = getRequiredInput(InputField);
 
   if (needToExecute())
   {
-   auto out = algo().run(withInputData((InputField, input)));
-
-   sendOutputFromAlgorithm(OutputField, out);
+    auto out = algo().run(withInputData((InputField, input)));
+    sendOutputFromAlgorithm(OutputField, out);
   }
 }

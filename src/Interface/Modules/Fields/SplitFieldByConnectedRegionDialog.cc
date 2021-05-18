@@ -26,6 +26,7 @@
 */
 
 
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -43,6 +44,6 @@ SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
-  addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
+  addCheckBoxManager(SortDomainBySize, Parameters::SortDomainBySize);
+  addCheckBoxManager(SortAscending, Parameters::SortAscending);
 }
