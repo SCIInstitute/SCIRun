@@ -95,11 +95,11 @@ namespace SCIRun {
 
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
-      
+
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void frameFinished();
       void lockMutex();
-      
+
       void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
@@ -247,6 +247,7 @@ namespace SCIRun {
       void pushCameraRotation();
       void pushCameraState();
       bool clickedInViewer(QMouseEvent* e) const;
+      void initializeAxes();
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();

@@ -135,6 +135,10 @@ ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneX);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneY);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneZ);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneD);
+ALGORITHM_PARAMETER_DEF(Render, AxesVisible);
+ALGORITHM_PARAMETER_DEF(Render, AxesSize);
+ALGORITHM_PARAMETER_DEF(Render, AxesX);
+ALGORITHM_PARAMETER_DEF(Render, AxesY);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -221,6 +225,11 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ClippingPlaneY, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneZ, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneD, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+
+  state->setValue(Parameters::AxesVisible, true);
+  state->setValue(Parameters::AxesSize, 10);
+  state->setValue(Parameters::AxesX, 100);
+  state->setValue(Parameters::AxesY, 100);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

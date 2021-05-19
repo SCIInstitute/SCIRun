@@ -85,6 +85,10 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ClippingPlaneY);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneZ);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneD);
+        ALGORITHM_PARAMETER_DECL(AxesVisible);
+        ALGORITHM_PARAMETER_DECL(AxesSize);
+        ALGORITHM_PARAMETER_DECL(AxesX);
+        ALGORITHM_PARAMETER_DECL(AxesY);
 
 
         // save/load confirmed, uses standard widget managers.

@@ -743,7 +743,7 @@ void ViewSceneDialog::pullCameraDistance()
 {
   if (pushingCameraState_) return;
   auto spire = mSpire.lock();
-  if (!spire) 
+  if (!spire)
     return;
 
   double distance = state_->getValue(Parameters::CameraDistance).toDouble();
@@ -763,7 +763,7 @@ void ViewSceneDialog::pushCameraDistance()
 {
   pushingCameraState_ = true;
   const auto spire = mSpire.lock();
-  if (!spire) 
+  if (!spire)
     return;
 
   state_->setValue(Parameters::CameraDistance, static_cast<double>(spire->getCameraDistance()));
@@ -774,7 +774,7 @@ void ViewSceneDialog::pushCameraLookAt()
 {
   pushingCameraState_ = true;
   const auto spire = mSpire.lock();
-  if (!spire) 
+  if (!spire)
     return;
 
   const auto v = spire->getCameraLookAt();
@@ -888,6 +888,8 @@ void ViewSceneDialog::pullSpecial()
     clippingPlaneManager_->loadFromState();
     initializeClippingPlaneDisplay();
 
+    initializeAxes();
+
     pulledSavedVisibility_ = true;
   }
 }
@@ -961,7 +963,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();
-  if (!spire) 
+  if (!spire)
     return;
 
   if (!mGLWidget->isValid())
@@ -1352,7 +1354,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   auto spire = mSpire.lock();
-  if (!spire) 
+  if (!spire)
     return;
   const bool widgetMoved = spire->getWidgetTransform() != glm::mat4(1.0f);
   if (selectedWidget_)
@@ -2025,28 +2027,64 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
 //---------------- Orientation Glyph ----------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
+void ViewSceneDialog::initializeAxes()
+{
+  auto spire = mSpire.lock();
+
+  {
+    bool visible = state_->getValue(Parameters::AxesVisible).toBool();
+    mConfigurationDock->orientationCheckBox_->setChecked(visible);
+    spire->showOrientation(visible);
+  }
+
+  {
+    int axesSize = state_->getValue(Parameters::AxesSize).toInt();
+    spire->setOrientSize(axesSize);
+    ScopedWidgetSignalBlocker swsb(mConfigurationDock->orientAxisSize_);
+    mConfigurationDock->orientAxisSize_->setValue(axesSize);
+  }
+
+  {
+    int axesX = state_->getValue(Parameters::AxesX).toInt();
+    spire->setOrientPosX(axesX);
+    ScopedWidgetSignalBlocker swsb(mConfigurationDock->orientAxisXPos_);
+    mConfigurationDock->orientAxisXPos_->setValue(axesX);
+  }
+
+  {
+    int axesY = state_->getValue(Parameters::AxesY).toInt();
+    spire->setOrientPosY(axesY);
+    ScopedWidgetSignalBlocker swsb(mConfigurationDock->orientAxisYPos_);
+    mConfigurationDock->orientAxisYPos_->setValue(axesY);
+  }
+}
+
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
   auto spire = mSpire.lock();
   spire->showOrientation(value);
+  state_->setValue(Parameters::AxesVisible, value);
 }
 
 void ViewSceneDialog::setOrientAxisSize(int value)
 {
   auto spire = mSpire.lock();
   spire->setOrientSize(value);
+  state_->setValue(Parameters::AxesSize, value);
 }
 
 void ViewSceneDialog::setOrientAxisPosX(int pos)
 {
   auto spire = mSpire.lock();
   spire->setOrientPosX(pos);
+  state_->setValue(Parameters::AxesX, pos);
 }
 
 void ViewSceneDialog::setOrientAxisPosY(int pos)
 {
   auto spire = mSpire.lock();
   spire->setOrientPosY(pos);
+  state_->setValue(Parameters::AxesY, pos);
 }
 
 void ViewSceneDialog::setCenterOrientPos()
@@ -2060,8 +2098,6 @@ void ViewSceneDialog::setDefaultOrientPos()
   setOrientAxisPosX(100);
   setOrientAxisPosY(100);
 }
-
-
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Scale Bar -----------------------------------------------------------------------
