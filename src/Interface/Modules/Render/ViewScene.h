@@ -94,14 +94,12 @@ namespace SCIRun {
       void sendBugReport();
 
       //---------------- New Geometry --------------------------------------------------------------
-      void updateModifiedGeometries();
       void updateModifiedGeometriesAndSendScreenShot();
-      void updateAllGeometries();
-      void newGeometryValue(bool forceAllObjectsToUpdate);
+      
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void frameFinished();
       void lockMutex();
-      void unblockExecution();
+      
       void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
@@ -144,7 +142,7 @@ namespace SCIRun {
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
 
-      //---------------- Orietation Glyph ----------------------------------------------------------
+      //---------------- Orientation Glyph ----------------------------------------------------------
       void showOrientationChecked(bool value);
       void setOrientAxisSize(int value);
       void setOrientAxisPosX(int pos);
@@ -202,8 +200,13 @@ namespace SCIRun {
 
 
     protected:
-      //---------------- Intitialization ------------------------------------------------------------
+      //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
+
+      void newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated);
+      void updateAllGeometries();
+      void updateModifiedGeometries();
+      void unblockExecution();
 
       //---------------- Input ---------------------------------------------------------------------
       void showEvent(QShowEvent* evt) override;
@@ -222,7 +225,7 @@ namespace SCIRun {
 
 
     private:
-      //---------------- Intitialization ------------------------------------------------------------
+      //---------------- Initialization ------------------------------------------------------------
       void addToolBar();
       void setupScaleBar();
       void setInitialLightValues();
@@ -237,7 +240,7 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock();
-      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
+      QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
       void pushCameraDistance();
       void pushCameraLookAt();
@@ -261,7 +264,7 @@ namespace SCIRun {
       void buildGeomClippingPlanes();
       void initializeClippingPlaneDisplay();
       void doClippingPlanes();
-      bool initializeClippingPlanes_{false};
+      bool initializeClippingPlanes_{true};
       void buildGeometryClippingPlane(int index, bool reverseNormal, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
@@ -346,7 +349,7 @@ namespace SCIRun {
       friend class ViewSceneControlsDock;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
-      std::string                                       name_               {""};
+      std::string name_;
 
       const int DIMENSIONS_ = 3;
       const int QUATERNION_SIZE_ = 4;

@@ -897,7 +897,7 @@ void ViewSceneDialog::adjustToolbar()
   adjustToolbarForHighResolution(mToolBar);
 }
 
-QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
+QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
 {
   QColor newColor;
   if (!rgb.empty())
@@ -920,7 +920,7 @@ void ViewSceneDialog::updateAllGeometries()
 {
   // If a render parameter changes we must update all of the geometries by removing and reading them.
   // This must be forced because the IDs will not have changed
-  newGeometryValue(true);
+  newGeometryValue(true, false);
 
   auto spire = mSpire.lock();
   if (!spire)
@@ -932,7 +932,7 @@ void ViewSceneDialog::updateModifiedGeometries()
 {
   // if we are looking for a new geometry the ID will have changed therefore we can find the
   // geometries that have changed and only remove those
-  newGeometryValue(false);
+  newGeometryValue(false, false);
 
   auto spire = mSpire.lock();
   if (!spire) return;
@@ -941,7 +941,7 @@ void ViewSceneDialog::updateModifiedGeometries()
 
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
-  newGeometryValue(false);
+  newGeometryValue(false, false);
   if (mGLWidget->isVisible() && mGLWidget->isValid())
     mGLWidget->requestFrame();
   else
@@ -953,7 +953,7 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   spire->runGCOnNextExecution();
 }
 
-void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
+void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated)
 {
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
@@ -990,6 +990,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if (scaleBarGeom_ && scaleBar_.visible)
     allGeoms.push_back(scaleBarGeom_);
 
+  if (clippingPlanesUpdated)
   {
     const auto& activePlane = clippingPlaneManager_->active();
     mConfigurationDock->updatePlaneControlDisplay(
@@ -1038,7 +1039,10 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     }
   }
 
-  spire->updateClippingPlanes();
+  if (clippingPlanesUpdated || initializeClippingPlanes_)
+  {
+    initializeClippingPlanes_ = !spire->updateClippingPlanes();
+  }
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
@@ -1087,7 +1091,7 @@ void ViewSceneDialog::runDelayedGC()
 {
   if (delayGC_)
   {
-    QTimer::singleShot(200, this, SLOT(runDelayedGC()));
+    QTimer::singleShot(200, this, &ViewSceneDialog::runDelayedGC);
   }
   else
   {
@@ -1918,20 +1922,8 @@ void ViewSceneDialog::setClippingPlaneD(int index)
 
 void ViewSceneDialog::updateClippingPlaneDisplay()
 {
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->updateClippingPlanes();
+  newGeometryValue(false, true);
 
-  const auto& activePlane = clippingPlaneManager_->active();
-  mConfigurationDock->updatePlaneControlDisplay(
-    activePlane.x,
-    activePlane.y,
-    activePlane.z,
-    activePlane.d);
-
-  buildGeomClippingPlanes();
-
-  newGeometryValue(false);
   delayGC_ = true;
   if (!delayedGCRequested_)
   {
@@ -2481,8 +2473,8 @@ void ViewSceneDialog::setFogUseBGColor(bool value)
 
 void ViewSceneDialog::assignFogColor()
 {
-  QString title = windowTitle() + " Choose fog color";
-  auto newColor = QColorDialog::getColor(fogColor_, this, title);
+  const auto title = windowTitle() + " Choose fog color";
+  const auto newColor = QColorDialog::getColor(fogColor_, this, title);
   if (newColor.isValid())
   {
     fogColor_ = newColor;
@@ -2538,8 +2530,8 @@ void ViewSceneDialog::setFogColor(const glm::vec4 &color)
 
 void ViewSceneDialog::assignBackgroundColor()
 {
-  QString title = windowTitle() + " Choose background color";
-  auto newColor = QColorDialog::getColor(bgColor_, this, title);
+  const auto title = windowTitle() + " Choose background color";
+  const auto newColor = QColorDialog::getColor(bgColor_, this, title);
   if (newColor.isValid())
   {
     bgColor_ = newColor;
@@ -2593,18 +2585,18 @@ void ViewSceneDialog::autoSaveScreenshot()
 {
   QThread::sleep(1);
   takeScreenshot();
-  auto file = Screenshot::screenshotDirectory() +
-    QString("/%1_%2.png")
-    .arg(windowTitle().replace(':', '-'))
-    .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
+  const auto file = Screenshot::screenshotDirectory() +
+                    QString("/%1_%2.png")
+                    .arg(windowTitle().replace(':', '-'))
+                    .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
   screenshotTaker_->saveScreenshot(file);
 }
 
 void ViewSceneDialog::sendBugReport()
 {
-  QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-  QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+  const QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+  const QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
@@ -2613,8 +2605,8 @@ void ViewSceneDialog::sendBugReport()
   image.save(location);
 
   // Generate email template
-  QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
-    % location % "\n\n\n";
+  const QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
+                                   % location % "\n\n\n";
   static QString instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
     "then delete the rest of the template to reduce clutter."
     "\n### If the prerequisite is met, just delete that text as well. "
@@ -2632,15 +2624,15 @@ void ViewSceneDialog::sendBugReport()
 
   static QString expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
   static QString additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
-  QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
-  QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
-  QString gpuInfo = "GPU: " % gpuVersion % "\n";
+  const QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
+  const QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
+  const QString gpuInfo = "GPU: " % gpuVersion % "\n";
 
 #ifndef OLDER_QT_SUPPORT_NEEDED // disable for older Qt 5 versions
-  QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
-  QString glInfo = "GL Version: " % glVersion % "\n";
-  QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";
-  QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
+  const QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
+  const QString glInfo = "GL Version: " % glVersion % "\n";
+  const QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";
+  const QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
 
   //TODO: need generic email
   static QString recipient = "dwhite@sci.utah.edu";

@@ -696,16 +696,11 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 }
 
 //---------------- Clipping Planes -------------------------------------------------------------
-    //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
     StaticClippingPlanes* SRInterface::getClippingPlanes()
     {
       return static_cast<StaticClippingPlanes*>(mCore.getStaticComponent<StaticClippingPlanes>());
     }
-
-    //----------------------------------------------------------------------------------------------
-
 
     double SRInterface::getMaxProjLength(const glm::vec3 &n)
     {
@@ -722,50 +717,50 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         std::abs(dot(n, a4))));
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::updateClippingPlanes()
+    bool SRInterface::updateClippingPlanes()
     {
       auto* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
-      if (clippingPlanes && sceneBBox_.valid())
+      if (!clippingPlanes || !sceneBBox_.valid())
+        return false;
+
+      clippingPlanes->clippingPlanes.clear();
+      clippingPlanes->clippingPlaneCtrls.clear();
+      //boundbox transformation
+      glm::mat4 trans_bb = glm::mat4(1.0f);
+      glm::vec3 scale_bb(sceneBBox_.x_length() / 2.0, sceneBBox_.y_length() / 2.0, sceneBBox_.z_length() / 2.0);
+      glm::vec3 center_bb(sceneBBox_.center().x(), sceneBBox_.center().y(), sceneBBox_.center().z());
+      glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
+      trans_bb = temp * trans_bb;
+      temp = translate(glm::mat4(1.0f), center_bb);
+      trans_bb = temp * trans_bb;
+      int index = 0;
+      for (const auto& plane : clippingPlaneManager_->allPlanes())
       {
-        clippingPlanes->clippingPlanes.clear();
-        clippingPlanes->clippingPlaneCtrls.clear();
-        //boundbox transformation
-        glm::mat4 trans_bb = glm::mat4(1.0f);
-        glm::vec3 scale_bb(sceneBBox_.x_length() / 2.0, sceneBBox_.y_length() / 2.0, sceneBBox_.z_length() / 2.0);
-        glm::vec3 center_bb(sceneBBox_.center().x(), sceneBBox_.center().y(), sceneBBox_.center().z());
-        glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
-        trans_bb = temp * trans_bb;
-        temp = translate(glm::mat4(1.0f), center_bb);
-        trans_bb = temp * trans_bb;
-        int index = 0;
-        for (const auto& plane : clippingPlaneManager_->allPlanes())
+        glm::vec3 n3(plane.x, plane.y, plane.z);
+        float d = plane.d;
+        glm::vec4 n(0.0);
+        if (length(n3) > 0.0)
         {
-          glm::vec3 n3(plane.x, plane.y, plane.z);
-          float d = plane.d;
-          glm::vec4 n(0.0);
-          if (length(n3) > 0.0)
-          {
-            n3 = normalize(n3);
-            n = glm::vec4(n3, 0.0);
-            d *= getMaxProjLength(n3);
-          }
-          auto o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
-          o.w = 1;
-          o = trans_bb * o;
-          n = inverseTranspose(trans_bb) * n;
-          o.w = 0;
-          n.w = 0;
-          n = normalize(n);
-          n.w = -dot(o, n);
-          clippingPlanes->clippingPlanes.push_back(n);
-          glm::vec4 control(plane.visible ? 1.0 : 0.0,
+          n3 = normalize(n3);
+          n = glm::vec4(n3, 0.0);
+          d *= getMaxProjLength(n3);
+        }
+        auto o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
+        o.w = 1;
+        o = trans_bb * o;
+        n = inverseTranspose(trans_bb) * n;
+        o.w = 0;
+        n.w = 0;
+        n = normalize(n);
+        n.w = -dot(o, n);
+        clippingPlanes->clippingPlanes.push_back(n);
+        glm::vec4 control(plane.visible ? 1.0 : 0.0,
             plane.showFrame ? 1.0 : 0.0,
             plane.reverseNormal ? 1.0 : 0.0, 0.0);
-          clippingPlanes->clippingPlaneCtrls.push_back(control);
-          index++;
-        }
+        clippingPlanes->clippingPlaneCtrls.push_back(control);
+        index++;
       }
+      return true;
     }
 
 

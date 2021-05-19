@@ -128,7 +128,7 @@ namespace SCIRun
       StaticClippingPlanes* getClippingPlanes() override;
       void setClippingPlaneManager(ClippingPlaneManagerPtr cpm) override { clippingPlaneManager_ = cpm; }
       void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) override;
-      void updateClippingPlanes() override;
+      bool updateClippingPlanes() override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.

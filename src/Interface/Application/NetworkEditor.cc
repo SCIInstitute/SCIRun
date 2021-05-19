@@ -1609,6 +1609,14 @@ void NetworkEditor::clear()
     {
       deleteTheseFirst.append(item);
     }
+    else if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
+    {
+      auto vs = vsw->dialog();
+      if (vs)
+      {
+        vs->blockSignals(true);
+      }
+    }
   }
   deleteImpl(deleteTheseFirst);
   scene_->clear();

@@ -374,6 +374,10 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   zSliderValueLabel_->setText(ztext);
   dSliderValueLabel_->setText(dtext);
 
+  ScopedWidgetSignalBlocker xBlocker(xValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker yBlocker(yValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker zBlocker(zValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker dBlocker(dValueHorizontalSlider_);
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);
   zValueHorizontalSlider_->setSliderPosition(z * 100);

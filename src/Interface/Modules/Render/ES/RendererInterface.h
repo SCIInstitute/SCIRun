@@ -131,7 +131,7 @@ namespace SCIRun
       virtual glm::mat4 getWorldToView() const = 0;
       virtual glm::mat4 getWorldToProjection() const = 0;
       virtual void setClippingPlaneManager(ClippingPlaneManagerPtr cpm) = 0;
-      virtual void updateClippingPlanes() = 0;
+      virtual bool updateClippingPlanes() = 0;
     };
 
     class SCISHARE RendererInterface : public ScreenParameters, public RendererModuleInterface, public RendererWidgetInterface
