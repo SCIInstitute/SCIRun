@@ -36,6 +36,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Visualization;
@@ -398,6 +399,34 @@ void ViewSceneControlsDock::setSliderCenterPos()
   orientAxisYPos_->setValue(50);
 }
 
+VisibleItemManager::VisibleItemManager(QTreeWidget* itemList, ModuleStateHandle state)
+  : itemList_(itemList), state_(state)
+{
+  connect(this, &VisibleItemManager::visibleItemChange, this, &VisibleItemManager::updateState);
+  connect(this, &VisibleItemManager::meshComponentSelectionChange, this, &VisibleItemManager::updateState);
+}
+
+void VisibleItemManager::updateState()
+{
+  VariableList checkList;
+  qDebug() << "updateState";
+  for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
+  {
+    VariableList items;
+    auto* item = itemList_->topLevelItem(i);
+    qDebug() << "item:" << item->text(0) << item->checkState(0);
+    items.emplace_back(makeVariable(item->text(0).toStdString(), item->checkState(0) == Qt::Checked));
+    for (int j = 0; j < item->childCount(); ++j)
+    {
+      auto* child = item->child(j);
+      qDebug() << "\tchild:" << child->text(0) << child->checkState(0);
+      items.emplace_back(makeVariable(child->text(0).toStdString(), child->checkState(0) == Qt::Checked));
+    }
+    checkList.push_back(makeVariable("graphicsItem", items));
+  }
+  state_->setValue(Core::Algorithms::Render::Parameters::VisibleItemListState, checkList);
+}
+
 bool VisibleItemManager::isVisible(const QString& name) const
 {
   auto itemMatch = itemList_->findItems(name, Qt::MatchExactly);
@@ -465,6 +494,7 @@ void VisibleItemManager::addRenderItem(const QString& name)
     new QTreeWidgetItem(item, QStringList("Edges"));
     new QTreeWidgetItem(item, QStringList("Faces"));
   }
+  updateState();
 }
 
 void VisibleItemManager::updateCheckStates(const QString& name, const std::vector<bool>& checked)

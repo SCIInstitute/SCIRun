@@ -48,7 +48,7 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      VisibleItemManager(QTreeWidget* itemList, Dataflow::Networks::ModuleStateHandle state) : itemList_(itemList), state_(state) {}
+      VisibleItemManager(QTreeWidget* itemList, Dataflow::Networks::ModuleStateHandle state);
       std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList,
         const Modules::Render::ShowFieldStatesMap& showFieldStates);
       bool isVisible(const QString& name) const;
@@ -62,6 +62,7 @@ namespace SCIRun {
       void updateVisible(QTreeWidgetItem* item, int column);
       void selectAllClicked();
       void deselectAllClicked();
+      void updateState();
     private:
       void addRenderItem(const QString& name);
       void updateCheckStates(const QString& name, const std::vector<bool>& checked);
