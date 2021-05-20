@@ -27,6 +27,7 @@
 
 
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -34,6 +35,7 @@
 #include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -51,7 +53,7 @@ MapFieldDataFromElemToNode::MapFieldDataFromElemToNode()
 
 void MapFieldDataFromElemToNode::setStateDefaults()
 {
-  setStateStringFromAlgoOption(MapFieldDataFromElemToNodeAlgo::Method);
+  setStateStringFromAlgoOption(Variables::Method);
 }
 
 void MapFieldDataFromElemToNode::execute()
@@ -60,7 +62,7 @@ void MapFieldDataFromElemToNode::execute()
 
   if (needToExecute())
   {
-   setAlgoOptionFromState(MapFieldDataFromElemToNodeAlgo::Method);
+   setAlgoOptionFromState(Variables::Method);
 
    auto output = algo().run(withInputData((InputField, input)));
 

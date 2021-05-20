@@ -37,39 +37,24 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <boost/lexical_cast.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Logging;
 
-ALGORITHM_PARAMETER_DEF(FiniteElements, InputField);
 ALGORITHM_PARAMETER_DEF(FiniteElements, BoundaryField);
 ALGORITHM_PARAMETER_DEF(FiniteElements, RHSMatrix);
 
-struct IndexHash {
-  static const size_t bucket_size = 4;
-  static const size_t min_buckets = 8;
-
-  size_t operator()(const index_type &idx) const
-    { return (static_cast<size_t>(idx)); }
-
-  bool operator()(const index_type &i1, const index_type &i2) const
-    { return (i1 < i2); }
-};
-
 bool BuildFESurfRHSAlgo::run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output) const
 {
-
    /// Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,index_type,IndexHash> hash_map_type;
-#endif
+
+  typedef std::unordered_map<index_type,index_type> hash_map_type;
+
   hash_map_type node_map;
   hash_map_type elem_map;
 
@@ -309,7 +294,7 @@ bool BuildFESurfRHSAlgo::run(FieldHandle input, FieldHandle& output,  MatrixHand
 
 AlgorithmOutput BuildFESurfRHSAlgo::run(const AlgorithmInput& input) const
 {
-  auto input_field = input.get<Field>(Parameters::InputField);
+  auto input_field = input.get<Field>(Variables::InputField);
 
   FieldHandle out;
   MatrixHandle rhs;

@@ -144,11 +144,11 @@ protected:
   {
     LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(JoinFieldsAlgo::MergeNodes,      std::get<0>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MergeElems,      std::get<1>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MatchNodeValues, std::get<2>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MakeNoData,      std::get<3>(GetParam()));
-    algo_.set(JoinFieldsAlgo::Tolerance,       std::get<4>(GetParam()));
+    algo_.set(Parameters::merge_nodes,      std::get<0>(GetParam()));
+    algo_.set(Parameters::merge_elems,      std::get<1>(GetParam()));
+    algo_.set(Parameters::match_node_values, std::get<2>(GetParam()));
+    algo_.set(Parameters::make_no_data,      std::get<3>(GetParam()));
+    algo_.set(Parameters::tolerance,       std::get<4>(GetParam()));
   }
 
   void TearDown() override { }
@@ -189,7 +189,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, DISABLED_JoinFieldsAlgo_Parameterized_s
 {
   // sample field has no data
   input.push_back(TriangleTriSurfConstantBasis(INT_E));
-  algo_.set(JoinFieldsAlgo::MatchNodeValues, true);
+  algo_.set(Parameters::match_node_values, true);
   EXPECT_FALSE(algo_.runImpl(input, output));
 }
 
@@ -198,7 +198,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, DISABLED_JoinFieldsAlgo_Parameterized_s
 {
   // sample field has no data
   input.push_back(TriangleTriSurfConstantBasis(INT_E));
-  algo_.set(JoinFieldsAlgo::MatchNodeValues, false);
+  algo_.set(Parameters::match_node_values, false);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 

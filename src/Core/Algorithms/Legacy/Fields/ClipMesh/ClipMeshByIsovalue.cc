@@ -136,10 +136,13 @@ namespace detail
 
 }
 
+ALGORITHM_PARAMETER_DEF(Fields, LessThanIsoValue);
+ALGORITHM_PARAMETER_DEF(Fields, ScalarIsoValue);
+
 ClipMeshByIsovalueAlgo::ClipMeshByIsovalueAlgo()
 {
- addParameter(LessThanIsoValue, 1);
- addParameter(ScalarIsoValue, 0.0);
+  addParameter(Parameters::LessThanIsoValue, 1);
+  addParameter(Parameters::ScalarIsoValue, 0.0);
 }
 
 class ClipMeshByIsovalueAlgoTet {
@@ -250,9 +253,9 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   std::vector<double> v(4);
   std::vector<Point> p(4);
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   VMesh::size_type num_elems = mesh->num_elems();
 
@@ -703,9 +706,9 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   std::vector<double> v(3);
   std::vector<Point>  p(3);
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   VMesh::size_type num_elems = mesh->num_elems();
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -957,10 +960,10 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
    mc_algo.set_progress_reporter(algo->get_progress_reporter());
   #endif
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
-  mc_algo.set(MarchingCubesAlgo::build_field, true);
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
+  mc_algo.set(Parameters::build_field, true);
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   std::vector<double> isovals(1);
   isovals[0] = isoval;
@@ -1440,14 +1443,9 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
   return (true);
 }
 
-AlgorithmInputName ClipMeshByIsovalueAlgo::InputField("InputField");
-AlgorithmOutputName ClipMeshByIsovalueAlgo::OutputField("OutputField");
-AlgorithmParameterName ClipMeshByIsovalueAlgo::LessThanIsoValue("LessThanIsoValue");
-AlgorithmParameterName ClipMeshByIsovalueAlgo::ScalarIsoValue("ScalarIsoValue");
-
 AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
 
   FieldHandle output_fld;
 
@@ -1455,7 +1453,7 @@ AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
     error("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = output_fld;
+  output[Variables::OutputField] = output_fld;
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    output[Mapping] = mapping;

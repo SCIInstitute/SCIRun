@@ -76,7 +76,7 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
   }
 }
 
-void ModuleDialogGeneric::setDockable(QDockWidget* dock)
+void ModuleDialogGeneric::setDockable(ModuleDialogDockWidget* dock)
 {
   dock_ = dock;
 }
@@ -1054,9 +1054,9 @@ std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>
 
 void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
 {
-  for (auto& child : toolbar->children())
+  for (const auto& child : toolbar->children())
   {
-    auto button = qobject_cast<QPushButton*>(child);
+    auto* button = qobject_cast<QPushButton*>(child);
     if (button)
     {
       button->setFixedSize(button->size() * 2);
@@ -1072,5 +1072,15 @@ void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
   else //Esc = close dialog
   {
     Q_EMIT closeButtonClicked();
+  }
+}
+
+void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
+{
+  QDockWidget::moveEvent(e);
+  auto* moduleDialog = qobject_cast<ModuleDialogGeneric*>(widget());
+  if (moduleDialog)
+  {
+    moduleDialog->postMoveEventCallback(e->pos());
   }
 }

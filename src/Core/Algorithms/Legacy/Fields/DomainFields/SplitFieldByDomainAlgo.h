@@ -37,6 +37,9 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(SortBySize);
+        ALGORITHM_PARAMETER_DECL(SortAscending);
+
 class SCISHARE SplitFieldByDomainAlgo : public AlgorithmBase
 {
   public:
@@ -44,9 +47,6 @@ class SCISHARE SplitFieldByDomainAlgo : public AlgorithmBase
 
     bool runImpl(FieldHandle input, FieldList& output) const;
     AlgorithmOutput run(const AlgorithmInput& input) const override;
-
-    static AlgorithmParameterName SortBySize;
-    static AlgorithmParameterName SortAscending;
 };
 
 }}}}

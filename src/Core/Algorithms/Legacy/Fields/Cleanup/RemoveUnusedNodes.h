@@ -29,7 +29,6 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H
 #define CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H 1
 
-// Datatypes that the algorithm uses
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
@@ -41,14 +40,8 @@ namespace Fields {
 class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
 {
   public:
-    /// Set defaults
-    RemoveUnusedNodesAlgo()
-    {}
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName OutputField;
-    /// run the algorithm
+    RemoveUnusedNodesAlgo() {}
     bool run(FieldHandle input, FieldHandle& output) const;
-
     AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 

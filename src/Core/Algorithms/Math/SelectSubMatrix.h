@@ -38,17 +38,18 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
 
+  ALGORITHM_PARAMETER_DECL(rowCheckBox);
+  ALGORITHM_PARAMETER_DECL(columnCheckBox);
+  ALGORITHM_PARAMETER_DECL(rowStartSpinBox);
+  ALGORITHM_PARAMETER_DECL(columnStartSpinBox);
+  ALGORITHM_PARAMETER_DECL(columnEndSpinBox);
+  ALGORITHM_PARAMETER_DECL(rowEndSpinBox);
+
   class SCISHARE SelectSubMatrixAlgorithm : public AlgorithmBase
   {
   public:
     static const AlgorithmInputName RowIndicies;
     static const AlgorithmInputName ColumnIndicies;
-    static AlgorithmParameterName rowCheckBox();
-    static AlgorithmParameterName columnCheckBox();
-    static AlgorithmParameterName rowStartSpinBox();
-    static AlgorithmParameterName columnStartSpinBox();
-    static AlgorithmParameterName columnEndSpinBox();
-    static AlgorithmParameterName rowEndSpinBox();
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle columns) const;
     SelectSubMatrixAlgorithm();
     AlgorithmOutput run(const AlgorithmInput& input) const override;

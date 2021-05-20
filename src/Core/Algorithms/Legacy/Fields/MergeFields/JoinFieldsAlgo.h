@@ -37,18 +37,18 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(merge_nodes);
+        ALGORITHM_PARAMETER_DECL(merge_elems);
+        ALGORITHM_PARAMETER_DECL(tolerance);
+        ALGORITHM_PARAMETER_DECL(match_node_values);
+        ALGORITHM_PARAMETER_DECL(make_no_data);
+        ALGORITHM_PARAMETER_DECL(ForcePointCloud);
+
         class SCISHARE JoinFieldsAlgo : public AlgorithmBase
         {
         public:
           JoinFieldsAlgo();
           bool runImpl(const FieldList& input, FieldHandle& output) const;
-
-          static AlgorithmParameterName MergeNodes;
-          static AlgorithmParameterName MergeElems;
-          static AlgorithmParameterName Tolerance;
-          static AlgorithmParameterName MatchNodeValues;
-          static AlgorithmParameterName MakeNoData;
-
           AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
