@@ -28,6 +28,7 @@
 #include "OSPRayDataManager.h"
 
 #include <cstring>
+#include <stdio.h>
 
 using namespace SCIRun::Render;
 
