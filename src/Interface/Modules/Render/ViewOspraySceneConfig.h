@@ -30,12 +30,6 @@
 #define INTERFACE_MODULES_VIEW_OSPRAY_SCENE_CONTROLS_H
 
 #include "Interface/Modules/Render/ui_ViewOspraySceneConfig.h"
-
-#ifndef Q_MOC_RUN
-#include <Core/Datatypes/DatatypeFwd.h>
-//#include <Modules/Render/ViewScene.h>
-#include <boost/atomic.hpp>
-#endif
 #include <QDialog>
 #include <Interface/Modules/Render/share.h>
 
@@ -50,30 +44,8 @@ namespace SCIRun {
 
     public:
       ViewOspraySceneConfigDialog(const QString& name, OsprayViewerDialog* parent);
-      // void setSampleColor(const QColor& color);
-      // void setFogColorLabel(const QColor& color);
-      // void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
-      //   bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
-      // void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-      //   double numTicks, double lineWidth, const QString& unit);
-      // void setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList, bool stereo,
-      //   double stereoFusion, double polygonOffset, double textOffset, int fov);
-      // void updateZoomOptionVisibility();
-      // void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
-      // void updatePlaneControlDisplay(double x, double y, double z, double d);
-      // QPointF getLightPosition(int index) const;
-      // QColor getLightColor(int index) const;
-      //
-      // VisibleItemManager& visibleItems() { return *visibleItems_; }
-
-    private:
-      // void setupObjectListWidget();
-      // void setupLightControlCircle(QFrame* frame, int index, const boost::atomic<bool>& pulling, bool moveable);
-      //
-      // std::vector<LightControlCircle*> lightControls_;
-      // std::unique_ptr<VisibleItemManager> visibleItems_;
     };
   }
 }
 
-#endif //INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
+#endif

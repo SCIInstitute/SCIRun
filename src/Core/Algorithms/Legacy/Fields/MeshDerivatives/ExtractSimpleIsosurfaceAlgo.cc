@@ -78,8 +78,7 @@ bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, const std::vector<doubl
   }
 
   MarchingCubesAlgo marching_;
-  marching_.set(MarchingCubesAlgo::build_field, true);
-
+  marching_.set(Parameters::build_field, true);
   marching_.run(input, isovalues, output);
 
   return (true);

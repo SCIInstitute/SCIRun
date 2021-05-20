@@ -41,6 +41,6 @@ SplitFieldByDomainDialog::SplitFieldByDomainDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(sortBySizeCheckBox_, SplitFieldByDomainAlgo::SortBySize);
-  addCheckBoxManager(sortAscendingCheckBox_, SplitFieldByDomainAlgo::SortAscending);
+  addCheckBoxManager(sortBySizeCheckBox_, Parameters::SortBySize);
+  addCheckBoxManager(sortAscendingCheckBox_, Parameters::SortAscending);
 }

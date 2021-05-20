@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -42,8 +43,8 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+  algo.set(Parameters::SortDomainBySize, false);
+  algo.set(Parameters::SortAscending, false);
 
   FieldHandle tetmesh  = SplitFieldByConnectedRegionModuleTetTests();
 
@@ -92,8 +93,8 @@ TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTetTest
 
   FieldHandle tetmesh  = SplitFieldByConnectedRegionModuleTetTests();
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+  algo.set(Parameters::SortDomainBySize, true);
+  algo.set(Parameters::SortAscending, false);
 
   std::vector<FieldHandle> result = algo.run(tetmesh);
 
@@ -139,8 +140,8 @@ TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTetTest
 
   FieldHandle tetmesh  = SplitFieldByConnectedRegionModuleTetTests();
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), true);
+  algo.set(Parameters::SortDomainBySize, true);
+  algo.set(Parameters::SortAscending, true);
 
   std::vector<FieldHandle> result = algo.run(tetmesh);
 
@@ -187,8 +188,8 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTetTests4)
 
   FieldHandle tetmesh  = SplitFieldByConnectedRegionModuleTetTests();
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), true);
+  algo.set(Parameters::SortDomainBySize, false);
+  algo.set(Parameters::SortAscending, true);
 
   std::vector<FieldHandle> result = algo.run(tetmesh);
 
@@ -233,8 +234,8 @@ TEST(SplitByConnectedRegionTest, SplitFieldByConnectedRegionAlgoTriTests)
 {
   SplitFieldByConnectedRegionAlgo algo;
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+  algo.set(Parameters::SortDomainBySize, false);
+  algo.set(Parameters::SortAscending, false);
 
   FieldHandle trimesh  = SplitFieldByConnectedRegionModuleTriTests();
 
@@ -281,8 +282,8 @@ TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTest
 {
   SplitFieldByConnectedRegionAlgo algo;
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+  algo.set(Parameters::SortDomainBySize, true);
+  algo.set(Parameters::SortAscending, false);
 
   FieldHandle trimesh  = SplitFieldByConnectedRegionModuleTriTests();
 
@@ -329,8 +330,8 @@ TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTest
 {
   SplitFieldByConnectedRegionAlgo algo;
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), true);
+  algo.set(Parameters::SortDomainBySize, true);
+  algo.set(Parameters::SortAscending, true);
 
   FieldHandle trimesh  = SplitFieldByConnectedRegionModuleTriTests();
 
@@ -377,8 +378,8 @@ TEST(SplitByConnectedRegionTest, DISABLED_SplitFieldByConnectedRegionAlgoTriTest
 {
   SplitFieldByConnectedRegionAlgo algo;
 
-  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
-  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), true);
+  algo.set(Parameters::SortDomainBySize, false);
+  algo.set(Parameters::SortAscending, true);
 
   FieldHandle trimesh  = SplitFieldByConnectedRegionModuleTriTests();
 

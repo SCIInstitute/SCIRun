@@ -30,7 +30,6 @@
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,15 +37,14 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(Location);
+
         class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
         {
         public:
           ConvertMeshToPointCloudMeshAlgo();
-
           bool runImpl(FieldHandle input, FieldHandle& output) const;
           AlgorithmOutput run(const AlgorithmInput& input) const override;
-
-          static AlgorithmParameterName Location;
         };
 
       }

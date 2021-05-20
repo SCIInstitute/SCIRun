@@ -47,12 +47,12 @@ SelectSubMatrix::SelectSubMatrix() : Module(ModuleLookupInfo("SelectSubMatrix", 
 
 void SelectSubMatrix::setStateDefaults()
 {
- setStateBoolFromAlgo(SelectSubMatrixAlgorithm::rowCheckBox());
- setStateBoolFromAlgo(SelectSubMatrixAlgorithm::columnCheckBox());
- setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowStartSpinBox());
- setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnStartSpinBox());
- setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnEndSpinBox());
- setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowEndSpinBox());
+  setStateBoolFromAlgo(Parameters::rowCheckBox);
+  setStateBoolFromAlgo(Parameters::columnCheckBox);
+  setStateIntFromAlgo(Parameters::rowStartSpinBox);
+  setStateIntFromAlgo(Parameters::columnStartSpinBox);
+  setStateIntFromAlgo(Parameters::columnEndSpinBox);
+  setStateIntFromAlgo(Parameters::rowEndSpinBox);
 }
 
 void SelectSubMatrix::execute()
@@ -159,15 +159,15 @@ void SelectSubMatrix::execute()
 
   if (needToExecute())
   {
-   algo().set(SelectSubMatrixAlgorithm::rowCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowCheckBox()).toBool());
-   algo().set(SelectSubMatrixAlgorithm::columnCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnCheckBox()).toBool());
-   algo().set(SelectSubMatrixAlgorithm::rowStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowStartSpinBox()).toInt());
-   algo().set(SelectSubMatrixAlgorithm::rowEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowEndSpinBox()).toInt());
-   algo().set(SelectSubMatrixAlgorithm::columnStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnStartSpinBox()).toInt());
-   algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox()).toInt());
+    setAlgoBoolFromState(Parameters::rowCheckBox);
+    setAlgoBoolFromState(Parameters::columnCheckBox);
+    setAlgoIntFromState(Parameters::rowStartSpinBox);
+    setAlgoIntFromState(Parameters::rowEndSpinBox);
+    setAlgoIntFromState(Parameters::columnStartSpinBox);
+    setAlgoIntFromState(Parameters::columnEndSpinBox);
 
-   auto output = algo().run(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
+    auto output = algo().run(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 
-   sendOutputFromAlgorithm(ResultMatrix, output);
+    sendOutputFromAlgorithm(ResultMatrix, output);
   }
 }

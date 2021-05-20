@@ -101,13 +101,8 @@ DefinePeriodicBoundariesAlgo::run(FieldHandle& input,
     algo_end(); return (false);
   }
 
-#ifdef HAVE_HASH_MAP
-  typedef hash_multimap<int,VMesh::DElem::index_type> delemidxmap_type;
+  typedef std::unordered_multimap<int, VMesh::DElem::index_type> delemidxmap_type;
   typedef std::vector<Point> pointmap_type;
-#else
-  typedef std::multimap<int, VMesh::DElem::index_type> delemidxmap_type;
-  typedef std::vector<Point> pointmap_type;
-#endif
 
   // Information to build:
 

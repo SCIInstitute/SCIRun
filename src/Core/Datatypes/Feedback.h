@@ -58,6 +58,13 @@ enum WidgetMovement
   SCALE_AXIS_UNIDIRECTIONAL,
 };
 
+struct SCISHARE ClippingPlane
+{
+  static constexpr int MaxCount = 6;
+  bool visible, showFrame, reverseNormal;
+  double x, y, z, d;
+};
+
 struct EnumClassHash
 {
   template <typename T> std::size_t operator()(T t) const

@@ -42,10 +42,10 @@ JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(forcePointCloudCheckBox_, SCIRun::Modules::Fields::JoinFields::ForcePointCloud);
-  addCheckBoxManager(mergeDuplicateElementsCheckBox_, JoinFieldsAlgo::MergeElems);
-  addCheckBoxManager(mergeDuplicateNodesCheckBox_, JoinFieldsAlgo::MergeNodes);
-  addCheckBoxManager(mergeMeshOnlyCheckBox_, JoinFieldsAlgo::MakeNoData);
-  addCheckBoxManager(onlyMergeSameValueCheckBox_, JoinFieldsAlgo::MatchNodeValues);
-  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, JoinFieldsAlgo::Tolerance);
+  addCheckBoxManager(forcePointCloudCheckBox_, Parameters::ForcePointCloud);
+  addCheckBoxManager(mergeDuplicateElementsCheckBox_, Parameters::merge_elems);
+  addCheckBoxManager(mergeDuplicateNodesCheckBox_, Parameters::merge_nodes);
+  addCheckBoxManager(mergeMeshOnlyCheckBox_, Parameters::make_no_data);
+  addCheckBoxManager(onlyMergeSameValueCheckBox_, Parameters::match_node_values);
+  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, Parameters::tolerance);
 }
