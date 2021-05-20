@@ -49,6 +49,7 @@
 #include <Graphics/Widgets/WidgetBuilders.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 

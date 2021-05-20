@@ -57,6 +57,8 @@ namespace SCIRun
         // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
+        // new state variable to save the whole list. Won't break the delicate transient state behavior
+        ALGORITHM_PARAMETER_DECL(VisibleItemListState);
 
         // save/load confirmed. Need refactoring to standard push/pull model.
         //ALGORITHM_PARAMETER_DECL(BackgroundColor); -->in OsprayViewer.h

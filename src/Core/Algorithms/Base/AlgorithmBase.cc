@@ -38,6 +38,7 @@
 
 #include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/Name.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <Core/Algorithms/Base/AlgorithmInputBuilder.h>

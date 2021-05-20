@@ -56,6 +56,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/DenseMatrix.h>

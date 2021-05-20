@@ -30,6 +30,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>

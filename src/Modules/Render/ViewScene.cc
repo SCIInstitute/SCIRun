@@ -33,6 +33,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header
@@ -139,6 +140,7 @@ ALGORITHM_PARAMETER_DEF(Render, AxesVisible);
 ALGORITHM_PARAMETER_DEF(Render, AxesSize);
 ALGORITHM_PARAMETER_DEF(Render, AxesX);
 ALGORITHM_PARAMETER_DEF(Render, AxesY);
+ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -218,6 +220,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(Parameters::CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(Parameters::HasNewGeometry, false);
+  state->setValue(Parameters::VisibleItemListState, VariableList());
 
   state->setValue(Parameters::ClippingPlaneEnabled, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneNormalReversed, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
@@ -333,6 +336,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
   {
     auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
     map[connectedModuleId] = state;
+    //std::cout << "ShowFieldStates" << map << std::endl;
     get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
   }
 }

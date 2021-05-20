@@ -57,6 +57,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;

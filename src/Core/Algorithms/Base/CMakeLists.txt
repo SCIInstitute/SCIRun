@@ -48,6 +48,7 @@ SET(Algorithms_Base_HEADERS
   Name.h
   Option.h
   Variable.h
+  VariableHelper.h
   share.h
 )
 

@@ -76,7 +76,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 
   //-----------Objects Tab-----------------//
-  visibleItems_.reset(new VisibleItemManager(objectListWidget_));
+  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
   connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
   connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
@@ -467,7 +467,7 @@ void VisibleItemManager::addRenderItem(const QString& name)
   }
 }
 
-void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool> checked)
+void VisibleItemManager::updateCheckStates(const QString& name, const std::vector<bool>& checked)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
   if (items.count() > 1)

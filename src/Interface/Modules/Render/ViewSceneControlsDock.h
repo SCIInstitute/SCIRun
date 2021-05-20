@@ -48,7 +48,7 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      explicit VisibleItemManager(QTreeWidget* itemList) : itemList_(itemList) {}
+      VisibleItemManager(QTreeWidget* itemList, Dataflow::Networks::ModuleStateHandle state) : itemList_(itemList), state_(state) {}
       std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList,
         const Modules::Render::ShowFieldStatesMap& showFieldStates);
       bool isVisible(const QString& name) const;
@@ -64,8 +64,9 @@ namespace SCIRun {
       void deselectAllClicked();
     private:
       void addRenderItem(const QString& name);
-      void updateCheckStates(const QString& name, std::vector<bool> checked);
+      void updateCheckStates(const QString& name, const std::vector<bool>& checked);
       QTreeWidget* itemList_;
+      Dataflow::Networks::ModuleStateHandle state_;
     };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls

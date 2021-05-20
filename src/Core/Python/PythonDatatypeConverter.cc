@@ -41,6 +41,7 @@
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <boost/variant/apply_visitor.hpp>
 
 using namespace SCIRun;
