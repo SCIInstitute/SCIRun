@@ -37,6 +37,7 @@
 
 #include <es-log/trace-log.h>
 #include <iostream>
+#include <limits>       // std::numeric_limits
 #include <array>
 #include <set>          // Only used in a corner case of walkComponents where
                         // all components are optional.
