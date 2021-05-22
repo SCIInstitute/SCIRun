@@ -484,21 +484,16 @@ void VisibleItemManager::initializeSavedStateMap()
     QString rootName;
     for (size_t i = 0; i < item.size(); ++i)
     {
-      //std::cout << i << std::endl;
-
       auto name = item[i].name().name();
       auto checked = item[i].toBool();
 
       if (0 == i) // showfield
       {
-        //qDebug() << name.c_str() << checked;
         rootName = QString::fromStdString(name);
         topLevelItemMap_[rootName] = checked;
       }
       else
       {
-        //qDebug() << "has sub-items";
-        //qDebug() << "\t" << name.c_str() << checked;
         secondLevelItemMap_[rootName][QString::fromStdString(name)] = checked;
       }
     }
@@ -515,32 +510,29 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
-  //qDebug() << "ADDING: " << item->text(0) << item->checkState(0);
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
   auto topLevelItemStateIter = topLevelItemMap_.find(name);
   if (topLevelItemStateIter != topLevelItemMap_.end())
   {
-    //qDebug() << "Setting to saved check state" << topLevelItemStateIter->second;
     if (!topLevelItemStateIter->second)
       item->setCheckState(0, Qt::Unchecked);
   }
   if (name.contains("ShowField:"))
   {
-    auto meshComponentCheckStates = secondLevelItemMap_.find(name);
     auto n = new QTreeWidgetItem(item, QStringList("Nodes"));
-    if (meshComponentCheckStates != secondLevelItemMap_.end())
-      n->setCheckState(0, meshComponentCheckStates->second["Nodes"] ? Qt::Checked : Qt::Unchecked);
-    //qDebug() << "\tADDING: " << n->text(0) << n->checkState(0);
     auto e = new QTreeWidgetItem(item, QStringList("Edges"));
-    if (meshComponentCheckStates != secondLevelItemMap_.end())
-      e->setCheckState(0, meshComponentCheckStates->second["Edges"] ? Qt::Checked : Qt::Unchecked);
-    //qDebug() << "\tADDING: " << e->text(0) << e->checkState(0);
     auto f = new QTreeWidgetItem(item, QStringList("Faces"));
-    if (meshComponentCheckStates != secondLevelItemMap_.end())
+
+    const auto meshComponentCheckStates = secondLevelItemMap_.find(name);
+    const auto hasSavedMeshFlags = meshComponentCheckStates != secondLevelItemMap_.end();
+    if (hasSavedMeshFlags)
+    {
+      n->setCheckState(0, meshComponentCheckStates->second["Nodes"] ? Qt::Checked : Qt::Unchecked);
+      e->setCheckState(0, meshComponentCheckStates->second["Edges"] ? Qt::Checked : Qt::Unchecked);
       f->setCheckState(0, meshComponentCheckStates->second["Faces"] ? Qt::Checked : Qt::Unchecked);
-    //qDebug() << "\tADDING: " << f->text(0) << f->checkState(0);
+    }
   }
   updateState();
 }
