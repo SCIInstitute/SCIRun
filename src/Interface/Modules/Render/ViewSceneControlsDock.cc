@@ -409,17 +409,17 @@ VisibleItemManager::VisibleItemManager(QTreeWidget* itemList, ModuleStateHandle 
 void VisibleItemManager::updateState()
 {
   VariableList checkList;
-  qDebug() << "updateState";
+  //qDebug() << "updateState";
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     VariableList items;
     auto* item = itemList_->topLevelItem(i);
-    qDebug() << "item:" << item->text(0) << item->checkState(0);
+    //qDebug() << "item:" << item->text(0) << item->checkState(0);
     items.emplace_back(makeVariable(item->text(0).toStdString(), item->checkState(0) == Qt::Checked));
     for (int j = 0; j < item->childCount(); ++j)
     {
       auto* child = item->child(j);
-      qDebug() << "\tchild:" << child->text(0) << child->checkState(0);
+      //qDebug() << "\tchild:" << child->text(0) << child->checkState(0);
       items.emplace_back(makeVariable(child->text(0).toStdString(), child->checkState(0) == Qt::Checked));
     }
     checkList.push_back(makeVariable("graphicsItem", items));
@@ -491,14 +491,14 @@ void VisibleItemManager::initializeSavedStateMap()
 
       if (0 == i) // showfield
       {
-        qDebug() << name.c_str() << checked;
+        //qDebug() << name.c_str() << checked;
         rootName = QString::fromStdString(name);
         topLevelItemMap_[rootName] = checked;
       }
       else
       {
-        qDebug() << "has sub-items";
-        qDebug() << "\t" << name.c_str() << checked;
+        //qDebug() << "has sub-items";
+        //qDebug() << "\t" << name.c_str() << checked;
         secondLevelItemMap_[rootName][QString::fromStdString(name)] = checked;
       }
     }
@@ -515,25 +515,32 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
-  qDebug() << "ADDING: " << item->text(0) << item->checkState(0);
+  //qDebug() << "ADDING: " << item->text(0) << item->checkState(0);
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
   auto topLevelItemStateIter = topLevelItemMap_.find(name);
   if (topLevelItemStateIter != topLevelItemMap_.end())
   {
-    qDebug() << "Setting to saved check state" << topLevelItemStateIter->second;
+    //qDebug() << "Setting to saved check state" << topLevelItemStateIter->second;
     if (!topLevelItemStateIter->second)
       item->setCheckState(0, Qt::Unchecked);
   }
   if (name.contains("ShowField:"))
   {
+    auto meshComponentCheckStates = secondLevelItemMap_.find(name);
     auto n = new QTreeWidgetItem(item, QStringList("Nodes"));
-    qDebug() << "\tADDING: " << n->text(0) << n->checkState(0);
+    if (meshComponentCheckStates != secondLevelItemMap_.end())
+      n->setCheckState(0, meshComponentCheckStates->second["Nodes"] ? Qt::Checked : Qt::Unchecked);
+    //qDebug() << "\tADDING: " << n->text(0) << n->checkState(0);
     auto e = new QTreeWidgetItem(item, QStringList("Edges"));
-    qDebug() << "\tADDING: " << e->text(0) << e->checkState(0);
+    if (meshComponentCheckStates != secondLevelItemMap_.end())
+      e->setCheckState(0, meshComponentCheckStates->second["Edges"] ? Qt::Checked : Qt::Unchecked);
+    //qDebug() << "\tADDING: " << e->text(0) << e->checkState(0);
     auto f = new QTreeWidgetItem(item, QStringList("Faces"));
-    qDebug() << "\tADDING: " << f->text(0) << f->checkState(0);
+    if (meshComponentCheckStates != secondLevelItemMap_.end())
+      f->setCheckState(0, meshComponentCheckStates->second["Faces"] ? Qt::Checked : Qt::Unchecked);
+    //qDebug() << "\tADDING: " << f->text(0) << f->checkState(0);
   }
   updateState();
 }

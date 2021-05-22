@@ -2705,11 +2705,11 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 
 void ViewSceneDialog::initializeVisibleObjects()
 {
-  qDebug() << "initializeVisibleObjects";
-  auto objs = state_->getValue(Parameters::VisibleItemListState).toVector();
-  for (const auto& o : objs)
-  {
-    std::cout << o << std::endl;
-  }
+  // qDebug() << "initializeVisibleObjects";
+  // auto objs = state_->getValue(Parameters::VisibleItemListState).toVector();
+  // for (const auto& o : objs)
+  // {
+  //   std::cout << o << std::endl;
+  // }
   mConfigurationDock->visibleItems().initializeSavedStateMap();
 }
