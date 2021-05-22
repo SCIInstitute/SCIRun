@@ -481,23 +481,26 @@ void VisibleItemManager::initializeSavedStateMap()
   for (const auto& o : objs)
   {
     auto item = o.toVector();
+    QString rootName;
     for (size_t i = 0; i < item.size(); ++i)
     {
       //std::cout << i << std::endl;
 
-      auto name = item[i].name();
+      auto name = item[i].name().name();
       auto checked = item[i].toBool();
 
-      if (i > 0) // showfield
+      if (0 == i) // showfield
       {
-        qDebug() << "has sub-items";
-        qDebug() << "\t" << name.name().c_str() << checked;
+        qDebug() << name.c_str() << checked;
+        rootName = QString::fromStdString(name);
+        topLevelItemMap_[rootName] = checked;
       }
       else
       {
-        qDebug() << name.name().c_str() << checked;
+        qDebug() << "has sub-items";
+        qDebug() << "\t" << name.c_str() << checked;
+        secondLevelItemMap_[rootName][QString::fromStdString(name)] = checked;
       }
-
     }
   }
 }
@@ -516,6 +519,13 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
+  auto topLevelItemStateIter = topLevelItemMap_.find(name);
+  if (topLevelItemStateIter != topLevelItemMap_.end())
+  {
+    qDebug() << "Setting to saved check state" << topLevelItemStateIter->second;
+    if (!topLevelItemStateIter->second)
+      item->setCheckState(0, Qt::Unchecked);
+  }
   if (name.contains("ShowField:"))
   {
     auto n = new QTreeWidgetItem(item, QStringList("Nodes"));
