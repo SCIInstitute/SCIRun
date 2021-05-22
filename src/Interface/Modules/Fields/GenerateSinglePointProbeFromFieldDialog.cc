@@ -56,9 +56,13 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
   addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
 
+  addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxSize);
+  addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxSize);
+
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
   connectButtonToExecuteSignal(colorChooserPushButton_);
+  connect(bboxScaleCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleSpinBoxes()));
 }
 
 void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
@@ -97,4 +101,10 @@ void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()
 void GenerateSinglePointProbeFromFieldDialog::pushColor()
 {
   state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+}
+
+void GenerateSinglePointProbeFromFieldDialog::toggleSpinBoxes()
+{
+  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
+  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
 }
