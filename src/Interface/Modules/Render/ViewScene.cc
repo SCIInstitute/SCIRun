@@ -890,6 +890,8 @@ void ViewSceneDialog::pullSpecial()
 
     initializeAxes();
 
+    initializeVisibleObjects();
+
     pulledSavedVisibility_ = true;
   }
 }
@@ -2699,4 +2701,15 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
   // check here for clipping func insertion
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
+}
+
+void ViewSceneDialog::initializeVisibleObjects()
+{
+  qDebug() << "initializeVisibleObjects";
+  auto objs = state_->getValue(Parameters::VisibleItemListState).toVector();
+  for (const auto& o : objs)
+  {
+    std::cout << o << std::endl;
+  }
+  mConfigurationDock->visibleItems().initializeSavedStateMap();
 }

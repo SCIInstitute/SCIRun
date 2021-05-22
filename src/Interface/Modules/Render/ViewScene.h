@@ -248,6 +248,7 @@ namespace SCIRun {
       void pushCameraState();
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
+      void initializeVisibleObjects();
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();

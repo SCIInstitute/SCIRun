@@ -53,6 +53,7 @@ namespace SCIRun {
         const Modules::Render::ShowFieldStatesMap& showFieldStates);
       bool isVisible(const QString& name) const;
       bool containsItem(const QString& name) const;
+      void initializeSavedStateMap();
     public Q_SLOTS:
       void clear();
     Q_SIGNALS:
@@ -68,6 +69,8 @@ namespace SCIRun {
       void updateCheckStates(const QString& name, const std::vector<bool>& checked);
       QTreeWidget* itemList_;
       Dataflow::Networks::ModuleStateHandle state_;
+      std::map<QString, bool> topLevelItemMap_;
+      std::map<QString, std::map<QString, bool>> secondLevelItemMap_;
     };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls

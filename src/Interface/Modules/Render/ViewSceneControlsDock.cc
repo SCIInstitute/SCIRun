@@ -475,6 +475,33 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
   return displayNames;
 }
 
+void VisibleItemManager::initializeSavedStateMap()
+{
+  auto objs = state_->getValue(Core::Algorithms::Render::Parameters::VisibleItemListState).toVector();
+  for (const auto& o : objs)
+  {
+    auto item = o.toVector();
+    for (size_t i = 0; i < item.size(); ++i)
+    {
+      //std::cout << i << std::endl;
+
+      auto name = item[i].name();
+      auto checked = item[i].toBool();
+
+      if (i > 0) // showfield
+      {
+        qDebug() << "has sub-items";
+        qDebug() << "\t" << name.name().c_str() << checked;
+      }
+      else
+      {
+        qDebug() << name.name().c_str() << checked;
+      }
+
+    }
+  }
+}
+
 void VisibleItemManager::addRenderItem(const QString& name)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
@@ -485,14 +512,18 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
+  qDebug() << "ADDING: " << item->text(0) << item->checkState(0);
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
   if (name.contains("ShowField:"))
   {
-    new QTreeWidgetItem(item, QStringList("Nodes"));
-    new QTreeWidgetItem(item, QStringList("Edges"));
-    new QTreeWidgetItem(item, QStringList("Faces"));
+    auto n = new QTreeWidgetItem(item, QStringList("Nodes"));
+    qDebug() << "\tADDING: " << n->text(0) << n->checkState(0);
+    auto e = new QTreeWidgetItem(item, QStringList("Edges"));
+    qDebug() << "\tADDING: " << e->text(0) << e->checkState(0);
+    auto f = new QTreeWidgetItem(item, QStringList("Faces"));
+    qDebug() << "\tADDING: " << f->text(0) << f->checkState(0);
   }
   updateState();
 }
