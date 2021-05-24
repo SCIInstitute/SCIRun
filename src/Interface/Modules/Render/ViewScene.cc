@@ -2167,8 +2167,8 @@ void ViewSceneDialog::setScaleBar()
   {
     updateScaleBarLength();
     scaleBarGeom_ = buildGeometryScaleBar();
-    updateModifiedGeometries();
   }
+  updateModifiedGeometries();
 }
 
 void ViewSceneDialog::updateScaleBarLength()
