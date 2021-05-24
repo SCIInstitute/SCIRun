@@ -847,10 +847,9 @@ void ViewSceneDialog::pullSpecial()
 {
   if (!pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker swsb(mConfigurationDock);
     pullCameraState();
-
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
-
     if (show && parentWidget())
     {
       parentWidget()->show();
@@ -884,14 +883,10 @@ void ViewSceneDialog::pullSpecial()
         }
       }
     }
-
     clippingPlaneManager_->loadFromState();
     initializeClippingPlaneDisplay();
-
     initializeAxes();
-
     initializeVisibleObjects();
-
     pulledSavedVisibility_ = true;
   }
 }
@@ -1182,10 +1177,6 @@ void ViewSceneDialog::resizingDone()
 
   state_->setValue(Parameters::WindowSizeX, size().width());
   state_->setValue(Parameters::WindowSizeY, size().height());
-  //qDebug() << "saving window #s:" << name_.c_str() <<
-  //  state_->getValue(Parameters::ShowViewer).toBool() <<
-  //  isVisible() <<
-  //  parentWidget()->isVisible() << size() << parentWidget()->pos();
 }
 
 void ViewSceneDialog::postMoveEventCallback(const QPoint& p)
@@ -1779,10 +1770,6 @@ void ClippingPlaneManager::loadFromState()
   auto visible = toBoolVector(state_->getValue(Parameters::ClippingPlaneEnabled).toVector());
   //auto showFrame = toBoolVector(state_->getValue(Parameters::ClippingPlaneFrameOn).toVector());
   auto reverseNormal = toBoolVector(state_->getValue(Parameters::ClippingPlaneNormalReversed).toVector());
-  // qDebug() << "Xs:" << xs << "Ys:" << ys << "Zs:" << zs
-  //   << "Ds:" << ds << "visible:" << visible
-  //   //<< "showFrame:" << showFrame
-  //   << "reverseNormal:" << reverseNormal;
 
   auto p = clippingPlanes_.begin();
   for (auto&& vals : zip(visible, reverseNormal, xs, ys, zs, ds))
@@ -2698,18 +2685,11 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
-  // check here for clipping func insertion
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
 
 void ViewSceneDialog::initializeVisibleObjects()
 {
-  // qDebug() << "initializeVisibleObjects";
-  // auto objs = state_->getValue(Parameters::VisibleItemListState).toVector();
-  // for (const auto& o : objs)
-  // {
-  //   std::cout << o << std::endl;
-  // }
   mConfigurationDock->visibleItems().initializeSavedStateMap();
 }

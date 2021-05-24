@@ -409,17 +409,14 @@ VisibleItemManager::VisibleItemManager(QTreeWidget* itemList, ModuleStateHandle 
 void VisibleItemManager::updateState()
 {
   VariableList checkList;
-  //qDebug() << "updateState";
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     VariableList items;
     auto* item = itemList_->topLevelItem(i);
-    //qDebug() << "item:" << item->text(0) << item->checkState(0);
     items.emplace_back(makeVariable(item->text(0).toStdString(), item->checkState(0) == Qt::Checked));
     for (int j = 0; j < item->childCount(); ++j)
     {
       auto* child = item->child(j);
-      //qDebug() << "\tchild:" << child->text(0) << child->checkState(0);
       items.emplace_back(makeVariable(child->text(0).toStdString(), child->checkState(0) == Qt::Checked));
     }
     checkList.push_back(makeVariable("graphicsItem", items));
@@ -450,6 +447,7 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
       return (parts.size() > 1) ? parts.at(1) : QString("scale bar");
     }
   );
+
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->topLevelItem(i)->text(0)) == displayNames.end())
@@ -533,8 +531,10 @@ void VisibleItemManager::addRenderItem(const QString& name)
       e->setCheckState(0, meshComponentCheckStates->second["Edges"] ? Qt::Checked : Qt::Unchecked);
       f->setCheckState(0, meshComponentCheckStates->second["Faces"] ? Qt::Checked : Qt::Unchecked);
     }
+
   }
-  updateState();
+  if (name != "scale bar") //TODO: super hacky fix
+    updateState();
 }
 
 void VisibleItemManager::updateCheckStates(const QString& name, const std::vector<bool>& checked)
