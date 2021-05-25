@@ -121,9 +121,9 @@ void EditMeshBoundingBox::setOutputParameters()
   state->setValue(OutputCenterY, widgetTranslation_.y());
   state->setValue(OutputCenterZ, widgetTranslation_.z());
   auto vecs = widgetScale_.get_transformation_vectors();
-  state->setValue(OutputSizeX, vecs[0].norm());
-  state->setValue(OutputSizeY, vecs[1].norm());
-  state->setValue(OutputSizeZ, vecs[2].norm());
+  state->setValue(OutputSizeX, 2.0*vecs[0].norm());
+  state->setValue(OutputSizeY, 2.0*vecs[1].norm());
+  state->setValue(OutputSizeZ, 2.0*vecs[2].norm());
 }
 
 void EditMeshBoundingBox::clearVals()
@@ -243,7 +243,7 @@ void EditMeshBoundingBox::resetToInputField()
   ogPos_ = pos_;
   widgetTranslation_ = pos_;
   auto trans = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-  ogScale_ = Vector(eigvals_[0], eigvals_[1], eigvals_[2]);
+  ogScale_ = 2.0 * Vector(eigvals_[0], eigvals_[1], eigvals_[2]);
   widgetScale_.pre_scale(Vector(eigvals_[0], eigvals_[1], eigvals_[2]));
 
   inputFieldInverse_ = Transform(trans);
@@ -288,9 +288,9 @@ void EditMeshBoundingBox::setOutputSize()
   state->setTransientValue(SetOutputSize, false);
 
   widgetScale_ = Transform();
-  widgetScale_.post_scale(Vector(state->getValue(OutputSizeX).toDouble(),
-                                 state->getValue(OutputSizeY).toDouble(),
-                                 state->getValue(OutputSizeZ).toDouble()));
+  widgetScale_.post_scale(0.5 * Vector(state->getValue(OutputSizeX).toDouble(),
+                                       state->getValue(OutputSizeY).toDouble(),
+                                       state->getValue(OutputSizeZ).toDouble()));
 }
 
 void EditMeshBoundingBox::resetOutputSize()
@@ -299,7 +299,7 @@ void EditMeshBoundingBox::resetOutputSize()
   state->setTransientValue(ResetSize, false);
 
   widgetScale_ = Transform();
-  widgetScale_.pre_scale(ogScale_);
+  widgetScale_.pre_scale(0.5 * ogScale_);
   state->setValue(OutputSizeX, ogScale_.x());
   state->setValue(OutputSizeY, ogScale_.y());
   state->setValue(OutputSizeZ, ogScale_.z());
