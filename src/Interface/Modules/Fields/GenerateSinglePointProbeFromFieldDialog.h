@@ -53,6 +53,7 @@ namespace SCIRun {
       void enableWidgets(const QString& mode);
       void pushColor();
       void assignDefaultMeshColor();
+      void toggleSpinBoxes();
 
     private:
       QColor defaultMeshColor_;
