@@ -94,12 +94,12 @@ class SCISHARE Piostream {
     typedef std::map<PersistentHandle, int>          MapPersistentInt;
     typedef std::map<int, PersistentHandle>          MapIntPersistent;
 
-    enum Direction {
+    enum class Direction {
       Read,
       Write
     };
 
-    enum Endian {
+    enum class Endian {
       Big,
       Little
     };
@@ -167,8 +167,8 @@ class SCISHARE Piostream {
 
     void io(PersistentHandle&, const PersistentTypeID&);
 
-    bool reading() const { return dir == Read; }
-    bool writing() const { return dir == Write; }
+    bool reading() const { return dir == Direction::Read; }
+    bool writing() const { return dir == Direction::Write; }
     bool error() const { return err; }
 
     int version() const { return version_; }

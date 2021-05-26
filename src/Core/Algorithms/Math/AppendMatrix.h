@@ -40,7 +40,7 @@ namespace Math {
   class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
   {
   public:
-    enum Option { ROWS, COLUMNS };
+    enum class Option { ROWS, COLUMNS };
     typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
     typedef Option Parameters;
     typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;

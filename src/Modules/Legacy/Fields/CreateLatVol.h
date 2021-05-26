@@ -67,13 +67,13 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName DataAtLocation;
         static const Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
 
-        enum DataLocation { NODES, CELLS, NONE };
-        enum MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
+        enum class DataLocation { NODES, CELLS, NONE };
+        enum class MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
-        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+        enum class DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
     }
   }

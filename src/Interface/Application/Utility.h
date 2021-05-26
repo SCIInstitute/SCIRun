@@ -87,7 +87,7 @@ namespace Gui
   const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 
   // arbitrary values
-  enum TagValues
+  enum class TagValues
   {
     MinTag = 0,
     MaxTag = 9,

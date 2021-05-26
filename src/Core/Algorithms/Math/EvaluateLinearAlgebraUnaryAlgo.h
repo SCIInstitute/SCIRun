@@ -80,7 +80,7 @@ namespace Math {
   class SCISHARE EvaluateLinearAlgebraUnaryAlgorithm : public AlgorithmBase
   {
   public:
-    enum Operator
+    enum class Operator
     {
       NEGATE,
       TRANSPOSE,

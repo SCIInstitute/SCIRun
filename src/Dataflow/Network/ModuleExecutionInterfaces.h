@@ -49,7 +49,7 @@ namespace Networks {
   class SCISHARE ModuleExecutionState
   {
   public:
-    enum Value
+    enum class Value
     {
       NotExecuted,
       Waiting,

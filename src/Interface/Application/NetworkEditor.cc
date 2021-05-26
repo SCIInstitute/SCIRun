@@ -1035,7 +1035,7 @@ void SearchResultItem::removeAll()
 
 std::set<SearchResultItem*> SearchResultItem::items_;
 
-enum SearchTupleParts
+enum class SearchTupleParts
 {
   ItemType,
   ItemName,

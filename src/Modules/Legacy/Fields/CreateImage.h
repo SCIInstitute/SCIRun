@@ -74,7 +74,7 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
-        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+        enum class DataTypeEnum { SCALAR, VECTOR, TENSOR };
 
       };
     }

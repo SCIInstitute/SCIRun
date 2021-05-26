@@ -132,13 +132,13 @@ namespace SCIRun {
   }
 }
 
-enum SecondaryVectorParameterScalingTypeEnum
+enum class SecondaryVectorParameterScalingTypeEnum
 {
   UNIFORM,
   USE_INPUT
 };
 
-enum FieldDataType
+enum class FieldDataType
 {
   node,
   edge,

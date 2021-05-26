@@ -996,7 +996,7 @@ void ModuleWidget::printPortPositions() const
   std::cout << std::endl;
 }
 
-enum ModuleWidgetPages
+enum class ModuleWidgetPages
 {
   TITLE_PAGE,
   PROGRESS_PAGE,

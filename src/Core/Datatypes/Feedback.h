@@ -43,7 +43,7 @@ namespace Core {
 namespace Datatypes {
 // These will give different types of widget movement through ViewScene.
 // To use rotation and scaling, an origin point must be given.
-enum WidgetMovement
+enum class WidgetMovement
 {
   NONE,
   TRANSLATE,

@@ -59,7 +59,7 @@ namespace Algorithms {
 
     Variable() {}
     Variable(const Name& name, const Value& value);
-    enum DatatypeVariableEnum { DATATYPE_VARIABLE };
+    enum class DatatypeVariableEnum { DATATYPE_VARIABLE };
     Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableEnum) : name_(name), data_(data) {}
 
     const Name& name() const { return name_; }

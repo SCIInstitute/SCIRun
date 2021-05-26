@@ -38,7 +38,7 @@ class SCISHARE RenderState
 {
 public:
 
-  enum ActionFlags
+  enum class ActionFlags
   {
     IS_ON = 0,
     HAS_DATA,
@@ -102,14 +102,14 @@ public:
     MAX_ACTION_FLAGS
   };
 
-  enum InputPort
+  enum class InputPort
   {
    PRIMARY_PORT,
    SECONDARY_PORT,
    TERTIARY_PORT
   };
 
-  enum GlyphType
+  enum class GlyphType
   {
     POINT_GLYPH,
     SPHERE_GLYPH,
@@ -127,7 +127,7 @@ public:
     SPRING_GLYPH
   };
 
-  enum TransparencySortType
+  enum class TransparencySortType
   {
     CONTINUOUS_SORT,
     UPDATE_SORT,

@@ -79,16 +79,16 @@ namespace Inverse {
     static const AlgorithmOutputName Lambda_Index;
 
 		// Define algorithm choices
-		enum AlgorithmChoice {
+		enum class AlgorithmChoice {
 			automatic,
 			underdetermined,
 			overdetermined
 		};
-		enum AlgorithmSolutionSubcase {
+		enum class AlgorithmSolutionSubcase {
 			solution_constrained,
 			solution_constrained_squared
 		};
-		enum AlgorithmResidualSubcase {
+		enum class AlgorithmResidualSubcase {
 			residual_constrained,
 			residual_constrained_squared
 		};

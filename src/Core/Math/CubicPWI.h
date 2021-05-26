@@ -55,7 +55,7 @@
 
 namespace SCIRun {
 
-enum EndCondition { natural_ends, clamped_ends, bessel_ends, quadratic_ends };
+enum class EndCondition { natural_ends, clamped_ends, bessel_ends, quadratic_ends };
 
 template <class T> std::ostream&
 operator<<(std::ostream& out, Array1<T> a)
@@ -154,9 +154,9 @@ Cubic3DPWI<T>::set_data(const Array1<double>& pts, const Array1<T>& vals)
     vz[i] = vals[i].z();
   }
 
-  if (set_tangents(pts, vx, drvX, natural_ends) &&
-      set_tangents(pts, vy, drvY, natural_ends)
-      && set_tangents(pts, vz, drvZ, natural_ends)) {
+  if (set_tangents(pts, vx, drvX, EndCondition::natural_ends) &&
+      set_tangents(pts, vy, drvY, EndCondition::natural_ends)
+      && set_tangents(pts, vz, drvZ, EndCondition::natural_ends)) {
 #if DEBUG
     std::cout << "Derivatives are done!!!" << std::endl;
 #endif

@@ -51,7 +51,7 @@ namespace SCIRun{
       class ShowFieldGlyphsPortHandler
       {
       private:
-        enum FieldDataType
+        enum class FieldDataType
           {
            Scalar,
            Vector,

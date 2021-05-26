@@ -80,7 +80,7 @@ private:
 public:
   ValueVisitor(const py::object& object) : object_(object) {}
 
-  enum NumberType
+  enum class NumberType
   {
     Int,
     Double

@@ -68,7 +68,7 @@ class ShowFieldBruteForceTest : public ParameterizedModuleTest<std::tuple<bool, 
   double, int, int>>
 {
 protected:
-  enum ShowFieldParams
+  enum class ShowFieldParams
   {
     SHOW_NODES,
     SHOW_EDGES,
@@ -173,7 +173,7 @@ INSTANTIATE_TEST_CASE_P(
 class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<int, bool, double, int, bool, bool>>
 {
 protected:
-  enum ShowFieldParams
+  enum class ShowFieldParams
   {
     FIELD,
     TRANSPARENCY,
@@ -298,7 +298,7 @@ INSTANTIATE_TEST_CASE_P(
 class ShowFieldEdgeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
 {
 protected:
-  enum ShowFieldParams
+  enum class ShowFieldParams
   {
     TRANSPARENCY,
     TRANSPARENCY_VALUE,
@@ -425,7 +425,7 @@ INSTANTIATE_TEST_CASE_P(
 class ShowFieldNodeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
 {
 protected:
-  enum ShowFieldParams
+  enum class ShowFieldParams
   {
     TRANSPARENCY,
     TRANSPARENCY_VALUE,

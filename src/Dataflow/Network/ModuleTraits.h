@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Modules
 {
-  enum ModuleFlags
+  enum class ModuleFlags
   {
     NoAlgoOrUI              = 0,
     ModuleHasAlgorithm      = 1 << 0,

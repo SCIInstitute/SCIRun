@@ -81,7 +81,7 @@ public:
   typedef std::vector<double> PointList;
   typedef std::vector<VMesh::index_type> ElemList;
 
-  enum DATA_TYPE
+  enum class DATA_TYPE
   {
     UNKNOWN,
     SCALAR,
