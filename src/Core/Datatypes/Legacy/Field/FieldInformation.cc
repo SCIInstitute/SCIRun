@@ -42,7 +42,6 @@ using namespace SCIRun::Core::Geometry;
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
 {
-  std::string temp;
   // Get the name of the GenericField class
   // This should give GenericField
 
@@ -53,13 +52,13 @@ FieldTypeInformation::insert_field_type_information(Field* field)
   // Analyze the mesh type
   // This will result in
   // mesh_type, mesh_basis_type, and point_type
-  const TypeDescription* mesh_td = field->get_type_description(Field::MESH_TD_E);
-  TypeDescription::td_vec* mesh_sub_td = mesh_td->get_sub_type();
-  const TypeDescription* mesh_basis_td = (*mesh_sub_td)[0];
-  TypeDescription::td_vec* mesh_basis_sub_td = mesh_basis_td->get_sub_type();
-  const TypeDescription* point_td = (*mesh_basis_sub_td)[0];
+  auto mesh_td = field->get_type_description(Field::MESH_TD_E);
+  auto mesh_sub_td = mesh_td->get_sub_type();
+  auto mesh_basis_td = (*mesh_sub_td)[0];
+  auto mesh_basis_sub_td = mesh_basis_td->get_sub_type();
+  auto point_td = (*mesh_basis_sub_td)[0];
 
-  temp = mesh_td->get_name();
+  auto temp = mesh_td->get_name();
   mesh_type = temp.substr(0,temp.find("<"));
   temp = mesh_basis_td->get_name();
   mesh_basis_type = temp.substr(0,temp.find("<"));
@@ -67,16 +66,16 @@ FieldTypeInformation::insert_field_type_information(Field* field)
 
   // Analyze the basis type
 
-  const TypeDescription* basis_td = field->get_type_description(Field::BASIS_TD_E);
-  TypeDescription::td_vec* basis_sub_td = basis_td->get_sub_type();
-  const TypeDescription* data_td = (*basis_sub_td)[0];
+  auto basis_td = field->get_type_description(Field::BASIS_TD_E);
+  auto basis_sub_td = basis_td->get_sub_type();
+  auto data_td = (*basis_sub_td)[0];
 
   temp = basis_td->get_name();
   basis_type = temp.substr(0,temp.find("<"));
   data_type = data_td->get_name();
-  for (size_t j=0; j<data_type.size(); j++) if(data_type[j] == ' ') data_type[j] = '_';
+  for (auto& j : data_type) if(j == ' ') j = '_';
 
-  const TypeDescription* container_td = field->get_type_description(Field::FDATA_TD_E);
+  auto container_td = field->get_type_description(Field::FDATA_TD_E);
   temp = container_td->get_name();
   container_type = temp.substr(0,temp.find("<"));
 }
@@ -189,7 +188,7 @@ FieldInformation::set_mesh_type(const std::string& type)
   std::string typeLower = string_tolower(type);
   if (typeLower == "scanlinemesh") set_mesh_type(mesh_info_type::SCANLINEMESH_E);
   else if (typeLower == "imagemesh") set_mesh_type(mesh_info_type::IMAGEMESH_E);
-  else if (typeLower == "latvolmesh") set_mesh_type(mesh_info_type::mesh_info_type::LATVOLMESH_E);
+  else if (typeLower == "latvolmesh") set_mesh_type(mesh_info_type::LATVOLMESH_E);
   else if (typeLower == "structcurvemesh") set_mesh_type(mesh_info_type::STRUCTCURVEMESH_E);
   else if (typeLower == "structquadsurfmesh") set_mesh_type(mesh_info_type::STRUCTQUADSURFMESH_E);
   else if (typeLower == "structhexvolmesh") set_mesh_type(mesh_info_type::STRUCTHEXVOLMESH_E);
@@ -211,7 +210,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
   {
     case mesh_info_type::SCANLINEMESH_E:      mesh_type = "ScanlineMesh"; break;
     case mesh_info_type::IMAGEMESH_E:         mesh_type = "ImageMesh"; break;
-    case mesh_info_type::mesh_info_type::LATVOLMESH_E:        mesh_type = "LatVolMesh"; break;
+    case mesh_info_type::LATVOLMESH_E:        mesh_type = "LatVolMesh"; break;
     case mesh_info_type::STRUCTCURVEMESH_E:      mesh_type = "StructCurveMesh"; break;
     case mesh_info_type::STRUCTQUADSURFMESH_E:   mesh_type = "StructQuadSurfMesh"; break;
     case mesh_info_type::STRUCTHEXVOLMESH_E:     mesh_type = "StructHexVolMesh"; break;
@@ -257,7 +256,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     }
     set_container_type("FData2d");
   }
-  if (type == mesh_info_type::mesh_info_type::LATVOLMESH_E)
+  if (type == mesh_info_type::LATVOLMESH_E)
   {
     if (mesh_basis_type.find("Hex") == std::string::npos)
     {
@@ -560,7 +559,7 @@ FieldInformation::set_data_type(const std::string& type1)
   if (type == "Scalar") type = "double";
 
   // be compatible with old dynamic compilation rules
-  for (size_t j=0;j<type.size(); j++) if (type[j]==' ') type[j] = '_';
+  for (auto& j : type) if (j ==' ') j = '_';
 
   data_type = type;
 }

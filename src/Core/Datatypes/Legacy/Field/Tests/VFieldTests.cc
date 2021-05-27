@@ -40,7 +40,7 @@ using namespace SCIRun::TestUtils;
 
 TEST(VFieldTest, EmptyFieldConstantBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldConstantBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = EmptyTriSurfFieldConstantBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();
@@ -59,7 +59,7 @@ TEST(VFieldTest, EmptyFieldConstantBasis)
 
 TEST(VFieldTest, EmptyFieldAddValuesConstantBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldConstantBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = EmptyTriSurfFieldConstantBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();
@@ -74,7 +74,7 @@ TEST(VFieldTest, EmptyFieldAddValuesConstantBasis)
 
 TEST(VFieldTest, EmptyFieldLinearBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldLinearBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = EmptyTriSurfFieldLinearBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();
@@ -84,7 +84,7 @@ TEST(VFieldTest, EmptyFieldLinearBasis)
 
 TEST(VFieldTest, EmptyFieldAddValuesLinearBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldLinearBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = EmptyTriSurfFieldLinearBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();
@@ -99,7 +99,7 @@ TEST(VFieldTest, EmptyFieldAddValuesLinearBasis)
 
 TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
 {
-  FieldHandle field = TetrahedronTetVolConstantBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = TetrahedronTetVolConstantBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();
@@ -114,7 +114,7 @@ TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
 
 TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
 {
-  FieldHandle field = TetrahedronTetVolLinearBasis(data_info_type::DOUBLE_E);
+  FieldHandle field = TetrahedronTetVolLinearBasis(data_info_type::data_info_type::DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VField *vfield = field->vfield();

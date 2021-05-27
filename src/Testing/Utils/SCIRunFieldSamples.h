@@ -92,7 +92,7 @@ SCISHARE FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
 
 SCISHARE FieldHandle CreateEmptyLatVol();
 SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez,
-  data_info_type type = DOUBLE_E,
+  data_info_type type = data_info_type::DOUBLE_E,
   const Core::Geometry::Point& minb = { -1, -1, -1 }, const Core::Geometry::Point& maxb = {1,1,1});
 
 }}

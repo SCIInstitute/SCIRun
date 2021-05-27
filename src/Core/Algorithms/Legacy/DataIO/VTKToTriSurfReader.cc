@@ -457,7 +457,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
         }
         else if (strings[2] == "double")
         {
-          this->fieldDataType_ = data_info_type::DOUBLE_E;
+          this->fieldDataType_ = data_info_type::data_info_type::DOUBLE_E;
         }
         else
         {
@@ -822,7 +822,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case data_info_type::DOUBLE_E:
+        case data_info_type::data_info_type::DOUBLE_E:
         {
           TriSurfScalarDataReaderPrivate<double> dataReader(this->fileStream_);
           dataReader.readScalarData();

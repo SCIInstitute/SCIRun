@@ -156,7 +156,7 @@ TEST(CalculateVectorMagnitudesAlgoTests, NullFieldHandleInput)
 
 TEST(CalculateVectorMagnitudesAlgoTests, NoFieldDataInput)
 {
-  FieldHandle in = CubeTetVolLinearBasis(DOUBLE_E);
+  FieldHandle in = CubeTetVolLinearBasis(data_info_type::DOUBLE_E);
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);

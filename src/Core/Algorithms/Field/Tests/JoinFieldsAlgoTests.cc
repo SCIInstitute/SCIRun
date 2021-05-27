@@ -62,7 +62,7 @@ protected:
     LogSettings::Instance().setVerbose(true);
   }
 
-  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=data_info_type::DOUBLE_E)
   {
     FieldInformation lfi(mesh_info_type::LATVOLMESH_E, LINEARDATA_E, type);
     Point minb(-1.0, -1.0, -1.0);
