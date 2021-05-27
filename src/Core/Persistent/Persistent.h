@@ -113,7 +113,7 @@ class SCISHARE Piostream {
     Direction dir;
     int version_;
     bool err;
-    int file_endian;
+    Endian file_endian;
 
     boost::shared_ptr<MapPersistentInt> outpointers;
     boost::shared_ptr<MapIntPersistent> inpointers;
@@ -130,7 +130,7 @@ class SCISHARE Piostream {
   public:
     static bool readHeader(Core::Logging::LoggerHandle pr,
                            const std::string& filename, char* hdr,
-                           const char* type, int& version, int& endian);
+                           const char* type, int& version, Endian& endian);
   private:
     virtual void reset_post_header() = 0;
   public:

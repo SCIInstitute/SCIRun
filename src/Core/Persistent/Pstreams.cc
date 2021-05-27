@@ -81,7 +81,7 @@ namespace SCIRun {
     else
       version_ = v;
 
-    if (dir==Read)
+    if (dir==Direction::Read)
     {
       fp_ = fopen (filename.c_str(), "rb");
       if (!fp_)
@@ -164,7 +164,7 @@ BinaryPiostream::BinaryPiostream(int fd, Direction dir, const int& v,
   else
     version_ = v;
 
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     fp_ = fdopen (fd, "rb");
     if (!fp_)
@@ -280,7 +280,7 @@ inline void
 BinaryPiostream::gen_io(T& data, const char *iotype)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     if (!fread(&data, sizeof(data), 1, fp_))
     {
@@ -484,7 +484,7 @@ BinaryPiostream::io(std::string& data)
   // xdr_wrapstring
   if (err) return;
   unsigned int chars = 0;
-  if (dir == Write)
+  if (dir == Direction::Write)
   {
     if (version() == 1)
     {
@@ -511,7 +511,7 @@ BinaryPiostream::io(std::string& data)
       if (!fwrite(p, sizeof(char), chars, fp_)) err = true;
     }
   }
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     // Read in size.
     io(chars);
@@ -557,7 +557,7 @@ bool
 BinaryPiostream::block_io(void *data, size_t s, size_t nmemb)
 {
   if (err || version() == 1) { return false; }
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     const size_t did = fread(data, s, nmemb, fp_);
     if (did != nmemb)
@@ -613,7 +613,7 @@ inline void
 BinarySwapPiostream::gen_io(T& data, const char *iotype)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     unsigned char tmp[sizeof(data)];
     if (!fread(tmp, sizeof(data), 1, fp_))
@@ -779,7 +779,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
   : Piostream(dir, -1, filename, pr),
     ownstreams_p_(true)
 {
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     ostr=nullptr;
     istr=new std::ifstream(filename.c_str());
@@ -830,7 +830,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
 
 
 TextPiostream::TextPiostream(std::istream *strm, LoggerHandle pr)
-  : Piostream(Read, -1, "", pr),
+  : Piostream(Direction::Read, -1, "", pr),
     istr(strm),
     ostr(nullptr),
     ownstreams_p_(false)
@@ -861,7 +861,7 @@ TextPiostream::TextPiostream(std::istream *strm, LoggerHandle pr)
 
 
 TextPiostream::TextPiostream(std::ostream *strm, LoggerHandle pr)
-  : Piostream(Write, -1, "", pr),
+  : Piostream(Direction::Write, -1, "", pr),
     istr(nullptr),
     ostr(strm),
     ownstreams_p_(false)
@@ -908,7 +908,7 @@ TextPiostream::ioString(bool do_quotes, std::string& str)
   }
   else
   {
-    if (dir==Read)
+    if (dir==Direction::Read)
     {
       char buf[1000];
       char* p=buf;
@@ -978,13 +978,13 @@ TextPiostream::begin_class(const std::string& classname, int current_version)
   if (err) return -1;
   int version = current_version;
   std::string gname;
-  if (dir==Write)
+  if (dir==Direction::Write)
   {
     gname=classname;
     *ostr << '{';
     ioString(false, gname);
   }
-  else if (dir==Read && have_peekname_)
+  else if (dir==Direction::Read && have_peekname_)
   {
     gname = peekname_;
   }
@@ -995,13 +995,13 @@ TextPiostream::begin_class(const std::string& classname, int current_version)
   }
   have_peekname_ = false;
 
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
 
   }
   io(version);
 
-  if (dir == Read && version > current_version)
+  if (dir == Direction::Read && version > current_version)
   {
     err = true;
     reporter_->error("File too new.  " + classname + " has version " +
@@ -1019,7 +1019,7 @@ TextPiostream::end_class()
 {
   if (err) return;
 
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     expect('}');
     expect('\n');
@@ -1035,7 +1035,7 @@ void
 TextPiostream::begin_cheap_delim()
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     expect('{');
   }
@@ -1050,7 +1050,7 @@ void
 TextPiostream::end_cheap_delim()
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     expect('}');
   }
@@ -1065,7 +1065,7 @@ void
 TextPiostream::io(bool& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1092,7 +1092,7 @@ void
 TextPiostream::io(char& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1119,7 +1119,7 @@ void
 TextPiostream::io(signed char& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1146,7 +1146,7 @@ void
 TextPiostream::io(unsigned char& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1173,7 +1173,7 @@ void
 TextPiostream::io(short& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1200,7 +1200,7 @@ void
 TextPiostream::io(unsigned short& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1227,7 +1227,7 @@ void
 TextPiostream::io(int& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1261,7 +1261,7 @@ void
 TextPiostream::io(unsigned int& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1288,7 +1288,7 @@ void
 TextPiostream::io(long& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1315,7 +1315,7 @@ void
 TextPiostream::io(unsigned long& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1342,7 +1342,7 @@ void
 TextPiostream::io(long long& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1369,7 +1369,7 @@ void
 TextPiostream::io(unsigned long long& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1401,7 +1401,7 @@ void
 TextPiostream::io(double& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1462,7 +1462,7 @@ void
 TextPiostream::io(float& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     in >> data;
@@ -1521,7 +1521,7 @@ void
 TextPiostream::io(std::string& data)
 {
   if (err) return;
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     expect('"');
@@ -1669,7 +1669,7 @@ TextPiostream::expect(char expected)
 void
 TextPiostream::emit_pointer(int& have_data, int& pointer_id)
 {
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     std::istream& in=*istr;
     char c;
@@ -1706,7 +1706,8 @@ TextPiostream::emit_pointer(int& have_data, int& pointer_id)
 
 bool
 TextPiostream::eof() {
-  if (dir == Write) {
+  if (dir == Direction::Write)
+  {
     return false;
   }
 
@@ -1723,7 +1724,7 @@ FastPiostream::FastPiostream(const std::string& filename, Direction dir,
   : Piostream(dir, -1, filename, pr),
     fp_(nullptr)
 {
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     fp_ = fopen (filename.c_str(), "rb");
     if (!fp_)
@@ -1786,7 +1787,7 @@ FastPiostream::FastPiostream(int fd, Direction dir, LoggerHandle pr)
 : Piostream(dir, -1, "", pr),
 fp_(nullptr)
 {
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     fp_ = fdopen (fd, "rb");
     if (!fp_)
@@ -1881,7 +1882,7 @@ FastPiostream::gen_io(T& data, const char *iotype)
   if (err) return;
   size_t expect = 1;
   size_t did = 0;
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     did = fread(&data, sizeof(data), 1, fp_);
     if (expect != did && !feof(fp_))
@@ -2005,14 +2006,14 @@ FastPiostream::io(std::string& data)
 {
   if (err) return;
   unsigned int chars = 0;
-  if (dir==Write)
+  if (dir==Direction::Write)
   {
     const char* p=data.c_str();
     chars = static_cast<int>(strlen(p)) + 1;
     fwrite(&chars, sizeof(unsigned int), 1, fp_);
     fwrite(p, sizeof(char), chars, fp_);
   }
-  if (dir==Read)
+  if (dir==Direction::Read)
   {
     fread(&chars, sizeof(unsigned int), 1, fp_);
     char* buf = new char[chars];
@@ -2026,7 +2027,7 @@ FastPiostream::io(std::string& data)
 bool
 FastPiostream::block_io(void *data, size_t s, size_t nmemb)
 {
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     const size_t did = fread(data, s, nmemb, fp_);
     if (did != nmemb)

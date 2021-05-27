@@ -66,12 +66,13 @@ operator<<(std::ostream& out, Array1<T> a)
   return out;
 }
 
-typedef struct Quat {
+struct Quat
+{
   double a;
   double b;
   double c;
   double d;
-} QUAT;
+};
 
 class SCISHARE CubicPWI: public PiecewiseInterp<double> {
 public:
