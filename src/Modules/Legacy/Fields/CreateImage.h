@@ -71,7 +71,7 @@ namespace SCIRun {
         static const SCIRun::Core::Algorithms::AlgorithmParameterName Index;
         static const SCIRun::Core::Algorithms::AlgorithmParameterName DataLocation;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       private:
         enum class DataTypeEnum { SCALAR, VECTOR, TENSOR };

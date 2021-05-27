@@ -50,7 +50,7 @@ namespace Math {
     OUTPUT_PORT(1, OutputComplexPartMatrix, Matrix);
     OUTPUT_PORT(2, Magnitude, Matrix);
     OUTPUT_PORT(3, Phase, Matrix);
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
     NEW_HELP_WEBPAGE_ONLY
   };
 }}}

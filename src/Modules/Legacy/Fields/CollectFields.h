@@ -50,7 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Buffer_Size, Int32);
         OUTPUT_PORT(0, Fields, Field);
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
     }
   }

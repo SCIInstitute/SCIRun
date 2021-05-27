@@ -76,7 +76,7 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(3, Regions, Field);
         OUTPUT_PORT(0, TetVol, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
     }
   }

@@ -212,7 +212,7 @@ namespace SCIRun
 
 /*static*/ void Module::resetIdGenerator() { DefaultModuleFactories::idGenerator_->reset(); }
 
-const int Module::TraitFlags = SCIRun::Modules::UNDEFINED_MODULE_FLAG;
+const int Module::TraitFlags = static_cast<int>(Modules::ModuleFlags::UNDEFINED_MODULE_FLAG);
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
@@ -239,7 +239,7 @@ Module::Module(const ModuleLookupInfo& info,
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
 
-  impl_->executionState_->transitionTo(ModuleExecutionState::NotExecuted);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Value::NotExecuted);
   setProgrammableInputPortEnabled(false);
 }
 

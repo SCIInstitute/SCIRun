@@ -41,12 +41,14 @@ namespace Math {
   {
   public:
     enum class Option { ROWS, COLUMNS };
-    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
-    typedef Option Parameters;
-    typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
-    Outputs ConcatenateMatrices(const Datatypes::MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Datatypes::Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const;
+
+    using Inputs = std::tuple<Datatypes::MatrixHandle, Datatypes::MatrixHandle>;
+    using Parameters = Option;
+    using Outputs = Datatypes::MatrixHandle;
+    Outputs concatenateMatrices(Datatypes::MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Datatypes::Matrix>>& input_matrices, const
+        Parameters& params) const;
     Outputs run(const Inputs& input, const Parameters& params) const;
-    bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params) const;
+    static bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params);
     AppendMatrixAlgorithm();
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     static const AlgorithmInputName InputMatrices;

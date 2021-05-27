@@ -70,7 +70,7 @@ namespace SCIRun {
         enum class DataLocation { NODES, CELLS, NONE };
         enum class MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUI)
 
       private:
         enum class DataTypeEnum { SCALAR, VECTOR, TENSOR };

@@ -48,7 +48,7 @@ namespace DataIO {
     OUTPUT_PORT(0, Matrix, Matrix);
     OUTPUT_PORT(1, Field, Field);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
     NEW_HELP_WEBPAGE_ONLY
   };
 

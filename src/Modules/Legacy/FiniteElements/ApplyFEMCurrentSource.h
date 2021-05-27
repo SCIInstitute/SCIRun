@@ -57,7 +57,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName SinkNode;
         static const Core::Algorithms::AlgorithmParameterName ModelType;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUI)
       };
 
     }

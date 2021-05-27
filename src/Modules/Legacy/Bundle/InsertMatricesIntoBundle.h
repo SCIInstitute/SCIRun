@@ -58,7 +58,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName MatrixNames;
         static const Core::Algorithms::AlgorithmParameterName MatrixReplace;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 
     }

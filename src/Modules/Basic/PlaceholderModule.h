@@ -45,7 +45,7 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
  }}}
 

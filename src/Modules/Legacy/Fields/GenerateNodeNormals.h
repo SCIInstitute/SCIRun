@@ -50,7 +50,7 @@ namespace Fields {
     INPUT_PORT(1, InputPoint, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   };
 }}}
 	#endif

@@ -177,7 +177,7 @@ namespace Render {
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix)
     void execute() override;
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
     static Core::Thread::Mutex mutex_;
     Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};

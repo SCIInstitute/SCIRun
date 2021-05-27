@@ -75,17 +75,17 @@ void AddMatrices::visit(DenseMatrixGeneric<double>& dense)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     *castMatrix::toDense(sum_) += dense;
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     *castMatrix::toColumn(sum_) += dense;
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(dense);
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }
@@ -93,19 +93,19 @@ void AddMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     sum_.reset(new SparseRowMatrix(*convertMatrix::toSparse(sum_) + sparse));
-    typeCode_ = SPARSE_ROW;
+    typeCode_ = MatrixTypeCode::SPARSE_ROW;
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     sum_.reset(new SparseRowMatrix(*convertMatrix::toSparse(sum_) + sparse));
-    typeCode_ = SPARSE_ROW;
+    typeCode_ = MatrixTypeCode::SPARSE_ROW;
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + sparse;
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }
@@ -113,17 +113,17 @@ void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     *castMatrix::toDense(sum_) += column;
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     *castMatrix::toColumn(sum_) += column;
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(column);
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }
@@ -136,17 +136,17 @@ void MultiplyMatrices::visit(DenseMatrixGeneric<double>& dense)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     product_ = boost::make_shared<DenseMatrix>(*castMatrix::toDense(factor_) * dense);
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     product_ = boost::make_shared<DenseMatrix>(*castMatrix::toColumn(factor_) * dense);
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     product_ = boost::make_shared<SparseRowMatrix>(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(dense));
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }
@@ -154,19 +154,19 @@ void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(factor_) * sparse));
-    typeCode_ = SPARSE_ROW;
+    typeCode_ = MatrixTypeCode::SPARSE_ROW;
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(factor_) * sparse));
-    typeCode_ = SPARSE_ROW;
+    typeCode_ = MatrixTypeCode::SPARSE_ROW;
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     product_.reset(new SparseRowMatrix(*castMatrix::toSparse(factor_) * sparse));
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }
@@ -174,17 +174,17 @@ void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
 {
   switch (typeCode_)
   {
-  case DENSE:
+  case MatrixTypeCode::DENSE:
     product_.reset(new DenseMatrix(*castMatrix::toDense(factor_) * column));
     break;
-  case COLUMN:
+  case MatrixTypeCode::COLUMN:
     product_.reset(new DenseMatrix(*castMatrix::toColumn(factor_) * column));
     break;
-  case SPARSE_ROW:
+  case MatrixTypeCode::SPARSE_ROW:
     product_.reset(new SparseRowMatrix(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(column)));
     break;
-  case NULL_MATRIX: break;
-  case UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: break;
+  case MatrixTypeCode::UNKNOWN: break;
   default: break;
   }
 }

@@ -70,7 +70,7 @@ namespace Teem {
     INPUT_PORT(0, InputNrrd, NrrdDataType);
     OUTPUT_PORT(0, OutputNrrd, NrrdDataType);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   };
 
 }}}

@@ -467,7 +467,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
       }
       else if (strings[0] == "COLOR_SCALARS")
       {
-        vtkDataType_ = COLOR;
+        vtkDataType_ = DATA_TYPE::COLOR;
       }
       // TODO: vectors, tensors
     }
