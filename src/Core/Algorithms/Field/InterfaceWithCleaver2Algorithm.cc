@@ -377,7 +377,7 @@ namespace detail
 
     static FieldHandle makeLatVolFromCleaver2Field(CleaverScalarField cfield)
     {
-      FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, FLOAT_E);
+      FieldInformation lfi(mesh_info_type::LATVOLMESH_E, LINEARDATA_E, FLOAT_E);
 
       auto cbbox = cfield->bounds();
       auto cdatabbox = cfield->dataBounds();

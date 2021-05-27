@@ -53,7 +53,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 TEST(PointCloudFieldTests, PrecisionOfNodePositions)
 {
-  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation lfi(mesh_info_type::LATVOLMESH_E, LINEARDATA_E, DOUBLE_E);
   Point minb(-1.0, -1.0, -1.0);
   Point maxb(1.0, 1.0, 1.0);
   MeshHandle mesh = CreateMesh(lfi, 3, 3, 3, minb, maxb);

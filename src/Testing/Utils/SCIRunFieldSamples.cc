@@ -300,7 +300,7 @@ FieldHandle SCIRun::TestUtils::CreateEmptyLatVol()
 FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type,
   const Core::Geometry::Point& minb, const Core::Geometry::Point& maxb)
 {
-  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
+  FieldInformation lfi(mesh_info_type::LATVOLMESH_E, LINEARDATA_E, type);
 
   MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   FieldHandle ofh = CreateField(lfi, mesh);

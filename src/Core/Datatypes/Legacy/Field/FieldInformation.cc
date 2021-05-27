@@ -93,7 +93,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,const std::string
   set_data_basis_type(databasis);
 }
 
-FieldInformation::FieldInformation(const std::string& meshtype,int meshbasis,int databasis, const std::string& datatype)
+FieldInformation::FieldInformation(const std::string& meshtype, meshbasis_info_type meshbasis, databasis_info_type databasis, const std::string& datatype)
 {
   set_field_type("GenericField");
   set_point_type("Point");
@@ -122,8 +122,8 @@ FieldInformation::FieldInformation(const std::string& meshtype,int basis, const 
   set_container_type("vector");
   set_data_type(datatype);
   set_mesh_type(meshtype);
-  set_mesh_basis_type(basis);
-  set_data_basis_type(basis);
+  set_mesh_basis_type(static_cast<meshbasis_info_type>(basis));
+  set_data_basis_type(static_cast<databasis_info_type>(basis));
 }
 
 FieldInformation::FieldInformation(mesh_info_type meshtype,
@@ -149,8 +149,7 @@ FieldInformation::FieldInformation(mesh_info_type meshtype,
   set_container_type("vector");
   set_data_type(datatype);
   set_mesh_type(meshtype);
-  int meshbasis = databasis;
-  set_mesh_basis_type(meshbasis);
+  set_mesh_basis_type(static_cast<meshbasis_info_type>(databasis));
   set_data_basis_type(databasis);
 }
 
@@ -188,19 +187,19 @@ void
 FieldInformation::set_mesh_type(const std::string& type)
 {
   std::string typeLower = string_tolower(type);
-  if (typeLower == "scanlinemesh") set_mesh_type(SCANLINEMESH_E);
-  else if (typeLower == "imagemesh") set_mesh_type(IMAGEMESH_E);
-  else if (typeLower == "latvolmesh") set_mesh_type(LATVOLMESH_E);
-  else if (typeLower == "structcurvemesh") set_mesh_type(STRUCTCURVEMESH_E);
-  else if (typeLower == "structquadsurfmesh") set_mesh_type(STRUCTQUADSURFMESH_E);
-  else if (typeLower == "structhexvolmesh") set_mesh_type(STRUCTHEXVOLMESH_E);
-  else if (typeLower == "pointcloudmesh") set_mesh_type(POINTCLOUDMESH_E);
-  else if (typeLower == "curvemesh") set_mesh_type(CURVEMESH_E);
-  else if (typeLower == "trisurfmesh") set_mesh_type(TRISURFMESH_E);
-  else if (typeLower == "quadsurfmesh") set_mesh_type(QUADSURFMESH_E);
-  else if (typeLower == "tetvolmesh") set_mesh_type(TETVOLMESH_E);
-  else if (typeLower == "prismvolmesh") set_mesh_type(PRISMVOLMESH_E);
-  else if (typeLower == "hexvolmesh") set_mesh_type(HEXVOLMESH_E);
+  if (typeLower == "scanlinemesh") set_mesh_type(mesh_info_type::SCANLINEMESH_E);
+  else if (typeLower == "imagemesh") set_mesh_type(mesh_info_type::IMAGEMESH_E);
+  else if (typeLower == "latvolmesh") set_mesh_type(mesh_info_type::mesh_info_type::LATVOLMESH_E);
+  else if (typeLower == "structcurvemesh") set_mesh_type(mesh_info_type::STRUCTCURVEMESH_E);
+  else if (typeLower == "structquadsurfmesh") set_mesh_type(mesh_info_type::STRUCTQUADSURFMESH_E);
+  else if (typeLower == "structhexvolmesh") set_mesh_type(mesh_info_type::STRUCTHEXVOLMESH_E);
+  else if (typeLower == "pointcloudmesh") set_mesh_type(mesh_info_type::POINTCLOUDMESH_E);
+  else if (typeLower == "curvemesh") set_mesh_type(mesh_info_type::CURVEMESH_E);
+  else if (typeLower == "trisurfmesh") set_mesh_type(mesh_info_type::TRISURFMESH_E);
+  else if (typeLower == "quadsurfmesh") set_mesh_type(mesh_info_type::QUADSURFMESH_E);
+  else if (typeLower == "tetvolmesh") set_mesh_type(mesh_info_type::TETVOLMESH_E);
+  else if (typeLower == "prismvolmesh") set_mesh_type(mesh_info_type::PRISMVOLMESH_E);
+  else if (typeLower == "hexvolmesh") set_mesh_type(mesh_info_type::HEXVOLMESH_E);
   else { BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("Unknown mesh type")); }
 }
 
@@ -210,23 +209,23 @@ FieldInformation::set_mesh_type(mesh_info_type type)
 {
   switch (type)
   {
-    case SCANLINEMESH_E:      mesh_type = "ScanlineMesh"; break;
-    case IMAGEMESH_E:         mesh_type = "ImageMesh"; break;
-    case LATVOLMESH_E:        mesh_type = "LatVolMesh"; break;
-    case STRUCTCURVEMESH_E:      mesh_type = "StructCurveMesh"; break;
-    case STRUCTQUADSURFMESH_E:   mesh_type = "StructQuadSurfMesh"; break;
-    case STRUCTHEXVOLMESH_E:     mesh_type = "StructHexVolMesh"; break;
-    case POINTCLOUDMESH_E:   mesh_type = "PointCloudMesh"; break;
-    case CURVEMESH_E:        mesh_type = "CurveMesh"; break;
-    case TRISURFMESH_E:      mesh_type = "TriSurfMesh"; break;
-    case QUADSURFMESH_E:     mesh_type = "QuadSurfMesh"; break;
-    case TETVOLMESH_E:       mesh_type = "TetVolMesh"; break;
-    case PRISMVOLMESH_E:     mesh_type = "PrismVolMesh"; break;
-    case HEXVOLMESH_E:       mesh_type = "HexVolMesh"; break;
+    case mesh_info_type::SCANLINEMESH_E:      mesh_type = "ScanlineMesh"; break;
+    case mesh_info_type::IMAGEMESH_E:         mesh_type = "ImageMesh"; break;
+    case mesh_info_type::mesh_info_type::LATVOLMESH_E:        mesh_type = "LatVolMesh"; break;
+    case mesh_info_type::STRUCTCURVEMESH_E:      mesh_type = "StructCurveMesh"; break;
+    case mesh_info_type::STRUCTQUADSURFMESH_E:   mesh_type = "StructQuadSurfMesh"; break;
+    case mesh_info_type::STRUCTHEXVOLMESH_E:     mesh_type = "StructHexVolMesh"; break;
+    case mesh_info_type::POINTCLOUDMESH_E:   mesh_type = "PointCloudMesh"; break;
+    case mesh_info_type::CURVEMESH_E:        mesh_type = "CurveMesh"; break;
+    case mesh_info_type::TRISURFMESH_E:      mesh_type = "TriSurfMesh"; break;
+    case mesh_info_type::QUADSURFMESH_E:     mesh_type = "QuadSurfMesh"; break;
+    case mesh_info_type::TETVOLMESH_E:       mesh_type = "TetVolMesh"; break;
+    case mesh_info_type::PRISMVOLMESH_E:     mesh_type = "PrismVolMesh"; break;
+    case mesh_info_type::HEXVOLMESH_E:       mesh_type = "HexVolMesh"; break;
     default: BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("Unknown mesh type"));
   }
 
-  if (type == SCANLINEMESH_E)
+  if (type == mesh_info_type::SCANLINEMESH_E)
   {
     if (mesh_basis_type.find("Crv") == std::string::npos)
     {
@@ -242,7 +241,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     }
     set_container_type("vector");
   }
-  if (type == IMAGEMESH_E)
+  if (type == mesh_info_type::IMAGEMESH_E)
   {
     if (mesh_basis_type.find("Quad") == std::string::npos)
     {
@@ -258,7 +257,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     }
     set_container_type("FData2d");
   }
-  if (type == LATVOLMESH_E)
+  if (type == mesh_info_type::mesh_info_type::LATVOLMESH_E)
   {
     if (mesh_basis_type.find("Hex") == std::string::npos)
     {
@@ -274,7 +273,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     }
     set_container_type("FData3d");
   }
-  if (type == STRUCTCURVEMESH_E)
+  if (type == mesh_info_type::STRUCTCURVEMESH_E)
   {
     if (mesh_basis_type.find("Crv") == std::string::npos)
     {
@@ -295,7 +294,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == STRUCTQUADSURFMESH_E)
+  if (type == mesh_info_type::STRUCTQUADSURFMESH_E)
   {
     if (mesh_basis_type.find("Quad") == std::string::npos)
     {
@@ -316,7 +315,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("FData2d");
   }
 
-  if (type == STRUCTHEXVOLMESH_E)
+  if (type == mesh_info_type::STRUCTHEXVOLMESH_E)
   {
     if (mesh_basis_type.find("Hex") == std::string::npos)
     {
@@ -337,7 +336,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("FData3d");
   }
 
-  if (type == CURVEMESH_E)
+  if (type == mesh_info_type::CURVEMESH_E)
   {
     if (mesh_basis_type.find("Crv") == std::string::npos)
     {
@@ -358,7 +357,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == TRISURFMESH_E)
+  if (type == mesh_info_type::TRISURFMESH_E)
   {
     if (mesh_basis_type.find("uadraticLgn") != std::string::npos) set_mesh_basis_type("TriQuadraticLgn");
     else if (mesh_basis_type.find("ubicHmt") != std::string::npos) set_mesh_basis_type("TriCubicHmt");
@@ -374,7 +373,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
 
     set_container_type("vector");
   }
-  if (type == QUADSURFMESH_E)
+  if (type == mesh_info_type::QUADSURFMESH_E)
   {
     if (mesh_basis_type.find("Quad") == std::string::npos)
     {
@@ -395,7 +394,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == TETVOLMESH_E)
+  if (type == mesh_info_type::TETVOLMESH_E)
   {
     if (mesh_basis_type.find("Tet") == std::string::npos)
     {
@@ -416,7 +415,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == PRISMVOLMESH_E)
+  if (type == mesh_info_type::PRISMVOLMESH_E)
   {
     if (mesh_basis_type.find("Prism") == std::string::npos)
     {
@@ -437,7 +436,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == HEXVOLMESH_E)
+  if (type == mesh_info_type::HEXVOLMESH_E)
   {
     if (mesh_basis_type.find("Hex") == std::string::npos)
     {
@@ -458,7 +457,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     set_container_type("vector");
   }
 
-  if (type == POINTCLOUDMESH_E)
+  if (type == mesh_info_type::POINTCLOUDMESH_E)
   {
     if (mesh_basis_type.find("NoData") != std::string::npos) set_mesh_basis_type("ConstantBasis");
     else set_mesh_basis_type("ConstantBasis");
@@ -477,11 +476,11 @@ FieldInformation::get_mesh_basis_type() const
 }
 
 void
-FieldInformation::set_mesh_basis_type(int order)
+FieldInformation::set_mesh_basis_type(meshbasis_info_type order)
 {
-  if (order == 1) set_mesh_basis_type("linear");
-  if (order == 2) set_mesh_basis_type("quadratic");
-  if (order == 3) set_mesh_basis_type("cubic");
+  if (order == meshbasis_info_type::LINEARMESH_E) set_mesh_basis_type("linear");
+  if (order == meshbasis_info_type::QUADRATICMESH_E) set_mesh_basis_type("quadratic");
+  if (order == meshbasis_info_type::CUBICMESH_E) set_mesh_basis_type("cubic");
 }
 
 void
@@ -516,13 +515,13 @@ FieldInformation::get_basis_type() const
 }
 
 void
-FieldInformation::set_basis_type(int order)
+FieldInformation::set_basis_type(databasis_info_type order)
 {
-  if (order == -1) set_basis_type("nodata");
-  if (order == 0) set_basis_type("constant");
-  if (order == 1) set_basis_type("linear");
-  if (order == 2) set_basis_type("quadratic");
-  if (order == 3) set_basis_type("cubic");
+  if (order == databasis_info_type::NODATA_E) set_basis_type("nodata");
+  if (order == databasis_info_type::CONSTANTDATA_E) set_basis_type("constant");
+  if (order == databasis_info_type::LINEARDATA_E) set_basis_type("linear");
+  if (order == databasis_info_type::QUADRATICDATA_E) set_basis_type("quadratic");
+  if (order == databasis_info_type::CUBICDATA_E) set_basis_type("cubic");
 }
 
 
@@ -628,20 +627,20 @@ FieldInformation::set_data_type(data_info_type type)
 {
   switch (type)
   {
-    case NONE_E:                data_type = "double"; break;
-    case CHAR_E:                data_type = "char"; break;
-    case UNSIGNED_CHAR_E:       data_type = "unsigned_char"; break;
-    case SHORT_E:               data_type = "short"; break;
-    case UNSIGNED_SHORT_E:      data_type = "unsigned_short"; break;
-    case INT_E:                 data_type = "int"; break;
-    case UNSIGNED_INT_E:        data_type = "unsigned_int"; break;
-    case LONGLONG_E:            data_type = "long_long"; break;
-    case UNSIGNED_LONGLONG_E:   data_type = "unsigned_long_long"; break;
-    case FLOAT_E:               data_type = "float"; break;
-    case DOUBLE_E:              data_type = "double"; break;
-    case VECTOR_E:              data_type = "Vector"; break;
-    case TENSOR_E:              data_type = "Tensor"; break;
-
+    case data_info_type::NONE_E:                data_type = "double"; break;
+    case data_info_type::CHAR_E:                data_type = "char"; break;
+    case data_info_type::UNSIGNED_CHAR_E:       data_type = "unsigned_char"; break;
+    case data_info_type::SHORT_E:               data_type = "short"; break;
+    case data_info_type::UNSIGNED_SHORT_E:      data_type = "unsigned_short"; break;
+    case data_info_type::INT_E:                 data_type = "int"; break;
+    case data_info_type::UNSIGNED_INT_E:        data_type = "unsigned_int"; break;
+    case data_info_type::LONGLONG_E:            data_type = "long_long"; break;
+    case data_info_type::UNSIGNED_LONGLONG_E:   data_type = "unsigned_long_long"; break;
+    case data_info_type::FLOAT_E:               data_type = "float"; break;
+    case data_info_type::DOUBLE_E:              data_type = "double"; break;
+    case data_info_type::VECTOR_E:              data_type = "Vector"; break;
+    case data_info_type::TENSOR_E:              data_type = "Tensor"; break;
+         
     default: BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("INTERNAL ERROR - unknown data_info_type"));
   }
 }
@@ -1541,7 +1540,7 @@ SCIRun::CreateField(FieldInformation &info)
   std::string type = info.get_field_type_id();
   std::string meshtype = info.get_mesh_type_id();
 
-  MeshHandle meshhandle = CreateMesh(meshtype);
+  auto meshhandle = CreateMesh(meshtype);
 
   if (!meshhandle) return FieldHandle();
 
@@ -1629,64 +1628,64 @@ SCIRun::CreateMesh(FieldInformation &info, const std::vector<size_type>& dim,con
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  const FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  const FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x,min,max));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,min,max));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,size_type z)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,size_type z,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z,min,max));
 }
 
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<size_type>& dim)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
-  std::string type = info.get_mesh_type_id();
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
+  const auto type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1]));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2]));
@@ -1696,7 +1695,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<size_type>& dim)
 MeshHandle
 SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<size_type>& dim,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  FieldInformation info(mesh, databasis_info_type::LINEARDATA_E, data_info_type::DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1],min,max));

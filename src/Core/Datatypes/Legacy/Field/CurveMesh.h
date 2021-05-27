@@ -1092,12 +1092,7 @@ const TypeDescription *get_type_description() const override;
   /// THESE ARE NOT WELL INTEGRATED YET
   typename Node::index_type delete_node(typename Node::index_type i1)
   {
-    CHECKARRAYBOUNDS(static_cast<index_type>(i1),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>(points_.size()));
-
-    std::vector<Core::Geometry::Point>::iterator niter;
-    niter = points_.begin() + i1;
+    const auto niter = points_.begin() + i1;
     points_.erase(niter);
     return static_cast<typename Node::index_type>(points_.size() - 1);
   }
@@ -1105,19 +1100,8 @@ const TypeDescription *get_type_description() const override;
   typename Node::index_type delete_nodes(typename Node::index_type i1,
 					 typename Node::index_type i2)
   {
-    CHECKARRAYBOUNDS(static_cast<index_type>(i1),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>(points_.size()));
-
-    CHECKARRAYBOUNDS(static_cast<index_type>(i2),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>(points_.size()+1));
-
-    std::vector<Core::Geometry::Point>::iterator niter1;
-    niter1 = points_.begin() + i1;
-
-    std::vector<Core::Geometry::Point>::iterator niter2;
-    niter2 = points_.begin() + i2;
+    auto niter1 = points_.begin() + i1;
+    auto niter2 = points_.begin() + i2;
 
     points_.erase(niter1, niter2);
     return static_cast<typename Node::index_type>(points_.size() - 1);
@@ -1125,15 +1109,8 @@ const TypeDescription *get_type_description() const override;
 
   typename Edge::index_type delete_edge(typename Edge::index_type i1)
   {
-    CHECKARRAYBOUNDS(static_cast<index_type>(i1),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>(edges_.size()>>1));
-
-    typename std::vector<index_type>::iterator niter1;
-    niter1 = edges_.begin() + 2*i1;
-
-    typename std::vector<index_type>::iterator niter2;
-    niter2 = edges_.begin() + 2*i1+2;
+    auto niter1 = edges_.begin() + 2*i1;
+    auto niter2 = edges_.begin() + 2*i1+2;
 
     edges_.erase(niter1, niter2);
     return static_cast<typename Edge::index_type>((edges_.size()>>1) - 1);
@@ -1142,19 +1119,8 @@ const TypeDescription *get_type_description() const override;
   typename Edge::index_type delete_edges(typename Edge::index_type i1,
 					 typename Edge::index_type i2)
   {
-    CHECKARRAYBOUNDS(static_cast<index_type>(i1),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>(edges_.size()>>1));
-
-    CHECKARRAYBOUNDS(static_cast<index_type>(i2),
-		     static_cast<index_type>(0),
-		     static_cast<index_type>((edges_.size()>>1)+1));
-
-    typename std::vector<index_type>::iterator niter1;
-    niter1 = edges_.begin() + 2*i1;
-
-    typename std::vector<index_type>::iterator niter2;
-    niter2 = edges_.begin() + 2*i2;
+    auto niter1 = edges_.begin() + 2*i1;
+    auto niter2 = edges_.begin() + 2*i2;
 
     edges_.erase(niter1, niter2);
 
