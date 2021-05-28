@@ -576,8 +576,8 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
     catch (boost::bad_lexical_cast&) {}
   }
 
-  Variable var1 = makeVariable("Input #", boost::str(boost::format("%s") % str1));
-  Variable var2 = makeVariable("Type", boost::str(boost::format("%s") % str2));
+  auto var1 = makeVariable("Input #", boost::str(boost::format("%s") % str1));
+  auto var2 = makeVariable("Type", boost::str(boost::format("%s") % str2));
 
   Variable var3, var4, var5;
 
@@ -596,13 +596,13 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
   else
     var5 = makeVariable("Z", boost::str(boost::format("%s") % str5));
 
-  Variable var6 = makeVariable("Angle", boost::str(boost::format("%s") % str6));
+  auto var6 = makeVariable("Angle", boost::str(boost::format("%s") % str6));
 
   ///if this table row was selected as tDCS -> project point to scalp surface and put its normal in table (NX,NY,NZ)
-  Variable var7 = makeVariable("NX", boost::str(boost::format("%s") % str7));
-  Variable var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
-  Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
-  Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
+  auto var7 = makeVariable("NX", boost::str(boost::format("%s") % str7));
+  auto var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
+  auto var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
+  auto var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
 
   Variable::List row{ var1, var2, var3, var4, var5, var6, var7, var8, var9, var10 };
 
@@ -615,11 +615,11 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   int nr_elc_sponge_triangles = 0, num_valid_electrode_definition = 0, nr_elc_sponge_triangles_on_scalp = 0;
   std::vector<double> field_values, field_values_elc_on_scalp;
   std::vector<int> valid_electrode_definition;
-  FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "int");
+  FieldInformation fieldinfo("TriSurfMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "int");
   auto electrode_field = CreateField(fieldinfo);
   auto tdcs_vmesh = electrode_field->vmesh();
   auto tdcs_vfld = electrode_field->vfield();
-  FieldInformation fieldinfo3("TriSurfMesh", CONSTANTDATA_E, "int");
+  FieldInformation fieldinfo3("TriSurfMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "int");
   auto output = CreateField(fieldinfo3);
   auto output_vmesh = output->vmesh();
   auto output_vfld = output->vfield();
@@ -639,7 +639,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   auto compute_third_output = get(Parameters::PutElectrodesOnScalpCheckBox).toBool();
   auto interpolate_elec_shape = get(Parameters::InterpolateElectrodeShapeCheckbox).toBool();
 
-  if (tab_values.size() == elc_prototyp_map.size() && elc_thickness.size() == elc_prototyp_map.size() && elc_x.size() == elc_prototyp_map.size() && elc_y.size() == elc_prototyp_map.size() && elc_z.size() == elc_prototyp_map.size() && elc_angle_rotation.size() == elc_prototyp_map.size())
+  if (tab_values.size() == elc_prototyp_map.size() && elc_thickness.size() == elc_prototyp_map.size() && elc_x.size() == elc_prototyp_map.size() 
+    && elc_y.size() == elc_prototyp_map.size() && elc_z.size() == elc_prototyp_map.size() && elc_angle_rotation.size() == elc_prototyp_map.size())
   {
     auto scalp_vmesh = scalp->vmesh();
     auto scalp_vfld = scalp->vfield();
@@ -761,7 +762,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         }
         VMesh* prototype_vmesh = prototype->vmesh();
 
-        FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "double"); /// this is the final moved prototype for elc i
+        FieldInformation fieldinfo("TriSurfMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double"); /// this is the final moved prototype for elc i
         FieldHandle tmp_tdcs_elc = CreateField(fieldinfo);
         VMesh*  tmp_tdcs_elc_vmesh = tmp_tdcs_elc->vmesh();
         VField* tmp_tdcs_elc_vfld = tmp_tdcs_elc->vfield();

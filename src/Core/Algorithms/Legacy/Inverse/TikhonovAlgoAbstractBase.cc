@@ -100,10 +100,8 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
   addParameter(Parameters::LambdaNum, 200);
   addParameter(Parameters::LambdaResolution, 1e-6);
   addParameter(Parameters::LambdaSliderValue, 0);
-  addParameter(
-      Parameters::regularizationSolutionSubcase, AlgorithmSolutionSubcase::solution_constrained);
-  addParameter(
-      Parameters::regularizationResidualSubcase, AlgorithmResidualSubcase::residual_constrained);
+  addParameter(Parameters::regularizationSolutionSubcase, static_cast<int>(AlgorithmSolutionSubcase::solution_constrained));
+  addParameter(Parameters::regularizationResidualSubcase, static_cast<int>(AlgorithmResidualSubcase::residual_constrained));
 }
 
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
@@ -120,15 +118,14 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput& input
   // check that rows of fwd matrix equal number of measurements
   if (M != measuredData_->nrows())
   {
-    THROW_ALGORITHM_INPUT_ERROR("Input matrix dimensions must agree.");
-    return false;
+    THROW_ALGORITHM_INPUT_ERROR("Input matrix dimensions must agree.")
   }
 
   // check source regularization matrix sizes
   if (sourceWeighting_)
   {
     if (get(Parameters::regularizationSolutionSubcase).toInt() ==
-        AlgorithmSolutionSubcase::solution_constrained)
+        static_cast<int>(AlgorithmSolutionSubcase::solution_constrained))
     {
       // check that the matrix is of appropriate size (equal number of rows as columns in fwd
       // matrix)
@@ -142,7 +139,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput& input
     }
     // otherwise, if the source regularization is provided as the squared version (RR^T)
     else if (get(Parameters::regularizationSolutionSubcase).toInt() ==
-             AlgorithmSolutionSubcase::solution_constrained_squared)
+      static_cast<int>(AlgorithmSolutionSubcase::solution_constrained_squared))
     {
       // check that the matrix is of appropriate size and squared (equal number of rows as columns
       // in fwd matrix)
@@ -150,8 +147,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput& input
       {
         THROW_ALGORITHM_INPUT_ERROR(
             "The squared solution Regularization Matrix must have the same number of rows and "
-            "columns and must be equal to the number of columns in the Forward Matrix !");
-        return false;
+            "columns and must be equal to the number of columns in the Forward Matrix !")
       }
     }
   }
@@ -160,20 +156,19 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput& input
   if (sensorWeighting_)
   {
     if (get(Parameters::regularizationResidualSubcase).toInt() ==
-        AlgorithmSolutionSubcase::residual_constrained)
+      static_cast<int>(AlgorithmResidualSubcase::residual_constrained))
     {
       // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
       if (M != sensorWeighting_->ncols())
       {
         THROW_ALGORITHM_INPUT_ERROR(
             "Data Residual Weighting Matrix must have the same number of rows as the Forward "
-            "Matrix !");
-        return false;
+            "Matrix !")
       }
     }
     // otherwise if the source covariance matrix is provided in squared form
     else if (get(Parameters::regularizationResidualSubcase).toInt() ==
-             AlgorithmSolutionSubcase::residual_constrained_squared)
+      static_cast<int>(AlgorithmResidualSubcase::residual_constrained_squared))
     {
       // check that the matrix is of appropriate size and squared (equal number of rows as rows in
       // fwd matrix)
@@ -181,8 +176,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput& input
       {
         THROW_ALGORITHM_INPUT_ERROR(
             "Squared data Residual Weighting Matrix must have the same number of rows and columns "
-            "as number of rows in the Forward Matrix !");
-        return false;
+            "as number of rows in the Forward Matrix !")
       }
     }
   }
@@ -210,7 +204,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput& input) const
   std::shared_ptr<TikhonovImpl> algoImpl;
   if (implOption == "standardTikhonov")
   {
-    int regularizationChoice = get(Parameters::regularizationChoice).toInt();
+    auto regularizationChoice = static_cast<AlgorithmChoice>(get(Parameters::regularizationChoice).toInt());
     int regularizationSolutionSubcase = get(Parameters::regularizationSolutionSubcase).toInt();
     int regularizationResidualSubcase = get(Parameters::regularizationResidualSubcase).toInt();
 

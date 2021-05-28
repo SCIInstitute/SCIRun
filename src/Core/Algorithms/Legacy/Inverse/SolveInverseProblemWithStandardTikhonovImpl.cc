@@ -93,7 +93,7 @@ using namespace Inverse;
 /////// precomputeInverseMatrices
 ///////////////
     void SolveInverseProblemWithStandardTikhonovImpl::preAllocateInverseMatrices(const DenseMatrix& forwardMatrix, const
-        DenseMatrix& measuredData_ , const DenseMatrix& sourceWeighting_, const DenseMatrix& sensorWeighting_, const AlgorithmChoice regularizationChoice,
+        DenseMatrix& measuredData_ , const DenseMatrix& sourceWeighting_, const DenseMatrix& sensorWeighting_, const TikhonovAlgoAbstractBase::AlgorithmChoice regularizationChoice,
       const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_)
     {
 
@@ -298,7 +298,7 @@ using namespace Inverse;
             // DEFINE M3 = identity (size of number of measurements)
             M3 = DenseMatrix::Identity(N, N);
 
-            // DEFINT M4 = A^T* C^T * C
+            // DEFINE M4 = A^T* C^T * C
             M4 = CtrCA.transpose();
 
             // DEFINE measurement vector
@@ -307,5 +307,5 @@ using namespace Inverse;
         }
 
     }
-//////// End of prealocation of matrices
+//////// End of preallocation of matrices
 ////////////

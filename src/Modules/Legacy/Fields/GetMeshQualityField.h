@@ -49,7 +49,7 @@ namespace Fields {
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 }}}
 

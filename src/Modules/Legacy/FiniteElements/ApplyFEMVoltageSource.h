@@ -55,7 +55,7 @@ namespace SCIRun {
 
         static const Core::Algorithms::AlgorithmParameterName ApplyDirichlet;
 
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 
     }

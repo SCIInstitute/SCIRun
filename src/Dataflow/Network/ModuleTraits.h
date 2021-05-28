@@ -59,7 +59,7 @@ namespace Modules
   };
 
   template <class ModuleType>
-  const bool HasUI<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleFlags::ModuleFlags::ModuleHasUI) != 0;
+  const bool HasUI<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & static_cast<int>(ModuleFlags::ModuleHasUI)) != 0;
 
   template <class ModuleType>
   struct HasAlgorithm
@@ -69,7 +69,7 @@ namespace Modules
   };
 
   template <class ModuleType>
-  const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleFlags::ModuleFlags::ModuleHasAlgorithm) != 0;
+  const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & static_cast<int>(ModuleFlags::ModuleHasAlgorithm)) != 0;
 
   #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = static_cast<int>(value);\
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;\

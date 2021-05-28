@@ -35,10 +35,8 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Color.h>
-#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -50,7 +48,6 @@ namespace SCIRun{
 // This class takes in input information from the port and hands back coloring and scalar, vector, and tensor data
       class ShowFieldGlyphsPortHandler
       {
-      private:
         enum class FieldDataType
           {
            Scalar,
@@ -60,14 +57,14 @@ namespace SCIRun{
           };
 
         const Dataflow::Networks::Module* module_;
-        RenderState::InputPort secondaryVecInput;
+        RenderState::GlyphInputPort secondaryVecInput;
         VField* p_vfld{ nullptr };
         VField* s_vfld{ nullptr };
         VField* t_vfld{ nullptr };
         FieldHandle pf_handle;
         FieldInformation pf_info;
         Graphics::Datatypes::ColorScheme colorScheme;
-        RenderState::InputPort colorInput;
+        RenderState::GlyphInputPort colorInput;
         Core::Datatypes::ColorRGB defaultColor;
         boost::optional<Core::Datatypes::ColorMapHandle> colorMap;
         Core::Datatypes::ColorMapHandle coordinateMap {nullptr}, textureMap {nullptr};
@@ -77,7 +74,7 @@ namespace SCIRun{
         double current_index;
         bool colorMapGiven;
         bool secondaryFieldGiven, tertiaryFieldGiven;
-        FieldDataType pf_data_type{ UNKNOWN }, sf_data_type{ UNKNOWN }, tf_data_type{ UNKNOWN };
+        FieldDataType pf_data_type{FieldDataType::UNKNOWN }, sf_data_type{ FieldDataType::UNKNOWN }, tf_data_type{FieldDataType::UNKNOWN };
 
         void getFieldData(int index);
 

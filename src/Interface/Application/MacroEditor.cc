@@ -189,7 +189,7 @@ void MacroEditor::renameMacro()
     {
       item->setText(name);
       macros_[row][MacroListItem::Name] = name;
-      auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+      auto index = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
       Q_EMIT macroButtonChanged(index, name);
     }
   }
@@ -205,7 +205,7 @@ void MacroEditor::updateScriptEditor()
     auto scr = macros_[row][MacroListItem::Script];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
 
-    auto buttonAssigned = macros_[row][MacroListItem::ButtonNumber].toInt();
+    auto buttonAssigned = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
     for (auto& button : buttons_)
     {
       dehighlightButton(button);
@@ -238,7 +238,7 @@ void MacroEditor::updateScripts()
     const auto row = macroListWidget_->currentRow();
     auto key = macroListWidget_->currentItem()->text();
     auto script = scriptPlainTextEdit_->toPlainText();
-    macros_[row][MacroListItem::Script] = script;
+    macros_[row][static_cast<int>(MacroListItem::Script)] = script;
   }
 }
 
@@ -248,7 +248,7 @@ void MacroEditor::runSelectedMacro()
   const auto row = macroListWidget_->currentRow();
   if (row >= 0 && row < macros_.size())
   {
-    auto scr = macros_[row][MacroListItem::Script];
+    auto scr = macros_[row][static_cast<int>(MacroListItem::Script)];
 
     NetworkEditor::InEditingContext iec(SCIRunMainWindow::Instance()->networkEditor());
     PythonInterpreter::Instance().run_script(scr.toStdString());

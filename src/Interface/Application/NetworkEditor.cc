@@ -55,13 +55,13 @@
 #include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Gui;
-using namespace SCIRun::Gui::NetworkBoundaries;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Engine;
+using namespace Core;
+using namespace Logging;
+using namespace Algorithms;
+using namespace Gui;
+using namespace NetworkBoundaries;
+using namespace Dataflow::Networks;
+using namespace Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* parent)
   : QGraphicsView(parent),
@@ -656,7 +656,7 @@ ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
   return dynamic_cast<ModuleProxyWidget*>(item);
 }
 
-ModuleWidget* SCIRun::Gui::getModule(QGraphicsItem* item)
+ModuleWidget* Gui::getModule(QGraphicsItem* item)
 {
   auto proxy = getModuleProxy(item);
   if (proxy)
@@ -1751,11 +1751,11 @@ int NetworkEditor::errorCode() const
 ModuleEventProxy::ModuleEventProxy()
 {
   qRegisterMetaType<std::string>("std::string");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleHandle>("SCIRun::Dataflow::Networks::ModuleHandle");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
-  qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
+  qRegisterMetaType<ModuleHandle>("SCIRun::Dataflow::Networks::ModuleHandle");
+  qRegisterMetaType<ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
+  qRegisterMetaType<ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
+  qRegisterMetaType<ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
+  qRegisterMetaType<ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
 }
 
 void ModuleEventProxy::trackModule(ModuleHandle module)
@@ -2149,30 +2149,30 @@ void NetworkEditor::tagLayer(bool active, TagValues tag)
     auto items = scene_->selectedItems();
     Q_FOREACH(QGraphicsItem* item, items)
     {
-      if (item->data(TagValues::TagDataKey).toInt() == TagValues::NoTag)
+      if (item->data(TagDataKey).toInt() == NoTag)
       {
         if (validTag(tag))
-          item->setData(TagValues::TagDataKey, tag);
+          item->setData(TagDataKey, tag);
       }
-      else if (TagValues::ClearTags == tag)
+      else if (ClearTags == tag)
       {
-        item->setData(TagValues::TagDataKey, TagValues::NoTag);
+        item->setData(TagDataKey, NoTag);
       }
     }
   }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    item->setData(TagValues::TagLayerKey, active);
-    item->setData(TagValues::CurrentTagKey, tag);
+    item->setData(static_cast<int>(TagLayerKey), active);
+    item->setData(static_cast<int>(CurrentTagKey), tag);
     if (active)
     {
-      const auto itemTag = item->data(TagValues::TagDataKey).toInt();
-      if (TagValues::AllTags == tag || TagValues::ShowGroups == tag)
+      const auto itemTag = static_cast<TagValues>(item->data(static_cast<int>(TagDataKey)).toInt());
+      if (AllTags == tag || ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
       }
-      else if (tag != TagValues::NoTag && tag != TagValues::ClearTags)
+      else if (tag != NoTag && tag != ClearTags)
       {
         if (tag == itemTag)
         {
@@ -2185,12 +2185,12 @@ void NetworkEditor::tagLayer(bool active, TagValues tag)
     else
       item->setGraphicsEffect(nullptr);
   }
-  if (TagValues::ShowGroups == tag)
+  if (ShowGroups == tag)
   {
     tagGroupsActive_ = true;
     redrawTagGroups();
   }
-  if (TagValues::HideGroups == tag)
+  if (HideGroups == tag)
   {
     tagGroupsActive_ = false;
     removeTagGroups();
@@ -2384,7 +2384,7 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, TagValues tagValue)
 {
-  if (tagValue == TagValues::NoTag)
+  if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());
   }
@@ -2504,7 +2504,7 @@ ZLevelManager::ZLevelManager(QGraphicsScene* scene)
 
 }
 
-bool SCIRun::Gui::allowModificationSignalConnection()
+bool Gui::allowModificationSignalConnection()
 {
   auto cmd = Application::Instance().parameters();
   return !cmd->executeNetwork() &&
