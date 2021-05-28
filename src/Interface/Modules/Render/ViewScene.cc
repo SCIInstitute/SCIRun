@@ -1638,7 +1638,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomList
         bool isWidget = false;
         for (const auto& pass : realObj->passes())
         {
-          if (pass.renderState.get(SCIRun::RenderState::IS_WIDGET))
+          if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
           {
             isWidget = true;
             break;
@@ -1981,14 +1981,14 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   uniqueNodeID = ss.str();
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   RenderState renState;
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
   renState.defaultColor = ColorRGB(clippingPlaneColors_[index][0], clippingPlaneColors_[index][1], clippingPlaneColors_[index][2]);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   Graphics::GlyphGeom glyphs2;
@@ -2000,10 +2000,10 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
     p3.x() << p3.y() << p3.z() <<
     p4.x() << p4.y() << p4.z();
   uniqueNodeID = ss.str();
-  renState.set(RenderState::USE_TRANSPARENCY, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
-  glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+  glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
   clippingPlaneGeoms_.push_back(geom);
@@ -2268,11 +2268,11 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::LINES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::HAS_DATA, true);
-  renState.set(RenderState::USE_COLORMAP, false);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-  renState.set(RenderState::IS_TEXT, true);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::HAS_DATA, true);
+  renState.set(RenderState::ActionFlags::USE_COLORMAP, false);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::IS_TEXT, true);
 
   SpireText text;
 

@@ -164,7 +164,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent* event)
     {
       if (networkEditor_->tagLayerActive())
       {
-        networkEditor_->tagLayer(true, TagValues::ClearTags);
+        networkEditor_->tagLayer(true, ClearTags);
         showStatusMessage("Tag layer active: selected modules' tags cleared");
       }
     }
@@ -176,7 +176,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent* event)
       if (networkEditor_->tagLayerActive())
       {
         auto key = event->key() - Qt::Key_0;
-        networkEditor_->tagLayer(true, key);
+        networkEditor_->tagLayer(true, static_cast<TagValues>(key));
         showStatusMessage("Tag layer active: " + QString::number(key));
       }
     }
@@ -206,7 +206,7 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent* event)
   {
     if (!actionToggleTagLayer_->isChecked())
     {
-      networkEditor_->tagLayer(false, -1);
+      networkEditor_->tagLayer(false, static_cast<TagValues>(-1));
       showStatusMessage("Tag layer inactive", 1000);
     }
   }

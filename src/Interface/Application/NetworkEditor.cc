@@ -1015,7 +1015,7 @@ SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std
   : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(color);
-  auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
+  const auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
   setHtml("<div style='" + backgroundGray + ";font: 15px Lucida, sans-serif'>" + toPlainText() + "</div>");
   items_.insert(this);
 }
@@ -1035,7 +1035,7 @@ void SearchResultItem::removeAll()
 
 std::set<SearchResultItem*> SearchResultItem::items_;
 
-enum class SearchTupleParts
+enum SearchTupleParts
 {
   ItemType,
   ItemName,
@@ -1185,7 +1185,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     }
     for (const auto& result : results)
     {
-      auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
+      auto searchItem = new SearchResultItem(std::get<SearchTupleParts::ItemType>(result) + ": " + std::get<SearchTupleParts::ItemName>(result),
         std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
@@ -2378,7 +2378,7 @@ void NetworkEditor::redrawTagGroups()
 
 void NetworkEditor::highlightTaggedItem(int tagValue)
 {
-  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), tagValue);
+  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), static_cast<TagValues>(tagValue));
   Q_EMIT modified();
 }
 

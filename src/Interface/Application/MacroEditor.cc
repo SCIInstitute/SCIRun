@@ -122,7 +122,7 @@ void MacroEditor::setScripts(const MacroNameValueList& macros)
         auto index = button.toInt();
         item->setToolTip(tr("Assigned to macro button %0").arg(index));
         item->setData(macroIndexInt, index);
-        Q_EMIT macroButtonChanged(index, macroList[MacroListItem::Name]);
+        Q_EMIT macroButtonChanged(index, macroList[static_cast<int>(MacroListItem::Name)]);
       }
     }
   }
@@ -167,7 +167,7 @@ void MacroEditor::removeMacro()
   for (auto& item : macroListWidget_->selectedItems())
   {
     auto name = item->text();
-    auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+    auto index = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
     Q_EMIT macroButtonChanged(index, "");
     macros_.removeAt(row);
 
@@ -188,7 +188,7 @@ void MacroEditor::renameMacro()
     for (auto& item : macroListWidget_->selectedItems())
     {
       item->setText(name);
-      macros_[row][MacroListItem::Name] = name;
+      macros_[row][static_cast<int>(MacroListItem::Name)] = name;
       auto index = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
       Q_EMIT macroButtonChanged(index, name);
     }
@@ -202,7 +202,7 @@ void MacroEditor::updateScriptEditor()
   if (item)
   {
     auto key = item->text();
-    auto scr = macros_[row][MacroListItem::Script];
+    auto scr = macros_[row][static_cast<int>(MacroListItem::Script)];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
 
     auto buttonAssigned = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();

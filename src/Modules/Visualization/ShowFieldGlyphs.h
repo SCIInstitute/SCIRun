@@ -117,7 +117,7 @@ namespace SCIRun {
             FieldHandle pfield,
             boost::optional<FieldHandle> sfield,
             boost::optional<FieldHandle> tfield);
-        RenderState::GlpyhInputPort getInput(const std::string& port_name);
+        RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 
         boost::shared_ptr<class GlyphBuilder> builder_;

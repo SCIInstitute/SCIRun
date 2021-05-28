@@ -171,7 +171,7 @@ CreateLatVol::execute()
     else if (dataAtLocation == DataLocation::NONE) basis_order = -1;
     else
     {
-      error("Unsupported data_at location " + boost::lexical_cast<std::string>(dataAtLocation) + ".");
+      error("Unsupported data_at location " + boost::lexical_cast<std::string>(static_cast<int>(dataAtLocation)) + ".");
       return;
     }
 

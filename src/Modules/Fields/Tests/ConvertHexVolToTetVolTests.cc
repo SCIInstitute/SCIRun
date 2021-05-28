@@ -52,7 +52,7 @@ class ConvertHexVolToTetVolModuleTests : public ModuleTest
 
   FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=data_info_type::DOUBLE_E)
   {
-    FieldInformation lfi(mesh_info_type::LATVOLMESH_E, LINEARDATA_E, type);
+    FieldInformation lfi(mesh_info_type::LATVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
     MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
@@ -90,6 +90,6 @@ TEST_F(ConvertHexVolToTetVolModuleTests, CorrectInput)
 {
   auto csdf = makeModule("ConvertHexVolToTetVol");
   auto size=6;
-  stubPortNWithThisData(csdf, 0, CreateEmptyLatVol(size, size, size, INT_E));
+  stubPortNWithThisData(csdf, 0, CreateEmptyLatVol(size, size, size, data_info_type::INT_E));
   EXPECT_NO_THROW(csdf->execute());
 }

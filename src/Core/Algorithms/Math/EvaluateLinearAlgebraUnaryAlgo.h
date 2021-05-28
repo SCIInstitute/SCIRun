@@ -25,7 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 #define ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 
@@ -39,38 +38,45 @@
 
 namespace SCIRun {
 namespace Core {
-namespace Algorithms {
-namespace Math {
+  namespace Algorithms {
+    namespace Math {
 
-///
-/// \class EvaluateLinearAlgebraUnaryAlgorithm
-///
-/// \brief Computes several unary operations on general matrices
-///
+      ///
+      /// \class EvaluateLinearAlgebraUnaryAlgorithm
+      ///
+      /// \brief Computes several unary operations on general matrices
+      ///
 
-  class SCISHARE EvaluateLinearAlgebraUnaryAlgorithm : public AlgorithmBase
-  {
-  public:
-    enum class Operator
-    {
-      NEGATE,
-      TRANSPOSE,
-      SCALAR_MULTIPLY,
-			FUNCTION
-    };
+      class SCISHARE EvaluateLinearAlgebraUnaryAlgorithm : public AlgorithmBase
+      {
+       public:
+        enum class Operator
+        {
+          NEGATE,
+          TRANSPOSE,
+          SCALAR_MULTIPLY,
+          FUNCTION
+        };
 
-    using Inputs = Datatypes::MatrixHandle;
-    struct Parameters { Operator op; double scalar; std::string func; };
-    using Outputs = Datatypes::MatrixHandle;
+        using Inputs = Datatypes::MatrixHandle;
+        struct Parameters
+        {
+          Operator op;
+          double scalar;
+          std::string func;
+        };
+        using Outputs = Datatypes::MatrixHandle;
 
-    EvaluateLinearAlgebraUnaryAlgorithm();
-    Outputs run(const Inputs& matrix, const Parameters& params) const;
+        EvaluateLinearAlgebraUnaryAlgorithm();
+        Outputs run(const Inputs& matrix, const Parameters& params) const;
 
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-  };
+        AlgorithmOutput run(const AlgorithmInput& input) const override;
+      };
 
-}}}}
-
+    }
+  }
+}
+}
 
 /*! @} End of Doxygen Groups*/
 
