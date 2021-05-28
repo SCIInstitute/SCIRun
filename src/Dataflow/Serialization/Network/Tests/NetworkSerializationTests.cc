@@ -298,7 +298,7 @@ TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
   auto trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 0));
   ASSERT_TRUE(trans2.get() != nullptr);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->name());
-  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).toInt());
+  EXPECT_EQ(static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE), trans2->get_state()->getValue(Variables::Operator).toInt());
 
   boost::filesystem::remove(filename);
 }
