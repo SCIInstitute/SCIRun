@@ -43,7 +43,7 @@ TEST(AppendMatrixAlgorithmTests, CanAppendRows)
 
   DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
   DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::ROWS);
 
   EXPECT_EQ(6, result->nrows());
   EXPECT_EQ(4, result->ncols());
@@ -57,7 +57,7 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
 
   DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
   DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::COLUMNS);
 
   EXPECT_EQ(3, result->nrows());
   EXPECT_EQ(8, result->ncols());
@@ -72,7 +72,7 @@ TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
 
   DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
   DenseMatrixHandle m2(SCIRun::TestUtils::Zero.clone());
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::ROWS);
 
   ASSERT_FALSE(result);
 }
@@ -81,7 +81,7 @@ TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 {
   AppendMatrixAlgorithm algo;
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::Option::ROWS);
   EXPECT_FALSE(result);
 }
 
@@ -97,7 +97,7 @@ TEST(AppendMatrixAlgorithmTests, AppendSquareSparseMatrix)
   for(int i=0;i<nr_rows;i++)
     m2.insert(i,i) = i+nr_rows;
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::ROWS);
   auto out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
 
   for (Eigen::Index k = 0; k < out->nrows(); ++k)
@@ -111,7 +111,7 @@ TEST(AppendMatrixAlgorithmTests, AppendSquareSparseMatrix)
     }
   }
 
-  result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::COLUMNS);
+  result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::COLUMNS);
   out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
 
   for (Eigen::Index k = 0; k < out->nrows(); ++k)
@@ -140,9 +140,9 @@ TEST(AppendMatrixAlgorithmTests, AppendDenseColumnMatrix)
   for (int i=0;i<nr_comp2;i++)
     (*m2)(i) = 2*(i+1);
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::COLUMNS);
   EXPECT_TRUE(result==nullptr);
-       result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+       result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::ROWS);
 
  auto out = boost::dynamic_pointer_cast<DenseColumnMatrix>(result);
  for (int i = 0; i < out->nrows(); i++)
@@ -169,6 +169,6 @@ TEST(AppendMatrixAlgorithmTests, MixingMatrixInputTypes)
    for(int j=0;j<nr_rows;j++)
      (*dense_mat)(i,j)=++count;
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(dense_mat, boost::make_shared<SparseRowMatrix>(sparse_mat)), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(dense_mat, boost::make_shared<SparseRowMatrix>(sparse_mat)), AppendMatrixAlgorithm::Option::ROWS);
   EXPECT_TRUE(result==nullptr);
 }

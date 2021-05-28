@@ -160,32 +160,29 @@ public:
   class ElemData
   {
   public:
-    typedef typename CurveMesh<Basis>::index_type  index_type;
+    using index_type = index_type;
 
     ElemData(const CurveMesh<Basis>& msh, const index_type idx) :
       mesh_(msh),
       index_(idx)
     {}
 
-    inline
     index_type node0_index() const {
       return mesh_.edges_[2*index_];
     }
-    inline
+
     index_type node1_index() const {
       return mesh_.edges_[2*index_+1];
     }
 
-    inline
     const Core::Geometry::Point &node0() const {
       return mesh_.points_[mesh_.edges_[2*index_]];
     }
-    inline
+
     const Core::Geometry::Point &node1() const {
       return mesh_.points_[mesh_.edges_[2*index_+1]];
     }
 
-    inline
     index_type edge0_index() const
     {
       return index_;
@@ -230,7 +227,7 @@ int basis_order() override { return (basis_.polynomial_order()); }
   /// structured = no connectivity data
   /// regular    = no node location data
   virtual int  topology_geometry() const
-    { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
+    { return UNSTRUCTURED | IRREGULAR; }
 
   /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
@@ -281,13 +278,16 @@ bool unsynchronize(mask_type sync) override;
   /// dimensional indices in some fields, these functions
   /// should deal with different pointer types.
   /// Use the virtual interface to avoid all this non sense.
-  inline void to_index(typename Node::index_type &index, index_type i) const
+void to_index(typename Node::index_type &index, index_type i) const
     { index = i; }
-  inline void to_index(typename Edge::index_type &index, index_type i) const
+
+void to_index(typename Edge::index_type &index, index_type i) const
     { index = i; }
-  inline void to_index(typename Face::index_type&, index_type) const
+
+void to_index(typename Face::index_type&, index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  inline void to_index(typename Cell::index_type&, index_type) const
+
+void to_index(typename Cell::index_type&, index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
 
@@ -1141,7 +1141,7 @@ protected:
   // often a StackVector is enough (The latter improves performance).
 
   template<class ARRAY, class INDEX>
-  inline void get_nodes_from_edge(ARRAY& array, INDEX idx) const
+  void get_nodes_from_edge(ARRAY& array, INDEX idx) const
   {
     array.resize(2);
     array[0] = static_cast<typename ARRAY::value_type>(edges_[2*idx]);
@@ -1149,7 +1149,7 @@ protected:
   }
 
   template<class ARRAY, class INDEX>
-  inline void get_edges_from_node(ARRAY& array, INDEX idx) const
+  void get_edges_from_node(ARRAY& array, INDEX idx) const
   {
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
       "CurveMesh: Must call synchronize NODE_NEIGHBORS_E on CurveMesh first");
@@ -1161,20 +1161,20 @@ protected:
   }
 
   template<class ARRAY, class INDEX>
-  inline void get_nodes_from_elem(ARRAY& array, INDEX idx) const
+  void get_nodes_from_elem(ARRAY& array, INDEX idx) const
   {
     get_nodes_from_edge(array,idx);
   }
 
   template<class ARRAY, class INDEX>
-  inline void get_edges_from_elem(ARRAY& array, INDEX idx) const
+  void get_edges_from_elem(ARRAY& array, INDEX idx) const
   {
     array.resize(1); array[0] = typename ARRAY::value_type(idx);
   }
 
 
   template <class ARRAY, class INDEX>
-  inline void set_nodes_by_elem(ARRAY &array, INDEX idx)
+  void set_nodes_by_elem(ARRAY &array, INDEX idx)
   {
     for (index_type n = 0; n < 2; ++n)
       edges_[idx * 2 + n] = static_cast<index_type>(array[n]);

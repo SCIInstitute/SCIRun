@@ -57,7 +57,7 @@ namespace SCIRun {
         INPUT_PORT(3, ElemLink, SparseRowMatrix);
         OUTPUT_PORT(0, BoundaryField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

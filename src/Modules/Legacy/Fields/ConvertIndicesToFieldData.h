@@ -47,10 +47,10 @@ namespace SCIRun {
         void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
-				INPUT_PORT(1, InputMatrix, Matrix);
+	INPUT_PORT(1, InputMatrix, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleFlags::ModuleHasUIAndAlgorithm)
       };
     }
   }

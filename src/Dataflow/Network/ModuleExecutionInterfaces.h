@@ -30,7 +30,6 @@
 #define DATAFLOW_NETWORK_MODULEEXECUTIONINTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/ExecutableObject.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {

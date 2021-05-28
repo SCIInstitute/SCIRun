@@ -51,22 +51,19 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/ArrowWidget.h>
-#include <Graphics/Widgets/WidgetFactory.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Dataflow::Networks;
+using namespace Dataflow::Networks;
 using namespace Modules::Visualization;
 using namespace Graphics::Datatypes;
 using namespace Core::Algorithms;
 using namespace Core::Datatypes;
 using namespace Core::Geometry;
-using namespace Core::Algorithms::Visualization;
+using namespace Visualization;
 
 MODULE_INFO_DEF(ShowAndEditDipoles, Visualization, SCIRun)
 
@@ -77,7 +74,7 @@ namespace SCIRun {
 class ShowAndEditDipolesImpl
 {
 public:
-  ShowAndEditDipolesImpl(std::function<Dataflow::Networks::ModuleStateHandle()> s,
+  ShowAndEditDipolesImpl(std::function<ModuleStateHandle()> s,
     GeometryGeneratingModule* module) : state_(s), module_(module) {}
   void setInput(FieldHandle input) { fieldInput_ = input; }
   void loadData(bool inputsChanged);
@@ -87,20 +84,20 @@ public:
   void toggleLastVectorShown();
   void generateGeomsList();
   FieldHandle makePointCloud();
-  const std::vector<Graphics::Datatypes::GeometryHandle>& geoms() const { return geoms_; }
+  const std::vector<GeometryHandle>& geoms() const { return geoms_; }
   void saveToParameters();
-  void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);
+  void adjustPositionFromTransform(const Transform& transformMatrix, size_t index, size_t id);
 private:
-  std::function<Dataflow::Networks::ModuleStateHandle()> state_;
+  std::function<ModuleStateHandle()> state_;
   GeometryGeneratingModule* module_;
   FieldHandle fieldInput_;
-  std::vector<Core::Geometry::Point> pos_;
-  std::vector<Core::Geometry::Vector> direction_;
+  std::vector<Point> pos_;
+  std::vector<Vector> direction_;
   std::vector<double> scale_;
-  Core::Geometry::BBox last_bounds_;
-  std::vector<Graphics::Datatypes::WidgetHandle> arrows_;
-  std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
-  std::vector<Core::Geometry::Transform> previousTransforms_;
+  BBox last_bounds_;
+  std::vector<WidgetHandle> arrows_;
+  std::vector<GeometryHandle> geoms_;
+  std::vector<Transform> previousTransforms_;
 
   bool firstRun_ = true;
   bool getFromFile_ = false;
@@ -117,7 +114,7 @@ private:
   double previousScaleFactor_ = 0.0;
   double zeroVectorRescale_ = 1.0e-3;
 
-  Core::Datatypes::ColorRGB lineCol_ = {0.8, 0.8, 0.2};
+  ColorRGB lineCol_ = {0.8, 0.8, 0.2};
 
   void receiveInputPoints();
   void receiveInputDirections();
@@ -127,9 +124,9 @@ private:
   void makeScalesPositive();
   void resetData();
   std::string widgetName(size_t i, size_t id, size_t iter);
-  void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
-  void moveDipolesTogether(const Core::Geometry::Transform &transform);
-  Graphics::Datatypes::GeometryHandle addLines();
+  void createDipoleWidget(BBox& bbox, Point& pos, Vector dir, double scale, size_t widget_num, bool show_as_vector);
+  void moveDipolesTogether(const Transform&transform);
+  GeometryHandle addLines();
   void loadFromParameters();
 };
 }}}
@@ -165,7 +162,7 @@ void ShowAndEditDipoles::setStateDefaults()
 void ShowAndEditDipoles::execute()
 {
   auto input = getRequiredInput(DipoleInputField);
-  FieldInformation fi(input);
+  const FieldInformation fi(input);
   auto state = get_state();
 
   // Point clouds must be linear, so we only loook for node-based data
@@ -263,7 +260,7 @@ void ShowAndEditDipolesImpl::loadData(bool inputsChanged)
   }
 
   if ((static_cast<int>(previousSizing_) != state_()->getValue(Parameters::Sizing).toInt() || state_()->getValue(Parameters::Reset).toBool())
-     && SizingType(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_VECTOR_DATA)
+     && static_cast<SizingType>(state_()->getValue(Parameters::Sizing).toInt()) == SizingType::NORMALIZE_VECTOR_DATA)
   {
     scale_.clear();
     for(size_t i = 0; i < pos_.size(); i++)
@@ -280,9 +277,9 @@ void ShowAndEditDipolesImpl::loadData(bool inputsChanged)
 
 void ShowAndEditDipolesImpl::loadFromParameters()
 {
-  VariableList positions = state_()->getValue(Parameters::DipolePositions).toVector();
-  VariableList directions = state_()->getValue(Parameters::DipoleDirections).toVector();
-  VariableList scales = state_()->getValue(Parameters::DipoleScales).toVector();
+  auto positions = state_()->getValue(Parameters::DipolePositions).toVector();
+  auto directions = state_()->getValue(Parameters::DipoleDirections).toVector();
+  auto scales = state_()->getValue(Parameters::DipoleScales).toVector();
 
   pos_.resize(positions.size());
   direction_.resize(positions.size());
@@ -586,12 +583,12 @@ GeometryHandle ShowAndEditDipolesImpl::addLines()
   Graphics::GlyphGeom glyphs;
 
   RenderState renState;
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, false);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_EDGES, false);
   renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
   renState.defaultColor = lineCol_;
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
 
   // Create lines between every point
   for (size_t a = 0; a < pos_.size(); a++)

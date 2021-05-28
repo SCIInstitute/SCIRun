@@ -92,11 +92,11 @@ public:
 
   VTKToTriSurfReaderPrivate(LoggerHandle pr)
     : pr_(pr),
-      meshType_(TRISURFMESH_E),
-      meshBasisType_(LINEARMESH_E),
-      fieldDataBasisType_(NODATA_E),
-      fieldDataType_(NONE_E),
-      vtkDataType_(UNKNOWN),
+      meshType_(mesh_info_type::TRISURFMESH_E),
+      meshBasisType_(meshbasis_info_type::LINEARMESH_E),
+      fieldDataBasisType_(databasis_info_type::NODATA_E),
+      fieldDataType_(data_info_type::NONE_E),
+      vtkDataType_(DATA_TYPE::UNKNOWN),
       POINTS_DIM(3),
       CELL_SIZE(3),
       numPointsFromFile_(0),

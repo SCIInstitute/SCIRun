@@ -49,28 +49,28 @@ namespace TestUtils
 inline
 FieldHandle EmptyTetVolFieldConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
 FieldHandle EmptyTetVolFieldLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
 FieldHandle EmptyTriSurfFieldConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
 FieldHandle EmptyTriSurfFieldLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::LINEARDATA_E, type);
   return( CreateField(fi) );
 }
 

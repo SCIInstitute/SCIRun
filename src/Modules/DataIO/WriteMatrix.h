@@ -50,7 +50,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, MatrixToWrite, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
       protected:
         std::string defaultFileTypeName() const override;

@@ -2140,7 +2140,7 @@ QGraphicsEffect* Gui::blurEffect(double radius)
   return blur;
 }
 
-void NetworkEditor::tagLayer(bool active, int tag)
+void NetworkEditor::tagLayer(bool active, TagValues tag)
 {
   tagLayerActive_ = active;
 
@@ -2149,30 +2149,30 @@ void NetworkEditor::tagLayer(bool active, int tag)
     auto items = scene_->selectedItems();
     Q_FOREACH(QGraphicsItem* item, items)
     {
-      if (item->data(TagDataKey).toInt() == NoTag)
+      if (item->data(TagValues::TagDataKey).toInt() == TagValues::NoTag)
       {
         if (validTag(tag))
-          item->setData(TagDataKey, tag);
+          item->setData(TagValues::TagDataKey, tag);
       }
-      else if (ClearTags == tag)
+      else if (TagValues::ClearTags == tag)
       {
-        item->setData(TagDataKey, NoTag);
+        item->setData(TagValues::TagDataKey, TagValues::NoTag);
       }
     }
   }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    item->setData(TagLayerKey, active);
-    item->setData(CurrentTagKey, tag);
+    item->setData(TagValues::TagLayerKey, active);
+    item->setData(TagValues::CurrentTagKey, tag);
     if (active)
     {
-      const auto itemTag = item->data(TagDataKey).toInt();
-      if (AllTags == tag || ShowGroups == tag)
+      const auto itemTag = item->data(TagValues::TagDataKey).toInt();
+      if (TagValues::AllTags == tag || TagValues::ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
       }
-      else if (tag != NoTag && tag != ClearTags)
+      else if (tag != TagValues::NoTag && tag != TagValues::ClearTags)
       {
         if (tag == itemTag)
         {
@@ -2185,12 +2185,12 @@ void NetworkEditor::tagLayer(bool active, int tag)
     else
       item->setGraphicsEffect(nullptr);
   }
-  if (ShowGroups == tag)
+  if (TagValues::ShowGroups == tag)
   {
     tagGroupsActive_ = true;
     redrawTagGroups();
   }
-  if (HideGroups == tag)
+  if (TagValues::HideGroups == tag)
   {
     tagGroupsActive_ = false;
     removeTagGroups();
@@ -2382,9 +2382,9 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
   Q_EMIT modified();
 }
 
-void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
+void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, TagValues tagValue)
 {
-  if (tagValue == NoTag)
+  if (tagValue == TagValues::NoTag)
   {
     item->setGraphicsEffect(blurEffect());
   }
