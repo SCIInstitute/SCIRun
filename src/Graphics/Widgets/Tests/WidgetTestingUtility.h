@@ -71,13 +71,13 @@ namespace SCIRun
       class SCISHARE StubGlyphFactory : public AbstractGlyphFactory
       {
       public:
-        std::string sphere(SphereParameters params, WidgetBase& widget) const override { return "__sphere__" + std::to_string(instanceCount_++); }
-        std::string disk(DiskParameters params, WidgetBase& widget) const override { return "__disk__" + std::to_string(instanceCount_++); }
-        std::string cone(ConeParameters params, WidgetBase& widget) const override { return "__cone__" + std::to_string(instanceCount_++); }
-        std::string cylinder(CylinderParameters params, WidgetBase& widget) const override { return "__cylinder__" + std::to_string(instanceCount_++); }
-        std::string basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const override { return "__basicBox__" + std::to_string(instanceCount_++); }
-        std::string box(BoundingBoxParameters params, WidgetBase& widget) const override { return "__box__" + std::to_string(instanceCount_++); }
-        std::string superquadric(SuperquadricParameters params, WidgetBase& widget) const override { return "__superquadric__" + std::to_string(instanceCount_++); }
+        std::string sphere(SphereParameters, WidgetBase& ) const override { return "__sphere__" + std::to_string(instanceCount_++); }
+        std::string disk(DiskParameters, WidgetBase&) const override { return "__disk__" + std::to_string(instanceCount_++); }
+        std::string cone(ConeParameters, WidgetBase&) const override { return "__cone__" + std::to_string(instanceCount_++); }
+        std::string cylinder(CylinderParameters, WidgetBase&) const override { return "__cylinder__" + std::to_string(instanceCount_++); }
+        std::string basicBox(BasicBoundingBoxParameters, WidgetBase&) const override { return "__basicBox__" + std::to_string(instanceCount_++); }
+        std::string box(BoundingBoxParameters, WidgetBase&) const override { return "__box__" + std::to_string(instanceCount_++); }
+        std::string superquadric(SuperquadricParameters, WidgetBase&) const override { return "__superquadric__" + std::to_string(instanceCount_++); }
       private:
         mutable int instanceCount_{0};
       };

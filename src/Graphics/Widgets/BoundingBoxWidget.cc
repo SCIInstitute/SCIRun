@@ -27,6 +27,8 @@
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Dyadic3DTensor.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
@@ -349,11 +351,12 @@ void BBoxDataHandler::makeCornerSuperquadrics(const GeneralWidgetParameters& gen
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
-  Tensor t = Tensor(scaledEigvecs_[0].normal(), scaledEigvecs_[1].normal(), scaledEigvecs_[2].normal());
+  auto t = Tensor(scaledEigvecs_[0].normal(), scaledEigvecs_[1].normal(), scaledEigvecs_[2].normal());
+  auto newT = Dyadic3DTensor(t.xx(), t.xy(), t.xz(), t.yy(), t.yz(), t.zz());
   for (int c = 0; c < CORNER_COUNT_; ++c)
   {
     corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c])
-      .tensor(t).A(cornerEmphasis).B(cornerEmphasis).build();
+      .tensor(newT).A(cornerEmphasis).B(cornerEmphasis).build();
     auto flipVec = cornerPoints_[c] - params.origin;
     corners_[c]->addTransformParameters<Scaling>(params.origin, flipVec);
   }
