@@ -25,17 +25,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <gtest/gtest.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
-#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
+#include <gtest/gtest.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -44,23 +43,21 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 class CleanupTetMeshTests : public ::testing::Test
-{
-
-};
+{};
 
 TEST_F(CleanupTetMeshTests, CleanupTetMeshTests_RemoveDegenerateTet)
 {
-  FieldInformation fi("TetVolMesh", CONSTANTDATA_E, "double");
+  FieldInformation fi("TetVolMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
   FieldHandle field = CreateField(fi);
   auto vmesh = field->vmesh();
   VMesh::Node::array_type vdata;
   vdata.resize(4);
   vmesh->node_reserve(4);
   vmesh->elem_reserve(1);
-  vmesh->add_point( Point(98.2337, 179.3770, 72.7303));
-  vmesh->add_point( Point(98.2337, 179.3770, 72.7303));
-  vmesh->add_point( Point(97.0604, 179.6824, 72.3515));
-  vmesh->add_point( Point(97.9706, 180.4140, 71.7113));
+  vmesh->add_point(Point(98.2337, 179.3770, 72.7303));
+  vmesh->add_point(Point(98.2337, 179.3770, 72.7303));
+  vmesh->add_point(Point(97.0604, 179.6824, 72.3515));
+  vmesh->add_point(Point(97.9706, 180.4140, 71.7113));
   vdata[0] = 0;
   vdata[1] = 0;
   vdata[2] = 2;
@@ -72,30 +69,29 @@ TEST_F(CleanupTetMeshTests, CleanupTetMeshTests_RemoveDegenerateTet)
   FieldHandle output;
   algo.set(Parameters::RemoveDegenerateCheckBox, true);
   algo.set(Parameters::FixOrientationCheckBox, false);
-  if(!algo.run(field, output))
+  if (!algo.run(field, output))
   {
-   std::cout << "Unexpected error: algorithm failed!" << std::endl;
+    std::cout << "Unexpected error: algorithm failed!" << std::endl;
   }
-  EXPECT_EQ(output->vmesh()->num_nodes(),4);
-  EXPECT_EQ(output->vmesh()->num_elems(),0);
-  EXPECT_EQ(output->vfield()->num_values(),0);
+  EXPECT_EQ(output->vmesh()->num_nodes(), 4);
+  EXPECT_EQ(output->vmesh()->num_elems(), 0);
+  EXPECT_EQ(output->vfield()->num_values(), 0);
 }
 
 TEST_F(CleanupTetMeshTests, CleanupTetMeshTests_fixorientations)
 {
-  FieldInformation fi("TetVolMesh", CONSTANTDATA_E, "double");
+  FieldInformation fi("TetVolMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
   FieldHandle field = CreateField(fi);
   auto vmesh = field->vmesh();
   VMesh::Node::array_type vdata;
   vdata.resize(4);
   vmesh->node_reserve(4);
   vmesh->elem_reserve(1);
-  vmesh->add_point( Point(-98.2337, -179.3770, -72.7303));
-  vmesh->add_point( Point(97.0604, 179.6824, 72.3515));
-  vmesh->add_point( Point(97.9706, 180.4140, 71.7113));
-  vmesh->add_point( Point(-97.5724, -179.0278, -71.8274));
-  for (size_type i = 0; i < 4; ++i)
-    vdata[i] = i;
+  vmesh->add_point(Point(-98.2337, -179.3770, -72.7303));
+  vmesh->add_point(Point(97.0604, 179.6824, 72.3515));
+  vmesh->add_point(Point(97.9706, 180.4140, 71.7113));
+  vmesh->add_point(Point(-97.5724, -179.0278, -71.8274));
+  for (size_type i = 0; i < 4; ++i) vdata[i] = i;
   vmesh->add_elem(vdata);
   field->vfield()->resize_values();
   field->vfield()->set_all_values(0.0);
@@ -103,15 +99,15 @@ TEST_F(CleanupTetMeshTests, CleanupTetMeshTests_fixorientations)
   FieldHandle output;
   algo.set(Parameters::RemoveDegenerateCheckBox, false);
   algo.set(Parameters::FixOrientationCheckBox, true);
-  if(!algo.run(field, output))
+  if (!algo.run(field, output))
   {
-   std::cout << "Unexpected error: algorithm failed!" << std::endl;
+    std::cout << "Unexpected error: algorithm failed!" << std::endl;
   }
-  VMesh*  imesh  = output->vmesh();
+  VMesh* imesh = output->vmesh();
   VMesh::Node::array_type nodes;
-  imesh->get_nodes(nodes,(VMesh::Elem::index_type)0);
-  EXPECT_EQ(nodes[0],1);
-  EXPECT_EQ(nodes[1],0);
-  EXPECT_EQ(nodes[2],2);
-  EXPECT_EQ(nodes[3],3);
+  imesh->get_nodes(nodes, static_cast<VMesh::Elem::index_type>(0));
+  EXPECT_EQ(nodes[0], 1);
+  EXPECT_EQ(nodes[1], 0);
+  EXPECT_EQ(nodes[2], 2);
+  EXPECT_EQ(nodes[3], 3);
 }

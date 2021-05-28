@@ -86,7 +86,7 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
     DenseMatrix expected(SCIRun::TestUtils::matrix1H()->col(i));
     ASSERT_TRUE(std::get<0>(col) != nullptr);
     //std::cout << "expected\n" << expected << "\n\nactual\n" << *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())) << std::endl;
-    EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(std::get<0>(col)));
+    EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(std::get<0>(col))));
     EXPECT_EQ(m1->ncols() - 1, std::get<1>(col));
   }
   for (int i = 0; i < m1->nrows(); ++i)
@@ -94,7 +94,7 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
     auto row = algo.runImpl(m1, i, false);
     SparseRowMatrix expected(m1->row(i));
     ASSERT_TRUE(std::get<0>(row) != nullptr);
-    EXPECT_SPARSE_EQ(expected, *castMatrix::toSparse(std::get<0>(row));
+    EXPECT_SPARSE_EQ(expected, *castMatrix::toSparse(std::get<0>(row)));
     EXPECT_EQ(m1->nrows() - 1, std::get<1>(row));
   }
 }

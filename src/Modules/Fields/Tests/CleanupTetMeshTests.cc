@@ -85,7 +85,7 @@ TEST_F(CleanupTetMeshModuleTests, WrongInput)
 TEST_F(CleanupTetMeshModuleTests, ShouldWork)
 {
   auto cg = makeModule("CleanupTetMesh");
-  FieldInformation fi("TetVolMesh", CONSTANTDATA_E, "double");
+  FieldInformation fi("TetVolMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
   FieldHandle field = CreateField(fi);
   auto vmesh = field->vmesh();
   VMesh::Node::array_type vdata;
