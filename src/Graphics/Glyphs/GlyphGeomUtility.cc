@@ -72,3 +72,7 @@ void GlyphGeomUtility::generateTransforms(const Point& center, const Vector& eig
   translate.pre_translate((Vector) center);
 }
 
+Vector GlyphGeomUtility::EigenVectorToSCIRunVector(const Eigen::Vector3d& v)
+{
+  return Vector(v[0], v[1], v[2]);
+}

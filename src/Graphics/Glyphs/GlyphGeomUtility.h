@@ -32,6 +32,7 @@
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Eigen/Dense>
 #include <Graphics/Glyphs/share.h>
 
 namespace SCIRun {
@@ -50,16 +51,13 @@ public:
                                  Core::Geometry::Transform& translate,
                                  Core::Geometry::Transform& rotate);
   static inline double spow(double e, double x);
+  static Core::Geometry::Vector EigenVectorToSCIRunVector(const Eigen::Vector3d& v);
 };
 
 inline double GlyphGeomUtility::spow(double e, double x)
 {
-  // This for round off of very small numbers.
-  if (std::abs(e) < 1.0e-6)
-    e = 0.0;
-
   if (e < 0.0)
-    return std::pow(std::abs(e), x) * -1.0;
+    return -std::pow(-e, x);
   else
     return std::pow(e, x);
 }
