@@ -65,8 +65,8 @@ MatrixHandle getOperand(MatrixTypeCode code)
     return MatrixHandle(matrix1().clone());
   case MatrixTypeCode::SPARSE_ROW:
     return matrix1sparse();
-  case MatrixTypeCode::NULL_MATRIX: break;
-  case MatrixTypeCode::UNKNOWN: break;
+  case MatrixTypeCode::NULL_MATRIX: return nullptr;
+  case MatrixTypeCode::UNKNOWN: return nullptr;
   default:
     return nullptr;
   }

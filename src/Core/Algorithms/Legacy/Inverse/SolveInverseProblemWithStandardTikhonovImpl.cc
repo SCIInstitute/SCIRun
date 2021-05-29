@@ -93,8 +93,8 @@ using namespace Inverse;
 /////// precomputeInverseMatrices
 ///////////////
     void SolveInverseProblemWithStandardTikhonovImpl::preAllocateInverseMatrices(const DenseMatrix& forwardMatrix, const
-        DenseMatrix& measuredData_ , const DenseMatrix& sourceWeighting_, const DenseMatrix& sensorWeighting_, const TikhonovAlgoAbstractBase::AlgorithmChoice regularizationChoice,
-      const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_)
+        DenseMatrix& measuredData_ , const DenseMatrix& , const DenseMatrix& , const TikhonovAlgoAbstractBase::AlgorithmChoice regularizationChoice,
+      const int , const int )
     {
 
         // TODO: use DimensionMismatch exception where appropriate
