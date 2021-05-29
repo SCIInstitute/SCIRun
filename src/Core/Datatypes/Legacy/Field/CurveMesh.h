@@ -160,7 +160,7 @@ public:
   class ElemData
   {
   public:
-    using index_type = index_type;
+    typedef typename CurveMesh<Basis>::index_type index_type;
 
     ElemData(const CurveMesh<Basis>& msh, const index_type idx) :
       mesh_(msh),
