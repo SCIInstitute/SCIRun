@@ -164,14 +164,14 @@ namespace Geometry {
     {
       /// @todo: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
-      return Max(diagonal.x(), diagonal.y(), diagonal.z());
+      return (std::max)({diagonal.x(), diagonal.y(), diagonal.z()});
     }
 
     inline double shortest_edge() const
     {
       /// @todo: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
-      return Min(diagonal.x(), diagonal.y(), diagonal.z());
+      return (std::min)({diagonal.x(), diagonal.y(), diagonal.z()});
     }
 
     /// Check whether two BBoxes are similar

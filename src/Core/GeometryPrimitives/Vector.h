@@ -48,18 +48,6 @@ namespace Core {
 namespace Geometry {
 
   /// @todo move to math header
-  template <typename T>
-  inline const T& Min(const T& t1, const T& t2, const T& t3)
-  {
-    return std::min(std::min(t1,t2), t3);
-  }
-
-  template <typename T>
-  inline const T& Max(const T& t1, const T& t2, const T& t3)
-  {
-    return std::max(std::max(t1,t2), t3);
-  }
-
 class Point;
 
 class Vector
@@ -263,12 +251,12 @@ inline double Vector::length2() const
 
 inline double Vector::minComponent() const
 {
-  return Min(d_[0], d_[1], d_[2]);
+  return (std::min)({d_[0], d_[1], d_[2]});
 }
 
 inline double Vector::maxComponent() const
 {
-  return Max(d_[0], d_[1], d_[2]);
+  return (std::max)({d_[0], d_[1], d_[2]});
 }
 
 inline Vector Vector::operator/(const double d) const
