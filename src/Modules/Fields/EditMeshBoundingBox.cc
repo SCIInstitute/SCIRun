@@ -120,10 +120,9 @@ void EditMeshBoundingBox::setOutputParameters()
   state->setValue(OutputCenterX, widgetTranslation_.x());
   state->setValue(OutputCenterY, widgetTranslation_.y());
   state->setValue(OutputCenterZ, widgetTranslation_.z());
-  auto vecs = widgetScale_.get_transformation_vectors();
-  state->setValue(OutputSizeX, vecs[0].norm());
-  state->setValue(OutputSizeY, vecs[1].norm());
-  state->setValue(OutputSizeZ, vecs[2].norm());
+  state->setValue(OutputSizeX, size_[0]);
+  state->setValue(OutputSizeY, size_[1]);
+  state->setValue(OutputSizeZ, size_[2]);
 }
 
 void EditMeshBoundingBox::clearVals()
@@ -241,10 +240,11 @@ void EditMeshBoundingBox::resetToInputField()
   computeWidgetBox(outputField_->vmesh()->get_bounding_box());
 
   ogPos_ = pos_;
+  ogSize_ = size_;
   widgetTranslation_ = pos_;
-  auto trans = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-  ogScale_ = Vector(eigvals_[0], eigvals_[1], eigvals_[2]);
-  widgetScale_.pre_scale(Vector(eigvals_[0], eigvals_[1], eigvals_[2]));
+  auto eigvals = HALF_SCALE_ * size_;
+  auto trans = Transform(pos_, eigvecs_[0]*eigvals[0], eigvecs_[1]*eigvals[1], eigvecs_[2]*eigvals[2]);
+  widgetScale_.pre_scale(eigvals);
 
   inputFieldInverse_ = Transform(trans);
   inputFieldInverse_.invert();
@@ -254,9 +254,9 @@ void EditMeshBoundingBox::resetToInputField()
   state->setValue(OutputCenterX, ogPos_.x());
   state->setValue(OutputCenterY, ogPos_.y());
   state->setValue(OutputCenterZ, ogPos_.z());
-  state->setValue(OutputSizeX, ogScale_.x());
-  state->setValue(OutputSizeY, ogScale_.y());
-  state->setValue(OutputSizeZ, ogScale_.z());
+  state->setValue(OutputSizeX, ogSize_.x());
+  state->setValue(OutputSizeY, ogSize_.y());
+  state->setValue(OutputSizeZ, ogSize_.z());
 }
 
 // Sets the translation vector in the homogeneous matrices
@@ -266,8 +266,8 @@ void EditMeshBoundingBox::setOutputCenter()
   state->setTransientValue(SetOutputCenter, false);
 
   widgetTranslation_ = Point(state->getValue(OutputCenterX).toDouble(),
-                              state->getValue(OutputCenterY).toDouble(),
-                              state->getValue(OutputCenterZ).toDouble());
+                             state->getValue(OutputCenterY).toDouble(),
+                             state->getValue(OutputCenterZ).toDouble());
 
 }
 
@@ -286,23 +286,27 @@ void EditMeshBoundingBox::setOutputSize()
 {
   auto state = get_state();
   state->setTransientValue(SetOutputSize, false);
+  size_ = Vector(state->getValue(OutputSizeX).toDouble(),
+                 state->getValue(OutputSizeY).toDouble(),
+                 state->getValue(OutputSizeZ).toDouble());
+  auto eigvals = HALF_SCALE_ * size_;
 
   widgetScale_ = Transform();
-  widgetScale_.post_scale(Vector(state->getValue(OutputSizeX).toDouble(),
-                                 state->getValue(OutputSizeY).toDouble(),
-                                 state->getValue(OutputSizeZ).toDouble()));
+  widgetScale_.post_scale(eigvals);
 }
 
 void EditMeshBoundingBox::resetOutputSize()
 {
   auto state = get_state();
   state->setTransientValue(ResetSize, false);
+  size_ = ogSize_;
+  auto eigvals = HALF_SCALE_ * size_;
 
   widgetScale_ = Transform();
-  widgetScale_.pre_scale(ogScale_);
-  state->setValue(OutputSizeX, ogScale_.x());
-  state->setValue(OutputSizeY, ogScale_.y());
-  state->setValue(OutputSizeZ, ogScale_.z());
+  widgetScale_.pre_scale(eigvals);
+  state->setValue(OutputSizeX, size_.x());
+  state->setValue(OutputSizeY, size_.y());
+  state->setValue(OutputSizeZ, size_.z());
 }
 
 std::string EditMeshBoundingBox::convertForLabel(double coord)
@@ -322,32 +326,28 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box)
   }
 
   // build a widget identical to the BBox
-  auto diag = bbox_.diagonal();
+  pos_ = bbox_.center();
+  size_ = bbox_.diagonal();
   const auto SMALL = 1e-4;
-  if (fabs(diag.x())<SMALL)
+  const auto SMALL2 = 2*SMALL;
+  if (fabs(size_.x())<SMALL)
   {
-    diag.x(2 * SMALL);
+    size_.x(SMALL2);
     bbox_.extend(bbox_.get_min() - Vector(SMALL, 0.0, 0.0));
     bbox_.extend(bbox_.get_max() + Vector(SMALL, 0.0, 0.0));
   }
-  if (fabs(diag.y())<SMALL)
+  if (fabs(size_.y())<SMALL)
   {
-    diag.y(2 * SMALL);
+    size_.y(SMALL2);
     bbox_.extend(bbox_.get_min() - Vector(0.0, SMALL, 0.0));
     bbox_.extend(bbox_.get_max() + Vector(0.0, SMALL, 0.0));
   }
-  if (fabs(diag.z())<SMALL)
+  if (fabs(size_.z())<SMALL)
   {
-    diag.z(2 * SMALL);
+    size_.z(SMALL2);
     bbox_.extend(bbox_.get_min() - Vector(0.0, 0.0, SMALL));
     bbox_.extend(bbox_.get_max() + Vector(0.0, 0.0, SMALL));
   }
-
-  eigvals_.resize(mDIMENSIONS);
-  pos_ = bbox_.center();
-  eigvals_[0] = diag.x() * 0.5;
-  eigvals_[1] = diag.y() * 0.5;
-  eigvals_[2] = diag.z() * 0.5;
 }
 
 void EditMeshBoundingBox::generateGeomsList()
@@ -377,9 +377,9 @@ void EditMeshBoundingBox::updateInputFieldAttributes()
   state->setValue(InputCenterX, convertForLabel(ogPos_[0]));
   state->setValue(InputCenterY, convertForLabel(ogPos_[1]));
   state->setValue(InputCenterZ, convertForLabel(ogPos_[2]));
-  state->setValue(InputSizeX, convertForLabel(ogScale_[0]));
-  state->setValue(InputSizeY, convertForLabel(ogScale_[1]));
-  state->setValue(InputSizeZ, convertForLabel(ogScale_[2]));
+  state->setValue(InputSizeX, convertForLabel(ogSize_[0]));
+  state->setValue(InputSizeY, convertForLabel(ogSize_[1]));
+  state->setValue(InputSizeZ, convertForLabel(ogSize_[2]));
 }
 
 void EditMeshBoundingBox::saveToParameters()

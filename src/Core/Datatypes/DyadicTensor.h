@@ -132,7 +132,7 @@ namespace Core {
           for (SizeType j = 0; j < Dim; ++j)
             (*this)(i, j) = mat(i, j);
       }
-      DyadicTensorGeneric(MandelVector man)
+      explicit DyadicTensorGeneric(MandelVector man)
       {
         static const Number sqrt2 = std::sqrt(2);
         for (SizeType i = Dim; i < MANDEL_SIZE_; ++i)
@@ -337,7 +337,7 @@ namespace Core {
       SizeType getDimension1() const { return Dim; }
       SizeType getDimension2() const { return Dim; }
 
-      VectorType getNormalizedEigenvalues()
+      VectorType getNormalizedEigenvalues() const
       {
         auto eigvals = getEigenvalues();
         auto fro = frobeniusNorm();
@@ -622,7 +622,7 @@ namespace Core {
           THROW_INVALID_ARGUMENT("The number of input eigvals must be " + std::to_string(eigvals_.size()));
       }
 
-     enum OrderState
+     enum class OrderState
      {
        NONE,
        DESCENDING,
