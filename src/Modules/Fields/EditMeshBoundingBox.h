@@ -103,6 +103,8 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       private:
+        const double HALF_SCALE_ = 0.5;
+
         void clearVals();
         void computeWidgetBox(const Core::Geometry::BBox& box);
         void buildGeometryObject();
@@ -127,14 +129,14 @@ namespace SCIRun {
         Core::Geometry::BBox bbox_;
         Core::Geometry::Point pos_;
         std::vector<Core::Geometry::Vector> eigvecs_;
-        std::vector<double> eigvals_;
+        Core::Geometry::Vector size_;
         FieldHandle outputField_;
         int widgetNum_{0};
         int resolution_ = 20;
 
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         Core::Geometry::Point ogPos_;
-        Core::Geometry::Vector ogScale_;
+        Core::Geometry::Vector ogSize_;
         Core::Geometry::Transform inputFieldInverse_;
         Core::Geometry::Transform widgetScale_;
         Core::Geometry::Transform widgetRotation_;
