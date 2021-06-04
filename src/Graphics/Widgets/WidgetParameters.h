@@ -30,8 +30,8 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Graphics_Widgets_WidgetParameters_H
 
 #include <Core/Datatypes/Feedback.h>
+#include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/share.h>
 
@@ -60,7 +60,7 @@ namespace SCIRun
       {
         CommonWidgetParameters common;
         Core::Geometry::Point point;
-        Core::Geometry::Tensor tensor;
+        Core::Datatypes::Dyadic3DTensor tensor;
         double A;
         double B;
       };

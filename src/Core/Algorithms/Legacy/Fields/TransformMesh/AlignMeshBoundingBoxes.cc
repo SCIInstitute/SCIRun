@@ -44,11 +44,11 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName AlignMeshBoundingBoxesAlgo::RotateData("rotate_data");
+ALGORITHM_PARAMETER_DEF(Fields, RotateData);
 
 AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
 {
-  addParameter(RotateData, true);
+  addParameter(Parameters::RotateData, true);
 }
 
 bool
@@ -56,7 +56,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
 
-  bool rotate_data = get(RotateData).toBool();
+  bool rotate_data = get(Parameters::RotateData).toBool();
   // Step 0:
   // Safety test:
   // Test whether we received actually a field. A handle can point to no object.
@@ -133,7 +133,6 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 }
 
 AlgorithmInputName AlignMeshBoundingBoxesAlgo::AlignmentField("AlignmentField");
-AlgorithmOutputName AlignMeshBoundingBoxesAlgo::OutputField("OutputField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::TransformMatrix("TransformMatrix");
 
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run(const AlgorithmInput& input) const
@@ -147,7 +146,7 @@ AlgorithmOutput AlignMeshBoundingBoxesAlgo::run(const AlgorithmInput& input) con
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = outputField;
+  output[Variables::OutputField] = outputField;
   output[TransformMatrix] = transform;
   return output;
 }

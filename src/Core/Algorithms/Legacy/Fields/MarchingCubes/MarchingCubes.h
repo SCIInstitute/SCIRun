@@ -48,20 +48,19 @@
 namespace SCIRun {
  namespace Core {
   namespace Algorithms {
+    namespace Fields {
+
+      ALGORITHM_PARAMETER_DECL(transparency);
+      ALGORITHM_PARAMETER_DECL(build_geometry);
+      ALGORITHM_PARAMETER_DECL(num_threads);
+      ALGORITHM_PARAMETER_DECL(build_field);
+      ALGORITHM_PARAMETER_DECL(build_node_interpolant);
+      ALGORITHM_PARAMETER_DECL(build_elem_interpolant);
 
    class SCISHARE MarchingCubesAlgo : public AlgorithmBase
    {
-
-    public:
-
-    MarchingCubesAlgo();
-
-    static AlgorithmParameterName transparency;
-    static AlgorithmParameterName build_geometry;
-    static AlgorithmParameterName build_field;
-    static AlgorithmParameterName build_node_interpolant;
-    static AlgorithmParameterName build_elem_interpolant;
-    static AlgorithmParameterName num_threads;
+   public:
+     MarchingCubesAlgo();
 
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    {
@@ -85,7 +84,8 @@ namespace SCIRun {
              Datatypes::MatrixHandle& elem_interpolant ) const;
    };
 
+ }
   }
- } // End namespace SCIRun
+ }
 }
 #endif

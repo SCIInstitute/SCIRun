@@ -60,6 +60,7 @@ class PositionProvider;
 class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
+class ModuleDialogDockWidget;
 
 class ModuleWidgetDisplayBase
 {
@@ -279,7 +280,7 @@ private:
   std::string moduleId_;
   QString name_;
   class ModuleDialogGeneric* dialog_;
-  QDockWidget* dockable_;
+  ModuleDialogDockWidget* dockable_;
   bool firstTimeShown_{ true };
   static QList<QPoint> positions_;
   void makeOptionsDialog();

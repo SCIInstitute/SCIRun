@@ -29,9 +29,6 @@
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -46,6 +43,6 @@ ClipVolumeByIsovalueDialog::ClipVolumeByIsovalueDialog(const std::string& name, 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addDoubleSpinBoxManager(IsoValueSpinBox_, ClipMeshByIsovalueAlgo::ScalarIsoValue);
-  addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, ClipMeshByIsovalueAlgo::LessThanIsoValue);
+  addDoubleSpinBoxManager(IsoValueSpinBox_, Parameters::ScalarIsoValue);
+  addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, Parameters::LessThanIsoValue);
 }

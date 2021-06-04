@@ -29,8 +29,8 @@
 #ifndef Graphics_Glyphs_TENSOR_GLYPH_BUILDER_H
 #define Graphics_Glyphs_TENSOR_GLYPH_BUILDER_H
 
+#include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Color.h>
@@ -43,7 +43,7 @@ namespace Graphics {
 class SCISHARE TensorGlyphBuilder
 {
 public:
-  TensorGlyphBuilder(const Core::Geometry::Tensor& t, const Core::Geometry::Point& center);
+  TensorGlyphBuilder(const Core::Datatypes::Dyadic3DTensor& t, const Core::Geometry::Point& center);
   void scaleTensor(double scale);
   void reorderTensorValues(std::vector<Core::Geometry::Vector>& eigvecs, std::vector<double>& eigvals);
   void makeTensorPositive();
@@ -57,11 +57,17 @@ public:
 
 private:
   void generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B);
+  Core::Geometry::Point evaluateSuperquadricNormalLinear(double sinphi, double cosphi, double sintheta,
+                                        double costheta, double A, double B);
+  Core::Geometry::Point evaluateSuperquadricNormalPlanar(double sinphi, double cosphi, double sintheta,
+                                        double costheta, double A, double B);
   Core::Geometry::Point evaluateSuperquadricPointLinear(double sinphi, double cosphi, double sintheta,
                                         double costheta, double A, double B);
   Core::Geometry::Point evaluateSuperquadricPointPlanar(double sinphi, double cosphi, double sintheta,
                                         double costheta, double A, double B);
   Core::Geometry::Point evaluateEllipsoidPoint(double sinphi, double cosphi, double sintheta, double costheta);
+  Core::Geometry::Point evaluateSuperquadricNormal(bool linear, double sinPhi, double cosPhi, double sinTheta,
+                                  double cosTheta, double A, double B);
   Core::Geometry::Point evaluateSuperquadricPoint(bool linear, double sinPhi, double cosPhi, double sinTheta,
                                   double cosTheta, double A, double B);
   void generateBoxSide(GlyphConstructor& constructor, const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
@@ -76,7 +82,7 @@ private:
 
   const static int DIMENSIONS_ = 3;
   const static int BOX_FACE_POINTS_ = 4;
-  Core::Geometry::Tensor t_;
+  Core::Datatypes::Dyadic3DTensor t_;
   Core::Geometry::Point center_;
   Core::Geometry::Transform trans_, rotate_;
   Core::Datatypes::ColorRGB color_ = {1.0, 1.0, 1.0};

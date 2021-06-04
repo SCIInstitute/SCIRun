@@ -50,11 +50,10 @@ ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 
 void ConvertMeshToPointCloud::setStateDefaults()
 {
-  setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
+  setStateStringFromAlgoOption(Parameters::Location);
 }
 
-void
-ConvertMeshToPointCloud::execute()
+void ConvertMeshToPointCloud::execute()
 {
   auto imesh = getRequiredInput(Mesh);
 
@@ -63,7 +62,7 @@ ConvertMeshToPointCloud::execute()
 
   if (needToExecute())
   {
-    setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
+    setAlgoOptionFromState(Parameters::Location);
 
     auto output = algo().run(input);
 

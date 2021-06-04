@@ -38,6 +38,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -63,9 +64,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, WM);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, Electrode);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InternalAir);
 
-AlgorithmInputName  SetConductivitiesToMeshAlgorithm::InputField("InputField");
-AlgorithmOutputName SetConductivitiesToMeshAlgorithm::OutputField("OutputField");
-
 SetConductivitiesToMeshAlgorithm::SetConductivitiesToMeshAlgorithm()
 {
   ElemLabelLookup += 1,2,3,4,5,6,7,8;
@@ -84,13 +82,13 @@ SetConductivitiesToMeshAlgorithm::SetConductivitiesToMeshAlgorithm()
 
 AlgorithmOutput SetConductivitiesToMeshAlgorithm::run(const AlgorithmInput& input) const
 {
-  auto mesh  = input.get<Field>(InputField);
+  auto mesh  = input.get<Field>(Variables::InputField);
 
   AlgorithmOutput output;
 
   FieldHandle output_field = run(mesh);
 
-  output[OutputField] = output_field;
+  output[Variables::OutputField] = output_field;
 
   return output;
 }

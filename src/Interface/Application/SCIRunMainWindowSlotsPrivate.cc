@@ -914,7 +914,6 @@ void SCIRunMainWindow::launchNewInstance()
 
 void SCIRunMainWindow::maxCoreValueChanged(int value)
 {
-  qDebug() << __FUNCTION__ << value;
   Core::Thread::Parallel::SetMaximumCores(value);
 }
 

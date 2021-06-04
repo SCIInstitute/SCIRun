@@ -54,7 +54,7 @@ bool
   FieldHandle& input,
   FieldHandle& output)
 {
-  std::string method = algo->getOption(MapFieldDataFromElemToNodeAlgo::Method);
+  std::string method = algo->getOption(Variables::Method);
 
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
@@ -224,10 +224,8 @@ bool
 
 MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
 {
-  addOption(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
+  addOption(Variables::Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
-
-AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
 AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run(const AlgorithmInput& input) const
 {

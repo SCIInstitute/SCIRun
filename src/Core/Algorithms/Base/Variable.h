@@ -125,6 +125,12 @@ namespace Algorithms {
   }
 
   template <typename T>
+  Variable::List makeHomogeneousVariableListFill(const T& value, size_t num)
+  {
+    return makeHomogeneousVariableList([value](size_t) { return value; }, num);
+  }
+
+  template <typename T>
   std::vector<T> toTypedVector(const Variable::List& list, std::function<T(const Variable&)> convert)
   {
     std::vector<T> ts;

@@ -244,7 +244,7 @@ namespace SCIRun
 
       ESCore                              mCore               {};       // Entity system core.
 
-      std::vector<ClippingPlane>          clippingPlanes_     {};
+      std::vector<Core::Datatypes::ClippingPlane>          clippingPlanes_     {};
       int                                 clippingPlaneIndex_ {0};
 
       ren::ShaderVBOAttribs<5>            mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
