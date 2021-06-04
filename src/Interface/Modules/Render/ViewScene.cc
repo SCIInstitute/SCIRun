@@ -342,8 +342,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     spire->setClippingPlaneManager(clippingPlaneManager_);
   }
 
-  setInitialLightValues();
-
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometriesAndSendScreenShot()));
 
@@ -887,6 +885,7 @@ void ViewSceneDialog::pullSpecial()
     initializeClippingPlaneDisplay();
     initializeAxes();
     initializeVisibleObjects();
+    setInitialLightValues();
     pulledSavedVisibility_ = true;
   }
 }
