@@ -252,6 +252,8 @@ ENDIF()
 IF(NOT BUILD_HEADLESS)
   CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
   INCLUDE(${QWT_USE_FILE})
+  CONFIG_STANDARD_EXTERNAL( Ctk CtkConfig.cmake ${CTK_DIR} )
+  #INCLUDE(${CTK_USE_FILE})
 ENDIF()
 
 ########################################################################

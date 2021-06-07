@@ -209,6 +209,7 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/CtkExternal.cmake Ctk_external )
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
@@ -293,6 +294,7 @@ IF(NOT BUILD_HEADLESS)
 	  "-DQt5Concurrent_DIR:PATH=${Qt5Concurrent_DIR}"
     "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
     "-DQWT_DIR:PATH=${QWT_DIR}"
+    "-DCTK_DIR:PATH=${CTK_DIR}"
   )
 ENDIF()
 
