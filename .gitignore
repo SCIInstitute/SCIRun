@@ -31,6 +31,5 @@ CTestTestfile.cmake
 DartConfiguration.tcl
 cmake
 
-# docs site
-_site
-.sass-cache
+# Sphinx builds
+docs/_build/
