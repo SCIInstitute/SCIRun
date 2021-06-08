@@ -253,7 +253,7 @@ IF(NOT BUILD_HEADLESS)
   CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
   INCLUDE(${QWT_USE_FILE})
   CONFIG_STANDARD_EXTERNAL( Ctk CtkConfig.cmake ${CTK_DIR} )
-  #INCLUDE(${CTK_USE_FILE})
+  INCLUDE(${CTK_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -526,6 +526,7 @@ INCLUDE_DIRECTORIES(
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
   ${SCI_QWT_INCLUDE}
+  ${SCI_CTK_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
 

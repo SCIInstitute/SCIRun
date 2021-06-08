@@ -32,7 +32,7 @@ SET(CTK_CACHE_ARGS
   "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
   )
 
-SET(ctk_GIT_TAG "origin/master")
+SET(ctk_GIT_TAG "origin/scirun-build")
 
 LIST(APPEND CTK_CACHE_ARGS
   "-DCTK_QT_VERSION:STRING=5"
@@ -43,7 +43,7 @@ LIST(APPEND CTK_CACHE_ARGS
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Ctk_external
-  GIT_REPOSITORY "https://github.com/commontk/CTK.git"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/CTK.git"
   GIT_TAG ${ctk_GIT_TAG}
   PATCH_COMMAND ""
   INSTALL_DIR ""
