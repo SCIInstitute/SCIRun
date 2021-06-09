@@ -116,6 +116,8 @@ SET(Interface_Modules_Math_SOURCES
 QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")
 QT_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC "${Interface_Modules_Math_HEADERS}")
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Base/CustomWidgets/CTK)
+
 SCIRUN_ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_HEADERS}
   ${Interface_Modules_Math_FORMS_HEADERS}
