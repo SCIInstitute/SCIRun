@@ -38,6 +38,7 @@ SET(Interface_Modules_Base_HEADERS
   share.h
   CustomWidgets/CTK/Core/ctkPimpl.h
   CustomWidgets/CTK/Core/ctkUtils.h
+  CustomWidgets/CTK/ctkWidgetsUtils.h
 )
 
 SET(Interface_Modules_Base_HEADERS_M
@@ -52,6 +53,10 @@ SET(Interface_Modules_Base_HEADERS_M
   CustomWidgets/CodeEditorWidgets.h
   CustomWidgets/CTK/ctkDoubleSpinBox.h
   CustomWidgets/CTK/ctkDoubleSpinBox_p.h
+  CustomWidgets/CTK/ctkBasePopupWidget.h
+  CustomWidgets/CTK/ctkBasePopupWidget_p.h
+  CustomWidgets/CTK/ctkPopupWidget.h
+  CustomWidgets/CTK/ctkPopupWidget_p.h
   CustomWidgets/CTK/Core/ctkValueProxy.h
 )
 
@@ -66,8 +71,11 @@ SET(Interface_Modules_Base_SOURCES
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
   CustomWidgets/CTK/ctkDoubleSpinBox.cpp
+  CustomWidgets/CTK/ctkPopupWidget.cpp
+  CustomWidgets/CTK/ctkBasePopupWidget.cpp
   CustomWidgets/CTK/Core/ctkUtils.cpp
   CustomWidgets/CTK/Core/ctkValueProxy.cpp
+  CustomWidgets/CTK/ctkWidgetsUtils.cpp
 )
 
 QT_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS "${Interface_Modules_Base_FORMS}")

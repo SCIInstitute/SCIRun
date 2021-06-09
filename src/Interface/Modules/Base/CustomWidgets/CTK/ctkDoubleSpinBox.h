@@ -24,10 +24,9 @@
 // Qt includes
 #include <QMetaType>
 #include <QString>
-#include <QWidget>
+#include <QDoubleSpinBox>
 #include <Interface/Modules/Base/share.h>
 
-class QDoubleSpinBox;
 class QEvent;
 class QKeyEvent;
 class QLineEdit;
@@ -43,7 +42,7 @@ class ctkValueProxy;
 /// The ctkDoubleSpinBox internaly uses a QDoubleSpinBox while it retain controls
 /// over it.
 /// \sa ctkDoubleSlider, ctkSliderWidget, ctkRangeSlider
-class CTK_WIDGETS_EXPORT ctkDoubleSpinBox : public QWidget
+class CTK_WIDGETS_EXPORT ctkDoubleSpinBox : public QDoubleSpinBox
 {
   Q_OBJECT
   Q_ENUMS(SetMode)

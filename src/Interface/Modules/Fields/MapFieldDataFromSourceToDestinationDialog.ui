@@ -86,7 +86,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="maxDistanceSpinBox_">
+         <widget class="ctkDoubleSpinBox" name="maxDistanceSpinBox_">
           <property name="minimumSize">
            <size>
             <width>150</width>
@@ -149,7 +149,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="defaultValueDoubleSpinBox_">
+         <widget class="ctkDoubleSpinBox" name="defaultValueDoubleSpinBox_">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -196,6 +196,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ctkDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>ctkDoubleSpinBox.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>noMaxCheckBox_</tabstop>
   <tabstop>useNanForUnassignedValuesCheckBox_</tabstop>

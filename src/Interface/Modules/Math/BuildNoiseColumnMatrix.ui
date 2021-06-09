@@ -39,6 +39,9 @@
        </item>
        <item>
         <widget class="ctkDoubleSpinBox" name="noiseSpinBox_">
+         <property name="decimals">
+          <number>5</number>
+         </property>
          <property name="maximum">
           <double>100.000000000000000</double>
          </property>

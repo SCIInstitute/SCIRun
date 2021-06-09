@@ -41,6 +41,7 @@
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneUtility.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
 #include <gl-platform/GLPlatform.hpp>
@@ -69,7 +70,7 @@ namespace Gui {
     BLUE
   };
 
-  class SCISHARE ScopedWidgetColorChanger
+  class ScopedWidgetColorChanger
   {
   public:
   ScopedWidgetColorChanger(WidgetHandle widget, WidgetColor color)
@@ -368,12 +369,40 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
+  /*
+  {
+    auto* spinBox = new QSpinBox(parent); // the spinbox is the parent of the popup, 
+    auto* popup = new ctkPopupWidget(spinBox); // the popup is placed relative to the spinbox
+    auto* popupLayout = new QHBoxLayout(popup);
+    // populate the popup with a vertical QSlider:
+    auto* popupSlider = new QSlider(Qt::Vertical, popup);
+    // add here the signal/slot connection between the slider and the spinbox
+    popupLayout->addWidget(popupSlider); // Control where to display the the popup relative to the parent
+    popup->setAlignment(Qt::AlignLeft | Qt::AlignTop); // at the top left corner
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom); // at the left of the spinbox sharing the top border
+    // Control the animation
+    popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
+    popup->setOrientation(Qt::Horizontal); // how to animate, could be Qt::Vertical or Qt::Horizontal|Qt::Vertical
+    popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
+    popup->setEffectDuration(100); // how long in ms.
+    // Control the behavior
+    popup->setAutoShow(true); // automatically open when the mouse is over the spinbox
+    popup->setAutoHide(true); // automatically hide when the mouse leaves the popup or the spinbox.
+
+    glLayout->addLayout(popupLayout);
+  }
+  */
   addToolBar();
   glLayout->addWidget(mGLWidget);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
   //viewSceneManager.moveViewSceneToGroup(this, 0);
+
+
+
+
 }
 
 ViewSceneDialog::~ViewSceneDialog()

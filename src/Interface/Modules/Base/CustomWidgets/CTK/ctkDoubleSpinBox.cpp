@@ -584,7 +584,7 @@ void ctkDoubleSpinBoxPrivate::onValueProxyModified()
 // ctkDoubleSpinBox
 //-----------------------------------------------------------------------------
 ctkDoubleSpinBox::ctkDoubleSpinBox(QWidget* newParent)
-  : QWidget(newParent)
+  : QDoubleSpinBox(newParent)
   , d_ptr(new ctkDoubleSpinBoxPrivate(*this))
 {
   Q_D(ctkDoubleSpinBox);
@@ -593,7 +593,7 @@ ctkDoubleSpinBox::ctkDoubleSpinBox(QWidget* newParent)
 
 //-----------------------------------------------------------------------------
 ctkDoubleSpinBox::ctkDoubleSpinBox(ctkDoubleSpinBox::SetMode mode, QWidget* newParent)
-  : QWidget(newParent)
+  : QDoubleSpinBox(newParent)
   , d_ptr(new ctkDoubleSpinBoxPrivate(*this))
 {
   Q_D(ctkDoubleSpinBox);
