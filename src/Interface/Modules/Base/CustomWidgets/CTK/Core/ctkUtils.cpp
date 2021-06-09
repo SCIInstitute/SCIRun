@@ -362,13 +362,13 @@ bool ctk::copyDirRecursively(const QString &srcPath, const QString &dstPath, boo
     return false;
     }
 
-  QDir::Filter hiddenFilter;
+  QDir::Filters dirFilter = QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot;
   if(includeHiddenFiles)
     {
-    hiddenFilter = QDir::Hidden;
+    dirFilter |= QDir::Hidden;
     }
 
-  Q_FOREACH(const QFileInfo &info, srcDir.entryInfoList(QDir::Dirs | QDir::Files | hiddenFilter | QDir::NoDotAndDotDot))
+  Q_FOREACH(const QFileInfo &info, srcDir.entryInfoList(dirFilter))
     {
     QString srcItemPath = srcPath + "/" + info.fileName();
     QString dstItemPath = dstPath + "/" + info.fileName();
