@@ -56,17 +56,6 @@ OSPRayRenderer::OSPRayRenderer()
   float backgroundColor[] = {0.0, 0.0, 0.0};
   ospSetParam(renderer_, "backgroundColor", OSP_VEC3F, backgroundColor);
   ospCommit(renderer_);
-
-  float dir[] = {0.0, -1.0, -1.0};
-  float col[] = {0.0, 1.0, 1.0};
-  OSPLight light = ospNewLight("distant");
-  ospSetParam(light, "color", OSP_VEC3F, col);
-  ospSetParam(light, "direction", OSP_VEC3F, dir);
-  ospCommit(light);
-
-  //ospSetObjectAsData(world_, "light", OSP_LIGHT, light);
-  ospCommit(world_);
-  ospRelease(light);
 }
 
 OSPRayRenderer::~OSPRayRenderer()
@@ -168,6 +157,7 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
         break;
       }
     }
+    addDirectionalLight();
   }
   printf("\n");
 
@@ -287,4 +277,18 @@ void OSPRayRenderer::addStructuredVolumeToGroup(OsprayGeometryObject* geometryOb
   ospSetObjectAsData(group_, "volume", OSP_VOLUMETRIC_MODEL, model);
   ospCommit(group_);
   ospRelease(model);
+}
+
+void OSPRayRenderer::addDirectionalLight()
+{
+  float dir[] = {0.0, -1.0, -1.0};
+  float col[] = {0.0, 1.0, 1.0};
+  OSPLight light = ospNewLight("distant");
+  ospSetParam(light, "color", OSP_VEC3F, col);
+  ospSetParam(light, "direction", OSP_VEC3F, dir);
+  ospCommit(light);
+
+  ospSetObjectAsData(world_, "light", OSP_LIGHT, light);
+  ospCommit(world_);
+  ospRelease(light);
 }

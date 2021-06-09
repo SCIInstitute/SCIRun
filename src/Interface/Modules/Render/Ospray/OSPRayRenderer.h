@@ -70,6 +70,7 @@ private:
   void addStructuredVolumeToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject);
   void addMaterial(OSPGeometricModel model, Core::Datatypes::OsprayGeometryObject::Material& mat);
   void addTransferFunction(OSPVolumetricModel model,  Core::Datatypes::OsprayGeometryObject::TransferFunc& transFunc);
+  void addDirectionalLight();
 
   static int osprayRendererInstances;
   static OSPRayDataManager dataManager;
