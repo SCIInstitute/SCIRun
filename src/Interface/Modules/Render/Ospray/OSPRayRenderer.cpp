@@ -56,6 +56,7 @@ OSPRayRenderer::OSPRayRenderer()
   float backgroundColor[] = {0.0, 0.0, 0.0};
   ospSetParam(renderer_, "backgroundColor", OSP_VEC3F, backgroundColor);
   ospCommit(renderer_);
+  addDirectionalLight();
 }
 
 OSPRayRenderer::~OSPRayRenderer()
@@ -157,7 +158,6 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
         break;
       }
     }
-    addDirectionalLight();
   }
   printf("\n");
 
