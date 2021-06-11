@@ -1,12 +1,12 @@
 # Basic Tutorial
 
-## 1  SCIRun Overview
+## SCIRun Overview
 
 This tutorial demonstrates how to build a simple SCIRun dataflow network.
 
-### 1.1  Software requirements
+### Software requirements
 
-#### 1.1.1  SCIRun
+#### SCIRun
 
 All available downloads for SCIRun version and the SCIRunData archive are available from [SCI software portal](https://github.com/SCIInstitute/SCIRun). Make sure to update to the most up-to-date release available, which will include the latest bug fixes.
 
@@ -14,14 +14,13 @@ Currently, the easiest way to get started with SCIRun version is to download and
 
 Unpack the SCIRunData archive in a convenient location. Recall from the User Guide that the path to data can be set using the environment variable or by setting in the *.scirunrc* file.
 
-## 2  Simple Dataflow Network
-**Scope: [Read Data File](#211--read-data-file) - [Slice](#212--slice-field) - [Visualize](#213--visualize-field) - [Bounding Box](#22--show-bounding-box) - [Isosurface](#23--isosurface)**
+## Simple Dataflow Network
 
-### 2.1  Slice Field
+### Slice Field
 
 The purpose of this section is to read, manipulate, and visualize a structured mesh dataset originating from SCIRunData.
 
-#### 2.1.1  Read Data File
+#### Read Data File
 
 Create a **ReadField** module by using the **Module Selector** on the left hand side of the screen. Navigate to **DataIO** subsection using the scroll bar in the Module Selector and instantiate a ReadField (<a href="#readfield">Figure 2.1</a>). Recall from the **User Guide** that a module can also be selected by giving a text input into the filter in the Module Selector (<a href="#readfield_text">Figure 2.2</a>).
 
@@ -42,7 +41,7 @@ Within the ReadField **user interface (UI)**, click the open button to navigate 
   <figcaption>Figure 2.3 The ReadField selector window can be used to select and read many data files.</figcaption>
 </figure>
 
-#### 2.1.2  Slice Field
+#### Slice Field
 
 Slice the engine field by node index along a given axis by instantiating the module **GetSlicesFromStructuredFieldByIndices** in the **NewField** category and connecting it to ReadField (<a href="#slicemod">Figure 2.4</a>). This can be done by using the Module Selector filter or scrolling through the list of modules in the Module Selector.
 
@@ -51,7 +50,7 @@ Slice the engine field by node index along a given axis by instantiating the mod
   <figcaption>Figure 2.4 Using the ReadField port’s pop-up module menu to instantiate GetSliceFromStructuredFieldByIndices.</figcaption>
 </figure>
 
-#### 2.1.3  Visualize Field
+#### Visualize Field
 
 To visualize the field geometry, instantiate module **ShowField** in the **Visualization** category and module **ViewScene** in the **Render** category (<a href="#colormap">Figure 2.5</a>). ShowField takes a field as input, and outputs scene-graph geometry. ViewScene displays the geometry and allows a user to interact with the scene.
 
@@ -79,7 +78,7 @@ Return to the default color scale. Use the sliders in the GetSlicesFromStructure
   <figcaption>Figure 2.8 Different cross sections can be visualized within the geometry using GetSlicesFromStructuredFieldbyIndices.</figcaption>
 </figure>
 
-### 2.2  Show Bounding Box
+### Show Bounding Box
 
 Add the **EditMeshBoundingBox** module under **ChangeMesh** (<a href="#addbbox">Figure 2.9</a>). Connect it to the ReadField module and direct the output to the ViewScene module. Execute the network to visualize the bounding box of engine.nhrd. Adjust the size of the bounding box by pressing the + or - buttons under Widget Scale in the EditMeshBoundingBox UI (<a href="#addbbox2">Figure 2.10</a>).
 
@@ -93,7 +92,7 @@ Add the **EditMeshBoundingBox** module under **ChangeMesh** (<a href="#addbbox">
   <figcaption>Figure 2.10 Change the scale of the mesh’s bounding box using the Scale Widget in the EditMeshBoundingBox UI.</figcaption>
 </figure>
 
-### 2.3  Isosurface
+### Isosurface
 
 Construct an isosurface from the field by instantiating and connecting a **ExtractSimpleIsosurface** module to the ReadField module. The isovalue must be changed within the ExtractSimpleIsosurface UI. Open the field information by clicking on the connection between the ReadField and ExtractSimpleIsosurface and press I to bring up information. Enter a value from within the data range like 120. Visualize the isosurface by connecting it to a new ShowField module ported into the ViewScene module (<a href="#extract">Figure 2.11</a>). Execute the network. Color isosurface output geometry by connecting the RescaleColorMap module to the ShowField module (<a href="#changeisoval">Figure 2.12</a>). To better view the geometry, turn off the edges within the ShowField UI (<a href="#viewisosurf">Figure 2.13</a>).
 
@@ -112,10 +111,9 @@ Construct an isosurface from the field by instantiating and connecting a **Extra
   <figcaption>Figure 2.13 Adjusting parameters within the ShowField UI helps to better visualize the isosurface.</figcaption>
 </figure>
 
-## 3  Create, Manipulate and Visualize Field
-**Scope: [Generate Lattice Volume](#31--create-field) [Isosurface](#32--isosurface) Visualize Geometry**
+## Create, Manipulate and Visualize Field
 
-### 3.1  Create Field
+### Create Field
 
 Create and manipulate a structured mesh type in this exercise. Start by creating a lattice volume using **CreateLatVol** module. Assign data at nodes using **CalculateFieldData** module. Connect CalculateFieldData to CreateLatVol. Input the expression $$RESULT = sqrt(X * X + Y * Y + Z * Z)$$ to compute data for each node within the CreateFieldData UI.
 
@@ -129,7 +127,7 @@ Create and manipulate a structured mesh type in this exercise. Start by creating
   <figcaption>Figure 3.2 Create a new field by inputting an expression into the CreateFieldData UI.</figcaption>
 </figure>
 
-### 3.2  Isosurface
+### Isosurface
 
 Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurface module to CalculateFieldData (<a href="#extractisosurf2">Figure 3.3</a>). Adjust the isovalue within the ExtractSimpleIsosurface UI so that the isosurface can be visualized (<a href="#conncolormap">Figure 3.4</a>). Add a color map and visualize the isosurface as in [section 2.3](#23--isosurface) (<a href="#viewdefaultisosurf">Figure 3.5</a>). Show the mesh bounding box as in [section 2.2](#22--show-bounding-box) (<a href="#changeisoval2">Figure 3.6</a>).
 
@@ -154,7 +152,7 @@ Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurfa
   <figcaption>Figure 3.6 Visualize the mesh’s bounding box.</figcaption>
 </figure>
 
-### 3.3  Slice Field
+### Slice Field
 
 Extend the functionality of this network by slicing the field using GetSliceFromStructuredFieldByIndices as in [section 2.1.2](#212--slice-field).
 
@@ -173,7 +171,7 @@ Extend the functionality of this network by slicing the field using GetSliceFrom
   <figcaption>Figure 3.9 Attach the RescaleColorMap module to the ShowField module.</figcaption>
 </figure>
 
-### 3.4  Clip Field
+### Clip Field
 
 Clip out a subset of the original field by converting the lattice volume to an unstructured mesh using **ConvertMeshToUnstructuredMesh** (<a href="#clipfieldfunc">Figure 3.10</a>) and adding **ClipFieldByFunction** (<a href="#convertmesh">Figure 3.11</a>) to the network. Set the clipping location setting in ClipFieldByFunction to *all nodes*. Use the expression _DATA1 &gt; 1&&X &lt; 0_ to clip the field (<a href="#clipfield">Figure 3.12</a>).
 
@@ -192,7 +190,7 @@ Clip out a subset of the original field by converting the lattice volume to an u
   <figcaption>Figure 3.12 Clip the field by entering an expression in the ClipField UI.</figcaption>
 </figure>
 
-#### 3.4.1  Extract Boundary
+#### Extract Boundary
 
 At this point, it will be necessary to map the fields by interpolating the the boundary surface field to the clipping field. First, use **BuildMappingMatrix** to build a matrix that maps a linear combination of data values in the clipping field to a value in the boundary field. Then use **ApplyMappingMatrix** to multiply the data vector of the clipping field with the mapping matrix to obtain the data vector for the boundary surface field (<a href="#clipfieldinput">Figure 3.13</a>). Use GetFieldBoundary to extract the boundary surface from the lattice volume and use it as input into the ApplyMappingMatrixModule and BuildMapping Matrix (<a href="#mappingmatrix">Figure 3.14</a>). Port the output from the BuildMappingMatrix module to ApplyMappingMatrix and visualize the resultant field using a ShowFieldModule (<a href="#highlightmods">Figure 3.15</a>). Add a colormap to and enable transparency in ShowField UI for further functionality (<a href="#viewbound">Figure 3.16</a>)
 
