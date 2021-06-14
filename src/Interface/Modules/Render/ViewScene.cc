@@ -369,40 +369,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-  /*
-  {
-    auto* spinBox = new QSpinBox(parent); // the spinbox is the parent of the popup, 
-    auto* popup = new ctkPopupWidget(spinBox); // the popup is placed relative to the spinbox
-    auto* popupLayout = new QHBoxLayout(popup);
-    // populate the popup with a vertical QSlider:
-    auto* popupSlider = new QSlider(Qt::Vertical, popup);
-    // add here the signal/slot connection between the slider and the spinbox
-    popupLayout->addWidget(popupSlider); // Control where to display the the popup relative to the parent
-    popup->setAlignment(Qt::AlignLeft | Qt::AlignTop); // at the top left corner
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom); // at the left of the spinbox sharing the top border
-    // Control the animation
-    popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
-    popup->setOrientation(Qt::Horizontal); // how to animate, could be Qt::Vertical or Qt::Horizontal|Qt::Vertical
-    popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
-    popup->setEffectDuration(100); // how long in ms.
-    // Control the behavior
-    popup->setAutoShow(true); // automatically open when the mouse is over the spinbox
-    popup->setAutoHide(true); // automatically hide when the mouse leaves the popup or the spinbox.
-
-    glLayout->addLayout(popupLayout);
-  }
-  */
   addToolBar();
   glLayout->addWidget(mGLWidget);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
   //viewSceneManager.moveViewSceneToGroup(this, 0);
-
-
-
-
 }
 
 ViewSceneDialog::~ViewSceneDialog()
@@ -426,16 +398,10 @@ std::string ViewSceneDialog::toString(std::string prefix) const
   return output;
 }
 
-
-
-//--------------------------------------------------------------------------------------------------
-//---------------- Initialization ------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------
-
 void ViewSceneDialog::addToolBar()
 {
-  mToolBar = new QToolBar(this);
-  WidgetStyleMixin::toolbarStyle(mToolBar);
+  toolBar_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(toolBar_);
 
   addConfigurationButton();
   addConfigurationDock();
@@ -443,7 +409,7 @@ void ViewSceneDialog::addToolBar()
   addScreenshotButton();
   addQuickScreenshotButton();
 
-  glLayout->addWidget(mToolBar);
+  glLayout->addWidget(toolBar_);
 
   addViewBar();
 }
@@ -460,9 +426,11 @@ void ViewSceneDialog::addConfigurationButton()
 
 void ViewSceneDialog::addToolbarButton(QPushButton* button)
 {
-  button->setFixedSize(35,35);
-  button->setIconSize(QSize(25,25));
-  mToolBar->addWidget(button);
+  static const auto buttonSize = 30;
+  static const auto iconSize = 22;
+  button->setFixedSize(buttonSize, buttonSize);
+  button->setIconSize(QSize(iconSize, iconSize));
+  toolBar_->addWidget(button);
 }
 
 void ViewSceneDialog::addConfigurationDock()
@@ -519,6 +487,27 @@ void ViewSceneDialog::addAutoViewButton()
   autoViewButton_->setShortcut(Qt::Key_0);
   connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
   addToolbarButton(autoViewButton_);
+  {
+    auto popup = new ctkPopupWidget(autoViewButton_);
+    auto popupLayout = new QHBoxLayout(popup);
+    auto popupSlider = new QSlider(Qt::Horizontal, popup);
+    popupSlider->setMinimumSize(80, 10);
+    popupSlider->setRange(0, 100);
+    popupSlider->setValue(50);
+    connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100-v); });
+    
+
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+
+    // Control the animation
+    //popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
+    //popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
+    //popup->setEffectDuration(100); // how long in ms.
+
+    popupLayout->addWidget(popupSlider);
+  }
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -543,14 +532,14 @@ void ViewSceneDialog::addQuickScreenshotButton()
 
 void ViewSceneDialog::addViewBar()
 {
-  mViewBar = new QToolBar(this);
+  viewBar_ = new QToolBar(this);
 
   addViewOptions();
   hideViewBar_ = true;
 
-  mViewBar->setHidden(hideViewBar_);
+  viewBar_->setHidden(hideViewBar_);
 
-  glLayout->addWidget(mViewBar);
+  glLayout->addWidget(viewBar_);
 
   addViewBarButton();
   addControlLockButton();
@@ -605,7 +594,7 @@ void ViewSceneDialog::addViewOptions()
 {
   QLabel* axisLabel = new QLabel();
   axisLabel->setText("Look Down Axis: ");
-  mViewBar->addWidget(axisLabel);
+  viewBar_->addWidget(axisLabel);
 
   mDownViewBox = new QComboBox();
   mDownViewBox->setMinimumHeight(25);
@@ -617,14 +606,14 @@ void ViewSceneDialog::addViewOptions()
   mDownViewBox->addItem("-X");
   mDownViewBox->addItem("-Y");
   mDownViewBox->addItem("-Z");
-  WidgetStyleMixin::toolbarStyle(mViewBar);
+  WidgetStyleMixin::toolbarStyle(viewBar_);
   connect(mDownViewBox, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
-  mViewBar->addWidget(mDownViewBox);
-  mViewBar->addSeparator();
+  viewBar_->addWidget(mDownViewBox);
+  viewBar_->addSeparator();
 
   auto* vectorLabel = new QLabel();
   vectorLabel->setText("Up Vector: ");
-  mViewBar->addWidget(vectorLabel);
+  viewBar_->addWidget(vectorLabel);
 
   mUpVectorBox = new QComboBox();
   mUpVectorBox->setMinimumHeight(25);
@@ -632,8 +621,8 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox->setToolTip("Vector pointing up");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
   mUpVectorBox->setEnabled(false);
-  mViewBar->addWidget(mUpVectorBox);
-  mViewBar->setMinimumHeight(35);
+  viewBar_->addWidget(mUpVectorBox);
+  viewBar_->setMinimumHeight(35);
   initAxisViewParams();
 }
 
@@ -921,7 +910,7 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustToolbar()
 {
-  adjustToolbarForHighResolution(mToolBar);
+  adjustToolbarForHighResolution(toolBar_);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
@@ -1177,8 +1166,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 void ViewSceneDialog::viewBarButtonClicked()
 {
   hideViewBar_ = !hideViewBar_;
-  mViewBar->setHidden(hideViewBar_);
-  QString color = hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
+  viewBar_->setHidden(hideViewBar_);
+  const QString color = hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
   viewBarBtn_->setStyleSheet("QPushButton { background-color: " + color + "; }");
   mDownViewBox->setCurrentIndex(0);
   mUpVectorBox->setDisabled(hideViewBar_);
@@ -1255,7 +1244,7 @@ void ViewSceneDialog::inputMouseUpHelper()
 void ViewSceneDialog::inputMouseWheelHelper(int32_t delta)
 {
   auto spire = mSpire.lock();
-  if(!spire) return;
+  if (!spire) return;
 
   spire->inputMouseWheel(delta);
   if (scaleBar_.visible)
@@ -1344,6 +1333,18 @@ bool ViewSceneDialog::canSelectWidget()
     && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
 }
 
+void ViewSceneDialog::enterEvent(QEvent* event)
+{
+  //toolBar_->show();
+  ModuleDialogGeneric::enterEvent(event);
+}
+
+void ViewSceneDialog::leaveEvent(QEvent* event)
+{
+  //toolBar_->hide();
+  ModuleDialogGeneric::leaveEvent(event);
+}
+
 bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 {
   return childAt(e->x(), e->y()) == mGLWidget;
@@ -1352,7 +1353,15 @@ bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
   if (!clickedInViewer(event))
+  {
+    //if (childAt(event->x(), event->y()) == toolBar_)
+    //{
+    //  qDebug() << "toolBar_ clicked";
+    //  ModuleDialogGeneric::mousePressEvent(event);
+    //}
     return;
+  }
+    
 
   const auto btn = getSpireButton(event);
   if (!tryWidgetSelection(event->x(), event->y(), btn))

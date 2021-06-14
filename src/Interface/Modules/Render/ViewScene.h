@@ -221,6 +221,8 @@ namespace SCIRun {
       void focusOutEvent(QFocusEvent* event) override;
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
+      void enterEvent(QEvent* event) override;
+      void leaveEvent(QEvent* event) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
 
 
@@ -298,8 +300,8 @@ namespace SCIRun {
 
       GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
       Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
-      QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
-      QToolBar*                             mViewBar                      {nullptr};  ///< Tool bar for view options.
+      QToolBar*                             toolBar_                      {nullptr};  ///< Tool bar.
+      QToolBar*                             viewBar_                      {nullptr};  ///< Tool bar for view options.
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
