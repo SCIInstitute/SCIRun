@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <boost/tuple/tuple.hpp>
 #include <unsupported/Eigen/MatrixFunctions>
 
 using namespace SCIRun;
@@ -418,16 +419,25 @@ ComputeTensorUncertaintyAlgorithm::ComputeTensorUncertaintyAlgorithm()
 AlgorithmOutput ComputeTensorUncertaintyAlgorithm::run(const AlgorithmInput& input) const
 {
   auto fields = input.getList<Field>(Variables::InputFields);
+  auto invariantMethod = get(Parameters::MeanInvariantMethod).toOption();
+  auto orientMethod = get(Parameters::MeanOrientationMethod).toOption();
+  auto data = runImpl(fields, invariantMethod, orientMethod);
+
+  AlgorithmOutput output;
+  output[MeanTensorField] = data.get<0>();
+  output[CovarianceMatrix] = data.get<1>();
+  return output;
+}
+
+boost::tuple<FieldHandle, MatrixHandle> ComputeTensorUncertaintyAlgorithm::runImpl(const FieldList& fields, const AlgoOption& invariantMethod, const AlgoOption& orientationOption) const
+{
   if (fields.empty())
     THROW_ALGORITHM_INPUT_ERROR("No input fields given");
 
   auto impl = ComputeTensorUncertaintyAlgorithmImpl();
-  impl.setInvariantMethod(get(Parameters::MeanInvariantMethod).toOption());
-  impl.setOrientationMethod(get(Parameters::MeanOrientationMethod).toOption());
+  impl.setInvariantMethod(invariantMethod);
+  impl.setOrientationMethod(orientationOption);
   impl.run(fields);
 
-  AlgorithmOutput output;
-  output[MeanTensorField] = impl.getMeanTensors();
-  output[CovarianceMatrix] = impl.getCovarianceMatrices();
-  return output;
+  return boost::make_tuple(impl.getMeanTensors(), impl.getCovarianceMatrices());
 }

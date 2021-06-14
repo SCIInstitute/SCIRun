@@ -44,6 +44,7 @@ namespace Math {
   public:
     ComputeTensorUncertaintyAlgorithm();
     AlgorithmOutput run(const AlgorithmInput& input) const override;
+    boost::tuple<FieldHandle, Datatypes::MatrixHandle> runImpl(const FieldList& fields, const AlgoOption& invariantMethod, const AlgoOption& orientationOption) const;
     static AlgorithmOutputName MeanTensorField;
     static AlgorithmOutputName CovarianceMatrix;
   };
