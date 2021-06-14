@@ -30,14 +30,12 @@
 #define INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
 
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
-#include "Interface/Modules/Render/ViewScene.h"
+#include "Interface/Modules/Render/ui_AutoRotateSettings.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/atomic.hpp>
 #endif
-#include <QGraphicsView>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
@@ -115,6 +113,14 @@ namespace SCIRun {
       void removeGroup();
       void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
 
+    };
+
+    class SCISHARE AutoRotateControls : public QWidget, public Ui::AutoRotateSettings
+    {
+      Q_OBJECT
+
+    public:
+      explicit AutoRotateControls(QWidget* parent);
     };
   }
 }

@@ -408,6 +408,7 @@ void ViewSceneDialog::addToolBar()
   addAutoViewButton();
   addScreenshotButton();
   addQuickScreenshotButton();
+  addAutoRotateButton();
 
   glLayout->addWidget(toolBar_);
 
@@ -417,11 +418,40 @@ void ViewSceneDialog::addToolBar()
 void ViewSceneDialog::addConfigurationButton()
 {
   auto* configurationButton = new QPushButton();
-  configurationButton->setToolTip("Open/Close Configuration Menu");
+  configurationButton->setToolTip("Open/Close Configuration Menu (F5)");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
   connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   addToolbarButton(configurationButton);
+}
+
+void ViewSceneDialog::addAutoRotateButton()
+{
+  auto* autoRotateButton = new QPushButton();
+  autoRotateButton->setToolTip("Autorotate settings");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //autoRotateButton->setShortcut(Qt::Key_F5);
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  {
+    auto popup = new ctkPopupWidget(autoRotateButton);
+    auto popupLayout = new QHBoxLayout(popup);
+    auto popupSlider = new AutoRotateControls(popup);
+    //popupSlider->setMinimumSize(80, 10);
+    //connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100 - v); });
+
+
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+
+    // Control the animation
+    //popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
+    //popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
+    //popup->setEffectDuration(100); // how long in ms.
+
+    popupLayout->addWidget(popupSlider);
+  }
+  addToolbarButton(autoRotateButton);
 }
 
 void ViewSceneDialog::addToolbarButton(QPushButton* button)

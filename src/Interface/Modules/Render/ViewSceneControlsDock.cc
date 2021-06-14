@@ -666,3 +666,8 @@ void ViewSceneControlsDock::selectLightColor(int index)
     }
   }
 }
+
+AutoRotateControls::AutoRotateControls(QWidget* parent) : QWidget(parent)
+{
+  setupUi(this);
+}
