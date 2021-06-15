@@ -429,7 +429,7 @@ void ViewSceneDialog::addConfigurationButton()
 void ViewSceneDialog::addAutoRotateButton()
 {
   auto* autoRotateButton = new QPushButton();
-  autoRotateButton->setToolTip("Autorotate settings");
+  //autoRotateButton->setToolTip("Autorotate settings");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
@@ -449,7 +449,7 @@ void ViewSceneDialog::addAutoRotateButton()
 void ViewSceneDialog::addColorOptionsButton()
 {
   auto* colorOptionsButton = new QPushButton();
-  colorOptionsButton->setToolTip("Color settings");
+  //colorOptionsButton->setToolTip("Color settings");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
