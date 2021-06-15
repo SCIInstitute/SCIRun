@@ -8,7 +8,7 @@ The ClipFieldByFunction module clips out a subset of a field by preserving all o
 
 The type of the field is preserved in the clip, as well as the data values if possible. Some field types are structured and thus not clippable. This includes the LatVolField, ImageField, and Scanline field types.
 
-The expression should be a SCIRun parser expression. The module UI has a help button that will bring up documentation for the parser which can also be found [here](/SCIRun/parserhelp.html).  For node centered data, select clipping location from One Node, Most Nodes or All Nodes. For cell centered data, select Element Center.
+The expression should be a SCIRun parser expression. The module UI has a help button that will bring up documentation for the parser which can also be found [here](../user_doc/parserhelp.html).  For node centered data, select clipping location from One Node, Most Nodes or All Nodes. For cell centered data, select Element Center.
 
 The ClipFieldByFunction module takes an **input** field, and optionally a function string and/or one or more additional matrices that may be used in the function.
 

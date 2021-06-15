@@ -6,4 +6,4 @@ This module clips a mesh to another mesh.
 
 Clip the first input to the second mesh. Both meshes need to be volumetric meshes such as tetrahedral rather than surface meshes.
 
-The output is the clipped mesh and a mapping matrix that allows you to apply data to the clipped mesh from the original using the module {% include moduleLink.md moduleName='ApplyMappingMatrix' %}.
+The output is the clipped mesh and a mapping matrix that allows you to apply data to the clipped mesh from the original using the module [ApplyMappingMatrix](../ChangeFieldData/ApplyMappingMatrix.md).

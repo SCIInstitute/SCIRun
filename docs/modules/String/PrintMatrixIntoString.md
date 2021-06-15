@@ -8,4 +8,4 @@ This module module takes in a formatted string (a string with %01d, %4.5f, %g et
 
 The format string to be used can be either entered in the GUI or on the first input port. If a string is found at the first input port, this one is automatically inserted in the widget on the GUI and is the one to be used.
 
-**Note:** the format string may contain '%s', which will remain in the format string and is not touched by this module. To insert strings use {% include moduleLink.md moduleName='PrintStringIntoString' %} instead.
+**Note:** the format string may contain '%s', which will remain in the format string and is not touched by this module. To insert strings use [PrintStringIntoString](PrintStringIntoString.md) instead.
