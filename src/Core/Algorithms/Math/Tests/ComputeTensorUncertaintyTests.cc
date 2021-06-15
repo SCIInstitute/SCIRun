@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Base/Option.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -68,6 +69,12 @@ void assertTensorsNear(const Tensor& t, const Tensor& expected, double epsilon)
   for (int i = 0; i < DIM; ++i)
     for (int j = 0; j < DIM; ++j)
       ASSERT_NEAR(t.val(i, j), expected.val(i, j), epsilon);
+}
+
+void assertMatricesNear(const MatrixHandle m, const MatrixHandle expected, double epsilon)
+{
+  for (int i = 0; i < DyadicTensor<DIM*2>::MANDEL_SIZE_; ++i)
+    ASSERT_NEAR(m->get(0, i), expected->get(0, i), epsilon);
 }
 
 TEST(ComputeTensorUncertaintyTest, MatrixAverage)
@@ -125,4 +132,27 @@ TEST(ComputeTensorUncertaintyTest, LinearInvariant)
 
   for (auto i = 0; i < DIM; ++i)
     ASSERT_NEAR(eigs[i], eigs_expected[i], epsilon);
+}
+
+TEST(ComputeTensorUncertaintyTest, Covariance)
+{
+  const double unitHalf = 0.5 * std::sqrt(2);
+  auto fh1 = tensorToField(Tensor(5*Vector(1,0,0), 3*Vector(0,1,0), Vector(0,0,1)));
+  auto fh2 = tensorToField(Tensor(7*Vector(unitHalf,unitHalf,0), 2*Vector(unitHalf,-unitHalf,0), Vector(0,0,1)));
+  Tensor t_expected(4.75, 1.25, 0, 3.75, 0, 1);
+  const auto epsilon = 0.001;
+
+  FieldList fields = {fh1, fh2};
+  ComputeTensorUncertaintyAlgorithm algo;
+  boost::tuple<FieldHandle, MatrixHandle> output = algo.runImpl(fields, MATRIX_AVERAGE, MATRIX_AVERAGE);
+
+  DyadicTensor<DIM*2> expected;
+  expected(0,0) = 0.0625;
+  expected(1,1) = 0.5625;
+  expected(5,5) = 3.125;
+  expected(0,1) = expected(1,0) = -0.1875;
+  expected(0,5) = expected(5,0) = -0.4419;
+  expected(1,5) = expected(5,1) = 1.3258;
+
+  assertMatricesNear(output.get<1>(), boost::make_shared<DenseMatrix>(expected.mandel()), epsilon);
 }
