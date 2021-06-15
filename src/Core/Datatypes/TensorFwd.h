@@ -31,9 +31,6 @@
 #ifndef CORE_DATATYPES_TENSOR_FWD_H
 #define CORE_DATATYPES_TENSOR_FWD_H
 
-#include <Core/Datatypes/Legacy/Base/TypeName.h>
-#include <unsupported/Eigen/CXX11/Tensor>
-
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
