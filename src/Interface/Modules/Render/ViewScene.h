@@ -352,6 +352,7 @@ namespace SCIRun {
       std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
       friend class ViewSceneControlsDock;
+      friend class AutoRotateControls;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
       std::string name_;

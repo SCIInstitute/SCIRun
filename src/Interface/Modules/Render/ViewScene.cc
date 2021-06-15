@@ -435,19 +435,10 @@ void ViewSceneDialog::addAutoRotateButton()
   {
     auto popup = new ctkPopupWidget(autoRotateButton);
     auto popupLayout = new QHBoxLayout(popup);
-    auto popupSlider = new AutoRotateControls(popup);
-    //popupSlider->setMinimumSize(80, 10);
-    //connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100 - v); });
-
-
+    auto popupSlider = new AutoRotateControls(this);
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-
-    // Control the animation
-    //popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
-    //popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
-    //popup->setEffectDuration(100); // how long in ms.
 
     popupLayout->addWidget(popupSlider);
   }

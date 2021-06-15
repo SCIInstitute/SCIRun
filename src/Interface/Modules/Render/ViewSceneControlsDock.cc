@@ -59,7 +59,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   setupObjectListWidget();
 
-  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+  if (Preferences::Instance().useNewViewSceneMouseControls)
   {
     mouseControlComboBox_->setCurrentIndex(1);
   }
@@ -68,7 +68,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
     mouseControlComboBox_->setCurrentIndex(0);
   }
 
-  invertZoomCheckBox_->setChecked(SCIRun::Core::Preferences::Instance().invertMouseZoom);
+  invertZoomCheckBox_->setChecked(Preferences::Instance().invertMouseZoom);
 
   updateZoomOptionVisibility();
 
@@ -173,12 +173,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
-  connect(rotateRightButton_, SIGNAL(clicked()), parent, SLOT(autoRotateRight()));
-  connect(rotateLeftButton_, SIGNAL(clicked()), parent, SLOT(autoRotateLeft()));
-  connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
-  connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
-  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
-
+  
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
@@ -483,7 +478,7 @@ void VisibleItemManager::initializeSavedStateMap()
     for (size_t i = 0; i < item.size(); ++i)
     {
       auto name = item[i].name().name();
-      auto checked = item[i].toBool();
+      const auto checked = item[i].toBool();
 
       if (0 == i) // showfield
       {
@@ -506,12 +501,12 @@ void VisibleItemManager::addRenderItem(const QString& name)
     return;
   }
 
-  QStringList names(name);
+  const QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
-  auto topLevelItemStateIter = topLevelItemMap_.find(name);
+  const auto topLevelItemStateIter = topLevelItemMap_.find(name);
   if (topLevelItemStateIter != topLevelItemMap_.end())
   {
     if (!topLevelItemStateIter->second)
@@ -632,7 +627,7 @@ class FixMacCheckBoxes : public QStyledItemDelegate
 public:
   void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override
   {
-    QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
+    auto& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
     refToNonConstOption.showDecorationSelected = false;
     QStyledItemDelegate::paint(painter, refToNonConstOption, index);
   }
@@ -650,9 +645,9 @@ QColor ViewSceneControlsDock::getLightColor(int index) const
 
 void ViewSceneControlsDock::selectLightColor(int index)
 {
-  QString title = index < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(index);
+  const auto title = index < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(index);
 
-  auto newColor = QColorDialog::getColor(lightColors[index], this, title);
+  const auto newColor = QColorDialog::getColor(lightColors[index], this, title);
   if (newColor.isValid())
   {
     lightColors[index] = newColor;
@@ -663,11 +658,18 @@ void ViewSceneControlsDock::selectLightColor(int index)
       case 1: setLabelColor(color1, newColor); break;
       case 2: setLabelColor(color2, newColor); break;
       case 3: setLabelColor(color3, newColor); break;
+      default: ;
     }
   }
 }
 
-AutoRotateControls::AutoRotateControls(QWidget* parent) : QWidget(parent)
+AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
+
+  connect(rotateRightButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateRight);
+  connect(rotateLeftButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateLeft);
+  connect(rotateUpButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateUp);
+  connect(rotateDownButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateDown);
+  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
 }

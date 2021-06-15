@@ -120,7 +120,7 @@ namespace SCIRun {
       Q_OBJECT
 
     public:
-      explicit AutoRotateControls(QWidget* parent);
+      explicit AutoRotateControls(ViewSceneDialog* parent);
     };
   }
 }

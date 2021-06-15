@@ -516,7 +516,7 @@ void ctkBasePopupWidget::onBaseWidgetDestroyed()
 {
   Q_D(ctkBasePopupWidget);
   d->hideAll();
-  this->setBaseWidget(0);
+  this->setBaseWidget(nullptr);
   // could be a property.
   this->deleteLater();
 }
