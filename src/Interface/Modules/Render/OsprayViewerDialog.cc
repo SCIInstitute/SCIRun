@@ -179,8 +179,6 @@ void OsprayViewerDialog::addToolBar()
 
   osprayLayout->addWidget(toolBar_);
 
-  //addViewBar();
-  //addViewBarButton();
   addControlLockButton();
 }
 
@@ -213,10 +211,6 @@ void OsprayViewerDialog::addConfigurationDialog()
   auto name = windowTitle() + " Configuration";
   configDialog_ = new ViewOspraySceneConfigDialog(name, this);
 #endif
-  // configDialog_->setSampleColor(bgColor_);
-  // configDialog_->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
-  //   scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
-  // setupMaterials();
 }
 
 void OsprayViewerDialog::addToolbarButton(QPushButton* button)

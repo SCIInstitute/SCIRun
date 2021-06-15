@@ -195,7 +195,8 @@ namespace SCIRun {
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
       void screenshotClicked();
-      void quickScreenshotClicked();
+      void quickScreenshot(bool prompt);
+      void quickScreenshotClicked() { quickScreenshot(true); }
       void saveNewGeometryChanged(int state);
 
 
@@ -238,6 +239,7 @@ namespace SCIRun {
       void addViewBarButton();
       void addControlLockButton();
       void addAutoRotateButton();
+      void addColorOptionsButton();
       void addToolbarButton(QPushButton* button);
       void addViewBar();
       void addViewOptions();
@@ -306,6 +308,7 @@ namespace SCIRun {
       QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
+      ColorOptions* colorOptions_{ nullptr };
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
       Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -353,6 +356,7 @@ namespace SCIRun {
 
       friend class ViewSceneControlsDock;
       friend class AutoRotateControls;
+      friend class ColorOptions;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
       std::string name_;

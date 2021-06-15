@@ -31,12 +31,14 @@
 
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
 #include "Interface/Modules/Render/ui_AutoRotateSettings.h"
+#include "Interface/Modules/Render/ui_ColorOptions.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/Render/ViewScene.h>
 #endif
 #include <Interface/Modules/Render/share.h>
+
 
 namespace SCIRun {
   namespace Gui {
@@ -77,7 +79,6 @@ namespace SCIRun {
 
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-      void setSampleColor(const QColor& color);
       void setFogColorLabel(const QColor& color);
       void setLabelColor(QLabel* label, const QColor& color);
       void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
@@ -121,6 +122,15 @@ namespace SCIRun {
 
     public:
       explicit AutoRotateControls(ViewSceneDialog* parent);
+    };
+
+    class SCISHARE ColorOptions : public QWidget, public Ui::ColorOptions
+    {
+      Q_OBJECT
+
+    public:
+      explicit ColorOptions(ViewSceneDialog* parent);
+      void setSampleColor(const QColor& color);
     };
   }
 }

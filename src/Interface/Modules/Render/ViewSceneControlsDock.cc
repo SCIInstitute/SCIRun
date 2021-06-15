@@ -92,9 +92,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   updateViewSceneTree();
   groupRemoveSpinBox_->setRange(0, 0);
 
-  //-----------Render Tab-----------------//
-  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
-
   //-----------Clipping Tab-----------------//
   planeButtonGroup_->setId(plane1RadioButton_, 0);
   planeButtonGroup_->setId(plane2RadioButton_, 1);
@@ -180,8 +177,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
-  setSampleColor(Qt::black);
-
   WidgetStyleMixin::tabStyle(tabWidget);
 
   /////Set unused widgets to be not visible
@@ -241,24 +236,24 @@ void ViewSceneControlsDock::addGroup()
 
 void ViewSceneControlsDock::removeGroup()
 {
-  uint32_t group = groupRemoveSpinBox_->value();
+  const uint32_t group = groupRemoveSpinBox_->value();
   ViewSceneDialog::viewSceneManager.removeGroup(group);
   groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
 void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
 {
-  QTreeWidgetItem* p = widgetItem->parent();
-  if(!p) return;
+  auto p = widgetItem->parent();
+  if (!p) return;
   uint32_t g = p->data(1, Qt::EditRole).toInt();
-  ViewSceneDialog* vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
+  const auto vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
   if (widgetItem->checkState(column) == Qt::Unchecked)
     ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
   else if (widgetItem->checkState(column) == Qt::Checked)
     ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
 }
 
-void ViewSceneControlsDock::setSampleColor(const QColor& color)
+void ColorOptions::setSampleColor(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
@@ -672,4 +667,11 @@ AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent
   connect(rotateUpButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateUp);
   connect(rotateDownButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateDown);
   connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
+}
+
+ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(setBackgroundColorPushButton_, &QPushButton::clicked, parent, &ViewSceneDialog::assignBackgroundColor);
 }

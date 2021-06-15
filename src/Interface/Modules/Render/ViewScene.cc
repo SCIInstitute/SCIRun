@@ -409,6 +409,7 @@ void ViewSceneDialog::addToolBar()
   addScreenshotButton();
   addQuickScreenshotButton();
   addAutoRotateButton();
+  addColorOptionsButton();
 
   glLayout->addWidget(toolBar_);
 
@@ -445,6 +446,27 @@ void ViewSceneDialog::addAutoRotateButton()
   addToolbarButton(autoRotateButton);
 }
 
+void ViewSceneDialog::addColorOptionsButton()
+{
+  auto* colorOptionsButton = new QPushButton();
+  colorOptionsButton->setToolTip("Color settings");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //autoRotateButton->setShortcut(Qt::Key_F5);
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  {
+    auto popup = new ctkPopupWidget(colorOptionsButton);
+    auto popupLayout = new QHBoxLayout(popup);
+    colorOptions_ = new ColorOptions(this);
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    colorOptions_->setSampleColor(bgColor_);
+
+    popupLayout->addWidget(colorOptions_);
+  }
+  addToolbarButton(colorOptionsButton);
+}
+
 void ViewSceneDialog::addToolbarButton(QPushButton* button)
 {
   static const auto buttonSize = 30;
@@ -461,7 +483,6 @@ void ViewSceneDialog::addConfigurationDock()
   mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
-  mConfigurationDock->setSampleColor(bgColor_);
   mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
     scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
   setupMaterials();
@@ -547,7 +568,7 @@ void ViewSceneDialog::addQuickScreenshotButton()
   quickScreenshotButton->setToolTip("Take Quick Screenshot");
   quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
   quickScreenshotButton->setShortcut(Qt::Key_F12);
-  connect(quickScreenshotButton, SIGNAL(clicked(bool)), this, SLOT(quickScreenshotClicked()));
+  connect(quickScreenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
   addToolbarButton(quickScreenshotButton);
 }
 
@@ -1025,7 +1046,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   if (scaleBarGeom_ && scaleBar_.visible)
-    allGeoms.push_back(scaleBarGeom_);
+    allGeoms.emplace_back(scaleBarGeom_);
 
   if (clippingPlanesUpdated)
   {
@@ -1040,7 +1061,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   for (auto& plane : clippingPlaneGeoms_)
-    allGeoms.push_back(plane);
+    allGeoms.emplace_back(plane);
 
   const auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
   auto displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
@@ -1082,7 +1103,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   if (saveScreenshotOnNewGeometry_)
-    screenshotClicked();
+    quickScreenshot(false);
 }
 
 void ViewSceneDialog::lockMutex()
@@ -2618,11 +2639,11 @@ void ViewSceneDialog::assignBackgroundColor()
   if (newColor.isValid())
   {
     bgColor_ = newColor;
-    mConfigurationDock->setSampleColor(bgColor_);
+    colorOptions_->setSampleColor(bgColor_);
     state_->setValue(Parameters::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
-    bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
+    const auto useBg = state_->getValue(Parameters::UseBGColor).toBool();
     if (useBg)
       setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
     else
@@ -2658,10 +2679,10 @@ void ViewSceneDialog::screenshotClicked()
   screenshotTaker_->saveScreenshot();
 }
 
-void ViewSceneDialog::quickScreenshotClicked()
+void ViewSceneDialog::quickScreenshot(bool prompt)
 {
   takeScreenshot();
-  screenshotTaker_->saveScreenshotFromPath();
+  screenshotTaker_->saveScreenshotFromPath(prompt);
 }
 
 void ViewSceneDialog::autoSaveScreenshot()
@@ -2683,30 +2704,30 @@ void ViewSceneDialog::sendBugReport()
 
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
-  QImage image = screenshotTaker_->getScreenshot();
+  const QImage image = screenshotTaker_->getScreenshot();
   QString location = Screenshot::screenshotDirectory() + ("/scirun_bug.png");
   image.save(location);
 
   // Generate email template
   const QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
                                    % location % "\n\n\n";
-  static QString instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
+  static const QString instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
     "then delete the rest of the template to reduce clutter."
     "\n### If the prerequisite is met, just delete that text as well. "
     "If they're not all met, the issue will be closed or assigned back to you.\n\n";
-  static QString prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
+  static const QString prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
     "to see if your bug or enhancement is already reported?\n\n";
-  static QString reportGuide = "For more information on how to write a good "
+  static const QString reportGuide = "For more information on how to write a good "
     "[bug report](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report) or"
     "[enhancement request](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-enhancement-suggestion),"
     "see the `CONTRIBUTING` guide. These links point to another project, but most of the advice holds in general.\n\n";
-  static QString describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
-  static QString askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
-  static QString reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
+  static const QString describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
+  static const QString askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
+  static const QString reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
     "\n1. Go to '...'\n2. Click on '....'\n3. Scroll down to '....'\n4. See error\n\n";
 
-  static QString expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
-  static QString additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
+  static const QString expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
+  static const QString additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
   const QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
   const QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
   const QString gpuInfo = "GPU: " % gpuVersion % "\n";
@@ -2718,8 +2739,8 @@ void ViewSceneDialog::sendBugReport()
   const QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
 
   //TODO: need generic email
-  static QString recipient = "dwhite@sci.utah.edu";
-  static QString subject = "View%20Scene%20Bug%20Report";
+  static const QString recipient = "dwhite@sci.utah.edu";
+  static const QString subject = "View%20Scene%20Bug%20Report";
   QDesktopServices::openUrl(QUrl(QString("mailto:" % recipient % "?subject=" % subject % "&body=" %
                                          askForScreenshot % instructions % prereqs % reportGuide %
                                          describe % askForData % reproduction % expectedBehavior %
