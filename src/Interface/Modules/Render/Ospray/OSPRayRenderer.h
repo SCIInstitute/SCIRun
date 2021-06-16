@@ -70,10 +70,13 @@ private:
   void addStructuredVolumeToGroup(Core::Datatypes::OsprayGeometryObject* geometryObject);
   void addMaterial(OSPGeometricModel model, Core::Datatypes::OsprayGeometryObject::Material& mat);
   void addTransferFunction(OSPVolumetricModel model,  Core::Datatypes::OsprayGeometryObject::TransferFunc& transFunc);
-  void addDirectionalLight();
+  void addDirectionalLight(glm::vec3 col, glm::vec3 dir);
+  void addAmbientLight(glm::vec3 col, float intensity);
+  void setLightsAsObject();
 
   static int osprayRendererInstances;
   static OSPRayDataManager dataManager;
+  std::vector<OSPLight> lights_;
 
   uint32_t width_  {16};
   uint32_t height_ {16};

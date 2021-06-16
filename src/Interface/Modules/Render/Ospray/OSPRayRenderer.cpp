@@ -56,7 +56,15 @@ OSPRayRenderer::OSPRayRenderer()
   float backgroundColor[] = {0.0, 0.0, 0.0};
   ospSetParam(renderer_, "backgroundColor", OSP_VEC3F, backgroundColor);
   ospCommit(renderer_);
-  addDirectionalLight();
+  lights_.clear();
+
+  // TODO make these into UI parameters
+  auto white = glm::vec3(1,1,1);
+  auto light_dir = glm::vec3(0,-1,-1);
+  double ambient_intensity = 0.1;
+  addDirectionalLight(white, light_dir);
+  addAmbientLight(white, ambient_intensity);
+  setLightsAsObject();
 }
 
 OSPRayRenderer::~OSPRayRenderer()
@@ -279,16 +287,29 @@ void OSPRayRenderer::addStructuredVolumeToGroup(OsprayGeometryObject* geometryOb
   ospRelease(model);
 }
 
-void OSPRayRenderer::addDirectionalLight()
+void OSPRayRenderer::addDirectionalLight(glm::vec3 col, glm::vec3 dir)
 {
-  float dir[] = {0.0, -1.0, -1.0};
-  float col[] = {0.0, 1.0, 1.0};
   OSPLight light = ospNewLight("distant");
-  ospSetParam(light, "color", OSP_VEC3F, col);
-  ospSetParam(light, "direction", OSP_VEC3F, dir);
+  ospSetParam(light, "color", OSP_VEC3F, &col);
+  ospSetParam(light, "direction", OSP_VEC3F, &dir);
   ospCommit(light);
+  lights_.push_back(light);
+}
 
-  ospSetObjectAsData(world_, "light", OSP_LIGHT, light);
+void OSPRayRenderer::addAmbientLight(glm::vec3 col, float intensity)
+{
+  OSPLight light = ospNewLight("ambient");
+  ospSetParam(light, "color", OSP_VEC3F, &col);
+  ospSetParam(light, "intensity", OSP_FLOAT, &intensity);
+  ospCommit(light);
+  lights_.push_back(light);
+}
+
+void OSPRayRenderer::setLightsAsObject()
+{
+  auto data = ospNewSharedData(lights_.data(), OSP_LIGHT, lights_.size());
+  ospSetObject(world_, "light", data);
+  for (auto light : lights_)
+    ospRelease(light);
   ospCommit(world_);
-  ospRelease(light);
 }
