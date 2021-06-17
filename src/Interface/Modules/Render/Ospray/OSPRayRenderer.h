@@ -72,6 +72,8 @@ private:
   void addTransferFunction(OSPVolumetricModel model,  Core::Datatypes::OsprayGeometryObject::TransferFunc& transFunc);
   void addDirectionalLight(glm::vec3 col, glm::vec3 dir);
   void addAmbientLight(glm::vec3 col, float intensity);
+  void addSphereLight(glm::vec3 col, glm::vec3 position, float radius, float intensity);
+  void addQuadLight(glm::vec3 col, glm::vec3 position, glm::vec3 edge1, glm::vec3 edge2, float intensity);
   void setLightsAsObject();
 
   static int osprayRendererInstances;

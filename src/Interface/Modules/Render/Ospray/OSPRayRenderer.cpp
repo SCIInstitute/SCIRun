@@ -64,6 +64,8 @@ OSPRayRenderer::OSPRayRenderer()
   double ambient_intensity = 0.1;
   addDirectionalLight(white, light_dir);
   addAmbientLight(white, ambient_intensity);
+  // addSphereLight(white, glm::vec3(0,0,60), 0.2, 500.0);
+  // addQuadLight(white, glm::vec3(0,45,0), glm::vec3(25,0,0), glm::vec3(0,0,25), 2);
   setLightsAsObject();
 }
 
@@ -300,6 +302,29 @@ void OSPRayRenderer::addAmbientLight(glm::vec3 col, float intensity)
 {
   OSPLight light = ospNewLight("ambient");
   ospSetParam(light, "color", OSP_VEC3F, &col);
+  ospSetParam(light, "intensity", OSP_FLOAT, &intensity);
+  ospCommit(light);
+  lights_.push_back(light);
+}
+
+void OSPRayRenderer::addSphereLight(glm::vec3 col, glm::vec3 position, float radius, float intensity)
+{
+  OSPLight light = ospNewLight("sphere");
+  ospSetParam(light, "color", OSP_VEC3F, &col);
+  ospSetParam(light, "position", OSP_VEC3F, &position);
+  ospSetParam(light, "radius", OSP_FLOAT, &radius);
+  ospSetParam(light, "intensity", OSP_FLOAT, &intensity);
+  ospCommit(light);
+  lights_.push_back(light);
+}
+
+void OSPRayRenderer::addQuadLight(glm::vec3 col, glm::vec3 position, glm::vec3 edge1, glm::vec3 edge2, float intensity)
+{
+  OSPLight light = ospNewLight("quad");
+  ospSetParam(light, "color", OSP_VEC3F, &col);
+  ospSetParam(light, "position", OSP_VEC3F, &position);
+  ospSetParam(light, "edge1", OSP_VEC3F, &edge1);
+  ospSetParam(light, "edge2", OSP_VEC3F, &edge2);
   ospSetParam(light, "intensity", OSP_FLOAT, &intensity);
   ospCommit(light);
   lights_.push_back(light);
