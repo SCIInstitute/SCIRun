@@ -32,6 +32,8 @@
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
 #include "Interface/Modules/Render/ui_AutoRotateSettings.h"
 #include "Interface/Modules/Render/ui_ColorOptions.h"
+#include "Interface/Modules/Render/ui_Materials.h"
+#include "Interface/Modules/Render/ui_Fog.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -79,10 +81,9 @@ namespace SCIRun {
 
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-      void setFogColorLabel(const QColor& color);
+
       void setLabelColor(QLabel* label, const QColor& color);
-      void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
-        bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+
       void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
         double numTicks, double lineWidth, const QString& unit);
       void updateZoomOptionVisibility();
@@ -131,6 +132,25 @@ namespace SCIRun {
     public:
       explicit ColorOptions(ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+    };
+
+    class SCISHARE MaterialsControls : public QWidget, public Ui::Materials
+    {
+      Q_OBJECT
+
+    public:
+      explicit MaterialsControls(ViewSceneDialog* parent);
+      void setMaterialValues(double ambient, double diffuse, double specular, double shine, double emission);
+    };
+
+    class SCISHARE FogControls : public QWidget, public Ui::Fog
+    {
+      Q_OBJECT
+
+    public:
+      explicit FogControls(ViewSceneDialog* parent);
+      void setFogColorLabel(const QColor& color);
+      void setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
     };
   }
 }

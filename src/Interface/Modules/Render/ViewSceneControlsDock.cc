@@ -143,17 +143,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
 
   //-----------Materials Tab-----------------//
-  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
-  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
-  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
-  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
-  emissionDoubleSpinBox_->setDisabled(true);
-  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
-  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
-  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
-  fogOnVisibleObjectsCheckBox_->setDisabled(true);
-  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
-  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+
   //-----------View Tab-------------------//
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
@@ -170,7 +160,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
-  
+
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
@@ -269,7 +259,7 @@ void ViewSceneControlsDock::setLabelColor(QLabel* label, const QColor& color)
   label->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
+void FogControls::setFogColorLabel(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
@@ -277,13 +267,16 @@ void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
   fogColorLabel_->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double,
-  bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+void MaterialsControls::setMaterialValues(double ambient, double diffuse, double specular, double shine, double)
 {
   ambientDoubleSpinBox_->setValue(ambient);
   diffuseDoubleSpinBox_->setValue(diffuse);
   specularDoubleSpinBox_->setValue(specular);
   shininessDoubleSpinBox_->setValue(shine);
+}
+
+void FogControls::setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+{
   fogGroupBox_->setChecked(fogVisible);
   fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
   fogUseBGColorCheckBox_->setChecked(useBGColor);
@@ -674,4 +667,27 @@ ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
   setupUi(this);
 
   connect(setBackgroundColorPushButton_, &QPushButton::clicked, parent, &ViewSceneDialog::assignBackgroundColor);
+}
+
+MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
+  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
+  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
+  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
+  //emissionDoubleSpinBox_->setDisabled(true);
+}
+
+FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
+  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
+  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
+  fogOnVisibleObjectsCheckBox_->setDisabled(true);
+  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
+  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
 }

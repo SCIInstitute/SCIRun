@@ -240,6 +240,8 @@ namespace SCIRun {
       void addControlLockButton();
       void addAutoRotateButton();
       void addColorOptionsButton();
+      void addFogOptionsButton();
+      void addMaterialOptionsButton();
       void addToolbarButton(QPushButton* button);
       void addViewBar();
       void addViewOptions();
@@ -309,6 +311,8 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       ColorOptions* colorOptions_{ nullptr };
+      FogControls* fogControls_{ nullptr };
+      MaterialsControls* materialsControls_{ nullptr };
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
       Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -357,6 +361,8 @@ namespace SCIRun {
       friend class ViewSceneControlsDock;
       friend class AutoRotateControls;
       friend class ColorOptions;
+      friend class FogControls;
+      friend class MaterialsControls;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
       std::string name_;

@@ -39,6 +39,8 @@ SET(Interface_Modules_Render_FORMS
   OsprayViewer.ui
   AutoRotateSettings.ui
   ColorOptions.ui
+  Fog.ui
+  Materials.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

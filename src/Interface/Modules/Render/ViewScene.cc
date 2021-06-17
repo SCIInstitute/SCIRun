@@ -410,6 +410,9 @@ void ViewSceneDialog::addToolBar()
   addQuickScreenshotButton();
   addAutoRotateButton();
   addColorOptionsButton();
+  addFogOptionsButton();
+  addMaterialOptionsButton();
+  setupMaterials();
 
   glLayout->addWidget(toolBar_);
 
@@ -442,6 +445,7 @@ void ViewSceneDialog::addAutoRotateButton()
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
 
     popupLayout->addWidget(popupSlider);
+    popupLayout->setContentsMargins(4,4,4,4);
   }
   addToolbarButton(autoRotateButton);
 }
@@ -463,8 +467,53 @@ void ViewSceneDialog::addColorOptionsButton()
     colorOptions_->setSampleColor(bgColor_);
 
     popupLayout->addWidget(colorOptions_);
+    popupLayout->setContentsMargins(4,4,4,4);
   }
   addToolbarButton(colorOptionsButton);
+}
+
+void ViewSceneDialog::addFogOptionsButton()
+{
+  auto* fogOptionsButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //autoRotateButton->setShortcut(Qt::Key_F5);
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  {
+    auto popup = new ctkPopupWidget(fogOptionsButton);
+    auto popupLayout = new QHBoxLayout(popup);
+    fogControls_ = new FogControls(this);
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    //fogControls_->setSampleColor(bgColor_);
+
+    popupLayout->addWidget(fogControls_);
+    popupLayout->setContentsMargins(4,4,4,4);
+  }
+  addToolbarButton(fogOptionsButton);
+}
+
+void ViewSceneDialog::addMaterialOptionsButton()
+{
+  auto* materialOptionsButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //autoRotateButton->setShortcut(Qt::Key_F5);
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  {
+    auto popup = new ctkPopupWidget(materialOptionsButton);
+    auto popupLayout = new QHBoxLayout(popup);
+    materialsControls_ = new MaterialsControls(this);
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    //colorOptions_->setSampleColor(bgColor_);
+
+    popupLayout->addWidget(materialsControls_);
+    popupLayout->setContentsMargins(4,4,4,4);
+  }
+  addToolbarButton(materialOptionsButton);
 }
 
 void ViewSceneDialog::addToolbarButton(QPushButton* button)
@@ -485,7 +534,6 @@ void ViewSceneDialog::addConfigurationDock()
 
   mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
     scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
-  setupMaterials();
 }
 
 void ViewSceneDialog::setupMaterials()
@@ -503,11 +551,10 @@ void ViewSceneDialog::setupMaterials()
   ColorRGB color(colorStr);
   fogColor_ = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
 
-  mConfigurationDock->setFogColorLabel(fogColor_);
+  fogControls_->setFogColorLabel(fogColor_);
 
-  mConfigurationDock->setMaterialTabValues(ambient, diffuse, specular, shine,
-                                           0.0, fogOn, false,
-                                           useBGColor, fogStart, fogEnd);
+  materialsControls_->setMaterialValues(ambient, diffuse, specular, shine, 0.0);
+  fogControls_->setFogValues(fogOn, false, useBGColor, fogStart, fogEnd);
 
   setAmbientValue(ambient);
   setDiffuseValue(diffuse);
@@ -537,7 +584,7 @@ void ViewSceneDialog::addAutoViewButton()
     popupSlider->setRange(0, 100);
     popupSlider->setValue(50);
     connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100-v); });
-    
+
 
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
@@ -1403,7 +1450,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     //}
     return;
   }
-    
+
 
   const auto btn = getSpireButton(event);
   if (!tryWidgetSelection(event->x(), event->y(), btn))
@@ -2582,7 +2629,7 @@ void ViewSceneDialog::assignFogColor()
   if (newColor.isValid())
   {
     fogColor_ = newColor;
-    mConfigurationDock->setFogColorLabel(fogColor_);
+    fogControls_->setFogColorLabel(fogColor_);
     state_->setValue(Parameters::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
   }
   bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
