@@ -195,10 +195,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light1On, false);
   state->setValue(Parameters::Light2On, false);
   state->setValue(Parameters::Light3On, false);
-  state->setValue(Parameters::HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light1Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light2Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light3Color, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(Parameters::HeadLightAzimuth, 180);
   state->setValue(Parameters::Light1Azimuth, 180);
   state->setValue(Parameters::Light2Azimuth, 180);
