@@ -231,7 +231,7 @@ Dyadic3DTensor ComputeTensorUncertaintyAlgorithmImpl::computeMeanLinearInvariant
   if (R3 > 1.0) R3 = 1.0;
   if (R3 < -1.0) R3 = -1.0;
 
-  double val = 1.0;
+  
   const double arccosR3 = std::acos(R3);
   Eigen::Vector3d eigvals;
   const double x = oneThird * K1;
