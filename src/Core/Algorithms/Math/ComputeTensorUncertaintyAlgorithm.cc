@@ -96,6 +96,8 @@ private:
   Dyadic3DTensor computeMeanMatrixAverage(int index) const;
   Dyadic3DTensor computeMeanLinearInvariant(int t) const;
   Dyadic3DTensor computeMeanLogEuclidean(int t) const;
+  void computeMeanTensorsSameMethod();
+  void computeMeanTensorsDifferentMethod();
 };
 
 void ComputeTensorUncertaintyAlgorithmImpl::setInvariantMethod(AlgoOption method)
@@ -127,57 +129,68 @@ FieldHandle ComputeTensorUncertaintyAlgorithmImpl::getMeanTensors() const
   return ofield;
 }
 
+void ComputeTensorUncertaintyAlgorithmImpl::computeMeanTensorsSameMethod()
+{
+  if (orientationMethod_.option_ == "Matrix Average")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      meanTensors_[t] = computeMeanMatrixAverage(t);
+  }
+  else if (orientationMethod_.option_ == "Log-Euclidean")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      meanTensors_[t] = computeMeanLogEuclidean(t);
+  }
+}
+
+void ComputeTensorUncertaintyAlgorithmImpl::computeMeanTensorsDifferentMethod()
+{
+  std::vector<Dyadic3DTensor> orientationTensors(fieldSize_);
+  std::vector<Dyadic3DTensor> invariantTensors(fieldSize_);
+  if (orientationMethod_.option_ == "Matrix Average")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      orientationTensors[t] = computeMeanMatrixAverage(t);
+  }
+  else if (orientationMethod_.option_ == "Log-Euclidean")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      orientationTensors[t] = computeMeanLogEuclidean(t);
+  }
+
+  if (invariantMethod_.option_ == "Matrix Average")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      invariantTensors[t] = computeMeanMatrixAverage(t);
+  }
+  else if (invariantMethod_.option_ == "Log-Euclidean")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      invariantTensors[t] = computeMeanLogEuclidean(t);
+  }
+  else if (invariantMethod_.option_ == "Linear Invariant")
+  {
+    for (size_t t = 0; t < fieldSize_; ++t)
+      invariantTensors[t] = computeMeanLinearInvariant(t);
+  }
+
+  for (size_t t = 0; t < fieldSize_; ++t)
+  {
+    invariantTensors[t].setDescendingRHSOrder();
+    orientationTensors[t].setDescendingRHSOrder();
+    meanTensors_[t] = Dyadic3DTensor(orientationTensors[t].getEigenvectors(),
+                                     invariantTensors[t].getEigenvalues());
+    meanTensors_[t].setDescendingRHSOrder();
+  }
+}
+
 void ComputeTensorUncertaintyAlgorithmImpl::computeMeanTensors()
 {
   meanTensors_ = std::vector<Dyadic3DTensor>(fieldSize_);
   if (invariantMethod_.option_ == orientationMethod_.option_)
-  {
-    if (orientationMethod_.option_ == "Matrix Average") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-        meanTensors_[t] = computeMeanMatrixAverage(t);
-    }
-    else if (orientationMethod_.option_ == "Log-Euclidean") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-        meanTensors_[t] = computeMeanLogEuclidean(t);
-    }
-  }
+    computeMeanTensorsSameMethod();
   else
-  {
-    std::vector<Dyadic3DTensor> orientationTensors(fieldSize_);
-    std::vector<Dyadic3DTensor> invariantTensors(fieldSize_);
-    if (orientationMethod_.option_ == "Matrix Average") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-        orientationTensors[t] = computeMeanMatrixAverage(t);
-    }
-    else if (orientationMethod_.option_ == "Log-Euclidean") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-        orientationTensors[t] = computeMeanLogEuclidean(t);
-    }
-
-    if (invariantMethod_.option_ == "Matrix Average"){
-      for (size_t t = 0; t < fieldSize_; ++t)
-        invariantTensors[t] = computeMeanMatrixAverage(t);
-    }
-    else if (invariantMethod_.option_ == "Log-Euclidean") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-        invariantTensors[t] = computeMeanLogEuclidean(t);
-    }
-    else if (invariantMethod_.option_ == "Linear Invariant") {
-      for (size_t t = 0; t < fieldSize_; ++t)
-      {
-        invariantTensors[t] = computeMeanLinearInvariant(t);
-      }
-    }
-
-    for (size_t t = 0; t < fieldSize_; ++t)
-    {
-      invariantTensors[t].setDescendingRHSOrder();
-      orientationTensors[t].setDescendingRHSOrder();
-      meanTensors_[t] = Dyadic3DTensor(orientationTensors[t].getEigenvectors(),
-                                       invariantTensors[t].getEigenvalues());
-      meanTensors_[t].setDescendingRHSOrder();
-    }
-  }
+    computeMeanTensorsDifferentMethod();
 }
 
 Dyadic3DTensor ComputeTensorUncertaintyAlgorithmImpl::computeMeanMatrixAverage(int t) const
@@ -359,14 +372,14 @@ void ComputeTensorUncertaintyAlgorithmImpl::verifyData(const FieldList& fields)
   fieldSize_ = indices_[0].size();
   for (size_t f = 1; f < fieldCount_; ++f)
     if (indices_[f].size() != fieldSize_)
-      throw std::invalid_argument("All field inputs must have the same size.");
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE("All field inputs must have the same size.");
 
   // Verify all are tensors
   for (auto field : fields)
   {
     FieldInformation finfo(field);
     if (!finfo.is_tensor())
-      throw std::invalid_argument("This module only supports tensor fields.");
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE("This module only supports tensor fields.");
   }
 }
 
