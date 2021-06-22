@@ -26,6 +26,7 @@
 */
 
 #include <Core/Datatypes/Feedback.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <arc-look-at/ArcLookAt.hpp>
 #include <glm/glm.hpp>
 #include <ospray/ospray.h>
@@ -43,10 +44,12 @@ public:
   void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
   void mouseWheel(int delta);
+  void autoView();
 
   OSPCamera getOSPCamera();
 
   void setAspect(float aspect) {aspect_ = aspect;}
+  void setSceneBoundingBox(const Core::Geometry::BBox& bbox);
 
 private:
   glm::vec3 pos_    {0.0f, 0.0f, 3.0f};
@@ -55,10 +58,12 @@ private:
   float aspect_     { 1.0f};
   float fovy_       {60.0f};
   float aperture_   {0.0f};
+  Core::Geometry::BBox sceneBBox_;
 
   spire::ArcLookAt lookat_ {       };
   OSPCamera camera_        {nullptr};
 
+  float toRadians(float v);
 };
 
 } /*Render*/ } /*SCIRun*/

@@ -230,9 +230,6 @@ void OsprayViewerDialog::addAutoViewButton()
 {
   autoViewButton_ = new QPushButton(this);
 
-  //TODO
-  autoViewButton_->setDisabled(true);
-
   autoViewButton_->setToolTip("Auto View");
   autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewButton_->setShortcut(Qt::Key_0);
@@ -314,7 +311,7 @@ void OsprayViewerDialog::autoRotateClicked()
 
 void OsprayViewerDialog::autoViewClicked()
 {
-  qDebug() << "TODO" << __FUNCTION__;
+  renderer_->autoView();
 }
 
 void OsprayViewerDialog::screenshotClicked()

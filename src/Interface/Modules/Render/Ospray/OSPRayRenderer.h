@@ -55,6 +55,7 @@ public:
   void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
   void mouseWheel(int32_t delta);
+  void autoView();
 
   //Data--------------------------------------------------------------------------------------------
   void updateGeometries(const std::vector<Core::Datatypes::OsprayGeometryObjectHandle>& geometries);

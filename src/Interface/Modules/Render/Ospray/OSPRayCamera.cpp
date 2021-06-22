@@ -31,6 +31,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace SCIRun::Render;
+using namespace SCIRun::Core::Geometry;
 
 OSPRayCamera::OSPRayCamera()
 {
@@ -103,4 +104,33 @@ void OSPRayCamera::mouseWheel(int delta)
 {
   lookat_.doZoom(-delta/100.0f);
   pos_ = lookat_.getPos();
+}
+
+float OSPRayCamera::toRadians(float v)
+{
+  const static float HALF_TURN_DEGREES = 180;
+  const static float TO_RADIAN_OPERATOR = glm::pi<float>() * HALF_TURN_DEGREES;
+  return TO_RADIAN_OPERATOR * v;
+}
+
+void OSPRayCamera::autoView()
+{
+  if(!sceneBBox_.valid()) return;
+
+  // Convert core geom bbox to AABB.
+  Core::Geometry::Point bboxMin = sceneBBox_.get_min();
+  Core::Geometry::Point bboxMax = sceneBBox_.get_max();
+  glm::vec3 min(bboxMin.x(), bboxMin.y(), bboxMin.z());
+  glm::vec3 max(bboxMax.x(), bboxMax.y(), bboxMax.z());
+
+  spire::AABB aabb(min, max);
+
+  // The arcball class expects fov in radians
+  lookat_.autoview(aabb, toRadians(fovy_));
+  pos_ = lookat_.getPos();
+}
+
+void OSPRayCamera::setSceneBoundingBox(const BBox& bbox)
+{
+  sceneBBox_ = bbox;
 }
