@@ -2312,16 +2312,16 @@ void ViewSceneDialog::setLightColor(int index)
   switch (index)
   {
   case 0:
-    state_->setValue(Parameters::HeadLightColor, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::HeadLightColor, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
     break;
   case 1:
-    state_->setValue(Parameters::Light1Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light1Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
     break;
   case 2:
-    state_->setValue(Parameters::Light2Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light2Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
     break;
   case 3:
-    state_->setValue(Parameters::Light3Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    state_->setValue(Parameters::Light3Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
     break;
   default:
     return;
