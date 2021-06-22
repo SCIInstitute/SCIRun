@@ -109,7 +109,7 @@ void OSPRayCamera::mouseWheel(int delta)
 float OSPRayCamera::toRadians(float v)
 {
   const static float HALF_TURN_DEGREES = 180;
-  const static float TO_RADIAN_OPERATOR = glm::pi<float>() * HALF_TURN_DEGREES;
+  const static float TO_RADIAN_OPERATOR = glm::pi<float>() / HALF_TURN_DEGREES;
   return TO_RADIAN_OPERATOR * v;
 }
 
