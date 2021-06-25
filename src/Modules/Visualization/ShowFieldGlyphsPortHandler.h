@@ -37,7 +37,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Vector.h>

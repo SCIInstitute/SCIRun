@@ -31,7 +31,7 @@
 
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 
 //freetype
 #include <ft2build.h>

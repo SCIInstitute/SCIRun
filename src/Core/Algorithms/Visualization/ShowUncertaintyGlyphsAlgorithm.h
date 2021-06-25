@@ -26,40 +26,28 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
+#ifndef CORE_ALGORITHMS_FIELDS_SHOW_UNCERTAINTY_GLYPHS_ALGORITHM_H
+#define CORE_ALGORITHMS_FIELDS_SHOW_UNCERTAINTY_GLYPHS_ALGORITHM_H
 
-#include <gl-shaders/GLShader.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include <es-render/util/Shader.hpp>
-#include <es-render/comp/StaticVBOMan.hpp>
-#include <Graphics/Datatypes/RenderFieldState.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/HasId.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun {
-namespace Render {
-
-/// \todo Transition this class to use the template ShaderVBOAttribs class
-///       under utils (utils/Shader.hpp).
-struct SRRenderState
-{
-  // -- Data --
-  RenderState state;
-
-  // -- Functions --
-  SRRenderState() {}
-
-  static const char* getName() {return "SRRenderState";}
-
-  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
+namespace Core {
+namespace Algorithms {
+namespace Visualization {
+  class SCISHARE ShowUncertaintyGlyphsAlgorithm : public AlgorithmBase
   {
-    // Shouldn't need to serialize these values. They are context specific.
-    // Maybe? Will need to figure out as I go along.
-    return true;
-  }
-};
+  public:
+    ShowUncertaintyGlyphsAlgorithm();
+    AlgorithmOutput run(const GeometryIDGenerator& idGen, const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
-} // namespace Render
-} // namespace SCIRun
+    // static const AlgorithmOutputName MeanTensorField;
+    // static const AlgorithmOutputName CovarianceMatrix;
+    static const AlgorithmOutputName OutputGeom;
+  };
+}}}}
 
 #endif

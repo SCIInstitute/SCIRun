@@ -33,7 +33,7 @@
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {

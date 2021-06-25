@@ -26,11 +26,11 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
-#define CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
+#ifndef GRAPHICS_DATATYPES_RENDER_FIELD_STATE_H
+#define GRAPHICS_DATATYPES_RENDER_FIELD_STATE_H
 
 #include <Core/Datatypes/Color.h>
-#include <Core/Algorithms/Visualization/share.h>
+#include <Graphics/Datatypes/share.h>
 
 namespace SCIRun {
 

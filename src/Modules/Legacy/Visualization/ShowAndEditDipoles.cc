@@ -36,7 +36,7 @@
  *
  */
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
