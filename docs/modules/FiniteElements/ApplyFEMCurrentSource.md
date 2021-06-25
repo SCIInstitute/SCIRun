@@ -2,9 +2,9 @@
 
 The ApplyFEMCurrentSource module builds the right-hand side (ColumnMatrix) to reflect monopolar and dipolar current sources for finite-element based bioelectric field problems.
 
-####Inputs:
+#### Inputs:
 
-####Outputs:
+#### Outputs:
 
 The first output, RHS, is the right-hand-side vector to be used with the stiffness matrix. The size of the vector is the number of nodes of the input mesh.
 

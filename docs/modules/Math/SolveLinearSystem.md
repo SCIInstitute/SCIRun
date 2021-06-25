@@ -1,16 +1,20 @@
 # SolveLinearSystem
 
-The SolveLinearSystem module is used to solve the linear system $$Ax=b$$, where the coefficient matrix $$A$$ may be dense or sparse, $$b$$ is a given right-hand-side vector, and the user wants to find the solution vector $$x$$.
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
+The SolveLinearSystem module is used to solve the linear system \\(Ax=b\\), where the coefficient matrix \\(A\\) may be dense or sparse, \\(b\\) is a given right-hand-side vector, and the user wants to find the solution vector \\(x\\)
 
 **Detailed Description**
 
 The SolveLinearSystem module takes two input matrices and returns three matrices.
-The first input port takes the coefficient matrix $$A$$, which may be a dense $$n \times n$$ matrix or a sparse $$n \times n$$ matrix.
-The second input port takes the right hand side vector $$b$$ as an $$n \times 1$$ dense matrix.
-Here, the module is assuming that an $$n \times n$$ system is being solved.
+The first input port takes the coefficient matrix \\(A\\), which may be a dense \\(n \times n\\) matrix or a sparse \\(n \times n\\) matrix.
+The second input port takes the right hand side vector \\(b\\) as an \\(n \times 1\\) dense matrix.
+Here, the module is assuming that an \\(n \times n\\) system is being solved.
 
-The first of the three output ports returns the solution vector $$x$$ as an $$n \times 1$$ dense matrix.
-The second output port returns the number of iterations required to reach convergence as a $$1 \times 1$$ dense matrix and the third output port returns the norm of the residual vector, again as a $$1 \times 1$$ dense matrix.
+The first of the three output ports returns the solution vector \\(x\\) as an \\(n \times 1\\) dense matrix.
+The second output port returns the number of iterations required to reach convergence as a \\(1 \times 1\\) dense matrix and the third output port returns the norm of the residual vector, again as a \\(1 \times 1\\) dense matrix.
 
 The GUI for this module is used to define the solution method for the module and monitor the convergence towards the solution.
 
@@ -57,7 +61,7 @@ Alternatively, to stop a diverging, or at least non-converging, simulation the T
 
 The bottom section of the GUI shows how the solution is progressing.
 
-There is an iteration counter to show how many iterations have been completed, the value of the original error (this will be 1.0 unless the  **Use the previous solution as initial guess** option has been used) and thevalue of the current error.
+There is an iteration counter to show how many iterations have been completed, the value of the original error (this will be 1.0 unless the  **Use the previous solution as initial guess** option has been used) and the value of the current error.
 These quantities are summarised graphically in the convergence plot.
 
 Further reading: [http://www-users.cs.umn.edu/~saad/books.html Y. Saad, Iterative methods for sparse linear systems, second edition (2000)].

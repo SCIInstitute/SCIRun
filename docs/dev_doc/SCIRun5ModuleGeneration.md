@@ -192,7 +192,7 @@ Here is a list of port tags that can be used in SCIRun:
 
 The header is also where the ports are named and the datatype is declared. It is important for the name of each port to be unique, including all the inputs and outputs. The datatype of each port is specific when the port is declared and named.
 This declares the datatype expected by the port and can be a subset of the port tag type, e.g., DenseMatrix instead of Matrix. However, it can be better to do this within the module to control the exception.  
-If there is a UI with the module in question, the state variables may be needed to pass data between the module and the UI. State variables will need to be declared here as public (see Section [Connecting UI to the Module](#connecting-ui-to-the-module) for an example). The `setStateDefault` function is how the default state variables are set. If there is no UI and therefore no state variables, this function can be set to empty in this file (`virtual void setStateDefaults() {};`)  and omitted from the .cc file.
+If there is a UI with the module in question, the state variables may be needed to pass data between the module and the UI. State variables will need to be declared here as public (see [Connecting UI to the Module](#connecting-ui-to-the-module) for an example). The `setStateDefault` function is how the default state variables are set. If there is no UI and therefore no state variables, this function can be set to empty in this file (`virtual void setStateDefaults() {};`)  and omitted from the .cc file.
 
 #### Module Code File
 
@@ -983,11 +983,11 @@ The process and code for this example is very similar to the previous example.
 We will make the *SortMatrixDialog.ui* in the Qt editor as we did previously ([Files Needed for a New Module](#files-needed-for-a-new-module)). It may be easier to copy a previously created UI file and modify it rather than to create one from scratch. Copy the `src/Interface/Template/ModuleDesignerFile.ui` file and rename it.Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window). Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to `ascendButton_` and `descendButton_`. You will also need to make sure to change the name of the `QDialog` to `SortMatrixDialog` (also in the 'Object Inpector'). The placement of the buttons and the size of the window and boxes can be adjusted in the 'Property Editor' window. The UI should look similar to <a href="#algoUI">Figure 5.1</a>.
 
 <!-- algoUI -->
-![Module interface design file for the SortMatrix module as seen in the Qt editor](SCIRun5ModuleGeneration_figures/algoUI.png)
+![Module interface design file for the SortMatrix module as seen in the Qt editor](SCIRun5ModuleGeneration_figures/algo_ui.png)
 <figcaption>Figure 5.1 Module interface design file for the SortMatrix module as seen in the Qt editor.</figcaption>
 
 
-The *SortMatrixDialog.h* is virtually identical to the header in the previous example ( [Simple Module With UI](#example-simple-module-with-ui)), except for the names, as shown here:
+The *SortMatrixDialog.h* is virtually identical to the header in the previous example ([Simple Module With UI](#example-simple-module-with-ui)), except for the names, as shown here:
 
 ```
 #ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
@@ -1013,7 +1013,7 @@ namespace SCIRun {
 #endif
 
 ```
-*SortMatrixDialog.cc* is also very similar to the dialog .cc file in the previous example ( [Simple Module With UI](#example-simple-module-with-ui)):
+*SortMatrixDialog.cc* is also very similar to the dialog .cc file in the previous example ([Simple Module With UI](#example-simple-module-with-ui)):
 
 ```
 #include <Interface/Modules/Math/SortMatrixDialog.h>
@@ -1227,7 +1227,7 @@ This network can be used to see the input and output of the SortMatrix module.
 If this or another module is not behaving as expected, change the output of some functions and set the output of the module to be some of the intermediate steps, or use `std::cout<< "message" <<std::endl;` to print values as the code runs. Unit Test can also find some bugs in the module code.
 
 <!-- algoNetwork -->
-![Network for running and testing the SortMatrix module](SCIRun5ModuleGeneration_figures/algoNetwork.png)
+![Network for running and testing the SortMatrix module](SCIRun5ModuleGeneration_figures/algo_network.png)
 <figcaption>Figure 5.2 Network for running and testing the SortMatrix module. </figcaption>
 
 
@@ -1281,7 +1281,7 @@ Once the module is building without functionality, a module UI can be added. Beg
 In the module design file, use the Qt editor to create the UI that is needed by adding and removing widgets as needed (see [Creating a Custom UI](#creating-a-custom-ui) & [Module UI Code](#module-ui-code)). Make sure that the name of the module and the name of the inputs are correctly named.  
 Next, modify the dialog header file so that the names of the module and dialog are corrected. There usually isn't anything extra needed with the dialog header. Similarly modify the module dialog cc file.
 Now add code to interpret the inputs from the widgets placed in the UI ([Module UI Code](#module-ui-code)). It may be helpful to look at other modules with similar UIs to determine which functions are needed (see [Creating a Custom UI](#creating-a-custom-ui) & [Module UI Code](#module-ui-code) for simple examples).  
-Now that the interface files are created, fill out the Interface section of the module configuration file. Make sure the names are consistent across files. Add all three files to *CMakeList.txt* in the directory that the files are in. Try to build SCIRun. If there are any errors, see [Common Build Errors](#63-common-build-errors) for ideas to resolve them. Once SCIRun is built, pull up the module and check the module UI. There will not be any functionality or defaults set, but the look should be correct. If the UI is correct, the UI code should be complete. Commit all changes to the local branch.
+Now that the interface files are created, fill out the Interface section of the module configuration file. Make sure the names are consistent across files. Add all three files to *CMakeList.txt* in the directory that the files are in. Try to build SCIRun. If there are any errors, see [Common Build Errors](#common-build-errors) for ideas to resolve them. Once SCIRun is built, pull up the module and check the module UI. There will not be any functionality or defaults set, but the look should be correct. If the UI is correct, the UI code should be complete. Commit all changes to the local branch.
 
 #### Add Module Algorithm Files
 
@@ -1384,7 +1384,6 @@ We suggest creating a second branch for the module documentation so that a separ
 Create a file in `docs/_includes/modules/` with the name *ModuleName.md*
 
 A template for the contents is provided here with annotated comments:
-{% raw %}
 ```
 ---
 title: MODULE_NAME
@@ -1415,7 +1414,6 @@ tags: module
 {% capture url %}{% include url.md %}{% endcapture %}
 {{ url }}
 ```
-{% endraw %}
 
 ### Creating the Symbolic Link
 

@@ -1,4 +1,7 @@
 # Basic Tutorial
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
 
 ## SCIRun Overview
 
@@ -83,7 +86,7 @@ Return to the default color scale. Use the sliders in the GetSlicesFromStructure
 Add the **EditMeshBoundingBox** module under **ChangeMesh** (<a href="#addbbox">Figure 2.9</a>). Connect it to the ReadField module and direct the output to the ViewScene module. Execute the network to visualize the bounding box of engine.nhrd. Adjust the size of the bounding box by pressing the + or - buttons under Widget Scale in the EditMeshBoundingBox UI (<a href="#addbbox2">Figure 2.10</a>).
 
 <!-- addbbox -->
-![Visualize the mesh’s bounding box.](BasicTutorial_figures/vieweditmeshboundingboxscene.png)
+![Visualize the mesh’s bounding box.](BasicTutorial_figures/editmeshboundingbox.png)
 <figcaption>Figure 2.9 Visualize the mesh’s bounding box.</figcaption>
 
 
@@ -115,7 +118,7 @@ Construct an isosurface from the field by instantiating and connecting a **Extra
 
 ### Create Field
 
-Create and manipulate a structured mesh type in this exercise. Start by creating a lattice volume using **CreateLatVol** module. Assign data at nodes using **CalculateFieldData** module. Connect CalculateFieldData to CreateLatVol. Input the expression $$RESULT = sqrt(X * X + Y * Y + Z * Z)$$ to compute data for each node within the CreateFieldData UI.
+Create and manipulate a structured mesh type in this exercise. Start by creating a lattice volume using **CreateLatVol** module. Assign data at nodes using **CalculateFieldData** module. Connect CalculateFieldData to CreateLatVol. Input the following expression \\( RESULT = sqrt(X * X + Y * Y + Z * Z) \\) to compute data for each node within the CreateFieldData UI.
 
 <!-- createnewfield -->
 ![Create lattice volume field using CreateLatVol module.](BasicTutorial_figures/create.png)
@@ -172,7 +175,7 @@ Extend the functionality of this network by slicing the field using GetSliceFrom
 
 ### Clip Field
 
-Clip out a subset of the original field by converting the lattice volume to an unstructured mesh using **ConvertMeshToUnstructuredMesh** (<a href="#clipfieldfunc">Figure 3.10</a>) and adding **ClipFieldByFunction** (<a href="#convertmesh">Figure 3.11</a>) to the network. Set the clipping location setting in ClipFieldByFunction to *all nodes*. Use the expression _DATA1 &gt; 1&&X &lt; 0_ to clip the field (<a href="#clipfield">Figure 3.12</a>).
+Clip out a subset of the original field by converting the lattice volume to an unstructured mesh using **ConvertMeshToUnstructuredMesh** (<a href="#clipfieldfunc">Figure 3.10</a>) and adding **ClipFieldByFunction** (<a href="#convertmesh">Figure 3.11</a>) to the network. Set the clipping location setting in ClipFieldByFunction to *all nodes*. Use the expression `DATA1 > 1 && X < 0` to clip the field (<a href="#clipfield">Figure 3.12</a>).
 
 <!-- clipfieldfunc -->
 ![Convert the original field to an unstructured mesh.](BasicTutorial_figures/convertmesh.png)

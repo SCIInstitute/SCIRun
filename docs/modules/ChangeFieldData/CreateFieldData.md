@@ -4,7 +4,7 @@ This module calculates a new value for each value in the field data based on a u
 
 **Detailed Description**
 
-This module allows the computation of a new scalar, vector or tensor value for each data location in the field. This module is closely related to CalculateFieldData, however it does not require any data to be present in the field and the data already in the field is ignored. This module also allows the user to state whether he or she wants to calculate data at the elements or at the nodes of the mesh.
+This module allows the computation of a new scalar, vector or tensor value for each data location in the field. This module is closely related to [CalculateFieldData](CalculateFieldData.md), however it does not require any data to be present in the field and the data already in the field is ignored. This module also allows the user to state whether he or she wants to calculate data at the elements or at the nodes of the mesh.
 
 The user defined function can depend on a number of variables that are defined for each location:
 

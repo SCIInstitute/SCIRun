@@ -26,7 +26,7 @@ This module allows the computation of a new position for each node in the input 
 
 #### Available Functions
 
-A list of available functions is available in the GUI of the module. The [Parser Help](../user_doc/parserhelp.md) button brings up a list of available functions to do scalar/vector/tensor algebra.
+A list of available functions is available in the GUI of the module. The [Parser Help](../../user_doc/parserhelp.md) button brings up a list of available functions to do scalar/vector/tensor algebra.
 
 #### Input Ports
 
