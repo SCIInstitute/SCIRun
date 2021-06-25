@@ -14,31 +14,75 @@ Each vector is visualized as 4 separate widgets.
 To interact with widgets, hold the SHIFT key and click and drag the widget.
 Moving different widgets will cause different transformations on that vector:
 
-| Part of Vector   | Transformation   |
-| :--------------- | :--------------- |
-| Sphere           | Movement         |
-| Cylinder         | Movement         |
-| Cone             | Rotation         |
-| Disk             | Resize           |
+```eval_rst
+.. list-table::
+   :widths: 25 75
+   :width: 100%
+   :header-rows: 1
+
+   * - Part of Vector
+     - Transformation
+
+   * - Sphere
+     - Movement
+
+   * - Cylinder
+     - Movement
+
+   * - Cone
+     - Rotation
+
+   * - Disk
+     - Resize
+
+```
 
 ### Scaling ###
 The Visualization Scaling Factor multiplies the scaling of all the dipoles, however it does not affect the field output.
 
 The 3 scaling options rescale the field output.
 
-| Scaling Option                | Transformation                                                                            |
-| :---------------------------- | :---------------------------------------------------------------------------------------- |
-| Original                      | Uses the scaling values given from the input port                                         |
-| Normalize Vector Data         | Normalizes all vector                                                                     |
-| Normalize by Largest Vector   | The largest vector is normalized and the rest are rescaled in proportion of the largest   |
+```eval_rst
+.. list-table::
+   :widths: 25 75
+   :width: 100%
+   :header-rows: 1
+
+   * - Scaling Option
+     - Transformation
+
+   * - Original
+     - Uses the scaling values given from the input port
+
+   * - Normalize Vector Data
+     - Normalizes all vector
+
+   * - Normalize by Largest Vector
+     - The largest vector is normalized and the rest are rescaled in proportion of the largest
+
+```
 
 Note: Changing scaling options reset to the original scales from the input field.
 However, you can resize the widget after changing scaling options.
 
 ### Other Options ###
 
-| Option Name                    | Description                                                                               |
-| :----------------------------  | :---------------------------------------------------------------------------------------- |
-| Show Last As Vector            | Shows the last vector in the field as a point                                             |
-| Show Lines                     | Displays lines connecting between the bases of every vector in the field                  |
-| Move Dipole Positions Together | When one dipole is moved, every other dipole moves the same direction and distance        |
+```eval_rst
+.. list-table::
+   :widths: 25 75
+   :width: 100%
+   :header-rows: 1
+
+   * - Option Name
+     - Description
+
+   * - Show Last As Vector
+     - Shows the last vector in the field as a point
+
+   * - Show Lines
+     - Displays lines connecting between the bases of every vector in the field
+
+   * - Move Dipole Positions Together
+     - When one dipole is moved, every other dipole moves the same direction and distance
+
+```
