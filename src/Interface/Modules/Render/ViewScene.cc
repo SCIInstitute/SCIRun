@@ -410,6 +410,7 @@ void ViewSceneDialog::addToolBar()
   addQuickScreenshotButton();
   addAutoRotateButton();
   addColorOptionsButton();
+  addLightOptionsComboBox();
   addFogOptionsButton();
   addMaterialOptionsButton();
   setupMaterials();
@@ -469,6 +470,15 @@ void ViewSceneDialog::addColorOptionsButton()
   addToolbarButton(colorOptionsButton);
 }
 
+void ViewSceneDialog::addLightOptionsComboBox()
+{
+  auto* lightOptionsComboBox = new QComboBox();
+  QStringList lightList;
+  lightList << "Headlight" << "Light1" << "Light2" << "Light3";
+  lightOptionsComboBox->addItems(lightList);
+  toolBar_->addWidget(lightOptionsComboBox);
+}
+
 void ViewSceneDialog::addFogOptionsButton()
 {
   auto* fogOptionsButton = new QPushButton();
@@ -491,13 +501,15 @@ void ViewSceneDialog::addMaterialOptionsButton()
   addToolbarButton(materialOptionsButton);
 }
 
-void ViewSceneDialog::addToolbarButton(QPushButton* button)
+void ViewSceneDialog::addToolbarButton(QWidget* widget)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
-  button->setFixedSize(buttonSize, buttonSize);
-  button->setIconSize(QSize(iconSize, iconSize));
-  toolBar_->addWidget(button);
+  widget->setFixedSize(buttonSize, buttonSize);
+  if (auto button = qobject_cast<QPushButton*>(widget))
+    button->setIconSize(QSize(iconSize, iconSize));
+
+  toolBar_->addWidget(widget);
 }
 
 void ViewSceneDialog::addConfigurationDock()

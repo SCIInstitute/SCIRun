@@ -240,9 +240,10 @@ namespace SCIRun {
       void addControlLockButton();
       void addAutoRotateButton();
       void addColorOptionsButton();
+      void addLightOptionsComboBox();
       void addFogOptionsButton();
       void addMaterialOptionsButton();
-      void addToolbarButton(QPushButton* button);
+      void addToolbarButton(QWidget* w);
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
