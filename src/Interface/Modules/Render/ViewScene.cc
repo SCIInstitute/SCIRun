@@ -429,6 +429,21 @@ void ViewSceneDialog::addConfigurationButton()
   addToolbarButton(configurationButton);
 }
 
+namespace
+{
+  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget)
+  {
+    auto popup = new ctkPopupWidget(button);
+    auto popupLayout = new QHBoxLayout(popup);
+    popup->setOrientation(Qt::Horizontal);
+    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+
+    popupLayout->addWidget(underlyingWidget);
+    popupLayout->setContentsMargins(4,4,4,4);
+  }
+}
+
 void ViewSceneDialog::addAutoRotateButton()
 {
   auto* autoRotateButton = new QPushButton();
@@ -436,17 +451,8 @@ void ViewSceneDialog::addAutoRotateButton()
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  {
-    auto popup = new ctkPopupWidget(autoRotateButton);
-    auto popupLayout = new QHBoxLayout(popup);
-    auto popupSlider = new AutoRotateControls(this);
-    popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-
-    popupLayout->addWidget(popupSlider);
-    popupLayout->setContentsMargins(4,4,4,4);
-  }
+  auto popupSlider = new AutoRotateControls(this);
+  setupPopupWidget(autoRotateButton, popupSlider);
   addToolbarButton(autoRotateButton);
 }
 
@@ -457,18 +463,9 @@ void ViewSceneDialog::addColorOptionsButton()
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  {
-    auto popup = new ctkPopupWidget(colorOptionsButton);
-    auto popupLayout = new QHBoxLayout(popup);
-    colorOptions_ = new ColorOptions(this);
-    popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    colorOptions_->setSampleColor(bgColor_);
-
-    popupLayout->addWidget(colorOptions_);
-    popupLayout->setContentsMargins(4,4,4,4);
-  }
+  colorOptions_ = new ColorOptions(this);
+  colorOptions_->setSampleColor(bgColor_);
+  setupPopupWidget(colorOptionsButton, colorOptions_);
   addToolbarButton(colorOptionsButton);
 }
 
@@ -477,20 +474,9 @@ void ViewSceneDialog::addFogOptionsButton()
   auto* fogOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
-  //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  {
-    auto popup = new ctkPopupWidget(fogOptionsButton);
-    auto popupLayout = new QHBoxLayout(popup);
-    fogControls_ = new FogControls(this);
-    popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    //fogControls_->setSampleColor(bgColor_);
-
-    popupLayout->addWidget(fogControls_);
-    popupLayout->setContentsMargins(4,4,4,4);
-  }
+  fogControls_ = new FogControls(this);
+  setupPopupWidget(fogOptionsButton, fogControls_);
   addToolbarButton(fogOptionsButton);
 }
 
@@ -499,20 +485,9 @@ void ViewSceneDialog::addMaterialOptionsButton()
   auto* materialOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
-  //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  {
-    auto popup = new ctkPopupWidget(materialOptionsButton);
-    auto popupLayout = new QHBoxLayout(popup);
-    materialsControls_ = new MaterialsControls(this);
-    popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    //colorOptions_->setSampleColor(bgColor_);
-
-    popupLayout->addWidget(materialsControls_);
-    popupLayout->setContentsMargins(4,4,4,4);
-  }
+  materialsControls_ = new MaterialsControls(this);
+  setupPopupWidget(materialOptionsButton, materialsControls_);
   addToolbarButton(materialOptionsButton);
 }
 
@@ -577,25 +552,25 @@ void ViewSceneDialog::addAutoViewButton()
   connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
   addToolbarButton(autoViewButton_);
   {
-    auto popup = new ctkPopupWidget(autoViewButton_);
-    auto popupLayout = new QHBoxLayout(popup);
-    auto popupSlider = new QSlider(Qt::Horizontal, popup);
-    popupSlider->setMinimumSize(80, 10);
-    popupSlider->setRange(0, 100);
-    popupSlider->setValue(50);
-    connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100-v); });
-
-
-    popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-
-    // Control the animation
-    //popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
-    //popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
-    //popup->setEffectDuration(100); // how long in ms.
-
-    popupLayout->addWidget(popupSlider);
+    // auto popup = new ctkPopupWidget(autoViewButton_);
+    // auto popupLayout = new QHBoxLayout(popup);
+    // auto popupSlider = new QSlider(Qt::Horizontal, popup);
+    // popupSlider->setMinimumSize(80, 10);
+    // popupSlider->setRange(0, 100);
+    // popupSlider->setValue(50);
+    // connect(popupSlider, &QSlider::valueChanged, [this](int v) { mSpire.lock()->setCameraDistance(100-v); });
+    //
+    //
+    // popup->setOrientation(Qt::Horizontal);
+    // popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    // popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    //
+    // // Control the animation
+    // //popup->setAnimationEffect(ctkBasePopupWidget::ScrollEffect); // could also be FadeEffect
+    // //popup->setEasingCurve(QEasingCurve::OutQuart); // how to accelerate the animation, QEasingCurve::Type
+    // //popup->setEffectDuration(100); // how long in ms.
+    //
+    // popupLayout->addWidget(popupSlider);
   }
 }
 
