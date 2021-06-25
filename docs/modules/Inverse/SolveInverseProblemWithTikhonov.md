@@ -43,11 +43,11 @@ The user can select between the formulations using the module GUI (see section [
 
 * underdetermined:
 
-\\(G=RR^TA^T (ARR^TA^T + \lambda LL^T)^{-1}\\)
+\\[G=RR^TA^T (ARR^TA^T + \lambda LL^T)^{-1}\\]
 
 * overdetermined:
 
-\\(G=(A^TL^TLA + \lambda R^TR)^{-1}A^TL^TL\\)
+\\[G=(A^TL^TLA + \lambda R^TR)^{-1}A^TL^TL\\]
 
 #### Computation
 
@@ -66,11 +66,11 @@ Both cases use Gaussian elimination to calculate the unknown \\(\hat{x}\\), but 
 
 * underdetermined:
 
-\\( (A R R^T A^T + \lambda L L^T) b = y, \hat{x} = R R^T A^T b  \\)
+\\[ (A R R^T A^T + \lambda L L^T) b = y, \hat{x} = R R^T A^T b  \\]
 
 * overdetermined:
 
-\\((A^T L^T L A + \lambda R^T R) \hat{x} = A^T L^T L y\\)
+\\[(A^T L^T L A + \lambda R^T R) \hat{x} = A^T L^T L y\\]
 
 However, If the output port of the inverse operator is connected to another module's input the inverse operator \\( G \\) is used to compute the
 solution estimate \\( \hat{x} \\) such as \\( \hat{x} = G y \\).
