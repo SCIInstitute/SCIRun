@@ -6,7 +6,7 @@ It allows you to move, rescale, and rotate vectors.
 ### Ports ###
 This module has 1 input port and 2 output ports.
 The input port must be a point cloud mesh with vectors on all of the points.
-The geometry output port visualizes vectors as widgets, which can be edited through the ViewScene module.
+The geometry output port visualizes vectors as widgets, which can be edited through the [ViewScene](../Render/ViewScene.md) module.
 The field output sends the edited data downstream.
 
 ### Editing ###
