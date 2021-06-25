@@ -20,7 +20,7 @@ from recommonmark.transform import AutoStructify
 # -- Project information -----------------------------------------------------
 
 project = 'SCIRun'
-copyright = '2021, TBA'
+copyright = '2021, Scientific Computing and Imaging Institute'
 author = 'TBA'
 
 # The full version, including alpha/beta/rc tags
@@ -54,7 +54,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    '.md': 'markdown'
 }
 
 # the master toctree doc
