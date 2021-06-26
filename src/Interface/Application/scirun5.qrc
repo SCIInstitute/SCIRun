@@ -47,6 +47,10 @@
     <file>Resources/ViewScene/lockView.png</file>
     <file>Resources/ViewScene/screenshot.png</file>
     <file>Resources/ViewScene/quickscreenshot.png</file>
+    <file>Resources/ViewScene/autorotate2.png</file>
+    <file>Resources/ViewScene/axes.png</file>
+    <file>Resources/ViewScene/materials.png</file>
+    <file>Resources/ViewScene/scaleBar.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>

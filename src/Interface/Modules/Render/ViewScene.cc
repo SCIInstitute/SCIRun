@@ -449,7 +449,7 @@ void ViewSceneDialog::addAutoRotateButton()
 {
   auto* autoRotateButton = new QPushButton();
   //autoRotateButton->setToolTip("Autorotate settings");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   auto popupSlider = new AutoRotateControls(this);
@@ -483,7 +483,7 @@ void ViewSceneDialog::addFogOptionsButton()
 {
   auto* fogOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   fogControls_ = new FogControls(this);
   setupPopupWidget(fogOptionsButton, fogControls_);
@@ -494,7 +494,7 @@ void ViewSceneDialog::addMaterialOptionsButton()
 {
   auto* materialOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   materialsControls_ = new MaterialsControls(this);
   setupPopupWidget(materialOptionsButton, materialsControls_);
