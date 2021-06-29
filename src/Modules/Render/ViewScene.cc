@@ -366,6 +366,12 @@ void ViewScene::execute()
 #endif
   state->setValue(Parameters::HasNewGeometry, true);
   state->setTransientValue(Parameters::TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+
+  if (state->getValue(Parameters::HeadLightOn).toBool() && state->getValue(Parameters::HeadLightColor).toString() == "Color(0,0,0)")
+  {
+    warning("This ViewScene is displaying a saved black headlight due to an old bug. Headlight color is being switched to white. Please save and reload your network file to fix this.");
+    state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  }
 }
 
 unsigned long ViewScene::getCurrentTimeSinceEpoch()
