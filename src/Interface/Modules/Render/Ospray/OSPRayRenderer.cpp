@@ -28,6 +28,7 @@
 #include "OSPRayRenderer.h"
 
 #ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
   #include <OpenGL/glu.h>
 #else
 #ifdef _WIN32
@@ -75,8 +76,6 @@ OSPRayRenderer::~OSPRayRenderer()
   if(camera_) delete camera_;
   if(world_) ospRelease(world_);
 }
-
-
 
 //Rendering-----------------------------------------------------------------------------------------
 void OSPRayRenderer::renderFrame()

@@ -50,7 +50,7 @@ namespace Basic {
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   protected:
-    void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}
+    void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override {}
   private:
     boost::atomic<int> counter_;
   };

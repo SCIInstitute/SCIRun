@@ -26,10 +26,7 @@
 */
 
 
-/// Class definition of this one
 #include <Core/Algorithms/Legacy/Fields/MergeFields/AppendFieldsAlgo.h>
-
-/// Need to find out what type of field we are dealing with
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -38,14 +35,15 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
-using namespace SCIRun::Core::Algorithm::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 AppendFieldsAlgorithm::AppendFieldsAlgorithm()
 {
   //addParameter(Variables::RowsOrColumns, 0);
 }
 
-AlgorithmOutput AppendFieldsAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput AppendFieldsAlgorithm::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 /*  auto inputFields = input.getList<Field>(Variables::InputFields);

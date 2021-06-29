@@ -220,7 +220,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixH
 }
 
 
-DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const double angle, const std::vector<double>& normal) const
+DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const std::vector<double>& normal) const
 {
   DenseMatrixHandle result(new DenseMatrix(3, 3));
 
@@ -387,7 +387,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           coil_vector.push_back(coil_ny[i]);
           coil_vector.push_back(coil_nz[i]);
 
-          rotation_matrix1 = make_rotation_matrix(angle, coil_vector);
+          rotation_matrix1 = make_rotation_matrix(coil_vector);
 
           if (angle != 0) /// test it !
           {
@@ -609,7 +609,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
 }
 
 
-boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp_mesh, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness, VariableHandle table) const
+boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp_mesh, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const
 {
   int nr_elc_sponge_triangles = 0, num_valid_electrode_definition = 0, nr_elc_sponge_triangles_on_scalp = 0;
   std::vector<double> field_values, field_values_elc_on_scalp;
@@ -688,8 +688,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       axis.push_back(norm[2]);
       double angle = elc_angle_rotation[i];
       DenseMatrixHandle rotation_matrix, rotation_matrix1, rotation_matrix2;
-      rotation_matrix1 = make_rotation_matrix(angle, axis);
-      if (elc_angle_rotation[i] != 0)
+      rotation_matrix1 = make_rotation_matrix(axis);
+      if (angle != 0)
       {
         rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
         rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
@@ -834,8 +834,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           SplitFieldByDomainAlgo algo_splitfieldbydomain;
           algo_splitfieldbydomain.setLogger(getLogger());
           FieldList scalp_elc_sphere;
-          algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
-          algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+          algo_splitfieldbydomain.set(Fields::Parameters::SortBySize, true);
+          algo_splitfieldbydomain.set(Fields::Parameters::SortAscending, false);
           algo_splitfieldbydomain.runImpl(scalp, scalp_elc_sphere);
 
           VMesh::Elem::index_type c_ind = 0;
@@ -853,8 +853,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           }
 
           SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-          algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-          algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+          algo_splitbyconnectedregion.set(Fields::Parameters::SortDomainBySize, true);
+          algo_splitbyconnectedregion.set(Fields::Parameters::SortAscending, false);
           auto scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
 
           FieldHandle small_scalp_surf;
@@ -875,11 +875,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
           if (!small_scalp_surf->vfield()->is_lineardata())
           {
-
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;
             {
-              convert_field_basis.setOption(OutputType, "Linear");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Linear");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(small_scalp_surf, scalp_linear_data);
             }
           }
@@ -901,18 +899,18 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           if (interpolate_elec_shape)
           {
             FieldHandle sdf_output_linear;
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+            // convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(OutputType, "Linear");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Linear");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, sdf_output_linear);
             }
 
             /// use clipvolumebyisovalue to get the electrode patch edges right
             FieldHandle clipmeshbyisoval_output;
             ClipMeshByIsovalueAlgo clipmeshbyisoval_algo;
-            clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
-            clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, true);
+            clipmeshbyisoval_algo.set(Fields::Parameters::ScalarIsoValue, 0.0);
+            clipmeshbyisoval_algo.set(Fields::Parameters::LessThanIsoValue, true);
             clipmeshbyisoval_algo.run(sdf_output_linear, clipmeshbyisoval_output);
             /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface
             bool found_correct_surface = false;
@@ -937,8 +935,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               }
               if (!found_correct_surface)
               {
-                clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
-                clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, false);
+                clipmeshbyisoval_algo.set(Fields::Parameters::ScalarIsoValue, 0.0);
+                clipmeshbyisoval_algo.set(Fields::Parameters::LessThanIsoValue, false);
                 clipmeshbyisoval_algo.run(sdf_output, clipmeshbyisoval_output);
                 if (clipmeshbyisoval_output)
                 {
@@ -967,17 +965,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
               }
 
-              using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+              // convert the data values (zero's) to elements
               {
-                convert_field_basis.setOption(OutputType, "Constant");
-                convert_field_basis.set(BuildBasisMapping, false);
+                convert_field_basis.setOption(Fields::Parameters::OutputType, "Constant");
+                convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
                 convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
               }
 
               final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero
               SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion_1;
-              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+              algo_splitbyconnectedregion_1.set(Fields::Parameters::SortDomainBySize, true);
+              algo_splitbyconnectedregion_1.set(Fields::Parameters::SortAscending, false);
               result = algo_splitbyconnectedregion_1.run(final_electrode_sponge_surf);
             }
 
@@ -1040,10 +1038,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
             }
 
-            using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+            /// convert the data values (zero's) to elements
             {
-              convert_field_basis.setOption(OutputType, "Constant");
-              convert_field_basis.set(BuildBasisMapping, false);
+              convert_field_basis.setOption(Fields::Parameters::OutputType, "Constant");
+              convert_field_basis.set(Fields::Parameters::BuildBasisMapping, false);
               convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
             }
 
@@ -1087,8 +1085,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             SplitFieldByDomainAlgo algo_splitfieldbydomain;
             algo_splitfieldbydomain.setLogger(getLogger());
             FieldList final_electrode_sponge_surf_domainsplit;
-            algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
-            algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+            algo_splitfieldbydomain.set(Fields::Parameters::SortBySize, true);
+            algo_splitfieldbydomain.set(Fields::Parameters::SortAscending, false);
             algo_splitfieldbydomain.runImpl(final_electrode_sponge_surf, final_electrode_sponge_surf_domainsplit);
             found_elc_surf = false;
             FieldHandle find_elc_surf;
@@ -1115,8 +1113,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
             }
 
             SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-            algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-            algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+            algo_splitbyconnectedregion.set(Fields::Parameters::SortDomainBySize, true);
+            algo_splitbyconnectedregion.set(Fields::Parameters::SortAscending, false);
             result = algo_splitbyconnectedregion.run(find_elc_surf);
           }
 
@@ -1391,21 +1389,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
   /// check GUI inputs:
   /// 1) Is there any valid row in the GUI table, so at least one row where both ComboBoxes are set
   ///
-  std::vector<double> elc_prototyp_map;
-  std::vector<double> elc_thickness;
-  std::vector<double> elc_angle_rotation;
-  std::vector<double> elc_x;
-  std::vector<double> elc_y;
-  std::vector<double> elc_z;
+  std::vector<double> elc_prototyp_map, elc_thickness, elc_angle_rotation, elc_x, elc_y, elc_z;
 
-  std::vector<double> coil_prototyp_map;
-  std::vector<double> coil_angle_rotation;
-  std::vector<double> coil_x;
-  std::vector<double> coil_y;
-  std::vector<double> coil_z;
-  std::vector<double> coil_nx;
-  std::vector<double> coil_ny;
-  std::vector<double> coil_nz;
+  std::vector<double> coil_prototyp_map, coil_angle_rotation, coil_x, coil_y, coil_z, coil_nx, coil_ny, coil_nz;
 
   /// The rest of the run function checks the validity of the GUI inputs. If there are not valid (="???") it tries to use the prototype inputs and if valid it calls functions make_tdcs_electrodes or make_tms
   for (int i = 0; i < table.size(); i++)
@@ -1696,7 +1682,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 
   if (t1 == t2 && t1 == t3 && t1 == t4 && t1 == t5 && t14 > 0 && t1 > 0)
   {
-    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field, table_output) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness, table_output);
+    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field, table_output) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness);
     valid_tdcs = true;
   }
 

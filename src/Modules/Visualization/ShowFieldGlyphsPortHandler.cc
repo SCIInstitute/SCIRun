@@ -44,7 +44,6 @@ namespace SCIRun{
     namespace Visualization{
       ShowFieldGlyphsPortHandler::ShowFieldGlyphsPortHandler(
           const Dataflow::Networks::Module* mod,
-          ModuleStateHandle state,
           const RenderState renState,
           FieldHandle pf,
           boost::optional<FieldHandle> sf,

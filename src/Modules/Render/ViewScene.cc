@@ -57,12 +57,12 @@ Mutex ViewScene::mutex_("ViewScene");
 ViewScene::ScopedExecutionReporter::ScopedExecutionReporter(ModuleStateHandle state)
   : state_(state)
 {
-  state_->setValue(IsExecuting, true);
+  state_->setValue(Parameters::IsExecuting, true);
 }
 
 ViewScene::ScopedExecutionReporter::~ScopedExecutionReporter()
 {
-  state_->setValue(IsExecuting, false);
+  state_->setValue(Parameters::IsExecuting, false);
 }
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
@@ -71,14 +71,78 @@ ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
 ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
+ALGORITHM_PARAMETER_DEF(Render, Ambient);
+ALGORITHM_PARAMETER_DEF(Render, Diffuse);
+ALGORITHM_PARAMETER_DEF(Render, Specular);
+ALGORITHM_PARAMETER_DEF(Render, Shine);
+ALGORITHM_PARAMETER_DEF(Render, Emission);
+ALGORITHM_PARAMETER_DEF(Render, FogOn);
+ALGORITHM_PARAMETER_DEF(Render, ObjectsOnly);
+ALGORITHM_PARAMETER_DEF(Render, UseBGColor);
+ALGORITHM_PARAMETER_DEF(Render, FogStart);
+ALGORITHM_PARAMETER_DEF(Render, FogEnd);
+ALGORITHM_PARAMETER_DEF(Render, FogColor);
+ALGORITHM_PARAMETER_DEF(Render, ShowScaleBar);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarUnitValue);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLength);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarHeight);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarMultiplier);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarNumTicks);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineWidth);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
+//ALGORITHM_PARAMETER_DEF(Render, Lighting);
+//ALGORITHM_PARAMETER_DEF(Render, ShowBBox);
+// ALGORITHM_PARAMETER_DEF(Render, UseClip);
+// ALGORITHM_PARAMETER_DEF(Render, Stereo);
+// ALGORITHM_PARAMETER_DEF(Render, BackCull);
+// ALGORITHM_PARAMETER_DEF(Render, DisplayList);
+// ALGORITHM_PARAMETER_DEF(Render, StereoFusion);
+// ALGORITHM_PARAMETER_DEF(Render, PolygonOffset);
+// ALGORITHM_PARAMETER_DEF(Render, TextOffset);
+// ALGORITHM_PARAMETER_DEF(Render, FieldOfView);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightOn);
+ALGORITHM_PARAMETER_DEF(Render, Light1On);
+ALGORITHM_PARAMETER_DEF(Render, Light2On);
+ALGORITHM_PARAMETER_DEF(Render, Light3On);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightColor);
+ALGORITHM_PARAMETER_DEF(Render, Light1Color);
+ALGORITHM_PARAMETER_DEF(Render, Light2Color);
+ALGORITHM_PARAMETER_DEF(Render, Light3Color);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightAzimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light1Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light2Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, Light3Azimuth);
+ALGORITHM_PARAMETER_DEF(Render, HeadLightInclination);
+ALGORITHM_PARAMETER_DEF(Render, Light1Inclination);
+ALGORITHM_PARAMETER_DEF(Render, Light2Inclination);
+ALGORITHM_PARAMETER_DEF(Render, Light3Inclination);
+ALGORITHM_PARAMETER_DEF(Render, ShowViewer);
+ALGORITHM_PARAMETER_DEF(Render, WindowSizeX);
+ALGORITHM_PARAMETER_DEF(Render, WindowSizeY);
+ALGORITHM_PARAMETER_DEF(Render, WindowPositionX);
+ALGORITHM_PARAMETER_DEF(Render, WindowPositionY);
+ALGORITHM_PARAMETER_DEF(Render, IsFloating);
+ALGORITHM_PARAMETER_DEF(Render, CameraDistance);
+ALGORITHM_PARAMETER_DEF(Render, CameraDistanceMinimum);
+ALGORITHM_PARAMETER_DEF(Render, CameraLookAt);
+ALGORITHM_PARAMETER_DEF(Render, CameraRotation);
+ALGORITHM_PARAMETER_DEF(Render, IsExecuting);
+ALGORITHM_PARAMETER_DEF(Render, TimeExecutionFinished);
+ALGORITHM_PARAMETER_DEF(Render, HasNewGeometry);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneEnabled);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneNormalReversed);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneX);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneY);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneZ);
+ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneD);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
-  INITIALIZE_PORT(GeneralGeom);
-  INITIALIZE_PORT(ScreenshotDataRed);
-  INITIALIZE_PORT(ScreenshotDataGreen);
-  INITIALIZE_PORT(ScreenshotDataBlue);
+  INITIALIZE_PORT(GeneralGeom)
+  INITIALIZE_PORT(ScreenshotDataRed)
+  INITIALIZE_PORT(ScreenshotDataGreen)
+  INITIALIZE_PORT(ScreenshotDataBlue)
 
   get_state()->setTransientValue(Parameters::VSMutex, &screenShotMutex_, true);
 }
@@ -91,61 +155,73 @@ ViewScene::~ViewScene()
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Ambient, 0.2);
-  state->setValue(Diffuse, 1.0);
-  state->setValue(Specular, 0.3);
-  state->setValue(Shine, 0.5);
-  state->setValue(Emission, 0.0);
-  state->setValue(FogOn, false);
-  state->setValue(ObjectsOnly, true);
-  state->setValue(UseBGColor, true);
-  state->setValue(FogStart, 0.0);
-  state->setValue(FogEnd, 0.71);
-  state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
-  state->setValue(ShowScaleBar, false);
-  state->setValue(ScaleBarUnitValue, std::string("mm"));
-  state->setValue(ScaleBarLength, 1.0);
-  state->setValue(ScaleBarHeight, 1.0);
-  state->setValue(ScaleBarMultiplier, 1.0);
-  state->setValue(ScaleBarNumTicks, 11);
-  state->setValue(ScaleBarLineWidth, 1.0);
-  state->setValue(ScaleBarFontSize, 8);
-  state->setValue(Lighting, true);
-  state->setValue(ShowBBox, false);
-  state->setValue(UseClip, true);
-  state->setValue(BackCull, false);
-  state->setValue(DisplayList, false);
-  state->setValue(Stereo, false);
-  state->setValue(StereoFusion, 0.4);
-  state->setValue(PolygonOffset, 0.0);
-  state->setValue(TextOffset, 0.0);
-  state->setValue(FieldOfView, 20);
-  state->setValue(HeadLightOn, true);
-  state->setValue(Light1On, false);
-  state->setValue(Light2On, false);
-  state->setValue(Light3On, false);
-  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(HeadLightAzimuth, 180);
-  state->setValue(Light1Azimuth, 180);
-  state->setValue(Light2Azimuth, 180);
-  state->setValue(Light3Azimuth, 180);
-  state->setValue(HeadLightInclination, 90);
-  state->setValue(Light1Inclination, 90);
-  state->setValue(Light2Inclination, 90);
-  state->setValue(Light3Inclination, 90);
-  state->setValue(ShowViewer, false);
-  state->setValue(CameraDistance, 3.0);
-  state->setValue(IsExecuting, false);
-  state->setTransientValue(TimeExecutionFinished, 0, false);
-  state->setValue(CameraDistanceMinimum, 1e-10);
-  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
-  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
-  state->setValue(HasNewGeometry, false);
-  
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Ambient, 0.2);
+  state->setValue(Parameters::Diffuse, 1.0);
+  state->setValue(Parameters::Specular, 0.3);
+  state->setValue(Parameters::Shine, 0.5);
+  state->setValue(Parameters::Emission, 0.0); // not connected yet
+  state->setValue(Parameters::FogOn, false);
+  state->setValue(Parameters::ObjectsOnly, true);
+  state->setValue(Parameters::UseBGColor, true);
+  state->setValue(Parameters::FogStart, 0.0);
+  state->setValue(Parameters::FogEnd, 0.71);
+  state->setValue(Parameters::FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(Parameters::ShowScaleBar, false);
+  state->setValue(Parameters::ScaleBarUnitValue, std::string("mm"));
+  state->setValue(Parameters::ScaleBarLength, 1.0);
+  state->setValue(Parameters::ScaleBarHeight, 1.0);
+  state->setValue(Parameters::ScaleBarMultiplier, 1.0);
+  state->setValue(Parameters::ScaleBarNumTicks, 11);
+  state->setValue(Parameters::ScaleBarLineWidth, 1.0);
+  state->setValue(Parameters::ScaleBarFontSize, 8);
+  // state->setValue(Parameters::Lighting, true);
+  //state->setValue(Parameters::ShowBBox, false);
+  // state->setValue(Parameters::UseClip, true);
+  // state->setValue(Parameters::BackCull, false);
+  // state->setValue(Parameters::DisplayList, false);
+  // state->setValue(Parameters::Stereo, false);
+  // state->setValue(Parameters::StereoFusion, 0.4);
+  // state->setValue(Parameters::PolygonOffset, 0.0);
+  // state->setValue(Parameters::TextOffset, 0.0);
+  // state->setValue(Parameters::FieldOfView, 20);
+  state->setValue(Parameters::HeadLightOn, true);
+  state->setValue(Parameters::Light1On, false);
+  state->setValue(Parameters::Light2On, false);
+  state->setValue(Parameters::Light3On, false);
+  state->setValue(Parameters::HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::HeadLightAzimuth, 180);
+  state->setValue(Parameters::Light1Azimuth, 180);
+  state->setValue(Parameters::Light2Azimuth, 180);
+  state->setValue(Parameters::Light3Azimuth, 180);
+  state->setValue(Parameters::HeadLightInclination, 90);
+  state->setValue(Parameters::Light1Inclination, 90);
+  state->setValue(Parameters::Light2Inclination, 90);
+  state->setValue(Parameters::Light3Inclination, 90);
+  state->setValue(Parameters::ShowViewer, false);
+  state->setValue(Parameters::WindowSizeX, 200);
+  state->setValue(Parameters::WindowSizeY, 200);
+  state->setValue(Parameters::WindowPositionX, 200);
+  state->setValue(Parameters::WindowPositionY, 200);
+  state->setValue(Parameters::IsFloating, true);
+  state->setValue(Parameters::CameraDistance, 3.0);
+  state->setValue(Parameters::IsExecuting, false);
+  state->setTransientValue(Parameters::TimeExecutionFinished, 0, false);
+  state->setValue(Parameters::CameraDistanceMinimum, 1e-10);
+  state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(Parameters::CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
+  state->setValue(Parameters::HasNewGeometry, false);
+
+  state->setValue(Parameters::ClippingPlaneEnabled, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneNormalReversed, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneX, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneY, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneZ, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+  state->setValue(Parameters::ClippingPlaneD, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
@@ -153,7 +229,7 @@ void ViewScene::setStateDefaults()
 void ViewScene::fireTransientStateChangeSignalForGeomData()
 {
   //this is gross but I dont see any other way to fire the signal associated with geom data
-  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  const auto transient = get_state()->getTransientValue(Parameters::GeomData);
   auto geoms = transient_value_cast<GeomListPtr>(transient);
   get_state()->setTransientValue(Parameters::GeomData, geoms, true);
 }
@@ -174,7 +250,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 
 void ViewScene::updateTransientList()
 {
-  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  const auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
   auto geoms = transient_value_cast<GeomListPtr>(transient);
   if (!geoms)
@@ -219,7 +295,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
 
-    auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    const auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
@@ -227,11 +303,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     }
 
     {
-      auto iport = getInputPort(pid);
+      const auto iport = getInputPort(pid);
       auto connectedModuleId = iport->connectedModuleId();
       if (connectedModuleId->find("ShowField") != std::string::npos)
       {
-        auto state = iport->stateFromConnectedModule();
+        const auto state = iport->stateFromConnectedModule();
         syncMeshComponentFlags(*connectedModuleId, state);
       }
     }
@@ -266,18 +342,17 @@ void ViewScene::execute()
   Guard lock(screenShotMutex_.get());
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    ModuleStateInterface::TransientValueOption screenshotDataOption;
-    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+    const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
-      auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+      const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
       if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
       if (screenshotData.blue) sendOutput(ScreenshotDataBlue, screenshotData.blue);
     }
   }
 #endif
-  state->setValue(HasNewGeometry, true);
-  state->setTransientValue(TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+  state->setValue(Parameters::HasNewGeometry, true);
+  state->setTransientValue(Parameters::TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
 }
 
 unsigned long ViewScene::getCurrentTimeSinceEpoch()
@@ -289,8 +364,8 @@ unsigned long ViewScene::getCurrentTimeSinceEpoch()
 void ViewScene::processViewSceneObjectFeedback()
 {
   //TODO: match ID of touched geom object with port id, and send that info back too.
-  auto state = get_state();
-  auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
   //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
   if (newInfo)
   {
@@ -301,66 +376,11 @@ void ViewScene::processViewSceneObjectFeedback()
 
 void ViewScene::processMeshComponentSelection()
 {
-  auto state = get_state();
-  auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
   if (newInfo)
   {
-    auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
+    const auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
     sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }
-
-const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
-const AlgorithmParameterName ViewScene::Ambient("Ambient");
-const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
-const AlgorithmParameterName ViewScene::Specular("Specular");
-const AlgorithmParameterName ViewScene::Shine("Shine");
-const AlgorithmParameterName ViewScene::Emission("Emission");
-const AlgorithmParameterName ViewScene::FogOn("FogOn");
-const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
-const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");
-const AlgorithmParameterName ViewScene::FogStart("FogStart");
-const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
-const AlgorithmParameterName ViewScene::FogColor("FogColor");
-const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
-const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
-const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
-const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
-const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
-const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
-const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
-const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
-const AlgorithmParameterName ViewScene::Lighting("Lighting");
-const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
-const AlgorithmParameterName ViewScene::UseClip("UseClip");
-const AlgorithmParameterName ViewScene::Stereo("Stereo");
-const AlgorithmParameterName ViewScene::BackCull("BackCull");
-const AlgorithmParameterName ViewScene::DisplayList("DisplayList");
-const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
-const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
-const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
-const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");
-const AlgorithmParameterName ViewScene::HeadLightOn("HeadLightOn");
-const AlgorithmParameterName ViewScene::Light1On("Light1On");
-const AlgorithmParameterName ViewScene::Light2On("Light2On");
-const AlgorithmParameterName ViewScene::Light3On("Light3On");
-const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
-const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
-const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
-const AlgorithmParameterName ViewScene::Light3Color("Light3Color");
-const AlgorithmParameterName ViewScene::HeadLightAzimuth("HeadLightAzimuth");
-const AlgorithmParameterName ViewScene::Light1Azimuth("Light1Azimuth");
-const AlgorithmParameterName ViewScene::Light2Azimuth("Light2Azimuth");
-const AlgorithmParameterName ViewScene::Light3Azimuth("Light3Azimuth");
-const AlgorithmParameterName ViewScene::HeadLightInclination("HeadLightInclination");
-const AlgorithmParameterName ViewScene::Light1Inclination("Light1Inclination");
-const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
-const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
-const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
-const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
-const AlgorithmParameterName ViewScene::CameraDistanceMinimum("CameraDistanceMinimum");
-const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
-const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
-const AlgorithmParameterName ViewScene::IsExecuting("IsExecuting");
-const AlgorithmParameterName ViewScene::TimeExecutionFinished("TimeExecutionFinished");
-const AlgorithmParameterName ViewScene::HasNewGeometry("HasNewGeometry");

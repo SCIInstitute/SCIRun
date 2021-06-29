@@ -752,7 +752,7 @@ std::unique_ptr<BaseCoilgen> AlgoSelector(int idx,const AlgorithmBase* scirunAlg
 }
 
 
-AlgorithmOutput ModelTMSCoilAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput ModelTMSCoilAlgorithm::run(const AlgorithmInput&) const
 {
 	ModelTMSCoilAlgorithm::Args algoArgs;
 	algoArgs.current = static_cast<double>(get(Parameters::Current).toDouble())*1e6; ///MD: here is the unit scaling, wire current module input is in [megaA/s]

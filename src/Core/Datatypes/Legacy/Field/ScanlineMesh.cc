@@ -374,18 +374,10 @@ protected:
 
   template <class ARRAY, class INDEX>
   inline void
-  inv_jacobian(const ARRAY& coords, INDEX idx, double* Ji) const
+  inv_jacobian(const ARRAY&, INDEX, double* Ji) const
   {
     double* inverse_jacobian = this->mesh_->inverse_jacobian_;
-    Ji[0] = inverse_jacobian[0];
-    Ji[1] = inverse_jacobian[1];
-    Ji[2] = inverse_jacobian[2];
-    Ji[3] = inverse_jacobian[3];
-    Ji[4] = inverse_jacobian[4];
-    Ji[5] = inverse_jacobian[5];
-    Ji[6] = inverse_jacobian[6];
-    Ji[7] = inverse_jacobian[7];
-    Ji[8] = inverse_jacobian[8];
+    std::copy(inverse_jacobian, inverse_jacobian + 9, Ji);
   }
 
 };

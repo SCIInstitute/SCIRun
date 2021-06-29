@@ -29,15 +29,7 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYISOVALUE_H
 #define CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYISOVALUE_H 1
 
-// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
-
-// Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -45,27 +37,18 @@ namespace SCIRun {
   namespace Algorithms {
    namespace Fields {
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
- using namespace SCIRun;
-#endif
+     ALGORITHM_PARAMETER_DECL(LessThanIsoValue);
+     ALGORITHM_PARAMETER_DECL(ScalarIsoValue);
 
 class SCISHARE ClipMeshByIsovalueAlgo : public AlgorithmBase
 {
-  public:
-
-    /// Set defaults
-    ClipMeshByIsovalueAlgo();
-
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
-    bool run(FieldHandle input, FieldHandle& output) const;
-    AlgorithmOutput run(const AlgorithmInput& input) const override;
-    static AlgorithmInputName InputField;
-    static AlgorithmOutputName OutputField;
-    static AlgorithmParameterName LessThanIsoValue;
-    static AlgorithmParameterName ScalarIsoValue;
+public:
+  ClipMeshByIsovalueAlgo();
+  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
+  bool run(FieldHandle input, FieldHandle& output) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
-}}}} // end namespace SCIRunAlgo
+}}}}
 
 #endif

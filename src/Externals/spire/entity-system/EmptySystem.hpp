@@ -53,7 +53,7 @@ public:
     postWalkComponents(core);
   }
 
-  bool walkEntity(ESCoreBase& core, uint64_t entityID) override
+  bool walkEntity(ESCoreBase& core, uint64_t) override
   {
     preWalkComponents(core);
     execute(core);
@@ -62,8 +62,8 @@ public:
   }
 
   // Used in the two functions above.
-  virtual void preWalkComponents(ESCoreBase& core)            {}
-  virtual void postWalkComponents(ESCoreBase& core)           {}
+  virtual void preWalkComponents(ESCoreBase&)            {}
+  virtual void postWalkComponents(ESCoreBase&)           {}
 
   std::vector<uint64_t> getComponents() const override
   {

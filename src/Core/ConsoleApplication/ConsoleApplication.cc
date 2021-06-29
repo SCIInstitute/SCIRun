@@ -39,7 +39,7 @@
 using namespace SCIRun::Core::Console;
 using namespace SCIRun::Core::Logging;
 
-int ConsoleApplication::run(int argc, const char* argv[])
+int ConsoleApplication::run(int /*argc*/, const char* /*argv*/[])
 {
   try
   {

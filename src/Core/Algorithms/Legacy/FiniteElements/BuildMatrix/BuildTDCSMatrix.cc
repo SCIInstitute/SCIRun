@@ -656,7 +656,7 @@ DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefini
 }
 
 
-bool TDCSMatrixBuilder::build_matrix(SparseRowMatrixHandle& output)
+bool TDCSMatrixBuilder::build_matrix(SparseRowMatrixHandle&)
 {
   return singlethread();
 }

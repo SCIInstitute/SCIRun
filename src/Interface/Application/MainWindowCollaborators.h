@@ -95,7 +95,7 @@ namespace Gui {
   {
     Q_OBJECT
 
-    CORE_SINGLETON( WidgetDisablingService );
+    CORE_SINGLETON( WidgetDisablingService )
 
   private:
     WidgetDisablingService() {}

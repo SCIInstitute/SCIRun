@@ -157,8 +157,8 @@ namespace Core {
     {
       typename SparseRowMatrixFromMapGeneric<T>::Values data;
       NonZero<T> nonZero;
-      for (auto i = 0; i < dense.nrows(); i++)
-        for (auto j = 0; j < dense.ncols(); j++)
+      for (auto i = 0ul; i < dense.nrows(); i++)
+        for (auto j = 0ul; j < dense.ncols(); j++)
           if (nonZero(dense(i, j)))
             data[i][j] = dense(i, j);
 

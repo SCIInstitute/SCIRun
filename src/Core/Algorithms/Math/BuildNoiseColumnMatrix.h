@@ -38,15 +38,14 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace Math {
 
+        ALGORITHM_PARAMETER_DECL(SignalToNoiseRatio);
 
 				class SCISHARE BuildNoiseColumnMatrixAlgorithm : public AlgorithmBase
 				{
-					public:
-						static AlgorithmOutputName ResultMatrix;
-						static AlgorithmParameterName SignalToNoiseRatio();
-						BuildNoiseColumnMatrixAlgorithm();
-            Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const;
-						AlgorithmOutput run(const AlgorithmInput& input) const override;
+				public:
+					BuildNoiseColumnMatrixAlgorithm();
+          Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const;
+					AlgorithmOutput run(const AlgorithmInput& input) const override;
 				};
 			}
 		}

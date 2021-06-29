@@ -73,7 +73,7 @@ namespace SCIRun
     class SCISHARE SRObject
     {
     public:
-      SRObject(const std::string& name, const glm::mat4& objToWorld,
+      SRObject(const std::string& name,
         const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
         mName(name),
         mBBox(bbox),
@@ -120,7 +120,7 @@ namespace SCIRun
 
       void doInitialUpdate(int x, int y, float depth);
       void updateWidget(int x, int y);
-      void setButtonPushed(Core::Datatypes::MouseButton b) { buttonPushed_ = b; }
+      void setButtonPushed(MouseButton b) { buttonPushed_ = b; }
 
       SRCamera& camera() const override { return *camera_; }
       const ScreenParams& screen() const override { return screen_; }
@@ -139,14 +139,14 @@ namespace SCIRun
 
       Graphics::Datatypes::WidgetHandle currentWidget_;
       SharedPointer<WidgetTransformEvent> event_;
-      Core::Datatypes::MouseButton buttonPushed_;
+      MouseButton buttonPushed_;
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       SRCamera* camera_ {nullptr};
       glm::mat4 widgetTransform_ {1.0f};
     };
 
-    SCISHARE Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(Core::Datatypes::MouseButton btn);
+    SCISHARE Graphics::Datatypes::WidgetInteraction yetAnotherEnumConversion(MouseButton btn);
     SCISHARE std::ostream& operator<<(std::ostream& o, const glm::mat4& m);
   }
 }

@@ -270,8 +270,8 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 
 template<class PTYPE>
 MatrixHandle
-ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
-NrrdDataHandle colsH, int cols)
+ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle, NrrdDataHandle ,
+NrrdDataHandle , int )
 {
   error("Nrrd to Sparse matrix not supported yet.");
   return nullptr;

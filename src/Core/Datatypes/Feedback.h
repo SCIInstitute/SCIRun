@@ -36,6 +36,9 @@
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
+  //TODO: relocate
+  enum class MouseButton { NONE = 0, LEFT, MIDDLE, RIGHT };
+
 namespace Core {
 namespace Datatypes {
 // These will give different types of widget movement through ViewScene.
@@ -55,6 +58,13 @@ enum WidgetMovement
   SCALE_AXIS_UNIDIRECTIONAL,
 };
 
+struct SCISHARE ClippingPlane
+{
+  static constexpr int MaxCount = 6;
+  bool visible, showFrame, reverseNormal;
+  double x, y, z, d;
+};
+
 struct EnumClassHash
 {
   template <typename T> std::size_t operator()(T t) const
@@ -62,8 +72,6 @@ struct EnumClassHash
     return static_cast<std::size_t>(t);
   }
 };
-
-enum class MouseButton { NONE = 0, LEFT, MIDDLE, RIGHT, STATE_COUNT };
 
 struct SCISHARE ViewSceneFeedback : ModuleFeedback
 {

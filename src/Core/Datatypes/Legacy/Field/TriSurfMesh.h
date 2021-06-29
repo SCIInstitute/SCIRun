@@ -442,7 +442,7 @@ bool unsynchronize(mask_type mask) override;
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_edge,
                        unsigned int div_per_unit) const
   {
@@ -453,7 +453,7 @@ bool unsynchronize(mask_type mask) override;
   /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_face,
                        unsigned int div_per_unit) const
   {

@@ -70,7 +70,7 @@ protected:
   void mouseMoveEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
   void wheelEvent(QWheelEvent* event) override;
-  void contextMenuEvent(QContextMenuEvent* evt) override {}
+  void contextMenuEvent(QContextMenuEvent*) override {}
 
 private Q_SLOTS:
   void newGeometryValue();
@@ -100,7 +100,7 @@ private:
   void addToolbarButton(QPushButton* button);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
-  Core::Datatypes::MouseButton getRenderButton(QMouseEvent* event);
+  MouseButton getRenderButton(QMouseEvent* event);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 

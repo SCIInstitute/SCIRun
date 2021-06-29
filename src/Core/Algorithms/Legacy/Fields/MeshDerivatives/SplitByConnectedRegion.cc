@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -40,7 +41,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-AlgorithmInputName SplitFieldByConnectedRegionAlgo::InputField("InputField");
+ALGORITHM_PARAMETER_DEF(Fields, SortDomainBySize);
 AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
 AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
 AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
@@ -50,52 +51,48 @@ AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6"
 AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
 AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
 
-AlgorithmParameterName SplitFieldByConnectedRegionAlgo::SortDomainBySize() { return AlgorithmParameterName("SortDomainBySize"); }
-AlgorithmParameterName SplitFieldByConnectedRegionAlgo::SortAscending() { return AlgorithmParameterName("SortAscending"); }
-
-/// TODO: These should be refactored to hold const std::vector<double>& rather than double*
-class SortSizes : public std::binary_function<index_type,index_type,bool>
+class SortSizes
 {
   public:
-    SortSizes(double* sizes) : sizes_(sizes) {}
+    explicit SortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
 
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] > sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+   const std::vector<double>&      sizes_;
 };
-/// TODO: These should be refactored to hold const std::vector<double>& rather than double*
-class AscSortSizes : public std::binary_function<index_type,index_type,bool>
+
+class AscSortSizes
 {
   public:
-    AscSortSizes(double* sizes) : sizes_(sizes) {}
+    explicit AscSortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
 
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] < sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+    const std::vector<double>&      sizes_;
 };
 
 SplitFieldByConnectedRegionAlgo::SplitFieldByConnectedRegionAlgo()
 {
-  addParameter(SortDomainBySize(), false);
-  addParameter(SortAscending(), false);
+  addParameter(Parameters::SortDomainBySize, false);
+  addParameter(Parameters::SortAscending, false);
 }
 
 std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input) const
 {
- bool sortDomainBySize = get(SortDomainBySize()).toBool();
- bool sortAscending = get(SortAscending()).toBool();
+ bool sortDomainBySize = get(Parameters::SortDomainBySize).toBool();
+ bool sortAscending = get(Parameters::SortAscending).toBool();
 
  if (!input)
  {
-      THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
+   THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
  }
 
  std::vector<FieldHandle> output;
@@ -298,11 +295,11 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
     {
       if (sortAscending)
       {
-        std::sort(order.begin(), order.end(), AscSortSizes(&(sizes[0])));
+        std::sort(order.begin(), order.end(), AscSortSizes(sizes));
       }
       else
       {
-        std::sort(order.begin(), order.end(), SortSizes(&(sizes[0])));
+        std::sort(order.begin(), order.end(), SortSizes(sizes));
       }
     }
 

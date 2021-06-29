@@ -178,7 +178,7 @@ private:
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const spire::ComponentGroup<ren::IBO>& ibo,
     const spire::ComponentGroup<SpireSubPass>& pass,
-    const spire::ComponentGroup<ren::StaticIBOMan>& iboMan)
+    const spire::ComponentGroup<ren::StaticIBOMan>&)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
     uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
@@ -252,7 +252,7 @@ private:
       const spire::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const spire::ComponentGroup<ren::StaticVBOMan>& vboMan,
       const spire::ComponentGroup<ren::StaticIBOMan>& iboMan,
-      const spire::ComponentGroup<ren::StaticTextureMan>& texMan) override
+      const spire::ComponentGroup<ren::StaticTextureMan>&) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

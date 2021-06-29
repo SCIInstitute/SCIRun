@@ -62,7 +62,6 @@ public:
 private:
   bool read_nrrd();
   bool read_file(const std::string& filename);
-  bool write_tmpfile(const std::string& filename, std::string *tmpfilename, const std::string& conv_command);
 
   GuiString       types_;
   GuiString       filetype_;
@@ -170,13 +169,13 @@ NrrdDataHandle ReadNrrd::read_nrrd()
     #endif
 
     const std::string ext(".nd");
-    const std::string vff_ext(".vff");
-    const std::string vff_conv_command("vff2nrrd %f %t");
-    const std::string pic_ext(".pic");
-    const std::string pic_ext2(".pict");
-    const std::string pic_conv_command("PictToNrrd %f %t");
-    const std::string vista_ext(".v");
-    const std::string vista_conv_command("VistaToNrrd %f %t");
+    // const std::string vff_ext(".vff");
+    // const std::string vff_conv_command("vff2nrrd %f %t");
+    // const std::string pic_ext(".pic");
+    // const std::string pic_ext2(".pict");
+    // const std::string pic_conv_command("PictToNrrd %f %t");
+    // const std::string vista_ext(".v");
+    // const std::string vista_conv_command("VistaToNrrd %f %t");
 
     // check that the last 3 chars are .nd for us to pio
     if (filename.extension() == ext)
@@ -198,24 +197,6 @@ NrrdDataHandle ReadNrrd::read_nrrd()
     }
     else
     { // assume it is just a nrrd
-      if (filename.extension() == vff_ext)
-      {
-        std::string tmpfilename;
-        write_tmpfile(filenameStr, &tmpfilename, vff_conv_command);
-        return read_file(tmpfilename);
-      }
-      if (filename.extension() == pic_ext || filename.extension() == pic_ext2)
-      {
-        std::string tmpfilename;
-        write_tmpfile(filenameStr, &tmpfilename, pic_conv_command);
-        return read_file(tmpfilename);
-      }
-      if (filename.extension() == vista_ext)
-      {
-        std::string tmpfilename;
-        write_tmpfile(filenameStr, &tmpfilename, vista_conv_command);
-        return read_file(tmpfilename);
-      }
       return read_file(filenameStr);
     }
     return nrrd;
@@ -237,52 +218,6 @@ ReadNrrd::read_file(const std::string& fn)
     return nullptr;
   }
   return n;
-}
-
-bool
-ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
-                          const std::string& conv_command)
-{
-  return false;
-  #if 0
-  std::string::size_type loc = filename.find_last_of("/");
-  const std::string basefilename =
-    (loc==std::string::npos)?filename:filename.substr(loc+1);
-
-  // Base filename with first extension removed.
-  loc = basefilename.find_last_of(".");
-  const std::string basenoext = basefilename.substr(0, loc);
-
-  // Filename with first extension removed.
-  loc = filename.find_last_of(".");
-  const std::string noext = filename.substr(0, loc);
-
-  // Temporary filename.
-  //tmpfilename = "/tmp/" + basenoext + "-" +
-  //  to_string((unsigned int)(getpid())) + ".nhdr";
-  std::string tmpdir = std::string(sci_getenv("SCIRUN_TMP_DIR")) + "/";
-  tmpfilename->assign(tmpdir + basenoext + "-" +
-		      to_string((unsigned int)(getpid())) + ".nhdr");
-
-  ASSERT(sci_getenv("SCIRUN_OBJDIR"));
-  std::string command =
-    std::string(sci_getenv("SCIRUN_OBJDIR")) + "/convert/" +
-    conv_command;
-  while ((loc = command.find("%f")) != std::string::npos)
-  {
-    command.replace(loc, 2, '"'+filename+'"');
-  }
-  while ((loc = command.find("%t")) != std::string::npos)
-  {
-    command.replace(loc, 2, '"'+*tmpfilename+'"');
-  }
-  const int status = sci_system(command.c_str());
-  if (status)
-  {
-    remark("'" + command + "' failed.  Read may not work.");
-  }
-  return true;
-  #endif
 }
 
 void

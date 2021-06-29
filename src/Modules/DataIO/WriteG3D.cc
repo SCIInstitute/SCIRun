@@ -121,7 +121,7 @@ void WriteG3D::execute()
 #endif
 }
 
-bool WriteG3D::useCustomExporter(const std::string& filename) const
+bool WriteG3D::useCustomExporter(const std::string&) const
 {
   return true;
 }

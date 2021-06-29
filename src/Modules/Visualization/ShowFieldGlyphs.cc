@@ -78,28 +78,24 @@ namespace SCIRun {
           boost::optional<ColorMapHandle> pcolormap,
           boost::optional<ColorMapHandle> scolormap,
           boost::optional<ColorMapHandle> tcolormap,
-          Interruptible* interruptible,
           ModuleStateHandle state,
           const GeometryIDGenerator& idgen,
           const Module* module);
 
         void renderVectors(
           ModuleStateHandle state,
-          Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
           const std::string& id);
 
         void renderScalars(
           ModuleStateHandle state,
-          Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
           const std::string& id);
 
         void renderTensors(
           ModuleStateHandle state,
-          Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
           const std::string& id,
@@ -308,7 +304,7 @@ void ShowFieldGlyphs::execute()
     configureInputs(pfield, sfield, tfield);
 
     auto geom = builder_->buildGeometryObject(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap,
-                                              this, get_state(), *this, this);
+                                              get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
@@ -367,7 +363,6 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   boost::optional<ColorMapHandle> pcolormap,
   boost::optional<ColorMapHandle> scolormap,
   boost::optional<ColorMapHandle> tcolormap,
-  Interruptible* interruptible,
   ModuleStateHandle state,
   const GeometryIDGenerator& idgen,
   const Module* module)
@@ -420,12 +415,13 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   }
 
   // Create port handler and check for errors
-  portHandler_.reset(new ShowFieldGlyphsPortHandler(module, state, renState, pfield, sfield, tfield,
+  portHandler_.reset(new ShowFieldGlyphsPortHandler(module, renState, pfield, sfield, tfield,
                                                     pcolormap, scolormap, tcolormap));
   try
   {
     portHandler_->checkForErrors();
-  } catch(const std::invalid_argument& e)
+  }
+  catch(const std::invalid_argument& e)
   {
     // If error is given, post it and return empty geom object
     module->error(e.what());
@@ -435,15 +431,15 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   // Render glyphs
   if (finfo.is_scalar() && showScalars)
   {
-    renderScalars(state, interruptible, renState, geom, geom->uniqueID());
+    renderScalars(state, renState, geom, geom->uniqueID());
   }
   else if (finfo.is_vector() && showVectors)
   {
-    renderVectors(state, interruptible, renState, geom, geom->uniqueID());
+    renderVectors(state, renState, geom, geom->uniqueID());
   }
   else if (finfo.is_tensor() && showTensors)
   {
-    renderTensors(state, interruptible, renState, geom, geom->uniqueID(), module);
+    renderTensors(state, renState, geom, geom->uniqueID(), module);
   }
 
   return geom;
@@ -506,7 +502,6 @@ void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector
 
 void GlyphBuilder::renderVectors(
   ModuleStateHandle state,
-  Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
@@ -603,7 +598,6 @@ void GlyphBuilder::renderVectors(
 
 void GlyphBuilder::renderScalars(
   ModuleStateHandle state,
-  Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
@@ -683,7 +677,6 @@ double map_emphasis(double old)
 
 void GlyphBuilder::renderTensors(
   ModuleStateHandle state,
-  Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id,
@@ -779,21 +772,22 @@ void GlyphBuilder::renderTensors(
     // Render as order 2 or 3 tensor
     else
     {
+      auto newT = Dyadic3DTensor(t.xx(), t.xy(), t.xz(), t.yy(), t.yz(), t.zz());
       switch (renState.mGlyphType)
       {
         case RenderState::GlyphType::BOX_GLYPH:
-          glyphs.addBox(points[i], t, scale, node_color, normalizeGlyphs);
+          glyphs.addBox(points[i], newT, scale, node_color, normalizeGlyphs);
           break;
         case RenderState::GlyphType::ELLIPSOID_GLYPH:
-          glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+          glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
           break;
         case RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH:
         {
           double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
           if(emphasis > 0.0)
-            glyphs.addSuperquadricTensor(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            glyphs.addSuperquadricTensor(points[i], newT, scale, resolution, node_color, normalizeGlyphs, emphasis);
           else
-            glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+            glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
         }
         default:
           break;

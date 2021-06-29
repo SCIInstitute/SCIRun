@@ -51,8 +51,7 @@ namespace Teem {
   private:
     void update_input_attributes(NrrdDataHandle nrrd);
     template <typename T>
-    void update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
-                         const char *pname);
+    void update_axis_var(std::ostringstream& info, const T& val, const char *pname);
   };
 
 }}}

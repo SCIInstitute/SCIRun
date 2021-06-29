@@ -143,9 +143,9 @@ void Pio(Piostream& stream, Array2<T>& data)
   }
   else
   {
-    for(index_type i=0;i<data.dim1();i++)
+    for (size_t i=0;i<data.dim1();i++)
     {
-      for(index_type j=0;j<data.dim2();j++)
+      for (size_t j=0;j<data.dim2();j++)
       {
         Pio(stream, data.getImpl()[i][j]);
       }

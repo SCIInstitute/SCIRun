@@ -135,7 +135,7 @@ public:
       const spire::ComponentGroup<gen::StaticCamera>& camera,
       const spire::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const spire::ComponentGroup<ren::StaticVBOMan>& vboMan,
-      const spire::ComponentGroup<ren::StaticTextureMan>& texMan) override
+      const spire::ComponentGroup<ren::StaticTextureMan>&) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

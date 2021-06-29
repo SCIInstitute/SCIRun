@@ -54,7 +54,7 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   connect(editCheckBox_, SIGNAL(toggled(bool)), matrixTextEdit_, SLOT(setEnabled(bool)));
 }
 
-void CreateMatrixDialog::hideEvent(QHideEvent* event)
+void CreateMatrixDialog::hideEvent(QHideEvent*)
 {
   editCheckBox_->setChecked(false);
 }

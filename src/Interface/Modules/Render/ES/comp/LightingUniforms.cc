@@ -43,7 +43,7 @@ namespace Render {
 
 LightingUniforms::LightingUniforms()
 {
-  for (int i = 0; i < LIGHT_NUM; ++i)
+  for (size_t i = 0; i < LIGHT_NUM; ++i)
   {
     hasLightUniform[i] = false;
     uniformLocation[i] = 0;
@@ -110,7 +110,7 @@ void LightingUniforms::checkUniformArray(GLuint shaderID)
 void LightingUniforms::applyUniform(const std::vector<glm::vec3>& lightDirs,
   const std::vector<glm::vec3>& lightColors) const
 {
-  for (int i = 0; i < lightDirs.size(); ++i)
+  for (size_t i = 0; i < lightDirs.size(); ++i)
   {
     if (i >= LIGHT_NUM)
       break;

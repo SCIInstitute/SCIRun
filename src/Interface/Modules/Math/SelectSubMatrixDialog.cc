@@ -44,10 +44,10 @@ SelectSubMatrixDialog::SelectSubMatrixDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(rowCheckBox_, SelectSubMatrixAlgorithm::rowCheckBox());
-  addCheckBoxManager(columnCheckBox_, SelectSubMatrixAlgorithm::columnCheckBox());
-  addSpinBoxManager(rowStartSpinBox_, SelectSubMatrixAlgorithm::rowStartSpinBox());
-  addSpinBoxManager(columnStartSpinBox_, SelectSubMatrixAlgorithm::columnStartSpinBox());
-  addSpinBoxManager(columnEndSpinBox_, SelectSubMatrixAlgorithm::columnEndSpinBox());
-  addSpinBoxManager(rowEndSpinBox_, SelectSubMatrixAlgorithm::rowEndSpinBox());
+  addCheckBoxManager(rowCheckBox_, Parameters::rowCheckBox);
+  addCheckBoxManager(columnCheckBox_, Parameters::columnCheckBox);
+  addSpinBoxManager(rowStartSpinBox_, Parameters::rowStartSpinBox);
+  addSpinBoxManager(columnStartSpinBox_, Parameters::columnStartSpinBox);
+  addSpinBoxManager(columnEndSpinBox_, Parameters::columnEndSpinBox);
+  addSpinBoxManager(rowEndSpinBox_, Parameters::rowEndSpinBox);
 }

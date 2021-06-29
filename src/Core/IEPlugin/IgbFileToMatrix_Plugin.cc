@@ -54,7 +54,7 @@ using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 
-MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
+MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle, const char *filename)
 {
   std::string line;
   std::vector<std::string> strs;

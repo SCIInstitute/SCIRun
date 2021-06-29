@@ -52,9 +52,9 @@ namespace Core
 class PythonInterpreterPrivate;
 typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-class SCISHARE PythonInterpreter /*: private Core::EventHandler*/
+class SCISHARE PythonInterpreter
 {
-	CORE_SINGLETON( PythonInterpreter );
+	CORE_SINGLETON( PythonInterpreter )
 
 public:
   typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;

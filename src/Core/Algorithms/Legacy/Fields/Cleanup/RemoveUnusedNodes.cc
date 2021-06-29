@@ -29,6 +29,7 @@
 #include <Core/Algorithms/Legacy/Fields/Cleanup/RemoveUnusedNodes.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -40,13 +41,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmInputName RemoveUnusedNodesAlgo::InputField("InputField");
-AlgorithmInputName RemoveUnusedNodesAlgo::OutputField("OutputField");
-
 AlgorithmOutput RemoveUnusedNodesAlgo::run(const AlgorithmInput& input) const
 {
-
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
 
   FieldHandle out;
 
@@ -54,7 +51,7 @@ AlgorithmOutput RemoveUnusedNodesAlgo::run(const AlgorithmInput& input) const
        THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
  AlgorithmOutput output;
- output[OutputField] = out;
+ output[Variables::OutputField] = out;
 
   return output;
 }

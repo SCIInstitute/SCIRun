@@ -161,7 +161,7 @@ Out SolveLinearSystemAlgorithm::solve(const In& input, const Parameters& params)
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
 }
 
-AlgorithmOutput SolveLinearSystemAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput SolveLinearSystemAlgorithm::run(const AlgorithmInput&) const
 {
   throw 2;
 }

@@ -360,18 +360,9 @@ ClipFieldToFieldOrWidget::execute()
     VField* ofield = ofield_->vfield();
     VField* ifield = ifieldhandle->vfield();
     ofield->copy_properties(ifield);
-     #ifdef HAVE_HASH_MAP
-    # if defined(__ECC) || defined(_MSC_VER)
-      typedef hash_map<VMesh::index_type, VMesh::index_type> hash_type;
-    # else
-      typedef hash_map<VMesh::index_type,VMesh::index_type,
-        hash<unsigned int>,
-        std::equal_to<unsigned int> > hash_type;
-    # endif
-    #else
-      typedef std::map<VMesh::index_type,VMesh::Node::index_type,
-        std::less<unsigned int> > hash_type;
-    #endif
+
+      typedef std::unordered_map<VMesh::index_type,VMesh::Node::index_type > hash_type;
+
 
     hash_type nodemap;
     std::vector<VMesh::Elem::index_type> elemmap;

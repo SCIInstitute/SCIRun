@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/MatrixComparison.h>
@@ -87,7 +88,7 @@ TEST_F(ConvertMeshToTetVolTest, ConvertLatVolToTetVol_ScalarDataDefinedOnElement
 
   MapFieldDataFromNodeToElemAlgo algo1;
 
-  algo1.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+  algo1.setOption(Variables::Method, "Min");
 
   FieldHandle latVol_data_on_ele = algo1.runImpl(latVol);
 

@@ -329,10 +329,10 @@ public:
     }
   }
 
+#ifdef _WIN32
   static void try_get_working_windows_directories(bfs::path& objdir, bfs::path& srcdir, bfs::path& appdata,
     bfs::path& thirdpartydir, std::string& packages)
   {
-#ifdef _WIN32
     getWin32RegistryValues(objdir, srcdir, appdata, thirdpartydir, packages);
     if (! bfs::is_directory(appdata)) {
       try {
@@ -349,8 +349,8 @@ public:
         std::cerr << __FILE__ << ", " << __LINE__ << ": create_directory failed in create_sci_environment(..)" << std::endl;
       }
     }
-#endif
   }
+#endif
 
   static void append_directory(std::string& objdir, const char* execname, const std::string& executable_name)
   {
@@ -403,48 +403,29 @@ public:
     }
   }
 
-  static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir )
-  {
-    return;
-#if SCIRUN4_CODE_TO_BE_CONVERTED_LATER //probably never, may not need this
-#ifndef _WIN32
-    std::string sciruntcl_package("sciruntcl");
-    sciruntcl_package += SCIRUN_TCL_PACKAGE_VERSION;
-    if ( bfs::exists( testdir / "lib" / sciruntcl_package ) )
-    {
-      objdir = testdir;
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-    else if ( bfs::exists( testdir / ".." / "lib" / sciruntcl_package ) )
-    {
-      objdir = testdir / "..";
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-    else if ( bfs::exists( testdir / ".." / ".." / "lib" / sciruntcl_package) )
-    {
-      objdir = testdir / ".." / "..";
-      sci_putenv("SCIRUN_OBJDIR", objdir.string());
-    }
-#endif
-#endif
-  }
-
   static void test_and_set_various_source_dirs(const bfs::path& testdir, bfs::path& srcdir)
   {
-    if ( bfs::exists( testdir / "src" ) )
+    try
     {
-      srcdir = testdir / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      if (bfs::exists(testdir / "src"))
+      {
+        srcdir = testdir / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
+      else if (bfs::exists(testdir / ".." / "src"))
+      {
+        srcdir = testdir / ".." / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
+      else if (bfs::exists(testdir / ".." / ".." / "src"))
+      {
+        srcdir = testdir / ".." / ".." / "src";
+        sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      }
     }
-    else if ( bfs::exists( testdir / ".." / "src" ) )
+    catch (boost::filesystem::filesystem_error&)
     {
-      srcdir = testdir / ".." / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
-    }
-    else if ( bfs::exists( testdir / ".." / ".." / "src" ) )
-    {
-      srcdir = testdir / ".." / ".." / "src";
-      sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
+      // ignore
     }
   }
 
@@ -501,7 +482,6 @@ SCIRun::create_sci_environment(char **env, const char *execname)
   {
     bfs::path full_name(execname);
     bfs::path testdir = full_name.parent_path();
-    SciEnvironmentBuilder::set_obj_dir_non_windows(testdir, objdir);
     SciEnvironmentBuilder::test_and_set_various_source_dirs(testdir, srcdir);
   }
 
@@ -520,8 +500,9 @@ SCIRun::create_sci_environment(char **env, const char *execname)
 
   bfs::path appdata;
   std::string packages = LOAD_PACKAGE;
+#ifdef _WIN32
   SciEnvironmentBuilder::try_get_working_windows_directories(objdir, srcdir, appdata, thirdpartydir, packages);
-
+#endif
   std::string executable_name = "scirun";
   SciEnvironmentBuilder::set_object_directory(execname, objdir, executable_name);
 

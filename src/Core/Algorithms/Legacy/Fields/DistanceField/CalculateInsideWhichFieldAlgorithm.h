@@ -40,12 +40,8 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
 
-
-  //ALGORITHM_PARAMETER_DECL(SamplingScheme);
   ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
-//ALGORITHM_PARAMETER_DECL(OutsideValue);
   ALGORITHM_PARAMETER_DECL(StartValue);
-  //ALGORITHM_PARAMETER_DECL(OutputType);
   ALGORITHM_PARAMETER_DECL(DataLocation);
 
   class SCISHARE CalculateInsideWhichFieldAlgorithm : public AlgorithmBase
@@ -53,13 +49,9 @@ namespace Fields {
 
   public:
     CalculateInsideWhichFieldAlgorithm();
-    //static const AlgorithmInputName InputField;
 
     FieldHandle run(FieldHandle input,const FieldList& objField)const;
-
     AlgorithmOutput run(const AlgorithmInput &) const override;
-
-
   };
 
 }}}}

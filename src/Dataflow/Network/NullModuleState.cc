@@ -67,11 +67,11 @@ boost::signals2::connection NullModuleState::connectSpecificStateChanged(const N
   return {};
 }
 
-NullModuleState::TransientValueOption NullModuleState::getTransientValue(const Name& name) const
+NullModuleState::TransientValueOption NullModuleState::getTransientValue(const Name&) const
 {
   return TransientValueOption();
 }
 
-void NullModuleState::setTransientValue(const Name& name, const TransientValue& value, bool b)
+void NullModuleState::setTransientValue(const Name&, const TransientValue&, bool)
 {
 }

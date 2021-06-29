@@ -60,7 +60,7 @@ enum EndCondition { natural_ends, clamped_ends, bessel_ends, quadratic_ends };
 template <class T> std::ostream&
 operator<<(std::ostream& out, Array1<T> a)
 {
-  for (int i = 0; i < a.size(); i++){
+  for (size_t i = 0; i < a.size(); i++){
     std::cout << a[i] << std::endl;
   }
   return out;

@@ -65,11 +65,8 @@ namespace BrainStimulator {
       FieldHandle run(FieldHandle fh) const;
 
       AlgorithmOutput run(const AlgorithmInput& input) const override;
-      static AlgorithmInputName InputField;
-      static AlgorithmOutputName OutputField;
 
       std::vector<int> ElemLabelLookup; /// this module checks for those label data stored on the elements
-
   };
 
 }}}}
