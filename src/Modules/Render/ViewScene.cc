@@ -195,10 +195,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light1On, false);
   state->setValue(Parameters::Light2On, false);
   state->setValue(Parameters::Light3On, false);
-  state->setValue(Parameters::HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light1Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light2Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light3Color, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(Parameters::HeadLightAzimuth, 180);
   state->setValue(Parameters::Light1Azimuth, 180);
   state->setValue(Parameters::Light2Azimuth, 180);
@@ -366,6 +366,12 @@ void ViewScene::execute()
 #endif
   state->setValue(Parameters::HasNewGeometry, true);
   state->setTransientValue(Parameters::TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+
+  if (state->getValue(Parameters::HeadLightOn).toBool() && state->getValue(Parameters::HeadLightColor).toString() == "Color(0,0,0)")
+  {
+    warning("This ViewScene is displaying a saved black headlight due to an old bug. Headlight color is being switched to white. Please save and reload your network file to fix this.");
+    state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  }
 }
 
 unsigned long ViewScene::getCurrentTimeSinceEpoch()
