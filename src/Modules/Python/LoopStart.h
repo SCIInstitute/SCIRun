@@ -72,7 +72,7 @@ namespace SCIRun
         OUTPUT_PORT(5, PythonString1, String);
         OUTPUT_PORT(6, PythonString2, String);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG

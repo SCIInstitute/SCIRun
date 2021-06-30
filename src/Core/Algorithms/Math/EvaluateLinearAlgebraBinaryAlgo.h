@@ -41,7 +41,7 @@ namespace Math {
   class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
   {
   public:
-    enum Operator
+    enum class Operator
     {
       ADD,
       SUBTRACT,

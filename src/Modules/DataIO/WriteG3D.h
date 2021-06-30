@@ -63,7 +63,7 @@ namespace SCIRun {
 
         void setStateDefaults() override;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       protected:
         std::string defaultFileTypeName() const override;
 

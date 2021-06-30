@@ -55,13 +55,13 @@
 #include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Gui;
-using namespace SCIRun::Gui::NetworkBoundaries;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Engine;
+using namespace Core;
+using namespace Logging;
+using namespace Algorithms;
+using namespace Gui;
+using namespace NetworkBoundaries;
+using namespace Dataflow::Networks;
+using namespace Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* parent)
   : QGraphicsView(parent),
@@ -656,7 +656,7 @@ ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
   return dynamic_cast<ModuleProxyWidget*>(item);
 }
 
-ModuleWidget* SCIRun::Gui::getModule(QGraphicsItem* item)
+ModuleWidget* Gui::getModule(QGraphicsItem* item)
 {
   auto proxy = getModuleProxy(item);
   if (proxy)
@@ -1015,7 +1015,7 @@ SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std
   : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(color);
-  auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
+  const auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
   setHtml("<div style='" + backgroundGray + ";font: 15px Lucida, sans-serif'>" + toPlainText() + "</div>");
   items_.insert(this);
 }
@@ -1185,7 +1185,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     }
     for (const auto& result : results)
     {
-      auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
+      auto searchItem = new SearchResultItem(std::get<SearchTupleParts::ItemType>(result) + ": " + std::get<SearchTupleParts::ItemName>(result),
         std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
@@ -1609,6 +1609,14 @@ void NetworkEditor::clear()
     {
       deleteTheseFirst.append(item);
     }
+    else if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
+    {
+      auto vs = vsw->dialog();
+      if (vs)
+      {
+        vs->blockSignals(true);
+      }
+    }
   }
   deleteImpl(deleteTheseFirst);
   scene_->clear();
@@ -1743,11 +1751,11 @@ int NetworkEditor::errorCode() const
 ModuleEventProxy::ModuleEventProxy()
 {
   qRegisterMetaType<std::string>("std::string");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleHandle>("SCIRun::Dataflow::Networks::ModuleHandle");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
-  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
-  qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
+  qRegisterMetaType<ModuleHandle>("SCIRun::Dataflow::Networks::ModuleHandle");
+  qRegisterMetaType<ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
+  qRegisterMetaType<ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
+  qRegisterMetaType<ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
+  qRegisterMetaType<ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
 }
 
 void ModuleEventProxy::trackModule(ModuleHandle module)
@@ -2132,7 +2140,7 @@ QGraphicsEffect* Gui::blurEffect(double radius)
   return blur;
 }
 
-void NetworkEditor::tagLayer(bool active, int tag)
+void NetworkEditor::tagLayer(bool active, TagValues tag)
 {
   tagLayerActive_ = active;
 
@@ -2155,11 +2163,11 @@ void NetworkEditor::tagLayer(bool active, int tag)
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    item->setData(TagLayerKey, active);
-    item->setData(CurrentTagKey, tag);
+    item->setData(static_cast<int>(TagLayerKey), active);
+    item->setData(static_cast<int>(CurrentTagKey), tag);
     if (active)
     {
-      const auto itemTag = item->data(TagDataKey).toInt();
+      const auto itemTag = static_cast<TagValues>(item->data(static_cast<int>(TagDataKey)).toInt());
       if (AllTags == tag || ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
@@ -2370,11 +2378,11 @@ void NetworkEditor::redrawTagGroups()
 
 void NetworkEditor::highlightTaggedItem(int tagValue)
 {
-  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), tagValue);
+  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), static_cast<TagValues>(tagValue));
   Q_EMIT modified();
 }
 
-void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
+void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, TagValues tagValue)
 {
   if (tagValue == NoTag)
   {
@@ -2496,7 +2504,7 @@ ZLevelManager::ZLevelManager(QGraphicsScene* scene)
 
 }
 
-bool SCIRun::Gui::allowModificationSignalConnection()
+bool Gui::allowModificationSignalConnection()
 {
   auto cmd = Application::Instance().parameters();
   return !cmd->executeNetwork() &&

@@ -722,7 +722,7 @@ int LegacyNetworkIO::getNotePosition(const std::string& position) const
     return 0;
   char oldPos = position[1];
   /* copied from gui header; should move type down here
-  enum NotePosition
+  enum class NotePosition
   {
     Default,  0
     None,     1

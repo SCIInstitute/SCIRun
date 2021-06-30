@@ -27,7 +27,7 @@
 
 
 SET(Core_Math_SRCS
-  CubicPWI.cc
+  #CubicPWI.cc
   Gaussian.cc
   LinAlg.c
   LinearPWI.cc
@@ -43,7 +43,7 @@ SET(Core_Math_SRCS
 
 SET(Core_Math_HEADERS
   CatmullRomSpline.h
-  CubicPWI.h
+  #CubicPWI.h
   Gaussian.h
   LinAlg.h
   LinearPWI.h

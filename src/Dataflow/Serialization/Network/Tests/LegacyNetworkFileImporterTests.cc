@@ -416,7 +416,7 @@ TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePo
 
   const auto& moduleNotesMap = networkFile->moduleNotes.notes;
   /*
-  enum NotePosition
+  enum class NotePosition
   {
     Default,  0
     None,     1

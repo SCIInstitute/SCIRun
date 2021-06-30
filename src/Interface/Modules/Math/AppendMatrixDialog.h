@@ -49,8 +49,8 @@ protected:
   void pullSpecial() override;
 
 private Q_SLOTS:
-  void isRows();
-  void isCols();
+  void isRows() const;
+  void isCols() const;
 };
 
 }

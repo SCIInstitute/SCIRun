@@ -117,7 +117,7 @@ void GetMatrixSliceDialog::selectLastIndex()
 
 void GetMatrixSliceDialog::startPlay()
 {
-  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
+  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PLAY));
   Q_EMIT executeFromStateChangeTriggered();
   Q_EMIT executionLoopStarted();
   //qDebug() << " execution loop started emitted ";
@@ -125,7 +125,7 @@ void GetMatrixSliceDialog::startPlay()
 
 void GetMatrixSliceDialog::stopPlay()
 {
-  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
   Q_EMIT executionLoopHalted();
   //qDebug() << " execution loop halted emitted ";
 }

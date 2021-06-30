@@ -63,7 +63,7 @@ namespace SCIRun {
 
         NEW_BRAIN_STIMULATOR_MODULE
 
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
 }}}

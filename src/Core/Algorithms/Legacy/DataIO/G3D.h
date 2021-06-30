@@ -38,9 +38,9 @@ class AbstractWriter;
 
 class G3D {
 public:
-    enum AttributeSemantic { Position = 0, Normal = 1, Tangent = 2, Color = 3, Tex = 4, Float = 5 };
-    enum PrimitiveType { Point, Line, Triangle, TriangleAdj };
-    enum VertexType { SoA, AoS };
+    enum class AttributeSemantic { Position = 0, Normal = 1, Tangent = 2, Color = 3, Tex = 4, Float = 5 };
+    enum class PrimitiveType { Point, Line, Triangle, TriangleAdj };
+    enum class VertexType { SoA, AoS };
     struct GeometryInfo {
         GeometryInfo()
             : vertexType(AoS)

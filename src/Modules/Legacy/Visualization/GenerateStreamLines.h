@@ -51,7 +51,7 @@ namespace SCIRun {
         INPUT_PORT(1, Seed_Points, Field);
         OUTPUT_PORT(0, Streamlines, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
     }
   }

@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadFile.h>
+#include <Modules/DataIO/AutoReadFile.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -74,7 +74,8 @@ namespace detail
   class PluginReader
   {
   public:
-    explicit PluginReader(const std::string& pluginFileTypeName) : pluginFileTypeName_(pluginFileTypeName) {}
+    explicit PluginReader(std::string pluginFileTypeName) : pluginFileTypeName_(
+        std::move(pluginFileTypeName)) {}
     DataHandle operator()(const Filename& filename) const
     {
       auto pl = mgr_.get_plugin(pluginFileTypeName_);
@@ -93,14 +94,14 @@ namespace detail
   public:
     DataHandle operator()(const Filename& name) const
     {
-      auto filename = name.string();
-      auto stream = auto_istream(filename, nullLogger);
+      const auto filename = name.string();
+      const auto stream = auto_istream(filename, nullLogger);
       if (!stream)
       {
         THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Error reading file '" + filename + "'.");
       }
 
-      DataHandle handle;
+      DataHandle handle{};
       Pio(*stream, handle);
 
       if (!handle || stream->error())
@@ -206,20 +207,20 @@ void AutoReadFile::execute()
 {
   if (needToExecute())
   {
-    auto filename = get_state()->getValue(Variables::Filename).toFilename();
+    const auto filename = get_state()->getValue(Variables::Filename).toFilename();
 
     if (filename.empty())
     {
       THROW_ALGORITHM_INPUT_ERROR("Empty filename, try again.");
     }
 
-    if (!boost::filesystem::exists(filename))
+    if (!exists(filename))
     {
       THROW_ALGORITHM_INPUT_ERROR("File does not exist.");
     }
 
-    bool asMatrix = oport_connected(Matrix);
-    bool asField = oport_connected(Field);
+    const bool asMatrix = oport_connected(Matrix);
+    const bool asField = oport_connected(Field);
     if (asMatrix && asField)
     {
       THROW_ALGORITHM_INPUT_ERROR("Please specify which type of file this is by connecting to only one output port.");
@@ -228,14 +229,14 @@ void AutoReadFile::execute()
     using namespace detail;
     if (asMatrix)
     {
-      QuickReader<MatrixHandle> matrixReader;
-      auto m = matrixReader.read(filename);
+      const QuickReader<MatrixHandle> matrixReader;
+      const auto m = matrixReader.read(filename);
       sendOutput(Matrix, m);
     }
     else if (asField)
     {
-      QuickReader<FieldHandle> fieldReader;
-      auto f = fieldReader.read(filename);
+      const QuickReader<FieldHandle> fieldReader;
+      const auto f = fieldReader.read(filename);
       sendOutput(Field, f);
     }
     else

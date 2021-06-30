@@ -41,7 +41,7 @@ namespace Core
 {
 namespace Datatypes
 {
-  enum GeometryType
+  enum class GeometryType
   {
     NO_TYPE,
     TRI_SURFACE,

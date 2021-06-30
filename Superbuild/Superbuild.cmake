@@ -174,7 +174,6 @@ ENDIF()
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/EigenExternal.cmake Eigen_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/ZlibExternal.cmake Zlib_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
-ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/GLMExternal.cmake GLM_external )
@@ -244,7 +243,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
-    "-DLibPNG_DIR:PATH=${LibPNG_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"

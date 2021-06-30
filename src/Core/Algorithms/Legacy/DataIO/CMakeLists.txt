@@ -30,7 +30,7 @@
 
 SET(Core_Algorithms_Legacy_DataIO_SRCS
   DataIOAlgo.cc
-  G3DToFieldReader.cc
+  #G3DToFieldReader.cc
   ObjToFieldReader.cc
   VTKToTriSurfReader.cc
   TriSurfSTLBinaryConverter.cc
@@ -39,7 +39,7 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
 )
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
-  G3DToFieldReader.h
+  #G3DToFieldReader.h
   ObjToFieldReader.h
   VTKToTriSurfReader.h
   DataIOAlgo.h

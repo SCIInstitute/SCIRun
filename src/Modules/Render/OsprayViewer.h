@@ -98,7 +98,7 @@ namespace Render {
     INPUT_PORT_DYNAMIC(0, GeneralGeom, OsprayGeometryObject);
     void execute() override;
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
   #ifndef WITH_OSPRAY
     DISABLED_WITHOUT_ABOVE_COMPILE_FLAG

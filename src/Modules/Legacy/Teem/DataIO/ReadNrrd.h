@@ -53,7 +53,7 @@ namespace DataIO {
 
     static std::string fileTypeList();
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     NrrdDataHandle read_nrrd();
     NrrdDataHandle read_file(const std::string& fn);

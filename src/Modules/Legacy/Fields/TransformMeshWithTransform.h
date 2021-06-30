@@ -50,7 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, TransformMatrix, Matrix);
         OUTPUT_PORT(0, Transformed_Field, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

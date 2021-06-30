@@ -68,7 +68,7 @@ namespace SCIRun {
         void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       private:
         TextBuilder textBuilder_;

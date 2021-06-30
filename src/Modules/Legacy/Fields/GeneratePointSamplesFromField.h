@@ -67,7 +67,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
         OUTPUT_PORT(1, GeneratedPoints, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();

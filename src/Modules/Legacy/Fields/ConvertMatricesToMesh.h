@@ -66,7 +66,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName InputFieldTypeName;
         static const Core::Algorithms::AlgorithmParameterName FieldBaseType;
         static const Core::Algorithms::AlgorithmParameterName DataType;
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
         void process_elements(VMesh* mesh, size_type positionRows);
       };

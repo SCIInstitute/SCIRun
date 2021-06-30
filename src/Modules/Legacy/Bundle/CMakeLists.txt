@@ -66,7 +66,6 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Bundle
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -696,88 +696,12 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 }
 
 //---------------- Clipping Planes -------------------------------------------------------------
-    //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
     StaticClippingPlanes* SRInterface::getClippingPlanes()
     {
       return static_cast<StaticClippingPlanes*>(mCore.getStaticComponent<StaticClippingPlanes>());
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneX(double value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].x = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneY(double value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].y = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneZ(double value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].z = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneD(double value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].d = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneVisible(bool value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].visible = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setClippingPlaneFrameOn(bool value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].showFrame = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::reverseClippingPlaneNormal(bool value)
-    {
-      checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
-      updateClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::checkClippingPlanes(unsigned int n)
-    {
-      while (n >= clippingPlanes_.size())
-      {
-        ClippingPlane plane;
-        plane.visible = false;
-        plane.showFrame = false;
-        plane.reverseNormal = false;
-        plane.x = 0.0;
-        plane.y = 0.0;
-        plane.z = 0.0;
-        plane.d = 0.0;
-        clippingPlanes_.push_back(plane);
-      }
-    }
-
-    //----------------------------------------------------------------------------------------------
     double SRInterface::getMaxProjLength(const glm::vec3 &n)
     {
       static const glm::vec3 a1(-1.0, 1.0, -1.0);
@@ -793,56 +717,56 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         std::abs(dot(n, a4))));
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::updateClippingPlanes()
+    bool SRInterface::updateClippingPlanes()
     {
       auto* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
-      if (clippingPlanes && sceneBBox_.valid())
+      if (!clippingPlanes || !sceneBBox_.valid())
+        return false;
+
+      clippingPlanes->clippingPlanes.clear();
+      clippingPlanes->clippingPlaneCtrls.clear();
+      //boundbox transformation
+      glm::mat4 trans_bb = glm::mat4(1.0f);
+      glm::vec3 scale_bb(sceneBBox_.x_length() / 2.0, sceneBBox_.y_length() / 2.0, sceneBBox_.z_length() / 2.0);
+      glm::vec3 center_bb(sceneBBox_.center().x(), sceneBBox_.center().y(), sceneBBox_.center().z());
+      glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
+      trans_bb = temp * trans_bb;
+      temp = translate(glm::mat4(1.0f), center_bb);
+      trans_bb = temp * trans_bb;
+      int index = 0;
+      for (const auto& plane : clippingPlaneManager_->allPlanes())
       {
-        clippingPlanes->clippingPlanes.clear();
-        clippingPlanes->clippingPlaneCtrls.clear();
-        //boundbox transformation
-        glm::mat4 trans_bb = glm::mat4(1.0f);
-        glm::vec3 scale_bb(sceneBBox_.x_length() / 2.0, sceneBBox_.y_length() / 2.0, sceneBBox_.z_length() / 2.0);
-        glm::vec3 center_bb(sceneBBox_.center().x(), sceneBBox_.center().y(), sceneBBox_.center().z());
-        glm::mat4 temp = scale(glm::mat4(1.0f), scale_bb);
-        trans_bb = temp * trans_bb;
-        temp = translate(glm::mat4(1.0f), center_bb);
-        trans_bb = temp * trans_bb;
-        int index = 0;
-        for (const auto& i : clippingPlanes_)
+        glm::vec3 n3(plane.x, plane.y, plane.z);
+        float d = plane.d;
+        glm::vec4 n(0.0);
+        if (length(n3) > 0.0)
         {
-          glm::vec3 n3(i.x, i.y, i.z);
-          float d = i.d;
-          glm::vec4 n(0.0);
-          if (length(n3) > 0.0)
-          {
-            n3 = normalize(n3);
-            n = glm::vec4(n3, 0.0);
-            d *= getMaxProjLength(n3);
-          }
-          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
-          o.w = 1;
-          o = trans_bb * o;
-          n = inverseTranspose(trans_bb) * n;
-          o.w = 0;
-          n.w = 0;
-          n = normalize(n);
-          n.w = -dot(o, n);
-          clippingPlanes->clippingPlanes.push_back(n);
-          glm::vec4 control(i.visible ? 1.0 : 0.0,
-            i.showFrame ? 1.0 : 0.0,
-            i.reverseNormal ? 1.0 : 0.0, 0.0);
-          clippingPlanes->clippingPlaneCtrls.push_back(control);
-          index++;
+          n3 = normalize(n3);
+          n = glm::vec4(n3, 0.0);
+          d *= getMaxProjLength(n3);
         }
+        auto o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
+        o.w = 1;
+        o = trans_bb * o;
+        n = inverseTranspose(trans_bb) * n;
+        o.w = 0;
+        n.w = 0;
+        n = normalize(n);
+        n.w = -dot(o, n);
+        clippingPlanes->clippingPlanes.push_back(n);
+        glm::vec4 control(plane.visible ? 1.0 : 0.0,
+            plane.showFrame ? 1.0 : 0.0,
+            plane.reverseNormal ? 1.0 : 0.0, 0.0);
+        clippingPlanes->clippingPlaneCtrls.push_back(control);
+        index++;
       }
+      return true;
     }
 
 
 
     //----------------------------------------------------------------------------------------------
-    //---------------- Data Handeling --------------------------------------------------------------
+    //---------------- Data Handling --------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
@@ -872,7 +796,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
       auto vmc = mCore.getStaticComponent<ren::StaticVBOMan>();
       auto imc = mCore.getStaticComponent<ren::StaticIBOMan>();
-      if(!vmc || !imc) return;
+      if (!vmc || !imc) return;
 
       if (std::shared_ptr<ren::VBOMan> vboMan = vmc->instance_)
       {
@@ -1206,8 +1130,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         // entity ID.
         for (const auto& pass : it->mPasses)
         {
-          uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-          mCore.removeEntity(entityID);
+          mCore.removeEntity(getEntityIDForName(pass.passName, it->mPort));
         }
       }
       mEntityIdMap.clear();
@@ -1226,8 +1149,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         {
           for (const auto& pass : it->mPasses)
           {
-            uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-            mCore.removeEntity(entityID);
+            mCore.removeEntity(getEntityIDForName(pass.passName, it->mPort));
           }
           it = mSRObjects.erase(it);
         }
@@ -1248,8 +1170,8 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     bool SRInterface::hasObject(const std::string& object)
     {
-      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-        if (it->mName == object)
+      for (const auto& mSRObject : mSRObjects)
+        if (mSRObject.mName == object)
           return true;
 
       return false;
@@ -1269,10 +1191,10 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     void SRInterface::addIBOToEntity(uint64_t entityID, const std::string& iboName)
     {
-      std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+      const std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+      if (const auto iboMan = im.lock()) {
         ren::IBO ibo;
-        auto iboData = iboMan->getIBOData(iboName);
+        const auto iboData = iboMan->getIBOData(iboName);
         ibo.glid = iboMan->hasIBO(iboName);
         ibo.primType = iboData.primType;
         ibo.primMode = iboData.primMode;
@@ -1292,7 +1214,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
       std::stringstream ss;
       ss << "FontTexture:" << entityID << text.name << text.width << text.height;
-      std::string assetName = ss.str();
+      const std::string assetName = ss.str();
 
       ren::Texture texture;
 
@@ -1319,11 +1241,11 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
       std::stringstream ss;
       ss << "Texture:" << entityID << texture.name << texture.width << texture.height;
-      std::string assetName = ss.str();
+      const std::string assetName = ss.str();
 
       ren::Texture renTexture;
-      spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
-      std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
+      const auto contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
+      const auto component = contTex->getComponent(entityID);
 
       if (!component.first)
         renTexture = textureMan->createTexture(assetName, GL_RGBA, texture.width, texture.height,
@@ -1340,9 +1262,9 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-      if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
-        ren::Shader shader;
-        shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
+      if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) 
+      {
+        const ren::Shader shader{ shaderMan->getIDForAsset(shaderName.c_str()) };
         mCore.addComponent(entityID, shader);
       }
     }
@@ -1353,7 +1275,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       //font texture
       //read in the font data
       bool success = true;
-      auto fontPath = Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
+      const auto fontPath = Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
       std::ifstream in(fontPath.string(), std::ifstream::binary);
       if (in.fail())
       {
@@ -1372,13 +1294,13 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         in >> w >> h;
         char temp;
         in.read(reinterpret_cast<char*>(&temp), sizeof(char));
-        uint16_t *font_data = new uint16_t[w*h];
-        in.read(reinterpret_cast<char*>(font_data), sizeof(uint16_t)*w*h);
+        std::vector<uint16_t> fontData(w*h);
+        in.read(reinterpret_cast<char*>(&fontData[0]), sizeof(uint16_t)*w*h);
         in.close();
-        char* font = new char[w * h * 4];
+        std::vector<char> font(w * h * 4);
         for (size_t i = 0; i < w*h; i++)
         {
-          uint16_t pixel = font_data[i];
+          uint16_t pixel = fontData[i];
           font[i * 4] = (pixel & 0x00ff);
           font[i * 4 + 1] = (pixel & 0x00ff);
           font[i * 4 + 2] = (pixel & 0x00ff);
@@ -1399,25 +1321,20 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           GL_RGBA,
           GLsizei(w), GLsizei(h), 0,
           GL_RGBA,
-          GL_UNSIGNED_BYTE, (GLvoid*)font));
-        delete [] font_data;
-        delete [] font;
+          GL_UNSIGNED_BYTE, (GLvoid*)&font[0]));
+       
       }
     }
 
-    //----------------------------------------------------------------------------------------------
     uint64_t SRInterface::getEntityIDForName(const std::string& name, int port)
     {
       return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
     }
 
-
-
     //----------------------------------------------------------------------------------------------
     //---------------- Rendering -------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    //----------------------------------------------------------------------------------------------
     void SRInterface::doFrame(double constantDeltaTime)
     {
       // todo Only render a frame if something has changed (new or deleted
@@ -1434,7 +1351,6 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         renderCoordinateAxes();
     }
 
-    //----------------------------------------------------------------------------------------------
     void SRInterface::renderCoordinateAxes()
     {
       // Only execute if static rendering resources are available. All of these
@@ -1678,7 +1594,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
-      StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+      auto light = mCore.getStaticComponent<StaticWorldLight>();
 
       if (light)
         for (int i = 0; i < LIGHT_NUM; ++i)
@@ -1767,7 +1683,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     //----------------------------------------------------------------------------------------------
     void SRInterface::setLightOn(int index, bool value)
     {
-      if (mLightsOn.size() > 0 && index < LIGHT_NUM)
+      if (!mLightsOn.empty() && index < LIGHT_NUM)
         mLightsOn[index] = value;
     }
 

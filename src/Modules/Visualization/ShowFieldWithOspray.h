@@ -52,7 +52,7 @@ namespace SCIRun {
 
         uint32_t id;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
     }
   }

@@ -57,7 +57,7 @@ namespace SCIRun {
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       private:
         bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int basis_order, int index) const;
       };

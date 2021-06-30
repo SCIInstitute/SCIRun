@@ -31,15 +31,12 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
@@ -51,22 +48,10 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 
-#include <boost/config.hpp> // put this first to suppress some VC++ warnings
-#include <boost/lockfree/spsc_queue.hpp>
-
-#include <iostream>
-#include <iterator>
-#include <algorithm>
-#include <numeric>
 #include <queue>
-#include <ctime>
 
-#include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/graph/visitors.hpp>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
@@ -207,12 +192,12 @@ protected:
     //Set module parameters.
     matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
     matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
-    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    transpose->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
+    negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+    scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
     scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+    multiply->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::MULTIPLY));
+    add->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::ADD));
   }
 };
 
@@ -257,9 +242,8 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_EQ(2, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  negate->get_state()->setValue(Variables::Operator,
-    EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+  scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
 
   BoostGraphSerialScheduler scheduler;
@@ -284,7 +268,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  auto reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
   //DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   //ASSERT_TRUE(receivedMatrix.get() != nullptr);

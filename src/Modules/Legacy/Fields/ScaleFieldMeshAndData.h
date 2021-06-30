@@ -51,7 +51,7 @@ namespace SCIRun {
         INPUT_PORT(2, DataScaleFactor, Double);
         OUTPUT_PORT(0, OutputField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
     }
   }

@@ -109,15 +109,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Algorithms_Math
   Core_Algorithms_Legacy_FiniteElements
   Core_Parser
-  #Core_Persistent
-  #Core_Thread
-  #Core_Utils
   Dataflow_Network
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${M_LIBRARY}
-  #${PETSC_UNI_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

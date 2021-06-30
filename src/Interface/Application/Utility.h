@@ -102,7 +102,7 @@ namespace Gui
     HideGroups = -101
   };
 
-  inline bool validTag(int tag) { return MinTag <= tag && tag <= MaxTag; }
+  inline bool validTag(int tag) { return static_cast<int>(MinTag) <= tag && tag <= static_cast<int>(MaxTag); }
 }
 
 }

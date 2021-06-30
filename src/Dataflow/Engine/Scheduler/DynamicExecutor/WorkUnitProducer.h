@@ -76,7 +76,7 @@ namespace SCIRun {
               {
                 auto module = network_->lookupModule(mod.second);
 
-                if (module->executionState().currentState() == Networks::ModuleExecutionState::Waiting)
+                if (module->executionState().currentState() == Networks::ModuleExecutionState::Value::Waiting)
                 {
                   //if (shouldLog_)
                   //  log_->trace("Producer pushing module {}", mod.second);

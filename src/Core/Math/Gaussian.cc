@@ -49,8 +49,4 @@ Gaussian::Gaussian(double mean, double sigma, int seed)
 {
 }
 
-Gaussian::~Gaussian() {
-  delete mr_;
-}
-
 } // End namespace SCIRun
