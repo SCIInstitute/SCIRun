@@ -50,7 +50,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, FieldToWrite, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       protected:
         std::string defaultFileTypeName() const override;

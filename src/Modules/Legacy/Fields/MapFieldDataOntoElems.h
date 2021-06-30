@@ -55,7 +55,7 @@ namespace Fields {
     INPUT_PORT(2, Destination, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 
 }}}

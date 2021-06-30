@@ -41,6 +41,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <boost/format.hpp>
 #include <boost/assign.hpp>
 #include <Core/Logging/Log.h>

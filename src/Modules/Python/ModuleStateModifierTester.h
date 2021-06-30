@@ -73,7 +73,7 @@ namespace SCIRun
         void postStateChangeInternalSignalHookup() override;
         OUTPUT_PORT(0, MetadataCode, MetadataObject);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG

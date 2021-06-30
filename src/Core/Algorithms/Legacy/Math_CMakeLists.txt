@@ -70,15 +70,6 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Math
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Math
   Core_Datatypes
-  #Core_Util
-  #Core_Exceptions
-  #Core_Thread
-  #Core_Geom
-  #Core_Geometry
-  #Core_Persistent
-  #Core_Basis
-  #Core_Algorithms_Util
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

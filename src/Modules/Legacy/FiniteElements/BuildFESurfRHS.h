@@ -60,7 +60,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, BoundaryField, Field);
 	OUTPUT_PORT(1, RHSMatrix, Matrix);
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

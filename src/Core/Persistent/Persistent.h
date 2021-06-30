@@ -94,12 +94,12 @@ class SCISHARE Piostream {
     typedef std::map<PersistentHandle, int>          MapPersistentInt;
     typedef std::map<int, PersistentHandle>          MapIntPersistent;
 
-    enum Direction {
+    enum class Direction {
       Read,
       Write
     };
 
-    enum Endian {
+    enum class Endian {
       Big,
       Little
     };
@@ -113,7 +113,7 @@ class SCISHARE Piostream {
     Direction dir;
     int version_;
     bool err;
-    int file_endian;
+    Endian file_endian;
 
     boost::shared_ptr<MapPersistentInt> outpointers;
     boost::shared_ptr<MapIntPersistent> inpointers;
@@ -130,7 +130,7 @@ class SCISHARE Piostream {
   public:
     static bool readHeader(Core::Logging::LoggerHandle pr,
                            const std::string& filename, char* hdr,
-                           const char* type, int& version, int& endian);
+                           const char* type, int& version, Endian& endian);
   private:
     virtual void reset_post_header() = 0;
   public:
@@ -167,8 +167,8 @@ class SCISHARE Piostream {
 
     void io(PersistentHandle&, const PersistentTypeID&);
 
-    bool reading() const { return dir == Read; }
-    bool writing() const { return dir == Write; }
+    bool reading() const { return dir == Direction::Read; }
+    bool writing() const { return dir == Direction::Write; }
     bool error() const { return err; }
 
     int version() const { return version_; }

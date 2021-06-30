@@ -81,12 +81,12 @@ void GetMatrixSlice::execute()
     }
     catch (const Core::Algorithms::AlgorithmInputException&)
     {
-      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
       throw;
     }
 
-    auto playMode = transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive));
-    if (playMode == GetMatrixSliceAlgo::PLAY)
+    auto playMode = static_cast<GetMatrixSliceAlgo::PlayMode>(transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive)));
+    if (playMode == GetMatrixSliceAlgo::PlayMode::PLAY)
     {
       auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();
       auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + sliceIncrement;
@@ -100,7 +100,7 @@ void GetMatrixSlice::execute()
         if (nextIndex >= (maxIndex + 1))
         {
           playing_ = false;
-          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
         }
         else
         {
@@ -108,11 +108,11 @@ void GetMatrixSlice::execute()
         }
       }
     }
-    else if (playMode == GetMatrixSliceAlgo::PAUSE)
+    else if (playMode == GetMatrixSliceAlgo::PlayMode::PAUSE)
     {
       playing_ = false;
     }
-    else if (playMode != 0)
+    else if (playMode != static_cast<GetMatrixSliceAlgo::PlayMode>(0))
     {
       playing_ = false;
       remark("Logical error: received invalid play mode value");

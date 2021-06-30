@@ -61,8 +61,8 @@ enum WidgetMovement
 struct SCISHARE ClippingPlane
 {
   static constexpr int MaxCount = 6;
-  bool visible, showFrame, reverseNormal;
-  double x, y, z, d;
+  bool visible{ false }, showFrame{ false }, reverseNormal{ false };
+  double x{ 0 }, y{ 0 }, z{ 0 }, d{ 0 };
 };
 
 struct EnumClassHash

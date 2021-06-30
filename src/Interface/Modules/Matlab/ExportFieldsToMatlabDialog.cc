@@ -29,6 +29,7 @@
 #include <Interface/Modules/Matlab/ExportFieldsToMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

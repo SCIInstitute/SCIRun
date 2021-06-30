@@ -27,12 +27,9 @@
 
 
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
-#include <sstream>
-#include <string>
-#include <vector>
-
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
@@ -82,7 +79,6 @@ void ExportFieldsToMatlab::execute()
       auto filename = (*filenameInputOption)->value();
       state->setValue(Variables::Filename, filename);
     }
-
 
     auto filename = state->getValue(Variables::Filename).toFilename();
 

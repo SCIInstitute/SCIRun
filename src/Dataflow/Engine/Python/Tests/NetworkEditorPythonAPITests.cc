@@ -138,12 +138,12 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
   initModuleParameters(false);
 
   PythonInterpreter::Instance().run_string("m1 = scirun_add_module(\"CreateLatVol\")");
-  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::NotExecuted);
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Value::NotExecuted);
   PythonInterpreter::Instance().run_string("m2 = scirun_add_module(\"CreateLatVol\")");
   PythonInterpreter::Instance().run_string("scirun_connect_modules(m1, 0, m2, 0)");
   PythonInterpreter::Instance().run_string("scirun_execute_all()");
  // boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Completed);
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Value::Completed);
   //TODO: how do i assert on
 }
 

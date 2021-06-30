@@ -33,6 +33,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header
@@ -135,6 +136,11 @@ ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneX);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneY);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneZ);
 ALGORITHM_PARAMETER_DEF(Render, ClippingPlaneD);
+ALGORITHM_PARAMETER_DEF(Render, AxesVisible);
+ALGORITHM_PARAMETER_DEF(Render, AxesSize);
+ALGORITHM_PARAMETER_DEF(Render, AxesX);
+ALGORITHM_PARAMETER_DEF(Render, AxesY);
+ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -189,10 +195,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light1On, false);
   state->setValue(Parameters::Light2On, false);
   state->setValue(Parameters::Light3On, false);
-  state->setValue(Parameters::HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light1Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light2Color, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::Light3Color, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(Parameters::HeadLightAzimuth, 180);
   state->setValue(Parameters::Light1Azimuth, 180);
   state->setValue(Parameters::Light2Azimuth, 180);
@@ -214,6 +220,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
   state->setValue(Parameters::CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
   state->setValue(Parameters::HasNewGeometry, false);
+  state->setValue(Parameters::VisibleItemListState, VariableList());
 
   state->setValue(Parameters::ClippingPlaneEnabled, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneNormalReversed, makeHomogeneousVariableListFill(false, ClippingPlane::MaxCount));
@@ -221,6 +228,11 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ClippingPlaneY, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneZ, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
   state->setValue(Parameters::ClippingPlaneD, makeHomogeneousVariableListFill(0.0, ClippingPlane::MaxCount));
+
+  state->setValue(Parameters::AxesVisible, true);
+  state->setValue(Parameters::AxesSize, 10);
+  state->setValue(Parameters::AxesX, 100);
+  state->setValue(Parameters::AxesY, 100);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
@@ -324,6 +336,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
   {
     auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
     map[connectedModuleId] = state;
+    //std::cout << "ShowFieldStates" << map << std::endl;
     get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
   }
 }
@@ -353,6 +366,12 @@ void ViewScene::execute()
 #endif
   state->setValue(Parameters::HasNewGeometry, true);
   state->setTransientValue(Parameters::TimeExecutionFinished, getCurrentTimeSinceEpoch(), false);
+
+  if (state->getValue(Parameters::HeadLightOn).toBool() && state->getValue(Parameters::HeadLightColor).toString() == "Color(0,0,0)")
+  {
+    warning("This ViewScene is displaying a saved black headlight due to an old bug. Headlight color is being switched to white. Please save and reload your network file to fix this.");
+    state->setValue(Parameters::HeadLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  }
 }
 
 unsigned long ViewScene::getCurrentTimeSinceEpoch()

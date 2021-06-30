@@ -56,7 +56,7 @@ namespace Matlab {
 
     LEGACY_MATLAB_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
   protected:
     void postStateChangeInternalSignalHookup() override;

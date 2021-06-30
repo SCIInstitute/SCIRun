@@ -50,7 +50,7 @@ namespace SCIRun {
                 OUTPUT_PORT(1, PrincipalValues, DenseMatrix);
                 OUTPUT_PORT(2, RightPrincipalMatrix, DenseMatrix);
 
-                MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+                MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
                 NEW_HELP_WEBPAGE_ONLY
             };
 

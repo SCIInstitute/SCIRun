@@ -40,21 +40,18 @@ namespace ren {
 
 struct StaticArcBallCam
 {
-  enum CamerasAffected
+  enum class CamerasAffected
   {
     PERSPECTIVE,
     ORTHO,
     BOTH
   };
 
-  // -- Data --
-  CamerasAffected           cams;
+  CamerasAffected cams {CamerasAffected::PERSPECTIVE};
   spire::ArcLookAt arcLookAt;
 
-  // -- Functions --
   StaticArcBallCam()
   {
-    cams = PERSPECTIVE;
   }
 
   StaticArcBallCam(const StaticArcBallCam& other)

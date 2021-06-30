@@ -377,7 +377,7 @@ namespace detail
 
     static FieldHandle makeLatVolFromCleaver2Field(CleaverScalarField cfield)
     {
-      FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, FLOAT_E);
+      FieldInformation lfi(mesh_info_type::LATVOLMESH_E, databasis_info_type::LINEARDATA_E, data_info_type::FLOAT_E);
 
       auto cbbox = cfield->bounds();
       auto cdatabbox = cfield->dataBounds();
@@ -510,7 +510,6 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   addParameter(Parameters::VolumeScaling, detail::kDefaultSamplingRate);
   addParameter(Parameters::VolumeMultiplier, detail::kDefaultFeatureScaling);
   addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
-  //addParameter(Parameters::Padding, detail::kDefaultPadding);
   addParameter(Parameters::AlphaLong, detail::kDefaultAlphaLong);
   addParameter(Parameters::AlphaShort, detail::kDefaultAlphaShort);
   addParameter(Parameters::MeshMode, static_cast<int>(cleaver2::MeshType::Regular));
@@ -536,7 +535,7 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, 
 
   detail::Cleaver2Parameters params
   {
-    cleaver2::MeshType(get(Parameters::MeshMode).toInt()),
+    static_cast<cleaver2::MeshType>(get(Parameters::MeshMode).toInt()),
     get(Parameters::AlphaLong).toDouble(),
     get(Parameters::AlphaShort).toDouble(),
     get(Parameters::VolumeScaling).toDouble(),
@@ -560,8 +559,8 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, 
 
 AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input) const
 {
-  auto inputfields = input.getList<Field>(Variables::InputFields);
-  auto sizingField = input.get<Field>(SizingField);
+  const auto inputfields = input.getList<Field>(Variables::InputFields);
+  const auto sizingField = input.get<Field>(SizingField);
 
   return runImpl(inputfields, nullptr, sizingField);
 }

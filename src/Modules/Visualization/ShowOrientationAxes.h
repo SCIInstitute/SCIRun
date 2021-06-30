@@ -43,7 +43,7 @@ namespace Visualization {
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputGeom, GeometryObject);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
     static const Core::Algorithms::AlgorithmParameterName Scale;
     static const Core::Algorithms::AlgorithmParameterName X;

@@ -57,7 +57,7 @@ namespace Gui {
 
   struct HideItemsNotMatchingString
   {
-    enum SearchType
+    enum class SearchType
     {
       STARTS_WITH,
       WILDCARDS,

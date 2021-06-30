@@ -31,9 +31,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/Widget.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Graphics::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
+using namespace Graphics::Datatypes;
 
 std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget) const
 {
@@ -46,13 +46,13 @@ std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget
 
   auto name = widget.uniqueID() + "widget" + ss.str();
 
-  Graphics::GlyphGeom glyphs;
+  GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addSphere(params.point, params.common.scale, params.common.resolution, node_color);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 
   return name;
@@ -69,14 +69,14 @@ std::string RealGlyphFactory::superquadric(SuperquadricParameters params, Widget
 
   auto name = widget.uniqueID() + "widget" + ss.str();
 
-  Graphics::GlyphGeom glyphs;
+  GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addSuperquadricSurface(params.point, params.tensor, params.common.scale,
                                 params.common.resolution, node_color, params.A, params.B);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 
   return name;
@@ -86,8 +86,8 @@ RenderState RealGlyphFactory::getSphereRenderState(const std::string& defaultCol
 {
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
 
   renState.defaultColor = ColorRGB(defaultColor);
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
@@ -99,9 +99,9 @@ RenderState RealGlyphFactory::getSphereRenderState(const std::string& defaultCol
     renState.defaultColor.b() / 255.)
     : renState.defaultColor;
 
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
   return renState;
 }
@@ -117,13 +117,13 @@ std::string RealGlyphFactory::disk(DiskParameters params, WidgetBase& widget) co
 
   auto name = widget.uniqueID() + "widget" + ss.str();
 
-  Graphics::GlyphGeom glyphs;
+  GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addDisk(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
   return name;
 }
@@ -139,13 +139,13 @@ std::string RealGlyphFactory::cylinder(CylinderParameters params, WidgetBase& wi
 
   auto name = widget.uniqueID() + "widget" + ss.str();
 
-  Graphics::GlyphGeom glyphs;
+  GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addCylinder(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 
   return name;
@@ -162,13 +162,13 @@ std::string RealGlyphFactory::cone(ConeParameters params, WidgetBase& widget) co
 
   auto name = widget.uniqueID() + "widget" + ss.str();
 
-  Graphics::GlyphGeom glyphs;
+  GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addCone(params.cylinder.p1, params.cylinder.p2, params.cylinder.common.scale, params.cylinder.common.resolution, params.renderBase, node_color, node_color);
 
   auto renState = getSphereRenderState(params.cylinder.common.defaultColor);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.cylinder.common.bbox);
 
   return name;
@@ -222,15 +222,15 @@ std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, Widget
 
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
 
   renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 
   return name;
@@ -282,15 +282,15 @@ std::string RealGlyphFactory::box(BoundingBoxParameters params, WidgetBase& widg
 
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
 
   renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
-  glyphs.buildObject(widget, name, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
 
   return name;

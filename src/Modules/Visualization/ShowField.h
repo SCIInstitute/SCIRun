@@ -109,7 +109,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
         //OUTPUT_PORT(1, OspraySceneGraph, OsprayGeometryObject); //TODO
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
         void setStateDefaults() override;
       private:

@@ -132,11 +132,11 @@ void ShowMeshBoundingBoxImpl::addLinesToAxis(GlyphGeom& glyphs, int count, const
 RenderState ShowMeshBoundingBoxImpl::getRenderState()
 {
   RenderState renState;
-  renState.set(RenderState::USE_NORMALS, false);
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, false);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
   renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
-  renState.set(RenderState::USE_DEFAULT_COLOR, false);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, false);
   return renState;
 }
 

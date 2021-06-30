@@ -135,7 +135,7 @@ TEST(CalculateGradientsAlgoTests, NullFieldHandleInput)
 //TODO DAN FIX TEST
 TEST(CalculateGradientsAlgoTests, DISABLED_NoFieldDataInput)
 {
-  FieldHandle in = CubeTetVolLinearBasis(DOUBLE_E);
+  FieldHandle in = CubeTetVolLinearBasis(data_info_type::DOUBLE_E);
   FieldHandle out;
   CalculateGradientsAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);

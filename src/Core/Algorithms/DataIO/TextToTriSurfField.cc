@@ -277,7 +277,7 @@ bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
 
 MeshHandle TextToTriSurfFieldPrivate::readField()
 {
-  FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+  FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::LINEARDATA_E), "double");
   auto triSurfMesh = CreateMesh(fi);
   auto triSurfVMesh = triSurfMesh->vmesh();
 

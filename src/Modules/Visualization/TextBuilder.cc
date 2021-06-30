@@ -245,9 +245,9 @@ void TextBuilder::printString(const std::string& oneline,
     SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
     geom.ibos().push_back(geomIBO);
     RenderState renState;
-    renState.set(RenderState::USE_COLORMAP, false);
-    renState.set(RenderState::USE_TRANSPARENCY, false);
-    renState.set(RenderState::IS_TEXT, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, false);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
+    renState.set(RenderState::ActionFlags::IS_TEXT, true);
     char c[2] = { p, 0 };
     SpireText text(c, ftFace_);
 
