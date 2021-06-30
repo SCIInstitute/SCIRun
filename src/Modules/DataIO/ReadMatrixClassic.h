@@ -51,7 +51,7 @@ namespace DataIO {
 
     static std::string fileTypeList();
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
   protected:
     std::string defaultFileTypeName() const override;

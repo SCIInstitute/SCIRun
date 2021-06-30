@@ -67,7 +67,7 @@ namespace SCIRun {
         OUTPUT_PORT(6, OutputField7, Field);
         OUTPUT_PORT(7, OutputField8, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

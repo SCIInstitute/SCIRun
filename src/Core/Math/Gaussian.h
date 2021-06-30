@@ -45,7 +45,7 @@
 
 #include <Core/Math/MusilRNG.h>
 #include <Core/Math/MiscMath.h> // for M_PI
-#include <math.h>
+#include <cmath>
 
 #include <Core/Math/share.h>
 
@@ -58,9 +58,8 @@ class SCISHARE Gaussian {
 public:
   double mean_;
   double sigma_;
-  MusilRNG *mr_;
+  std::unique_ptr<MusilRNG> mr_;
   Gaussian(double mean=0, double sigma=1, int seed=0);
-  ~Gaussian();
 
   //   pick a random value from this Gaussian distribution
   //      - implemented using the Box-Muller transformation

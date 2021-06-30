@@ -46,7 +46,7 @@ namespace Basic {
     void setStateDefaults() override {}
 
     OUTPUT_PORT(0, Scalar, ComplexDenseMatrix);
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   private:
     complex data_;
   };

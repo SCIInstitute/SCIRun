@@ -116,7 +116,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const
 {
   auto state = mh->executionState().currentState();
-  return state != Networks::ModuleExecutionState::Completed;// || state != Networks::ModuleExecutionState::Errored;
+  return state != ModuleExecutionState::Value::Completed;// || state != Networks::ModuleExecutionState::Errored;
 }
 
 const ModuleWaitingFilter& ModuleWaitingFilter::Instance()

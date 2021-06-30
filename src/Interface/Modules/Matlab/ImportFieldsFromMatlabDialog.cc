@@ -29,6 +29,7 @@
 #include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/StringUtil.h>
 #endif

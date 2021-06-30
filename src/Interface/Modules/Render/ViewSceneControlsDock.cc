@@ -36,6 +36,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Visualization;
@@ -76,7 +77,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 
   //-----------Objects Tab-----------------//
-  visibleItems_.reset(new VisibleItemManager(objectListWidget_));
+  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
   connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
   connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
@@ -374,6 +375,10 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   zSliderValueLabel_->setText(ztext);
   dSliderValueLabel_->setText(dtext);
 
+  ScopedWidgetSignalBlocker xBlocker(xValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker yBlocker(yValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker zBlocker(zValueHorizontalSlider_);
+  ScopedWidgetSignalBlocker dBlocker(dValueHorizontalSlider_);
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);
   zValueHorizontalSlider_->setSliderPosition(z * 100);
@@ -392,6 +397,31 @@ void ViewSceneControlsDock::setSliderCenterPos()
 {
   orientAxisXPos_->setValue(50);
   orientAxisYPos_->setValue(50);
+}
+
+VisibleItemManager::VisibleItemManager(QTreeWidget* itemList, ModuleStateHandle state)
+  : itemList_(itemList), state_(state)
+{
+  connect(this, &VisibleItemManager::visibleItemChange, this, &VisibleItemManager::updateState);
+  connect(this, &VisibleItemManager::meshComponentSelectionChange, this, &VisibleItemManager::updateState);
+}
+
+void VisibleItemManager::updateState()
+{
+  VariableList checkList;
+  for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
+  {
+    VariableList items;
+    auto* item = itemList_->topLevelItem(i);
+    items.emplace_back(makeVariable(item->text(0).toStdString(), item->checkState(0) == Qt::Checked));
+    for (int j = 0; j < item->childCount(); ++j)
+    {
+      auto* child = item->child(j);
+      items.emplace_back(makeVariable(child->text(0).toStdString(), child->checkState(0) == Qt::Checked));
+    }
+    checkList.push_back(makeVariable("graphicsItem", items));
+  }
+  state_->setValue(Core::Algorithms::Render::Parameters::VisibleItemListState, checkList);
 }
 
 bool VisibleItemManager::isVisible(const QString& name) const
@@ -417,6 +447,7 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
       return (parts.size() > 1) ? parts.at(1) : QString("scale bar");
     }
   );
+
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->topLevelItem(i)->text(0)) == displayNames.end())
@@ -442,6 +473,31 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
   return displayNames;
 }
 
+void VisibleItemManager::initializeSavedStateMap()
+{
+  auto objs = state_->getValue(Core::Algorithms::Render::Parameters::VisibleItemListState).toVector();
+  for (const auto& o : objs)
+  {
+    auto item = o.toVector();
+    QString rootName;
+    for (size_t i = 0; i < item.size(); ++i)
+    {
+      auto name = item[i].name().name();
+      auto checked = item[i].toBool();
+
+      if (0 == i) // showfield
+      {
+        rootName = QString::fromStdString(name);
+        topLevelItemMap_[rootName] = checked;
+      }
+      else
+      {
+        secondLevelItemMap_[rootName][QString::fromStdString(name)] = checked;
+      }
+    }
+  }
+}
+
 void VisibleItemManager::addRenderItem(const QString& name)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
@@ -455,15 +511,33 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
+  auto topLevelItemStateIter = topLevelItemMap_.find(name);
+  if (topLevelItemStateIter != topLevelItemMap_.end())
+  {
+    if (!topLevelItemStateIter->second)
+      item->setCheckState(0, Qt::Unchecked);
+  }
   if (name.contains("ShowField:"))
   {
-    new QTreeWidgetItem(item, QStringList("Nodes"));
-    new QTreeWidgetItem(item, QStringList("Edges"));
-    new QTreeWidgetItem(item, QStringList("Faces"));
+    auto n = new QTreeWidgetItem(item, QStringList("Nodes"));
+    auto e = new QTreeWidgetItem(item, QStringList("Edges"));
+    auto f = new QTreeWidgetItem(item, QStringList("Faces"));
+
+    const auto meshComponentCheckStates = secondLevelItemMap_.find(name);
+    const auto hasSavedMeshFlags = meshComponentCheckStates != secondLevelItemMap_.end();
+    if (hasSavedMeshFlags)
+    {
+      n->setCheckState(0, meshComponentCheckStates->second["Nodes"] ? Qt::Checked : Qt::Unchecked);
+      e->setCheckState(0, meshComponentCheckStates->second["Edges"] ? Qt::Checked : Qt::Unchecked);
+      f->setCheckState(0, meshComponentCheckStates->second["Faces"] ? Qt::Checked : Qt::Unchecked);
+    }
+
   }
+  if (name != "scale bar") //TODO: super hacky fix
+    updateState();
 }
 
-void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool> checked)
+void VisibleItemManager::updateCheckStates(const QString& name, const std::vector<bool>& checked)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
   if (items.count() > 1)
@@ -505,8 +579,8 @@ void VisibleItemManager::selectAllClicked()
   {
     auto item = itemList_->topLevelItem(i);
     item->setCheckState(0, Qt::Checked);
-    for (int i = 0; i < item->childCount(); ++i)
-      item->child(i)->setCheckState(0, Qt::Checked);
+    for (int j = 0; j < item->childCount(); ++j)
+      item->child(j)->setCheckState(0, Qt::Checked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
@@ -519,8 +593,8 @@ void VisibleItemManager::deselectAllClicked()
   {
     auto item = itemList_->topLevelItem(i);
     item->setCheckState(0, Qt::Unchecked);
-    for (int i = 0; i < item->childCount(); ++i)
-      item->child(i)->setCheckState(0, Qt::Unchecked);
+    for (int j = 0; j < item->childCount(); ++j)
+      item->child(j)->setCheckState(0, Qt::Unchecked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();

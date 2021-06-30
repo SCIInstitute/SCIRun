@@ -229,10 +229,10 @@ RenderState GeometryBuilder::getNodeRenderState(
 
   bool useColorMap = state_->getValue(NodesColoring).toInt() == 1;
   bool rgbConversion = state_->getValue(NodesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowNodes).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_NODES, state_->getValue(NodeTransparency).toBool());
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowNodes).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_NODES, state_->getValue(NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state_->getValue(NodeAsSpheres).toInt() == 1);
+  renState.set(RenderState::ActionFlags::USE_SPHERE, state_->getValue(NodeAsSpheres).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
@@ -246,15 +246,15 @@ RenderState GeometryBuilder::getNodeRenderState(
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP_ON_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP_ON_NODES, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT_ON_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT_ON_NODES, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR_NODES, true);
     state_->setValue(NodesColoring, 0);
   }
 
@@ -267,9 +267,9 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_pt
 
   bool useColorMap = state_->getValue(EdgesColoring).toInt() == 1;
   bool rgbConversion = state_->getValue(EdgesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state_->getValue(EdgeTransparency).toBool());
-  renState.set(RenderState::USE_CYLINDER, state_->getValue(EdgesAsCylinders).toInt() == 1);
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowEdges).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_EDGES, state_->getValue(EdgeTransparency).toBool());
+  renState.set(RenderState::ActionFlags::USE_CYLINDER, state_->getValue(EdgesAsCylinders).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
@@ -285,15 +285,15 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_pt
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP_ON_EDGES, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP_ON_EDGES, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT_ON_EDGES, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT_ON_EDGES, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR_EDGES, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR_EDGES, true);
     state_->setValue(EdgesColoring, 0);
   }
 
@@ -306,9 +306,9 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
 
   bool useColorMap = state_->getValue(FacesColoring).toInt() == 1;
   bool rgbConversion = state_->getValue(FacesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state_->getValue(FaceTransparency).toBool());
-  renState.set(RenderState::USE_FACE_NORMALS, state_->getValue(UseFaceNormals).toBool());
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowFaces).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, state_->getValue(FaceTransparency).toBool());
+  renState.set(RenderState::ActionFlags::USE_FACE_NORMALS, state_->getValue(UseFaceNormals).toBool());
 
   renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
@@ -324,15 +324,15 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
     state_->setValue(FacesColoring, 0);
   }
 
@@ -514,10 +514,10 @@ void GeometryBuilder::renderFacesLinear(
   mesh->end(fiterEnd);
   int numNodesPerFace = nodes.size();
   bool useQuads = (numNodesPerFace == 4);
-  int numAttributes = 3; //intially 3 because we will atleast be rendering verticies (vec3's)
+  int numAttributes = 3; //initially 3 because we will atleast be rendering verticies (vec3's)
 
-  bool useNormals = state.get(RenderState::USE_NORMALS);
-  bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
+  bool useNormals = state.get(RenderState::ActionFlags::USE_NORMALS);
+  bool useFaceNormals = state.get(RenderState::ActionFlags::USE_FACE_NORMALS) && mesh->has_normals();
   bool invertNormals = state_->getValue(FaceInvertNormals).toBool();
   if (useNormals)
   {
@@ -525,7 +525,7 @@ void GeometryBuilder::renderFacesLinear(
     mesh->synchronize(Mesh::NORMALS_E);
   }
 
-  bool useColorMap = (fld->basis_order() >= 0 && state.get(RenderState::USE_COLORMAP));
+  bool useColorMap = (fld->basis_order() >= 0 && state.get(RenderState::ActionFlags::USE_COLORMAP));
   bool isCellData = (fld->basis_order() == 0 && mesh->dimensionality() == 3);
   bool isFaceData = (fld->basis_order() == 0 && mesh->dimensionality() == 2);
   bool isNodeData = (fld->basis_order() == 1);
@@ -843,9 +843,9 @@ void GeometryBuilder::renderNodes(
   ColorMapHandle textureMap, coordinateMap;
   spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR_NODES))
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::ActionFlags::USE_DEFAULT_COLOR_NODES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP_ON_NODES))
+  else if (state.get(RenderState::ActionFlags::USE_COLORMAP_ON_NODES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -861,7 +861,7 @@ void GeometryBuilder::renderNodes(
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
+  ss << state.get(RenderState::ActionFlags::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
@@ -869,7 +869,7 @@ void GeometryBuilder::renderNodes(
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
   // Use spheres...
-  if (state.get(RenderState::USE_SPHERE))
+  if (state.get(RenderState::ActionFlags::USE_SPHERE))
     primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
@@ -898,7 +898,7 @@ void GeometryBuilder::renderNodes(
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_SPHERE))
+    if (state.get(RenderState::ActionFlags::USE_SPHERE))
     {
       glyphs.addSphere(p, radius, num_strips, node_color);
     }
@@ -910,7 +910,7 @@ void GeometryBuilder::renderNodes(
     ++eiter;
   }
 
-  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
 }
 
@@ -938,9 +938,9 @@ void GeometryBuilder::renderEdges(
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-    state.get(RenderState::USE_DEFAULT_COLOR_EDGES))
+    state.get(RenderState::ActionFlags::USE_DEFAULT_COLOR_EDGES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP_ON_EDGES))
+  else if (state.get(RenderState::ActionFlags::USE_COLORMAP_ON_EDGES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -957,13 +957,13 @@ void GeometryBuilder::renderEdges(
   if (radius < 0) radius = 1.;
 
   std::stringstream ss;
-  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
+  ss << state.get(RenderState::ActionFlags::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "edge" + ss.str();
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
   // Use cylinders...
-  if (state.get(RenderState::USE_CYLINDER))
+  if (state.get(RenderState::ActionFlags::USE_CYLINDER))
     primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
@@ -1032,7 +1032,7 @@ void GeometryBuilder::renderEdges(
 
     if (p0 != p1)
     {
-      if (state.get(RenderState::USE_CYLINDER))
+      if (state.get(RenderState::ActionFlags::USE_CYLINDER))
       {
         glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
         glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
@@ -1047,7 +1047,7 @@ void GeometryBuilder::renderEdges(
     ++eiter;
   }
 
-  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
 }
 

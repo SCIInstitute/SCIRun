@@ -61,7 +61,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
         std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
       };

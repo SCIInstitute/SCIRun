@@ -112,10 +112,10 @@ namespace SCIRun {
         ColorScheme getColoringType(const RenderState& renState, VField* fld);
         void getPoints(VMesh* mesh, std::vector<int>& indices, std::vector<Point>& points);
         std::unique_ptr<ShowFieldGlyphsPortHandler> portHandler_;
-        RenderState::InputPort getInput(const std::string& port_name);
+        RenderState::GlyphInputPort getInput(const std::string& port_name);
         void addGlyph(
           GlyphGeom& glyphs,
-          int glyph_type,
+          RenderState::GlyphType glyph_type,
           Point& p1,
           Vector& dir,
           double radius,
@@ -132,13 +132,13 @@ namespace SCIRun {
   }
 }
 
-enum SecondaryVectorParameterScalingTypeEnum
+enum class SecondaryVectorParameterScalingTypeEnum
 {
   UNIFORM,
   USE_INPUT
 };
 
-enum FieldDataType
+enum class FieldDataType
 {
   node,
   edge,
@@ -148,11 +148,11 @@ enum FieldDataType
 
 ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* fld)
 {
-  if(fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
+  if(fld->basis_order() < 0 || renState.get(RenderState::ActionFlags::USE_DEFAULT_COLOR))
   {
     return ColorScheme::COLOR_UNIFORM;
   }
-  else if(renState.get(RenderState::USE_COLORMAP))
+  else if(renState.get(RenderState::ActionFlags::USE_COLORMAP))
   {
     return ColorScheme::COLOR_MAP;
   }
@@ -164,7 +164,7 @@ ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* f
 
 void GlyphBuilder::addGlyph(
   GlyphGeom& glyphs,
-  int glyph_type,
+  RenderState::GlyphType glyph_type,
   Point& p1,
   Vector& dir,
   double radius,
@@ -250,7 +250,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsTransparency, 0);
   state->setValue(VectorsUniformTransparencyValue, 0.65);
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
-  state->setValue(SecondaryVectorParameterScalingType, SecondaryVectorParameterScalingTypeEnum::USE_INPUT);
+  state->setValue(SecondaryVectorParameterScalingType, static_cast<int>(SecondaryVectorParameterScalingTypeEnum::USE_INPUT));
   state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
   state->setValue(SecondaryVectorParameterScale, 0.25);
   state->setValue(NormalizeVectors, false);
@@ -340,20 +340,17 @@ void ShowFieldGlyphs::configureInputs(
   }
 }
 
-RenderState::InputPort GlyphBuilder::getInput(const std::string& port_name)
+RenderState::GlyphInputPort GlyphBuilder::getInput(const std::string& port_name)
 {
-  if(port_name == "Primary")
+  if (port_name == "Primary")
   {
-    return RenderState::PRIMARY_PORT;
+    return RenderState::GlyphInputPort::PRIMARY_PORT;
   }
-  else if(port_name == "Secondary")
+  if(port_name == "Secondary")
   {
-    return RenderState::SECONDARY_PORT;
+    return RenderState::GlyphInputPort::SECONDARY_PORT;
   }
-  else
-  {
-    return RenderState::TERTIARY_PORT;
-  }
+  return RenderState::GlyphInputPort::TERTIARY_PORT;
 }
 
 GeometryHandle GlyphBuilder::buildGeometryObject(
@@ -565,7 +562,7 @@ void GlyphBuilder::renderVectors(
     // Get radius
     // radius = scale * radiusWidthScale / 2.0;
     radius = radiusWidthScale / 2.0;
-    if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == SecondaryVectorParameterScalingTypeEnum::USE_INPUT)
+    if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == static_cast<int>(SecondaryVectorParameterScalingTypeEnum::USE_INPUT))
       radius *= portHandler_->getSecondaryVectorParameter(indices[i]);
 
     ColorRGB node_color = portHandler_->getNodeColor(indices[i]);
@@ -587,11 +584,11 @@ void GlyphBuilder::renderVectors(
   }
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
+  ss << static_cast<int>(renState.mGlyphType) << resolution << scale << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES),
                      state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, primIn, mesh->get_bounding_box(), true, portHandler_->getTextureMap());
 }
@@ -656,11 +653,11 @@ void GlyphBuilder::renderScalars(
   }
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
+  ss << static_cast<int>(renState.mGlyphType) << resolution << scale << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_NODES),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES),
                      state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, primIn, mesh->get_bounding_box(), true,
                      portHandler_->getTextureMap());
@@ -701,7 +698,7 @@ void GlyphBuilder::renderTensors(
   if (resolution < 3) resolution = 5;
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
+  ss << static_cast<int>(renState.mGlyphType) << resolution << scale << static_cast<int>(colorScheme);
 
   // Separate id's are needed for lines and points if rendered
   std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
@@ -721,7 +718,7 @@ void GlyphBuilder::renderTensors(
 
   GlyphGeom glyphs;
   // Render every item from facade
-  for(int i = 0; i < indices.size(); i++)
+  for (int i = 0; i < indices.size(); i++)
   {
     Tensor t = portHandler_->getPrimaryTensor(indices[i]);
 
@@ -730,7 +727,7 @@ void GlyphBuilder::renderTensors(
     Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
 
     // Counter for negative eigen values
-    if(eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon) ++neg_eigval_count;
+    if (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon) ++neg_eigval_count;
 
     Vector eigvec1, eigvec2, eigvec3;
     t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
@@ -750,13 +747,13 @@ void GlyphBuilder::renderTensors(
 
     // Do not render tensors that are too small - because surfaces
     // are not renderd at least two of the scales must be non zero.
-    if(!renderGlyphsBelowThreshold && t.magnitude() < threshold) continue;
+    if (!renderGlyphsBelowThreshold && t.magnitude() < threshold) continue;
 
-    if(order0Tensor)
+    if (order0Tensor)
     {
       point_glyphs.addPoint(points[i], node_color);
     }
-    else if(order1Tensor)
+    else if (order1Tensor)
     {
       Vector dir;
       if(vector_eig_x_0 && vector_eig_y_0)
@@ -797,25 +794,26 @@ void GlyphBuilder::renderTensors(
   }
 
   // Prints warning if there are negative eigen values
-  if(neg_eigval_count > 0) {
+  if (neg_eigval_count > 0) 
+  {
       module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
   }
 
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY),
                      state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, primIn, mesh->get_bounding_box(), true,
                      portHandler_->getTextureMap());
 
-  // Render lines(2 eigenvalues equalling 0)
+  // Render lines(2 eigenvalues equaling 0)
   RenderState lineRenState = getVectorsRenderState(state);
-  tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::USE_TRANSPARENT_EDGES),
+  tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES),
                                  state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                                  colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box(),
                                  true, portHandler_->getTextureMap());
 
-  // Render scalars(3 eigenvalues equalling 0)
+  // Render scalars(3 eigenvalues equaling 0)
   RenderState pointRenState = getScalarsRenderState(state);
-  point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
+  point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES),
                            state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                            colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box(),
                            true, portHandler_->getTextureMap());
@@ -823,7 +821,7 @@ void GlyphBuilder::renderTensors(
 
 void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)
 {
-  double mapped_emphasis = map_emphasis((double) emphasis * 0.01);
+  double mapped_emphasis = map_emphasis(static_cast<double>(emphasis) * 0.01);
   get_state()->setValue(ShowFieldGlyphs::SuperquadricEmphasis, mapped_emphasis);
 }
 
@@ -831,12 +829,12 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
-  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
 
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
+  renState.set(RenderState::ActionFlags::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
 
   // Transparency
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldGlyphs::VectorsTransparency).toInt() == 1);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldGlyphs::VectorsTransparency).toInt() == 1);
 
   std::string g_type = state->getValue(ShowFieldGlyphs::VectorsDisplayType).toString();
   if(g_type == "Lines")
@@ -869,15 +867,15 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
   std::string c_type = state->getValue(ShowFieldGlyphs::VectorsColoring).toString();
   if(c_type == "Colormap Lookup")
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, true);
   }
   else if (c_type == "Conversion to RGB")
   {
-    renState.set(RenderState::USE_COLOR_CONVERT, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::VectorsColoringDataInput).toString());
   renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
@@ -889,22 +887,22 @@ RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
-  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
 
   // Transparency
   int transparency = state->getValue(ShowFieldGlyphs::ScalarsTransparency).toInt();
   if(transparency == 0)
   {
-    renState.set(RenderState::USE_TRANSPARENT_NODES, false);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENT_NODES, false);
   }
   //TODO add input option
   else if(transparency == 1)
   {
-    renState.set(RenderState::USE_TRANSPARENT_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENT_NODES, true);
   }
   else
   {
-    renState.set(RenderState::USE_TRANSPARENT_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENT_NODES, true);
   }
 
   std::string g_type = state->getValue(ShowFieldGlyphs::ScalarsDisplayType).toString();
@@ -932,15 +930,15 @@ RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
   std::string c_type = state->getValue(ShowFieldGlyphs::ScalarsColoring).toString();
   if(c_type == "Colormap Lookup")
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, true);
   }
   else if (c_type == "Conversion to RGB")
   {
-    renState.set(RenderState::USE_COLOR_CONVERT, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::ScalarsColoringDataInput).toString());
 
@@ -951,25 +949,25 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
-  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
 
   // Show Tensors
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowTensors).toBool());
+  renState.set(RenderState::ActionFlags::IS_ON, state->getValue(ShowFieldGlyphs::ShowTensors).toBool());
 
   // Transparency
   int transparency = state->getValue(ShowFieldGlyphs::TensorsTransparency).toInt();
   if(transparency == 0)
   {
-    renState.set(RenderState::USE_TRANSPARENCY, false);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
   }
   //TODO add input option
   else if(transparency == 1)
   {
-    renState.set(RenderState::USE_TRANSPARENCY, true);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, true);
   }
   else
   {
-    renState.set(RenderState::USE_TRANSPARENCY, true);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, true);
   }
 
   // Glpyh Type
@@ -996,15 +994,15 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
   std::string color = state->getValue(ShowFieldGlyphs::TensorsColoring).toString();
   if(color == "Colormap Lookup")
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, true);
   }
   else if (color == "Conversion to RGB")
   {
-    renState.set(RenderState::USE_COLOR_CONVERT, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::TensorsColoringDataInput).toString());
 

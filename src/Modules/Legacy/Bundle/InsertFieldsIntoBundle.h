@@ -58,7 +58,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FieldNames;
         static const Core::Algorithms::AlgorithmParameterName FieldReplace;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 
     }

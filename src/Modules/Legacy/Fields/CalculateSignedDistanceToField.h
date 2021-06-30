@@ -56,7 +56,7 @@ namespace SCIRun {
         INPUT_PORT(1, ObjectField, Field);
         OUTPUT_PORT(0, SignedDistanceField, Field);
         OUTPUT_PORT(1, ValueField, Field);
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

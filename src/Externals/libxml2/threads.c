@@ -613,21 +613,21 @@ xmlGetGlobalState(void)
  *
  * Returns the current thread ID number
  */
-int
-xmlGetThreadId(void)
-{
-#ifdef HAVE_PTHREAD_H
-    if (libxml_is_threaded == 0)
-        return(0);
-    return((int) pthread_self());
-#elif defined HAVE_WIN32_THREADS
-    return GetCurrentThreadId();
-#elif defined HAVE_BEOS_THREADS
-	return find_thread(NULL);
-#else
-    return((int) 0);
-#endif
-}
+// int
+// xmlGetThreadId(void)
+// {
+// #ifdef HAVE_PTHREAD_H
+//     if (libxml_is_threaded == 0)
+//         return(0);
+//     return((int) pthread_self());
+// #elif defined HAVE_WIN32_THREADS
+//     return GetCurrentThreadId();
+// #elif defined HAVE_BEOS_THREADS
+// 	return find_thread(NULL);
+// #else
+//     return((int) 0);
+// #endif
+// }
 
 /**
  * xmlIsMainThread:

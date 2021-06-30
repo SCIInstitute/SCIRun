@@ -56,7 +56,6 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
-    class PreviousWidgetSelectionInfo;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -65,7 +64,7 @@ namespace SCIRun {
     public:
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
-      ~ViewSceneDialog();
+      ~ViewSceneDialog() override;
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
@@ -86,7 +85,7 @@ namespace SCIRun {
       void newGeometryValueForwarder();
       void cameraRotationChangeForwarder();
       void cameraLookAtChangeForwarder();
-      void cameraDistnaceChangeForwarder();
+      void cameraDistanceChangeForwarder();
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
@@ -95,14 +94,12 @@ namespace SCIRun {
       void sendBugReport();
 
       //---------------- New Geometry --------------------------------------------------------------
-      void updateModifiedGeometries();
       void updateModifiedGeometriesAndSendScreenShot();
-      void updateAllGeometries();
-      void newGeometryValue(bool forceAllObjectsToUpdate);
+
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void frameFinished();
       void lockMutex();
-      void unblockExecution();
+
       void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
@@ -145,7 +142,7 @@ namespace SCIRun {
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
 
-      //---------------- Orietation Glyph ----------------------------------------------------------
+      //---------------- Orientation Glyph ----------------------------------------------------------
       void showOrientationChecked(bool value);
       void setOrientAxisSize(int value);
       void setOrientAxisPosX(int pos);
@@ -203,8 +200,13 @@ namespace SCIRun {
 
 
     protected:
-      //---------------- Intitialization ------------------------------------------------------------
+      //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
+
+      void newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated);
+      void updateAllGeometries();
+      void updateModifiedGeometries();
+      void unblockExecution();
 
       //---------------- Input ---------------------------------------------------------------------
       void showEvent(QShowEvent* evt) override;
@@ -223,9 +225,8 @@ namespace SCIRun {
 
 
     private:
-      //---------------- Intitialization ------------------------------------------------------------
+      //---------------- Initialization ------------------------------------------------------------
       void addToolBar();
-      void setupClippingPlanes();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
@@ -239,13 +240,15 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock();
-      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
+      QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
       void pushCameraDistance();
       void pushCameraLookAt();
       void pushCameraRotation();
       void pushCameraState();
       bool clickedInViewer(QMouseEvent* e) const;
+      void initializeAxes();
+      void initializeVisibleObjects();
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
@@ -261,7 +264,10 @@ namespace SCIRun {
       //---------------- Clipping Planes -----------------------------------------------------------
       void updateClippingPlaneDisplay();
       void buildGeomClippingPlanes();
-      void buildGeometryClippingPlane(int index, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
+      void initializeClippingPlaneDisplay();
+      void doClippingPlanes();
+      bool initializeClippingPlanes_{true};
+      void buildGeometryClippingPlane(int index, bool reverseNormal, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
       void updateScaleBarLength();
@@ -281,13 +287,6 @@ namespace SCIRun {
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
-
-      struct ClippingPlane
-      {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
-
       struct ScaleBar
       {
         bool visible;
@@ -297,7 +296,6 @@ namespace SCIRun {
         double projLength;
       };
 
-
       GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
       Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
       QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
@@ -306,18 +304,18 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
       SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
-      PreviousWidgetSelectionInfo*          previousWidgetInfo_           {nullptr};
+      Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
       bool                                  shown_                        {false};
-      bool                                  delayGC                       {false};
-      bool                                  delayedGCRequested            {false};
+      bool                                  delayGC_                      {false};
+      bool                                  delayedGCRequested_           {false};
       bool                                  hideViewBar_                  {};
       bool                                  invertZoom_                   {};
       bool                                  shiftdown_                    {false};
       bool                                  mouseButtonPressed_           {false};
       Graphics::Datatypes::WidgetHandle     selectedWidget_;
       Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
-      int                                   clippingPlaneIndex_           {0};
+
       const static int                      delayAfterModuleExecution_    {200};
       const static int                      delayAfterWidgetColorRestored_ {50};
       int                                   delayAfterLastSelection_      {50};
@@ -329,7 +327,7 @@ namespace SCIRun {
       QColor                                bgColor_                      {};
       QColor                                fogColor_                     {};
       ScaleBar                              scaleBar_                     {};
-      std::vector<ClippingPlane>            clippingPlanes_               {};
+      Render::ClippingPlaneManagerPtr clippingPlaneManager_;
       class Screenshot*                     screenshotTaker_              {nullptr};
       bool                                  saveScreenshotOnNewGeometry_  {false};
       bool                                  pulledSavedVisibility_        {false};
@@ -353,7 +351,7 @@ namespace SCIRun {
       friend class ViewSceneControlsDock;
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
-      std::string                                       name_               {""};
+      std::string name_;
 
       const int DIMENSIONS_ = 3;
       const int QUATERNION_SIZE_ = 4;

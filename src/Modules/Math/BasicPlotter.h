@@ -66,7 +66,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputMatrix, DenseMatrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
         HAS_DYNAMIC_PORTS
       };

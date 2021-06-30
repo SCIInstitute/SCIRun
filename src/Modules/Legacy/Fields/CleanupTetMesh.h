@@ -52,7 +52,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputTetMesh, Field);
         OUTPUT_PORT(0, OutputTetMesh, Field);
 
-	MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+	MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

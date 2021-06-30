@@ -57,7 +57,7 @@ namespace Fields {
     OUTPUT_PORT(7, Dimensions, DenseMatrix);
     OUTPUT_PORT(8, GeomSize, Double);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 }}}
 

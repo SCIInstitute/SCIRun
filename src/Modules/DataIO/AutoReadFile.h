@@ -26,40 +26,32 @@
 */
 
 
-///
-///@file  ArrayIndexOutOfBounds.h
-///@brief Exception to indicate a failed bounds check
-///
-///@author
-///    Steven G. Parker
-///    Department of Computer Science
-///    University of Utah
-///@date  July 1999
-///
+#ifndef MODULES_DATAIO_READ_FILE_H
+#define MODULES_DATAIO_READ_FILE_H
 
-#ifndef Core_Exceptions_ArrayIndexOutOfBounds_h
-#define Core_Exceptions_ArrayIndexOutOfBounds_h
-
-#include <Core/Datatypes/Legacy/Base/Types.h>
-#include <Core/Exceptions/Exception.h>
-#include <Core/Exceptions/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/DataIO/share.h>
 
 namespace SCIRun {
-	class SCISHARE ArrayIndexOutOfBounds : public Exception {
-	public:
-	    ArrayIndexOutOfBounds(index_type value, index_type lower, index_type upper,
-                                  const char* file, int line);
-	    ArrayIndexOutOfBounds(const ArrayIndexOutOfBounds&);
-	    virtual ~ArrayIndexOutOfBounds() NOEXCEPT;
-            const char* message() const override;
-            const char* type() const override;
-	protected:
-	private:
-	    long value, lower, upper;
-	    char* msg;
+namespace Modules {
+namespace DataIO {
 
-	    ArrayIndexOutOfBounds& operator=(const ArrayIndexOutOfBounds);
-	};
-} // End namespace SCIRun
+  class SCISHARE AutoReadFile : public SCIRun::Dataflow::Networks::Module,
+    public HasNoInputPorts,
+    public Has2OutputPorts<MatrixPortTag, FieldPortTag>
+  {
+  public:
+    AutoReadFile();
+    void setStateDefaults() override;
+    void execute() override;
+
+    OUTPUT_PORT(0, Matrix, Matrix);
+    OUTPUT_PORT(1, Field, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+    NEW_HELP_WEBPAGE_ONLY
+  };
+
+}}}
 
 #endif

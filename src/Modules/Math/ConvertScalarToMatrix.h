@@ -48,7 +48,7 @@ namespace Math {
     INPUT_PORT(0, Input, Scalar);
     OUTPUT_PORT(0, Output, Matrix);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
     NEW_HELP_WEBPAGE_ONLY
   };
 }}}
