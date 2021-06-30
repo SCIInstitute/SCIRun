@@ -52,7 +52,7 @@ namespace SCIRun {
         INPUT_PORT(0, HexOrLatVol, Field);
         OUTPUT_PORT(0, TetVol, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

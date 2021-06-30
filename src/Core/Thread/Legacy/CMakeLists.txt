@@ -72,8 +72,6 @@ SCIRUN_ADD_LIBRARY(Core_Thread_Legacy
 SET(Core_Thread_Legacy_Link
   Core_Exceptions_Legacy
   Core_Thread
-  #${THREAD_LIBRARY}
-  #${TRACEBACK_LIB}
 )
 
 IF(WIN32)

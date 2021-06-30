@@ -26,9 +26,7 @@
 */
 
 #include <Modules/Legacy/Matlab/DataIO/ExportMatricesToMatlab.h>
-#include <sstream>
-#include <string>
-#include <vector>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>

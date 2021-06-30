@@ -30,6 +30,7 @@
 #define CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 
 #include <Core/Datatypes/Color.h>
+#include <array>
 #include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun {
@@ -38,7 +39,7 @@ class SCISHARE RenderState
 {
 public:
 
-  enum ActionFlags
+  enum class ActionFlags
   {
     IS_ON = 0,
     HAS_DATA,
@@ -102,14 +103,14 @@ public:
     MAX_ACTION_FLAGS
   };
 
-  enum InputPort
+  enum class GlyphInputPort
   {
-   PRIMARY_PORT,
-   SECONDARY_PORT,
-   TERTIARY_PORT
+    PRIMARY_PORT,
+    SECONDARY_PORT,
+    TERTIARY_PORT
   };
 
-  enum GlyphType
+  enum class GlyphType
   {
     POINT_GLYPH,
     SPHERE_GLYPH,
@@ -127,7 +128,7 @@ public:
     SPRING_GLYPH
   };
 
-  enum TransparencySortType
+  enum class TransparencySortType
   {
     CONTINUOUS_SORT,
     UPDATE_SORT,
@@ -140,15 +141,15 @@ public:
   bool get(ActionFlags flag) const;
 
   // Render state flags.
-  bool mFlags[MAX_ACTION_FLAGS];
-  TransparencySortType mSortType = CONTINUOUS_SORT;
-  GlyphType mGlyphType = POINT_GLYPH;
+  std::array<bool, static_cast<size_t>(ActionFlags::MAX_ACTION_FLAGS)> mFlags {false};
+  TransparencySortType mSortType = TransparencySortType::CONTINUOUS_SORT;
+  GlyphType mGlyphType = GlyphType::POINT_GLYPH;
 //InputPort mTransparencyInput = PRIMARY_PORT;
-  InputPort mColorInput = PRIMARY_PORT;
-  InputPort mSecondaryVectorParameterInput = PRIMARY_PORT;
-  InputPort mSpringsMajorRadiusInput = PRIMARY_PORT;
-  InputPort mSpringsMinorRadiusInput = PRIMARY_PORT;
-  InputPort mSpringsPitchInput = PRIMARY_PORT;
+  GlyphInputPort mColorInput = GlyphInputPort::PRIMARY_PORT;
+  GlyphInputPort mSecondaryVectorParameterInput = GlyphInputPort::PRIMARY_PORT;
+  GlyphInputPort mSpringsMajorRadiusInput = GlyphInputPort::PRIMARY_PORT;
+  GlyphInputPort mSpringsMinorRadiusInput = GlyphInputPort::PRIMARY_PORT;
+  GlyphInputPort mSpringsPitchInput = GlyphInputPort::PRIMARY_PORT;
 
   Core::Datatypes::ColorRGB defaultColor;
 };

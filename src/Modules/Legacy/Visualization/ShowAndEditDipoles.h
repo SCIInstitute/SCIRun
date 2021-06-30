@@ -76,7 +76,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, DipoleOutputField, Field);
         OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI);
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
 
       private:
         SharedPointer<ShowAndEditDipolesImpl> impl_;

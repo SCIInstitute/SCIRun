@@ -36,7 +36,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>

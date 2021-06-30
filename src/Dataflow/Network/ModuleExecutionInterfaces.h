@@ -30,7 +30,6 @@
 #define DATAFLOW_NETWORK_MODULEEXECUTIONINTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/ExecutableObject.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -49,7 +48,7 @@ namespace Networks {
   class SCISHARE ModuleExecutionState
   {
   public:
-    enum Value
+    enum class Value
     {
       NotExecuted,
       Waiting,

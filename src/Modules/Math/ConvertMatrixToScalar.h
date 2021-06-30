@@ -45,7 +45,7 @@ namespace Math {
     void execute() override;
     void setStateDefaults() override {}
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
 
     INPUT_PORT(0, Input, Matrix);
     OUTPUT_PORT(0, Output, Int32);

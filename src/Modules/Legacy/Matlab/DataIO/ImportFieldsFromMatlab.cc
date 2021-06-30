@@ -32,7 +32,6 @@
  */
 
 #include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
-#include <vector>
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -42,6 +41,7 @@
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Matlab;

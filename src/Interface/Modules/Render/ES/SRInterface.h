@@ -72,7 +72,7 @@ namespace SCIRun
 
     public:
       explicit SRInterface(int frameInitLimit = 100);
-      ~SRInterface();
+      ~SRInterface() override;
       std::string toString(std::string prefix) const override;
 
       void setContext(QOpenGLContext* context) override {mContext = context;}
@@ -126,15 +126,9 @@ namespace SCIRun
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes() override;
-      void setClippingPlaneVisible(bool value) override;
-      void setClippingPlaneFrameOn(bool value) override;
-      void reverseClippingPlaneNormal(bool value) override;
-      void setClippingPlaneX(double value) override;
-      void setClippingPlaneY(double value) override;
-      void setClippingPlaneZ(double value) override;
-      void setClippingPlaneD(double value) override;
-      void setClippingPlaneIndex(int index) override {clippingPlaneIndex_ = index;}
+      void setClippingPlaneManager(ClippingPlaneManagerPtr cpm) override { clippingPlaneManager_ = cpm; }
       void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) override;
+      bool updateClippingPlanes() override;
 
       //---------------- Data Handling ------------------------------------------------------------
       // Handles a new geometry object.
@@ -165,7 +159,7 @@ namespace SCIRun
       void showOrientation(bool value) override {showOrientation_ = value;}
       void setBackgroundColor(const QColor& color) override;
       void setFogColor(const glm::vec4 &color) override {mFogColor = color;}
-      void setTransparencyRendertype(RenderState::TransparencySortType rType) override {mRenderSortType = rType;}
+      void setTransparencyRenderType(RenderState::TransparencySortType rType) override {mRenderSortType = rType;}
 
       // Screen width retrieval. Dimensions are pixels.
       size_t getScreenWidthPixels() const override  { return screen_.width; }
@@ -193,9 +187,8 @@ namespace SCIRun
       static uint32_t getIDForVector(const glm::vec4& vec);
 
       //---------------- Clipping Planes -----------------------------------------------------------
-      void checkClippingPlanes(unsigned int n);// make sure clipping plane number matches
       double getMaxProjLength(const glm::vec3 &n);
-      void updateClippingPlanes();
+      
 
       //---------------- Data Handling ------------------------------------------------------------
       // Adds a VBO to the given entityID.
@@ -242,10 +235,9 @@ namespace SCIRun
       Core::Geometry::BBox				        sceneBBox_ {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
 
-      ESCore                              mCore               {};       // Entity system core.
+      ClippingPlaneManagerPtr clippingPlaneManager_;
 
-      std::vector<Core::Datatypes::ClippingPlane>          clippingPlanes_     {};
-      int                                 clippingPlaneIndex_ {0};
+      ESCore                              mCore               {};       // Entity system core.
 
       ren::ShaderVBOAttribs<5>            mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
       ren::CommonUniforms                 mArrowUniforms      {};       // Common uniforms used in the arrow shader.

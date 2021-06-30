@@ -43,9 +43,9 @@ using namespace SCIRun::TestUtils;
 TEST(TetVolMeshTest, CheckMeshIteratorTetVolMesh)
 {
   FieldHandle output;
-  FieldHandle tetmesh = CubeTetVolLinearBasis(NONE_E);
+  auto tetmesh = CubeTetVolLinearBasis(data_info_type::NONE_E);
 
-  VMesh* mesh = tetmesh->vmesh();
+  auto mesh = tetmesh->vmesh();
 
   VMesh::Elem::array_type elems;
   VMesh::Elem::iterator it, eit;

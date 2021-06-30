@@ -34,6 +34,7 @@
 #endif
 
 #include <Core/Datatypes/DenseMatrix.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -41,6 +42,7 @@
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <boost/variant/apply_visitor.hpp>
 
 using namespace SCIRun;
@@ -63,11 +65,11 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
   {
     THROW_INVALID_ARGUMENT("Conversion to AlgoOption is not implemented.");
   }
-  py::object operator()(const VariableList& v) const
+  py::object operator()(const VariableList& vl) const
   {
     py::list pyList;
-    for (int i = 0; i < v.size(); ++i)
-      pyList.append(boost::apply_visitor(PythonObjectVisitor(), v[i].value()));
+    for (const auto& v : vl)
+      pyList.append(boost::apply_visitor(PythonObjectVisitor(), v.value()));
     return std::move(pyList);
   }
 };
@@ -77,9 +79,9 @@ struct ValueVisitor : boost::static_visitor<Variable::Value>
 private:
   const py::object& object_;
 public:
-  ValueVisitor(const py::object& object) : object_(object) {}
+  explicit ValueVisitor(const py::object& object) : object_(object) {}
 
-  enum NumberType
+  enum class NumberType
   {
     Int,
     Double
@@ -127,8 +129,8 @@ public:
   {
     if (getClassName(object_) == "list")
     {
-      Variable firstVal = v[0];
-      py::extract<py::list> e(object_);
+      const auto firstVal = v[0];
+      const py::extract<py::list> e(object_);
       auto pyList = e();
       Variable::List newList(py::len(pyList));
       for (auto i = 0; i < py::len(pyList); ++i)
@@ -142,35 +144,35 @@ public:
 
   Variable::Value convertNumber(NumberType returnType) const
   {
-    auto classname = getClassName(object_);
+    const auto classname = getClassName(object_);
     if (classname == "int")
     {
       py::extract<int> e(object_);
-      auto objectVal = e();
+      const auto objectVal = e();
       switch (returnType)
       {
-      case Int: return objectVal;
-      case Double: return static_cast<int>(objectVal);
+      case NumberType::Int: return objectVal;
+      case NumberType::Double: return static_cast<int>(objectVal);
       }
     }
     else if (classname == "float")
     {
       py::extract<float> e(object_);
-      auto objectVal = e();
+      const auto objectVal = e();
       switch (returnType)
       {
-      case Int: return static_cast<int>(objectVal);
-      case Double: return static_cast<double>(objectVal);
+      case NumberType::Int: return static_cast<int>(objectVal);
+      case NumberType::Double: return static_cast<double>(objectVal);
       }
     }
     else if (classname == "double")
     {
       py::extract<double> e(object_);
-      auto objectVal = e();
+      const auto objectVal = e();
       switch (returnType)
       {
-      case Int: return static_cast<double>(objectVal);
-      case Double: return objectVal;
+      case NumberType::Int: return static_cast<double>(objectVal);
+      case NumberType::Double: return objectVal;
       }
     }
     else
@@ -564,13 +566,13 @@ DatatypeHandle FieldExtractor::operator()() const
 namespace {
   Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
 {
-  return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
+  return Variable(Name(extractor.label()), extractor(), Variable::DatatypeVariableEnum::DATATYPE_VARIABLE);
 }
 }
 
 const std::string SCIRun::Core::Python::getClassName(const py::object& object)
 {
-  py::extract<py::object> extractor(object);
+  const py::extract<py::object> extractor(object);
   return py::extract<std::string>(extractor().attr("__class__").attr("__name__"));
 }
 

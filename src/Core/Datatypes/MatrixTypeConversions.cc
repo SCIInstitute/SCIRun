@@ -66,14 +66,14 @@ std::string matrixIs::whatType(const ComplexMatrixHandle& cmh)
 MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
 {
   if (!mh)
-    return NULL_MATRIX;
+    return MatrixTypeCode::NULL_MATRIX;
   if (column(mh))
-    return COLUMN;
+    return MatrixTypeCode::COLUMN;
   if (dense(mh))
-    return DENSE;
+    return MatrixTypeCode::DENSE;
   if (sparse(mh))
-    return SPARSE_ROW;
-  return UNKNOWN;
+    return MatrixTypeCode::SPARSE_ROW;
+  return MatrixTypeCode::UNKNOWN;
 }
 
 DenseMatrixHandle convertMatrix::toDense(const MatrixHandle& mh)

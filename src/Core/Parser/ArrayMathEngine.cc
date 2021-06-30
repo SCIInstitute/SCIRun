@@ -1042,7 +1042,7 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
       fi.set_data_type("double");
     else
       fi.set_data_type(output_datatype);
-    fi.set_basis_type(basis_order);
+    fi.set_basis_type(static_cast<databasis_info_type>(basis_order));
     fd.field_ = CreateField(fi);
 
     fielddata_.push_back(fd);
@@ -1575,7 +1575,7 @@ NewArrayMathEngine::run()
 
     if (fielddata_[j].output_basis_order_ > -1)
     {
-      fi.set_basis_type(fielddata_[j].output_basis_order_);
+      fi.set_basis_type(static_cast<databasis_info_type>(fielddata_[j].output_basis_order_));
     }
 
     MeshHandle mesh = field->mesh();

@@ -38,9 +38,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Math {
 
-      class SCISHARE AddKnownsToLinearSystem : public Dataflow::Networks::Module,
-        public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
+      class SCISHARE AddKnownsToLinearSystem final : public Dataflow::Networks::Module,
+                                                     public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+                                                     public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
       public:
         AddKnownsToLinearSystem();
@@ -49,10 +49,10 @@ namespace SCIRun {
 
         INPUT_PORT(0, LHS_Matrix, SparseRowMatrix);
         INPUT_PORT(1, RHS_Vector, DenseMatrix);
-	      INPUT_PORT(2, X_Vector, DenseMatrix);
+	INPUT_PORT(2, X_Vector, DenseMatrix);
         OUTPUT_PORT(0, OutPutLHSMatrix, SparseRowMatrix);
-	      OUTPUT_PORT(1, OutPutRHSVector, DenseColumnMatrix);
-	      MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+	OUTPUT_PORT(1, OutPutRHSVector, DenseColumnMatrix);
+	MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

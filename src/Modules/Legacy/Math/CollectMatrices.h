@@ -49,7 +49,7 @@ namespace SCIRun {
 				INPUT_PORT(1, SubMatrix, Matrix);
 				OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
-				MODULE_TRAITS_AND_INFO(ModuleHasUI)
+				MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       protected:
         void postStateChangeInternalSignalHookup() override;
       private:

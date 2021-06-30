@@ -260,14 +260,14 @@ private:
       return;
     }
 
-    if (srstate.front().state.get(RenderState::IS_TEXT))
+    if (srstate.front().state.get(RenderState::ActionFlags::IS_TEXT))
     {
       return;
     }
 
-    bool doRender = srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
-      srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
-      srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES);
+    bool doRender = srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENCY) ||
+      srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES) ||
+      srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES);
 
     if (!doRender)
     {
@@ -568,7 +568,7 @@ private:
     }
     else
     {
-      if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+      if (!srstate.front().state.get(RenderState::ActionFlags::IS_DOUBLE_SIDED))
       {
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
                           ibo.front().primType, nullptr));

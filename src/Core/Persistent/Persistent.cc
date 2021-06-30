@@ -140,12 +140,12 @@ Piostream::begin_class(const std::string& classname, int current_version)
   if (err) return -1;
   int version = current_version;
   std::string gname;
-  if (dir == Write)
+  if (dir == Direction::Write)
   {
     gname = classname;
     io(gname);
   }
-  else if (dir == Read && have_peekname_)
+  else if (dir == Direction::Read && have_peekname_)
   {
     gname = peekname_;
   }
@@ -157,7 +157,7 @@ Piostream::begin_class(const std::string& classname, int current_version)
 
   io(version);
 
-  if (dir == Read && version > current_version)
+  if (dir == Direction::Read && version > current_version)
   {
     err = true;
     reporter_->error("File too new.  " + classname + " has version " +
@@ -190,7 +190,7 @@ Piostream::io(bool& data)
   if (err) return;
   unsigned char tmp = data;
   io(tmp);
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     data = tmp;
   }
@@ -208,7 +208,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
 //  std::cerr << "looking for pid: "<<pid.type.c_str()<<" "<<pid.parent.c_str()<<std::endl;
 #endif
   if (err) return;
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     int have_data;
     int pointer_id;
@@ -417,7 +417,8 @@ auto_istream(const std::string& filename, LoggerHandle pr)
   in.close();
 
   // Determine endianness of file.
-  int file_endian, version;
+  Piostream::Endian file_endian;
+  int version;
 
   if (!Piostream::readHeader(pr, filename, hdr, nullptr, version, file_endian))
   {
@@ -443,16 +444,16 @@ auto_istream(const std::string& filename, LoggerHandle pr)
     // Old versions of Pio used XDR which always wrote big endian so if
     // the version = 1, readHeader would return BIG, otherwise it will
     // read it from the header.
-    int machine_endian = Piostream::Little;
+    auto machine_endian = Piostream::Endian::Little;
 
     if (file_endian == machine_endian)
-      return PiostreamPtr(new BinaryPiostream(filename, Piostream::Read, version, pr));
+      return PiostreamPtr(new BinaryPiostream(filename, Piostream::Direction::Read, version, pr));
     else
-      return PiostreamPtr(new BinarySwapPiostream(filename, Piostream::Read, version,pr));
+      return PiostreamPtr(new BinarySwapPiostream(filename, Piostream::Direction::Read, version,pr));
   }
   else if (m1 == 'A' && m2 == 'S' && m3 == 'C')
   {
-    return PiostreamPtr(new TextPiostream(filename, Piostream::Read, pr));
+    return PiostreamPtr(new TextPiostream(filename, Piostream::Direction::Read, pr));
   }
 
   if (pr) pr->error(filename + " is an unknown type!");
@@ -472,24 +473,22 @@ auto_ostream(const std::string& filename, const std::string& type, LoggerHandle 
   //     Default: Return BinaryPiostream
   // NOTE: Binary will never return BinarySwap so we always write
   //       out the endianness of the machine we are on
-  Piostream* stream;
   if (type == "Binary")
   {
-    stream = new BinaryPiostream(filename, Piostream::Write, -1, pr);
+    return boost::make_shared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
   else if (type == "Text")
   {
-    stream = new TextPiostream(filename, Piostream::Write, pr);
+    return boost::make_shared<TextPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else if (type == "Fast")
   {
-    stream = new FastPiostream(filename, Piostream::Write, pr);
+    return boost::make_shared<FastPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else
   {
-    stream = new BinaryPiostream(filename, Piostream::Write, -1, pr);
+    return boost::make_shared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
-  return PiostreamPtr(stream);
 }
 
 
@@ -498,7 +497,7 @@ bool
 Piostream::readHeader( LoggerHandle pr,
                        const std::string& filename, char* hdr,
                        const char* filetype, int& version,
-                       int& endian)
+                       Endian& endian)
 {
   char m1=hdr[0];
   char m2=hdr[1];
@@ -561,12 +560,12 @@ Piostream::readHeader( LoggerHandle pr,
     if (hdr[12] == 'B' && hdr[13] == 'I' &&
       hdr[14] == 'G' && hdr[15] == '\n')
     {
-      endian = Big;
+      endian = Endian::Big;
     }
     else if (hdr[12] == 'L' && hdr[13] == 'I' &&
 	       hdr[14] == 'T' && hdr[15] == '\n')
     {
-      endian = Little;
+      endian = Endian::Little;
     }
     else
     {
@@ -585,7 +584,7 @@ Piostream::readHeader( LoggerHandle pr,
   }
   else
   {
-    endian = Big; // old system using XDR always read/wrote big endian
+    endian = Endian::Big; // old system using XDR always read/wrote big endian
   }
   return true;
 }

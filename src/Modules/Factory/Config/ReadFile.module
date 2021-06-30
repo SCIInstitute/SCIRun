@@ -4,7 +4,7 @@
     "namespace": "DataIO",
     "status": "In progress",
     "description": "This module reads files intelligently.",
-    "header": "Modules/DataIO/ReadFile.h"
+    "header": "Modules/DataIO/AutoReadFile.h"
   },
   "algorithm": {
     "name": "N/A",

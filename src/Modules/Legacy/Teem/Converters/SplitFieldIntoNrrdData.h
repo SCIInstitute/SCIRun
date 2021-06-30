@@ -50,7 +50,7 @@ namespace Teem {
     OUTPUT_PORT(1, Points, NrrdDataType);
     OUTPUT_PORT(2, Connections, NrrdDataType);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 
 }}}

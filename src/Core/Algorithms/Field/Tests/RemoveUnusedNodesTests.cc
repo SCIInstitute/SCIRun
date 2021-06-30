@@ -27,23 +27,20 @@
 
 
 #include <gtest/gtest.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Cleanup/RemoveUnusedNodes.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
-#include <Testing/Utils/SCIRunFieldSamples.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Algorithms;
+using namespace Fields;
 
-class RemoveUnusedNodesTests : public ::testing::Test
+class RemoveUnusedNodesTests : public testing::Test
 {
 
 };
@@ -51,7 +48,7 @@ class RemoveUnusedNodesTests : public ::testing::Test
 TEST_F(RemoveUnusedNodesTests, RemoveUnusedNodesTests_trianglemeshexample)
 {
   MeshHandle basicTriangleMesh_;
-  FieldInformation fi("TriSurfMesh", CONSTANTDATA_E, "double");
+  FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
   basicTriangleMesh_ = CreateMesh(fi);
   auto triangleVMesh = basicTriangleMesh_->vmesh();
   FieldHandle basicTriangleField_ = CreateField(fi, basicTriangleMesh_);
@@ -77,7 +74,7 @@ TEST_F(RemoveUnusedNodesTests, RemoveUnusedNodesTests_trianglemeshexample)
 
 TEST_F(RemoveUnusedNodesTests, RemoveUnusedNodesTests_tetrahedralmeshexample)
 {
-  FieldInformation fi("TetVolMesh", CONSTANTDATA_E, "double");
+  FieldInformation fi("TetVolMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
   FieldHandle field = CreateField(fi);
   auto vmesh = field->vmesh();
   VMesh::Node::array_type vdata;

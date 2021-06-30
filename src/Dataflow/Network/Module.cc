@@ -212,7 +212,7 @@ namespace SCIRun
 
 /*static*/ void Module::resetIdGenerator() { DefaultModuleFactories::idGenerator_->reset(); }
 
-const int Module::TraitFlags = SCIRun::Modules::UNDEFINED_MODULE_FLAG;
+const int Module::TraitFlags = static_cast<int>(Modules::ModuleFlags::UNDEFINED_MODULE_FLAG);
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
@@ -239,7 +239,7 @@ Module::Module(const ModuleLookupInfo& info,
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
 
-  impl_->executionState_->transitionTo(ModuleExecutionState::NotExecuted);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Value::NotExecuted);
   setProgrammableInputPortEnabled(false);
 }
 
@@ -400,7 +400,7 @@ bool Module::executeWithSignals() NOEXCEPT
   status(starting);
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
-  impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Value::Executing);
   impl_->returnCode_ = false;
   bool threadStopValue = false;
 
@@ -473,9 +473,9 @@ bool Module::executeWithSignals() NOEXCEPT
 #endif
 
   //TODO: brittle dependency on Completed with executor
-  impl_->executionState_->transitionTo(ModuleExecutionState::Completed);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Value::Completed);
 
-  auto expandedEndState = impl_->returnCode_ ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
+  auto expandedEndState = impl_->returnCode_ ? ModuleExecutionState::Value::Completed : ModuleExecutionState::Value::Errored;
   impl_->executionState_->setExpandedState(expandedEndState);
 
   if (!executionDisabled())

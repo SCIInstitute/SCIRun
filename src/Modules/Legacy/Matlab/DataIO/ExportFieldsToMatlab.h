@@ -61,7 +61,7 @@ namespace Matlab {
     INPUT_PORT(1, Filename, String);
     HAS_DYNAMIC_PORTS
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
     LEGACY_MATLAB_MODULE
   };
