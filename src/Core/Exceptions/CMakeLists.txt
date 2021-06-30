@@ -29,7 +29,6 @@
 # Sources of Core/Exceptions classes
 
 SET(Core_Exceptions_Legacy_SRCS
-  ArrayIndexOutOfBounds.cc
   AssertionFailed.cc
   DimensionMismatch.cc
   ErrnoException.cc
@@ -39,7 +38,6 @@ SET(Core_Exceptions_Legacy_SRCS
 )
 
 SET(Core_Exceptions_Legacy_HEADERS
-  ArrayIndexOutOfBounds.h
   AssertionFailed.h
   DimensionMismatch.h
   ErrnoException.h

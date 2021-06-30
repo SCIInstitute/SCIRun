@@ -47,7 +47,7 @@ namespace SCIRun {
 
         OUTPUT_PORT(0, Current_FileName, String);
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
     }}}
 

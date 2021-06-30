@@ -73,7 +73,7 @@ namespace SCIRun {
         INPUT_PORT(3, TargetVector, DenseColumnMatrix);
         OUTPUT_PORT(0, WeightVector, DenseColumnMatrix);
         OUTPUT_PORT(1, ResultVector, DenseColumnMatrix);
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
 }}}
 

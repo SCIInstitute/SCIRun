@@ -46,7 +46,7 @@ namespace Bundles {
     void setStateDefaults() override {}
     INPUT_PORT(0, InputBundle, Bundle);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   };
 }}}
 

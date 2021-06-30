@@ -53,7 +53,7 @@ namespace Fields {
     OUTPUT_PORT(1, SizingFieldUsed, Field);
     OUTPUT_PORT(2, BackgroundFieldUsed, Field);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 }}}
 

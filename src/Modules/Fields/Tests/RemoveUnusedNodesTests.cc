@@ -59,7 +59,7 @@ class RemoveUnusedNodesModuleTests : public ModuleTest
 TEST_F(RemoveUnusedNodesModuleTests, ThrowsForNullInput)
 {
   auto cg = makeModule("RemoveUnusedNodes");
-  FieldHandle nullField;
+  const FieldHandle nullField;
   stubPortNWithThisData(cg, 0, nullField);
   EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }
@@ -85,11 +85,10 @@ TEST_F(RemoveUnusedNodesModuleTests, WrongInput)
 TEST_F(RemoveUnusedNodesModuleTests, ShouldWork)
 {
   auto cg = makeModule("RemoveUnusedNodes");
-  MeshHandle basicTriangleMesh_;
-  FieldInformation fi("TriSurfMesh", CONSTANTDATA_E, "double");
-  basicTriangleMesh_ = CreateMesh(fi);
+  FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::CONSTANTDATA_E), "double");
+  auto basicTriangleMesh_ = CreateMesh(fi);
   auto triangleVMesh = basicTriangleMesh_->vmesh();
-  FieldHandle basicTriangleField_ = CreateField(fi, basicTriangleMesh_);
+  auto basicTriangleField_ = CreateField(fi, basicTriangleMesh_);
   triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
   triangleVMesh->add_point(Point(1.0, 0.0, 0.0));
   triangleVMesh->add_point(Point(0.5, 1.0, 0.0));

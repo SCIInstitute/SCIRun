@@ -100,16 +100,16 @@ public:
       bool doPersp = false;
       bool doOrtho = false;
       // Update the necessary cameras.
-      if (arcBall.cams == StaticArcBallCam::BOTH)
+      if (arcBall.cams == StaticArcBallCam::CamerasAffected::BOTH)
       {
         doPersp = true;
         doOrtho = true;
       }
-      else if (arcBall.cams == StaticArcBallCam::PERSPECTIVE)
+      else if (arcBall.cams == StaticArcBallCam::CamerasAffected::PERSPECTIVE)
       {
         doPersp = true;
       }
-      else if (arcBall.cams == StaticArcBallCam::ORTHO)
+      else if (arcBall.cams == StaticArcBallCam::CamerasAffected::ORTHO)
       {
         doOrtho = true;
       }

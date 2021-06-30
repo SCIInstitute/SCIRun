@@ -51,7 +51,7 @@ public:
     }
 };
 
-TEST(StoppableTaskTests, Example)
+TEST(StoppableTaskTests, DISABLED_Example)
 {
   std::cout << std::this_thread::get_id() << " Creating our Task" << std::endl;
   MyTask task;
@@ -68,7 +68,7 @@ TEST(StoppableTaskTests, Example)
   std::cout << std::this_thread::get_id() << " Exiting Main Function" << std::endl;
 }
 
-TEST(StoppableTaskTests, CanResetTaskToRunAgain)
+TEST(StoppableTaskTests, DISABLED_CanResetTaskToRunAgain)
 {
   std::cout << std::this_thread::get_id() << " Creating our Task" << std::endl;
   MyTask task;

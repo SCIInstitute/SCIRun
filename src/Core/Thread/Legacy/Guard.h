@@ -78,7 +78,7 @@ public:
 
   Guard(RecursiveMutex* rmutex);
 
-  enum Which {
+  enum class Which {
     Read,
     Write
   };

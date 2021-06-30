@@ -52,7 +52,7 @@ namespace SCIRun {
 	      OUTPUT_PORT(1, OutputRHS, Matrix);
         OUTPUT_PORT(2, Mapping, SparseRowMatrix);
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
 
     }

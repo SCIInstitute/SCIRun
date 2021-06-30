@@ -48,20 +48,20 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
 }
 
-void AppendMatrixDialog::isRows()
+void AppendMatrixDialog::isRows() const
 {
-  state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::ROWS);
+  state_->setValue(Variables::RowsOrColumns, static_cast<int>(AppendMatrixAlgorithm::Option::ROWS));
 }
 
-void AppendMatrixDialog::isCols()
+void AppendMatrixDialog::isCols() const
 {
-  state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::COLUMNS);
+  state_->setValue(Variables::RowsOrColumns, static_cast<int>(AppendMatrixAlgorithm::Option::COLUMNS));
 }
 
 void AppendMatrixDialog::pullSpecial() //TODO refactor away
 {
   //TODO convert to new widget managers
-  if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).toInt())
+  if (static_cast<int>(AppendMatrixAlgorithm::Option::ROWS) == state_->getValue(Variables::RowsOrColumns).toInt())
     appendRowsButton_->setChecked(true);
   else
     appendColumnsButton_->setChecked(true);

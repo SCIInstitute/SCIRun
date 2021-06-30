@@ -29,6 +29,7 @@
 #include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

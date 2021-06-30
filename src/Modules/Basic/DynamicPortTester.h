@@ -59,7 +59,7 @@ namespace Basic {
     OUTPUT_PORT(1, NumFields, Int32);
     OUTPUT_PORT(2, NumStrings, Int32);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   };
 
 }}}

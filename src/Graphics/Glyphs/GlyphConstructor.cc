@@ -132,7 +132,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
     BBox newBBox;
     for (size_t i = startOfPass; i < endOfPass; ++i)
     {
-      Vector point = points_.at(i);
+      auto point = points_.at(i);
       newBBox.extend(Point(point.x(), point.y(), point.z()));
       vboBuffer->write(static_cast<float>(point.x()));
       vboBuffer->write(static_cast<float>(point.y()));
@@ -140,7 +140,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       if (useNormals)
       {
-        Vector normal = normals_.at(i);
+        auto normal = normals_.at(i);
         vboBuffer->write(static_cast<float>(normal.x()));
         vboBuffer->write(static_cast<float>(normal.y()));
         vboBuffer->write(static_cast<float>(normal.z()));
@@ -148,7 +148,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       if (useColor)
       {
-        ColorRGB color = colors_.at(i);
+        auto color = colors_.at(i);
         if(!colorMap)
         {
           vboBuffer->write(static_cast<float>(color.r()));
@@ -170,8 +170,8 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
     SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
     SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
-    state.set(RenderState::IS_ON, true);
-    state.set(RenderState::HAS_DATA, true);
+    state.set(RenderState::ActionFlags::IS_ON, true);
+    state.set(RenderState::ActionFlags::HAS_DATA, true);
     SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
 
     for (const auto& uniform : uniforms) pass.addUniform(uniform);

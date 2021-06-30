@@ -60,7 +60,7 @@ class CreateStructHex : public Module
     GuiDouble padpercent_;
     GuiString data_at_;
 
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+    enum class DataTypeEnum { SCALAR, VECTOR, TENSOR };
 };
 
 

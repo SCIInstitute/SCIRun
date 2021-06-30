@@ -32,7 +32,6 @@
 #define CORE_DATATYPES_FIELDINFORMATION 1
 
 #include <string>
-#include <vector>
 #include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -90,19 +89,19 @@ class SCISHARE FieldTypeInformation
     bool        is_unstructuredmesh() const;
 
     // These should go...
-    inline bool is_pointcloud() const { return(is_pointcloudmesh()); }
-    inline bool is_scanline() const { return(is_scanlinemesh()); }
-    inline bool is_image() const { return(is_imagemesh()); }
-    inline bool is_latvol() const { return(is_latvolmesh()); }
-    inline bool is_curve() const { return(is_curvemesh()); }
-    inline bool is_trisurf() const { return(is_trisurfmesh()); }
-    inline bool is_quadsurf() const { return(is_quadsurfmesh()); }
-    inline bool is_tetvol() const { return(is_tetvolmesh()); }
-    inline bool is_prismvol() const { return(is_prismvolmesh()); }
-    inline bool is_hexvol() const { return(is_hexvolmesh()); }
-    inline bool is_structcurve() const { return(is_structcurvemesh()); }
-    inline bool is_structquadsurf() const { return(is_structquadsurfmesh()); }
-    inline bool is_structhexvol() const { return(is_structhexvolmesh()); }
+    bool is_pointcloud() const { return(is_pointcloudmesh()); }
+    bool is_scanline() const { return(is_scanlinemesh()); }
+    bool is_image() const { return(is_imagemesh()); }
+    bool is_latvol() const { return(is_latvolmesh()); }
+    bool is_curve() const { return(is_curvemesh()); }
+    bool is_trisurf() const { return(is_trisurfmesh()); }
+    bool is_quadsurf() const { return(is_quadsurfmesh()); }
+    bool is_tetvol() const { return(is_tetvolmesh()); }
+    bool is_prismvol() const { return(is_prismvolmesh()); }
+    bool is_hexvol() const { return(is_hexvolmesh()); }
+    bool is_structcurve() const { return(is_structcurvemesh()); }
+    bool is_structquadsurf() const { return(is_structquadsurfmesh()); }
+    bool is_structhexvol() const { return(is_structhexvolmesh()); }
 
     // Naming that is more systematic
     bool        is_pointcloudmesh() const;
@@ -156,8 +155,8 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
                                   const std::string& databasis, const std::string& datatype);
     FieldInformation(const std::string& meshtype,const std::string& basis, const std::string& datatype);
 
-    FieldInformation(const std::string& meshtype,int,int, const std::string& datatype);
-    FieldInformation(const std::string& meshtype,int, const std::string& datatype);
+    FieldInformation(const std::string& meshtype, meshbasis_info_type, databasis_info_type, const std::string& datatype);
+    FieldInformation(const std::string& meshtype, int, const std::string& datatype);
 
     FieldInformation(mesh_info_type mesh, meshbasis_info_type databasis,
                      databasis_info_type, data_info_type data);
@@ -178,19 +177,19 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
 
     std::string get_mesh_basis_type() const;
     void        set_mesh_basis_type(const std::string&);
-    void        set_mesh_basis_type(int);
+    void        set_mesh_basis_type(meshbasis_info_type);
 
     std::string get_point_type() const;
     void        set_point_type(const std::string&);
 
     std::string get_basis_type() const;
     void        set_basis_type(const std::string&);
-    void        set_basis_type(int);
+    void        set_basis_type(databasis_info_type);
 
     // alternative way of setting data_basis
     std::string get_data_basis_type() const { return (get_basis_type()); }
     void        set_data_basis_type(const std::string& s) { set_basis_type(s); }
-    void        set_data_basis_type(int s) { set_basis_type(s); }
+    void        set_data_basis_type(databasis_info_type s) { set_basis_type(s); }
 
     std::string get_data_type() const;
     void        set_data_type(const std::string&);
