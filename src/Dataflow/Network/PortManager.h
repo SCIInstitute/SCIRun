@@ -1,3 +1,4 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -121,7 +122,7 @@ PortManager<T>::add(const T& item)
       {
         DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
 
-        if (portPair.second->getIndex() >= newPortIndex)
+        if (static_cast<int>(portPair.second->getIndex()) >= newPortIndex)
           portPair.second->incrementIndex();
       }
 
@@ -159,7 +160,7 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
   auto byName = findAllByName(name);
   const size_t lastIndex = byName.size() - 1;
   std::vector<PortId> toRemove;
-  for (int i = 0; i < byName.size(); ++i)
+  for (size_t i = 0; i < byName.size(); ++i)
   {
     auto port = byName[i];
     if (0 == port->nconnections() && i != lastIndex)

@@ -35,10 +35,10 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  template <typename Number, size_t Dim>
+  template <typename Number, int Dim>
   class DyadicTensorGeneric;
 
-  template <size_t Dim>
+  template <int Dim>
   using DyadicTensor = DyadicTensorGeneric<double, Dim>;
 
   typedef DyadicTensorGeneric<double, 2> Dyadic2DTensor;

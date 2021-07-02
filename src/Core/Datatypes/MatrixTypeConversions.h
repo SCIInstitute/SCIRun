@@ -37,7 +37,6 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <boost/type_traits.hpp>
-#include <boost/utility/enable_if.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -141,7 +140,7 @@ namespace Core {
       if (sparse)
       {
         DenseColumnMatrixGeneric<T> dense_col(DenseColumnMatrixGeneric<T>::Zero(sparse->nrows()));
-        for (auto i = 0; i < sparse->nrows(); i++)
+        for (auto i = 0ul; i < sparse->nrows(); i++)
           dense_col(i) = sparse->coeff(i, 0);
 
         return makeShared<DenseColumnMatrixGeneric<T>>(dense_col);

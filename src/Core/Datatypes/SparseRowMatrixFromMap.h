@@ -113,20 +113,20 @@ namespace SCIRun
                 auto col = row->second.find(it.col());
                 if (col == row->second.end())
                 {
-                  tripletList.push_back(Triplet(it.row(), it.col(), it.value()));
+                  tripletList.emplace_back(it.row(), it.col(), it.value());
                 }
               }
               else
-                tripletList.push_back(Triplet(it.row(), it.col(), it.value()));
+                tripletList.emplace_back(it.row(), it.col(), it.value());
             }
           }
 
           for (auto row = additionalValues.begin(); row != additionalValues.end(); ++row)
           {
-            auto rowIndex = row->first;
+            auto rowIndex = static_cast<typename SparseRowMatrixGeneric<T>::StorageIndex>(row->first);
             for (auto colVal = row->second.begin(); colVal != row->second.end(); ++colVal)
             {
-              tripletList.push_back(Triplet(rowIndex, colVal->first, colVal->second));
+              tripletList.emplace_back(rowIndex, static_cast<typename SparseRowMatrixGeneric<T>::StorageIndex>(colVal->first), colVal->second);
             }
           }
           auto mat(makeShared<SparseRowMatrixGeneric<T>>(rows, cols));
@@ -151,7 +151,7 @@ namespace SCIRun
             auto rowIndex = row->first;
             for (auto colVal = row->second.begin(); colVal != row->second.end(); ++colVal)
             {
-              tripletList.push_back(Triplet(rowIndex, colVal->first, colVal->second));
+              tripletList.emplace_back(rowIndex, colVal->first, colVal->second);
             }
           }
           auto mat(makeShared<SparseRowMatrixGeneric<T>>(rows, cols));
@@ -179,7 +179,7 @@ namespace SCIRun
           {
             for (typename SparseRowMatrixGeneric<T>::InnerIterator it(mat1, k); it; ++it)
             {
-              tripletList.push_back(Triplet(it.row(), it.col(), it.value()));
+              tripletList.emplace_back(it.row(), it.col(), it.value());
             }
           }
 
@@ -198,7 +198,7 @@ namespace SCIRun
           {
             for (typename SparseRowMatrixGeneric<T>::InnerIterator it(mat2, k); it; ++it)
             {
-              tripletList.push_back(Triplet(it.row() + offset_rows, it.col() + offset_cols, it.value()));
+              tripletList.emplace_back(it.row() + offset_rows, it.col() + offset_cols, it.value());
             }
           }
 
