@@ -81,7 +81,7 @@ namespace SCIRun
               tripletList.emplace_back(rowIndex, static_cast<typename SparseRowMatrixGeneric<T>::StorageIndex>(colVal.first), colVal.second);
             }
           }
-          auto mat(makeShared<SparseRowMatrixGeneric<T>>(rows, cols));
+          auto mat(makeShared<SparseRowMatrixGeneric<T>>(static_cast<int>(rows), static_cast<int>(cols)));
           mat->setZero();
           mat->setFromTriplets(tripletList.begin(), tripletList.end());
           return mat;
@@ -94,7 +94,7 @@ namespace SCIRun
 
         static SharedPointer<SparseRowMatrixGeneric<T>> appendToSparseMatrix(size_type rows, size_type cols, const SparseRowMatrixGeneric<T>& sparse, const Values& additionalValues)
         {
-          if (rows < sparse.nrows() || cols < sparse.ncols())
+          if (rows < static_cast<size_type>(sparse.nrows()) || cols < static_cast<size_type>(sparse.ncols()))
             THROW_INVALID_ARGUMENT("new matrix needs to be at least the size of old matrix");
 
           const size_type nnz = get_nnz(additionalValues) + sparse.nonZeros();
@@ -129,7 +129,7 @@ namespace SCIRun
               tripletList.emplace_back(rowIndex, static_cast<typename SparseRowMatrixGeneric<T>::StorageIndex>(colVal->first), colVal->second);
             }
           }
-          auto mat(makeShared<SparseRowMatrixGeneric<T>>(rows, cols));
+          auto mat(makeShared<SparseRowMatrixGeneric<T>>(static_cast<int>(rows), static_cast<int>(cols)));
           mat->setFromTriplets(tripletList.begin(), tripletList.end());
 
           return mat;
@@ -154,7 +154,7 @@ namespace SCIRun
               tripletList.emplace_back(rowIndex, colVal->first, colVal->second);
             }
           }
-          auto mat(makeShared<SparseRowMatrixGeneric<T>>(rows, cols));
+          auto mat(makeShared<SparseRowMatrixGeneric<T>>(static_cast<int>(rows), static_cast<int>(cols)));
           mat->setFromTriplets(tripletList.begin(), tripletList.end());
 
           SparseRowMatrixGeneric<T> empty(rows, cols);
