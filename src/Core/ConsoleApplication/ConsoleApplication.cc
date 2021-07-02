@@ -29,7 +29,7 @@
 /// @todo Documentation Core/ConsoleApplication/ConsoleApplication.cc
 ///  ConsoleCommandFactory.cc ConsoleCommands.cc
 
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Application/Application.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 #include <Core/ConsoleApplication/ConsoleCommandFactory.h>
@@ -43,7 +43,7 @@ int ConsoleApplication::run(int /*argc*/, const char* /*argv*/[])
 {
   try
   {
-    Application::Instance().setCommandFactory(boost::make_shared<ConsoleGlobalCommandFactory>());
+    Application::Instance().setCommandFactory(makeShared<ConsoleGlobalCommandFactory>());
     auto c = Application::Instance().controller();
     Application::Instance().executeCommandLineRequests();
   }

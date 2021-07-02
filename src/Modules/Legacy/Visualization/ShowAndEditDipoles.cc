@@ -351,7 +351,7 @@ void ShowAndEditDipolesImpl::generateGeomsList()
   geoms_.clear();
   for (const auto& arrow : arrows_)
   {
-    auto composite = boost::dynamic_pointer_cast<CompositeWidget>(arrow);
+    auto composite = std::dynamic_pointer_cast<CompositeWidget>(arrow);
     geoms_.insert(geoms_.end(), composite->subwidgetBegin(), composite->subwidgetEnd());
   }
 
@@ -423,7 +423,7 @@ void ShowAndEditDipolesImpl::moveDipolesTogether(const Transform& transform)
 void ShowAndEditDipolesImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
 {
   auto bbox = fieldInput_->vmesh()->get_bounding_box();
-  bool is_vector = boost::dynamic_pointer_cast<ArrowWidget>(arrows_[id])->isVector();
+  bool is_vector = std::dynamic_pointer_cast<ArrowWidget>(arrows_[id])->isVector();
 
   auto stype = static_cast<ArrowWidgetSection>(type);
   if (state_()->getValue(Parameters::MoveDipolesTogether).toBool() && (stype == ArrowWidgetSection::CYLINDER || stype == ArrowWidgetSection::SPHERE))
@@ -579,7 +579,7 @@ GeometryHandle ShowAndEditDipolesImpl::addLines()
     + " (from " + module_->id().id_ + ")" +
     "(" + std::to_string(widgetIter_) + ")";
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*module_, idName, true));
+  auto geom(makeShared<GeometryObjectSpire>(*module_, idName, true));
   Graphics::GlyphGeom glyphs;
 
   RenderState renState;

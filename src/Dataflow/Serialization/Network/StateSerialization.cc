@@ -42,10 +42,10 @@ SimpleMapModuleStateXML::SimpleMapModuleStateXML(const SimpleMapModuleState& sta
   //std::cout << "SMMSxml copy" << std::endl;
 }
 
-boost::shared_ptr<SimpleMapModuleStateXML> SCIRun::Dataflow::State::make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state)
+SCIRun::SharedPointer<SimpleMapModuleStateXML> SCIRun::Dataflow::State::make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state)
 {
-  boost::shared_ptr<SimpleMapModuleState> mapState = boost::dynamic_pointer_cast<SimpleMapModuleState>(state);
+  const auto mapState = std::dynamic_pointer_cast<SimpleMapModuleState>(state);
   if (mapState)
-    return boost::shared_ptr<SimpleMapModuleStateXML>(new SimpleMapModuleStateXML(*mapState));
-  return boost::shared_ptr<SimpleMapModuleStateXML>();
+    return std::make_shared<SimpleMapModuleStateXML>(*mapState);
+  return {};
 }

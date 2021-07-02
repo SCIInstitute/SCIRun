@@ -356,7 +356,7 @@ void EditMeshBoundingBox::generateGeomsList()
   auto bbox = WidgetFactory::createBoundingBox({*this, "EMBB"},
     {{get_state()->getValue(Scale).toDouble(), "no-color", widgetTranslation_, bbox_, resolution_},
     {widgetTranslation_, (widgetRotation_ * widgetScale_).get_transformation_vectors()}});
-  auto bboxWidget = boost::dynamic_pointer_cast<CompositeWidget>(bbox);
+  auto bboxWidget = std::dynamic_pointer_cast<CompositeWidget>(bbox);
   geoms_.insert(geoms_.end(), bboxWidget->subwidgetBegin(), bboxWidget->subwidgetEnd());
 }
 

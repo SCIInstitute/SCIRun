@@ -89,7 +89,7 @@ void ModuleStateModifierTester::execute()
   {
     auto code = get_state()->getValue(Parameters::StateModifyingCode).toString();
     remark(code);
-    sendOutput(MetadataCode, boost::make_shared<PythonExecutingMetadataObject>(code));
+    sendOutput(MetadataCode, makeShared<PythonExecutingMetadataObject>(code));
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");

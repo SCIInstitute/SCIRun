@@ -93,7 +93,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<ImageMesh<Basis> >  handle_type;
+  typedef SharedPointer<ImageMesh<Basis> >  handle_type;
   typedef Basis                             basis_type;
   struct ImageIndex;
   friend struct ImageIndex;
@@ -424,7 +424,7 @@ ImageMesh *clone() const override { return new ImageMesh(*this); }
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// Access point to virtual interface
@@ -858,10 +858,10 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new ImageMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<ImageMesh<Basis>>();}
+  static MeshHandle mesh_maker() { return makeShared<ImageMesh<Basis>>();}
   /// This function returns a handle for the virtual interface.
   static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
-    { return boost::make_shared<ImageMesh<Basis>>(x,y,min,max); }
+    { return makeShared<ImageMesh<Basis>>(x,y,min,max); }
 
   /// This function will find the closest element and the location on that
   /// element that is the closest
@@ -969,7 +969,7 @@ protected:
   Basis                  basis_;
 
   /// Virtual mesh
-  boost::shared_ptr<VMesh>          vmesh_;
+  SharedPointer<VMesh>          vmesh_;
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
   // This should speed up FE computations on these regular grids.

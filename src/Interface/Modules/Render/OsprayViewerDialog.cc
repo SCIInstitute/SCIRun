@@ -149,7 +149,7 @@ void OsprayViewerDialog::newGeometryValue()
   auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
   if (!geom) return;
 
-  auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+  auto compGeom = std::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
 
   //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
   renderer_->updateGeometries(compGeom.get()->objects());

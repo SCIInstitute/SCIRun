@@ -99,7 +99,7 @@ TEST_F(SimulateForwardMagneticFieldModuleTests, ThrowsForNullInput)
 TEST_F(SimulateForwardMagneticFieldModuleTests, WrongDataType)
 {
   auto test = makeModule("SimulateForwardMagneticField");
-  DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);

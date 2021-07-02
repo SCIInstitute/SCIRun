@@ -53,7 +53,7 @@ namespace
   const int size = 1000;
   SparseRowMatrixHandle matrix1()
   {
-    SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(size,size));
+    SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(size,size));
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(size-1,size-1) = 2;
@@ -62,7 +62,7 @@ namespace
 
   DenseColumnMatrixHandle vector1()
   {
-    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
+    DenseColumnMatrixHandle v(makeShared<DenseColumnMatrix>(size));
 	  v->setZero();
 	  (*v)[0] = 1;
   	(*v)[1] = 2;
@@ -73,7 +73,7 @@ namespace
 
   DenseColumnMatrixHandle vector2()
   {
-    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
+    DenseColumnMatrixHandle v(makeShared<DenseColumnMatrix>(size));
     v->setZero();
     //*v << -1, -2, -4;
 	  (*v)[0] = -1;
@@ -89,7 +89,7 @@ namespace
 
   DenseColumnMatrixHandle vector3()
   {
-    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
+    DenseColumnMatrixHandle v(makeShared<DenseColumnMatrix>(size));
     v->setZero();
    // *v << 0, 1, 0;
 	  (*v)[0] = 0;
@@ -378,7 +378,7 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 	ParallelLinearAlgebraSharedData data(getDummySystem(),1);
 	ParallelLinearAlgebra pla(data, 0);
 
-  DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
+  DenseColumnMatrixHandle v(makeShared<DenseColumnMatrix>(size));
 	v->setZero();
 
   ParallelLinearAlgebra::ParallelVector dummyResult;
@@ -485,11 +485,11 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
   ParallelLinearAlgebra::ParallelVector v2;
 
   auto vec2 = vector1();
-  std::vector<boost::shared_ptr<absthreshold_inv>> workers;
+  std::vector<SharedPointer<absthreshold_inv>> workers;
   ThreadGroup threads;
   {
     for (int i = 0; i < NUM_THREADS; ++i)
-      workers.push_back(boost::make_shared<absthreshold_inv>(data, v1, v2, i, vec2));
+      workers.push_back(makeShared<absthreshold_inv>(data, v1, v2, i, vec2));
 
     for (int i = 0; i < NUM_THREADS; ++i)
       threads.create_thread(std::ref(*workers[i]));

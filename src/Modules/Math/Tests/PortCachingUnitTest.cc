@@ -73,7 +73,7 @@ namespace Testing
     MOCK_CONST_METHOD0(needToExecute, bool());
   };
 
-  typedef boost::shared_ptr<MockModuleReexecutionStrategy> MockModuleReexecutionStrategyPtr;
+  typedef SharedPointer<MockModuleReexecutionStrategy> MockModuleReexecutionStrategyPtr;
 
   class MockInputsChangedChecker : public InputsChangedChecker
   {
@@ -81,7 +81,7 @@ namespace Testing
     MOCK_CONST_METHOD0(inputsChanged, bool());
   };
 
-  typedef boost::shared_ptr<MockInputsChangedChecker> MockInputsChangedCheckerPtr;
+  typedef SharedPointer<MockInputsChangedChecker> MockInputsChangedCheckerPtr;
 
   class MockStateChangedChecker : public StateChangedChecker
   {
@@ -89,7 +89,7 @@ namespace Testing
     MOCK_CONST_METHOD0(newStatePresent, bool());
   };
 
-  typedef boost::shared_ptr<MockStateChangedChecker> MockStateChangedCheckerPtr;
+  typedef SharedPointer<MockStateChangedChecker> MockStateChangedCheckerPtr;
 
   class MockOutputPortsCachedChecker : public OutputPortsCachedChecker
   {
@@ -97,7 +97,7 @@ namespace Testing
     MOCK_CONST_METHOD0(outputPortsCached, bool());
   };
 
-  typedef boost::shared_ptr<MockOutputPortsCachedChecker> MockOutputPortsCachedCheckerPtr;
+  typedef SharedPointer<MockOutputPortsCachedChecker> MockOutputPortsCachedCheckerPtr;
 
 }
 

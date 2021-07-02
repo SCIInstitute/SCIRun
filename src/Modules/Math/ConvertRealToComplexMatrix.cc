@@ -94,14 +94,14 @@ void ConvertRealToComplexMatrix::execute()
     {
 
       auto real = castMatrix::toSparse(input_matrix1), imag = castMatrix::toSparse(input_matrix2);
-      auto out(boost::make_shared<ComplexSparseRowMatrix>(realToComplex(*real, *imag)));
+      auto out(makeShared<ComplexSparseRowMatrix>(realToComplex(*real, *imag)));
       sendOutput(Output, out);
 
     }
     else
     {
       auto real = castMatrix::toDense(input_matrix1), imag = castMatrix::toDense(input_matrix2);
-      auto out(boost::make_shared<ComplexDenseMatrix>(realToComplex(*real, *imag)));
+      auto out(makeShared<ComplexDenseMatrix>(realToComplex(*real, *imag)));
       sendOutput(Output, out);
     }
   }

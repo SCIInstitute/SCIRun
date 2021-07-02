@@ -1171,7 +1171,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
     auto name = displayNames[port];
     if (impl_->mConfigurationDock->visibleItems().isVisible(name))
     {
-      const auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && spire->hasObject(obj->uniqueID()))
         validObjects.push_back(obj->uniqueID());
     }
@@ -1186,7 +1186,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
     auto name = displayNames[port];
     if (impl_->mConfigurationDock->visibleItems().isVisible(name))
     {
-      const auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && !spire->hasObject(obj->uniqueID()))
       {
         DEBUG_LOG_LINE_INFO
@@ -1817,7 +1817,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomList
     auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
     if (mConfigurationDock->visibleItems().isVisible(displayName))
     {
-      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
         //filter objs
@@ -1831,7 +1831,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomList
           }
         }
         if (isWidget)
-          objList.push_back(boost::dynamic_pointer_cast<WidgetBase>(realObj));
+          objList.push_back(std::dynamic_pointer_cast<WidgetBase>(realObj));
       }
     }
   }
@@ -1905,7 +1905,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
 
       if (impl_->selectedWidget_)
       {
-        impl_->widgetColorChanger_ = boost::make_shared<ScopedWidgetColorChanger>(impl_->selectedWidget_, WidgetColor::RED);
+        impl_->widgetColorChanger_ = makeShared<ScopedWidgetColorChanger>(impl_->selectedWidget_, WidgetColor::RED);
         impl_->movementType_ = impl_->selectedWidget_->movementType(yetAnotherEnumConversion(button)).base;
         impl_->selectedWidget_->changeID();
       }
@@ -2173,7 +2173,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::ActionFlags::USE_NORMALS, true);
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
-  auto geom(boost::make_shared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
+  auto geom(makeShared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
@@ -2188,7 +2188,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   uniqueNodeID = ss.str();
   renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
-  auto geom2(boost::make_shared<GeometryObjectSpire>(*impl_->gid_, ss.str(), false));
+  auto geom2(makeShared<GeometryObjectSpire>(*impl_->gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
 
@@ -2467,7 +2467,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
+  auto geom(makeShared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
 
   geom->ibos().push_back(geomIBO);
   geom->vbos().push_back(geomVBO);

@@ -50,7 +50,7 @@ protected:
 private Q_SLOTS:
 		void setIsoValueEnabled();
 private:
-		boost::shared_ptr<class RefineMeshDialogImpl> impl_;
+		SharedPointer<class RefineMeshDialogImpl> impl_;
 };
 
 }

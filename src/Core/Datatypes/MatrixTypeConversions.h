@@ -52,7 +52,7 @@ namespace Core {
       template <class ToType, typename T, template <typename> class MatrixType>
       static SharedPointer<ToType> to(const SharedPointer<MatrixType<T>>& matrix, typename boost::enable_if<boost::is_same<T, typename ToType::value_type> >::type* = nullptr)
       {
-        return boost::dynamic_pointer_cast<ToType>(matrix);
+        return std::dynamic_pointer_cast<ToType>(matrix);
       }
 
       template <typename T, template <typename> class MatrixType>
@@ -135,7 +135,7 @@ namespace Core {
 
       auto dense = castMatrix::toDense(mh);
       if (dense)
-        return boost::make_shared<DenseColumnMatrixGeneric<T>>(dense->col(0));
+        return makeShared<DenseColumnMatrixGeneric<T>>(dense->col(0));
 
       auto sparse = castMatrix::toSparse(mh);
       if (sparse)
@@ -144,7 +144,7 @@ namespace Core {
         for (auto i = 0; i < sparse->nrows(); i++)
           dense_col(i) = sparse->coeff(i, 0);
 
-        return boost::make_shared<DenseColumnMatrixGeneric<T>>(dense_col);
+        return makeShared<DenseColumnMatrixGeneric<T>>(dense_col);
       }
 
       return nullptr;

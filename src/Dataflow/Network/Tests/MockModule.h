@@ -103,7 +103,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(description, std::string());
         };
 
-        typedef boost::shared_ptr<MockModule> MockModulePtr;
+        typedef SharedPointer<MockModule> MockModulePtr;
 
         class MockModuleFactory : public ModuleFactory
         {

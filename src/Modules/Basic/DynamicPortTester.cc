@@ -59,7 +59,7 @@ void DynamicPortTester::execute()
   std::cout << "Dynamic port test. Connected are " << matrices.size() << " matrices, " << fields.size()
     << " fields, and " << strings.size() << " strings." << std::endl;
 
-  sendOutput(NumMatrices, boost::make_shared<Int32>(static_cast<int>(matrices.size())));
-  sendOutput(NumFields, boost::make_shared<Int32>(static_cast<int>(fields.size())));
-  sendOutput(NumStrings, boost::make_shared<Int32>(static_cast<int>(strings.size())));
+  sendOutput(NumMatrices, makeShared<Int32>(static_cast<int>(matrices.size())));
+  sendOutput(NumFields, makeShared<Int32>(static_cast<int>(fields.size())));
+  sendOutput(NumStrings, makeShared<Int32>(static_cast<int>(strings.size())));
 }

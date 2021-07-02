@@ -145,7 +145,7 @@ public:
   typedef SCIRun::size_type                 size_type;
   typedef SCIRun::mask_type                 mask_type;
 
-  typedef boost::shared_ptr<TetVolMesh<Basis> > handle_type;
+  typedef SharedPointer<TetVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -367,7 +367,7 @@ public:
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// This one should go at some point, should be reroute through the
@@ -1417,7 +1417,7 @@ public:
   /// This function returns a maker for Pio.
   static Persistent* maker() { return new TetVolMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<TetVolMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<TetVolMesh>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)
@@ -2603,8 +2603,8 @@ protected:
   ///  tets overlap that grid cell -- to find the tet which contains a
   ///  point, we simply find which grid cell contains that point, and
   ///  then search just those tets that overlap that grid cell.
-  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
-  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
+  SharedPointer<SearchGridT<index_type> >  node_grid_;
+  SharedPointer<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex                 synchronize_lock_;
@@ -2622,7 +2622,7 @@ protected:
   double                epsilon3_;
 
   /// Pointer to virtual interface
-  boost::shared_ptr<VMesh>         vmesh_;
+  SharedPointer<VMesh>         vmesh_;
 
 public:
 

@@ -112,7 +112,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<TriSurfMesh<Basis> > handle_type;
+  typedef SharedPointer<TriSurfMesh<Basis> > handle_type;
   typedef Basis                              basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -303,7 +303,7 @@ public:
   /// a new version if needed.
 TriSurfMesh *clone() const override { return new TriSurfMesh(*this); }
 
-MeshFacadeHandle getFacade() const override { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
   /// Destructor
   virtual ~TriSurfMesh();
@@ -1399,7 +1399,7 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<TriSurfMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<TriSurfMesh<Basis>>(); }
 
 
   //////////////////////////////////////////////////////////////////
@@ -2036,8 +2036,8 @@ protected:
   std::vector<std::vector<index_type> > node_neighbors_; // Node neighbor connectivity
   std::vector<std::vector<index_type> > edge_on_node_; // Edges emanating from a node
 
-  boost::shared_ptr<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
-  boost::shared_ptr<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
+  SharedPointer<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
+  SharedPointer<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex         synchronize_lock_;
@@ -2054,7 +2054,7 @@ protected:
   double                epsilon_;           // Epsilon to use for computation 1e-8 of bbox diagonal
   double                epsilon2_;          // Square of epsilon
 
-  boost::shared_ptr<VMesh>         vmesh_;             // Handle to virtual function table
+  SharedPointer<VMesh>         vmesh_;             // Handle to virtual function table
 
   struct edgehash
   {

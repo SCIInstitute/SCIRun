@@ -46,7 +46,7 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
 private:
-  boost::shared_ptr<class SolveLinearSystemDialogImpl> impl_;
+  SharedPointer<class SolveLinearSystemDialogImpl> impl_;
 };
 
 }

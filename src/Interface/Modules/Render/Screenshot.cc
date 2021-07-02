@@ -121,9 +121,9 @@ QString Screenshot::screenshotFile() const
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const
 {
-  const auto red = boost::make_shared<DenseMatrix>(screenshot_.height(), screenshot_.width());
-  const auto green = boost::make_shared<DenseMatrix>(screenshot_.height(), screenshot_.width());
-  const auto blue = boost::make_shared<DenseMatrix>(screenshot_.height(), screenshot_.width());
+  const auto red = makeShared<DenseMatrix>(screenshot_.height(), screenshot_.width());
+  const auto green = makeShared<DenseMatrix>(screenshot_.height(), screenshot_.width());
+  const auto blue = makeShared<DenseMatrix>(screenshot_.height(), screenshot_.width());
   for (int i = 0; i < screenshot_.height(); i++)
   {
     for (int j = 0; j < screenshot_.width(); j++)

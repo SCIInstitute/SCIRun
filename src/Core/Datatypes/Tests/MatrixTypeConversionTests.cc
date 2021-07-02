@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 
 DenseColumnMatrixHandle CreateColumnMatrix()
 {
-  auto m(boost::make_shared<DenseColumnMatrix>(3));
+  auto m(makeShared<DenseColumnMatrix>(3));
 
     (*m)(0) = 1;
     (*m)(1) = 2;
@@ -51,7 +51,7 @@ DenseColumnMatrixHandle CreateColumnMatrix()
 
 SparseRowMatrixHandle CreateSparseMatrixWithOneColumn()
 {
-  auto m(boost::make_shared<SparseRowMatrix>(3,1));
+  auto m(makeShared<SparseRowMatrix>(3,1));
     m->insert(0,0) = 1;
     m->insert(1,0) = 2;
     m->insert(2,0) = 3;
@@ -61,7 +61,7 @@ SparseRowMatrixHandle CreateSparseMatrixWithOneColumn()
 
 DenseColumnMatrixHandle CreateColumnMatrix_2()
 {
-  auto m(boost::make_shared<DenseColumnMatrix>(3));
+  auto m(makeShared<DenseColumnMatrix>(3));
 
     (*m)(0) = 1;
     (*m)(1) = 0;
@@ -71,7 +71,7 @@ DenseColumnMatrixHandle CreateColumnMatrix_2()
 
 DenseMatrixHandle CreateDenseMatrix_2()
 {
-  auto m(boost::make_shared<DenseMatrix>(3,3));
+  auto m(makeShared<DenseMatrix>(3,3));
 
     (*m)(0,0) = 1;
     (*m)(0,1) = 0;
@@ -88,7 +88,7 @@ DenseMatrixHandle CreateDenseMatrix_2()
 
 SparseRowMatrixHandle CreateSparseMatrix()
 {
-  auto m(boost::make_shared<SparseRowMatrix>(3,3));
+  auto m(makeShared<SparseRowMatrix>(3,3));
     m->insert(0,0) = 1;
     m->insert(1,1) = 2;
     m->insert(2,2) = 3;
@@ -98,7 +98,7 @@ SparseRowMatrixHandle CreateSparseMatrix()
 
 DenseMatrixHandle CreateDenseMatrix()
 {
-  auto m(boost::make_shared<DenseMatrix>(3,1));
+  auto m(makeShared<DenseMatrix>(3,1));
 
     (*m)(0,0) = 1;
     (*m)(1,0) = 2;

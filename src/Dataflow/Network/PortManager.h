@@ -210,7 +210,7 @@ PortManager<T>::operator[](const PortId& id)
       {
         throwForPortNotFound(id);
       }
-      auto newPort = boost::shared_ptr<typename T::element_type>(byName[0]->clone());
+      auto newPort = SharedPointer<typename T::element_type>(byName[0]->clone());
       newPort->setId(id);
       newPort->setIndex(moduleAdd_(newPort));
 

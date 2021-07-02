@@ -56,9 +56,9 @@ std::string matrixIs::whatType(const ComplexMatrixHandle& cmh)
     return "<null>";
   // if (column(mh))
   //   return "DenseColumnMatrix";
-  if (boost::dynamic_pointer_cast<ComplexDenseMatrix>(cmh))
+  if (std::dynamic_pointer_cast<ComplexDenseMatrix>(cmh))
     return "ComplexDenseMatrix";
-  if (boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(cmh))
+  if (std::dynamic_pointer_cast<ComplexSparseRowMatrix>(cmh))
     return "ComplexSparseRowMatrix";
   return cmh->dynamic_type_name();
 }
@@ -84,7 +84,7 @@ DenseMatrixHandle convertMatrix::toDense(const MatrixHandle& mh)
 
   auto col = castMatrix::toColumn(mh);
   if (col)
-    return boost::make_shared<DenseMatrix>(*col);
+    return makeShared<DenseMatrix>(*col);
 
   auto sparse = castMatrix::toSparse(mh);
   if (sparse)

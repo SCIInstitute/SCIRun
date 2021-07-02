@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Utils/SmartPointers.h>
 // ReSharper disable once CppUnusedIncludeDirective
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 
 namespace SCIRun {
 namespace Core {

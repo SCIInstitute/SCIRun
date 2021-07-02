@@ -113,7 +113,7 @@ void LoopStart::execute()
     const auto counter = state->getValue(Parameters::IterationCount).toInt();
     auto code = 0 == counter ? startCode : incrCode;
 
-    sendOutput(LoopStartCodeObject, boost::make_shared<PythonExecutingMetadataObject>(code));
+    sendOutput(LoopStartCodeObject, makeShared<PythonExecutingMetadataObject>(code));
     state->setValue(Parameters::IterationCount, counter + 1);
 
     if (counter > 0)

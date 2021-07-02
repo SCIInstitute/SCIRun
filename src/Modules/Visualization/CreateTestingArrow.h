@@ -69,7 +69,7 @@ namespace SCIRun
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
 
-        boost::shared_ptr<CreateTestingArrowImpl> impl_;
+        SharedPointer<CreateTestingArrowImpl> impl_;
       };
     }
   }

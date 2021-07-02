@@ -62,7 +62,7 @@ class CollectMatricesImpl
 {
 public:
   MatrixHandle matrixH_;
-  boost::shared_ptr<CollectMatricesAlgorithmBase> create_algo(MatrixHandle aH, MatrixHandle bH) const;
+  SharedPointer<CollectMatricesAlgorithmBase> create_algo(MatrixHandle aH, MatrixHandle bH) const;
   void resetMatrix() { matrixH_.reset(); }
 };
 }}}
@@ -197,13 +197,13 @@ CollectMatrices::execute()
   }
 }
 
-boost::shared_ptr<CollectMatricesAlgorithmBase>
+SharedPointer<CollectMatricesAlgorithmBase>
 CollectMatricesImpl::create_algo(MatrixHandle aH, MatrixHandle bH) const
 {
   if (matrixIs::sparse(aH) && matrixIs::sparse(bH))
-    return boost::make_shared<CollectSparseRowMatricesAlgorithm>();
+    return makeShared<CollectSparseRowMatricesAlgorithm>();
   else
-    return boost::make_shared<CollectDenseMatricesAlgorithm>();
+    return makeShared<CollectDenseMatricesAlgorithm>();
 }
 
 void CollectMatrices::checkForClearOutput()

@@ -408,21 +408,21 @@ public:
   CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
     : WidgetSlotManager(state, dialog)
   {
-    std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
+    std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return makeShared<Manager>(state, dialog, stateKey, w); });
   }
 private:
-  std::vector<boost::shared_ptr<Manager>> managers_;
+  std::vector<SharedPointer<Manager>> managers_;
 };
 #endif
 
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
+  addWidgetSlotManager(makeShared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap)
 {
-  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox, stringMap));
+  addWidgetSlotManager(makeShared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox, stringMap));
 }
 
 // ASSUMEs true state = comboBox index 1, false state = comboBox index 0.
@@ -460,7 +460,7 @@ private:
 
 void ModuleDialogGeneric::addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<TwoChoiceBooleanComboBoxSlotManager>(state_, *this, stateKey, comboBox));
+  addWidgetSlotManager(makeShared<TwoChoiceBooleanComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
 class TextEditSlotManager final : public WidgetSlotManager
@@ -492,7 +492,7 @@ private:
 
 void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
+  addWidgetSlotManager(makeShared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }
 
 class PlainTextEditSlotManager final : public WidgetSlotManager
@@ -524,7 +524,7 @@ private:
 
 void ModuleDialogGeneric::addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<PlainTextEditSlotManager>(state_, *this, stateKey, plainTextEdit));
+  addWidgetSlotManager(makeShared<PlainTextEditSlotManager>(state_, *this, stateKey, plainTextEdit));
 }
 
 class LineEditSlotManager final : public WidgetSlotManager
@@ -556,7 +556,7 @@ private:
 
 void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
+  addWidgetSlotManager(makeShared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
 
 class TabSlotManager : public WidgetSlotManager
@@ -595,7 +595,7 @@ private:
 
 void ModuleDialogGeneric::addTabManager(QTabWidget* tab, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<TabSlotManager>(state_, *this, stateKey, tab));
+  addWidgetSlotManager(makeShared<TabSlotManager>(state_, *this, stateKey, tab));
 }
 
 class DoubleLineEditSlotManager final : public WidgetSlotManager
@@ -631,7 +631,7 @@ private:
 
 void ModuleDialogGeneric::addDoubleLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<DoubleLineEditSlotManager>(state_, *this, stateKey, lineEdit));
+  addWidgetSlotManager(makeShared<DoubleLineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
 
 class SpinBoxSlotManager final : public WidgetSlotManager
@@ -663,7 +663,7 @@ private:
 
 void ModuleDialogGeneric::addSpinBoxManager(QSpinBox* spinBox, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
+  addWidgetSlotManager(makeShared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
 
 class DoubleSpinBoxSlotManager : public WidgetSlotManager
@@ -695,7 +695,7 @@ private:
 
 void ModuleDialogGeneric::addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
+  addWidgetSlotManager(makeShared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
 
 class CheckBoxSlotManager : public WidgetSlotManager
@@ -727,7 +727,7 @@ private:
 
 void ModuleDialogGeneric::addCheckBoxManager(QCheckBox* checkBox, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
+  addWidgetSlotManager(makeShared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
 }
 
 class CheckableButtonSlotManager : public WidgetSlotManager
@@ -759,7 +759,7 @@ private:
 
 void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
+  addWidgetSlotManager(makeShared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
 }
 
 class DynamicLabelSlotManager : public WidgetSlotManager
@@ -788,7 +788,7 @@ private:
 
 void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
+  addWidgetSlotManager(makeShared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }
 
 class SliderSlotManager : public WidgetSlotManager
@@ -817,7 +817,7 @@ private:
 
 void ModuleDialogGeneric::addSliderManager(QSlider* slider, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<SliderSlotManager>(state_, *this, stateKey, slider));
+  addWidgetSlotManager(makeShared<SliderSlotManager>(state_, *this, stateKey, slider));
 }
 
 class RadioButtonGroupSlotManager : public WidgetSlotManager
@@ -857,7 +857,7 @@ private:
 
 void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
+  addWidgetSlotManager(makeShared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
 }
 
 void WidgetStyleMixin::tabStyle(QTabWidget* tabs)

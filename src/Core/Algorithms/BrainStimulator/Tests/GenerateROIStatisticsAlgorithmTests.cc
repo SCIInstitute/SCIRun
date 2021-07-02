@@ -69,7 +69,7 @@ namespace
 
   DenseMatrixHandle expected_result_no_roi_spec()
   {
-    DenseMatrixHandle expected_result(boost::make_shared<DenseMatrix>(8, 5));
+    DenseMatrixHandle expected_result(makeShared<DenseMatrix>(8, 5));
 
    (*expected_result)(0, 0) = 0.5398800608953688;  (*expected_result)(1, 0) = 0.7546866819823609; (*expected_result)(2, 0) = 0.3784870349158202;  (*expected_result)(3, 0) = 0.5215146855270543;  (*expected_result)(4, 0) = 0.6204598403245096; (*expected_result)(5, 0) = 0.4103867315361441; (*expected_result)(6, 0) = 0.6164145705872455; (*expected_result)(7, 0) = 0.3773992798882833;
    (*expected_result)(0, 1) = 0.2023192248404992;  (*expected_result)(1, 1) = std::numeric_limits<double>::quiet_NaN();  (*expected_result)(2, 1) = 0.270036948169627;  (*expected_result)(3, 1) = 0.2819928747450936;  (*expected_result)(4, 1) = 0.2464919130115238;  (*expected_result)(5, 1) = 0.348358459345021;  (*expected_result)(6, 1) = 0.3382031144990396;  (*expected_result)(7, 1) = 0.1699586184078796;
@@ -82,7 +82,7 @@ namespace
 
   DenseMatrixHandle expected_result_roi_spec()
   {
-   DenseMatrixHandle expected_result(boost::make_shared<DenseMatrix>(1, 5));
+   DenseMatrixHandle expected_result(makeShared<DenseMatrix>(1, 5));
    (*expected_result)(0, 0) = 0.5046221600763444;
    (*expected_result)(0, 1) = 0.2271478773489659;
    (*expected_result)(0, 2) = 0.1626117351946306;

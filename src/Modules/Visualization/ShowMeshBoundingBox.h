@@ -54,7 +54,7 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName YSize;
     static const Core::Algorithms::AlgorithmParameterName ZSize;
   private:
-    boost::shared_ptr<ShowMeshBoundingBoxImpl> impl_;
+    SharedPointer<ShowMeshBoundingBoxImpl> impl_;
   };
 }}}
 

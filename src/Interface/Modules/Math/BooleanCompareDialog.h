@@ -43,7 +43,7 @@ namespace Gui {
         SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
 
    private:
-    boost::shared_ptr<class BooleanCompareDialogImpl> impl_;
+    SharedPointer<class BooleanCompareDialogImpl> impl_;
   };
 }
 }

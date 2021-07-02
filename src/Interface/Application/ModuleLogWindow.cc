@@ -37,7 +37,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
+ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, SharedPointer<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
   displayer_(displayer),
 	dialogErrorControl_(dialogErrorControl)
 {

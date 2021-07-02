@@ -269,7 +269,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       formatCount((*output)(i, 4))); //element count
   }, AtlasMeshLabels_vector.size());
 
-  auto statistics_table(boost::make_shared<Variable>(Name("Table"), elc_vals_in_table));
+  auto statistics_table(makeShared<Variable>(Name("Table"), elc_vals_in_table));
 
   return boost::make_tuple(output, statistics_table);
 }

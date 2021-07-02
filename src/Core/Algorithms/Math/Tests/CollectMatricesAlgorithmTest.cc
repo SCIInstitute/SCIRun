@@ -89,7 +89,7 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroColumns)
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
+  auto neg_m1 = makeShared<DenseMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
   denseOut = castMatrix::toDense(out);
   EXPECT_MATRIX_EQ(*denseOut, *neg_m1);
@@ -107,7 +107,7 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroRows)
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
+  auto neg_m1 = makeShared<DenseMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
   denseOut = castMatrix::toDense(out);
 
@@ -171,7 +171,7 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroColumns)
 
   EXPECT_MATRIX_EQ(*sparseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
+  auto neg_m1 = makeShared<SparseRowMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
   sparseOut = castMatrix::toSparse(out);
 
@@ -191,7 +191,7 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroRows)
 
   EXPECT_MATRIX_EQ(*sparseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
+  auto neg_m1 = makeShared<SparseRowMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
   sparseOut = castMatrix::toSparse(out);
 

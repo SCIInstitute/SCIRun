@@ -31,7 +31,7 @@
 
 #include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 

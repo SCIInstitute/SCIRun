@@ -71,7 +71,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   reexFactory_(reex),
   executorFactory_(executorFactory),
   cmdFactory_(cmdFactory),
-  eventCmdFactory_(eventCmdFactory ? eventCmdFactory : boost::make_shared<NullCommandFactory>()),
+  eventCmdFactory_(eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>()),
   serializationManager_(nesm),
   signalSwitch_(true),
   loadingContext_(false)
@@ -81,7 +81,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   /// @todo should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
-  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this, cmdFactory_));
+  NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, cmdFactory_));
 #endif
 
   eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
@@ -692,7 +692,7 @@ void NetworkEditorController::initExecutor()
 
 ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
 {
-  return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+  return makeShared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
 ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
@@ -737,12 +737,12 @@ const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescri
   return moduleFactory_->getAllAvailableModuleDescriptions();
 }
 
-boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
+SharedPointer<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
 {
-  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
+  return makeShared<DisableDynamicPortSwitch>(dynamicPortManager_);
 }
 
-DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : first_(true), dpm_(dpm)
+DisableDynamicPortSwitch::DisableDynamicPortSwitch(SharedPointer<DynamicPortManager> dpm) : first_(true), dpm_(dpm)
 {
   if (dpm_)
   {

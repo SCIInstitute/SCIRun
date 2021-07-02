@@ -67,7 +67,7 @@ TEST_F(BuildFESurfRHSTests, CreateLatVolTest)
   auto size=3,len=size*size*size;
   FieldHandle latVol = CreateEmptyLatVol(size, size, size);
 
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(8,3));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(8,3));
   double t=0.22984884706593014525;
   (*m)(0,0) =  t; (*m)(0,1) =  t; (*m)(0,2) =  t;
   (*m)(1,0) = -t; (*m)(1,1) =  t; (*m)(1,2) = -t;
