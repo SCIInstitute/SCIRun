@@ -57,7 +57,7 @@ namespace Math {
     OUTPUT_PORT(0, MeanTensorField, Field);
     OUTPUT_PORT(1, CovarianceMatrix, Matrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 }}}
 
