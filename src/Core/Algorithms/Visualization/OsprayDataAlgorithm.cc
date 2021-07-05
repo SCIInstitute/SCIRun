@@ -375,6 +375,9 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
 
   }
   //auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+  double min, max;
+  vfield->minmax(min,max);
+  obj->tfn.range = {float(min), float(max)};
   if (colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap->getColorMapName());

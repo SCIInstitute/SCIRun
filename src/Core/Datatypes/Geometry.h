@@ -127,6 +127,7 @@ namespace Datatypes
     {
       std::vector<float> colors;
       std::vector<float> opacities;
+      std::vector<float> range;
     };
 
     GeometryType type {GeometryType::NO_TYPE};
