@@ -196,15 +196,14 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
   OSPMaterial material;
   if(isScivis)
   {
-    printf("scivis mat\n");
     float ks[] = {0.8, 0.8, 0.8};
     float ns = (1.0f - mat.roughness);
     ns = ns * ns * 20.0f + 2.0f;
     material = ospNewMaterial("scivis", "obj");
-    ospSetParam(model, "kd", OSP_VEC3F, mat.albedo);
-    ospSetParam(model, "ks", OSP_VEC3F, ks);
-    ospSetParam(model, "ns", OSP_FLOAT, &ns);
-    ospSetParam(model, "d", OSP_FLOAT, &mat.opacity);
+    ospSetParam(material, "kd", OSP_VEC3F, mat.albedo);
+    ospSetParam(material, "ks", OSP_VEC3F, ks);
+    ospSetParam(material, "ns", OSP_FLOAT, &ns);
+    ospSetParam(material, "d", OSP_FLOAT, &mat.opacity);
     ospCommit(material);
   }
   else
@@ -213,7 +212,7 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
     return;
   }
 
-  ospSetParam(model, "material", OSP_MATERIAL, &material);
+  ospSetObject(model, "material", material);
   ospCommit(model);
   ospRelease(material);
 }
