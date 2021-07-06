@@ -1,5 +1,5 @@
 Old SCIRun4 Tutorials
-=============
+=====================
 
 `Heart Ischemia Model <../_static/old_tutorials/IschemiaModelTutorial.pdf>`_
 

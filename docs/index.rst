@@ -18,6 +18,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :hidden:
    :caption: Getting Started:
 
    start/*
@@ -29,6 +30,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :hidden:
    :caption: User Documentation:
 
    user_doc/*
@@ -40,6 +42,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :hidden:
    :caption: Developer Documentation:
 
    dev_doc/*
@@ -51,6 +54,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :hidden:
    :caption: Modules:
 
    modules/BIOPSE/index
@@ -79,6 +83,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :hidden:
    :caption: Other Links:
 
    other

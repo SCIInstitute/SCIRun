@@ -20,7 +20,7 @@ from recommonmark.transform import AutoStructify
 # -- Project information -----------------------------------------------------
 
 project = 'SCIRun'
-copyright = '2021, Scientific Computing and Imaging Institute'
+copyright = '2021, Scientific Computing and Imaging Institute at the University of Utah'
 author = 'TBA'
 
 # The full version, including alpha/beta/rc tags
@@ -35,7 +35,6 @@ release = '0.01'
 extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.napoleon',
-        'sphinx.ext.autosectionlabel',
         'recommonmark',
         'sphinxcontrib.bibtex',
         'sphinx_markdown_tables'
