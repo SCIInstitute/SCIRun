@@ -168,7 +168,8 @@ namespace Gui {
 
           GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
           Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
-          QToolBar*                             toolBar_                      {nullptr};  ///< Tool bar.
+          QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
+          QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
           QToolBar*                             viewBar_                      {nullptr};  ///< Tool bar for view options.
           QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
           QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
@@ -484,8 +485,10 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 void ViewSceneDialog::addToolBar()
 {
-  impl_->toolBar_ = new QToolBar(this);
-  WidgetStyleMixin::toolbarStyle(impl_->toolBar_);
+  impl_->toolBar1_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
+  impl_->toolBar2_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
   addConfigurationButton();
   addConfigurationDock();
@@ -499,7 +502,8 @@ void ViewSceneDialog::addToolBar()
   addMaterialOptionsButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar_);
+  glLayout->addWidget(impl_->toolBar1_);
+  glLayout->addWidget(impl_->toolBar2_);
 
   addViewBar();
 }
@@ -511,7 +515,7 @@ void ViewSceneDialog::addConfigurationButton()
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
   connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  addToolbarButton(configurationButton);
+  addToolbarButton(configurationButton, 1);
 }
 
 namespace
@@ -538,7 +542,7 @@ void ViewSceneDialog::addAutoRotateButton()
   connect(autoRotateButton, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto popupSlider = new AutoRotateControls(this);
   setupPopupWidget(autoRotateButton, popupSlider);
-  addToolbarButton(autoRotateButton);
+  addToolbarButton(autoRotateButton, 1);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
@@ -551,7 +555,7 @@ void ViewSceneDialog::addColorOptionsButton()
   impl_->colorOptions_ = new ColorOptions(this);
   impl_->colorOptions_->setSampleColor(impl_->bgColor_);
   setupPopupWidget(colorOptionsButton, impl_->colorOptions_);
-  addToolbarButton(colorOptionsButton);
+  addToolbarButton(colorOptionsButton, 2);
 }
 
 void ViewSceneDialog::addLightOptionsComboBox()
@@ -560,7 +564,8 @@ void ViewSceneDialog::addLightOptionsComboBox()
   QStringList lightList;
   lightList << "Headlight" << "Light1" << "Light2" << "Light3";
   lightOptionsComboBox->addItems(lightList);
-  impl_->toolBar_->addWidget(lightOptionsComboBox);
+  lightOptionsComboBox->setMinimumWidth(110);
+  impl_->toolBar2_->addWidget(lightOptionsComboBox);
 }
 
 void ViewSceneDialog::addFogOptionsButton()
@@ -571,7 +576,7 @@ void ViewSceneDialog::addFogOptionsButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->fogControls_ = new FogControls(this);
   setupPopupWidget(fogOptionsButton, impl_->fogControls_);
-  addToolbarButton(fogOptionsButton);
+  addToolbarButton(fogOptionsButton, 2);
 }
 
 void ViewSceneDialog::addMaterialOptionsButton()
@@ -582,10 +587,10 @@ void ViewSceneDialog::addMaterialOptionsButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->materialsControls_ = new MaterialsControls(this);
   setupPopupWidget(materialOptionsButton, impl_->materialsControls_);
-  addToolbarButton(materialOptionsButton);
+  addToolbarButton(materialOptionsButton, 2);
 }
 
-void ViewSceneDialog::addToolbarButton(QWidget* widget)
+void ViewSceneDialog::addToolbarButton(QWidget* widget, int which)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
@@ -593,7 +598,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget)
   if (auto button = qobject_cast<QPushButton*>(widget))
     button->setIconSize(QSize(iconSize, iconSize));
 
-  impl_->toolBar_->addWidget(widget);
+  (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
 }
 
 void ViewSceneDialog::addConfigurationDock()
@@ -646,7 +651,7 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   impl_->autoViewButton_->setShortcut(Qt::Key_0);
   connect(impl_->autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-  addToolbarButton(impl_->autoViewButton_);
+  addToolbarButton(impl_->autoViewButton_, 1);
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -656,7 +661,7 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
-  addToolbarButton(screenshotButton);
+  addToolbarButton(screenshotButton, 1);
 }
 
 void ViewSceneDialog::addQuickScreenshotButton()
@@ -666,7 +671,7 @@ void ViewSceneDialog::addQuickScreenshotButton()
   quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
   quickScreenshotButton->setShortcut(Qt::Key_F12);
   connect(quickScreenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
-  addToolbarButton(quickScreenshotButton);
+  addToolbarButton(quickScreenshotButton, 1);
 }
 
 void ViewSceneDialog::addViewBar()
@@ -771,7 +776,7 @@ void ViewSceneDialog::addViewBarButton()
   impl_->viewBarBtn_->setToolTip("Show View Options");
   impl_->viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
   connect(impl_->viewBarBtn_, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  addToolbarButton(impl_->viewBarBtn_);
+  addToolbarButton(impl_->viewBarBtn_, 2);
 }
 
 void ViewSceneDialog::addControlLockButton()
@@ -803,7 +808,7 @@ void ViewSceneDialog::addControlLockButton()
 
   impl_->controlLock_->setMenu(menu);
 
-  addToolbarButton(impl_->controlLock_);
+  addToolbarButton(impl_->controlLock_, 1);
   impl_->controlLock_->setFixedWidth(45);
   toggleLockColor(false);
 }
@@ -1050,7 +1055,8 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustToolbar()
 {
-  adjustToolbarForHighResolution(impl_->toolBar_);
+  adjustToolbarForHighResolution(impl_->toolBar1_);
+  adjustToolbarForHighResolution(impl_->toolBar2_);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)

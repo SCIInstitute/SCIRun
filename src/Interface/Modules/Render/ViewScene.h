@@ -245,7 +245,7 @@ namespace SCIRun {
       void addLightOptionsComboBox();
       void addFogOptionsButton();
       void addMaterialOptionsButton();
-      void addToolbarButton(QWidget* w);
+      void addToolbarButton(QWidget* w, int which);
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
