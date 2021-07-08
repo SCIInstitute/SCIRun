@@ -687,8 +687,8 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent) : QWid
   connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
   connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
   connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), parent, SLOT(setDefaultOrientPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
+  connect(orientDefaultPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setDefaultOrientPos);
+  connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
+  connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
+  connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
 }

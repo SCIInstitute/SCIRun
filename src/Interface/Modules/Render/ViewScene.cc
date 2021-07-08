@@ -521,7 +521,7 @@ namespace
     auto popup = new ctkPopupWidget(button);
     auto popupLayout = new QHBoxLayout(popup);
     popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::TopToBottom);
+    popup->setVerticalDirection(ctkBasePopupWidget::BottomToTop);
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
 
     popupLayout->addWidget(underlyingWidget);
