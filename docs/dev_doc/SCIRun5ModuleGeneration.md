@@ -22,7 +22,7 @@ Download SCIRun version 5.0 from the [SCI software portal](http://www.scirun.org
 
 Make sure to update to the most up-to-date version of the source code available, which will include the latest bug fixes.
 
-Alternatively, use Git to clone the SCIRun repository (https://github.com/SCIInstitute/SCIRun.git). We suggest creating a fork of the repository so that you can track your changes and create pull requests to the SCIRun repository ([Creating Your SCIRun Fork](#creating-your-scirun-fork)).
+Alternatively, use Git to clone the SCIRun [repository](https://github.com/SCIInstitute/SCIRun.git). We suggest creating a fork of the repository so that you can track your changes and create pull requests to the SCIRun repository ([Creating Your SCIRun Fork](#creating-your-scirun-fork)).
 
 #### Compilers, Dependencies Development Tools
 
@@ -70,7 +70,7 @@ Please see the [GitHub help page](https://help.github.com) for more information.
 
 ## Files Needed for a New Module
 
-**This chapter will describe the files need to create a module in SCIRun. Each file will be described and a template example will be provided. These template files are all included in the source code in the template directories.**
+**This section will describe the files need to create a module in SCIRun. Each file will be described and a template example will be provided. These template files are all included in the source code in the template directories.**
 
 ### Overview of Files Needed for each Module
 
@@ -457,7 +457,7 @@ There are several algorithms already implemented in SCIRun. If there are modules
 
 ## Example: Simple Module Without UI
 
-**This chapter describes how to create a very simple module in SCIRun. We will show how to make a simple module that outputs a simple string. This example will show the basics of the functions and code used by SCIRun to create and run modules.**
+**This section describes how to create a very simple module in SCIRun. We will show how to make a simple module that outputs a simple string. This example will show the basics of the functions and code used by SCIRun to create and run modules.**
 
 ### Module Config File
 
@@ -939,7 +939,7 @@ For the sake of comparison, the final version of the code for this module is inc
 
 As mentioned in the chapter introduction, we are going to create a module that will sort the entries of a matrix in ascending or descending order. We will call the module SortMatrix. This module will use a simple simple quicksort algorithm with a [Lomuto partition scheme](https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme). There are some implementations for vector sorting in the STL algorithm library, but this implementation works more generally on matrices and will hopefully be helpful in showing how to implement an algorithm from scratch.
 
-There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files. The first six were used in the previous example, but this chapter will show how to incorporate the algorithm code and how it interacts with the module and UI code. Each file is also described in the general in Chapter 2 with templates.
+There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files. The first six were used in the previous example, but this chapter will show how to incorporate the algorithm code and how it interacts with the module and UI code. Each file is also described in the general in [Files Needed for a New Module](#files-needed-for-a-new-module) with templates.
 
 ### Module Configuration File
 

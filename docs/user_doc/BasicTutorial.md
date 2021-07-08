@@ -126,7 +126,7 @@ Create and manipulate a structured mesh type in this exercise. Start by creating
 ![Extract an isosurface from the field data.](BasicTutorial_figures/extractiso2.png)
 <figcaption>Figure 3.3 Extract an isosurface from the field data.</figcaption>
 
-Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurface module to CalculateFieldData (see image above). Adjust the isovalue within the ExtractSimpleIsosurface UI so that the isosurface can be visualized (screenshot below). Add a color map and visualize the isosurface as in [section 2.3](#23--isosurface). Show the mesh bounding box as in [section 2.2](#22--show-bounding-box).
+Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurface module to CalculateFieldData (see image above). Adjust the isovalue within the ExtractSimpleIsosurface UI so that the isosurface can be visualized (screenshot below). Add a color map and visualize the isosurface as in the previous [example](#isosurface). Show the mesh bounding box as in [Show Bounding Box](#show-bounding-box) section.
 
 <!-- conncolormap -->
 ![Change the isovalue so that an isosurface can be visualized.](BasicTutorial_figures/selectisoval.png)
@@ -144,7 +144,7 @@ Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurfa
 
 ### Slice Field
 
-Extend the functionality of this network by slicing the field using GetSliceFromStructuredFieldByIndices as in [section 2.1.2](#212--slice-field).
+Extend the functionality of this network by slicing the field using GetSliceFromStructuredFieldByIndices as in previous [example](#slice-field).
 
 <!-- slicemod2 -->
 ![Insert GetSliceFromStructuredFieldByIndices into the network.](BasicTutorial_figures/getslice2.png)
