@@ -132,15 +132,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
 
-  //-----------View Tab-------------------//
-  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
-  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
-  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
-  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
-  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
-  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
-
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
@@ -256,16 +247,15 @@ void FogControls::setFogValues(bool fogVisible, bool objectsOnly, bool useBGColo
   fogEndDoubleSpinBox_->setValue(fogEnd);
 }
 
-void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-  double numTicks, double, const QString& unit)
+void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
 {
-  showScaleBarTextGroupBox_->setChecked(visible);
-  fontSizeSpinBox_->setValue(fontSize);
-  scaleBarLengthDoubleSpinBox_->setValue(length);
-  scaleBarHeightDoubleSpinBox_->setValue(height);
-  scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
-  numTicksSpinBox_->setValue(numTicks);
-  scaleBarUnitLineEdit_->setText(unit);
+  showScaleBarTextGroupBox_->setChecked(scale.visible);
+  fontSizeSpinBox_->setValue(scale.fontSize);
+  scaleBarLengthDoubleSpinBox_->setValue(scale.length);
+  scaleBarHeightDoubleSpinBox_->setValue(scale.height);
+  scaleBarMultiplierDoubleSpinBox_->setValue(scale.multiplier);
+  numTicksSpinBox_->setValue(scale.numTicks);
+  scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
 }
 
 void ViewSceneControlsDock::updateZoomOptionVisibility()
@@ -691,4 +681,17 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent) : QWid
   connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
+}
+
+ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
+  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
+  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
+  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
+  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
+  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
+  connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
 }

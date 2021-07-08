@@ -43,6 +43,7 @@ SET(Interface_Modules_Render_FORMS
   Materials.ui
   ObjectSelection.ui
   OrientationAxes.ui
+  ScaleBar.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

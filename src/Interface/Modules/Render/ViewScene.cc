@@ -70,15 +70,6 @@ namespace Gui {
     BLUE
   };
 
-  struct ScaleBar
-  {
-    bool visible;
-    int fontSize;
-    double length, height, multiplier, numTicks, lineWidth;
-    std::string unit;
-    double projLength;
-  };
-
   class ScopedWidgetColorChanger
   {
   public:
@@ -179,6 +170,7 @@ namespace Gui {
           MaterialsControls* materialsControls_{ nullptr };
           ObjectSelectionControls* objectSelectionControls_{nullptr};
           OrientationAxesControls* orientationAxesControls_{nullptr};
+          ScaleBarControls* scaleBarControls_{nullptr};
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -204,7 +196,7 @@ namespace Gui {
           boost::optional<QPoint> savedPos_;
           QColor                                bgColor_                      {};
           QColor                                fogColor_                     {};
-          ScaleBar                              scaleBar_                     {};
+          ScaleBarData                              scaleBar_                     {};
           Render::ClippingPlaneManagerPtr clippingPlaneManager_;
           class Screenshot*                     screenshotTaker_              {nullptr};
           bool                                  saveScreenshotOnNewGeometry_  {false};
@@ -506,6 +498,7 @@ void ViewSceneDialog::addToolBar()
   addFogOptionsButton();
   addMaterialOptionsButton();
   addOrientationAxesButton();
+  addScaleBarButton();
   setupMaterials();
 
   glLayout->addWidget(impl_->toolBar1_);
@@ -523,6 +516,7 @@ namespace
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(ctkBasePopupWidget::BottomToTop);
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    QObject::connect(popup, &ctkPopupWidget::popupOpened, [](bool open) { qDebug() << "popup is " << open;});
 
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
@@ -620,6 +614,20 @@ void ViewSceneDialog::addOrientationAxesButton()
   addToolbarButton(orientationAxesButton, 2);
 }
 
+void ViewSceneDialog::addScaleBarButton()
+{
+  auto* scaleBarButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->scaleBarControls_ = new ScaleBarControls(this);
+  fixSize(impl_->scaleBarControls_);
+  setupPopupWidget(scaleBarButton, impl_->scaleBarControls_);
+  addToolbarButton(scaleBarButton, 2);
+
+  impl_->scaleBarControls_->setScaleBarValues(impl_->scaleBar_);
+}
+
 void ViewSceneDialog::addToolbarButton(QWidget* widget, int which)
 {
   static const auto buttonSize = 30;
@@ -637,9 +645,6 @@ void ViewSceneDialog::addConfigurationDock()
   impl_->mConfigurationDock = new ViewSceneControlsDock(name, this);
   impl_->mConfigurationDock->setHidden(true);
   impl_->mConfigurationDock->setVisible(false);
-
-  impl_->mConfigurationDock->setScaleBarValues(impl_->scaleBar_.visible, impl_->scaleBar_.fontSize, impl_->scaleBar_.length, impl_->scaleBar_.height,
-    impl_->scaleBar_.multiplier, impl_->scaleBar_.numTicks, impl_->scaleBar_.visible, QString::fromStdString(impl_->scaleBar_.unit));
 }
 
 void ViewSceneDialog::setupMaterials()

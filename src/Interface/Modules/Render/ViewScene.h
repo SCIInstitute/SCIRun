@@ -246,6 +246,7 @@ namespace SCIRun {
       void addFogOptionsButton();
       void addMaterialOptionsButton();
       void addOrientationAxesButton();
+      void addScaleBarButton();
       void addToolbarButton(QWidget* w, int which);
       void addViewBar();
       void addViewOptions();
@@ -307,6 +308,7 @@ namespace SCIRun {
       friend class MaterialsControls;
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
+      friend class ScaleBarControls;
     };
 
     MouseButton getSpireButton(QMouseEvent* event);

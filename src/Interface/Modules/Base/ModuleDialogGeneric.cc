@@ -171,9 +171,14 @@ void ModuleDialogGeneric::setButtonBarTitleVisible(bool visible)
 
 void ModuleDialogGeneric::fixSize()
 {
-  if (minimumWidth() > 0 && minimumHeight() > 0)
+  fixSize(this);
+}
+
+void ModuleDialogGeneric::fixSize(QWidget* widget)
+{
+  if (widget->minimumWidth() > 0 && widget->minimumHeight() > 0)
   {
-    setFixedSize(minimumWidth(), minimumHeight());
+    widget->setFixedSize(widget->minimumWidth(), widget->minimumHeight());
   }
 }
 

@@ -36,6 +36,7 @@
 #include "Interface/Modules/Render/ui_Fog.h"
 #include "Interface/Modules/Render/ui_ObjectSelection.h"
 #include "Interface/Modules/Render/ui_OrientationAxes.h"
+#include "Interface/Modules/Render/ui_ScaleBar.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -85,9 +86,6 @@ namespace SCIRun {
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
 
       void setLabelColor(QLabel* label, const QColor& color);
-
-      void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-        double numTicks, double lineWidth, const QString& unit);
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
@@ -169,6 +167,24 @@ namespace SCIRun {
     private:
       void setSliderDefaultPos();
       void setSliderCenterPos();
+    };
+
+    struct SCISHARE ScaleBarData
+    {
+      bool visible;
+      int fontSize;
+      double length, height, multiplier, numTicks, lineWidth;
+      std::string unit;
+      double projLength;
+    };
+
+    class SCISHARE ScaleBarControls : public QWidget, public Ui::ScaleBar
+    {
+      Q_OBJECT
+
+    public:
+      explicit ScaleBarControls(ViewSceneDialog* parent);
+      void setScaleBarValues(const ScaleBarData& scale);
     };
   }
 }
