@@ -35,6 +35,7 @@
 #include "Interface/Modules/Render/ui_Materials.h"
 #include "Interface/Modules/Render/ui_Fog.h"
 #include "Interface/Modules/Render/ui_ObjectSelection.h"
+#include "Interface/Modules/Render/ui_OrientationAxes.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -104,8 +105,6 @@ namespace SCIRun {
       void selectLight1Color() {selectLightColor(1);}
       void selectLight2Color() {selectLightColor(2);}
       void selectLight3Color() {selectLightColor(3);}
-      void setSliderDefaultPos();
-      void setSliderCenterPos();
       void updateViewSceneTree();
       void addGroup();
       void removeGroup();
@@ -159,6 +158,17 @@ namespace SCIRun {
     private:
       void setupObjectListWidget();
       std::unique_ptr<VisibleItemManager> visibleItems_;
+    };
+
+    class SCISHARE OrientationAxesControls : public QWidget, public Ui::OrientationAxes
+    {
+      Q_OBJECT
+
+    public:
+      explicit OrientationAxesControls(ViewSceneDialog* parent);
+    private:
+      void setSliderDefaultPos();
+      void setSliderCenterPos();
     };
   }
 }

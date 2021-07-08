@@ -42,6 +42,7 @@ SET(Interface_Modules_Render_FORMS
   Fog.ui
   Materials.ui
   ObjectSelection.ui
+  OrientationAxes.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

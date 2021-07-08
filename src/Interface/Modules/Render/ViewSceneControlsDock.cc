@@ -132,17 +132,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
 
-  //-----------Materials Tab-----------------//
-
   //-----------View Tab-------------------//
-  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
-  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
-  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
-  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), parent, SLOT(setDefaultOrientPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
   connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
   connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
   connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
@@ -159,15 +149,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
-  /////Set unused widgets to be not visible
-
-  ///Object Tab
   tabWidget->setCurrentIndex(0);
-
-  ////View Tab
-  viewOptionsGroupBox_->setEnabled(false);
-  viewOptionsGroupBox_->setVisible(false);
-  autoViewOnLoadCheckBox_->setVisible(false);
 }
 
 static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
@@ -359,14 +341,14 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
 }
 
 // Set x and y sliders all the way right(100)
-void ViewSceneControlsDock::setSliderDefaultPos()
+void OrientationAxesControls::setSliderDefaultPos()
 {
   orientAxisXPos_->setValue(100);
   orientAxisYPos_->setValue(100);
 }
 
 // Set x and y sliders to half way(50)
-void ViewSceneControlsDock::setSliderCenterPos()
+void OrientationAxesControls::setSliderCenterPos()
 {
   orientAxisXPos_->setValue(50);
   orientAxisYPos_->setValue(50);
@@ -695,4 +677,18 @@ ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWid
   connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
   connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
     parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
+}
+
+OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
+  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
+  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
+  connect(orientDefaultPositionButton, SIGNAL(clicked()), parent, SLOT(setDefaultOrientPos()));
+  connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
+  connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
+  connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
 }

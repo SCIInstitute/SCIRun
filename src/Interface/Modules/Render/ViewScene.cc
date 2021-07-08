@@ -178,6 +178,7 @@ namespace Gui {
           FogControls* fogControls_{ nullptr };
           MaterialsControls* materialsControls_{ nullptr };
           ObjectSelectionControls* objectSelectionControls_{nullptr};
+          OrientationAxesControls* orientationAxesControls_{nullptr};
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -504,6 +505,7 @@ void ViewSceneDialog::addToolBar()
   addLightOptionsComboBox();
   addFogOptionsButton();
   addMaterialOptionsButton();
+  addOrientationAxesButton();
   setupMaterials();
 
   glLayout->addWidget(impl_->toolBar1_);
@@ -605,6 +607,17 @@ void ViewSceneDialog::addMaterialOptionsButton()
   impl_->materialsControls_ = new MaterialsControls(this);
   setupPopupWidget(materialOptionsButton, impl_->materialsControls_);
   addToolbarButton(materialOptionsButton, 2);
+}
+
+void ViewSceneDialog::addOrientationAxesButton()
+{
+  auto* orientationAxesButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->orientationAxesControls_ = new OrientationAxesControls(this);
+  setupPopupWidget(orientationAxesButton, impl_->orientationAxesControls_);
+  addToolbarButton(orientationAxesButton, 2);
 }
 
 void ViewSceneDialog::addToolbarButton(QWidget* widget, int which)
@@ -2231,29 +2244,29 @@ void ViewSceneDialog::initializeAxes()
 
   {
     bool visible = state_->getValue(Parameters::AxesVisible).toBool();
-    impl_->mConfigurationDock->orientationCheckBox_->setChecked(visible);
+    impl_->orientationAxesControls_->orientationCheckBox_->setChecked(visible);
     spire->showOrientation(visible);
   }
 
   {
     int axesSize = state_->getValue(Parameters::AxesSize).toInt();
     spire->setOrientSize(axesSize);
-    ScopedWidgetSignalBlocker swsb(impl_->mConfigurationDock->orientAxisSize_);
-    impl_->mConfigurationDock->orientAxisSize_->setValue(axesSize);
+    ScopedWidgetSignalBlocker swsb(impl_->orientationAxesControls_->orientAxisSize_);
+    impl_->orientationAxesControls_->orientAxisSize_->setValue(axesSize);
   }
 
   {
     int axesX = state_->getValue(Parameters::AxesX).toInt();
     spire->setOrientPosX(axesX);
-    ScopedWidgetSignalBlocker swsb(impl_->mConfigurationDock->orientAxisXPos_);
-    impl_->mConfigurationDock->orientAxisXPos_->setValue(axesX);
+    ScopedWidgetSignalBlocker swsb(impl_->orientationAxesControls_->orientAxisXPos_);
+    impl_->orientationAxesControls_->orientAxisXPos_->setValue(axesX);
   }
 
   {
     int axesY = state_->getValue(Parameters::AxesY).toInt();
     spire->setOrientPosY(axesY);
-    ScopedWidgetSignalBlocker swsb(impl_->mConfigurationDock->orientAxisYPos_);
-    impl_->mConfigurationDock->orientAxisYPos_->setValue(axesY);
+    ScopedWidgetSignalBlocker swsb(impl_->orientationAxesControls_->orientAxisYPos_);
+    impl_->orientationAxesControls_->orientAxisYPos_->setValue(axesY);
   }
 }
 
