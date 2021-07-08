@@ -57,8 +57,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setFloating(true);
   setStyleSheet(parent->styleSheet());
 
-  setupObjectListWidget();
-
   if (Preferences::Instance().useNewViewSceneMouseControls)
   {
     mouseControlComboBox_->setCurrentIndex(1);
@@ -76,14 +74,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 
-  //-----------Objects Tab-----------------//
-  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
-  connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
-  connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
-  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
-  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
-  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
-    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 
   connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
   connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
@@ -120,25 +110,25 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(headlightAzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightAzimuth(int)));
   connect(headlightInclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightInclination(int)));
   connect(colorButton0, SIGNAL(clicked()), this, SLOT(selectLight0Color()));
-  setLabelColor(color0, lightColors[0] = Qt::white);
+  setLabelColor(color0, lightColors_[0] = Qt::white);
 
   connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
   connect(light1AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Azimuth(int)));
   connect(light1InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Inclination(int)));
   connect(colorButton1, SIGNAL(clicked()), this, SLOT(selectLight1Color()));
-  setLabelColor(color1, lightColors[1] = Qt::white);
+  setLabelColor(color1, lightColors_[1] = Qt::white);
 
   connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
   connect(light2AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Azimuth(int)));
   connect(light2InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Inclination(int)));
   connect(colorButton2, SIGNAL(clicked()), this, SLOT(selectLight2Color()));
-  setLabelColor(color2, lightColors[2] = Qt::white);
+  setLabelColor(color2, lightColors_[2] = Qt::white);
 
   connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
   connect(light3AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Azimuth(int)));
   connect(light3InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Inclination(int)));
   connect(colorButton3, SIGNAL(clicked()), this, SLOT(selectLight3Color()));
-  setLabelColor(color3, lightColors[3] = Qt::white);
+  setLabelColor(color3, lightColors_[3] = Qt::white);
 
   connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
 
@@ -621,24 +611,24 @@ public:
   }
 };
 
-void ViewSceneControlsDock::setupObjectListWidget()
+void ObjectSelectionControls::setupObjectListWidget()
 {
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
 QColor ViewSceneControlsDock::getLightColor(int index) const
 {
-  return lightColors[index];
+  return lightColors_[index];
 }
 
 void ViewSceneControlsDock::selectLightColor(int index)
 {
   const auto title = index < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(index);
 
-  const auto newColor = QColorDialog::getColor(lightColors[index], this, title);
+  const auto newColor = QColorDialog::getColor(lightColors_[index], this, title);
   if (newColor.isValid())
   {
-    lightColors[index] = newColor;
+    lightColors_[index] = newColor;
     updateLightColor(index);
     switch (index)
     {
@@ -690,4 +680,19 @@ FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
   fogOnVisibleObjectsCheckBox_->setDisabled(true);
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
   connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+}
+
+ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  setupObjectListWidget();
+
+  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
+  connect(selectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::selectAllClicked);
+  connect(deselectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::deselectAllClicked);
+  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
+  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
+  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
+    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 }

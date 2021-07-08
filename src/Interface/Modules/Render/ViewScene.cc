@@ -177,6 +177,7 @@ namespace Gui {
           ColorOptions* colorOptions_{ nullptr };
           FogControls* fogControls_{ nullptr };
           MaterialsControls* materialsControls_{ nullptr };
+          ObjectSelectionControls* objectSelectionControls_{nullptr};
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -227,6 +228,8 @@ namespace Gui {
 
           std::unique_ptr<Core::GeometryIDGenerator> gid_;
           std::string name_;
+
+          std::unique_ptr<VisibleItemManager> visibleItems_;
 
           static const int DIMENSIONS_ = 3;
           static const int QUATERNION_SIZE_ = 4;
@@ -491,6 +494,7 @@ void ViewSceneDialog::addToolBar()
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
   addConfigurationButton();
+  addObjectSelectionButton();
   addConfigurationDock();
   addAutoViewButton();
   addScreenshotButton();
@@ -508,16 +512,6 @@ void ViewSceneDialog::addToolBar()
   addViewBar();
 }
 
-void ViewSceneDialog::addConfigurationButton()
-{
-  auto* configurationButton = new QPushButton();
-  configurationButton->setToolTip("Open/Close Configuration Menu (F5)");
-  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
-  configurationButton->setShortcut(Qt::Key_F5);
-  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  addToolbarButton(configurationButton, 1);
-}
-
 namespace
 {
   void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget)
@@ -531,6 +525,29 @@ namespace
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
   }
+}
+
+void ViewSceneDialog::addConfigurationButton()
+{
+  auto* configurationButton = new QPushButton();
+  configurationButton->setToolTip("Open/Close Configuration Menu (F5)");
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  configurationButton->setShortcut(Qt::Key_F5);
+  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  addToolbarButton(configurationButton, 1);
+}
+
+void ViewSceneDialog::addObjectSelectionButton()
+{
+  auto* objectSelectionButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  //autoRotateButton->setShortcut(Qt::Key_F5);
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
+  //impl_->objectSelectionControls_->setSampleColor(impl_->bgColor_);
+  setupPopupWidget(objectSelectionButton, impl_->objectSelectionControls_);
+  addToolbarButton(objectSelectionButton, 1);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -1168,14 +1185,14 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
     allGeoms.emplace_back(plane);
 
   const auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
-  auto displayNames = impl_->mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
+  auto displayNames = impl_->objectSelectionControls_->visibleItems().synchronize(allGeoms, showFieldStates);
 
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
     auto obj = *it;
     auto name = displayNames[port];
-    if (impl_->mConfigurationDock->visibleItems().isVisible(name))
+    if (impl_->objectSelectionControls_->visibleItems().isVisible(name))
     {
       const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && spire->hasObject(obj->uniqueID()))
@@ -1190,7 +1207,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   {
     auto obj = *it;
     auto name = displayNames[port];
-    if (impl_->mConfigurationDock->visibleItems().isVisible(name))
+    if (impl_->objectSelectionControls_->visibleItems().isVisible(name))
     {
       const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && !spire->hasObject(obj->uniqueID()))
@@ -1810,7 +1827,7 @@ void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName,
   state_->setTransientValue(Parameters::MeshComponentSelection, sel);
 }
 
-static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomListPtr geomData, ViewSceneControlsDock* mConfigurationDock)
+static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomListPtr geomData, VisibleItemManager& visibleItems)
 {
   //getting geom list
   std::vector<WidgetHandle> objList;
@@ -1821,7 +1838,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(ViewScene::GeomList
     // Check if object is visible
     auto obj = *it; auto name = obj->uniqueID();
     auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
-    if (mConfigurationDock->visibleItems().isVisible(displayName))
+    if (visibleItems.isVisible(displayName))
     {
       auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
@@ -1880,7 +1897,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
       const bool newGeometry = state_->getValue(Parameters::HasNewGeometry).toBool();
       if (newGeometry)
       {
-        impl_->widgetHandles_ = filterGeomObjectsForWidgets(geomData, impl_->mConfigurationDock);
+        impl_->widgetHandles_ = filterGeomObjectsForWidgets(geomData, impl_->objectSelectionControls_->visibleItems());
         state_->setValue(Parameters::HasNewGeometry, false);
       }
 
@@ -2881,5 +2898,5 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 
 void ViewSceneDialog::initializeVisibleObjects()
 {
-  impl_->mConfigurationDock->visibleItems().initializeSavedStateMap();
+  impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
 }

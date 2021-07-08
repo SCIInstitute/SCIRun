@@ -41,6 +41,7 @@ SET(Interface_Modules_Render_FORMS
   ColorOptions.ui
   Fog.ui
   Materials.ui
+  ObjectSelection.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

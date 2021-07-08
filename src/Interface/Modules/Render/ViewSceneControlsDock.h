@@ -34,6 +34,7 @@
 #include "Interface/Modules/Render/ui_ColorOptions.h"
 #include "Interface/Modules/Render/ui_Materials.h"
 #include "Interface/Modules/Render/ui_Fog.h"
+#include "Interface/Modules/Render/ui_ObjectSelection.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -58,13 +59,13 @@ namespace SCIRun {
       void initializeSavedStateMap();
     public Q_SLOTS:
       void clear();
+      void selectAllClicked();
+      void deselectAllClicked();
     Q_SIGNALS:
       void visibleItemChange();
       void meshComponentSelectionChange(const QString& moduleId, const QString& component, bool selected);
     private Q_SLOTS:
       void updateVisible(QTreeWidgetItem* item, int column);
-      void selectAllClicked();
-      void deselectAllClicked();
       void updateState();
     private:
       void addRenderItem(const QString& name);
@@ -91,13 +92,8 @@ namespace SCIRun {
       void updatePlaneControlDisplay(double x, double y, double z, double d);
       QColor getLightColor(int index) const;
 
-      VisibleItemManager& visibleItems() { return *visibleItems_; }
-
     private:
-      void setupObjectListWidget();
-      QColor lightColors[4];
-
-      std::unique_ptr<VisibleItemManager> visibleItems_;
+      QColor lightColors_[4];
 
     Q_SIGNALS:
       void updateLightColor(const int index);
@@ -151,6 +147,18 @@ namespace SCIRun {
       explicit FogControls(ViewSceneDialog* parent);
       void setFogColorLabel(const QColor& color);
       void setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+    };
+
+    class SCISHARE ObjectSelectionControls : public QWidget, public Ui::ObjectSelection
+    {
+      Q_OBJECT
+
+    public:
+      explicit ObjectSelectionControls(ViewSceneDialog* parent);
+      VisibleItemManager& visibleItems() { return *visibleItems_; }
+    private:
+      void setupObjectListWidget();
+      std::unique_ptr<VisibleItemManager> visibleItems_;
     };
   }
 }

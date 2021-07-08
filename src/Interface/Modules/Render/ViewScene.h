@@ -249,6 +249,7 @@ namespace SCIRun {
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
+      void addObjectSelectionButton();
       void addConfigurationDock();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
@@ -303,6 +304,7 @@ namespace SCIRun {
       friend class ColorOptions;
       friend class FogControls;
       friend class MaterialsControls;
+      friend class ObjectSelectionControls;
     };
 
     MouseButton getSpireButton(QMouseEvent* event);
