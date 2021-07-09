@@ -1,10 +1,11 @@
 Welcome to SCIRun's documentation!
 ==================================
 
-.. figure:: _static/scirun.png
-    :width: 495 px
-    :align: center
-    :target: https://www.sci.utah.edu/cibc-software/scirun.html
+.. raw:: html
+
+   <iframe src="https://player.vimeo.com/video/279319572" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+
 
 `SCIRun <https://github.com/SCIInstitute/SCIRun>`_ is a problem solving environment developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
