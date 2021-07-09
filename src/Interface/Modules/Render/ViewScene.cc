@@ -447,8 +447,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   addToolBar();
-  glLayout->addWidget(impl_->mGLWidget, 1, 0);
-  glLayout->addWidget(impl_->toolBar2_, 1, 1);
+  glLayout->addWidget(impl_->mGLWidget, 1, 1);
+  glLayout->addWidget(impl_->toolBar2_, 1, 0);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
@@ -506,7 +506,7 @@ void ViewSceneDialog::addToolBar()
   addScaleBarButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar1_, 0, 0);
+  glLayout->addWidget(impl_->toolBar1_, 0, 1);
 
   addViewBar();
 }
@@ -520,7 +520,7 @@ namespace
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(dir);
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    QObject::connect(popup, &ctkPopupWidget::popupOpened, [underlyingWidget](bool open) { qDebug() << "popup " << underlyingWidget << " is " << open;});
+    //QObject::connect(popup, &ctkPopupWidget::popupOpened, [underlyingWidget](bool open) { qDebug() << "popup " << underlyingWidget << " is " << open;});
 
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
