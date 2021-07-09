@@ -247,7 +247,7 @@ namespace SCIRun {
       void addMaterialOptionsButton();
       void addOrientationAxesButton();
       void addScaleBarButton();
-      void addToolbarButton(QWidget* w, int which);
+      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();

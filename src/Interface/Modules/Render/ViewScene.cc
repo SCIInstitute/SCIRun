@@ -447,6 +447,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   addToolBar();
   glLayout->addWidget(impl_->mGLWidget);
+  glLayout->addWidget(impl_->toolBar2_);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
@@ -482,8 +483,10 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 void ViewSceneDialog::addToolBar()
 {
   impl_->toolBar1_ = new QToolBar(this);
+  //impl_->toolBar1_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
   impl_->toolBar2_ = new QToolBar(this);
+  //impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
   addConfigurationButton();
@@ -502,21 +505,20 @@ void ViewSceneDialog::addToolBar()
   setupMaterials();
 
   glLayout->addWidget(impl_->toolBar1_);
-  glLayout->addWidget(impl_->toolBar2_);
 
   addViewBar();
 }
 
 namespace
 {
-  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget)
+  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, ctkBasePopupWidget::VerticalDirection dir)
   {
     auto popup = new ctkPopupWidget(button);
     auto popupLayout = new QHBoxLayout(popup);
     popup->setOrientation(Qt::Horizontal);
-    popup->setVerticalDirection(ctkBasePopupWidget::BottomToTop);
+    popup->setVerticalDirection(dir);
     popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
-    QObject::connect(popup, &ctkPopupWidget::popupOpened, [](bool open) { qDebug() << "popup is " << open;});
+    QObject::connect(popup, &ctkPopupWidget::popupOpened, [underlyingWidget](bool open) { qDebug() << "popup " << underlyingWidget << " is " << open;});
 
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
@@ -542,8 +544,7 @@ void ViewSceneDialog::addObjectSelectionButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
   //impl_->objectSelectionControls_->setSampleColor(impl_->bgColor_);
-  setupPopupWidget(objectSelectionButton, impl_->objectSelectionControls_);
-  addToolbarButton(objectSelectionButton, 1);
+  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -553,9 +554,8 @@ void ViewSceneDialog::addAutoRotateButton()
   autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   connect(autoRotateButton, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
-  auto popupSlider = new AutoRotateControls(this);
-  setupPopupWidget(autoRotateButton, popupSlider);
-  addToolbarButton(autoRotateButton, 1);
+  auto arctrls = new AutoRotateControls(this);
+  addToolbarButton(autoRotateButton, 1, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
@@ -567,8 +567,7 @@ void ViewSceneDialog::addColorOptionsButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->colorOptions_ = new ColorOptions(this);
   impl_->colorOptions_->setSampleColor(impl_->bgColor_);
-  setupPopupWidget(colorOptionsButton, impl_->colorOptions_);
-  addToolbarButton(colorOptionsButton, 2);
+  addToolbarButton(colorOptionsButton, 2, impl_->colorOptions_);
 }
 
 void ViewSceneDialog::addLightOptionsComboBox()
@@ -588,8 +587,7 @@ void ViewSceneDialog::addFogOptionsButton()
   //fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->fogControls_ = new FogControls(this);
-  setupPopupWidget(fogOptionsButton, impl_->fogControls_);
-  addToolbarButton(fogOptionsButton, 2);
+  addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
 }
 
 void ViewSceneDialog::addMaterialOptionsButton()
@@ -599,8 +597,7 @@ void ViewSceneDialog::addMaterialOptionsButton()
   materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->materialsControls_ = new MaterialsControls(this);
-  setupPopupWidget(materialOptionsButton, impl_->materialsControls_);
-  addToolbarButton(materialOptionsButton, 2);
+  addToolbarButton(materialOptionsButton, 2, impl_->materialsControls_);
 }
 
 void ViewSceneDialog::addOrientationAxesButton()
@@ -610,8 +607,7 @@ void ViewSceneDialog::addOrientationAxesButton()
   orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->orientationAxesControls_ = new OrientationAxesControls(this);
-  setupPopupWidget(orientationAxesButton, impl_->orientationAxesControls_);
-  addToolbarButton(orientationAxesButton, 2);
+  addToolbarButton(orientationAxesButton, 2, impl_->orientationAxesControls_);
 }
 
 void ViewSceneDialog::addScaleBarButton()
@@ -622,21 +618,26 @@ void ViewSceneDialog::addScaleBarButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->scaleBarControls_ = new ScaleBarControls(this);
   fixSize(impl_->scaleBarControls_);
-  setupPopupWidget(scaleBarButton, impl_->scaleBarControls_);
-  addToolbarButton(scaleBarButton, 2);
+  addToolbarButton(scaleBarButton, 2, impl_->scaleBarControls_);
 
   impl_->scaleBarControls_->setScaleBarValues(impl_->scaleBar_);
 }
 
-void ViewSceneDialog::addToolbarButton(QWidget* widget, int which)
+void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
   if (auto button = qobject_cast<QPushButton*>(widget))
+  {
     button->setIconSize(QSize(iconSize, iconSize));
+    if (widgetToPopup)
+      setupPopupWidget(button, widgetToPopup, which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom);
+  }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
+
+
 }
 
 void ViewSceneDialog::addConfigurationDock()
