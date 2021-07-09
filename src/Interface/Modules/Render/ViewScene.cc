@@ -398,7 +398,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
 
   //Set background Color
-  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+  const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
   impl_->bgColor_ = checkColorSetting(colorStr, Qt::black);
 
   {
@@ -484,7 +484,6 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 void ViewSceneDialog::addToolBar()
 {
   impl_->toolBar1_ = new QToolBar(this);
-  //impl_->toolBar1_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
   impl_->toolBar2_ = new QToolBar(this);
   impl_->toolBar2_->setOrientation(Qt::Vertical);
@@ -515,11 +514,12 @@ namespace
 {
   void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, ctkBasePopupWidget::VerticalDirection dir)
   {
-    auto popup = new ctkPopupWidget(button);
-    auto popupLayout = new QHBoxLayout(popup);
+    auto* popup = new ctkPopupWidget(button);
+    auto* popupLayout = new QVBoxLayout(popup);
+    popup->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(dir);
-    popup->setHorizontalDirection(Qt::RightToLeft); // open outside the parent
+    popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
     //QObject::connect(popup, &ctkPopupWidget::popupOpened, [underlyingWidget](bool open) { qDebug() << "popup " << underlyingWidget << " is " << open;});
 
     popupLayout->addWidget(underlyingWidget);
@@ -543,9 +543,7 @@ void ViewSceneDialog::addObjectSelectionButton()
   //colorOptionsButton->setToolTip("Color settings");
   objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
-  //impl_->objectSelectionControls_->setSampleColor(impl_->bgColor_);
   addToolbarButton(objectSelectionButton, 2, impl_->objectSelectionControls_);
 }
 
@@ -566,7 +564,6 @@ void ViewSceneDialog::addColorOptionsButton()
   //colorOptionsButton->setToolTip("Color settings");
   colorOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->colorOptions_ = new ColorOptions(this);
   impl_->colorOptions_->setSampleColor(impl_->bgColor_);
   addToolbarButton(colorOptionsButton, 2, impl_->colorOptions_);
@@ -587,7 +584,6 @@ void ViewSceneDialog::addFogOptionsButton()
   auto* fogOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->fogControls_ = new FogControls(this);
   addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
 }
@@ -597,7 +593,6 @@ void ViewSceneDialog::addMaterialOptionsButton()
   auto* materialOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->materialsControls_ = new MaterialsControls(this);
   addToolbarButton(materialOptionsButton, 2, impl_->materialsControls_);
 }
@@ -607,7 +602,6 @@ void ViewSceneDialog::addOrientationAxesButton()
   auto* orientationAxesButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->orientationAxesControls_ = new OrientationAxesControls(this);
   addToolbarButton(orientationAxesButton, 2, impl_->orientationAxesControls_);
 }
@@ -617,7 +611,6 @@ void ViewSceneDialog::addScaleBarButton()
   auto* scaleBarButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
   scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->scaleBarControls_ = new ScaleBarControls(this);
   fixSize(impl_->scaleBarControls_);
   addToolbarButton(scaleBarButton, 2, impl_->scaleBarControls_);
@@ -630,7 +623,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
-  if (auto button = qobject_cast<QPushButton*>(widget))
+  if (auto* button = qobject_cast<QPushButton*>(widget))
   {
     button->setIconSize(QSize(iconSize, iconSize));
     if (widgetToPopup)
@@ -638,8 +631,6 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
-
-
 }
 
 void ViewSceneDialog::addConfigurationDock()
