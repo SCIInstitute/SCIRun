@@ -171,6 +171,7 @@ namespace Gui {
           ObjectSelectionControls* objectSelectionControls_{nullptr};
           OrientationAxesControls* orientationAxesControls_{nullptr};
           ScaleBarControls* scaleBarControls_{nullptr};
+          ClippingPlaneControls* clippingPlaneControls_{nullptr};
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -446,8 +447,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   addToolBar();
-  glLayout->addWidget(impl_->mGLWidget);
-  glLayout->addWidget(impl_->toolBar2_);
+  glLayout->addWidget(impl_->mGLWidget, 1, 0);
+  glLayout->addWidget(impl_->toolBar2_, 1, 1);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
@@ -486,7 +487,7 @@ void ViewSceneDialog::addToolBar()
   //impl_->toolBar1_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
   impl_->toolBar2_ = new QToolBar(this);
-  //impl_->toolBar2_->setOrientation(Qt::Vertical);
+  impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
   addConfigurationButton();
@@ -498,13 +499,14 @@ void ViewSceneDialog::addToolBar()
   addAutoRotateButton();
   addColorOptionsButton();
   addLightOptionsComboBox();
+  addClippingPlaneButton();
   addFogOptionsButton();
   addMaterialOptionsButton();
   addOrientationAxesButton();
   addScaleBarButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar1_);
+  glLayout->addWidget(impl_->toolBar1_, 0, 0);
 
   addViewBar();
 }
@@ -539,12 +541,12 @@ void ViewSceneDialog::addObjectSelectionButton()
 {
   auto* objectSelectionButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
   //impl_->objectSelectionControls_->setSampleColor(impl_->bgColor_);
-  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_);
+  addToolbarButton(objectSelectionButton, 2, impl_->objectSelectionControls_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -555,14 +557,14 @@ void ViewSceneDialog::addAutoRotateButton()
   //autoRotateButton->setShortcut(Qt::Key_F5);
   connect(autoRotateButton, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto arctrls = new AutoRotateControls(this);
-  addToolbarButton(autoRotateButton, 1, arctrls);
+  addToolbarButton(autoRotateButton, 2, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
 {
   auto* colorOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  colorOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
   //autoRotateButton->setShortcut(Qt::Key_F5);
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->colorOptions_ = new ColorOptions(this);
@@ -577,14 +579,14 @@ void ViewSceneDialog::addLightOptionsComboBox()
   lightList << "Headlight" << "Light1" << "Light2" << "Light3";
   lightOptionsComboBox->addItems(lightList);
   lightOptionsComboBox->setMinimumWidth(110);
-  impl_->toolBar2_->addWidget(lightOptionsComboBox);
+  impl_->toolBar1_->addWidget(lightOptionsComboBox);
 }
 
 void ViewSceneDialog::addFogOptionsButton()
 {
   auto* fogOptionsButton = new QPushButton();
   //colorOptionsButton->setToolTip("Color settings");
-  //fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
+  fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->fogControls_ = new FogControls(this);
   addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
@@ -812,7 +814,7 @@ void ViewSceneDialog::addViewBarButton()
   impl_->viewBarBtn_->setToolTip("Show View Options");
   impl_->viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
   connect(impl_->viewBarBtn_, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  addToolbarButton(impl_->viewBarBtn_, 2);
+  addToolbarButton(impl_->viewBarBtn_, 1);
 }
 
 void ViewSceneDialog::addControlLockButton()
@@ -847,6 +849,16 @@ void ViewSceneDialog::addControlLockButton()
   addToolbarButton(impl_->controlLock_, 1);
   impl_->controlLock_->setFixedWidth(45);
   toggleLockColor(false);
+}
+
+void ViewSceneDialog::addClippingPlaneButton()
+{
+  auto* clippingPlaneButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->clippingPlaneControls_ = new ClippingPlaneControls(this);
+  addToolbarButton(clippingPlaneButton, 2, impl_->clippingPlaneControls_);
 }
 
 ClippingPlaneManager::ClippingPlaneManager(ModuleStateHandle state) : state_(state), clippingPlanes_(ClippingPlane::MaxCount)
@@ -1191,7 +1203,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   if (clippingPlanesUpdated)
   {
     const auto& activePlane = impl_->clippingPlaneManager_->active();
-    impl_->mConfigurationDock->updatePlaneControlDisplay(
+    impl_->clippingPlaneControls_->updatePlaneControlDisplay(
       activePlane.x,
       activePlane.y,
       activePlane.z,
@@ -2068,11 +2080,11 @@ void ViewSceneDialog::initializeClippingPlaneDisplay()
   impl_->clippingPlaneManager_->setActive(0);
 
   const auto& activePlane = impl_->clippingPlaneManager_->active();
-  impl_->mConfigurationDock->updatePlaneSettingsDisplay(
+  impl_->clippingPlaneControls_->updatePlaneSettingsDisplay(
     activePlane.visible,
     activePlane.showFrame,
     activePlane.reverseNormal);
-  impl_->mConfigurationDock->updatePlaneControlDisplay(
+  impl_->clippingPlaneControls_->updatePlaneControlDisplay(
     activePlane.x,
     activePlane.y,
     activePlane.z,
@@ -2089,7 +2101,7 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 void ViewSceneDialog::doClippingPlanes()
 {
   const auto& activePlane = impl_->clippingPlaneManager_->active();
-  impl_->mConfigurationDock->updatePlaneSettingsDisplay(
+  impl_->clippingPlaneControls_->updatePlaneSettingsDisplay(
     activePlane.visible,
     activePlane.showFrame,
     activePlane.reverseNormal);

@@ -37,6 +37,7 @@
 #include "Interface/Modules/Render/ui_ObjectSelection.h"
 #include "Interface/Modules/Render/ui_OrientationAxes.h"
 #include "Interface/Modules/Render/ui_ScaleBar.h"
+#include "Interface/Modules/Render/ui_ClippingPlanes.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -87,8 +88,6 @@ namespace SCIRun {
 
       void setLabelColor(QLabel* label, const QColor& color);
       void updateZoomOptionVisibility();
-      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
-      void updatePlaneControlDisplay(double x, double y, double z, double d);
       QColor getLightColor(int index) const;
 
     private:
@@ -185,6 +184,17 @@ namespace SCIRun {
     public:
       explicit ScaleBarControls(ViewSceneDialog* parent);
       void setScaleBarValues(const ScaleBarData& scale);
+    };
+
+    class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes
+    {
+      Q_OBJECT
+
+    public:
+      explicit ClippingPlaneControls(ViewSceneDialog* parent);
+      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
+      void updatePlaneControlDisplay(double x, double y, double z, double d);
+    private:
     };
   }
 }

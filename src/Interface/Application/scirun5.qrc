@@ -51,6 +51,10 @@
     <file>Resources/ViewScene/axes.png</file>
     <file>Resources/ViewScene/materials.png</file>
     <file>Resources/ViewScene/scaleBar.png</file>
+    <file>Resources/ViewScene/selection.png</file>
+    <file>Resources/ViewScene/fillColor.png</file>
+    <file>Resources/ViewScene/clipping.png</file>
+    <file>Resources/ViewScene/eye.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>
