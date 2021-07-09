@@ -89,6 +89,16 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
    other
 
 
+..
+   bib tree
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Bibliography:
+
+   bib
+
 
 
 Indices and tables

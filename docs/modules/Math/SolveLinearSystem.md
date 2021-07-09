@@ -64,4 +64,6 @@ The bottom section of the GUI shows how the solution is progressing.
 There is an iteration counter to show how many iterations have been completed, the value of the original error (this will be 1.0 unless the  **Use the previous solution as initial guess** option has been used) and the value of the current error.
 These quantities are summarised graphically in the convergence plot.
 
-Further reading: [http://www-users.cs.umn.edu/~saad/books.html Y. Saad, Iterative methods for sparse linear systems, second edition (2000)].
+```eval_rst
+Further reading: :cite:p:`Saa2003`.
+```
