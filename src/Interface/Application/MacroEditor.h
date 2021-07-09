@@ -44,7 +44,7 @@ namespace Gui {
 
   using MacroNameValueList = QList<QStringList>;
 
-  enum MacroListItem
+  enum class MacroListItem
   {
     Name,
     Script,

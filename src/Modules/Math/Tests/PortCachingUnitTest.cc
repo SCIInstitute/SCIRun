@@ -163,7 +163,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
     EXPECT_CALL(*mockNeedToExecute, needToExecute()).Times(1).WillOnce(Return(needToExecute_));
     SimpleSink::setGlobalPortCachingFlag(portCaching_);
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     send->execute();
     process->execute();
@@ -205,7 +205,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
 
   evalModule->resetFlags();
   send->execute();
-  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
   process->execute();
   receive->execute();
   FAIL() << "test needs rewrite";
@@ -215,7 +215,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
 
   evalModule->resetFlags();
   send->execute();
-  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
@@ -592,7 +592,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustInputsChanged)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
@@ -679,7 +679,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
@@ -705,7 +705,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+      process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
 
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //state has changed
@@ -765,7 +765,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);

@@ -67,7 +67,7 @@ namespace SCIRun
 
         OUTPUT_PORT(0, ColorMapOutput, ColorMap);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
     }
   }

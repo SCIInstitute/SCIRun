@@ -68,7 +68,7 @@ namespace Visualization {
     void setStateDefaults() override;
     INPUT_PORT(0, String, String);
     OUTPUT_PORT(0, RenderedString, GeometryObject);
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
     std::tuple<double, double> getTextPosition();

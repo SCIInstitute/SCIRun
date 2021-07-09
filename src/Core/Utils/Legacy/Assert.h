@@ -43,7 +43,6 @@
 #include <sci_defs/error_defs.h>
 
 #include <Core/Exceptions/AssertionFailed.h>
-#include <Core/Exceptions/ArrayIndexOutOfBounds.h>
 
 /// @todo: make sure default SCI_ASSERTION_LEVEL is consistent across platforms
 
@@ -79,13 +78,8 @@
      if(!(condition)){ \
         SCI_THROW(SCIRun::AssertionFailed(#condition, __FILE__, __LINE__)); \
      }
-#  define CHECKARRAYBOUNDS(value, lower, upper) \
-     if(value < lower || value >= upper){ \
-        SCI_THROW(SCIRun::ArrayIndexOutOfBounds(value, lower, upper, __FILE__, __LINE__)); \
-     }
 #else
 #  define ASSERTL3(condition)
-#  define CHECKARRAYBOUNDS(value, lower, upper)
 #endif
 
 #if SCI_ASSERTION_LEVEL == 0

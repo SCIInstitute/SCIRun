@@ -29,6 +29,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/ModuleButtonBar.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Utils/Exception.h>

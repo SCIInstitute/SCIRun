@@ -78,8 +78,8 @@ void CreateLatVol::setStateDefaults()
   state->setValue(YSize, 16);
   state->setValue(ZSize, 16);
   state->setValue(PadPercent, 0.0);
-  state->setValue(DataAtLocation, static_cast<int>(NODES));
-  state->setValue(ElementSizeNormalized, static_cast<int>(ELEMENTS_NORMALIZED));
+  state->setValue(DataAtLocation, static_cast<int>(DataLocation::NODES));
+  state->setValue(ElementSizeNormalized, static_cast<int>(MeshDimensions::ELEMENTS_NORMALIZED));
 }
 
 /// @todo: extract algorithm class!!!!!!!!!!!!!!!!!!!!
@@ -128,8 +128,8 @@ CreateLatVol::execute()
 
     if (!ifieldhandleOption)
     {
-      datatype = SCALAR;
-      if (get_state()->getValue(ElementSizeNormalized).toInt() == ELEMENTS_NORMALIZED)
+      datatype = DataTypeEnum::SCALAR;
+      if (static_cast<MeshDimensions>(get_state()->getValue(ElementSizeNormalized).toInt()) == MeshDimensions::ELEMENTS_NORMALIZED)
       {
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
@@ -144,15 +144,15 @@ CreateLatVol::execute()
     }
     else
     {
-      datatype = SCALAR;
+      datatype = DataTypeEnum::SCALAR;
       FieldInformation fi(*ifieldhandleOption);
       if (fi.is_vector())
       {
-        datatype = VECTOR;
+        datatype = DataTypeEnum::VECTOR;
       }
       else if (fi.is_tensor())
       {
-        datatype = TENSOR;
+        datatype = DataTypeEnum::TENSOR;
       }
       BBox bbox = (*ifieldhandleOption)->vmesh()->get_bounding_box();
       minb = bbox.get_min();
@@ -165,19 +165,19 @@ CreateLatVol::execute()
     maxb += diag;
 
     int basis_order;
-    auto dataAtLocation = get_state()->getValue(DataAtLocation).toInt();
-    if (dataAtLocation == NODES) basis_order = 1;
-    else if (dataAtLocation == CELLS) basis_order = 0;
-    else if (dataAtLocation == NONE) basis_order = -1;
+    auto dataAtLocation = static_cast<DataLocation>(get_state()->getValue(DataAtLocation).toInt());
+    if (dataAtLocation == DataLocation::NODES) basis_order = 1;
+    else if (dataAtLocation == DataLocation::CELLS) basis_order = 0;
+    else if (dataAtLocation == DataLocation::NONE) basis_order = -1;
     else
     {
-      error("Unsupported data_at location " + boost::lexical_cast<std::string>(dataAtLocation) + ".");
+      error("Unsupported data_at location " + boost::lexical_cast<std::string>(static_cast<int>(dataAtLocation)) + ".");
       return;
     }
 
     FieldInformation lfi("LatVolMesh",basis_order,"double");
-    if (datatype == VECTOR) lfi.make_vector();
-    else if (datatype == TENSOR) lfi.make_tensor();
+    if (datatype == DataTypeEnum::VECTOR) lfi.make_vector();
+    else if (datatype == DataTypeEnum::TENSOR) lfi.make_tensor();
 
     MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);

@@ -58,7 +58,7 @@ namespace Inverse {
 		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix)
 		OUTPUT_PORT(2, RegInverse, DenseMatrix)
 
-		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+		MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
 	private:
 	};

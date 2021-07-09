@@ -159,7 +159,7 @@ public:
     }
   };
 
-  struct INodeIter : public ImageIter
+  struct INodeIter : ImageIter
   {
     INodeIter() : ImageIter() {}
     INodeIter(const ImageMesh *m, index_type i, index_type j)
@@ -188,7 +188,7 @@ public:
   };
 
 
-  struct IFaceIter : public ImageIter
+  struct IFaceIter : ImageIter
   {
     IFaceIter() : ImageIter() {}
     IFaceIter(const ImageMesh *m, index_type i, index_type j)
@@ -198,7 +198,7 @@ public:
 
     IFaceIter &operator++()
     {
-      this->i_++;
+      ++this->i_;
       if (this->i_ >= this->mesh_->min_i_+this->mesh_->ni_-1)
       {
         this->i_ = this->mesh_->min_i_;
@@ -219,7 +219,6 @@ public:
 
   struct ImageSize
   {
-  public:
     ImageSize() : i_(0), j_(0) {}
     ImageSize(index_type i, index_type j) : i_(i), j_(j) {}
 
@@ -350,8 +349,8 @@ public:
       Core::Geometry::Point p(index_.i_, index_.j_, 0.0);
       return mesh_.transform_.project(p);
     }
-    inline
-    const Core::Geometry::Point node1() const
+
+     Core::Geometry::Point node1() const
     {
       Core::Geometry::Point p(index_.i_ + 1, index_.j_, 0.0);
       return mesh_.transform_.project(p);

@@ -200,12 +200,12 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   //Set module parameters.
   matrix1Send->get_state()->setValue(Parameters::TextEntry, TestUtils::matrix1str());
   matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
-  transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-  negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  transpose->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
+  negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+  scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-  multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-  add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  multiply->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::MULTIPLY));
+  add->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::ADD));
 
   auto xml = controller.saveNetwork();
 
@@ -227,7 +227,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   auto trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 0));
   ASSERT_TRUE(trans2.get() != nullptr);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->name());
-  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).toInt());
+  EXPECT_EQ(static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE), trans2->get_state()->getValue(Variables::Operator).toInt());
 }
 
 TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
@@ -270,12 +270,12 @@ TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
     //Set module parameters.
     matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
     matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
-    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    transpose->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
+    negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+    scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
     scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+    multiply->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::MULTIPLY));
+    add->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::ADD));
   }
   auto filename = (TestUtils::TestResources::rootDir() / "TransientOutput" / "testCommandNetwork.srn5").string();
   save.set(Variables::Filename, filename);
@@ -298,7 +298,7 @@ TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
   auto trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 0));
   ASSERT_TRUE(trans2.get() != nullptr);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->name());
-  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).toInt());
+  EXPECT_EQ(static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE), trans2->get_state()->getValue(Variables::Operator).toInt());
 
   boost::filesystem::remove(filename);
 }
@@ -392,12 +392,12 @@ TEST(ToolkitSerializationTest, Experimenting)
     //Set module parameters.
     matrix1Send->get_state()->setValue(Parameters::TextEntry, TestUtils::matrix1str());
     matrix2Send->get_state()->setValue(Parameters::TextEntry, TestUtils::matrix2str());
-    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    transpose->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
+    negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+    scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
     scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+    multiply->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::MULTIPLY));
+    add->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::ADD));
 
     auto xml = controller.saveNetwork();
     toolkit.networks["dir/first.srn5"] = *xml;

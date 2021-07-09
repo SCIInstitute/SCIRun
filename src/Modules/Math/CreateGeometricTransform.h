@@ -92,7 +92,7 @@ namespace Math {
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, Widget, GeometryObject);
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
   private:
     Core::Datatypes::MatrixHandle omatrixH_;

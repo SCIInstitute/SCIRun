@@ -58,8 +58,8 @@ const ExecutionBounds& ExecutionContext::bounds() const
 
 void ExecutionContext::preexecute()
 {
-  network_.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, [](ModuleHandle) { return true; });
-  network_.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter_);
+  network_.setExpandedModuleExecutionState(ModuleExecutionState::Value::NotExecuted, [](ModuleHandle) { return true; });
+  network_.setModuleExecutionState(ModuleExecutionState::Value::Waiting, additionalFilter_);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);

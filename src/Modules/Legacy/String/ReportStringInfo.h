@@ -47,7 +47,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, Input, String);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         static const std::string infoKey_;
       };
     }}}

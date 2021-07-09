@@ -51,7 +51,7 @@ namespace Math {
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, Selected_Index, Int32);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
   private:
     bool playing_;

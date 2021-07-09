@@ -524,7 +524,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
   if (color == Qt::red)
   {
     errored_ = true;
-    updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored)));
+    updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Value::Errored)));
   }
   fullWidgetDisplay_->setStatusColor(moduleRGBA(color.red(), color.green(), color.blue()));
 }
@@ -996,7 +996,7 @@ void ModuleWidget::printPortPositions() const
   std::cout << std::endl;
 }
 
-enum ModuleWidgetPages
+enum class ModuleWidgetPages
 {
   TITLE_PAGE,
   PROGRESS_PAGE,
@@ -1006,8 +1006,8 @@ enum ModuleWidgetPages
 void ModuleWidget::enterEvent(QEvent* event)
 {
   previousPageIndex_ = currentIndex();
-  movePortWidgets(previousPageIndex_, BUTTON_PAGE);
-  setCurrentIndex(BUTTON_PAGE);
+  movePortWidgets(previousPageIndex_, static_cast<int>(ModuleWidgetPages::BUTTON_PAGE));
+  setCurrentIndex(static_cast<int>(ModuleWidgetPages::BUTTON_PAGE));
   QStackedWidget::enterEvent(event);
 }
 
@@ -1121,11 +1121,11 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
 
 void ModuleWidget::fillColorStateLookup(const QString& background)
 {
-  colorStateLookup_.insert(ColorStatePair(moduleRGBA(205,190,112), static_cast<int>(ModuleExecutionState::Waiting)));
-  colorStateLookup_.insert(ColorStatePair(moduleRGBA(170, 204, 170), static_cast<int>(ModuleExecutionState::Executing)));
-  colorStateLookup_.insert(ColorStatePair(background, static_cast<int>(ModuleExecutionState::Completed)));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(205,190,112), static_cast<int>(ModuleExecutionState::Value::Waiting)));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(170, 204, 170), static_cast<int>(ModuleExecutionState::Value::Executing)));
+  colorStateLookup_.insert(ColorStatePair(background, static_cast<int>(ModuleExecutionState::Value::Completed)));
   colorStateLookup_.insert(ColorStatePair(moduleRGBA(164, 211, 238), SELECTED));
-  colorStateLookup_.insert(ColorStatePair(moduleRGBA(176, 23, 31), static_cast<int>(ModuleExecutionState::Errored)));
+  colorStateLookup_.insert(ColorStatePair(moduleRGBA(176, 23, 31), static_cast<int>(ModuleExecutionState::Value::Errored)));
 }
 
 //primitive state machine--updateBackgroundColor slot needs the thread-safe state machine too
@@ -1133,17 +1133,17 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
   switch (moduleState)
   {
-  case static_cast<int>(ModuleExecutionState::Waiting):
+  case static_cast<int>(ModuleExecutionState::Value::Waiting):
   {
-    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
+    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Value::Waiting)));
   }
   break;
-  case static_cast<int>(ModuleExecutionState::Executing):
+  case static_cast<int>(ModuleExecutionState::Value::Executing):
   {
-    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Executing)));
+    Q_EMIT backgroundColorUpdated(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Value::Executing)));
   }
   break;
-  case static_cast<int>(ModuleExecutionState::Completed):
+  case static_cast<int>(ModuleExecutionState::Value::Completed):
   {
     Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
   }
@@ -1159,7 +1159,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 
     if (errored_)
     {
-      colorToUse = colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored));
+      colorToUse = colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Value::Errored));
     }
 
     static const QString rounded("color: white; border-radius: 7px;");
@@ -1485,8 +1485,8 @@ void ModuleWidget::changeExecuteButtonToStop()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
-  movePortWidgets(currentIndex(), PROGRESS_PAGE);
-  setCurrentIndex(PROGRESS_PAGE);
+  movePortWidgets(currentIndex(), static_cast<int>(ModuleWidgetPages::PROGRESS_PAGE));
+  setCurrentIndex(static_cast<int>(ModuleWidgetPages::PROGRESS_PAGE));
 
   fullWidgetDisplay_->startExecuteMovie();
 }
@@ -1496,8 +1496,8 @@ void ModuleWidget::changeExecuteButtonToPlay()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(*currentExecuteIcon_));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  movePortWidgets(currentIndex(), TITLE_PAGE);
-  setCurrentIndex(TITLE_PAGE);
+  movePortWidgets(currentIndex(), static_cast<int>(ModuleWidgetPages::TITLE_PAGE));
+  setCurrentIndex(static_cast<int>(ModuleWidgetPages::TITLE_PAGE));
 }
 
 void ModuleWidget::stopButtonPushed()
@@ -1528,7 +1528,7 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 {
   skipExecuteDueToFatalError_ = true;
   qDebug() << "Dialog error: " << message;
-  updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Errored)));
+  updateBackgroundColor(colorStateLookup_.right.at(static_cast<int>(ModuleExecutionState::Value::Errored)));
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 

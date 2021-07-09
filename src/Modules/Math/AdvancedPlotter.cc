@@ -31,6 +31,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::Math;

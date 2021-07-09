@@ -47,7 +47,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, Input, Matrix);
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
  }}}
 

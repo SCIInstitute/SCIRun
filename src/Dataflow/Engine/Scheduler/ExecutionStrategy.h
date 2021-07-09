@@ -46,7 +46,7 @@ namespace Engine {
     virtual ~ExecutionStrategy() {}
     virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
-    enum Type
+    enum class Type
     {
       SERIAL,
       BASIC_PARALLEL,

@@ -57,7 +57,7 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
         static const Core::Algorithms::AlgorithmParameterName BasisString;
       };

@@ -39,8 +39,6 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 
-#include <iostream>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -56,7 +54,7 @@ protected:
   void SetUp() override
   {
     {
-      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::LINEARDATA_E), "double");
       basicTriangleMesh_ = CreateMesh(fi);
       auto triangleVMesh = basicTriangleMesh_->vmesh();
       triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
@@ -69,7 +67,7 @@ protected:
     }
 
     {
-      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::LINEARDATA_E), "double");
       cubeMesh_ = CreateMesh(fi);
       auto cubeVMesh = cubeMesh_->vmesh();
       cubeVMesh->add_point(Point(0.0, 1.0, 0.0));
@@ -120,7 +118,7 @@ protected:
     }
 
     {
-      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      FieldInformation fi("TriSurfMesh", static_cast<int>(databasis_info_type::LINEARDATA_E), "double");
       tetrahedronMesh_ = CreateMesh(fi);
       auto tetrahedronVMesh = tetrahedronMesh_->vmesh();
       tetrahedronVMesh->add_point(Point(1.0, 0.0, -0.707));

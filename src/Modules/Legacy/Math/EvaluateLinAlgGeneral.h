@@ -55,7 +55,7 @@ namespace SCIRun {
         OUTPUT_PORT(3, o4, Matrix);
         OUTPUT_PORT(4, o5, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 }}}
 

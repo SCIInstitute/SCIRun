@@ -54,7 +54,7 @@ namespace SCIRun {
 
         LEGACY_BIOPSE_MODULE
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
 
     }

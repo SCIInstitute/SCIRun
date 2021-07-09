@@ -143,7 +143,7 @@ public:
       return;
     }
 
-    if (!srstate.front().state.get(RenderState::IS_TEXT))
+    if (!srstate.front().state.get(RenderState::ActionFlags::IS_TEXT))
     {
       return;
     }
@@ -345,7 +345,7 @@ public:
     }
     else
     {
-      if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+      if (!srstate.front().state.get(RenderState::ActionFlags::IS_DOUBLE_SIDED))
       {
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
                           ibo.front().primType, nullptr));

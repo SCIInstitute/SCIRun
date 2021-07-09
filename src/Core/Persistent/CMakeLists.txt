@@ -55,7 +55,6 @@ TARGET_LINK_LIBRARIES( Core_Persistent
   Core_Util_Legacy
   Core_Logging
   Algorithms_Base #TODO
-  #${SCI_ZLIB_LIBRARY}
 )
 
 IF(SCI_TEEM_LIBRARY)

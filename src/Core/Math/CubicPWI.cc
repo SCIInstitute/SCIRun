@@ -62,7 +62,7 @@ bool set_tangents(const Array1<double>& pts, const Array1<double>& vals, Array1<
   int psz = pts.size();
   int vsz = vals.size();
 
-  if (end_conds == clamped_ends) {
+  if (end_conds == EndCondition::clamped_ends) {
     ASSERT(psz == (vsz - 2) && psz >= 2);
   }
   else
@@ -95,7 +95,7 @@ bool set_tangents(const Array1<double>& pts, const Array1<double>& vals, Array1<
   diag[0] = diag[hind] = 1;
 
   switch (end_conds) {
-    case natural_ends:
+    case EndCondition::natural_ends:
       r[0]=3 * dv[0] / dx[0];
       r[hind] = 3 * dv[hind-1] / dx[hind-1];
       diag[0] = diag[hind] = 2;
@@ -103,12 +103,12 @@ bool set_tangents(const Array1<double>& pts, const Array1<double>& vals, Array1<
       lrow[hind] = 1;
       break;
 
-    case clamped_ends:
+    case EndCondition::clamped_ends:
       r[0] = vals[vsz-2];
       r[hind] = vals[vsz-1];
       break;
 
-    case bessel_ends:
+    case EndCondition::bessel_ends:
     {
       r[0] = -2 * pts[0] * (2 * dx[0] + dx[1]) / (dx[0] * diag[1]) +
                diag[1] * pts[1] / (2 * dx[0] * dx[1]) -
@@ -121,7 +121,7 @@ bool set_tangents(const Array1<double>& pts, const Array1<double>& vals, Array1<
     }
       break;
 
-    case quadratic_ends:
+    case EndCondition::quadratic_ends:
       r[0] = 2 * dv[0] / dx[0];
       r[hind] = 2 * dv[hind-1] / dx[hind-1];
       hrow[0] = lrow[hind] = 1;
@@ -168,12 +168,14 @@ bool CubicPWI::set_data(const Array1<double>& pts, const Array1<double>& vals)
   reset();
   int sz = 0;
 
-  if (fill_data(pts) && (sz = points.size()) > 1 && sz == vals.size()) {
+  if (fill_data(pts) && (sz = points.size()) > 1 && sz == vals.size())
+  {
     std::cout << "Inside set_data!!!" << std::endl;
 
     p.resize(sz);
     Array1<double> ders;
-    if (set_tangents(points, vals, ders, natural_ends)){
+    if (set_tangents(points, vals, ders, natural_ends))
+    {
 
       data_valid = true;
       double a, b, c, d, delta;

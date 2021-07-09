@@ -274,7 +274,7 @@ namespace Gui {
     void setVisibility(bool visible);
 
     void metadataLayer(bool active);
-    void tagLayer(bool active, int tag);
+    void tagLayer(bool active, TagValues tag);
     bool tagLayerActive() const { return tagLayerActive_; }
     bool tagGroupsActive() const { return tagGroupsActive_; }
 
@@ -413,7 +413,7 @@ namespace Gui {
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
-    void highlightTaggedItem(QGraphicsItem* item, int tagValue);
+    void highlightTaggedItem(QGraphicsItem* item, TagValues tagValue);
     void pasteImpl(const QString& xml);
     void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect,
       const std::string& newModuleName);

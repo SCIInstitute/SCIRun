@@ -57,15 +57,6 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Converter
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
-  #Core_Util
-  #Core_Exceptions
-  #Core_Thread
-  #Core_Geom
-  #Core_Geometry
-  #Core_Persistent
-  #Core_Basis
-  #${M_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

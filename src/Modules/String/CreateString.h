@@ -48,7 +48,7 @@ namespace StringProcessing {
     void setStateDefaults() override;
     OUTPUT_PORT(0, NewString, String);
     static const Core::Algorithms::AlgorithmParameterName InputString;
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     std::string stringValue_;
   };

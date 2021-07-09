@@ -47,7 +47,7 @@ namespace Teem {
 
     INPUT_PORT(0, Query_Nrrd, NrrdDataType)
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     void update_input_attributes(NrrdDataHandle nrrd);
     template <typename T>

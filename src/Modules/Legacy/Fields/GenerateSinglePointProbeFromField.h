@@ -78,7 +78,7 @@ namespace SCIRun {
         OUTPUT_PORT(1, GeneratedPoint, Field);
         OUTPUT_PORT(2, ElementIndex, Int32);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;

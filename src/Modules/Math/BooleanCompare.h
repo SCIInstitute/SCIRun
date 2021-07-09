@@ -53,7 +53,7 @@ namespace Math {
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, BooleanResult, Matrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
     NEW_HELP_WEBPAGE_ONLY
 
   };

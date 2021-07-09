@@ -181,7 +181,7 @@ void triCubeGeometry(FieldHandle field)
 
 FieldHandle CubeTetVolConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetCubeGeometry(field);
@@ -192,7 +192,7 @@ FieldHandle CubeTetVolConstantBasis(data_info_type type)
 
 FieldHandle CubeTetVolLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetCubeGeometry(field);
@@ -203,7 +203,7 @@ FieldHandle CubeTetVolLinearBasis(data_info_type type)
 
 FieldHandle TetrahedronTetVolConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetTetrahedronGeometry(field);
@@ -214,7 +214,7 @@ FieldHandle TetrahedronTetVolConstantBasis(data_info_type type)
 
 FieldHandle TetrahedronTetVolLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TETVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetTetrahedronGeometry(field);
@@ -225,7 +225,7 @@ FieldHandle TetrahedronTetVolLinearBasis(data_info_type type)
 
 FieldHandle TriangleTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triTriangleGeometry(field);
@@ -236,7 +236,7 @@ FieldHandle TriangleTriSurfConstantBasis(data_info_type type)
 
 FieldHandle TriangleTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triTriangleGeometry(field);
@@ -247,7 +247,7 @@ FieldHandle TriangleTriSurfLinearBasis(data_info_type type)
 
 FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triTetrahedronGeometry(field);
@@ -258,7 +258,7 @@ FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type)
 
 FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triTetrahedronGeometry(field);
@@ -269,7 +269,7 @@ FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type)
 
 FieldHandle CubeTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triCubeGeometry(field);
@@ -280,7 +280,7 @@ FieldHandle CubeTriSurfConstantBasis(data_info_type type)
 
 FieldHandle CubeTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
+  FieldInformation fi(mesh_info_type::TRISURFMESH_E, databasis_info_type::LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   triCubeGeometry(field);
@@ -300,7 +300,7 @@ FieldHandle SCIRun::TestUtils::CreateEmptyLatVol()
 FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type,
   const Core::Geometry::Point& minb, const Core::Geometry::Point& maxb)
 {
-  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
+  FieldInformation lfi(mesh_info_type::LATVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
 
   MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   FieldHandle ofh = CreateField(lfi, mesh);

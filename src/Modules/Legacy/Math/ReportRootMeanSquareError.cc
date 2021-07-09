@@ -48,7 +48,7 @@ class ReportRootMeanSquareError : public Module
 
   SCIRunAlgo::RootMeanSquareErrorAlgo algo_;
 
-  enum MATRIX_ORDER
+  enum class MATRIX_ORDER
   {
     ROW_ORDER = 0,
     COLUMN_ORDER

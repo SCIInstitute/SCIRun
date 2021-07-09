@@ -257,7 +257,7 @@ public:
   }
   ModuleExecutionState::Value stateValue() const override
   {
-    return ModuleExecutionState::NotExecuted;
+    return ModuleExecutionState::Value::NotExecuted;
   }
   std::string color() const override { return "gray"; }
 };
@@ -276,7 +276,7 @@ public:
   }
   ModuleExecutionState::Value stateValue() const override
   {
-    return ModuleExecutionState::Waiting;
+    return ModuleExecutionState::Value::Waiting;
   }
   std::string color() const override { return "yellow"; }
 };
@@ -298,7 +298,7 @@ public:
   }
   ModuleExecutionState::Value stateValue() const override
   {
-    return ModuleExecutionState::Executing;
+    return ModuleExecutionState::Value::Executing;
   }
   std::string color() const override { return "green"; }
 };
@@ -317,7 +317,7 @@ public:
   }
   ModuleExecutionState::Value stateValue() const override
   {
-    return ModuleExecutionState::Errored;
+    return ModuleExecutionState::Value::Errored;
   }
   std::string color() const override { return "red"; }
 };
@@ -336,7 +336,7 @@ public:
   }
   ModuleExecutionState::Value stateValue() const override
   {
-    return ModuleExecutionState::Completed;
+    return ModuleExecutionState::Value::Completed;
   }
   std::string color() const override { return "darkGray"; }
 };
@@ -411,28 +411,28 @@ public:
   bool transitionTo(Value state) override
   {
     //Guard g(mutex_.get());
-    auto current = currentState();
+    const auto current = currentState();
     switch (state)
     {
-      case NotExecuted:
+      case Value::NotExecuted:
         moduleState_.process_event( ModuleReset() );
         break;
-      case Waiting:
+      case Value::Waiting:
         moduleState_.process_event( ModuleQueued() );
         break;
-      case Executing:
+      case Value::Executing:
         moduleState_.process_event( ModuleStart() );
         break;
-      case Completed:
+      case Value::Completed:
         moduleState_.process_event( ModuleEnd() );
         break;
-      case Errored:
+      case Value::Errored:
         moduleState_.process_event( ModuleError() );
         break;
     }
-    auto changed = current != currentState();
+    const auto changed = current != currentState();
     if (changed)
-      signal_(currentState());
+      signal_(static_cast<int>(currentState()));
     return changed;
   }
 
@@ -452,45 +452,45 @@ private:
 TEST(ModuleStateMachineTest, NormalSequence)
 {
   ModuleStateMachine msm;
-  msm.transitionTo(ModuleExecutionState::Waiting);
-  msm.transitionTo(ModuleExecutionState::Executing);
-  msm.transitionTo(ModuleExecutionState::Completed);
+  msm.transitionTo(ModuleExecutionState::Value::Waiting);
+  msm.transitionTo(ModuleExecutionState::Value::Executing);
+  msm.transitionTo(ModuleExecutionState::Value::Completed);
   EXPECT_EQ("darkGray", msm.currentColor());
 }
 
 TEST(ModuleStateMachineTest, ErrorSequence)
 {
   ModuleStateMachine msm;
-  msm.transitionTo(ModuleExecutionState::Waiting);
-  msm.transitionTo(ModuleExecutionState::Executing);
-  msm.transitionTo(ModuleExecutionState::Errored);
+  msm.transitionTo(ModuleExecutionState::Value::Waiting);
+  msm.transitionTo(ModuleExecutionState::Value::Executing);
+  msm.transitionTo(ModuleExecutionState::Value::Errored);
   EXPECT_EQ("red", msm.currentColor());
 }
 
 TEST(ModuleStateMachineTest, ErrorSequenceWithComplete)
 {
   ModuleStateMachine msm;
-  msm.transitionTo(ModuleExecutionState::Waiting);
-  msm.transitionTo(ModuleExecutionState::Executing);
-  msm.transitionTo(ModuleExecutionState::Errored);
-  msm.transitionTo(ModuleExecutionState::Completed);
+  msm.transitionTo(ModuleExecutionState::Value::Waiting);
+  msm.transitionTo(ModuleExecutionState::Value::Executing);
+  msm.transitionTo(ModuleExecutionState::Value::Errored);
+  msm.transitionTo(ModuleExecutionState::Value::Completed);
   EXPECT_EQ("red", msm.currentColor());
 }
 
 TEST(ModuleStateMachineTest, OutOfOrderSequence)
 {
   ModuleStateMachine msm;
-  msm.transitionTo(ModuleExecutionState::Executing);
-  msm.transitionTo(ModuleExecutionState::Waiting);
+  msm.transitionTo(ModuleExecutionState::Value::Executing);
+  msm.transitionTo(ModuleExecutionState::Value::Waiting);
   EXPECT_EQ("yellow", msm.currentColor());
 }
 
 TEST(ModuleStateMachineTest, ErrorSequenceWithReset)
 {
   ModuleStateMachine msm;
-  msm.transitionTo(ModuleExecutionState::Waiting);
-  msm.transitionTo(ModuleExecutionState::Executing);
-  msm.transitionTo(ModuleExecutionState::Errored);
-  msm.transitionTo(ModuleExecutionState::NotExecuted);
+  msm.transitionTo(ModuleExecutionState::Value::Waiting);
+  msm.transitionTo(ModuleExecutionState::Value::Executing);
+  msm.transitionTo(ModuleExecutionState::Value::Errored);
+  msm.transitionTo(ModuleExecutionState::Value::NotExecuted);
   EXPECT_EQ("gray", msm.currentColor());
 }
