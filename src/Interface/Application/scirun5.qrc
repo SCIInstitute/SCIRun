@@ -55,6 +55,7 @@
     <file>Resources/ViewScene/fillColor.png</file>
     <file>Resources/ViewScene/clipping.png</file>
     <file>Resources/ViewScene/eye.png</file>
+    <file>Resources/ViewScene/fog.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>
