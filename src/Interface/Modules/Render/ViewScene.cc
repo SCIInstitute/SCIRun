@@ -2253,7 +2253,7 @@ void ViewSceneDialog::initializeAxes()
 
   {
     bool visible = state_->getValue(Parameters::AxesVisible).toBool();
-    impl_->orientationAxesControls_->orientationCheckBox_->setChecked(visible);
+    impl_->orientationAxesControls_->orientationCheckableGroupBox_->setChecked(visible);
     spire->showOrientation(visible);
   }
 
