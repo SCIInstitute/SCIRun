@@ -57,18 +57,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setFloating(true);
   setStyleSheet(parent->styleSheet());
 
-  if (Preferences::Instance().useNewViewSceneMouseControls)
-  {
-    mouseControlComboBox_->setCurrentIndex(1);
-  }
-  else
-  {
-    mouseControlComboBox_->setCurrentIndex(0);
-  }
-
-  invertZoomCheckBox_->setChecked(Preferences::Instance().invertMouseZoom);
-
-  updateZoomOptionVisibility();
 
   //----------- Developer Tab--------------//
   connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
@@ -108,12 +96,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setLabelColor(color3, lightColors_[3] = Qt::white);
 
   connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
-
-  //-----------Controls Tab-------------------//
-  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
-  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
@@ -235,7 +217,7 @@ void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
   scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
 }
 
-void ViewSceneControlsDock::updateZoomOptionVisibility()
+void InputControls::updateZoomOptionVisibility()
 {
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
   {
@@ -699,4 +681,27 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent) : QWidget(
   connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
   connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+}
+
+InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  if (Preferences::Instance().useNewViewSceneMouseControls)
+  {
+    mouseControlComboBox_->setCurrentIndex(1);
+  }
+  else
+  {
+    mouseControlComboBox_->setCurrentIndex(0);
+  }
+
+  invertZoomCheckBox_->setChecked(Preferences::Instance().invertMouseZoom);
+
+  updateZoomOptionVisibility();
+
+  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
+  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
+  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
+  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 }

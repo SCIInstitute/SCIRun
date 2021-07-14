@@ -172,6 +172,7 @@ namespace Gui {
           OrientationAxesControls* orientationAxesControls_{nullptr};
           ScaleBarControls* scaleBarControls_{nullptr};
           ClippingPlaneControls* clippingPlaneControls_{nullptr};
+          InputControls* inputControls_{nullptr};
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -503,6 +504,7 @@ void ViewSceneDialog::addToolBar()
   addMaterialOptionsButton();
   addOrientationAxesButton();
   addScaleBarButton();
+  addInputControlButton();
   setupMaterials();
 
   glLayout->addWidget(impl_->toolBar1_, 0, 1);
@@ -881,6 +883,16 @@ void ViewSceneDialog::setupScaleBar()
     impl_->scaleBar_.lineWidth = 1.0;
     impl_->scaleBar_.fontSize = 8;
   }
+}
+
+void ViewSceneDialog::addInputControlButton()
+{
+  auto* inputControlButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/input.png"));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->inputControls_ = new InputControls(this);
+  addToolbarButton(inputControlButton, 2, impl_->inputControls_);
 }
 
 void ViewSceneDialog::pullCameraState()
@@ -1722,7 +1734,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
     spire->setMouseMode(MouseMode::MOUSE_NEWSCIRUN);
     Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
-  impl_->mConfigurationDock->updateZoomOptionVisibility();
+  impl_->inputControls_->updateZoomOptionVisibility();
 }
 
 void ViewSceneDialog::invertZoomClicked(bool value)

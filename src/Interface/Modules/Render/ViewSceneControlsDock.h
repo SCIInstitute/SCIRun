@@ -38,6 +38,7 @@
 #include "Interface/Modules/Render/ui_OrientationAxes.h"
 #include "Interface/Modules/Render/ui_ScaleBar.h"
 #include "Interface/Modules/Render/ui_ClippingPlanes.h"
+#include "Interface/Modules/Render/ui_InputControls.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -87,7 +88,7 @@ namespace SCIRun {
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
 
       void setLabelColor(QLabel* label, const QColor& color);
-      void updateZoomOptionVisibility();
+
       QColor getLightColor(int index) const;
 
     private:
@@ -194,7 +195,15 @@ namespace SCIRun {
       explicit ClippingPlaneControls(ViewSceneDialog* parent);
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
-    private:
+    };
+
+    class SCISHARE InputControls : public QWidget, public Ui::Input
+    {
+      Q_OBJECT
+
+    public:
+      explicit InputControls(ViewSceneDialog* parent);
+      void updateZoomOptionVisibility();
     };
   }
 }

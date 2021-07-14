@@ -45,6 +45,7 @@ SET(Interface_Modules_Render_FORMS
   OrientationAxes.ui
   ScaleBar.ui
   ClippingPlanes.ui
+  InputControls.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
