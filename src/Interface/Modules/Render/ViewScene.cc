@@ -508,6 +508,8 @@ void ViewSceneDialog::addToolBar()
   addOrientationAxesButton();
   addScaleBarButton();
   addInputControlButton();
+  addCameraLocksButton();
+  addDeveloperControlButton();
   setupMaterials();
 
   glLayout->addWidget(impl_->toolBar1_, 0, 1);
