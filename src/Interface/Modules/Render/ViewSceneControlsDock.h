@@ -39,6 +39,8 @@
 #include "Interface/Modules/Render/ui_ScaleBar.h"
 #include "Interface/Modules/Render/ui_ClippingPlanes.h"
 #include "Interface/Modules/Render/ui_InputControls.h"
+#include "Interface/Modules/Render/ui_CameraLocks.h"
+#include "Interface/Modules/Render/ui_DevControls.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -103,10 +105,6 @@ namespace SCIRun {
       void selectLight1Color() {selectLightColor(1);}
       void selectLight2Color() {selectLightColor(2);}
       void selectLight3Color() {selectLightColor(3);}
-      void updateViewSceneTree();
-      void addGroup();
-      void removeGroup();
-      void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
 
     };
 
@@ -205,7 +203,29 @@ namespace SCIRun {
       explicit InputControls(ViewSceneDialog* parent);
       void updateZoomOptionVisibility();
     };
+
+    class SCISHARE CameraLockControls : public QWidget, public Ui::CameraLocks
+    {
+      Q_OBJECT
+
+    public:
+      explicit CameraLockControls(ViewSceneDialog* parent);
+    private Q_SLOTS:
+      void updateViewSceneTree();
+      void addGroup();
+      void removeGroup();
+      void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
+    };
+
+    class SCISHARE DeveloperControls : public QWidget, public Ui::Developer
+    {
+      Q_OBJECT
+
+    public:
+      explicit DeveloperControls(ViewSceneDialog* parent);
+      //void updateZoomOptionVisibility();
+    };
   }
 }
 
-#endif //INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
+#endif

@@ -249,6 +249,8 @@ namespace SCIRun {
       void addScaleBarButton();
       void addClippingPlaneButton();
       void addInputControlButton();
+      void addCameraLocksButton();
+      void addDeveloperControlButton();
       void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
       void addViewBar();
       void addViewOptions();

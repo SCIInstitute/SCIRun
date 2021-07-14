@@ -173,6 +173,9 @@ namespace Gui {
           ScaleBarControls* scaleBarControls_{nullptr};
           ClippingPlaneControls* clippingPlaneControls_{nullptr};
           InputControls* inputControls_{nullptr};
+          CameraLockControls* cameraLockControls_{nullptr};
+          DeveloperControls* developerControls_{nullptr};
+
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
 
@@ -620,6 +623,18 @@ void ViewSceneDialog::addScaleBarButton()
   impl_->scaleBarControls_->setScaleBarValues(impl_->scaleBar_);
 }
 
+void ViewSceneDialog::addCameraLocksButton()
+{
+  auto* cameraLocksButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
+  impl_->cameraLockControls_ = new CameraLockControls(this);
+  fixSize(impl_->cameraLockControls_);
+  addToolbarButton(cameraLocksButton, 2, impl_->cameraLockControls_);
+
+  //impl_->cameraLockControls_->setScaleBarValues(impl_->scaleBar_);
+}
+
 void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup)
 {
   static const auto buttonSize = 30;
@@ -893,6 +908,16 @@ void ViewSceneDialog::addInputControlButton()
   //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->inputControls_ = new InputControls(this);
   addToolbarButton(inputControlButton, 2, impl_->inputControls_);
+}
+
+void ViewSceneDialog::addDeveloperControlButton()
+{
+  auto* devControlButton = new QPushButton();
+  //colorOptionsButton->setToolTip("Color settings");
+  //inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/input.png"));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  impl_->developerControls_ = new DeveloperControls(this);
+  addToolbarButton(devControlButton, 2, impl_->developerControls_);
 }
 
 void ViewSceneDialog::pullCameraState()

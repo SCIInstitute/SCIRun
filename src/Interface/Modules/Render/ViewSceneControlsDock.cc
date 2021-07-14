@@ -58,17 +58,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setStyleSheet(parent->styleSheet());
 
 
-  //----------- Developer Tab--------------//
-  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
-  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
-
-
-  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
-  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
-  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
-  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
-  updateViewSceneTree();
-  groupRemoveSpinBox_->setRange(0, 0);
 
   //-----------Lights Tab-----------------//
   connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
@@ -107,7 +96,7 @@ static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewScene
   return std::get<0>(a)->getName() < std::get<0>(b)->getName();
 }
 
-void ViewSceneControlsDock::updateViewSceneTree()
+void CameraLockControls::updateViewSceneTree()
 {
   viewSceneTreeWidget_->clear();
 
@@ -140,20 +129,20 @@ void ViewSceneControlsDock::updateViewSceneTree()
   viewSceneTreeWidget_->expandAll();
 }
 
-void ViewSceneControlsDock::addGroup()
+void CameraLockControls::addGroup()
 {
   ViewSceneDialog::viewSceneManager.addGroup();
   groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
-void ViewSceneControlsDock::removeGroup()
+void CameraLockControls::removeGroup()
 {
   const uint32_t group = groupRemoveSpinBox_->value();
   ViewSceneDialog::viewSceneManager.removeGroup(group);
   groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
-void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
+void CameraLockControls::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
 {
   auto p = widgetItem->parent();
   if (!p) return;
@@ -704,4 +693,24 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+}
+
+CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
+  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
+  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
+  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
+  updateViewSceneTree();
+  groupRemoveSpinBox_->setRange(0, 0);
+}
+
+DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
+  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
