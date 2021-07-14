@@ -49,8 +49,6 @@ namespace Math {
   {
   public:
     ComputeTensorUncertainty();
-    virtual void execute();
-    virtual void setStateDefaults();
     void execute() override;
     void setStateDefaults() override;
 
