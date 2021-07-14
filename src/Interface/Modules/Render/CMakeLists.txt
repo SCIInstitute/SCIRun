@@ -48,6 +48,7 @@ SET(Interface_Modules_Render_FORMS
   InputControls.ui
   CameraLocks.ui
   DevControls.ui
+  LightControls.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

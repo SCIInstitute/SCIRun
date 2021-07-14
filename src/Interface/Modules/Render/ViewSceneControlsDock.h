@@ -41,6 +41,7 @@
 #include "Interface/Modules/Render/ui_InputControls.h"
 #include "Interface/Modules/Render/ui_CameraLocks.h"
 #include "Interface/Modules/Render/ui_DevControls.h"
+#include "Interface/Modules/Render/ui_LightControls.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -88,24 +89,6 @@ namespace SCIRun {
 
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-
-      void setLabelColor(QLabel* label, const QColor& color);
-
-      QColor getLightColor(int index) const;
-
-    private:
-      QColor lightColors_[4];
-
-    Q_SIGNALS:
-      void updateLightColor(const int index);
-
-    private Q_SLOTS:
-      void selectLightColor(int index);
-      void selectLight0Color() {selectLightColor(0);}
-      void selectLight1Color() {selectLightColor(1);}
-      void selectLight2Color() {selectLightColor(2);}
-      void selectLight3Color() {selectLightColor(3);}
-
     };
 
     class SCISHARE AutoRotateControls : public QWidget, public Ui::AutoRotateSettings
@@ -223,7 +206,33 @@ namespace SCIRun {
 
     public:
       explicit DeveloperControls(ViewSceneDialog* parent);
-      //void updateZoomOptionVisibility();
+    };
+
+    class SCISHARE LightControls : public QWidget, public Ui::LightControls
+    {
+      Q_OBJECT
+
+    public:
+      explicit LightControls(ViewSceneDialog* parent, int lightNumber);
+      void setLabelColor(QLabel* label, const QColor& color);
+      QColor getLightColor() const;
+
+    private:
+      int lightNumber_ {-1};
+
+    private:
+      QColor lightColor_;
+
+    Q_SIGNALS:
+      void updateLightColor();
+
+    private Q_SLOTS:
+      void selectLightColor();
+      // void selectLight0Color() {selectLightColor(0);}
+      // void selectLight1Color() {selectLightColor(1);}
+      // void selectLight2Color() {selectLightColor(2);}
+      // void selectLight3Color() {selectLightColor(3);}
+
     };
   }
 }
