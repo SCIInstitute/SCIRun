@@ -519,16 +519,15 @@ void ViewSceneDialog::addToolBar()
 
 namespace
 {
-  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, ctkBasePopupWidget::VerticalDirection dir)
+  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, int which)
   {
+    auto dir = which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom;
     auto* popup = new ctkPopupWidget(button);
     auto* popupLayout = new QVBoxLayout(popup);
     popup->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     popup->setOrientation(Qt::Horizontal);
     popup->setVerticalDirection(dir);
     popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
-    //QObject::connect(popup, &ctkPopupWidget::popupOpened, [underlyingWidget](bool open) { qDebug() << "popup " << underlyingWidget << " is " << open;});
-
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
   }
@@ -581,20 +580,19 @@ void ViewSceneDialog::addLightButtons()
   for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
   {
     auto* lightButton = new QPushButton();
-    //colorOptionsButton->setToolTip("Color settings");
-    //lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
-    //autoRotateButton->setShortcut(Qt::Key_F5);
+    if (0 == i)
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+    else
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
     impl_->lightControls_[i] = new LightControls(this, i);
     fixSize(impl_->lightControls_[i]);
-    //impl_->colorOptions_->setSampleColor(impl_->bgColor_);
-    addToolbarButton(lightButton, 2, impl_->lightControls_[i]);
+    addToolbarButton(lightButton, 1, impl_->lightControls_[i]);
   }
 }
 
 void ViewSceneDialog::addFogOptionsButton()
 {
   auto* fogOptionsButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   impl_->fogControls_ = new FogControls(this);
   addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
@@ -651,7 +649,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   {
     button->setIconSize(QSize(iconSize, iconSize));
     if (widgetToPopup)
-      setupPopupWidget(button, widgetToPopup, which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom);
+      setupPopupWidget(button, widgetToPopup, which);
   }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
