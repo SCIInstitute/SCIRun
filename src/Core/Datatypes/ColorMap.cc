@@ -219,6 +219,7 @@ inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double
 
 double ColorMap::alpha(double transformedValue) const
 {
+  if (invert_) transformedValue = 1.0 - transformedValue;
   if (alphaLookup_.empty()) return 0.5;
   size_t i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
