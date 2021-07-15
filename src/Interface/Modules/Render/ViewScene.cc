@@ -161,12 +161,12 @@ namespace Gui {
           Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
           QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
           QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
-          QToolBar*                             viewBar_                      {nullptr};  ///< Tool bar for view options.
           QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
           QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
           ColorOptions* colorOptions_{ nullptr };
           FogControls* fogControls_{ nullptr };
           MaterialsControls* materialsControls_{ nullptr };
+          ViewAxisChooserControls* viewAxisChooser_{nullptr};
           ObjectSelectionControls* objectSelectionControls_{nullptr};
           OrientationAxesControls* orientationAxesControls_{nullptr};
           ScaleBarControls* scaleBarControls_{nullptr};
@@ -183,7 +183,6 @@ namespace Gui {
           bool                                  shown_                        {false};
           bool                                  delayGC_                      {false};
           bool                                  delayedGCRequested_           {false};
-          bool                                  hideViewBar_                  {};
           bool                                  invertZoom_                   {};
           bool                                  shiftdown_                    {false};
           bool                                  mouseButtonPressed_           {false};
@@ -514,18 +513,21 @@ void ViewSceneDialog::addToolBar()
 
   glLayout->addWidget(impl_->toolBar1_, 0, 1);
 
-  addViewBar();
+  addViewBarButton();
+  addControlLockButton();
 }
 
 namespace
 {
   void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, int which)
   {
-    auto dir = which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom;
     auto* popup = new ctkPopupWidget(button);
     auto* popupLayout = new QVBoxLayout(popup);
-    popup->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    popup->setOrientation(Qt::Horizontal);
+    const auto dir = which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom;
+    const auto alignment = which == 1 ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignLeft | Qt::AlignVCenter;
+    const auto orientation = which == 1 ? Qt::Vertical : Qt::Horizontal;
+    popup->setAlignment(alignment);
+    popup->setOrientation(orientation);
     popup->setVerticalDirection(dir);
     popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
     popupLayout->addWidget(underlyingWidget);
@@ -631,13 +633,10 @@ void ViewSceneDialog::addScaleBarButton()
 void ViewSceneDialog::addCameraLocksButton()
 {
   auto* cameraLocksButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
-  //cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
+  cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
   impl_->cameraLockControls_ = new CameraLockControls(this);
   fixSize(impl_->cameraLockControls_);
   addToolbarButton(cameraLocksButton, 2, impl_->cameraLockControls_);
-
-  //impl_->cameraLockControls_->setScaleBarValues(impl_->scaleBar_);
 }
 
 void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup)
@@ -717,109 +716,56 @@ void ViewSceneDialog::addQuickScreenshotButton()
   addToolbarButton(quickScreenshotButton, 1);
 }
 
-void ViewSceneDialog::addViewBar()
-{
-  impl_->viewBar_ = new QToolBar(this);
-
-  addViewOptions();
-  impl_->hideViewBar_ = true;
-
-  impl_->viewBar_->setHidden(impl_->hideViewBar_);
-
-  glLayout->addWidget(impl_->viewBar_);
-
-  addViewBarButton();
-  addControlLockButton();
-}
-
 using V = glm::vec3;
 using P = std::tuple<V, V>;
 using InnerMap = std::map<QString, P>;
-static std::map<QString, InnerMap> axisViewParams;
-
-static void initAxisViewParams()
-{
-  axisViewParams["+X"] = InnerMap {
+static const std::map<QString, InnerMap> axisViewParams = {
+  {"+X", InnerMap {
     { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V( 1, 0, 0), V( 0,-1, 0)) },
     { "+Z", P(V( 1, 0, 0), V( 0, 0, 1)) },
     { "-Z", P(V( 1, 0, 0), V( 0, 0,-1)) }
-  };
-  axisViewParams["-X"] = InnerMap {
+  }},
+  {"-X", InnerMap {
     { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V(-1, 0, 0), V( 0,-1, 0)) },
     { "+Z", P(V(-1, 0, 0), V( 0, 0, 1)) },
     { "-Z", P(V(-1, 0, 0), V( 0, 0,-1)) }
-  };
-  axisViewParams["+Y"] = InnerMap {
+  }},
+  {"+Y", InnerMap {
     { "+X", P(V( 0, 1, 0), V( 1, 0, 0)) },
     { "-X", P(V( 0, 1, 0), V(-1, 0, 0)) },
     { "+Z", P(V( 0, 1, 0), V( 0, 0, 1)) },
     { "-Z", P(V( 0, 1, 0), V( 0, 0,-1)) }
-  };
-  axisViewParams["-Y"] = InnerMap {
+  }},
+  {"-Y", InnerMap {
     { "+X", P(V( 0,-1, 0), V( 1, 0, 0)) },
     { "-X", P(V( 0,-1, 0), V(-1, 0, 0)) },
     { "+Z", P(V( 0,-1, 0), V( 0, 0, 1)) },
     { "-Z", P(V( 0,-1, 0), V( 0, 0,-1)) }
-  };
-  axisViewParams["+Z"] = InnerMap {
+  }},
+  {"+Z", InnerMap {
     { "+Y", P(V(0, 0, 1), V( 0, 1, 0)) },
     { "-Y", P(V(0, 0, 1), V( 0,-1, 0)) },
     { "+X", P(V(0, 0, 1), V( 1, 0, 0)) },
     { "-X", P(V(0, 0, 1), V(-1, 0, 0)) }
-  };
-  axisViewParams["-Z"] = InnerMap {
+  }},
+  {"-Z", InnerMap {
     { "+Y", P(V(0, 0,-1), V( 0, 1, 0)) },
     { "-Y", P(V(0, 0,-1), V( 0,-1, 0)) },
     { "+X", P(V(0, 0,-1), V( 1, 0, 0)) },
     { "-X", P(V(0, 0,-1), V(-1, 0, 0)) }
-  };
-}
-
-void ViewSceneDialog::addViewOptions()
-{
-  QLabel* axisLabel = new QLabel();
-  axisLabel->setText("Look Down Axis: ");
-  impl_->viewBar_->addWidget(axisLabel);
-
-  impl_->mDownViewBox = new QComboBox();
-  impl_->mDownViewBox->setMinimumHeight(25);
-  impl_->mDownViewBox->setMinimumWidth(60);
-  impl_->mDownViewBox->setToolTip("Vector pointing out of the screen");
-  impl_->mDownViewBox->addItem("+X");
-  impl_->mDownViewBox->addItem("+Y");
-  impl_->mDownViewBox->addItem("+Z");
-  impl_->mDownViewBox->addItem("-X");
-  impl_->mDownViewBox->addItem("-Y");
-  impl_->mDownViewBox->addItem("-Z");
-  WidgetStyleMixin::toolbarStyle(impl_->viewBar_);
-  connect(impl_->mDownViewBox, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
-  impl_->viewBar_->addWidget(impl_->mDownViewBox);
-  impl_->viewBar_->addSeparator();
-
-  auto* vectorLabel = new QLabel();
-  vectorLabel->setText("Up Vector: ");
-  impl_->viewBar_->addWidget(vectorLabel);
-
-  impl_->mUpVectorBox = new QComboBox();
-  impl_->mUpVectorBox->setMinimumHeight(25);
-  impl_->mUpVectorBox->setMinimumWidth(60);
-  impl_->mUpVectorBox->setToolTip("Vector pointing up");
-  connect(impl_->mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
-  impl_->mUpVectorBox->setEnabled(false);
-  impl_->viewBar_->addWidget(impl_->mUpVectorBox);
-  impl_->viewBar_->setMinimumHeight(35);
-  initAxisViewParams();
-}
+  }}
+};
 
 void ViewSceneDialog::addViewBarButton()
 {
   impl_->viewBarBtn_ = new QPushButton();
   impl_->viewBarBtn_->setToolTip("Show View Options");
   impl_->viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
-  connect(impl_->viewBarBtn_, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  addToolbarButton(impl_->viewBarBtn_, 1);
+
+  impl_->viewAxisChooser_ = new ViewAxisChooserControls(this);
+  addToolbarButton(impl_->viewBarBtn_, 1, impl_->viewAxisChooser_);
 }
 
 void ViewSceneDialog::addControlLockButton()
@@ -859,9 +805,7 @@ void ViewSceneDialog::addControlLockButton()
 void ViewSceneDialog::addClippingPlaneButton()
 {
   auto* clippingPlaneButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   impl_->clippingPlaneControls_ = new ClippingPlaneControls(this);
   addToolbarButton(clippingPlaneButton, 2, impl_->clippingPlaneControls_);
 }
@@ -900,9 +844,7 @@ void ViewSceneDialog::setupScaleBar()
 void ViewSceneDialog::addInputControlButton()
 {
   auto* inputControlButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
-  //inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/input.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
   impl_->inputControls_ = new InputControls(this);
   addToolbarButton(inputControlButton, 2, impl_->inputControls_);
 }
@@ -910,9 +852,7 @@ void ViewSceneDialog::addInputControlButton()
 void ViewSceneDialog::addDeveloperControlButton()
 {
   auto* devControlButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
-  //inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/input.png"));
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  devControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
   impl_->developerControls_ = new DeveloperControls(this);
   addToolbarButton(devControlButton, 2, impl_->developerControls_);
 }
@@ -1377,21 +1317,6 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   ModuleDialogGeneric::closeEvent(evt);
 }
 
-void ViewSceneDialog::viewBarButtonClicked()
-{
-  impl_->hideViewBar_ = !impl_->hideViewBar_;
-  impl_->viewBar_->setHidden(impl_->hideViewBar_);
-  const QString color = impl_->hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
-  impl_->viewBarBtn_->setStyleSheet("QPushButton { background-color: " + color + "; }");
-  impl_->mDownViewBox->setCurrentIndex(0);
-  impl_->mUpVectorBox->setDisabled(impl_->hideViewBar_);
-  impl_->mUpVectorBox->clear();
-}
-
-void ViewSceneDialog::configurationButtonClicked()
-{
-}
-
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
   impl_->resizeTimer_.start(400);
@@ -1681,32 +1606,9 @@ void ViewSceneDialog::updateCursor()
     setCursor(Qt::ArrowCursor);
 }
 
-
 //--------------------------------------------------------------------------------------------------
 //---------------- Camera --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-
-void ViewSceneDialog::viewAxisSelected(const QString& name)
-{
-  impl_->mUpVectorBox->clear();
-
-  if (!name.contains("X"))
-  {
-    impl_->mUpVectorBox->addItem("+X");
-    impl_->mUpVectorBox->addItem("-X");
-  }
-  if (!name.contains("Y"))
-  {
-    impl_->mUpVectorBox->addItem("+Y");
-    impl_->mUpVectorBox->addItem("-Y");
-  }
-  if (!name.contains("Z"))
-  {
-    impl_->mUpVectorBox->addItem("+Z");
-    impl_->mUpVectorBox->addItem("-Z");
-  }
-  impl_->mUpVectorBox->setEnabled(true);
-}
 
 void ViewSceneDialog::viewVectorSelected(const QString& name)
 {
@@ -1714,7 +1616,8 @@ void ViewSceneDialog::viewVectorSelected(const QString& name)
     return;
 
   glm::vec3 up, view;
-  std::tie(view, up) = axisViewParams[impl_->mDownViewBox->currentText()][name];
+  impl_->viewAxisChooser_->upVectorComboBox_->clear();
+  std::tie(view, up) = axisViewParams.at(impl_->viewAxisChooser_->currentAxis()).at(name);
 
   auto spire = impl_->mSpire.lock();
   if (!spire) return;

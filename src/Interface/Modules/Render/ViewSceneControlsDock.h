@@ -42,6 +42,7 @@
 #include "Interface/Modules/Render/ui_CameraLocks.h"
 #include "Interface/Modules/Render/ui_DevControls.h"
 #include "Interface/Modules/Render/ui_LightControls.h"
+#include "Interface/Modules/Render/ui_ViewAxisChooser.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -219,6 +220,16 @@ namespace SCIRun {
 
     private Q_SLOTS:
       void selectLightColor();
+    };
+
+    class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser
+    {
+      Q_OBJECT
+    public:
+      explicit ViewAxisChooserControls(ViewSceneDialog* parent);
+      QString currentAxis() const;
+    private Q_SLOTS:
+      void viewAxisSelected(const QString& name);
     };
   }
 }

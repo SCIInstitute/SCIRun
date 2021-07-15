@@ -58,6 +58,9 @@
     <file>Resources/ViewScene/fog.png</file>
     <file>Resources/ViewScene/light.png</file>
     <file>Resources/ViewScene/headlight.png</file>
+    <file>Resources/ViewScene/devel.png</file>
+    <file>Resources/ViewScene/link.png</file>
+    <file>Resources/ViewScene/mouse.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>

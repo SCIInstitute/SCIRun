@@ -103,13 +103,10 @@ namespace SCIRun {
       void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
-      void viewBarButtonClicked();
-      void configurationButtonClicked();
       void resizingDone();
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void viewAxisSelected(const QString& name);
       void viewVectorSelected(const QString& name);
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
@@ -242,8 +239,6 @@ namespace SCIRun {
       void addCameraLocksButton();
       void addDeveloperControlButton();
       void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
-      void addViewBar();
-      void addViewOptions();
       void addConfigurationButton();
       void addObjectSelectionButton();
       void addLightButtons();

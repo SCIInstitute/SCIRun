@@ -685,3 +685,38 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
 
   connect(this, &LightControls::updateLightColor, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 }
+
+ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(lookDownComboBox_, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
+  connect(upVectorComboBox_, SIGNAL(activated(const QString&)), parent, SLOT(viewVectorSelected(const QString&)));
+}
+
+QString ViewAxisChooserControls::currentAxis() const
+{
+  return lookDownComboBox_->currentText();
+}
+
+void ViewAxisChooserControls::viewAxisSelected(const QString& name)
+{
+  upVectorComboBox_->clear();
+
+  if (!name.contains("X"))
+  {
+    upVectorComboBox_->addItem("+X");
+    upVectorComboBox_->addItem("-X");
+  }
+  if (!name.contains("Y"))
+  {
+    upVectorComboBox_->addItem("+Y");
+    upVectorComboBox_->addItem("-Y");
+  }
+  if (!name.contains("Z"))
+  {
+    upVectorComboBox_->addItem("+Z");
+    upVectorComboBox_->addItem("-Z");
+  }
+  upVectorComboBox_->setEnabled(true);
+}
