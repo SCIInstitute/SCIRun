@@ -164,7 +164,6 @@ namespace Gui {
           QToolBar*                             viewBar_                      {nullptr};  ///< Tool bar for view options.
           QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
           QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
-          ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
           ColorOptions* colorOptions_{ nullptr };
           FogControls* fogControls_{ nullptr };
           MaterialsControls* materialsControls_{ nullptr };
@@ -495,9 +494,8 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
-  addConfigurationButton();
+  //addConfigurationButton();
   addObjectSelectionButton();
-  addConfigurationDock();
   addAutoViewButton();
   addScreenshotButton();
   addQuickScreenshotButton();
@@ -542,7 +540,7 @@ void ViewSceneDialog::addConfigurationButton()
   configurationButton->setToolTip("Open/Close Configuration Menu (F5)");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
-  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   addToolbarButton(configurationButton, 1);
 }
 
@@ -657,14 +655,6 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
-}
-
-void ViewSceneDialog::addConfigurationDock()
-{
-  const auto name = windowTitle() + " Configuration";
-  impl_->mConfigurationDock = new ViewSceneControlsDock(name, this);
-  impl_->mConfigurationDock->setHidden(true);
-  impl_->mConfigurationDock->setVisible(false);
 }
 
 void ViewSceneDialog::setupMaterials()
@@ -1040,52 +1030,50 @@ void ViewSceneDialog::pushCameraRotation()
   impl_->pushingCameraState_ = false;
 }
 
+namespace
+{
+  float toInclination(int value)
+  {
+    return value / 180.0f * M_PI - M_PI / 2.0f;
+  }
+
+  float toAzimuth(int value)
+  {
+    return value / 180.0f * M_PI - M_PI;
+  }
+
+  static const std::vector<AlgorithmParameterName> lightColorKeys =
+    { Parameters::HeadLightColor, Parameters::Light1Color, Parameters::Light2Color, Parameters::Light3Color };
+  static const std::vector<AlgorithmParameterName> lightInclinationKeys =
+    { Parameters::HeadLightInclination, Parameters::Light1Inclination, Parameters::Light2Inclination, Parameters::Light3Inclination };
+  static const std::vector<AlgorithmParameterName> lightAzimuthKeys =
+    { Parameters::HeadLightAzimuth, Parameters::Light1Azimuth, Parameters::Light2Azimuth, Parameters::Light3Azimuth };
+  static const std::vector<AlgorithmParameterName> lightOnKeys =
+    { Parameters::HeadLightOn, Parameters::Light1On, Parameters::Light2On, Parameters::Light3On };
+
+}
+
 void ViewSceneDialog::setInitialLightValues()
 {
-  auto light0str = state_->getValue(Parameters::HeadLightColor).toString();
-  QColor light0 = checkColorSetting(light0str, Qt::white);
-  int headlightAzimuth = state_->getValue(Parameters::HeadLightAzimuth).toInt();
-  int headlightInclination = state_->getValue(Parameters::HeadLightInclination).toInt();
-
-  auto light1str = state_->getValue(Parameters::Light1Color).toString();
-  QColor light1 = checkColorSetting(light1str, Qt::white);
-  int light1Azimuth = state_->getValue(Parameters::Light1Azimuth).toInt();
-  int light1Inclination = state_->getValue(Parameters::Light1Inclination).toInt();
-
-  auto light2str = state_->getValue(Parameters::Light2Color).toString();
-  QColor light2 = checkColorSetting(light2str, Qt::white);
-  int light2Azimuth = state_->getValue(Parameters::Light2Azimuth).toInt();
-  int light2Inclination = state_->getValue(Parameters::Light2Inclination).toInt();
-
-  auto light3str = state_->getValue(Parameters::Light3Color).toString();
-  QColor light3 = checkColorSetting(light3str, Qt::white);
-  int light3Azimuth = state_->getValue(Parameters::Light2Azimuth).toInt();
-  int light3Inclination = state_->getValue(Parameters::Light2Inclination).toInt();
-
   auto spire = impl_->mSpire.lock();
-  if (spire)
+
+  for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
   {
-    setLightAzimuth(0, headlightAzimuth);
-    setLightInclination(0, headlightInclination);
+    auto lightStr = state_->getValue(lightColorKeys[i]).toString();
+    auto light = checkColorSetting(lightStr, Qt::white);
+    impl_->lightControls_[i]->setLabelColor(light);
+    auto lightAzimuth = state_->getValue(lightAzimuthKeys[i]).toInt();
+    auto lightInclination = state_->getValue(lightInclinationKeys[i]).toInt();
+    auto lightOn = state_->getValue(lightOnKeys[i]).toBool();
+    impl_->lightControls_[i]->setState(lightAzimuth, lightInclination, lightOn);
 
-    setLightAzimuth(1, light1Azimuth);
-    setLightInclination(1, light1Inclination);
-
-    setLightAzimuth(2, light2Azimuth);
-    setLightInclination(2, light2Inclination);
-
-    setLightAzimuth(3, light3Azimuth);
-    setLightInclination(3, light3Inclination);
-
-    spire->setLightColor(0, light0.redF(), light0.greenF(), light0.blueF());
-    spire->setLightColor(1, light1.redF(), light1.greenF(), light1.blueF());
-    spire->setLightColor(2, light2.redF(), light2.greenF(), light2.blueF());
-    spire->setLightColor(3, light3.redF(), light3.greenF(), light3.blueF());
-
-    spire->setLightOn(0, state_->getValue(Parameters::HeadLightOn).toBool());
-    spire->setLightOn(1, state_->getValue(Parameters::Light1On).toBool());
-    spire->setLightOn(2, state_->getValue(Parameters::Light2On).toBool());
-    spire->setLightOn(3, state_->getValue(Parameters::Light3On).toBool());
+    if (spire)
+    {
+      spire->setLightAzimuth(i, toAzimuth(lightAzimuth));
+      spire->setLightInclination(i, toInclination(lightInclination));
+      spire->setLightColor(i, light.redF(), light.greenF(), light.blueF());
+      spire->setLightOn(i, lightOn);
+    }
   }
 }
 
@@ -1093,7 +1081,6 @@ void ViewSceneDialog::pullSpecial()
 {
   if (!impl_->pulledSavedVisibility_)
   {
-    ScopedWidgetSignalBlocker swsb(impl_->mConfigurationDock);
     pullCameraState();
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
     if (show && parentWidget())
@@ -1372,8 +1359,6 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
-  impl_->mConfigurationDock->setVisible(false);
-
   if (impl_->pulledSavedVisibility_)
   {
     ScopedWidgetSignalBlocker ssb(this);
@@ -1407,7 +1392,6 @@ void ViewSceneDialog::viewBarButtonClicked()
 
 void ViewSceneDialog::configurationButtonClicked()
 {
-  impl_->mConfigurationDock->setVisible(!impl_->mConfigurationDock->isVisible());
 }
 
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
@@ -2582,15 +2566,6 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 //---------------- Lights --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-static const std::vector<AlgorithmParameterName> lightColorKeys =
-  { Parameters::HeadLightColor, Parameters::Light1Color, Parameters::Light2Color, Parameters::Light3Color };
-static const std::vector<AlgorithmParameterName> inclininationKeys =
-  { Parameters::HeadLightInclination, Parameters::Light1Inclination, Parameters::Light2Inclination, Parameters::Light3Inclination };
-static const std::vector<AlgorithmParameterName> azimuthKeys =
-  { Parameters::HeadLightAzimuth, Parameters::Light1Azimuth, Parameters::Light2Azimuth, Parameters::Light3Azimuth };
-static const std::vector<AlgorithmParameterName> lightOnKeys =
-  { Parameters::HeadLightOn, Parameters::Light1On, Parameters::Light2On, Parameters::Light3On };
-
 void ViewSceneDialog::setLightColor(int index)
 {
   const auto lightColor(impl_->lightControls_[index]->getLightColor());
@@ -2604,9 +2579,9 @@ void ViewSceneDialog::setLightColor(int index)
 
 void ViewSceneDialog::setLightInclination(int index, int value)
 {
-  state_->setValue(inclininationKeys[index], value);
+  state_->setValue(lightInclinationKeys[index], value);
   auto spire = impl_->mSpire.lock();
-  spire->setLightInclination(index, value / 180.0f * M_PI - M_PI / 2.0f);
+  spire->setLightInclination(index, toInclination(value));
 }
 
 void ViewSceneDialog::toggleLight(int index, bool value)
@@ -2619,9 +2594,9 @@ void ViewSceneDialog::toggleLight(int index, bool value)
 
 void ViewSceneDialog::setLightAzimuth(int index, int value)
 {
-  state_->setValue(azimuthKeys[index], value);
+  state_->setValue(lightAzimuthKeys[index], value);
   auto spire = impl_->mSpire.lock();
-  spire->setLightAzimuth(index, value / 180.0f * M_PI - M_PI);
+  spire->setLightAzimuth(index, toAzimuth(value));
 }
 
 //--------------------------------------------------------------------------------------------------

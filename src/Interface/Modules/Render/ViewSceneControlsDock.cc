@@ -46,24 +46,6 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Modules::Visualization;
 
-ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
-{
-  setupUi(this);
-
-  setHidden(true);
-  setVisible(false);
-  setWindowTitle(name);
-  setAllowedAreas(Qt::BottomDockWidgetArea);
-  setFloating(true);
-  setStyleSheet(parent->styleSheet());
-
-
-
-  //WidgetStyleMixin::tabStyle(tabWidget);
-
-  //tabWidget->setCurrentIndex(0);
-}
-
 static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
 {
   return std::get<0>(a)->getName() < std::get<0>(b)->getName();
@@ -135,12 +117,19 @@ void ColorOptions::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-void LightControls::setLabelColor(QLabel* label, const QColor& color)
+void LightControls::setState(int azimuth, int inclination, bool on)
+{
+  lightAzimuthSlider_->setValue(azimuth);
+  lightInclinationSlider_->setValue(inclination);
+  lightCheckBox_->setChecked(on);
+}
+
+void LightControls::setLabelColor(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
 
-  label->setStyleSheet(styleSheet);
+  colorLabel_->setStyleSheet(styleSheet);
 }
 
 void FogControls::setFogColorLabel(const QColor& color)
@@ -523,7 +512,7 @@ void LightControls::selectLightColor()
   {
     lightColor_ = newColor;
     updateLightColor();
-    setLabelColor(colorLabel_, lightColor_);
+    setLabelColor(lightColor_);
   }
 }
 
@@ -692,7 +681,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   connect(lightInclinationSlider_, &QSlider::valueChanged,
     [this, viewScene](int value) { viewScene->setLightInclination(lightNumber_, value); });
   connect(colorButton_, &QPushButton::clicked, this, &LightControls::selectLightColor);
-  setLabelColor(colorLabel_, lightColor_ = Qt::white);
+  setLabelColor(lightColor_ = Qt::white);
 
   connect(this, &LightControls::updateLightColor, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 }

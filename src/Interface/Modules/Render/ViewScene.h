@@ -54,7 +54,6 @@ namespace SCIRun {
   namespace Gui {
 
     class GLWidget;
-    class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
     class ViewSceneDialogImpl;
 
@@ -248,7 +247,6 @@ namespace SCIRun {
       void addConfigurationButton();
       void addObjectSelectionButton();
       void addLightButtons();
-      void addConfigurationDock();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
       void pushCameraDistance();

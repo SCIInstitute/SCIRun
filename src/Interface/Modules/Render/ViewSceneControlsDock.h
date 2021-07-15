@@ -83,14 +83,6 @@ namespace SCIRun {
       std::map<QString, std::map<QString, bool>> secondLevelItemMap_;
     };
 
-    class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
-    {
-      Q_OBJECT
-
-    public:
-      ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-    };
-
     class SCISHARE AutoRotateControls : public QWidget, public Ui::AutoRotateSettings
     {
       Q_OBJECT
@@ -214,13 +206,12 @@ namespace SCIRun {
 
     public:
       explicit LightControls(ViewSceneDialog* parent, int lightNumber);
-      void setLabelColor(QLabel* label, const QColor& color);
+      void setLabelColor(const QColor& color);
       QColor getLightColor() const;
+      void setState(int azimuth, int inclination, bool on);
 
     private:
       int lightNumber_ {-1};
-
-    private:
       QColor lightColor_;
 
     Q_SIGNALS:
@@ -228,11 +219,6 @@ namespace SCIRun {
 
     private Q_SLOTS:
       void selectLightColor();
-      // void selectLight0Color() {selectLightColor(0);}
-      // void selectLight1Color() {selectLightColor(1);}
-      // void selectLight2Color() {selectLightColor(2);}
-      // void selectLight3Color() {selectLightColor(3);}
-
     };
   }
 }
