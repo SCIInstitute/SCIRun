@@ -523,14 +523,7 @@ void LightControls::selectLightColor()
   {
     lightColor_ = newColor;
     updateLightColor();
-    // switch (index)
-    // {
-    //   case 0: setLabelColor(color0, newColor); break;
-    //   case 1: setLabelColor(color1, newColor); break;
-    //   case 2: setLabelColor(color2, newColor); break;
-    //   case 3: setLabelColor(color3, newColor); break;
-    //   default: ;
-    // }
+    setLabelColor(colorLabel_, lightColor_);
   }
 }
 
@@ -688,34 +681,18 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
 
-LightControls::LightControls(ViewSceneDialog* parent, int lightNumber) : QWidget(parent), lightNumber_(lightNumber)
+LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWidget(viewScene), lightNumber_(lightNumber)
 {
   setupUi(this);
 
-    //-----------Lights Tab-----------------//
-    connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
-    connect(headlightAzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightAzimuth(int)));
-    connect(headlightInclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightInclination(int)));
-    connect(colorButton0, SIGNAL(clicked()), this, SLOT(selectLight0Color()));
-    setLabelColor(color0, lightColor_ = Qt::white);
+  connect(lightCheckBox_, &QCheckBox::clicked,
+    [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
+  connect(lightAzimuthSlider_, &QSlider::valueChanged,
+    [this, viewScene](int value) { viewScene->setLightAzimuth(lightNumber_, value); });
+  connect(lightInclinationSlider_, &QSlider::valueChanged,
+    [this, viewScene](int value) { viewScene->setLightInclination(lightNumber_, value); });
+  connect(colorButton_, &QPushButton::clicked, this, &LightControls::selectLightColor);
+  setLabelColor(colorLabel_, lightColor_ = Qt::white);
 
-    // connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
-    // connect(light1AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Azimuth(int)));
-    // connect(light1InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Inclination(int)));
-    // connect(colorButton1, SIGNAL(clicked()), this, SLOT(selectLight1Color()));
-    // setLabelColor(color1, lightColors_[1] = Qt::white);
-    //
-    // connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
-    // connect(light2AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Azimuth(int)));
-    // connect(light2InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Inclination(int)));
-    // connect(colorButton2, SIGNAL(clicked()), this, SLOT(selectLight2Color()));
-    // setLabelColor(color2, lightColors_[2] = Qt::white);
-    //
-    // connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
-    // connect(light3AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Azimuth(int)));
-    // connect(light3InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Inclination(int)));
-    // connect(colorButton3, SIGNAL(clicked()), this, SLOT(selectLight3Color()));
-    // setLabelColor(color3, lightColors_[3] = Qt::white);
-
-    connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
+  connect(this, &LightControls::updateLightColor, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 }

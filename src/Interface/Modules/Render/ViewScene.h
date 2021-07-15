@@ -165,18 +165,9 @@ namespace SCIRun {
 
       //---------------- Lights --------------------------------------------------------------------
       void setLightColor(int index);
-      void toggleHeadLight(bool value);
-      void setHeadLightAzimuth(int value);
-      void setHeadLightInclination(int value);
-      void toggleLight1(bool value);
-      void setLight1Azimuth(int value);
-      void setLight1Inclination(int value);
-      void toggleLight2(bool value);
-      void setLight2Azimuth(int value);
-      void setLight2Inclination(int value);
-      void toggleLight3(bool value);
-      void setLight3Azimuth(int value);
-      void setLight3Inclination(int value);
+      void toggleLight(int index, bool value);
+      void setLightAzimuth(int index, int value);
+      void setLightInclination(int index, int value);
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
@@ -256,6 +247,7 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addObjectSelectionButton();
+      void addLightButtons();
       void addConfigurationDock();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
@@ -289,9 +281,6 @@ namespace SCIRun {
       void updateScaleBarLength();
       Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
 
-      //---------------- Lights --------------------------------------------------------------------
-      void toggleLightOnOff(int index, bool value);
-
       //---------------- Materials -----------------------------------------------------------------
       void setMaterialFactor(Render::MatFactor factor, double value);
 
@@ -313,6 +302,7 @@ namespace SCIRun {
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
       friend class ScaleBarControls;
+      friend class LightControls;
     };
 
     MouseButton getSpireButton(QMouseEvent* event);

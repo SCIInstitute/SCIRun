@@ -175,6 +175,8 @@ namespace Gui {
           InputControls* inputControls_{nullptr};
           CameraLockControls* cameraLockControls_{nullptr};
           DeveloperControls* developerControls_{nullptr};
+          static constexpr int NUM_LIGHTS = 4;
+          LightControls* lightControls_[NUM_LIGHTS];
 
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
@@ -501,7 +503,7 @@ void ViewSceneDialog::addToolBar()
   addQuickScreenshotButton();
   addAutoRotateButton();
   addColorOptionsButton();
-  addLightOptionsComboBox();
+  addLightButtons();
   addClippingPlaneButton();
   addFogOptionsButton();
   addMaterialOptionsButton();
@@ -576,14 +578,19 @@ void ViewSceneDialog::addColorOptionsButton()
   addToolbarButton(colorOptionsButton, 2, impl_->colorOptions_);
 }
 
-void ViewSceneDialog::addLightOptionsComboBox()
+void ViewSceneDialog::addLightButtons()
 {
-  auto* lightOptionsComboBox = new QComboBox();
-  QStringList lightList;
-  lightList << "Headlight" << "Light1" << "Light2" << "Light3";
-  lightOptionsComboBox->addItems(lightList);
-  lightOptionsComboBox->setMinimumWidth(110);
-  impl_->toolBar1_->addWidget(lightOptionsComboBox);
+  for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
+  {
+    auto* lightButton = new QPushButton();
+    //colorOptionsButton->setToolTip("Color settings");
+    //lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
+    //autoRotateButton->setShortcut(Qt::Key_F5);
+    impl_->lightControls_[i] = new LightControls(this, i);
+    fixSize(impl_->lightControls_[i]);
+    //impl_->colorOptions_->setSampleColor(impl_->bgColor_);
+    addToolbarButton(lightButton, 2, impl_->lightControls_[i]);
+  }
 }
 
 void ViewSceneDialog::addFogOptionsButton()
@@ -1058,17 +1065,17 @@ void ViewSceneDialog::setInitialLightValues()
   auto spire = impl_->mSpire.lock();
   if (spire)
   {
-    setHeadLightAzimuth(headlightAzimuth);
-    setHeadLightInclination(headlightInclination);
+    setLightAzimuth(0, headlightAzimuth);
+    setLightInclination(0, headlightInclination);
 
-    setLight1Azimuth(light1Azimuth);
-    setLight1Inclination(light1Inclination);
+    setLightAzimuth(1, light1Azimuth);
+    setLightInclination(1, light1Inclination);
 
-    setLight2Azimuth(light2Azimuth);
-    setLight2Inclination(light2Inclination);
+    setLightAzimuth(2, light2Azimuth);
+    setLightInclination(2, light2Inclination);
 
-    setLight3Azimuth(light3Azimuth);
-    setLight3Inclination(light3Inclination);
+    setLightAzimuth(3, light3Azimuth);
+    setLightInclination(3, light3Inclination);
 
     spire->setLightColor(0, light0.redF(), light0.greenF(), light0.blueF());
     spire->setLightColor(1, light1.redF(), light1.greenF(), light1.blueF());
@@ -2575,135 +2582,47 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 //---------------- Lights --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
+static const std::vector<AlgorithmParameterName> lightColorKeys =
+  { Parameters::HeadLightColor, Parameters::Light1Color, Parameters::Light2Color, Parameters::Light3Color };
+static const std::vector<AlgorithmParameterName> inclininationKeys =
+  { Parameters::HeadLightInclination, Parameters::Light1Inclination, Parameters::Light2Inclination, Parameters::Light3Inclination };
+static const std::vector<AlgorithmParameterName> azimuthKeys =
+  { Parameters::HeadLightAzimuth, Parameters::Light1Azimuth, Parameters::Light2Azimuth, Parameters::Light3Azimuth };
+static const std::vector<AlgorithmParameterName> lightOnKeys =
+  { Parameters::HeadLightOn, Parameters::Light1On, Parameters::Light2On, Parameters::Light3On };
+
 void ViewSceneDialog::setLightColor(int index)
 {
-  const auto lightColor(impl_->mConfigurationDock->getLightColor(index));
-  switch (index)
-  {
-  case 0:
-    state_->setValue(Parameters::HeadLightColor, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
-    break;
-  case 1:
-    state_->setValue(Parameters::Light1Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
-    break;
-  case 2:
-    state_->setValue(Parameters::Light2Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
-    break;
-  case 3:
-    state_->setValue(Parameters::Light3Color, ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
-    break;
-  default:
-    return;
-  }
+  const auto lightColor(impl_->lightControls_[index]->getLightColor());
+
+  state_->setValue(lightColorKeys[index], ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
 
   auto spire = impl_->mSpire.lock();
   if (spire)
     spire->setLightColor(index, lightColor.redF(), lightColor.greenF(), lightColor.blueF());
 }
 
-void ViewSceneDialog::toggleHeadLight(bool value)
+void ViewSceneDialog::setLightInclination(int index, int value)
 {
-  toggleLightOnOff(0, value);
-}
-
-const static float PI = 3.1415926f;
-
-void ViewSceneDialog::setHeadLightAzimuth(int value)
-{
-  state_->setValue(Parameters::HeadLightAzimuth, value);
+  state_->setValue(inclininationKeys[index], value);
   auto spire = impl_->mSpire.lock();
-  spire->setLightAzimuth(0, value / 180.0f * PI - PI);
+  spire->setLightInclination(index, value / 180.0f * M_PI - M_PI / 2.0f);
 }
 
-void ViewSceneDialog::setHeadLightInclination(int value)
+void ViewSceneDialog::toggleLight(int index, bool value)
 {
-  state_->setValue(Parameters::HeadLightInclination, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightInclination(0, value / 180.0f * PI - PI / 2.0f);
-}
-
-void ViewSceneDialog::toggleLight1(bool value)
-{
-  toggleLightOnOff(1, value);
-}
-
-void ViewSceneDialog::setLight1Azimuth(int value)
-{
-  state_->setValue(Parameters::Light1Azimuth, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightAzimuth(1, value / 180.0f * PI - PI);
-}
-
-void ViewSceneDialog::setLight1Inclination(int value)
-{
-  state_->setValue(Parameters::Light1Inclination, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightInclination(1, value / 180.0f * PI - PI / 2.0f);
-}
-
-void ViewSceneDialog::toggleLight2(bool value)
-{
-  toggleLightOnOff(2, value);
-}
-
-void ViewSceneDialog::setLight2Azimuth(int value)
-{
-  state_->setValue(Parameters::Light2Azimuth, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightAzimuth(2, value / 180.0f * PI - PI);
-}
-
-void ViewSceneDialog::setLight2Inclination(int value)
-{
-  state_->setValue(Parameters::Light2Inclination, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightInclination(2, value / 180.0f * PI - PI / 2.0f);
-}
-
-void ViewSceneDialog::toggleLight3(bool value)
-{
-  toggleLightOnOff(3, value);
-}
-
-void ViewSceneDialog::setLight3Azimuth(int value)
-{
-  state_->setValue(Parameters::Light3Azimuth, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightAzimuth(3, value / 180.0f * PI - PI);
-}
-
-void ViewSceneDialog::setLight3Inclination(int value)
-{
-  state_->setValue(Parameters::Light3Inclination, value);
-  auto spire = impl_->mSpire.lock();
-  spire->setLightInclination(3, value / 180.0f * PI - PI / 2.0f);
-}
-
-void ViewSceneDialog::toggleLightOnOff(int index, bool value)
-{
-  switch (index)
-  {
-  case 0:
-    state_->setValue(Parameters::HeadLightOn, value);
-    break;
-  case 1:
-    state_->setValue(Parameters::Light1On, value);
-    break;
-  case 2:
-    state_->setValue(Parameters::Light2On, value);
-    break;
-  case 3:
-    state_->setValue(Parameters::Light3On, value);
-    break;
-  default:
-    return;
-  }
-
+  state_->setValue(lightOnKeys[index], value);
   auto spire = impl_->mSpire.lock();
   if (spire)
     spire->setLightOn(index, value);
 }
 
+void ViewSceneDialog::setLightAzimuth(int index, int value)
+{
+  state_->setValue(azimuthKeys[index], value);
+  auto spire = impl_->mSpire.lock();
+  spire->setLightAzimuth(index, value / 180.0f * M_PI - M_PI);
+}
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Materials -----------------------------------------------------------------------
