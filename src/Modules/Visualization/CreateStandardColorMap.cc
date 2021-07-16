@@ -54,6 +54,7 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::AlphaUserPointsVector, Variable::List());
   state->setValue(Parameters::CustomColor0, ColorRGB(0.2, 0.2, 0.2).toString());
   state->setValue(Parameters::CustomColor1, ColorRGB(0.8, 0.8, 0.8).toString());
+  state->setValue(Parameters::ColorMapOption, ColorMapOptionType::PREDEFINED);
 }
 
 void CreateStandardColorMap::execute()
@@ -85,7 +86,8 @@ void CreateStandardColorMap::execute()
     customData.push_back(ColorRGB(state->getValue(Parameters::CustomColor1).toString()));
 
     ColorMapHandle cmap;
-    cmap = (name == "Custom" ) ?
+    auto option = state->getValue(Parameters::ColorMapOption).toInt();
+    cmap = (option == ColorMapOptionType::CUSTOM) ?
       StandardColorMapFactory::create(customData, name, res, shift, inv, 0.5, 1.0, points) :
       StandardColorMapFactory::create(name, res, shift, inv, 0.5, 1.0, points);
 
@@ -99,5 +101,6 @@ ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaUserPointsVector);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaFunctionVector);
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapOption);
 ALGORITHM_PARAMETER_DEF(Visualization, CustomColor0);
 ALGORITHM_PARAMETER_DEF(Visualization, CustomColor1);
