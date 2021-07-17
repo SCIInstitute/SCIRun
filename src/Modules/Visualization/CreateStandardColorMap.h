@@ -51,6 +51,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ColorMapOption);
         ALGORITHM_PARAMETER_DECL(CustomColor0);
         ALGORITHM_PARAMETER_DECL(CustomColor1);
+        ALGORITHM_PARAMETER_DECL(DefaultAlphaValue);
       }
     }
   }

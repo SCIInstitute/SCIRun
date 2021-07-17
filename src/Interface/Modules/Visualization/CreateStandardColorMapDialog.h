@@ -64,26 +64,18 @@ namespace SCIRun {
     class AlphaFunctionManager
     {
     public:
-        AlphaFunctionManager(SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                             const boost::atomic<bool>& pulling);
+      AlphaFunctionManager(const boost::atomic<bool>& pulling);
       void clear();
       void insert(const QPointF& p);
       void erase(const QPointF& p);
-      void pushToState();
       size_t size() const;
       bool alreadyExists(const QPointF& p) const;
       bool empty() const;
-      static LogicalAlphaPointSet convertPointsFromState(const Core::Algorithms::Variable::List& statePoints);
-      static Core::Algorithms::Variable::List convertPointsToState(const LogicalAlphaPointSet& points);
       bool equals(const LogicalAlphaPointSet& other) const { return other == alphaPoints_; }
     private:
-      Dataflow::Networks::ModuleStateHandle state_;
       LogicalAlphaPointSet alphaPoints_;
       static const size_t ALPHA_SAMPLES = 10; //TODO cbright: once alpha values are visible, increase this number
       static const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
-      const double DEFAULT_ALPHA = 0.5;
-      const QPointF defaultStart_ = QPointF(0.0, 0.5);
-      const QPointF defaultEnd_ = QPointF(1.0, 0.5);
       const boost::atomic<bool>& dialogPulling_;
       void printSet() const;
     public:
@@ -105,10 +97,12 @@ namespace SCIRun {
       void addPoint(const QPointF& point, std::pair<double, double>& range);
       void updateSize();
       void addPointsAndLineFromFile(const LogicalAlphaPointSet& pointsToLoad);
-      void updateFromState(const LogicalAlphaPointSet& points);
+      void updateFromState();
       void drawAlphaPolyline();
       void redraw();
       void deletePointItems();
+      LogicalAlphaPointSet getPointsFromState();
+      Core::Algorithms::Variable::List getPointsAsVariableList();
     public Q_SLOTS:
       void clearAlphaPointGraphics();
     Q_SIGNALS:
@@ -119,23 +113,27 @@ namespace SCIRun {
       void mouseReleaseEvent(QMouseEvent* event) override;
       QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value);
     private:
+      double convertToAlphaValue(double v);
       void removeCurrentLine();
       void removePoint(const QPointF& point);
       void removeItem(ColorMapPreviewPoint* item);
-      QPointF normalizePoint(const QPointF pos) const;
-      QPointF scalePointToWindow(const QPointF& p) const;
+      QPointF& flipYAxis(QPointF& pos) const;
+      QPointF previewToAlphaPoint(QPointF pos) const;
+      QPointF alphaToPreviewPoint(QPointF pos) const;
+      QPointF& scalePointToWindow(QPointF& p) const;
+      QPointF& normalizePoint(QPointF& pos) const;
       double clickableWidth() const;
       double clickableHeight() const;
+      void pushToState();
 
       SharedPointer<QGraphicsPathItem> alphaPath_;
       SharedPointer<ColorMapPreviewPoint> selectedPoint_;
       std::pair<double, double> selectedPointRange_;
-      const QPointF defaultStart_ = QPointF(0.0, 0.5);
-      const QPointF defaultEnd_ = QPointF(1.0, 0.5);
       AlphaFunctionManager alphaManager_;
       const boost::atomic<bool>& dialogPulling_;
       const static int BORDER_SIZE_ = 3;
       PreviewPointSet previewPoints_;
+      Dataflow::Networks::ModuleStateHandle state_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
@@ -161,8 +159,8 @@ namespace SCIRun {
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
     private:
-      SharedPointer<QGraphicsScene> scene_;
-      SharedPointer<ColormapPreview> previewColorMap_;
+      QGraphicsScene* scene_;
+      ColormapPreview* previewColorMap_;
       QColor customColors_[2] = {{0, 0, 0}, {0, 0, 0}};
     };
   }

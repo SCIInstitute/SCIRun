@@ -98,14 +98,14 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(customColorMapRadioButton_, SIGNAL(clicked()), this, SLOT(updateColorMapPreview()));
 
   // Create preview window
-  scene_ = boost::make_shared<QGraphicsScene>(this);
-  previewColorMap_ = boost::make_shared<ColormapPreview>(scene_.get(), state, pulling_, this);
+  scene_ = new QGraphicsScene(this);
+  previewColorMap_ = new ColormapPreview(scene_, state, pulling_, this);
   previewColorMap_->setFixedHeight(colormapPreviewHeight);
-  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_.get());
+  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->updateSize();
   previewColorMap_->show();
-  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_.get(), SLOT(clearAlphaPointGraphics()));
+  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
 }
 
 void CreateStandardColorMapDialog::selectCustomColorMin()
@@ -128,10 +128,7 @@ void CreateStandardColorMapDialog::selectCustomColorMax()
 
 void CreateStandardColorMapDialog::pullSpecial()
 {
-  auto val = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
-
-  auto pointsVec = AlphaFunctionManager::convertPointsFromState(val);
-  previewColorMap_->updateFromState(pointsVec);
+  previewColorMap_->updateFromState();
 }
 
 void CreateStandardColorMapDialog::resizeEvent(QResizeEvent *event)
@@ -149,8 +146,10 @@ void CreateStandardColorMapDialog::showEvent(QShowEvent *event)
   resizeEvent(new QResizeEvent(size(), size()));
 }
 
-void ColormapPreview::updateFromState(const LogicalAlphaPointSet& points)
+void ColormapPreview::updateFromState()
 {
+  auto points = getPointsFromState();
+
   if (points.empty())
   {
     removeCurrentLine();
@@ -229,15 +228,15 @@ void CreateStandardColorMapDialog::onInvertCheck(bool)
   updateColorMapPreview();
 }
 
-AlphaFunctionManager::AlphaFunctionManager(ModuleStateHandle state, const boost::atomic<bool>& pulling) :
-  state_(state), dialogPulling_(pulling)
+AlphaFunctionManager::AlphaFunctionManager(const boost::atomic<bool>& pulling) :
+  dialogPulling_(pulling)
 {
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
   const boost::atomic<bool>& pulling, QWidget* parent)
   : QGraphicsView(scene, parent), alphaPath_(nullptr),
-  alphaManager_(state, pulling), dialogPulling_(pulling)
+    alphaManager_(pulling), dialogPulling_(pulling), state_(state)
 {
 }
 
@@ -270,11 +269,11 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
     {
       pos = item->center(); // Adopt the item's pos to maintain its range and position
       removeItem(item);
-      alphaManager_.erase(normalizePoint(pos));
+      alphaManager_.erase(previewToAlphaPoint(pos));
     }
 
     // Make sure to get range before adding point, otherwise it will be counted as a current point
-    auto range = alphaManager_.getPointRange(normalizePoint(pos));
+    auto range = alphaManager_.getPointRange(previewToAlphaPoint(pos));
     selectedPointRange_ = std::make_pair(range.first * clickableWidth(), range.second * clickableWidth());
     addPoint(pos, selectedPointRange_);
   }
@@ -309,7 +308,7 @@ void ColormapPreview::mouseMoveEvent(QMouseEvent* event)
 
 void ColormapPreview::mouseReleaseEvent(QMouseEvent*)
 {
-  alphaManager_.pushToState();
+  pushToState();
   selectedPoint_.reset();
 }
 
@@ -321,9 +320,11 @@ void ColormapPreview::addDefaultLine()
   alphaPath_ = boost::make_shared<QGraphicsPathItem>();
   QPainterPath path;
 
+  auto alpha = state_->getValue(Parameters::DefaultAlphaValue).toDouble();
+  auto pointHeight = alpha * clickableHeight();
   alphaPath_->setPen(alphaLinePen);
-  path.moveTo(QPointF(0, clickableHeight()/2.0));
-  path.lineTo(QPointF(clickableWidth(), clickableHeight()/2.0));
+  path.moveTo(QPointF(0, pointHeight));
+  path.lineTo(QPointF(clickableWidth(), pointHeight));
   alphaPath_->setPath(path);
   scene()->addItem(alphaPath_.get());
 }
@@ -365,15 +366,15 @@ void ColormapPreview::addPoint(const QPointF& point)
   qDebug() << __FUNCTION__ << point;
   #endif
 
-  auto normPoint = normalizePoint(point);
-  if (alphaManager_.alreadyExists(normPoint))
+  auto alphaPoint = previewToAlphaPoint(point);
+  if (alphaManager_.alreadyExists(alphaPoint))
     return;
 
   auto item = new ColorMapPreviewPoint(point);
   scene()->addItem(item);
   previewPoints_.insert(item);
   selectedPoint_ = boost::make_shared<ColorMapPreviewPoint>(point);
-  alphaManager_.insert(normPoint);
+  alphaManager_.insert(alphaPoint);
 }
 
 // This adds a point but clamps it to a range for the x value
@@ -402,7 +403,7 @@ void ColormapPreview::addPointsAndLineFromFile(const LogicalAlphaPointSet& point
     addDefaultLine();
   else
     for (const auto& p : pointsToLoad)
-      addPoint(scalePointToWindow(p));
+      addPoint(alphaToPreviewPoint(p));
 }
 
 ColorMapPreviewPoint* ColormapPreview::getItemAtPoint(const QPointF& point) const
@@ -450,14 +451,43 @@ void ColormapPreview::removeItem(ColorMapPreviewPoint* item)
 
   scene()->removeItem(item);
   previewPoints_.erase(item);
-  alphaManager_.erase(normalizePoint(item->center()));
+  alphaManager_.erase(previewToAlphaPoint(item->center()));
   delete item;
 }
 
-// This maps the preview coordinates to a normalized space for the alpha manager, which is size independent
-QPointF ColormapPreview::normalizePoint(const QPointF pos) const
+  // This flips the y axis, because the Qt origin is the top left, but the alpha manager's origin is bottom left
+QPointF& ColormapPreview::flipYAxis(QPointF& pos) const
 {
-  return QPointF(pos.x()/clickableWidth(), pos.y()/clickableHeight());
+  pos.setY(1.0 - pos.y());
+  return pos;
+}
+
+// Converts from the preview window's space to the alpha manager's space
+QPointF ColormapPreview::previewToAlphaPoint(QPointF pos) const
+{
+  return flipYAxis(normalizePoint(pos));
+}
+
+// Converts from the alpha manager's space to the preview window's space
+QPointF ColormapPreview::alphaToPreviewPoint(QPointF pos) const
+{
+  return scalePointToWindow(flipYAxis(pos));
+}
+
+// Scale normalized point back to the preview's coordinate system
+QPointF& ColormapPreview::scalePointToWindow(QPointF& pos) const
+{
+  pos.setX(pos.x() * clickableWidth());
+  pos.setY(pos.y() * clickableHeight());
+  return pos;
+}
+
+// This maps the preview coordinates to a normalized space for the alpha manager, which is size independent
+QPointF& ColormapPreview::normalizePoint(QPointF& pos) const
+{
+  pos.setX(pos.x() / clickableWidth());
+  pos.setY(pos.y() / clickableHeight());
+  return pos;
 }
 
 bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
@@ -557,34 +587,36 @@ void AlphaFunctionManager::clear()
   alphaPoints_.clear();
 }
 
-void AlphaFunctionManager::pushToState()
+void ColormapPreview::pushToState()
 {
   if (dialogPulling_) return;
-  auto list = (alphaPoints_.empty()) ? Variable::List() : convertPointsToState(alphaPoints_);
+  Variable::List list;
+  if (!alphaManager_.empty())
+    list = getPointsAsVariableList();
   state_->setValue(Parameters::AlphaUserPointsVector, list);
 }
 
-LogicalAlphaPointSet AlphaFunctionManager::convertPointsFromState(const Variable::List& statePoints)
+double ColormapPreview::convertToAlphaValue(double v)
 {
-  auto toQPointF = [](const Variable& v) { auto v2 = v.toVector(); return QPointF(v2[0].toDouble(), 1.0 - v2[1].toDouble()); };
+  return 1.0 - v;
+}
+
+LogicalAlphaPointSet ColormapPreview::getPointsFromState()
+{
+  auto statePoints = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
+  auto toQPointF = [](const Variable& v) { auto v2 = v.toVector(); return QPointF(v2[0].toDouble(), v2[1].toDouble()); };
   auto pairVec = toTypedVector<QPointF>(statePoints, toQPointF);
   return LogicalAlphaPointSet(pairVec.begin(), pairVec.end());
 }
 
-Variable::List AlphaFunctionManager::convertPointsToState(const LogicalAlphaPointSet& points)
+Variable::List ColormapPreview::getPointsAsVariableList()
 {
   Variable::List alphaPointsVec;
-  auto begin = points.begin(), end = points.end();
+  auto begin = alphaManager_.begin(), end = alphaManager_.end();
   std::for_each(begin, end, [&](const QPointF& p) {
     alphaPointsVec.emplace_back(Name("alphaPoint"),
-    makeAnonymousVariableList(p.x(), 1.0f - p.y())); });
+    makeAnonymousVariableList(p.x(), p.y())); });
   return alphaPointsVec;
-}
-
-// Scale normalized point back to the preview's coordinate system
-QPointF ColormapPreview::scalePointToWindow(const QPointF& p) const
-{
-  return QPointF(p.x()*clickableWidth(), p.y()*clickableHeight());
 }
 
 void ColormapPreview::drawAlphaPolyline()
@@ -602,14 +634,14 @@ void ColormapPreview::drawAlphaPolyline()
   QPainterPath path;
   auto start = alphaManager_.begin();
   auto end = alphaManager_.end(); std::advance(end, -1);
-  QPointF from = scalePointToWindow(*start);
-  QPointF to = scalePointToWindow(*end);
+  QPointF from = alphaToPreviewPoint(*start);
+  QPointF to = alphaToPreviewPoint(*end);
   from.setX(0);
   to.setX(clickableWidth());
 
   // Draw line through points
   path.moveTo(from);
-  for (const auto& point : alphaManager_) path.lineTo(scalePointToWindow(point));
+  for (const auto& point : alphaManager_) path.lineTo(alphaToPreviewPoint(point));
   path.lineTo(to);
 
   alphaPath_->setPath(path);
@@ -643,7 +675,7 @@ void ColormapPreview::redraw()
     addDefaultLine();
   else
     for (const auto& point : alphaManager_)
-      scene()->addItem(new ColorMapPreviewPoint(scalePointToWindow(point)));
+      scene()->addItem(new ColorMapPreviewPoint(alphaToPreviewPoint(point)));
 
   drawAlphaPolyline();
 }
@@ -651,7 +683,7 @@ void ColormapPreview::redraw()
 void ColormapPreview::clearAlphaPointGraphics()
 {
   alphaManager_.clear();
-  alphaManager_.pushToState();
+  pushToState();
 
   deletePointItems();
   removeCurrentLine();
