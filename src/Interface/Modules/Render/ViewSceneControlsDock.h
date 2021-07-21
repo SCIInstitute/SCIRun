@@ -50,6 +50,7 @@
 #endif
 #include <Interface/Modules/Render/share.h>
 
+class QwtKnob;
 
 namespace SCIRun {
   namespace Gui {
@@ -210,6 +211,8 @@ namespace SCIRun {
       void setLabelColor(const QColor& color);
       QColor getLightColor() const;
       void setState(int azimuth, int inclination, bool on);
+      QwtKnob* lightAzimuthSlider_;
+      QwtKnob* lightInclinationSlider_;
 
     private:
       int lightNumber_ {-1};
