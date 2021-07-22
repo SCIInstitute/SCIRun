@@ -50,8 +50,6 @@ protected:
 private Q_SLOTS:
   void setNoMaximumValue(int state);
   void setUseNanForUnassignedValues(int state);
-private:
-  SharedPointer<class MapFieldDataFromSourceToDestinationDialogImpl> impl_;
 };
 
 }

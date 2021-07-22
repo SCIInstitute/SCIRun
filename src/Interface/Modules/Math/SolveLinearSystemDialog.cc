@@ -41,25 +41,9 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-
-namespace SCIRun {
-  namespace Gui {
-    class SolveLinearSystemDialogImpl
-    {
-    public:
-      SolveLinearSystemDialogImpl()
-      {
-        solverNameLookup_.insert(StringPair("Conjugate Gradient (SCI)", "cg"));
-        solverNameLookup_.insert(StringPair("BiConjugate Gradient (SCI)", "bicg"));
-        solverNameLookup_.insert(StringPair("Jacobi (SCI)", "jacobi"));
-        solverNameLookup_.insert(StringPair("MINRES (SCI)", "minres"));
-      }
-    };
-  }}
-
 SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), impl_(new SolveLinearSystemDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -102,5 +86,9 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 #endif
 
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
-  addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
+  addComboBoxManager(methodComboBox_, Variables::Method,
+    {{"Conjugate Gradient (SCI)", "cg"},
+    {"BiConjugate Gradient (SCI)", "bicg"},
+    {"Jacobi (SCI)", "jacobi"},
+    {"MINRES (SCI)", "minres"}});
 }

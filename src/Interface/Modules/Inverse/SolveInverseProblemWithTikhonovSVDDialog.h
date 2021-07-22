@@ -57,7 +57,6 @@ private Q_SLOTS:
   void setSliderStep(double value);
   void pullAndDisplayInfo();
 private:
-  GuiStringTranslationMap lambdaMethod_;
   LCurvePlotWidgetHelper lCurvePlotWidgetHelper_;
 };
 

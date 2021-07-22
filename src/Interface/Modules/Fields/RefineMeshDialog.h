@@ -48,9 +48,7 @@ public:
 protected:
   void pullSpecial() override;
 private Q_SLOTS:
-		void setIsoValueEnabled();
-private:
-		SharedPointer<class RefineMeshDialogImpl> impl_;
+	void setIsoValueEnabled();
 };
 
 }

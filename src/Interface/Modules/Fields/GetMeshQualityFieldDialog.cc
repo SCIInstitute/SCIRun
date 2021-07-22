@@ -34,7 +34,6 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
-
 GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
@@ -43,10 +42,9 @@ GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  map_.insert(StringPair("Scaled Jacobian","scaled_jacobian"));
-  map_.insert(StringPair("Jacobian","jacobian"));
-  map_.insert(StringPair("Volume","volume"));
-  map_.insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
-
-  addComboBoxManager(metricComboBox_, Metric,map_);
+  addComboBoxManager(metricComboBox_, Metric,
+    {{"Scaled Jacobian","scaled_jacobian"},
+    {"Jacobian","jacobian"},
+    {"Volume","volume"},
+    {"Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"}});
 }

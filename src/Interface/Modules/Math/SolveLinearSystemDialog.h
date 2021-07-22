@@ -45,8 +45,6 @@ public:
   SolveLinearSystemDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-private:
-  SharedPointer<class SolveLinearSystemDialogImpl> impl_;
 };
 
 }

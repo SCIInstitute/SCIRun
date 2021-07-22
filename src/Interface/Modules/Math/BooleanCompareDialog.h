@@ -41,9 +41,6 @@ namespace Gui {
    public:
     BooleanCompareDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-
-   private:
-    SharedPointer<class BooleanCompareDialogImpl> impl_;
   };
 }
 }
