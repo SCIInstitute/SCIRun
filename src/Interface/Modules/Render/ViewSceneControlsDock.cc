@@ -29,12 +29,12 @@
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
-#include <Dataflow/Network/NullModuleState.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/StringUtil.h>
 
 #include <qwt_knob.h>
+#include <qwt_abstract_slider.h>
 //#include <qwt_dial_needle.h>
 
 using namespace SCIRun;
@@ -696,9 +696,9 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
 
   connect(lightCheckBox_, &QCheckBox::clicked,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
-  connect(lightAzimuthSlider_, &QwtAbstractSlider::valueChanged,
+  connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });
-  connect(lightInclinationSlider_, &QwtAbstractSlider::valueChanged,
+  connect(lightInclinationSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
   connect(colorButton_, &QPushButton::clicked, this, &LightControls::selectLightColor);
   setLabelColor(lightColor_ = Qt::white);

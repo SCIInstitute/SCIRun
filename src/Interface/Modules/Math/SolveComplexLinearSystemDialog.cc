@@ -45,7 +45,6 @@ SolveComplexLinearSystemDialog::SolveComplexLinearSystemDialog(const std::string
   addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
 
-  GuiStringTranslationMap solverNameLookup;
   solverNameLookup.insert(StringPair("Conjugate Gradient (Eigen)", "cg"));
   solverNameLookup.insert(StringPair("BiConjugate Gradient (Eigen)", "bicg"));
   solverNameLookup.insert(StringPair("Least Squares Conjugate Gradient (Eigen)", "lscg"));

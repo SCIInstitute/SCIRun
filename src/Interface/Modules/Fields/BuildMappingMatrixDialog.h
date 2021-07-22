@@ -49,8 +49,6 @@ protected:
   void pullSpecial() override;
 private Q_SLOTS:
   void setNoMaximumValue(int state);
-private:
-  GuiStringTranslationMap map_;
 };
 
 }

@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
+#include <boost/bimap.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
@@ -338,6 +339,7 @@ class ComboBoxSlotManager final : public WidgetSlotManager
 public:
   typedef boost::function<std::string(const QString&)> FromQStringConverter;
   typedef boost::function<QString(const std::string&)> ToQStringConverter;
+  typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     FromQStringConverter fromLabelConverter = &QString::toStdString,
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
@@ -346,8 +348,8 @@ public:
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
-    const GuiStringTranslationMap& stringMap) :
-    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
+    StringPairs stringPairs) :
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(std::begin(stringPairs), std::end(stringPairs))
   {
     if (stringMap_.empty())
     {
@@ -425,7 +427,7 @@ void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const Algorith
   addWidgetSlotManager(makeShared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
-void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap)
+void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey, StringPairs stringMap)
 {
   addWidgetSlotManager(makeShared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox, stringMap));
 }

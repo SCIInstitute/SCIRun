@@ -54,7 +54,6 @@ namespace SCIRun {
         solverNameLookup_.insert(StringPair("Jacobi (SCI)", "jacobi"));
         solverNameLookup_.insert(StringPair("MINRES (SCI)", "minres"));
       }
-      GuiStringTranslationMap solverNameLookup_;
     };
   }}
 

@@ -49,7 +49,6 @@ GeneratePointSamplesFromFieldOrWidgetDialog::GeneratePointSamplesFromFieldOrWidg
   addCheckBoxManager(incrementSeedCheckBox_, Parameters::IncrementRNGSeed);
   addCheckBoxManager(clampToNodesCheckBox_, Parameters::ClampToNodes);
 
-  GuiStringTranslationMap distributionNames;
   //"impscat|impuni|uniuni|uniscat"
   distributionNames.insert(StringPair("Unweighted--Uniform", "uniuni"));
   distributionNames.insert(StringPair("Unweighted--Scattered", "uniscat"));
