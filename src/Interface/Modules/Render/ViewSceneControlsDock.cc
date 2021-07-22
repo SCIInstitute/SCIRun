@@ -122,8 +122,10 @@ void ColorOptions::setSampleColor(const QColor& color)
 
 void LightControls::setState(int azimuth, int inclination, bool on)
 {
-  lightAzimuthSlider_->setValue(azimuth);
-  lightInclinationSlider_->setValue(inclination);
+  if (lightAzimuthSlider_)
+    lightAzimuthSlider_->setValue(azimuth);
+  if (lightInclinationSlider_)
+    lightInclinationSlider_->setValue(inclination);
   lightCheckBox_->setChecked(on);
 }
 
@@ -677,6 +679,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
 {
   setupUi(this);
 
+#ifndef WIN32 //TODO: link error with Qwt--try upgrading
   auto knobLayout = new QHBoxLayout(this);
   lightAzimuthSlider_ = new QwtKnob(this);
   lightAzimuthSlider_->setTotalAngle(360);
@@ -693,13 +696,14 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   lightInclinationSlider_->setMarkerStyle(QwtKnob::Triangle);
   knobLayout->addWidget(lightInclinationSlider_);
   qobject_cast<QVBoxLayout*>(layout())->addLayout(knobLayout);
-
-  connect(lightCheckBox_, &QCheckBox::clicked,
-    [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
   connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });
   connect(lightInclinationSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
+#endif
+
+  connect(lightCheckBox_, &QCheckBox::clicked,
+    [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
   connect(colorButton_, &QPushButton::clicked, this, &LightControls::selectLightColor);
   setLabelColor(lightColor_ = Qt::white);
 

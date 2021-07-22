@@ -29,7 +29,6 @@
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

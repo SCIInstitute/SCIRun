@@ -34,7 +34,6 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
-#include <boost/bimap.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
@@ -334,66 +333,47 @@ void ModuleDialogGeneric::moduleSelected(bool selected)
   }
 }
 
-class ComboBoxSlotManager final : public WidgetSlotManager
+class GuiStringTranslationMap
 {
 public:
-  typedef boost::function<std::string(const QString&)> FromQStringConverter;
-  typedef boost::function<QString(const std::string&)> ToQStringConverter;
-  typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
-  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
-    FromQStringConverter fromLabelConverter = &QString::toStdString,
-    ToQStringConverter toLabelConverter = &QString::fromStdString) :
-  WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+  explicit GuiStringTranslationMap(StringPairs namePairs)
   {
-    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
-  }
-  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
-    StringPairs stringPairs) :
-    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(std::begin(stringPairs), std::end(stringPairs))
-  {
-    if (stringMap_.empty())
+    for (const auto& namePair : namePairs)
     {
-      THROW_INVALID_ARGUMENT("empty combo box string mapping");
-    }
-    if (0 == comboBox->count())
-    {
-      for (const auto& choices : stringMap_.left)
-      {
-        comboBox->addItem(QString::fromStdString(choices.first));
-      }
-    }
-    fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
-    toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
-    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
-  }
-  void pull() override
-  {
-    auto value = state_->getValue(stateKey_).toString();
-    const auto qstring = toLabelConverter_(value);
-    if (qstring != comboBox_->currentText())
-    {
-      LOG_TRACE("In new version of pull code for combobox: {}", value);
-      comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+      guiToAlgoLookup_[std::get<0>(namePair)] = std::get<1>(namePair);
+      algoToGuiLookup_[std::get<1>(namePair)] = std::get<0>(namePair);
     }
   }
-  void pushImpl() override
+  std::string guiToAlgo(const std::string& key) const
   {
-    auto label = fromLabelConverter_(comboBox_->currentText());
-    if (label != state_->getValue(stateKey_).toString())
-    {
-      LOG_TRACE("In new version of push code for combobox: {}", label);
-      state_->setValue(stateKey_, label);
-    }
+    if (empty())
+      return {};
+
+    return findOrFirst(guiToAlgoLookup_, key);
+  }
+  std::string algoToGui(const std::string& key) const
+  {
+    if (empty())
+      return {};
+
+    return findOrFirst(algoToGuiLookup_, key);
+  }
+  std::vector<std::string> guiItems() const
+  {
+    std::vector<std::string> guiStrs;
+    std::transform(guiToAlgoLookup_.begin(), guiToAlgoLookup_.end(), std::back_inserter(guiStrs), [](const auto& m) { return m.first; });
+    return guiStrs;
+  }
+  bool empty() const
+  {
+    return guiToAlgoLookup_.empty();
   }
 private:
-  AlgorithmParameterName stateKey_;
-  QComboBox* comboBox_;
-  FromQStringConverter fromLabelConverter_;
-  ToQStringConverter toLabelConverter_;
-  GuiStringTranslationMap stringMap_;
+  std::map<std::string, std::string> guiToAlgoLookup_;
+  std::map<std::string, std::string> algoToGuiLookup_;
 
-  template <class Map>
-  std::string findOrFirst(const Map& map, const std::string& key) const
+
+  static std::string findOrFirst(const std::map<std::string, std::string>& map, const std::string& key)
   {
     auto iter = map.find(key);
     if (iter == map.end())
@@ -404,6 +384,56 @@ private:
     }
     return iter->second;
   }
+};
+
+class ComboBoxSlotManager final : public WidgetSlotManager
+{
+public:
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_({})
+  {
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
+  }
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
+    StringPairs stringPairs) :
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringPairs)
+  {
+    if (stringMap_.empty())
+    {
+      THROW_INVALID_ARGUMENT("empty combo box string mapping");
+    }
+    if (0 == comboBox->count())
+    {
+      for (const auto& choice : stringMap_.guiItems())
+      {
+        comboBox->addItem(QString::fromStdString(choice));
+      }
+    }
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
+  }
+  void pull() override
+  {
+    auto value = state_->getValue(stateKey_).toString();
+    const auto qstring = QString::fromStdString(stringMap_.algoToGui(value));
+    if (qstring != comboBox_->currentText())
+    {
+      LOG_TRACE("In new version of pull code for combobox: {}", value);
+      comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+    }
+  }
+  void pushImpl() override
+  {
+    auto label = stringMap_.guiToAlgo(comboBox_->currentText().toStdString());
+    if (label != state_->getValue(stateKey_).toString())
+    {
+      LOG_TRACE("In new version of push code for combobox: {}", label);
+      state_->setValue(stateKey_, label);
+    }
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QComboBox* comboBox_;
+  GuiStringTranslationMap stringMap_;
 };
 
 #if 0

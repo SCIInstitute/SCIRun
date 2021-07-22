@@ -211,8 +211,8 @@ namespace SCIRun {
       void setLabelColor(const QColor& color);
       QColor getLightColor() const;
       void setState(int azimuth, int inclination, bool on);
-      QwtKnob* lightAzimuthSlider_;
-      QwtKnob* lightInclinationSlider_;
+      QwtKnob* lightAzimuthSlider_{nullptr};
+      QwtKnob* lightInclinationSlider_{ nullptr };
 
     private:
       int lightNumber_ {-1};
