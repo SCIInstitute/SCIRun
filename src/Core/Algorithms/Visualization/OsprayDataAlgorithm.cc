@@ -380,8 +380,9 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   obj->tfn.range = {float(min), float(max)};
   if (colorMap)
   {
-    ColorMap_OSP_helper cmp(colorMap->getColorMapName());
+    ColorMap_OSP_helper cmp(colorMap);
     obj->tfn.colors = cmp.colorList;
+    obj->tfn.opacities = cmp.opacityList;
 
     // set default opacity for now
     // alpha pushed twice for both upper and lower values
@@ -472,8 +473,9 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
 
   if (colorMap)
   {
-    ColorMap_OSP_helper cmp(colorMap->getColorMapName());
+    ColorMap_OSP_helper cmp(colorMap);
     obj->tfn.colors = cmp.colorList;
+    obj->tfn.opacities = cmp.opacityList;
 
     // set default opacity for now
     // alpha pushed twice for both upper and lower values

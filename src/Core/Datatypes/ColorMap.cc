@@ -297,15 +297,15 @@ double ColorMap::valueToIndex(Tensor &tensor) const
 }
 
 //TODO: heavily refactor
-ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
+ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 {
-  opacityList.push_back(0.5);
-  opacityList.push_back(0.5);
-
   const std::vector<ColorRGB>* colorData;
-  auto entry = standardColorMaps.find(name);
+  auto entry = standardColorMaps.find(cmap->getColorMapName());
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
+
+  for (double v = 0.0; v < 1.0; v += (1.0/colorData->size()))
+    opacityList.push_back(cmap->alpha(v));
 
   for(auto& color : *colorData)
   {
