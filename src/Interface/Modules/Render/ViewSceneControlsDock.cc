@@ -680,13 +680,14 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   setupUi(this);
 
 #ifndef WIN32 //TODO: link error with Qwt--try upgrading
-  auto knobLayout = new QHBoxLayout(this);
+  auto knobLayout = new QHBoxLayout;
   lightAzimuthSlider_ = new QwtKnob(this);
   lightAzimuthSlider_->setTotalAngle(360);
   lightAzimuthSlider_->setScale(0, 360);
   lightAzimuthSlider_->setScaleStepSize(45);
   lightAzimuthSlider_->setValue(180);
   lightAzimuthSlider_->setMarkerStyle(QwtKnob::Triangle);
+  lightAzimuthSlider_->setToolTip("Azimuth angle");
   knobLayout->addWidget(lightAzimuthSlider_);
   lightInclinationSlider_ = new QwtKnob(this);
   lightInclinationSlider_->setTotalAngle(180);
@@ -694,6 +695,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   lightInclinationSlider_->setScaleStepSize(45);
   lightInclinationSlider_->setValue(90);
   lightInclinationSlider_->setMarkerStyle(QwtKnob::Triangle);
+  lightInclinationSlider_->setToolTip("Inclination angle");
   knobLayout->addWidget(lightInclinationSlider_);
   qobject_cast<QVBoxLayout*>(layout())->addLayout(knobLayout);
   connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
