@@ -51,6 +51,7 @@
 #include <Interface/Modules/Render/share.h>
 
 class QwtKnob;
+class ctkColorPickerButton;
 
 namespace SCIRun {
   namespace Gui {
@@ -208,21 +209,22 @@ namespace SCIRun {
 
     public:
       explicit LightControls(ViewSceneDialog* parent, int lightNumber);
-      void setLabelColor(const QColor& color);
       QColor getLightColor() const;
+      void setColor(const QColor& color);
       void setState(int azimuth, int inclination, bool on);
-      QwtKnob* lightAzimuthSlider_{nullptr};
-      QwtKnob* lightInclinationSlider_{ nullptr };
 
     private:
       int lightNumber_ {-1};
       QColor lightColor_;
+      QwtKnob* lightAzimuthSlider_{nullptr};
+      QwtKnob* lightInclinationSlider_{ nullptr };
+      ctkColorPickerButton* colorPickerButton_{nullptr};
 
     Q_SIGNALS:
-      void updateLightColor();
+      void lightColorUpdated();
 
     private Q_SLOTS:
-      void selectLightColor();
+      void updateLightColor();
     };
 
     class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser

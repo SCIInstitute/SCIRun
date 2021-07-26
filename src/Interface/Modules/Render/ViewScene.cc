@@ -999,7 +999,7 @@ void ViewSceneDialog::setInitialLightValues()
   {
     auto lightStr = state_->getValue(lightColorKeys[i]).toString();
     auto light = checkColorSetting(lightStr, Qt::white);
-    impl_->lightControls_[i]->setLabelColor(light);
+    impl_->lightControls_[i]->setColor(light);
     auto lightAzimuth = state_->getValue(lightAzimuthKeys[i]).toInt();
     auto lightInclination = state_->getValue(lightInclinationKeys[i]).toInt();
     auto lightOn = state_->getValue(lightOnKeys[i]).toBool();

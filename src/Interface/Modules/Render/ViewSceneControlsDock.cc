@@ -32,6 +32,7 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/StringUtil.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
 
 #include <qwt_knob.h>
 #include <qwt_abstract_slider.h>
@@ -127,14 +128,6 @@ void LightControls::setState(int azimuth, int inclination, bool on)
   if (lightInclinationSlider_)
     lightInclinationSlider_->setValue(inclination);
   lightCheckBox_->setChecked(on);
-}
-
-void LightControls::setLabelColor(const QColor& color)
-{
-  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
-    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
-
-  colorLabel_->setStyleSheet(styleSheet);
 }
 
 void FogControls::setFogColorLabel(const QColor& color)
@@ -508,17 +501,19 @@ QColor LightControls::getLightColor() const
   return lightColor_;
 }
 
-void LightControls::selectLightColor()
+void LightControls::updateLightColor()
 {
-  const auto title = lightNumber_ < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(lightNumber_);
-
-  const auto newColor = QColorDialog::getColor(lightColor_, this, title);
+  const auto newColor = colorPickerButton_->color();
   if (newColor.isValid())
   {
     lightColor_ = newColor;
-    updateLightColor();
-    setLabelColor(lightColor_);
+    lightColorUpdated();
   }
+}
+
+void LightControls::setColor(const QColor& color)
+{
+  colorPickerButton_->setColor(color);
 }
 
 AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -678,9 +673,9 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
 LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWidget(viewScene), lightNumber_(lightNumber)
 {
   setupUi(this);
+  auto lightLayout = qobject_cast<QGridLayout*>(layout());
 
 #ifndef WIN32 //TODO: link error with Qwt--try upgrading
-  auto knobLayout = new QHBoxLayout;
   lightAzimuthSlider_ = new QwtKnob(this);
   lightAzimuthSlider_->setTotalAngle(360);
   lightAzimuthSlider_->setScale(0, 360);
@@ -688,7 +683,8 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   lightAzimuthSlider_->setValue(180);
   lightAzimuthSlider_->setMarkerStyle(QwtKnob::Triangle);
   lightAzimuthSlider_->setToolTip("Azimuth angle");
-  knobLayout->addWidget(lightAzimuthSlider_);
+  lightAzimuthSlider_->setKnobWidth(65);
+  lightLayout->addWidget(lightAzimuthSlider_, 1, 0);
   lightInclinationSlider_ = new QwtKnob(this);
   lightInclinationSlider_->setTotalAngle(180);
   lightInclinationSlider_->setScale(0, 180);
@@ -696,21 +692,23 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   lightInclinationSlider_->setValue(90);
   lightInclinationSlider_->setMarkerStyle(QwtKnob::Triangle);
   lightInclinationSlider_->setToolTip("Inclination angle");
-  knobLayout->addWidget(lightInclinationSlider_);
-  qobject_cast<QVBoxLayout*>(layout())->addLayout(knobLayout);
+  lightInclinationSlider_->setKnobWidth(65);
+  lightLayout->addWidget(lightInclinationSlider_, 1, 1);
+
   connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });
   connect(lightInclinationSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
-#endif
 
+#endif
+  colorPickerButton_ = new ctkColorPickerButton("Text");
+  lightLayout->addWidget(colorPickerButton_, 0, 1);
   connect(lightCheckBox_, &QCheckBox::clicked,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
-  connect(colorButton_, &QPushButton::clicked, this, &LightControls::selectLightColor);
-  setLabelColor(lightColor_ = Qt::white);
+  connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, this, &LightControls::updateLightColor);
+  colorPickerButton_->setColor(lightColor_ = Qt::white);
 
-  connect(this, &LightControls::updateLightColor, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
-
+  connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 }
 
 ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)
