@@ -51,6 +51,8 @@ SET(Interface_Modules_Base_HEADERS_M
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
+  CustomWidgets/CTK/ctkColorPickerButton.h
+  CustomWidgets/CTK/ctkColorDialog.h
   CustomWidgets/CTK/ctkDoubleSpinBox.h
   CustomWidgets/CTK/ctkDoubleSpinBox_p.h
   CustomWidgets/CTK/ctkBasePopupWidget.h
@@ -70,6 +72,8 @@ SET(Interface_Modules_Base_SOURCES
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
+  CustomWidgets/CTK/ctkColorPickerButton.cpp
+  CustomWidgets/CTK/ctkColorDialog.cpp
   CustomWidgets/CTK/ctkDoubleSpinBox.cpp
   CustomWidgets/CTK/ctkPopupWidget.cpp
   CustomWidgets/CTK/ctkBasePopupWidget.cpp
