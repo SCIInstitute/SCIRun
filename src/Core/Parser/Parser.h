@@ -103,21 +103,16 @@ enum {
   SCRIPT_OPTIONAL_VAR_E   = 16
 };
 
-class SCISHARE ParserVariable {
-  public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
+class SCISHARE ParserVariable
+{
   public:
     ParserVariable(std::string name, std::string type) :
-      ref_cnt(0),
       name_(name),
       type_(type),
       flags_(SCRIPT_SINGLE_VAR_E)
       {}
 
     ParserVariable(std::string name, std::string type, int flags) :
-      ref_cnt(0),
       name_(name),
       type_(type),
       flags_(flags)
@@ -231,15 +226,11 @@ class SCISHARE ParserNode
 };
 
 
-class SCISHARE ParserTree {
-  public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
+class SCISHARE ParserTree
+{
   public:
     // Constructor
     ParserTree(const std::string& varname, ParserNodeHandle expression) :
-      ref_cnt(0),
       varname_(varname),
       expression_(expression),
       type_("U")
@@ -276,13 +267,11 @@ class SCISHARE ParserTree {
 
 typedef std::map<std::string,ParserVariableHandle> ParserVariableList;
 
-class SCISHARE ParserProgram {
+class SCISHARE ParserProgram
+{
   public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
-  public:
-    ParserProgram() : ref_cnt(0) {}
+    ParserProgram()
+    {}
 
     // Add an expression to a program: this is a combination of the raw
     // unparsed program code and the expression tree
