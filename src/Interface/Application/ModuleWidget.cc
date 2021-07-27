@@ -1313,6 +1313,10 @@ void ModuleWidget::toggleOptionsDialog()
           static const auto rec = QGuiApplication::screens()[0]->size();
           dockable_->move((maxX.x() + 30) % rec.width(), (maxY.y() + 30) % rec.height());
         }
+        else
+        {
+          dockable_->move(400, 200);
+        }
         positions_.append(dockable_->pos());
       }
       dockable_->show();

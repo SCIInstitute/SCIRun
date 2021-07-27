@@ -675,11 +675,13 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
 #endif
   colorPickerButton_ = new ctkColorPickerButton("Text");
   lightLayout->addWidget(colorPickerButton_, 0, 1);
-  connect(lightCheckBox_, &QCheckBox::clicked,
+  connect(lightCheckBox_, &QCheckBox::toggled,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
-  connect(lightCheckBox_, &QCheckBox::clicked, this, &LightControls::updateLightColor);
+  connect(lightCheckBox_, &QCheckBox::toggled, this, &LightControls::updateLightColor);
   connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, this, &LightControls::updateLightColor);
   colorPickerButton_->setColor(lightColor_ = Qt::white);
+
+  connect(toolbarButton_, &QPushButton::clicked, lightCheckBox_, &QCheckBox::toggle);
 
   connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 }
