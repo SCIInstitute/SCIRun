@@ -73,11 +73,11 @@ namespace Datatypes {
 
     std::string dynamic_type_name() const override { return "ColorMap"; }
     double alpha(double transformedValue) const;
+    double getTransformedValue(double v) const;
 
   private:
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
-    double getTransformedValue(double v) const;
     ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
 
     std::vector<ColorRGB> colorData_;
