@@ -496,26 +496,6 @@ void ObjectSelectionControls::setupObjectListWidget()
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
-QColor LightControls::getLightColor() const
-{
-  return lightColor_;
-}
-
-void LightControls::updateLightColor()
-{
-  const auto newColor = colorPickerButton_->color();
-  if (newColor.isValid())
-  {
-    lightColor_ = newColor;
-    lightColorUpdated();
-  }
-}
-
-void LightControls::setColor(const QColor& color)
-{
-  colorPickerButton_->setColor(color);
-}
-
 AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
@@ -670,7 +650,8 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
 
-LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWidget(viewScene), lightNumber_(lightNumber)
+LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
+  : QWidget(viewScene), lightNumber_(lightNumber), toolbarButton_(toolbarButton)
 {
   setupUi(this);
   auto lightLayout = qobject_cast<QGridLayout*>(layout());
@@ -709,6 +690,27 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber) : QWid
   colorPickerButton_->setColor(lightColor_ = Qt::white);
 
   connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
+}
+
+QColor LightControls::getLightColor() const
+{
+  return lightColor_;
+}
+
+void LightControls::updateLightColor()
+{
+  const auto newColor = colorPickerButton_->color();
+  if (newColor.isValid())
+  {
+    lightColor_ = newColor;
+    lightColorUpdated();
+    toolbarButton_->setStyleSheet("QPushButton { background-color: " + lightColor_.name() + "; }");
+  }
+}
+
+void LightControls::setColor(const QColor& color)
+{
+  colorPickerButton_->setColor(color);
 }
 
 ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)

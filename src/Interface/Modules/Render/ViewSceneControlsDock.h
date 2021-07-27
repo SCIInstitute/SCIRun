@@ -208,7 +208,7 @@ namespace SCIRun {
       Q_OBJECT
 
     public:
-      explicit LightControls(ViewSceneDialog* parent, int lightNumber);
+      explicit LightControls(ViewSceneDialog* parent, int lightNumber, QPushButton* toolbarButton);
       QColor getLightColor() const;
       void setColor(const QColor& color);
       void setState(int azimuth, int inclination, bool on);
@@ -219,6 +219,7 @@ namespace SCIRun {
       QwtKnob* lightAzimuthSlider_{nullptr};
       QwtKnob* lightInclinationSlider_{ nullptr };
       ctkColorPickerButton* colorPickerButton_{nullptr};
+      QPushButton* toolbarButton_{nullptr};
 
     Q_SIGNALS:
       void lightColorUpdated();

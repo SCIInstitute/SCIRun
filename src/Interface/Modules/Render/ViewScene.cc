@@ -541,16 +541,13 @@ void ViewSceneDialog::addConfigurationButton()
   configurationButton->setToolTip("Open/Close Configuration Menu (F5)");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
-  //connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
   addToolbarButton(configurationButton, 1);
 }
 
 void ViewSceneDialog::addObjectSelectionButton()
 {
   auto* objectSelectionButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
-  //autoRotateButton->setShortcut(Qt::Key_F5);
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
   addToolbarButton(objectSelectionButton, 2, impl_->objectSelectionControls_);
 }
@@ -558,9 +555,7 @@ void ViewSceneDialog::addObjectSelectionButton()
 void ViewSceneDialog::addAutoRotateButton()
 {
   auto* autoRotateButton = new QPushButton();
-  //autoRotateButton->setToolTip("Autorotate settings");
   autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
-  //autoRotateButton->setShortcut(Qt::Key_F5);
   connect(autoRotateButton, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto arctrls = new AutoRotateControls(this);
   addToolbarButton(autoRotateButton, 2, arctrls);
@@ -569,9 +564,7 @@ void ViewSceneDialog::addAutoRotateButton()
 void ViewSceneDialog::addColorOptionsButton()
 {
   auto* colorOptionsButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   colorOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
-  //autoRotateButton->setShortcut(Qt::Key_F5);
   impl_->colorOptions_ = new ColorOptions(this);
   impl_->colorOptions_->setSampleColor(impl_->bgColor_);
   addToolbarButton(colorOptionsButton, 2, impl_->colorOptions_);
@@ -586,7 +579,8 @@ void ViewSceneDialog::addLightButtons()
       lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
     else
       lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
-    impl_->lightControls_[i] = new LightControls(this, i);
+
+    impl_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->lightControls_[i]);
     addToolbarButton(lightButton, 1, impl_->lightControls_[i]);
   }
