@@ -121,15 +121,6 @@ void ColorOptions::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-void LightControls::setState(int azimuth, int inclination, bool on)
-{
-  if (lightAzimuthSlider_)
-    lightAzimuthSlider_->setValue(azimuth);
-  if (lightInclinationSlider_)
-    lightInclinationSlider_->setValue(inclination);
-  lightCheckBox_->setChecked(on);
-}
-
 void FogControls::setFogColorLabel(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
@@ -686,6 +677,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   lightLayout->addWidget(colorPickerButton_, 0, 1);
   connect(lightCheckBox_, &QCheckBox::clicked,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
+  connect(lightCheckBox_, &QCheckBox::clicked, this, &LightControls::updateLightColor);
   connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, this, &LightControls::updateLightColor);
   colorPickerButton_->setColor(lightColor_ = Qt::white);
 
@@ -704,13 +696,33 @@ void LightControls::updateLightColor()
   {
     lightColor_ = newColor;
     lightColorUpdated();
-    toolbarButton_->setStyleSheet("QPushButton { background-color: " + lightColor_.name() + "; }");
+
+    if (lightCheckBox_->isChecked())
+    {
+      QColor complimentary(255 - lightColor_.red(), 255 - lightColor_.green(), 255 - lightColor_.blue());
+      toolbarButton_->setStyleSheet("QPushButton { background-color: " + lightColor_.name()
+        + "; color: " + complimentary.name() + " }");
+    }
+    else
+    {
+      toolbarButton_->setStyleSheet("");
+    }
   }
 }
 
 void LightControls::setColor(const QColor& color)
 {
   colorPickerButton_->setColor(color);
+}
+
+void LightControls::setAdditionalLightState(int azimuth, int inclination, bool on)
+{
+  if (lightAzimuthSlider_)
+    lightAzimuthSlider_->setValue(azimuth);
+  if (lightInclinationSlider_)
+    lightInclinationSlider_->setValue(inclination);
+  lightCheckBox_->setChecked(on);
+  updateLightColor();
 }
 
 ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)

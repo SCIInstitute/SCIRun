@@ -211,7 +211,7 @@ namespace SCIRun {
       explicit LightControls(ViewSceneDialog* parent, int lightNumber, QPushButton* toolbarButton);
       QColor getLightColor() const;
       void setColor(const QColor& color);
-      void setState(int azimuth, int inclination, bool on);
+      void setAdditionalLightState(int azimuth, int inclination, bool on);
 
     private:
       int lightNumber_ {-1};

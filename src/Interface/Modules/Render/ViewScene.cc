@@ -997,7 +997,7 @@ void ViewSceneDialog::setInitialLightValues()
     auto lightAzimuth = state_->getValue(lightAzimuthKeys[i]).toInt();
     auto lightInclination = state_->getValue(lightInclinationKeys[i]).toInt();
     auto lightOn = state_->getValue(lightOnKeys[i]).toBool();
-    impl_->lightControls_[i]->setState(lightAzimuth, lightInclination, lightOn);
+    impl_->lightControls_[i]->setAdditionalLightState(lightAzimuth, lightInclination, lightOn);
 
     if (spire)
     {
