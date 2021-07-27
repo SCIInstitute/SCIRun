@@ -305,13 +305,15 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 
   auto min = cmap->getColorMapRescaleShift();
   auto range = (1.0/cmap->getColorMapRescaleScale());
-  auto max = min + range;
-  for (double v = min; v < max; v += (range/colorData->size()))
+  auto v = min;
+  auto inc = range/colorData->size();
+  for (int i = 0; i <= colorData->size(); ++i)
   {
     auto color = cmap->valueToColor(v);
     colorList.push_back(color.r());
     colorList.push_back(color.g());
     colorList.push_back(color.b());
     opacityList.push_back(color.a());
+    v += inc;
   }
 }
