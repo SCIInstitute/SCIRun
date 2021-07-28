@@ -228,15 +228,14 @@ void CreateStandardColorMapDialog::onInvertCheck(bool)
   updateColorMapPreview();
 }
 
-AlphaFunctionManager::AlphaFunctionManager(const boost::atomic<bool>& pulling) :
-  dialogPulling_(pulling)
+AlphaFunctionManager::AlphaFunctionManager()
 {
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
   const boost::atomic<bool>& pulling, QWidget* parent)
   : QGraphicsView(scene, parent), alphaPath_(nullptr),
-    alphaManager_(pulling), dialogPulling_(pulling), state_(state)
+    alphaManager_(), dialogPulling_(pulling), state_(state)
 {
 }
 

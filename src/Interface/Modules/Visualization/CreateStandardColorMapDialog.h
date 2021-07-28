@@ -64,7 +64,7 @@ namespace SCIRun {
     class AlphaFunctionManager
     {
     public:
-      AlphaFunctionManager(const boost::atomic<bool>& pulling);
+      AlphaFunctionManager();
       void clear();
       void insert(const QPointF& p);
       void erase(const QPointF& p);
@@ -76,7 +76,6 @@ namespace SCIRun {
       LogicalAlphaPointSet alphaPoints_;
       static const size_t ALPHA_SAMPLES = 10; //TODO cbright: once alpha values are visible, increase this number
       static const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
-      const boost::atomic<bool>& dialogPulling_;
       void printSet() const;
     public:
       auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
