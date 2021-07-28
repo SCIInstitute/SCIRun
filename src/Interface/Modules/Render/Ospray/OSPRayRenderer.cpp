@@ -220,8 +220,6 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
 
 void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tnf)
 {
-  float valueRange[] = {tnf.range[0] , tnf.range[1]};
-
   size_t numColors = tnf.colors.size()/3;
   OSPData colorDataTemp = ospNewSharedData(tnf.colors.data(), OSP_VEC3F, numColors);
   OSPData colorData = ospNewData(OSP_VEC3F, numColors);
