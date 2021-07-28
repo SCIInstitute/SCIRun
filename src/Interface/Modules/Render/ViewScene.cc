@@ -1033,7 +1033,6 @@ void ViewSceneDialog::pullSpecial()
     {
       const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
       parentWidget()->resize(qs);
-      parentWidget()->resize(qs + QSize(1,1));
     }
 
     if (parentWidget())

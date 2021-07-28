@@ -208,8 +208,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light2Inclination, 90);
   state->setValue(Parameters::Light3Inclination, 90);
   state->setValue(Parameters::ShowViewer, false);
-  state->setValue(Parameters::WindowSizeX, 200);
-  state->setValue(Parameters::WindowSizeY, 200);
+  state->setValue(Parameters::WindowSizeX, 450);
+  state->setValue(Parameters::WindowSizeY, 450);
   state->setValue(Parameters::WindowPositionX, 200);
   state->setValue(Parameters::WindowPositionY, 200);
   state->setValue(Parameters::IsFloating, true);
