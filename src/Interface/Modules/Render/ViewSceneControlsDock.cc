@@ -111,6 +111,7 @@ void CameraLockControls::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int c
     ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
   else if (widgetItem->checkState(column) == Qt::Checked)
     ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
+  vs->vsLog("Lock set up");
 }
 
 void ColorOptions::setSampleColor(const QColor& color)
@@ -657,6 +658,9 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   lightAzimuthSlider_->setToolTip("Azimuth angle");
   lightAzimuthSlider_->setKnobWidth(65);
   lightLayout->addWidget(lightAzimuthSlider_, 1, 0);
+  auto azLabel = new QLabel("Azimuth");
+  azLabel->setAlignment(Qt::AlignCenter);
+  lightLayout->addWidget(azLabel, 2, 0);
   lightInclinationSlider_ = new QwtKnob(this);
   lightInclinationSlider_->setTotalAngle(180);
   lightInclinationSlider_->setScale(0, 180);
@@ -666,6 +670,9 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   lightInclinationSlider_->setToolTip("Inclination angle");
   lightInclinationSlider_->setKnobWidth(65);
   lightLayout->addWidget(lightInclinationSlider_, 1, 1);
+  auto incLabel = new QLabel("Inclination");
+  incLabel->setAlignment(Qt::AlignCenter);
+  lightLayout->addWidget(incLabel, 2, 1);
 
   connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
     [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });

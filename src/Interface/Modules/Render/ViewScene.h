@@ -78,6 +78,7 @@ namespace SCIRun {
       std::string getName() const;
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
+      void vsLog(const QString& msg) const;
 
       void postMoveEventCallback(const QPoint& p) override;
 

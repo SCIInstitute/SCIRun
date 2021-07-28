@@ -176,6 +176,7 @@ namespace Gui {
           DeveloperControls* developerControls_{nullptr};
           static constexpr int NUM_LIGHTS = 4;
           LightControls* lightControls_[NUM_LIGHTS];
+          QLabel* statusLabel_{nullptr};
 
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
@@ -456,7 +457,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
-  //viewSceneManager.moveViewSceneToGroup(this, 0);
 }
 
 ViewSceneDialog::~ViewSceneDialog()
@@ -515,6 +515,9 @@ void ViewSceneDialog::addToolBar()
 
   addViewBarButton();
   addControlLockButton();
+
+  impl_->statusLabel_ = new QLabel("");
+  impl_->toolBar1_->addWidget(impl_->statusLabel_);
 }
 
 namespace
@@ -1007,6 +1010,12 @@ void ViewSceneDialog::setInitialLightValues()
       spire->setLightOn(i, lightOn);
     }
   }
+}
+
+void ViewSceneDialog::vsLog(const QString& msg) const
+{
+  if (impl_ && impl_->statusLabel_)
+    impl_->statusLabel_->setText(msg);
 }
 
 void ViewSceneDialog::pullSpecial()
