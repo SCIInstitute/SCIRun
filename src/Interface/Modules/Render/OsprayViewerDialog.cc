@@ -311,7 +311,9 @@ void OsprayViewerDialog::autoRotateClicked()
 
 void OsprayViewerDialog::autoViewClicked()
 {
+#ifdef WITH_OSPRAY
   renderer_->autoView();
+#endif
 }
 
 void OsprayViewerDialog::screenshotClicked()
@@ -344,7 +346,9 @@ void OsprayViewerDialog::setViewportCamera()
 
 float OsprayViewerDialog::getFloat(const Name& name) const
 {
+#ifdef WITH_OSPRAY
   return static_cast<float>(state_->getValue(name).toDouble());
+#endif
 }
 
 void OsprayViewerDialog::setCameraWidgets()
@@ -397,11 +401,13 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 
 MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
+#ifdef WITH_OSPRAY
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
   else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
+#endif
 }
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)

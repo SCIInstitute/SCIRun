@@ -30,11 +30,15 @@
 #include <vector>
 #include <cstdio>
 
+
+#ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
 
 #include "OSPRayDataManager.h"
 #include "OSPRayCamera.h"
+#endif
+
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Ospray/share.h>
 
