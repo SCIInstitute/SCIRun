@@ -37,7 +37,6 @@
 
 #include "OSPRayDataManager.h"
 #include "OSPRayCamera.h"
-#endif
 
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Ospray/share.h>
@@ -95,3 +94,5 @@ private:
 };
 
 }}
+
+#endif
