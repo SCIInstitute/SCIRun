@@ -91,7 +91,6 @@ class CTK_WIDGETS_EXPORT ctkDoubleSpinBox : public QDoubleSpinBox
   Q_PROPERTY(SizeHintPolicy sizeHintPolicy READ sizeHintPolicy WRITE setSizeHintPolicy)
 
 public:
-
   /// SetMode enums for the spinbox behavior.
   /// SetAlways:
   /// No check is made and the given parameters is directly set

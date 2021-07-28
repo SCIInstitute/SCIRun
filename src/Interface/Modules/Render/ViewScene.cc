@@ -809,7 +809,6 @@ void ViewSceneDialog::addClippingPlaneButton()
 
 ClippingPlaneManager::ClippingPlaneManager(ModuleStateHandle state) : state_(state), clippingPlanes_(ClippingPlane::MaxCount)
 {
-
 }
 
 void ViewSceneDialog::setupScaleBar()
