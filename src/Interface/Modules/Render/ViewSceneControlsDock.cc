@@ -108,10 +108,15 @@ void CameraLockControls::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int c
   uint32_t g = p->data(1, Qt::EditRole).toInt();
   const auto vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
   if (widgetItem->checkState(column) == Qt::Unchecked)
+  {
     ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
+    vs->vsLog("");
+  }
   else if (widgetItem->checkState(column) == Qt::Checked)
+  {
     ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
-  vs->vsLog("Lock set up");
+    vs->vsLog(tr("In camera lock group %1").arg(g));
+  }
 }
 
 void ColorOptions::setSampleColor(const QColor& color)
