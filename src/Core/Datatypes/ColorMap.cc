@@ -303,7 +303,7 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
 
-  auto min = cmap->getColorMapRescaleShift();
+  auto min = -cmap->getColorMapRescaleShift();
   auto range = (1.0/cmap->getColorMapRescaleScale());
   auto v = min;
   auto inc = range/colorData->size();
