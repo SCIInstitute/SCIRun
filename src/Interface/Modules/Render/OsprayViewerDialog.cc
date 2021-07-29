@@ -349,6 +349,7 @@ float OsprayViewerDialog::getFloat(const Name& name) const
 #ifdef WITH_OSPRAY
   return static_cast<float>(state_->getValue(name).toDouble());
 #endif
+  return 0;
 }
 
 void OsprayViewerDialog::setCameraWidgets()
