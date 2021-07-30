@@ -68,6 +68,8 @@ namespace SCIRun
           OsprayDataAlgorithm();
           AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
+          const double HALF_SCALE_ = 0.5;
+          const int DIM_ = 3;
           Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle addSphere(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle addTriSurface(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
