@@ -360,7 +360,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   outputPortLayout_(nullptr),
   deleting_(false),
   defaultBackgroundColor_(backgroundColorByName(name)),
-  isViewScene_(name == "ViewScene" || name == "OsprayViewer") //TODO
+  isViewScene_(name == "ViewScene") //TODO
 {
   fillColorStateLookup(defaultBackgroundColor_);
 
