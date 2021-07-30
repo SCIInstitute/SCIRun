@@ -80,9 +80,11 @@ OSPRayRenderer::~OSPRayRenderer()
 //Rendering-----------------------------------------------------------------------------------------
 void OSPRayRenderer::renderFrame()
 {
+  if(framesAccumulated == 0)
+    parentCamera_ = camera_->getOSPCamera();
   if(framesAccumulated < 64)
   {
-    OSPFuture fut = ospRenderFrame(frameBuffer_, renderer_, camera_->getOSPCamera(), world_);
+    OSPFuture fut = ospRenderFrame(frameBuffer_, renderer_, parentCamera_, world_);
     ospWait(fut);
     ++framesAccumulated;
   }
@@ -172,6 +174,7 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
   printf("\n");
 
   ospResetAccumulation(frameBuffer_);
+  framesAccumulated = 0;
   ospCommit(frameBuffer_);
 }
 

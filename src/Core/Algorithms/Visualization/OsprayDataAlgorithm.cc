@@ -348,15 +348,13 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
   Vector dimensions_ = Vector(1.0,1.0,1.0);
   for (size_t p=0;p<dim.size();p++) dimensions_[p] = static_cast<double>(dim[p]);
 
-  fieldData.dim[0] = dimensions_[0];
-  fieldData.dim[1] = dimensions_[1];
-  fieldData.dim[2] = dimensions_[2];
-  fieldData.origin[0] = center.x() - size.x()/2.0;
-  fieldData.origin[2] = center.y() - size.y()/2.0;
-  fieldData.origin[2] = center.z() - size.z()/2.0;
-  fieldData.spacing[0] = size.x()/dimensions_[0];
-  fieldData.spacing[1] = size.y()/dimensions_[1];
-  fieldData.spacing[2] = size.z()/dimensions_[2];
+  for (int i = 0; i < DIM_; ++i)
+  {
+    fieldData.dim[i] = dimensions_[i];
+    fieldData.origin[i] = center[i] - HALF_SCALE_*size[i];
+    // dimensions are reduced by one to convert from number of lines to number of faces
+    fieldData.spacing[i] = size[i]/(dimensions_[i]-1);
+  }
 
   double value;
   //std::cout << "mname:" << field->mesh()->type_name << std::endl;
