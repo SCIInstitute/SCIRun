@@ -1670,10 +1670,18 @@ void ViewSceneDialog::adjustZoomSpeed(int value)
   spire->setZoomSpeed(value);
 }
 
+namespace
+{
+  QString buttonStyleSheet(bool active)
+  {
+    QString color = active ? "red" : "rgb(66,66,69)";
+    return "QPushButton { background-color: " + color + "; }";
+  }
+}
+
 void ViewSceneDialog::toggleLockColor(bool locked)
 {
-  QString color = locked ? "red" : "rgb(66,66,69)";
-  impl_->controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  impl_->controlLock_->setStyleSheet(buttonStyleSheet(locked));
   impl_->autoViewButton_->setDisabled(locked);
 }
 
@@ -1725,14 +1733,19 @@ void ViewSceneDialog::setAutoRotateSpeed(double speed)
 
 void ViewSceneDialog::toggleAutoRotate()
 {
+  auto* button = qobject_cast<QPushButton*>(sender());
   auto spire = impl_->mSpire.lock();
   auto currentRotate = spire->autoRotateVector();
   if (currentRotate == glm::vec2{0,0})
+  {
     spire->setAutoRotateVector(impl_->previousAutoRotate_);
+    button->setStyleSheet(buttonStyleSheet(true));
+  }
   else
   {
     impl_->previousAutoRotate_ = currentRotate;
     spire->setAutoRotateVector({0,0});
+    button->setStyleSheet(buttonStyleSheet(false));
   }
 
   pushCameraState();
