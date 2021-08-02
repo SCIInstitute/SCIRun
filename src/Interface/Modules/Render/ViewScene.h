@@ -212,8 +212,6 @@ namespace SCIRun {
       void focusOutEvent(QFocusEvent* event) override;
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
-      void enterEvent(QEvent* event) override;
-      void leaveEvent(QEvent* event) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
 
 

@@ -177,6 +177,7 @@ namespace Gui {
           static constexpr int NUM_LIGHTS = 4;
           LightControls* lightControls_[NUM_LIGHTS];
           QLabel* statusLabel_{nullptr};
+          QPushButton* autoRotateButton_{nullptr};
 
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
@@ -557,11 +558,11 @@ void ViewSceneDialog::addObjectSelectionButton()
 
 void ViewSceneDialog::addAutoRotateButton()
 {
-  auto* autoRotateButton = new QPushButton();
-  autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
-  connect(autoRotateButton, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
+  impl_->autoRotateButton_ = new QPushButton();
+  impl_->autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
+  connect(impl_->autoRotateButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto arctrls = new AutoRotateControls(this);
-  addToolbarButton(autoRotateButton, 2, arctrls);
+  addToolbarButton(impl_->autoRotateButton_, 2, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
@@ -1472,18 +1473,6 @@ bool ViewSceneDialog::canSelectWidget()
     && !impl_->mouseButtonPressed_ && !needToWaitForWidgetSelection();
 }
 
-void ViewSceneDialog::enterEvent(QEvent* event)
-{
-  //toolBar_->show();
-  ModuleDialogGeneric::enterEvent(event);
-}
-
-void ViewSceneDialog::leaveEvent(QEvent* event)
-{
-  //toolBar_->hide();
-  ModuleDialogGeneric::leaveEvent(event);
-}
-
 bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 {
   return childAt(e->x(), e->y()) == impl_->mGLWidget;
@@ -1672,9 +1661,9 @@ void ViewSceneDialog::adjustZoomSpeed(int value)
 
 namespace
 {
-  QString buttonStyleSheet(bool active)
+  QString buttonStyleSheet(bool active, const QString& activeColor = "red")
   {
-    QString color = active ? "red" : "rgb(66,66,69)";
+    QString color = active ? activeColor : "rgb(66,66,69)";
     return "QPushButton { background-color: " + color + "; }";
   }
 }
@@ -1733,19 +1722,18 @@ void ViewSceneDialog::setAutoRotateSpeed(double speed)
 
 void ViewSceneDialog::toggleAutoRotate()
 {
-  auto* button = qobject_cast<QPushButton*>(sender());
   auto spire = impl_->mSpire.lock();
   auto currentRotate = spire->autoRotateVector();
   if (currentRotate == glm::vec2{0,0})
   {
     spire->setAutoRotateVector(impl_->previousAutoRotate_);
-    button->setStyleSheet(buttonStyleSheet(true));
+    impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(true, "green"));
   }
   else
   {
     impl_->previousAutoRotate_ = currentRotate;
     spire->setAutoRotateVector({0,0});
-    button->setStyleSheet(buttonStyleSheet(false));
+    impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(false));
   }
 
   pushCameraState();
@@ -1755,6 +1743,7 @@ void ViewSceneDialog::autoRotateRight()
 {
   auto spire = impl_->mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(1.0, 0.0));
+  impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(true, "green"));
   pushCameraState();
 }
 
@@ -1762,6 +1751,7 @@ void ViewSceneDialog::autoRotateLeft()
 {
   auto spire = impl_->mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(-1.0, 0.0));
+  impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(true, "green"));
   pushCameraState();
 }
 
@@ -1769,6 +1759,7 @@ void ViewSceneDialog::autoRotateUp()
 {
   auto spire = impl_->mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(0.0, 1.0));
+  impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(true, "green"));
   pushCameraState();
 }
 
@@ -1776,6 +1767,7 @@ void ViewSceneDialog::autoRotateDown()
 {
   auto spire = impl_->mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(0.0, -1.0));
+  impl_->autoRotateButton_->setStyleSheet(buttonStyleSheet(true, "green"));
   pushCameraState();
 }
 
