@@ -226,6 +226,7 @@ namespace SCIRun {
 
     private Q_SLOTS:
       void updateLightColor();
+      void resetAngles();
     };
 
     class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser

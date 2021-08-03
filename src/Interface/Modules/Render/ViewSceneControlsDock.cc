@@ -696,6 +696,19 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   connect(toolbarButton_, &QPushButton::clicked, lightCheckBox_, &QCheckBox::toggle);
 
   connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
+
+  auto resetButton = new QPushButton("Reset angles");
+  resetButton->setMaximumWidth(85);
+  connect(resetButton, &QPushButton::pressed, this, &LightControls::resetAngles);
+  lightLayout->addWidget(resetButton, 3, 0, 1, 2, Qt::AlignCenter);
+}
+
+void LightControls::resetAngles()
+{
+  if (lightAzimuthSlider_)
+    lightAzimuthSlider_->setValue(180);
+  if (lightInclinationSlider_)
+    lightInclinationSlider_->setValue(90);
 }
 
 QColor LightControls::getLightColor() const
