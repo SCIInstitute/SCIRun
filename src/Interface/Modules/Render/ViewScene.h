@@ -108,7 +108,6 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void viewVectorSelected(const QString& name);
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
       void adjustZoomSpeed(int value);
@@ -127,6 +126,7 @@ namespace SCIRun {
       void pullCameraRotation();
       void pullCameraLookAt();
       void pullCameraDistance();
+      void snapToViewAxis();
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);

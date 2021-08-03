@@ -494,7 +494,6 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
-  //addConfigurationButton();
   addObjectSelectionButton();
   addAutoViewButton();
   addScreenshotButton();
@@ -512,7 +511,7 @@ void ViewSceneDialog::addToolBar()
   addDeveloperControlButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar1_, 0, 1);
+  glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
 
   addViewBarButton();
   addControlLockButton();
@@ -601,7 +600,6 @@ void ViewSceneDialog::addFogOptionsButton()
 void ViewSceneDialog::addMaterialOptionsButton()
 {
   auto* materialOptionsButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
   impl_->materialsControls_ = new MaterialsControls(this);
   addToolbarButton(materialOptionsButton, 2, impl_->materialsControls_);
@@ -610,7 +608,6 @@ void ViewSceneDialog::addMaterialOptionsButton()
 void ViewSceneDialog::addOrientationAxesButton()
 {
   auto* orientationAxesButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
   impl_->orientationAxesControls_ = new OrientationAxesControls(this);
   addToolbarButton(orientationAxesButton, 2, impl_->orientationAxesControls_);
@@ -619,7 +616,6 @@ void ViewSceneDialog::addOrientationAxesButton()
 void ViewSceneDialog::addScaleBarButton()
 {
   auto* scaleBarButton = new QPushButton();
-  //colorOptionsButton->setToolTip("Color settings");
   scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
   impl_->scaleBarControls_ = new ScaleBarControls(this);
   fixSize(impl_->scaleBarControls_);
@@ -764,6 +760,7 @@ void ViewSceneDialog::addViewBarButton()
 
   impl_->viewAxisChooser_ = new ViewAxisChooserControls(this);
   addToolbarButton(impl_->viewBarBtn_, 1, impl_->viewAxisChooser_);
+  connect(impl_->viewBarBtn_, &QPushButton::clicked, this, &ViewSceneDialog::snapToViewAxis);
 }
 
 void ViewSceneDialog::addControlLockButton()
@@ -1600,17 +1597,18 @@ void ViewSceneDialog::updateCursor()
 //---------------- Camera --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
-void ViewSceneDialog::viewVectorSelected(const QString& name)
+void ViewSceneDialog::snapToViewAxis()
 {
-  if (name.isEmpty())
+  auto upName = impl_->viewAxisChooser_->upVectorComboBox_->currentText();
+  if (upName.isEmpty())
     return;
 
   glm::vec3 up, view;
-  impl_->viewAxisChooser_->upVectorComboBox_->clear();
-  std::tie(view, up) = axisViewParams.at(impl_->viewAxisChooser_->currentAxis()).at(name);
+  std::tie(view, up) = axisViewParams.at(impl_->viewAxisChooser_->currentAxis()).at(upName);
 
   auto spire = impl_->mSpire.lock();
-  if (!spire) return;
+  if (!spire)
+    return;
 
   spire->setView(view, up);
 

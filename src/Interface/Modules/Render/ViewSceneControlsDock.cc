@@ -744,7 +744,6 @@ ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWid
   setupUi(this);
 
   connect(lookDownComboBox_, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
-  connect(upVectorComboBox_, SIGNAL(activated(const QString&)), parent, SLOT(viewVectorSelected(const QString&)));
 }
 
 QString ViewAxisChooserControls::currentAxis() const
