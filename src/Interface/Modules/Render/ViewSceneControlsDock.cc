@@ -519,7 +519,6 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
   connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
   connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
-  //emissionDoubleSpinBox_->setDisabled(true);
 }
 
 FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -529,9 +528,17 @@ FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
   connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
   connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
+  connect(this, SIGNAL(setFogTo(bool)), parent, SLOT(setFogOn(bool)));
   fogOnVisibleObjectsCheckBox_->setDisabled(true);
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
   connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+}
+
+void FogControls::toggleFog()
+{
+  auto toggle = !fogGroupBox_->isChecked();
+  fogGroupBox_->setChecked(toggle);
+  Q_EMIT setFogTo(toggle);
 }
 
 ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -699,7 +706,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
 
   auto resetButton = new QPushButton("Reset angles");
   resetButton->setMaximumWidth(85);
-  connect(resetButton, &QPushButton::pressed, this, &LightControls::resetAngles);
+  connect(resetButton, &QPushButton::clicked, this, &LightControls::resetAngles);
   lightLayout->addWidget(resetButton, 3, 0, 1, 2, Qt::AlignCenter);
 }
 

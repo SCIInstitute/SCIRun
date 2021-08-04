@@ -120,6 +120,10 @@ namespace SCIRun {
       explicit FogControls(ViewSceneDialog* parent);
       void setFogColorLabel(const QColor& color);
       void setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+    Q_SIGNALS:
+      void setFogTo(bool toggle);
+    public Q_SLOTS:
+      void toggleFog();
     };
 
     class SCISHARE ObjectSelectionControls : public QWidget, public Ui::ObjectSelection

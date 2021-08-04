@@ -454,7 +454,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   addToolBar();
   glLayout->addWidget(impl_->mGLWidget, 1, 1);
-  glLayout->addWidget(impl_->toolBar2_, 1, 0);
+  glLayout->addWidget(impl_->toolBar2_, 0, 0, 2, 1);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
@@ -511,7 +511,7 @@ void ViewSceneDialog::addToolBar()
   addDeveloperControlButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
+  glLayout->addWidget(impl_->toolBar1_, 0, 1);
 
   addViewBarButton();
   addControlLockButton();
@@ -594,6 +594,7 @@ void ViewSceneDialog::addFogOptionsButton()
   auto* fogOptionsButton = new QPushButton();
   fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   impl_->fogControls_ = new FogControls(this);
+  connect(fogOptionsButton, &QPushButton::clicked, impl_->fogControls_, &FogControls::toggleFog);
   addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
 }
 
@@ -672,8 +673,6 @@ void ViewSceneDialog::setupMaterials()
   setDiffuseValue(diffuse);
   setSpecularValue(specular);
   setShininessValue(shine);
-  //setEmissionValue(emission);
-  //setFogOnVisibleObjects(objectsOnly);
   setFogUseBGColor(useBGColor);
   setFogStartValue(fogStart);
   setFogEndValue(fogEnd);
