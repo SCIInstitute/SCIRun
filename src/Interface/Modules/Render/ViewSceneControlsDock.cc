@@ -523,7 +523,7 @@ FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   connect(this, SIGNAL(setFogTo(bool)), parent, SLOT(setFogOn(bool)));
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
   qobject_cast<QGridLayout*>(fogGroupBox_->layout())->addWidget(colorPickerButton_, 3, 0, 1, 2);
-  linkedLightCheckBox_ = [this]() { return fogGroupBox_->isChecked(); };
+  linkedCheckable_ = [this]() { return fogGroupBox_->isChecked(); };
   connect(this, &FogControls::lightColorUpdated, parent, &ViewSceneDialog::assignFogColor);
   connect(fogGroupBox_, &QGroupBox::toggled, [this]() { updateLightColor(); });
 }
@@ -648,8 +648,13 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
 
-LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton)
+ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton)
   : toolbarButton_(toolbarButton)
+{
+}
+
+LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton)
+  : ButtonStylesheetToggler(toolbarButton)
 {
   colorPickerButton_ = new ctkColorPickerButton("");
   QObject::connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, [this]() { updateLightColor(); });
@@ -695,7 +700,7 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
 
 #endif
 
-  linkedLightCheckBox_ = [this]() { return lightCheckBox_->isChecked(); };
+  linkedCheckable_ = [this]() { return lightCheckBox_->isChecked(); };
   lightLayout->addWidget(colorPickerButton_, 0, 1);
   connect(lightCheckBox_, &QCheckBox::toggled,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
@@ -726,6 +731,20 @@ QColor LightButtonUpdater::color() const
   return lightColor_;
 }
 
+void ButtonStylesheetToggler::updateToolbarButton(const QColor& color)
+{
+  if (linkedCheckable_())
+  {
+    const QColor complimentary(255 - color.red(), 255 - color.green(), 255 - color.blue());
+    toolbarButton_->setStyleSheet("QPushButton { background-color: " + color.name()
+      + "; color: " + complimentary.name() + " }");
+  }
+  else
+  {
+    toolbarButton_->setStyleSheet("");
+  }
+}
+
 void LightButtonUpdater::updateLightColor()
 {
   const auto newColor = colorPickerButton_->color();
@@ -733,17 +752,7 @@ void LightButtonUpdater::updateLightColor()
   {
     lightColor_ = newColor;
     lightColorUpdated();
-
-    if (linkedLightCheckBox_())
-    {
-      QColor complimentary(255 - lightColor_.red(), 255 - lightColor_.green(), 255 - lightColor_.blue());
-      toolbarButton_->setStyleSheet("QPushButton { background-color: " + lightColor_.name()
-        + "; color: " + complimentary.name() + " }");
-    }
-    else
-    {
-      toolbarButton_->setStyleSheet("");
-    }
+    updateToolbarButton(lightColor_);
   }
 }
 

@@ -112,7 +112,17 @@ namespace SCIRun {
       void setMaterialValues(double ambient, double diffuse, double specular, double shine, double emission);
     };
 
-    class SCISHARE LightButtonUpdater
+    class SCISHARE ButtonStylesheetToggler
+    {
+    public:
+      explicit ButtonStylesheetToggler(QPushButton* toolbarButton);
+      void updateToolbarButton(const QColor& color);
+    protected:
+      QPushButton* toolbarButton_{nullptr};
+      std::function<bool()> linkedCheckable_;
+    };
+
+    class SCISHARE LightButtonUpdater : public ButtonStylesheetToggler
     {
     public:
       explicit LightButtonUpdater(QPushButton* toolbarButton);
@@ -120,8 +130,6 @@ namespace SCIRun {
       void setColor(const QColor& color);
     protected:
       ctkColorPickerButton* colorPickerButton_{nullptr};
-      QPushButton* toolbarButton_{nullptr};
-      std::function<bool()> linkedLightCheckBox_;
       QColor lightColor_;
       void updateLightColor();
       virtual void lightColorUpdated() = 0;
