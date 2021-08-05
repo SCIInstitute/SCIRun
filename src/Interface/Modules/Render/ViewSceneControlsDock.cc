@@ -524,8 +524,8 @@ FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
   qobject_cast<QGridLayout*>(fogGroupBox_->layout())->addWidget(colorPickerButton_, 3, 0, 1, 2);
   linkedLightCheckBox_ = [this]() { return fogGroupBox_->isChecked(); };
-//colorPickerButton_->setColor(lightColor_ = Qt::white);
   connect(this, &FogControls::lightColorUpdated, parent, &ViewSceneDialog::assignFogColor);
+  connect(fogGroupBox_, &QGroupBox::toggled, [this]() { updateLightColor(); });
 }
 
 void FogControls::toggleFog()
