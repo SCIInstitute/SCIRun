@@ -178,6 +178,7 @@ namespace Gui {
           LightControls* lightControls_[NUM_LIGHTS];
           QLabel* statusLabel_{nullptr};
           QPushButton* autoRotateButton_{nullptr};
+          QPushButton* fogButton_{nullptr};
 
           SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
           Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
@@ -202,7 +203,7 @@ namespace Gui {
 
           boost::optional<QPoint> savedPos_;
           QColor                                bgColor_                      {};
-          QColor                                fogColor_                     {};
+          //QColor                                fogColor_                     {};
           ScaleBarData                              scaleBar_                     {};
           Render::ClippingPlaneManagerPtr clippingPlaneManager_;
           class Screenshot*                     screenshotTaker_              {nullptr};
@@ -591,11 +592,11 @@ void ViewSceneDialog::addLightButtons()
 
 void ViewSceneDialog::addFogOptionsButton()
 {
-  auto* fogOptionsButton = new QPushButton();
-  fogOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
-  impl_->fogControls_ = new FogControls(this);
-  connect(fogOptionsButton, &QPushButton::clicked, impl_->fogControls_, &FogControls::toggleFog);
-  addToolbarButton(fogOptionsButton, 2, impl_->fogControls_);
+  impl_->fogButton_ = new QPushButton();
+  impl_->fogButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
+  impl_->fogControls_ = new FogControls(this, impl_->fogButton_);
+  connect(impl_->fogButton_, &QPushButton::clicked, impl_->fogControls_, &FogControls::toggleFog);
+  addToolbarButton(impl_->fogButton_, 2, impl_->fogControls_);
 }
 
 void ViewSceneDialog::addMaterialOptionsButton()
@@ -662,9 +663,8 @@ void ViewSceneDialog::setupMaterials()
   auto colorStr = state_->getValue(Parameters::FogColor).toString();
 
   ColorRGB color(colorStr);
-  impl_->fogColor_ = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
 
-  impl_->fogControls_->setFogColorLabel(impl_->fogColor_);
+  impl_->fogControls_->setColor(QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized()));
 
   impl_->materialsControls_->setMaterialValues(ambient, diffuse, specular, shine, 0.0);
   impl_->fogControls_->setFogValues(fogOn, false, useBGColor, fogStart, fogEnd);
@@ -2472,7 +2472,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
 void ViewSceneDialog::setLightColor(int index)
 {
-  const auto lightColor(impl_->lightControls_[index]->getLightColor());
+  const auto lightColor(impl_->lightControls_[index]->color());
 
   state_->setValue(lightColorKeys[index], ColorRGB(lightColor.redF(), lightColor.greenF(), lightColor.blueF()).toString());
 
@@ -2545,10 +2545,7 @@ void ViewSceneDialog::setShininessValue(double value)
 void ViewSceneDialog::setFogOn(bool value)
 {
   state_->setValue(Parameters::FogOn, value);
-  if (value)
-    setFog(FogFactor::FOG_INTENSITY, 1.0);
-  else
-    setFog(FogFactor::FOG_INTENSITY, 0.0);
+  setFog(FogFactor::FOG_INTENSITY, value ? 1.0 : 0.0);
   updateAllGeometries();
 }
 
@@ -2558,24 +2555,21 @@ void ViewSceneDialog::setFogUseBGColor(bool value)
   if (value)
     setFogColor(glm::vec4(impl_->bgColor_.red(), impl_->bgColor_.green(), impl_->bgColor_.blue(), 1.0));
   else
-    setFogColor(glm::vec4(impl_->fogColor_.red(), impl_->fogColor_.green(), impl_->fogColor_.blue(), 1.0));
+  {
+    auto fogColor = impl_->fogControls_->color();
+    setFogColor(glm::vec4(fogColor.red(), fogColor.green(), fogColor.blue(), 1.0));
+  }
   updateAllGeometries();
 }
 
 void ViewSceneDialog::assignFogColor()
 {
-  const auto title = windowTitle() + " Choose fog color";
-  const auto newColor = QColorDialog::getColor(impl_->fogColor_, this, title);
-  if (newColor.isValid())
-  {
-    impl_->fogColor_ = newColor;
-    impl_->fogControls_->setFogColorLabel(impl_->fogColor_);
-    state_->setValue(Parameters::FogColor, ColorRGB(impl_->fogColor_.red(), impl_->fogColor_.green(), impl_->fogColor_.blue()).toString());
-  }
+  auto fogColor = impl_->fogControls_->color();
+  state_->setValue(Parameters::FogColor, ColorRGB(fogColor.red(), fogColor.green(), fogColor.blue()).toString());
   bool useBg = state_->getValue(Parameters::UseBGColor).toBool();
   if (!useBg)
   {
-    setFogColor(glm::vec4(impl_->fogColor_.red(), impl_->fogColor_.green(), impl_->fogColor_.blue(), 1.0));
+    setFogColor(glm::vec4(fogColor.red(), fogColor.green(), fogColor.blue(), 1.0));
     updateAllGeometries();
   }
 }
@@ -2634,7 +2628,10 @@ void ViewSceneDialog::assignBackgroundColor()
     if (useBg)
       setFogColor(glm::vec4(impl_->bgColor_.red(), impl_->bgColor_.green(), impl_->bgColor_.blue(), 1.0));
     else
-      setFogColor(glm::vec4(impl_->fogColor_.red(), impl_->fogColor_.green(), impl_->fogColor_.blue(), 1.0));
+    {
+      const auto fogColor = impl_->fogControls_->color();
+      setFogColor(glm::vec4(fogColor.red(), fogColor.green(), fogColor.blue(), 1.0));
+    }
     updateAllGeometries();
   }
 }

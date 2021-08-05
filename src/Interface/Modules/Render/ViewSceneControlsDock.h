@@ -112,16 +112,31 @@ namespace SCIRun {
       void setMaterialValues(double ambient, double diffuse, double specular, double shine, double emission);
     };
 
-    class SCISHARE FogControls : public QWidget, public Ui::Fog
+    class SCISHARE LightButtonUpdater
+    {
+    public:
+      explicit LightButtonUpdater(QPushButton* toolbarButton);
+      QColor color() const;
+      void setColor(const QColor& color);
+    protected:
+      ctkColorPickerButton* colorPickerButton_{nullptr};
+      QPushButton* toolbarButton_{nullptr};
+      std::function<bool()> linkedLightCheckBox_;
+      QColor lightColor_;
+      void updateLightColor();
+      virtual void lightColorUpdated() = 0;
+    };
+
+    class SCISHARE FogControls : public QWidget, public Ui::Fog, public LightButtonUpdater
     {
       Q_OBJECT
 
     public:
-      explicit FogControls(ViewSceneDialog* parent);
-      void setFogColorLabel(const QColor& color);
+      FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
       void setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
     Q_SIGNALS:
       void setFogTo(bool toggle);
+      void lightColorUpdated() override;
     public Q_SLOTS:
       void toggleFog();
     };
@@ -207,30 +222,22 @@ namespace SCIRun {
       explicit DeveloperControls(ViewSceneDialog* parent);
     };
 
-    class SCISHARE LightControls : public QWidget, public Ui::LightControls
+    class SCISHARE LightControls : public QWidget, public Ui::LightControls, public LightButtonUpdater
     {
       Q_OBJECT
 
     public:
       explicit LightControls(ViewSceneDialog* parent, int lightNumber, QPushButton* toolbarButton);
-      QColor getLightColor() const;
-      void setColor(const QColor& color);
       void setAdditionalLightState(int azimuth, int inclination, bool on);
-
     private:
       int lightNumber_ {-1};
-      QColor lightColor_;
       QwtKnob* lightAzimuthSlider_{nullptr};
       QwtKnob* lightInclinationSlider_{ nullptr };
-      ctkColorPickerButton* colorPickerButton_{nullptr};
-      QPushButton* toolbarButton_{nullptr};
-
-    Q_SIGNALS:
-      void lightColorUpdated();
 
     private Q_SLOTS:
-      void updateLightColor();
       void resetAngles();
+    Q_SIGNALS:
+      void lightColorUpdated() override;
     };
 
     class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser

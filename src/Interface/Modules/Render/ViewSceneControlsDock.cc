@@ -127,14 +127,6 @@ void ColorOptions::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-void FogControls::setFogColorLabel(const QColor& color)
-{
-  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
-    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
-
-  fogColorLabel_->setStyleSheet(styleSheet);
-}
-
 void MaterialsControls::setMaterialValues(double ambient, double diffuse, double specular, double shine, double)
 {
   ambientDoubleSpinBox_->setValue(ambient);
@@ -143,10 +135,9 @@ void MaterialsControls::setMaterialValues(double ambient, double diffuse, double
   shininessDoubleSpinBox_->setValue(shine);
 }
 
-void FogControls::setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+void FogControls::setFogValues(bool fogVisible, bool, bool useBGColor, double fogStart, double fogEnd)
 {
   fogGroupBox_->setChecked(fogVisible);
-  fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
   fogUseBGColorCheckBox_->setChecked(useBGColor);
   fogStartDoubleSpinBox_->setValue(fogStart);
   fogEndDoubleSpinBox_->setValue(fogEnd);
@@ -521,7 +512,8 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
 }
 
-FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
+FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), LightButtonUpdater(toolbarButton)
 {
   setupUi(this);
 
@@ -529,9 +521,11 @@ FogControls::FogControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
   connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
   connect(this, SIGNAL(setFogTo(bool)), parent, SLOT(setFogOn(bool)));
-  fogOnVisibleObjectsCheckBox_->setDisabled(true);
   connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
-  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+  qobject_cast<QGridLayout*>(fogGroupBox_->layout())->addWidget(colorPickerButton_, 3, 0, 1, 2);
+  linkedLightCheckBox_ = [this]() { return fogGroupBox_->isChecked(); };
+//colorPickerButton_->setColor(lightColor_ = Qt::white);
+  connect(this, &FogControls::lightColorUpdated, parent, &ViewSceneDialog::assignFogColor);
 }
 
 void FogControls::toggleFog()
@@ -654,8 +648,16 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
 
+LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton)
+  : toolbarButton_(toolbarButton)
+{
+  colorPickerButton_ = new ctkColorPickerButton("");
+  QObject::connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, [this]() { updateLightColor(); });
+}
+
 LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
-  : QWidget(viewScene), lightNumber_(lightNumber), toolbarButton_(toolbarButton)
+  : QWidget(viewScene), LightButtonUpdater(toolbarButton),
+    lightNumber_(lightNumber)
 {
   setupUi(this);
   auto lightLayout = qobject_cast<QGridLayout*>(layout());
@@ -692,12 +694,13 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
     [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
 
 #endif
-  colorPickerButton_ = new ctkColorPickerButton("Text");
+
+  linkedLightCheckBox_ = [this]() { return lightCheckBox_->isChecked(); };
   lightLayout->addWidget(colorPickerButton_, 0, 1);
   connect(lightCheckBox_, &QCheckBox::toggled,
     [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
-  connect(lightCheckBox_, &QCheckBox::toggled, this, &LightControls::updateLightColor);
-  connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, this, &LightControls::updateLightColor);
+  connect(lightCheckBox_, &QCheckBox::toggled, [this]() { updateLightColor(); });
+
   colorPickerButton_->setColor(lightColor_ = Qt::white);
 
   connect(toolbarButton_, &QPushButton::clicked, lightCheckBox_, &QCheckBox::toggle);
@@ -718,12 +721,12 @@ void LightControls::resetAngles()
     lightInclinationSlider_->setValue(90);
 }
 
-QColor LightControls::getLightColor() const
+QColor LightButtonUpdater::color() const
 {
   return lightColor_;
 }
 
-void LightControls::updateLightColor()
+void LightButtonUpdater::updateLightColor()
 {
   const auto newColor = colorPickerButton_->color();
   if (newColor.isValid())
@@ -731,7 +734,7 @@ void LightControls::updateLightColor()
     lightColor_ = newColor;
     lightColorUpdated();
 
-    if (lightCheckBox_->isChecked())
+    if (linkedLightCheckBox_())
     {
       QColor complimentary(255 - lightColor_.red(), 255 - lightColor_.green(), 255 - lightColor_.blue());
       toolbarButton_->setStyleSheet("QPushButton { background-color: " + lightColor_.name()
@@ -744,7 +747,7 @@ void LightControls::updateLightColor()
   }
 }
 
-void LightControls::setColor(const QColor& color)
+void LightButtonUpdater::setColor(const QColor& color)
 {
   colorPickerButton_->setColor(color);
 }
