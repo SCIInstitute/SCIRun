@@ -595,7 +595,6 @@ void ViewSceneDialog::addFogOptionsButton()
   impl_->fogButton_ = new QPushButton();
   impl_->fogButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   impl_->fogControls_ = new FogControls(this, impl_->fogButton_);
-  connect(impl_->fogButton_, &QPushButton::clicked, impl_->fogControls_, &FogControls::toggleFog);
   addToolbarButton(impl_->fogButton_, 2, impl_->fogControls_);
 }
 
@@ -611,7 +610,7 @@ void ViewSceneDialog::addOrientationAxesButton()
 {
   auto* orientationAxesButton = new QPushButton();
   orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
-  impl_->orientationAxesControls_ = new OrientationAxesControls(this);
+  impl_->orientationAxesControls_ = new OrientationAxesControls(this, orientationAxesButton);
   addToolbarButton(orientationAxesButton, 2, impl_->orientationAxesControls_);
 }
 
@@ -2188,6 +2187,8 @@ void ViewSceneDialog::initializeAxes()
   {
     bool visible = state_->getValue(Parameters::AxesVisible).toBool();
     impl_->orientationAxesControls_->orientationCheckableGroupBox_->setChecked(visible);
+    if (visible)
+      impl_->orientationAxesControls_->updateToolbarButton("brown");
     spire->showOrientation(visible);
   }
 

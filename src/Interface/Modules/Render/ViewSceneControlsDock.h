@@ -115,17 +115,18 @@ namespace SCIRun {
     class SCISHARE ButtonStylesheetToggler
     {
     public:
-      explicit ButtonStylesheetToggler(QPushButton* toolbarButton);
+      ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle);
       void updateToolbarButton(const QColor& color);
     protected:
       QPushButton* toolbarButton_{nullptr};
       std::function<bool()> linkedCheckable_;
+      std::function<void()> whatToToggle_;
     };
 
     class SCISHARE LightButtonUpdater : public ButtonStylesheetToggler
     {
     public:
-      explicit LightButtonUpdater(QPushButton* toolbarButton);
+      explicit LightButtonUpdater(QPushButton* toolbarButton, std::function<void()> whatToToggle);
       QColor color() const;
       void setColor(const QColor& color);
     protected:
@@ -161,12 +162,13 @@ namespace SCIRun {
       std::unique_ptr<VisibleItemManager> visibleItems_;
     };
 
-    class SCISHARE OrientationAxesControls : public QWidget, public Ui::OrientationAxes
+    class SCISHARE OrientationAxesControls : public QWidget, public Ui::OrientationAxes, public ButtonStylesheetToggler
     {
       Q_OBJECT
 
     public:
-      explicit OrientationAxesControls(ViewSceneDialog* parent);
+      explicit OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
+      void toggleButton();
     private:
       void setSliderDefaultPos();
       void setSliderCenterPos();

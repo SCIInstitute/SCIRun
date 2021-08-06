@@ -513,7 +513,7 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
 }
 
 FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent), LightButtonUpdater(toolbarButton)
+  : QWidget(parent), LightButtonUpdater(toolbarButton, [this]() { toggleFog(); })
 {
   setupUi(this);
 
@@ -550,7 +550,9 @@ ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWid
     parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 }
 
-OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent) : QWidget(parent)
+OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), ButtonStylesheetToggler(toolbarButton,
+    [this]() { orientationCheckableGroupBox_->setChecked(!orientationCheckableGroupBox_->isChecked()); })
 {
   setupUi(this);
 
@@ -562,6 +564,13 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent) : QWid
   connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
+  linkedCheckable_ = [this]() { return orientationCheckableGroupBox_->isChecked(); };
+  connect(orientationCheckableGroupBox_, &QGroupBox::toggled, [this]() { toggleButton(); });
+}
+
+void OrientationAxesControls::toggleButton()
+{
+  updateToolbarButton("brown");
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -648,20 +657,21 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 }
 
-ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton)
-  : toolbarButton_(toolbarButton)
+ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle)
+  : toolbarButton_(toolbarButton), whatToToggle_(whatToToggle)
 {
+  QObject::connect(toolbarButton, &QPushButton::clicked, whatToToggle_);
 }
 
-LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton)
-  : ButtonStylesheetToggler(toolbarButton)
+LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton, std::function<void()> whatToToggle)
+  : ButtonStylesheetToggler(toolbarButton, whatToToggle)
 {
   colorPickerButton_ = new ctkColorPickerButton("");
   QObject::connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, [this]() { updateLightColor(); });
 }
 
 LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
-  : QWidget(viewScene), LightButtonUpdater(toolbarButton),
+  : QWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { lightCheckBox_->toggle(); }),
     lightNumber_(lightNumber)
 {
   setupUi(this);
@@ -707,8 +717,6 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   connect(lightCheckBox_, &QCheckBox::toggled, [this]() { updateLightColor(); });
 
   colorPickerButton_->setColor(lightColor_ = Qt::white);
-
-  connect(toolbarButton_, &QPushButton::clicked, lightCheckBox_, &QCheckBox::toggle);
 
   connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
 
