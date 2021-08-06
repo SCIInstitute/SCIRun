@@ -6,7 +6,7 @@ This module calculates a new value for each value in the Field data based on a u
 
 This module allows the computation of a new scalar, vector or tensor value for each data location in the Field. The user defined function can depend on a number of variables that are defined for each location:
 
-#### Input Variables
+## Input Variables
 
   1. ```DATA```: This is the current value stored in the Field (either on the element or the node location).
 
@@ -22,23 +22,23 @@ This module allows the computation of a new scalar, vector or tensor value for e
 
   7. ```ELEMENT```: Special access variable to access properties of the element. Currently only length, area, and volume are available to be called on this entity. In case one is iterating over the nodes, the node point is assumed to be the element, in case one is iterating of the elements, this variable is referring to the full element.
 
-#### Output Variable
+## Output Variable
 
 The output needs to be stored in the variable ```RESULT```.
 
-#### Available Functions
+## Available Functions
 
 A list of available functions is available in the GUI of the module. The [Parser Help](../../user_doc/parserhelp.md)  brings up a list of available functions to do scalar/vector/tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
 
-#### Input Ports
+## Input Ports
 
 The first input is the Field whose data needs to be recalculated using a function. The second port is an optional port that allows the user to script the module with a user defined input function. This function will override the function entered in module GUI. The third and next ports are used to import a Matrix. The first port corresponds to Matrix A, the next to Matrix B and so on. These ports can be used to do algebra with values stored as a Matrix or can be used to enter scriptable scalar/vector/tensor values that can be defined elsewhere.
 
-#### Output Port
+## Output Port
 
 The module has one output port that has the newly defined values.
 
-#### Example Functions
+## Example Functions
 
 Suppose one wants to set the data values to a certain value:
 
@@ -78,6 +78,6 @@ One can reuse the value that are there as well:
 RESULT = DATA+A+B*C;
 ```
 
-#### Output Data Type
+## Output Data Type
 
 As the function is parsed using the compiler, the output type cannot be guessed by the module, hence it needs to be set by the user to the correct data type.

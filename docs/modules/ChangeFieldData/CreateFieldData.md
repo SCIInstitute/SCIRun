@@ -8,7 +8,7 @@ This module allows the computation of a new scalar, vector or tensor value for e
 
 The user defined function can depend on a number of variables that are defined for each location:
 
-##### Input Variables
+## Input Variables
 
   1. ```X,Y,Z```: Cartesian coordinates of the node or element (center of the element)
 
@@ -22,22 +22,22 @@ The user defined function can depend on a number of variables that are defined f
 
   6. ```ELEMENT```: Special access variable to access properties of the element. Currently only length, area, and volume are available to be called on this entity. In case one is iterating over the nodes, the node point is assumed to be the element, in case one is iterating of the elements, this variable is referring to the full element.
 
-##### Output Variable
+## Output Variable
 
 The output needs to be stored in the variable ```RESULT```.
 
-##### Available Functions
+## Available Functions
 
 A list of available functions is available in the GUI of the module. Press on the button available functions to obtain a full overview of the current available functions to do Scalar/Vector/Tensor algebra and to view the functions that can be applied to the ```ELEMENT``` variable.
 
-##### Input Ports
+## Input Ports
 
 The first input is the field whose data needs to be recalculated using a function. The second port is an optional port that allows the user to script the module with a user defined input function. This function will override the function given in the GUI of the module. The third and next ports are used to import a matrix. The first port corresponds to matrix A, the next to matrix B and so on. These ports can be used to do algebra with values stored as a matrix or can be used to enter scriptable scalar/vector/tensor values that can be defined elsewhere.
 
-##### Output Port
+## Output Port
 
 The module has one output port that has the newly defined values.
 
-##### Output Data Type
+## Output Data Type
 
 As the function is parsed using the compiler, the output type cannot be guessed by the module, hence it needs to be set by the user to the correct data type.

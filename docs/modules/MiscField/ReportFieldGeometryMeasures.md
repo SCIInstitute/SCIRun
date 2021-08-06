@@ -10,7 +10,7 @@ First the user selects the measues location in the top half of the UI. The numbe
 
 Then the user selects what measures are sampled at each location in the bottom half of the UI. The number of measures selected equals the number of columns (M) in the output matrix.
 
-#### Description of Measures:
+## Description of Measures:
 
   * **X position** - The X coordinate of the center of the measure location.
 

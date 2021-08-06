@@ -20,7 +20,7 @@ The GUI for this module is used to define the solution method for the module and
 
 ![alt text](../module_images/Sls.png)
 
-#### Methods Tab
+## Methods Tab
 
 ![alt text](../module_images/Methods.png)
 
@@ -38,7 +38,7 @@ Each solution method comes with the option of choosing a preconditioner for the 
 At present, only the Jacobi preconditioner is available.
 However, there is the option of using no preconditioning.
 
-#### Convergence Criteria
+## Convergence Criteria
 
 The next section of the GUI sets up the convergence criteria for the numerical
 solution.
@@ -57,13 +57,11 @@ Finally, the option **Use the previous solution as initial guess**, which is set
 A useful strategy for solving simulation problems is to begin with a small number of iterations to check that the solution will converge and then use the **Use the previous solution as initial guess** option to continue the simulation.
 Alternatively, to stop a diverging, or at least non-converging, simulation the Target error can be dynamically changed to a residual error level already obtained by the solver.
 
-#### Iteration Progress
+## Iteration Progress
 
 The bottom section of the GUI shows how the solution is progressing.
 
 There is an iteration counter to show how many iterations have been completed, the value of the original error (this will be 1.0 unless the  **Use the previous solution as initial guess** option has been used) and the value of the current error.
 These quantities are summarised graphically in the convergence plot.
 
-```eval_rst
-Further reading: :cite:p:`Saa2003`.
-```
+Further reading: {cite:p}`Saa2003`.

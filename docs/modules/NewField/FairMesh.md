@@ -4,9 +4,7 @@ This module smooths surface meshes without shrinking them.
 
 **Detailed Description**
 
-```eval_rst
-Based on the surface smoothing algorithm published by Taubin in 1995 :cite:p:`Tau1995`.
-```
+Based on the surface smoothing algorithm published by Taubin in 1995 {cite:p}`Tau1995`.
 
 User Interface:
 

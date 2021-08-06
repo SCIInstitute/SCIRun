@@ -6,7 +6,7 @@ This module allows the computation of a new position for each node in the input 
 
 **Overview**
 
-#### Input Variables
+## Input Variables
 
   1. ```DATA```: This is the current value stored in the field (either on the element or the node location). The value is only available if the data is located on the nodes.
 
@@ -20,22 +20,22 @@ This module allows the computation of a new position for each node in the input 
 
   6. ```SIZE```: The number of elements or nodes in the Field (depends on the input Field mesh type).
 
-#### Output Variable
+## Output Variable
 
   1. ```NEWPOS```: The output needs to be stored in the variable NEWPOS.
 
-#### Available Functions
+## Available Functions
 
 A list of available functions is available in the GUI of the module. The [Parser Help](../../user_doc/parserhelp.md) button brings up a list of available functions to do scalar/vector/tensor algebra.
 
-#### Input Ports
+## Input Ports
 
 The first input is the Field whose node positions need to be recalculated using a function. The second port is an optional port that allows the user to script the module with a user defined input function. This function will override the function given in the GUI of the module. The third and next ports are used to import a matrix. The first port corresponds to matrix A, the next to matrix B and so on. These ports can be used to do algebra with values stored as a matrix or can be used to enter scriptable scalar/vector/tensor values that can be defined elsewhere.
 
-#### Output Port
+## Output Port
 
 The module has one output port that has the newly defined values.
 
-#### Output Data Type
+## Output Data Type
 
 As the function is parsed using the compiler, the output type cannot be guessed by the module, hence it needs to be set by the user to the correct data type.

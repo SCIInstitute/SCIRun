@@ -2,7 +2,7 @@
 
 This module visualizes the data that makes up a Field. When possible and selected, the glyph takes its color from the data values that permeate the field.
 
-### Ports
+## Ports
 This module has 6 input ports, 3 field inputs and 3 color map inputs. The only required port is the first field input port because that holds the data that is visualized. By default, ports will be set to primary input.
 
 **Secondary and Tertiary Ports**  
@@ -12,29 +12,29 @@ The secondary and tertiary ports can be used to scale vector parameters like wid
 They can also be used to assign colors based on data besides the primary field.
 **Ex:** If you want to render scalars in RGB, you can give a secondary input of a vector or tensor and set the coloring to RGB Conversion through the secondary input.
 
-### Color
+## Color
 By default, glyphs is displayed using the default color, which is editable from the GUI.
 
 **Color Map**  
 If there is a color map and field attached to the selected input port, then the data in the selected field input is used as an index into the corresponding color map, and the glyph is rendered with the color at that point.
 
-```eval_rst
-.. list-table::
-   :widths: 25 75
-   :width: 100%
-   :header-rows: 1
+```{list-table}
+:name: table-color-map
+:widths: 25 75
+:width: 100%
+:header-rows: 1
 
-   * - Type
-     - Description
+* - Type
+  - Description
 
-   * - Scalar
-     - Uses scalar value as index
+* - Scalar
+  - Uses scalar value as index
 
-   * - Vector
-     - Uses vector's length as index
+* - Vector
+  - Uses vector's length as index
 
-   * - Tensor
-     - Uses the vector magnitude of the 3 eigenvalues as the index
+* - Tensor
+  - Uses the vector magnitude of the 3 eigenvalues as the index
 
 ```
 
@@ -45,22 +45,22 @@ If there is a field attached to the selected input port, then the data in the se
    (R = |x|, G = |y|, B = |z|)
 ```
 
-```eval_rst
-.. list-table::
-   :widths: 25 75
-   :width: 100%
-   :header-rows: 1
+```{list-table}
+:name: table-color-conversion
+:widths: 25 75
+:width: 100%
+:header-rows: 1
 
-   * - Type
-     - Description
+* - Type
+  - Description
 
-   * - Scalar
-     - Creates gray-scale mapping
+* - Scalar
+  - Creates gray-scale mapping
 
-   * - Vector
-     - Normalized vector creates RGB colors
+* - Vector
+  - Normalized vector creates RGB colors
 
-   * - Tensor
-     - Principle eigenvector(normalized) creates RGB colors
+* - Tensor
+  - Principle eigenvector(normalized) creates RGB colors
 
 ```

@@ -20,7 +20,7 @@ One of a number of unary matrix operations can be selected from the GUI and is t
 
 There are a number of mathematical functions available for use:
 
-#### Operators
+## Operators
 
   * +: Add two numbers:
 

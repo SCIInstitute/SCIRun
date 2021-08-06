@@ -1430,31 +1430,31 @@ With the module fully completed, we can now submit it to be included in the main
 
 ### Common Function Changes
 
-```eval_rst
-.. list-table::
-   :widths: 5 5 90
-   :width: 100%
-   :header-rows: 1
+```{list-table}
+:name: table-function-changes
+:widths: 40 40 20
+:width: 100%
+:header-rows: 1
 
-   * - SCIRun 4
-     - SCIRun 5
-     - Notes
+* - SCIRun 4
+  - SCIRun 5
+  - Notes
 
-   * - ``if (input.get_rep()==0)``
-     - ``if (!input)``
-     - | Checks for an empty handle.
-       | Works for all major handle types.
+* - ``if (input.get_rep()==0)``
+  - ``if (!input)``
+  - Checks for an empty handle.
+  | Works for all major handle types.
 
-   * - | ``output = input;``
-       | ``output.detach();``
-     - ``FieldHandle output_field(input_field->clone());``
-     - Copy a field and disconnect the data
+* - ``output = input;``
+  | ``output.detach();``
+  - ``FieldHandle output_field(input_field->clone());``
+  - Copy a field and disconnect the data
 
-   * - | ``output = input;``
-       | ``output.detach();``
-       | ``output->mesh_detach();``
-     - ``FieldHandle output_field(input_field->deep_clone());``
-     - Copy a field and disconnect the mesh and data.
+* - ``output = input;``
+  | ``output.detach();``
+  | ``output->mesh_detach();``
+  - ``FieldHandle output_field(input_field->deep_clone());``
+  - Copy a field and disconnect the mesh and data.
 
 ```
 

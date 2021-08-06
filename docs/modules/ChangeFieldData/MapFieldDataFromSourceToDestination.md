@@ -15,6 +15,6 @@ This module returns 1 output Field:
 
 1. **Remapped Destination** contains the **Destination** geometry with the **Source** input.
 
-#### GUI Options
+## GUI Options
 
 The user can select the option of choosing the closest element (**Constant** option) when a data value cannot be interpolated. Otherwise, **Linear** interpolation can be used. The **Maximum Distance** option indicates the maximum distance between points of interpolation and data values. The default for unassigned values can be numeric or NaN.

@@ -6,7 +6,7 @@ This module is used to view the attributes of fields.
 
 ReportFieldInfo is purely an informational Module. It performs no modification on input data. Upon execution it displays attributes about the input field in the UI.
 
-#### Field Attributes displayed:
+## Field Attributes displayed:
 
   * **Name** - The Field name. May be blank.
 
