@@ -4,17 +4,17 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
 </script>
 
-The SolveLinearSystem module is used to solve the linear system \\(Ax=b\\), where the coefficient matrix \\(A\\) may be dense or sparse, \\(b\\) is a given right-hand-side vector, and the user wants to find the solution vector \\(x\\)
+The SolveLinearSystem module is used to solve the linear system {math}`Ax=b`, where the coefficient matrix {math}`A` may be dense or sparse, {math}`b` is a given right-hand-side vector, and the user wants to find the solution vector {math}`x`
 
 **Detailed Description**
 
 The SolveLinearSystem module takes two input matrices and returns three matrices.
-The first input port takes the coefficient matrix \\(A\\), which may be a dense \\(n \times n\\) matrix or a sparse \\(n \times n\\) matrix.
-The second input port takes the right hand side vector \\(b\\) as an \\(n \times 1\\) dense matrix.
-Here, the module is assuming that an \\(n \times n\\) system is being solved.
+The first input port takes the coefficient matrix {math}`A`, which may be a dense {math}`n \times n` matrix or a sparse {math}`n \times n` matrix.
+The second input port takes the right hand side vector {math}`b` as an {math}`n \times 1` dense matrix.
+Here, the module is assuming that an {math}`n \times n` system is being solved.
 
-The first of the three output ports returns the solution vector \\(x\\) as an \\(n \times 1\\) dense matrix.
-The second output port returns the number of iterations required to reach convergence as a \\(1 \times 1\\) dense matrix and the third output port returns the norm of the residual vector, again as a \\(1 \times 1\\) dense matrix.
+The first of the three output ports returns the solution vector {math}`x` as an {math}`n \times 1` dense matrix.
+The second output port returns the number of iterations required to reach convergence as a {math}`1 \times 1` dense matrix and the third output port returns the norm of the residual vector, again as a {math}`1 \times 1` dense matrix.
 
 The GUI for this module is used to define the solution method for the module and monitor the convergence towards the solution.
 
