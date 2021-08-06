@@ -1,10 +1,12 @@
 docutils
 pygments
-recommonmark
+linkify-it-py
+lxml
+myst-parser
 sphinx
 sphinx-issues
 sphinx-markdown-tables
 sphinx-notfound-page
-sphinx_rtd_theme
+sphinx-book-theme
 sphinxcontrib-bibtex
 sphinx-markdown-tables
