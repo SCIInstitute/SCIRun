@@ -2188,7 +2188,7 @@ void ViewSceneDialog::initializeAxes()
     bool visible = state_->getValue(Parameters::AxesVisible).toBool();
     impl_->orientationAxesControls_->orientationCheckableGroupBox_->setChecked(visible);
     if (visible)
-      impl_->orientationAxesControls_->updateToolbarButton("brown");
+      impl_->orientationAxesControls_->toggleButton();
     spire->showOrientation(visible);
   }
 

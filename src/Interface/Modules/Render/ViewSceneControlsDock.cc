@@ -556,7 +556,9 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushB
 {
   setupUi(this);
 
-  connect(orientationCheckableGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(orientationCheckableGroupBox_, &QGroupBox::toggled,
+    [parent, this](bool b) { parent->showOrientationChecked(b); toggleButton(); }
+    );
   connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
   connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
   connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
@@ -565,12 +567,11 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushB
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
   linkedCheckable_ = [this]() { return orientationCheckableGroupBox_->isChecked(); };
-  connect(orientationCheckableGroupBox_, &QGroupBox::toggled, [this]() { toggleButton(); });
 }
 
 void OrientationAxesControls::toggleButton()
 {
-  updateToolbarButton("brown");
+  updateToolbarButton("lightGray");
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent) : QWidget(parent)
