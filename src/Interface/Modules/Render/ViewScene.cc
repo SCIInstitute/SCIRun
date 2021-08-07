@@ -618,7 +618,7 @@ void ViewSceneDialog::addScaleBarButton()
 {
   auto* scaleBarButton = new QPushButton();
   scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
-  impl_->scaleBarControls_ = new ScaleBarControls(this);
+  impl_->scaleBarControls_ = new ScaleBarControls(this, scaleBarButton);
   fixSize(impl_->scaleBarControls_);
   addToolbarButton(scaleBarButton, 2, impl_->scaleBarControls_);
 

@@ -183,13 +183,15 @@ namespace SCIRun {
       double projLength;
     };
 
-    class SCISHARE ScaleBarControls : public QWidget, public Ui::ScaleBar
+    class SCISHARE ScaleBarControls : public QWidget, public Ui::ScaleBar, public ButtonStylesheetToggler
     {
       Q_OBJECT
 
     public:
-      explicit ScaleBarControls(ViewSceneDialog* parent);
+      ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
       void setScaleBarValues(const ScaleBarData& scale);
+    private:
+      static const QColor buttonOutlineColor;
     };
 
     class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes

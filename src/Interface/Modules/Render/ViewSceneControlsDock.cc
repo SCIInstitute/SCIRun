@@ -143,6 +143,8 @@ void FogControls::setFogValues(bool fogVisible, bool, bool useBGColor, double fo
   fogEndDoubleSpinBox_->setValue(fogEnd);
 }
 
+const QColor ScaleBarControls::buttonOutlineColor{"lightGray"};
+
 void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
 {
   showScaleBarTextGroupBox_->setChecked(scale.visible);
@@ -152,6 +154,8 @@ void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
   scaleBarMultiplierDoubleSpinBox_->setValue(scale.multiplier);
   numTicksSpinBox_->setValue(scale.numTicks);
   scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
+  if (scale.visible)
+    updateToolbarButton(ScaleBarControls::buttonOutlineColor);
 }
 
 void InputControls::updateZoomOptionVisibility()
@@ -550,9 +554,17 @@ ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWid
     parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 }
 
+namespace
+{
+  void toggleGroupBox(QGroupBox* box)
+  {
+    box->setChecked(!box->isChecked());
+  }
+}
+
 OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : QWidget(parent), ButtonStylesheetToggler(toolbarButton,
-    [this]() { orientationCheckableGroupBox_->setChecked(!orientationCheckableGroupBox_->isChecked()); })
+    [this]() { toggleGroupBox(orientationCheckableGroupBox_); })
 {
   setupUi(this);
 
@@ -574,11 +586,15 @@ void OrientationAxesControls::toggleButton()
   updateToolbarButton("lightGray");
 }
 
-ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent) : QWidget(parent)
+ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleGroupBox(showScaleBarTextGroupBox_); })
 {
   setupUi(this);
 
-  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
+  connect(showScaleBarTextGroupBox_, &QGroupBox::toggled,
+    [parent, this](bool b) { parent->setScaleBarVisible(b); updateToolbarButton(buttonOutlineColor); }
+    );
+  linkedCheckable_ = [this]() { return showScaleBarTextGroupBox_->isChecked(); };
   connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
   connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
   connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
@@ -742,6 +758,8 @@ QColor LightButtonUpdater::color() const
 
 void ButtonStylesheetToggler::updateToolbarButton(const QColor& color)
 {
+  if (!linkedCheckable_)
+    return;
   if (linkedCheckable_())
   {
     const QColor complimentary(255 - color.red(), 255 - color.green(), 255 - color.blue());
