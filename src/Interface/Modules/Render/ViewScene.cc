@@ -455,7 +455,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   addToolBar();
   glLayout->addWidget(impl_->mGLWidget, 1, 1);
-  glLayout->addWidget(impl_->toolBar2_, 0, 0, 2, 1);
+  glLayout->addWidget(impl_->toolBar2_, 1, 0);
   glLayout->update();
 
   viewSceneManager.addViewScene(this);
@@ -512,7 +512,7 @@ void ViewSceneDialog::addToolBar()
   addDeveloperControlButton();
   setupMaterials();
 
-  glLayout->addWidget(impl_->toolBar1_, 0, 1);
+  glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
 
   addViewBarButton();
   addControlLockButton();
@@ -553,7 +553,7 @@ void ViewSceneDialog::addObjectSelectionButton()
   auto* objectSelectionButton = new QPushButton();
   objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
-  addToolbarButton(objectSelectionButton, 2, impl_->objectSelectionControls_);
+  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
