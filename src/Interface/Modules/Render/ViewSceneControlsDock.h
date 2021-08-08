@@ -194,12 +194,12 @@ namespace SCIRun {
       static const QColor buttonOutlineColor;
     };
 
-    class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes
+    class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes, public ButtonStylesheetToggler
     {
       Q_OBJECT
 
     public:
-      explicit ClippingPlaneControls(ViewSceneDialog* parent);
+      ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
     };

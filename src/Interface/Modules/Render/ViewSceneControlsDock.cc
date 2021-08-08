@@ -556,7 +556,8 @@ ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWid
 
 namespace
 {
-  void toggleGroupBox(QGroupBox* box)
+  template <typename Checkable>
+  void toggleCheckable(Checkable* box)
   {
     box->setChecked(!box->isChecked());
   }
@@ -564,7 +565,7 @@ namespace
 
 OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : QWidget(parent), ButtonStylesheetToggler(toolbarButton,
-    [this]() { toggleGroupBox(orientationCheckableGroupBox_); })
+    [this]() { toggleCheckable(orientationCheckableGroupBox_); })
 {
   setupUi(this);
 
@@ -587,7 +588,7 @@ void OrientationAxesControls::toggleButton()
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleGroupBox(showScaleBarTextGroupBox_); })
+  : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
 {
   setupUi(this);
 
@@ -603,7 +604,9 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
 }
 
-ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent) : QWidget(parent)
+ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent),
+  ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(planeVisibleCheckBox_); })
 {
   setupUi(this);
 
@@ -622,7 +625,11 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent) : QWidget(
   plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
-  connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
+  connect(planeVisibleCheckBox_, &QCheckBox::toggled,
+    [parent, this](bool b) {
+      parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }
+    );
+  linkedCheckable_ = [this]() { return planeVisibleCheckBox_->isChecked(); };
   connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
   connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
   connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));

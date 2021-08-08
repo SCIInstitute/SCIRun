@@ -799,7 +799,7 @@ void ViewSceneDialog::addClippingPlaneButton()
 {
   auto* clippingPlaneButton = new QPushButton();
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
-  impl_->clippingPlaneControls_ = new ClippingPlaneControls(this);
+  impl_->clippingPlaneControls_ = new ClippingPlaneControls(this, clippingPlaneButton);
   addToolbarButton(clippingPlaneButton, 2, impl_->clippingPlaneControls_);
 }
 

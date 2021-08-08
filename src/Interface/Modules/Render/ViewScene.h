@@ -295,6 +295,7 @@ namespace SCIRun {
       friend class OrientationAxesControls;
       friend class ScaleBarControls;
       friend class LightControls;
+      friend class ClippingPlaneControls;
     };
 
     MouseButton getSpireButton(QMouseEvent* event);
