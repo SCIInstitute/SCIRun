@@ -36,13 +36,33 @@ using namespace Graphics::Datatypes;
 GlyphConstructor::GlyphConstructor()
 {}
 
+GlyphData& GlyphConstructor::getData(SpireIBO::PRIMITIVE prim)
+{
+  switch(prim)
+  {
+    case Datatypes::SpireIBO::PRIMITIVE::POINTS:
+      return pointData_;
+      break;
+    case Datatypes::SpireIBO::PRIMITIVE::LINES:
+      return lineData_;
+      break;
+    case Datatypes::SpireIBO::PRIMITIVE::TRIANGLES:
+      return meshData_;
+      break;
+    default:
+      return meshData_;
+      break;
+  }
+}
+
 void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
   const bool isTransparent, const double transparencyValue, const ColorScheme& colorScheme,
-  RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const bool isClippable,
+  RenderState state, SpireIBO::PRIMITIVE primIn, const BBox& bbox, const bool isClippable,
   const Core::Datatypes::ColorMapHandle colorMap)
 {
+  auto& data = getData(primIn);
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
-  bool useNormals = normals_.size() == points_.size();
+  bool useNormals = data.normals_.size() == data.points_.size();
   int numAttributes = 3;
 
   RenderType renderType = RenderType::RENDER_VBO_IBO;
@@ -104,7 +124,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
   if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  size_t pointsLeft = points_.size();
+  size_t pointsLeft = data.points_.size();
   size_t startOfPass = 0;
   int passNumber = 0;
   while(pointsLeft > 0)
@@ -126,13 +146,13 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
-    for (auto a : indices_) if(a >= startOfPass && a < endOfPass)
+    for (auto a : data.indices_) if(a >= startOfPass && a < endOfPass)
       iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
 
     BBox newBBox;
     for (size_t i = startOfPass; i < endOfPass; ++i)
     {
-      auto point = points_.at(i);
+      auto point = data.points_.at(i);
       newBBox.extend(Point(point.x(), point.y(), point.z()));
       vboBuffer->write(static_cast<float>(point.x()));
       vboBuffer->write(static_cast<float>(point.y()));
@@ -140,7 +160,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       if (useNormals)
       {
-        auto normal = normals_.at(i);
+        auto normal = data.normals_.at(i);
         vboBuffer->write(static_cast<float>(normal.x()));
         vboBuffer->write(static_cast<float>(normal.y()));
         vboBuffer->write(static_cast<float>(normal.z()));
@@ -148,7 +168,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       if (useColor)
       {
-        auto color = colors_.at(i);
+        auto color = data.colors_.at(i);
         if(!colorMap)
         {
           vboBuffer->write(static_cast<float>(color.r()));
@@ -167,7 +187,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
     startOfPass = endOfPass;
 
-    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
+    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, data.numVBOElements_, newBBox, true);
     SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
     state.set(RenderState::ActionFlags::IS_ON, true);
@@ -182,89 +202,100 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
   }
 }
 
-uint32_t GlyphConstructor::setOffset()
+uint32_t GlyphConstructor::setOffset(SpireIBO::PRIMITIVE prim)
 {
-  offset_ = numVBOElements_;
-  return offset_;
+  auto& data = getData(prim);
+  data.offset_ = data.numVBOElements_;
+  return data.offset_;
 }
 
-bool GlyphConstructor::normalsValid() const
+bool GlyphConstructor::normalsValid(SpireIBO::PRIMITIVE prim)
 {
-  return normals_.size() == points_.size();
+  auto& data = getData(prim);
+  return data.normals_.size() == data.points_.size();
 }
 
-void GlyphConstructor::addVertex(const Vector& point, const Vector& normal, const ColorRGB& color)
+void GlyphConstructor::addVertex(SpireIBO::PRIMITIVE prim, const Vector& point, const Vector& normal, const ColorRGB& color)
 {
-  points_.push_back(point);
-  normals_.push_back(normal);
-  colors_.push_back(color);
-  ++numVBOElements_;
+  auto& data = getData(prim);
+  data.points_.push_back(point);
+  data.normals_.push_back(normal);
+  data.colors_.push_back(color);
+  ++data.numVBOElements_;
 }
 
-void GlyphConstructor::addVertex(const Vector& point, const ColorRGB& color)
+void GlyphConstructor::addVertex(SpireIBO::PRIMITIVE prim, const Vector& point, const ColorRGB& color)
 {
-  points_.push_back(point);
-  colors_.push_back(color);
-  ++numVBOElements_;
+  auto& data = getData(prim);
+  data.points_.push_back(point);
+  data.colors_.push_back(color);
+  ++data.numVBOElements_;
 }
 
 void GlyphConstructor::addLine(const Vector& point1, const Vector& point2, const ColorRGB& color1,
                                const ColorRGB& color2)
 {
-  points_.push_back(point1);
-  colors_.push_back(color1);
-  addLineIndex();
+  const auto prim = SpireIBO::PRIMITIVE::LINES;
+  lineData_.points_.push_back(point1);
+  lineData_.colors_.push_back(color1);
+  addLineIndex(prim);
 
-  points_.push_back(point2);
-  colors_.push_back(color2);
-  addLineIndex();
+  lineData_.points_.push_back(point2);
+  lineData_.colors_.push_back(color2);
+  addLineIndex(prim);
 
-  ++numVBOElements_;
+  ++lineData_.numVBOElements_;
 }
 
 void GlyphConstructor::addPoint(const Vector& point, const ColorRGB& color)
 {
-  addVertex(point, color);
-  addLineIndex();
+  const auto prim = SpireIBO::PRIMITIVE::POINTS;
+  addVertex(prim, point, color);
+  addLineIndex(prim);
 }
 
-void GlyphConstructor::addLineIndex()
+void GlyphConstructor::addLineIndex(SpireIBO::PRIMITIVE prim)
 {
-  indices_.push_back(lineIndex_);
-  ++lineIndex_;
+  auto& data = getData(prim);
+  data.indices_.push_back(data.lineIndex_);
+  ++data.lineIndex_;
 }
 
-void GlyphConstructor::addIndex(size_t i)
+void GlyphConstructor::addIndex(SpireIBO::PRIMITIVE prim, size_t i)
 {
-  indices_.push_back(i);
+  auto& data = getData(prim);
+  data.indices_.push_back(i);
 }
 
-void GlyphConstructor::addIndexToOffset(size_t i)
+void GlyphConstructor::addIndexToOffset(SpireIBO::PRIMITIVE prim, size_t i)
 {
-  addIndex(i + offset_);
+  auto& data = getData(prim);
+  addIndex(prim, i + data.offset_);
 }
 
-void GlyphConstructor::addIndices(size_t i1, size_t i2, size_t i3)
+void GlyphConstructor::addIndices(SpireIBO::PRIMITIVE prim, size_t i1, size_t i2, size_t i3)
 {
-  addIndex(i1);
-  addIndex(i2);
-  addIndex(i3);
+  addIndex(prim, i1);
+  addIndex(prim, i2);
+  addIndex(prim, i3);
 }
 
-void GlyphConstructor::addIndicesToOffset(size_t i1, size_t i2, size_t i3)
+void GlyphConstructor::addIndicesToOffset(SpireIBO::PRIMITIVE prim, size_t i1, size_t i2, size_t i3)
 {
-  addIndexToOffset(i1);
-  addIndexToOffset(i2);
-  addIndexToOffset(i3);
+  addIndexToOffset(prim, i1);
+  addIndexToOffset(prim, i2);
+  addIndexToOffset(prim, i3);
 }
 
-size_t GlyphConstructor::getCurrentIndex() const
+size_t GlyphConstructor::getCurrentIndex(SpireIBO::PRIMITIVE prim)
 {
-  return numVBOElements_;
+  auto& data = getData(prim);
+  return data.numVBOElements_;
 }
 
-void GlyphConstructor::popIndicesNTimes(int n)
+void GlyphConstructor::popIndicesNTimes(SpireIBO::PRIMITIVE prim, int n)
 {
+  auto& data = getData(prim);
   for (int i = 0; i < n; ++i)
-    indices_.pop_back();
+    data.indices_.pop_back();
 }

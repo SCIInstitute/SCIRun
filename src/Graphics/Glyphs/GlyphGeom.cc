@@ -216,6 +216,7 @@ void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
 
 void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color)
 {
+  const auto prim = SpireIBO::PRIMITIVE::TRIANGLES;
   if (resolution < 3) resolution = 3;
   if (radius < 0) radius = 1.0;
   double theta_inc = M_PI / resolution;
@@ -231,36 +232,37 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       Vector p1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       Vector p2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
 
-      constructor_.setOffset();
-      constructor_.addVertex(radius * p1 + Vector(center), p1, color);
-      constructor_.addVertex(radius * p2 + Vector(center), p2, color);
+      constructor_.setOffset(prim);
+      constructor_.addVertex(prim, radius * p1 + Vector(center), p1, color);
+      constructor_.addVertex(prim, radius * p2 + Vector(center), p2, color);
 
       int v1 = 1, v2 = 2;
       if(u < resolution)
         std::swap(v1, v2);
 
-      constructor_.addIndicesToOffset(0, v1, v2);
-      constructor_.addIndicesToOffset(v2, v1, 3);
+      constructor_.addIndicesToOffset(prim, 0, v1, v2);
+      constructor_.addIndicesToOffset(prim, v2, v1, 3);
     }
-    constructor_.popIndicesNTimes(6);
+    constructor_.popIndicesNTimes(prim, 6);
   }
 }
 
 void GlyphGeom::generatePlane(const Point& p1, const Point& p2,
   const Point& p3, const Point& p4, const ColorRGB& color)
 {
+  const auto prim = SpireIBO::PRIMITIVE::TRIANGLES;
   Vector n1 = Cross(p2 - p1, p4 - p1).normal();
   Vector n2 = Cross(p3 - p2, p1 - p2).normal();
   Vector n3 = Cross(p4 - p3, p2 - p3).normal();
   Vector n4 = Cross(p1 - p4, p3 - p4).normal();
 
-  constructor_.setOffset();
+  constructor_.setOffset(prim);
 
-  constructor_.addVertex(Vector(p1), n1, color);
-  constructor_.addVertex(Vector(p2), n2, color);
-  constructor_.addVertex(Vector(p3), n3, color);
-  constructor_.addVertex(Vector(p4), n4, color);
+  constructor_.addVertex(prim, Vector(p1), n1, color);
+  constructor_.addVertex(prim, Vector(p2), n2, color);
+  constructor_.addVertex(prim, Vector(p3), n3, color);
+  constructor_.addVertex(prim, Vector(p4), n4, color);
 
-  constructor_.addIndicesToOffset(0, 1, 2);
-  constructor_.addIndicesToOffset(2, 3, 0);
+  constructor_.addIndicesToOffset(prim, 0, 1, 2);
+  constructor_.addIndicesToOffset(prim, 2, 3, 0);
 }
