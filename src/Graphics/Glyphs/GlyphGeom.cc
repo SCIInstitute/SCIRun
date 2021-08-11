@@ -45,41 +45,47 @@ GlyphGeom::GlyphGeom()
 }
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
                                    const bool isTransparent, const double transparencyValue,
-                            const ColorScheme& colorScheme, RenderState state,
-                            const SpireIBO::PRIMITIVE& primIn, const BBox& bbox,
+                            const ColorScheme& colorScheme, RenderState state, const BBox& bbox,
                             const bool isClippable, const Core::Datatypes::ColorMapHandle colorMap)
 {
   constructor_.buildObject(geom, uniqueNodeID, isTransparent, transparencyValue, colorScheme, state,
-                           primIn, bbox, isClippable, colorMap);
+                           bbox, isClippable, colorMap);
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, int resolution,
-                         const ColorRGB& color1, const ColorRGB& color2, bool render_cylinder_base, bool render_cone_base)
+                         const ColorRGB& color1, const ColorRGB& color2, bool render_cylinder_base,
+                         bool render_cone_base, bool showNormals, double showNormalsScale)
 {
 
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateArrow(constructor_, radius, ratio, render_cylinder_base, render_cone_base);
 }
 
-void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
+void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color,
+                          bool showNormals, double showNormalsScale)
 {
-  generateSphere(p, radius, resolution, color);
+  generateSphere(p, radius, resolution, color, showNormals, showNormalsScale);
 }
 
 void GlyphGeom::addComet(const Point& p1, const Point& p2, double radius, int resolution,
-                         const ColorRGB& color1, const ColorRGB& color2, double sphere_extrusion)
+                         const ColorRGB& color1, const ColorRGB& color2, double sphere_extrusion,
+                         bool showNormals, double showNormalsScale)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateComet(constructor_, radius, sphere_extrusion);
 }
 
-void GlyphGeom::addBox(const Point& center, Dyadic3DTensor& t, double scale, ColorRGB& color, bool normalize)
+void GlyphGeom::addBox(const Point& center, Dyadic3DTensor& t, double scale, ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setColor(color);
@@ -87,10 +93,12 @@ void GlyphGeom::addBox(const Point& center, Dyadic3DTensor& t, double scale, Col
     builder.normalizeTensor();
   builder.scaleTensor(scale);
   builder.makeTensorPositive();
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateBox(constructor_);
 }
 
-void GlyphGeom::addEllipsoid(const Point& center, Dyadic3DTensor& t, double scale, int resolution, const ColorRGB& color, bool normalize)
+void GlyphGeom::addEllipsoid(const Point& center, Dyadic3DTensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setResolution(resolution);
@@ -99,11 +107,13 @@ void GlyphGeom::addEllipsoid(const Point& center, Dyadic3DTensor& t, double scal
     builder.normalizeTensor();
   builder.scaleTensor(scale);
   builder.makeTensorPositive();
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateEllipsoid(constructor_, false);
 }
 
 void GlyphGeom::addSuperquadricTensor(const Point& center, Dyadic3DTensor& t, double scale, int resolution,
-                                      const ColorRGB& color, bool normalize, double emphasis)
+                                      const ColorRGB& color, bool normalize, double emphasis, bool showNormals, double showNormalsScale)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setResolution(resolution);
@@ -111,67 +121,81 @@ void GlyphGeom::addSuperquadricTensor(const Point& center, Dyadic3DTensor& t, do
   if (normalize)
     builder.normalizeTensor();
   builder.scaleTensor(scale);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateSuperquadricTensor(constructor_, emphasis);
 }
 
 void GlyphGeom::addSuperquadricSurface(const Point& center, Dyadic3DTensor& t, double scale, int resolution,
-                                       const ColorRGB& color, double A, double B)
+                                       const ColorRGB& color, double A, double B, bool showNormals, double showNormalsScale)
 {
   TensorGlyphBuilder builder(t, center);
   builder.setResolution(resolution);
   builder.setColor(color);
   builder.scaleTensor(scale);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateSuperquadricSurface(constructor_, A, B);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2,
-                            bool renderBase1, bool renderBase2)
+                            bool showNormals, double showNormalsScale, bool renderBase1, bool renderBase2)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateCylinder(constructor_, radius, radius, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius1, double radius2,
                             int resolution, const ColorRGB& color1, const ColorRGB& color2,
-                            bool renderBase1, bool renderBase2)
+                            bool showNormals, double showNormalsScale, bool renderBase1, bool renderBase2)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateCylinder(constructor_, radius1, radius2, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int resolution,
-                            const ColorRGB& color1, const ColorRGB& color2)
+                            const ColorRGB& color1, const ColorRGB& color2, bool showNormals, double showNormalsScale)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateCylinder(constructor_, radius, radius, true, true);
 }
 
 void GlyphGeom::addTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius, int resolution,
-                        const ColorRGB& color1, const ColorRGB&)
+                        const ColorRGB& color1, const ColorRGB&, bool showNormals, double showNormalsScale)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateTorus(constructor_, major_radius, minor_radius);
 }
 
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, int resolution,
-                        bool render_base, const ColorRGB& color1, const ColorRGB& color2)
+                        bool render_base, const ColorRGB& color1, const ColorRGB& color2, bool showNormals, double showNormalsScale)
 {
   VectorGlyphBuilder builder(p1, p2);
   builder.setResolution(resolution);
   builder.setColor1(color1);
   builder.setColor2(color2);
+  builder.setShowNormals(showNormals);
+  builder.setShowNormalsScale(showNormalsScale);
   builder.generateCone(constructor_, radius, render_base);
 }
 
@@ -179,14 +203,16 @@ void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
   const Point& p3, const Point& p4, double radius, int resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
-  addSphere(p1, radius, resolution, color1);
-  addSphere(p2, radius, resolution, color1);
-  addSphere(p3, radius, resolution, color1);
-  addSphere(p4, radius, resolution, color1);
-  addCylinder(p1, p2, radius, resolution, color1, color2);
-  addCylinder(p2, p3, radius, resolution, color1, color2);
-  addCylinder(p3, p4, radius, resolution, color1, color2);
-  addCylinder(p4, p1, radius, resolution, color1, color2);
+  const bool showNormals = false;
+  const double showNormalsScale = 0.0;
+  addSphere(p1, radius, resolution, color1, showNormals, showNormalsScale);
+  addSphere(p2, radius, resolution, color1, showNormals, showNormalsScale);
+  addSphere(p3, radius, resolution, color1, showNormals, showNormalsScale);
+  addSphere(p4, radius, resolution, color1, showNormals, showNormalsScale);
+  addCylinder(p1, p2, radius, resolution, color1, color2, showNormals, showNormalsScale);
+  addCylinder(p2, p3, radius, resolution, color1, color2, showNormals, showNormalsScale);
+  addCylinder(p3, p4, radius, resolution, color1, color2, showNormals, showNormalsScale);
+  addCylinder(p4, p1, radius, resolution, color1, color2, showNormals, showNormalsScale);
 }
 
 void GlyphGeom::addPlane(const Point& p1, const Point& p2,
@@ -214,7 +240,7 @@ void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
   constructor_.addPoint(Vector(p), color);
 }
 
-void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color)
+void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color, bool showNormals, double showNormalsScale)
 {
   const auto prim = SpireIBO::PRIMITIVE::TRIANGLES;
   if (resolution < 3) resolution = 3;
@@ -229,12 +255,19 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
     for(int u = 0; u <= 2*resolution; ++u)
     {
       double theta = u * theta_inc;
-      Vector p1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-      Vector p2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
+      Vector n1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+      Vector n2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
+      Vector p1 = radius * p1 + Vector(center);
+      Vector p2 = radius * p2 + Vector(center);
 
       constructor_.setOffset(prim);
-      constructor_.addVertex(prim, radius * p1 + Vector(center), p1, color);
-      constructor_.addVertex(prim, radius * p2 + Vector(center), p2, color);
+      constructor_.addVertex(prim, p1, n1, color);
+      constructor_.addVertex(prim, p2, n2, color);
+      if (showNormals)
+      {
+        constructor_.addLine(p1, showNormalsScale * n1, color, color);
+        constructor_.addLine(p2, showNormalsScale * n2, color, color);
+      }
 
       int v1 = 1, v2 = 2;
       if(u < resolution)

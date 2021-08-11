@@ -67,6 +67,16 @@ void VectorGlyphBuilder::setP2(const Point& p)
   p2_ = p;
 }
 
+void VectorGlyphBuilder::setShowNormals(bool showNormals)
+{
+  showNormals_ = showNormals;
+}
+
+void VectorGlyphBuilder::setShowNormalsScale(double showNormalsScale)
+{
+  showNormalsScale_ = showNormalsScale;// * (p2_ - p1_).length();
+}
+
 void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double radius1, double radius2, bool renderBase1, bool renderBase2)
 {
   if (radius1 < 0) radius1 = 1.0;
@@ -105,17 +115,33 @@ void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double 
         std::sin(strip_angle * strip) * crx;
     p.normalize();
     Vector normals((length * p + (radius2-radius1)*n).normal());
+    auto vert1 = radius1 * p + Vector(p1_);
+    auto vert2 = radius2 * p + Vector(p2_);
 
     constructor.setOffset(prim);
-    constructor.addVertex(prim, radius1 * p + Vector(p1_), normals, color1_);
-    constructor.addVertex(prim, radius2 * p + Vector(p2_), normals, color2_);
+    constructor.addVertex(prim, vert1, normals, color1_);
+    constructor.addVertex(prim, vert2, normals, color2_);
     constructor.addIndicesToOffset(prim, 0, 1, points_per_loop);
     constructor.addIndicesToOffset(prim, points_per_loop, 1, points_per_loop + 1);
 
     if(renderBase1)
-      constructor.addVertex(prim, radius1 * p + Vector(p1_), n, color1_);
+    {
+      constructor.addVertex(prim, vert1, n, color1_);
+      if (showNormals_)
+        constructor.addLine(vert1, vert1 + showNormalsScale_ * n, color1_, color1_);
+    }
     if(renderBase2)
-      constructor.addVertex(prim, radius2 * p + Vector(p2_), -n, color2_);
+    {
+      constructor.addVertex(prim, vert2, -n, color2_);
+      if (showNormals_)
+        constructor.addLine(vert2, vert2 - showNormalsScale_ * n, color2_, color2_);
+    }
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(vert1, vert1 + normScaled, color1_, color1_);
+      constructor.addLine(vert2, vert2 + normScaled, color2_, color2_);
+    }
   }
   constructor.popIndicesNTimes(prim, 6);
 
@@ -167,6 +193,13 @@ void VectorGlyphBuilder::generateComet(GlyphConstructor& constructor, double rad
     constructor.addVertex(prim, new_point, normals, color1_);
     constructor.addVertex(prim, Vector(p1_), normals, color2_);
     constructor.addIndicesToOffset(prim, 0, points_per_loop, 1);
+
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(new_point, normScaled + new_point, color1_, color1_);
+      constructor.addLine(Vector(p1_), normScaled + Vector(p1_), color2_, color2_);
+    }
   }
 
   // Generate ellipsoid
@@ -223,13 +256,17 @@ void VectorGlyphBuilder::generateComet(GlyphConstructor& constructor, double rad
 
       // Use cone points around rim of ellipsoid
       if(v == nv - 2)
-        constructor.addVertex(prim, cone_rim_points[cone_rim_index++], norm1, color1_);
-      else
-        constructor.addVertex(prim, vert1, norm1, color1_);
+        vert1 = cone_rim_points[cone_rim_index++];
 
+      constructor.addVertex(prim, vert1, norm1, color1_);
       constructor.addVertex(prim, vert2, norm2, color1_);
       constructor.addIndicesToOffset(prim, 0, 1, 2);
       constructor.addIndicesToOffset(prim, 2, 1, 3);
+      if (showNormals_)
+      {
+        constructor.addLine(vert1, vert1 + showNormalsScale_ * norm1, color1_, color1_);
+        constructor.addLine(vert2, vert2 + showNormalsScale_ * norm2, color2_, color2_);
+      }
     }
     constructor.popIndicesNTimes(prim, 6);
   }
@@ -266,14 +303,24 @@ void VectorGlyphBuilder::generateCone(GlyphConstructor& constructor, double radi
     Vector normals((length * p - radius * n).normal());
 
     auto offset = constructor.setOffset(prim);
-    constructor.addVertex(prim, radius * p + Vector(p1_), normals, color1_);
+    auto vert1 = radius * p + Vector(p1_);
+    constructor.addVertex(prim, vert1, normals, color1_);
     constructor.addVertex(prim, Vector(p2_), normals, color2_);
     constructor.addIndicesToOffset(prim, 0, 1, points_per_loop);
 
     if(renderBase)
     {
-      constructor.addVertex(prim, radius * p + Vector(p1_), n, color1_);
+      auto point = radius * p + Vector(p1_);
+      constructor.addVertex(prim, point, n, color1_);
       constructor.addIndices(prim, base_index, offset + 2, offset + points_per_loop + 2);
+      if (showNormals_)
+        constructor.addLine(Vector(point), Vector(point) + showNormalsScale_ * n, color2_, color2_);
+    }
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(vert1, vert1 + normScaled, color1_, color1_);
+      constructor.addLine(Vector(p2_), Vector(p2_) + normScaled, color2_, color2_);
     }
   }
   constructor.popIndicesNTimes(prim, 3 * (1 + renderBase));
@@ -325,6 +372,11 @@ void VectorGlyphBuilder::generateTorus(GlyphConstructor& constructor, double maj
       constructor.addVertex(prim, vert2, norm2, color1_);
       constructor.addIndicesToOffset(prim, 0, 1, 2);
       constructor.addIndicesToOffset(prim, 2, 1, 3);
+      if (showNormals_)
+      {
+        constructor.addLine(Vector(vert1), Vector(vert1) + showNormalsScale_ * norm1, color1_, color1_);
+        constructor.addLine(Vector(vert2), Vector(vert2) + showNormalsScale_ * norm2, color2_, color2_);
+      }
     }
   }
   constructor.popIndicesNTimes(prim, 6);

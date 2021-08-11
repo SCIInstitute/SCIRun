@@ -57,7 +57,6 @@ public:
   void buildObject(Graphics::Datatypes::GeometryObjectSpire& geom, const std::string& uniqueNodeID,
                    const bool isTransparent, const double transparencyValue,
                    const Graphics::Datatypes::ColorScheme& colorScheme, RenderState state,
-                   const Graphics::Datatypes::SpireIBO::PRIMITIVE primIn,
                    const Core::Geometry::BBox& bbox,
                    const bool isClippable = true,
                    const Core::Datatypes::ColorMapHandle colorMap = nullptr);

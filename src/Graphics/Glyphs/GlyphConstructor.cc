@@ -57,148 +57,152 @@ GlyphData& GlyphConstructor::getData(SpireIBO::PRIMITIVE prim)
 
 void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
   const bool isTransparent, const double transparencyValue, const ColorScheme& colorScheme,
-  RenderState state, SpireIBO::PRIMITIVE primIn, const BBox& bbox, const bool isClippable,
+  RenderState state, const BBox& bbox, const bool isClippable,
   const Core::Datatypes::ColorMapHandle colorMap)
 {
-  auto& data = getData(primIn);
-  bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
-  bool useNormals = data.normals_.size() == data.points_.size();
-  int numAttributes = 3;
-
-  RenderType renderType = RenderType::RENDER_VBO_IBO;
-  ColorRGB dft = state.defaultColor;
-
-  std::string shader = (useNormals ? "Shaders/Phong" : "Shaders/Flat");
-  std::vector<SpireVBO::AttributeData> attribs;
-  std::vector<SpireSubPass::Uniform> uniforms;
-
-  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", isClippable));
-  uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
-
-  if (useNormals)
+  for (auto prim : {SpireIBO::PRIMITIVE::POINTS, SpireIBO::PRIMITIVE::LINES, SpireIBO::PRIMITIVE::TRIANGLES})
   {
-    numAttributes += 3;
-    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-    uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-    uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-    uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-  }
+    auto& data = getData(prim);
+    if (data.numVBOElements_ == 0) continue;
+    bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
+    bool useNormals = data.normals_.size() == data.points_.size();
+    int numAttributes = 3;
 
-  SpireText text;
-  SpireTexture2D texture;
-  if (useColor)
-  {
-    if(colorMap)
+    RenderType renderType = RenderType::RENDER_VBO_IBO;
+    ColorRGB dft = state.defaultColor;
+
+    std::string shader = (useNormals ? "Shaders/Phong" : "Shaders/Flat");
+    std::vector<SpireVBO::AttributeData> attribs;
+    std::vector<SpireSubPass::Uniform> uniforms;
+
+    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", isClippable));
+    uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
+
+    if (useNormals)
     {
-      numAttributes += 2;
-      shader += "_ColorMap";
-      attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+      numAttributes += 3;
+      attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    }
 
-      const static int colorMapResolution = 256;
-      for(int i = 0; i < colorMapResolution; ++i)
+    SpireText text;
+    SpireTexture2D texture;
+    if (useColor)
+    {
+      if(colorMap)
       {
-        ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0f - 1.0f);
-        texture.bitmap.push_back(color.r()*255.99f);
-        texture.bitmap.push_back(color.g()*255.99f);
-        texture.bitmap.push_back(color.b()*255.99f);
-        texture.bitmap.push_back(color.a()*255.99f);
-      }
+        numAttributes += 2;
+        shader += "_ColorMap";
+        attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
 
-      texture.name = "ColorMap";
-      texture.height = 1;
-      texture.width = colorMapResolution;
+        const static int colorMapResolution = 256;
+        for(int i = 0; i < colorMapResolution; ++i)
+        {
+          ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0f - 1.0f);
+          texture.bitmap.push_back(color.r()*255.99f);
+          texture.bitmap.push_back(color.g()*255.99f);
+          texture.bitmap.push_back(color.b()*255.99f);
+          texture.bitmap.push_back(color.a()*255.99f);
+        }
+
+        texture.name = "ColorMap";
+        texture.height = 1;
+        texture.width = colorMapResolution;
+      }
+      else
+      {
+        numAttributes += 4;
+        shader += "_Color";
+        attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+      }
     }
     else
     {
-      numAttributes += 4;
-      shader += "_Color";
-      attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
+                                               glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
     }
-  }
-  else
-  {
-    uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
-      glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
-  }
 
-  if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
+    if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  size_t pointsLeft = data.points_.size();
-  size_t startOfPass = 0;
-  int passNumber = 0;
-  while(pointsLeft > 0)
-  {
-    std::string passID = uniqueNodeID + "_" + std::to_string(passNumber++);
-    std::string vboName = passID + "VBO";
-    std::string iboName = passID + "IBO";
-    std::string passName = passID + "Pass";
-
-    const static size_t maxPointsPerPass = 3 << 24; //must be a number divisible by 2, 3 and, 4
-    uint32_t pointsInThisPass = std::min(pointsLeft, maxPointsPerPass);
-    size_t endOfPass = startOfPass + pointsInThisPass;
-    pointsLeft -= pointsInThisPass;
-
-    size_t vboSize = static_cast<size_t>(pointsInThisPass) * numAttributes * sizeof(float);
-    size_t iboSize = static_cast<size_t>(pointsInThisPass) * sizeof(uint32_t);
-    std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-    std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
-    auto iboBuffer = iboBufferSPtr.get();
-    auto vboBuffer = vboBufferSPtr.get();
-
-    for (auto a : data.indices_) if(a >= startOfPass && a < endOfPass)
-      iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
-
-    BBox newBBox;
-    for (size_t i = startOfPass; i < endOfPass; ++i)
+    size_t pointsLeft = data.points_.size();
+    size_t startOfPass = 0;
+    int passNumber = 0;
+    while(pointsLeft > 0)
     {
-      auto point = data.points_.at(i);
-      newBBox.extend(Point(point.x(), point.y(), point.z()));
-      vboBuffer->write(static_cast<float>(point.x()));
-      vboBuffer->write(static_cast<float>(point.y()));
-      vboBuffer->write(static_cast<float>(point.z()));
+      std::string passID = uniqueNodeID + "_" + std::to_string(int(prim)) + "_" + std::to_string(passNumber++);
+      std::string vboName = passID + "VBO";
+      std::string iboName = passID + "IBO";
+      std::string passName = passID + "Pass";
 
-      if (useNormals)
-      {
-        auto normal = data.normals_.at(i);
-        vboBuffer->write(static_cast<float>(normal.x()));
-        vboBuffer->write(static_cast<float>(normal.y()));
-        vboBuffer->write(static_cast<float>(normal.z()));
-      }
+      const static size_t maxPointsPerPass = 3 << 24; //must be a number divisible by 2, 3 and, 4
+      uint32_t pointsInThisPass = std::min(pointsLeft, maxPointsPerPass);
+      size_t endOfPass = startOfPass + pointsInThisPass;
+      pointsLeft -= pointsInThisPass;
 
-      if (useColor)
+      size_t vboSize = static_cast<size_t>(pointsInThisPass) * numAttributes * sizeof(float);
+      size_t iboSize = static_cast<size_t>(pointsInThisPass) * sizeof(uint32_t);
+      std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
+      std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+      auto iboBuffer = iboBufferSPtr.get();
+      auto vboBuffer = vboBufferSPtr.get();
+
+      for (auto a : data.indices_) if(a >= startOfPass && a < endOfPass)
+                                     iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
+
+      BBox newBBox;
+      for (size_t i = startOfPass; i < endOfPass; ++i)
       {
-        auto color = data.colors_.at(i);
-        if(!colorMap)
+        auto point = data.points_.at(i);
+        newBBox.extend(Point(point.x(), point.y(), point.z()));
+        vboBuffer->write(static_cast<float>(point.x()));
+        vboBuffer->write(static_cast<float>(point.y()));
+        vboBuffer->write(static_cast<float>(point.z()));
+
+        if (useNormals)
         {
-          vboBuffer->write(static_cast<float>(color.r()));
-          vboBuffer->write(static_cast<float>(color.g()));
-          vboBuffer->write(static_cast<float>(color.b()));
-          vboBuffer->write(static_cast<float>(color.a()));
+          auto normal = data.normals_.at(i);
+          vboBuffer->write(static_cast<float>(normal.x()));
+          vboBuffer->write(static_cast<float>(normal.y()));
+          vboBuffer->write(static_cast<float>(normal.z()));
         }
-        else
+
+        if (useColor)
         {
-          vboBuffer->write(static_cast<float>(color.r()));
-          vboBuffer->write(static_cast<float>(color.r()));
+          auto color = data.colors_.at(i);
+          if(!colorMap)
+          {
+            vboBuffer->write(static_cast<float>(color.r()));
+            vboBuffer->write(static_cast<float>(color.g()));
+            vboBuffer->write(static_cast<float>(color.b()));
+            vboBuffer->write(static_cast<float>(color.a()));
+          }
+          else
+          {
+            vboBuffer->write(static_cast<float>(color.r()));
+            vboBuffer->write(static_cast<float>(color.r()));
+          }
         }
       }
+      if(!bbox.valid()) newBBox.reset();
+
+      startOfPass = endOfPass;
+
+      SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, data.numVBOElements_, newBBox, true);
+      SpireIBO geomIBO(iboName, prim, sizeof(uint32_t), iboBufferSPtr);
+
+      state.set(RenderState::ActionFlags::IS_ON, true);
+      state.set(RenderState::ActionFlags::HAS_DATA, true);
+      SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
+
+      for (const auto& uniform : uniforms) pass.addUniform(uniform);
+
+      geom.vbos().push_back(geomVBO);
+      geom.ibos().push_back(geomIBO);
+      geom.passes().push_back(pass);
     }
-    if(!bbox.valid()) newBBox.reset();
-
-    startOfPass = endOfPass;
-
-    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, data.numVBOElements_, newBBox, true);
-    SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
-
-    state.set(RenderState::ActionFlags::IS_ON, true);
-    state.set(RenderState::ActionFlags::HAS_DATA, true);
-    SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
-
-    for (const auto& uniform : uniforms) pass.addUniform(uniform);
-
-    geom.vbos().push_back(geomVBO);
-    geom.ibos().push_back(geomIBO);
-    geom.passes().push_back(pass);
   }
 }
 
