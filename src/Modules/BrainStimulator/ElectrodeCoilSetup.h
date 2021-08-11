@@ -80,7 +80,7 @@ class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
 
     NEW_BRAIN_STIMULATOR_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 };
 
 }}}

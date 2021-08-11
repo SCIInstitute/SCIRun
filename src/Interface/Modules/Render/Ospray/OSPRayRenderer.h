@@ -83,6 +83,7 @@ private:
   OSPFrameBuffer frameBuffer_ {nullptr};
   OSPRenderer    renderer_    {nullptr};
   OSPRayCamera*  camera_      {nullptr};
+  OSPCamera      parentCamera_{nullptr};
   OSPWorld       world_       {nullptr};
 
 

@@ -57,6 +57,8 @@ namespace SCIRun
         // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
+        // new state variable to save the whole list. Won't break the delicate transient state behavior
+        ALGORITHM_PARAMETER_DECL(VisibleItemListState);
 
         // save/load confirmed. Need refactoring to standard push/pull model.
         //ALGORITHM_PARAMETER_DECL(BackgroundColor); -->in OsprayViewer.h
@@ -85,6 +87,10 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ClippingPlaneY);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneZ);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneD);
+        ALGORITHM_PARAMETER_DECL(AxesVisible);
+        ALGORITHM_PARAMETER_DECL(AxesSize);
+        ALGORITHM_PARAMETER_DECL(AxesX);
+        ALGORITHM_PARAMETER_DECL(AxesY);
 
 
         // save/load confirmed, uses standard widget managers.
@@ -171,7 +177,7 @@ namespace Render {
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix)
     void execute() override;
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
     static Core::Thread::Mutex mutex_;
     Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};

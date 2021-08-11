@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 #include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

@@ -112,19 +112,19 @@ namespace
 
     MatrixHandleGeneric<T2> operator()(const MatrixTuple<T1>& mats)
     {
-      auto a = std::get<DENSE>(mats);
+      auto a = std::get<static_cast<int>(MatrixTypeCode::DENSE)>(mats);
       if (a)
       {
         MoveToHeap<DenseMatrixGeneric<T2>> m;
         return m(f(*a));
       }
-      auto b = std::get<SPARSE_ROW>(mats);
+      auto b = std::get< static_cast<int>(MatrixTypeCode::SPARSE_ROW)>(mats);
       if (b)
       {
         MoveToHeap<SparseRowMatrixGeneric<T2>> m;
         return m(f(*b));
       }
-      auto c = std::get<COLUMN>(mats);
+      auto c = std::get< static_cast<int>(MatrixTypeCode::COLUMN)>(mats);
       if (c)
       {
         MoveToHeap<DenseColumnMatrixGeneric<T2>> m;

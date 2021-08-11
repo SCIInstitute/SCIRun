@@ -48,7 +48,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, VectorField, Field);
         OUTPUT_PORT(0, ScalarField, Field);
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

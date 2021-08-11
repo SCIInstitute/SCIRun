@@ -232,22 +232,22 @@ void CreateImage::execute()
 
     if (!inputField)
     {
-      datatype = SCALAR;
+      datatype = DataTypeEnum::SCALAR;
       // Create blank mesh.
       width = std::max(2, get_state()->getValue(Width).toInt());
       height = std::max(2, get_state()->getValue(Height).toInt());
     }
     else
     {
-      datatype = SCALAR;
+      datatype = DataTypeEnum::SCALAR;
       FieldInformation fi(*inputField);
       if (fi.is_tensor())
       {
-        datatype = TENSOR;
+        datatype = DataTypeEnum::TENSOR;
       }
       else if (fi.is_vector())
       {
-        datatype = VECTOR;
+        datatype = DataTypeEnum::VECTOR;
       }
       int basis_order = 1;
       if (get_state()->getValue(Mode).toString() == "Auto")
@@ -401,12 +401,12 @@ void CreateImage::execute()
 
     FieldInformation ifi("ImageMesh", basis_order, "double");
 
-    if (datatype == VECTOR)
+    if (datatype == DataTypeEnum::VECTOR)
       ifi.make_vector();
-    else if (datatype == TENSOR)
+    else if (datatype == DataTypeEnum::TENSOR)
       ifi.make_tensor();
 
-    MeshHandle imagemesh = CreateMesh(ifi, width, height, minb, maxb);
+    auto imagemesh = CreateMesh(ifi, width, height, minb, maxb);
     output = CreateField(ifi, imagemesh);
 
     output->vmesh()->transform(trans);

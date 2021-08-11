@@ -49,7 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, Input_Mesh, Field);
         OUTPUT_PORT(0, Faired_Mesh, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

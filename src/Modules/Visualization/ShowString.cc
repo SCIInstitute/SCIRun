@@ -158,8 +158,8 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::HAS_DATA, true);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::HAS_DATA, true);
 
   SpireText spiretext;
 

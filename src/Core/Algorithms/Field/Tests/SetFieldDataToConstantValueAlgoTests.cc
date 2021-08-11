@@ -33,20 +33,19 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Utils/StringUtil.h>
 
 #include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::TestUtils;
+using namespace Geometry;
+using namespace Algorithms;
+using namespace Fields;
+using namespace TestUtils;
 
 TEST(SetFieldDataToConstantValueAlgoTest, NullInput)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle nullField;
+  const FieldHandle nullField;
 
   const double value = 0;
   algo.set(Parameters::Value, value);
@@ -58,7 +57,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NullInput)
 TEST(SetFieldDataToConstantValueAlgoTest, NullInputDoesNotThrow)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle nullField;
+  const FieldHandle nullField;
 
   const double value = 0;
   algo.set(Parameters::Value, value);
@@ -70,7 +69,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NullInputDoesNotThrow)
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -80,7 +79,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -90,7 +89,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle emptyTetVol = EmptyTetVolFieldConstantBasis(DOUBLE_E);
+  auto emptyTetVol = EmptyTetVolFieldConstantBasis(data_info_type::DOUBLE_E);
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(emptyTetVol, result));
@@ -112,7 +111,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
 TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetTetVol = TetrahedronTetVolLinearBasis(DOUBLE_E);
+  auto tetTetVol = TetrahedronTetVolLinearBasis(data_info_type::DOUBLE_E);
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(tetTetVol, result));
@@ -123,7 +122,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -135,7 +134,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
 TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -149,7 +148,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -164,7 +163,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
 TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetmesh = LoadTet();
+  auto tetmesh = LoadTet();
   GetFieldDataAlgo getData;
 
   const double value = 3.14;
@@ -190,7 +189,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
 TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetmesh = LoadTet();
+  auto tetmesh = LoadTet();
   GetFieldDataAlgo getData;
 
   const double value = -5.7;
@@ -217,7 +216,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
 TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = -200;
   algo.set(Parameters::Value, value);
@@ -231,7 +230,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -244,7 +243,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
 TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfConstantBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfConstantBasis(data_info_type::INT_E);
 
   const int value = -200;
   algo.set(Parameters::Value, value);
@@ -258,7 +257,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -270,7 +269,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
 TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(DOUBLE_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::DOUBLE_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -297,7 +296,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(DOUBLE_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::DOUBLE_E);
 
   const double value = 5.2;
   const int intValue = 5;
@@ -354,7 +353,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
 TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);

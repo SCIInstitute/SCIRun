@@ -115,13 +115,6 @@ namespace SCIRun
       virtual void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) = 0;
       virtual void setWidgetInteractionMode(MouseButton btn) = 0;
       virtual Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets) = 0;
-      virtual void setClippingPlaneIndex(int index) = 0;
-      virtual void setClippingPlaneFrameOn(bool value) = 0;
-      virtual void reverseClippingPlaneNormal(bool value) = 0;
-      virtual void setClippingPlaneX(double value) = 0;
-      virtual void setClippingPlaneY(double value) = 0;
-      virtual void setClippingPlaneZ(double value) = 0;
-      virtual void setClippingPlaneD(double value) = 0;
       virtual void showOrientation(bool value) = 0;
       virtual void setLightAzimuth(int index, float azimuth) = 0;
       virtual void setLightInclination(int index, float inclination) = 0;
@@ -132,12 +125,13 @@ namespace SCIRun
       virtual void setOrientPosX(int pos) = 0;
       virtual void setOrientPosY(int pos) = 0;
       virtual void setFogColor(const glm::vec4 &color) = 0;
-      virtual void setTransparencyRendertype(RenderState::TransparencySortType rType) = 0;
+      virtual void setTransparencyRenderType(RenderState::TransparencySortType rType) = 0;
       virtual StaticClippingPlanes* getClippingPlanes() = 0;
-      virtual void setClippingPlaneVisible(bool value) = 0;
       virtual Core::Geometry::BBox getSceneBox() = 0;
       virtual glm::mat4 getWorldToView() const = 0;
       virtual glm::mat4 getWorldToProjection() const = 0;
+      virtual void setClippingPlaneManager(ClippingPlaneManagerPtr cpm) = 0;
+      virtual bool updateClippingPlanes() = 0;
     };
 
     class SCISHARE RendererInterface : public ScreenParameters, public RendererModuleInterface, public RendererWidgetInterface

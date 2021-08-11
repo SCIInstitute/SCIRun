@@ -48,11 +48,12 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      explicit VisibleItemManager(QTreeWidget* itemList) : itemList_(itemList) {}
+      VisibleItemManager(QTreeWidget* itemList, Dataflow::Networks::ModuleStateHandle state);
       std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList,
         const Modules::Render::ShowFieldStatesMap& showFieldStates);
       bool isVisible(const QString& name) const;
       bool containsItem(const QString& name) const;
+      void initializeSavedStateMap();
     public Q_SLOTS:
       void clear();
     Q_SIGNALS:
@@ -62,10 +63,14 @@ namespace SCIRun {
       void updateVisible(QTreeWidgetItem* item, int column);
       void selectAllClicked();
       void deselectAllClicked();
+      void updateState();
     private:
       void addRenderItem(const QString& name);
-      void updateCheckStates(const QString& name, std::vector<bool> checked);
+      void updateCheckStates(const QString& name, const std::vector<bool>& checked);
       QTreeWidget* itemList_;
+      Dataflow::Networks::ModuleStateHandle state_;
+      std::map<QString, bool> topLevelItemMap_;
+      std::map<QString, std::map<QString, bool>> secondLevelItemMap_;
     };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls

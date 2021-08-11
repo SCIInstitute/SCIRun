@@ -52,7 +52,7 @@ namespace DataIO {
     OUTPUT_PORT(1, OutputMatrix, Matrix);
     OUTPUT_PORT(2, FilenameOut, String);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   };
 
 }}}}

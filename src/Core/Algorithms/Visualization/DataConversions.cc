@@ -127,23 +127,18 @@ bool valToBuffer(const char &value, std::ostringstream &buffer)
 
 RenderState::RenderState()
 {
-  for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
-  {
-    mFlags[i] = false;
-  }
-
   // Default settings.
-  mFlags[USE_NORMALS] = true;
+  mFlags[static_cast<int>(ActionFlags::USE_NORMALS)] = true;
 }
 
 void RenderState::set(ActionFlags flag, bool truth)
 {
-  mFlags[flag] = truth;
+  mFlags[static_cast<int>(flag)] = truth;
 }
 
 bool RenderState::get(ActionFlags flag) const
 {
-  return mFlags[flag];
+  return mFlags[static_cast<int>(flag)];
 }
 
 } // end namespace SCIRun

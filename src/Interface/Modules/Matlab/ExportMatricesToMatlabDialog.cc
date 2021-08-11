@@ -28,6 +28,7 @@
 #include <Interface/Modules/Matlab/ExportMatricesToMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportMatricesToMatlab.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

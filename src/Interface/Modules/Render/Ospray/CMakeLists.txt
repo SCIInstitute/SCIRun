@@ -27,15 +27,6 @@ SET(SRCS ${SRCS}
   OSPRayRenderer.cpp
   OSPRayDataManager.cpp
   OSPRayCamera.cpp
-  #util.h
-  #util.cpp
-  #importer/Importer.h
-  #importer/Importer.cpp
-  #importer/importOSP.cpp
-  #importer/importRAW.cpp
-  #importer/importRM.cpp
-  #importer/TinyXML2.cpp
-  #importer/TinyXML2.h
 )
 
 SET(MOC_HEADERS

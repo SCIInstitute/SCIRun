@@ -81,19 +81,19 @@ void MacroEditor::assignToButton()
       {
         other->setToolTip("");
         other->setData(macroIndexInt, 0);
-        macros_[i][MacroListItem::ButtonNumber] = "";
+        macros_[i][static_cast<int>(MacroListItem::ButtonNumber)] = "";
       }
     }
 
-    auto previous = macros_[row][MacroListItem::ButtonNumber].toInt();
+    auto previous = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
     if (previous >= MIN_MACRO_INDEX && previous <= MAX_MACRO_INDEX)
       Q_EMIT macroButtonChanged(previous, "");
 
     auto item = selected[0];
     item->setToolTip(tr("Assigned to macro button %0").arg(index));
     item->setData(macroIndexInt, index);
-    macros_[row][MacroListItem::ButtonNumber] = QString::number(index);
-    Q_EMIT macroButtonChanged(index, macros_[row][MacroListItem::Name]);
+    macros_[row][static_cast<int>(MacroListItem::ButtonNumber)] = QString::number(index);
+    Q_EMIT macroButtonChanged(index, macros_[row][static_cast<int>(MacroListItem::Name)]);
     for (auto& b : buttons_)
     {
       dehighlightButton(b);
@@ -113,16 +113,16 @@ void MacroEditor::setScripts(const MacroNameValueList& macros)
 
   for (const auto& macroList : macros_)
   {
-    auto item = new QListWidgetItem(macroList[MacroListItem::Name], macroListWidget_);
-    if (macroList.size() > MacroListItem::ButtonNumber)
+    auto item = new QListWidgetItem(macroList[static_cast<int>(MacroListItem::Name)], macroListWidget_);
+    if (macroList.size() > static_cast<int>(MacroListItem::ButtonNumber))
     {
-      auto button = macroList[MacroListItem::ButtonNumber];
+      auto button = macroList[static_cast<int>(MacroListItem::ButtonNumber)];
       if (!button.isEmpty())
       {
         auto index = button.toInt();
         item->setToolTip(tr("Assigned to macro button %0").arg(index));
         item->setData(macroIndexInt, index);
-        Q_EMIT macroButtonChanged(index, macroList[MacroListItem::Name]);
+        Q_EMIT macroButtonChanged(index, macroList[static_cast<int>(MacroListItem::Name)]);
       }
     }
   }
@@ -167,7 +167,7 @@ void MacroEditor::removeMacro()
   for (auto& item : macroListWidget_->selectedItems())
   {
     auto name = item->text();
-    auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+    auto index = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
     Q_EMIT macroButtonChanged(index, "");
     macros_.removeAt(row);
 
@@ -188,8 +188,8 @@ void MacroEditor::renameMacro()
     for (auto& item : macroListWidget_->selectedItems())
     {
       item->setText(name);
-      macros_[row][MacroListItem::Name] = name;
-      auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+      macros_[row][static_cast<int>(MacroListItem::Name)] = name;
+      auto index = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
       Q_EMIT macroButtonChanged(index, name);
     }
   }
@@ -197,15 +197,15 @@ void MacroEditor::renameMacro()
 
 void MacroEditor::updateScriptEditor()
 {
-  auto item = macroListWidget_->currentItem();
-  auto row = macroListWidget_->currentRow();
+  const auto item = macroListWidget_->currentItem();
+  const auto row = macroListWidget_->currentRow();
   if (item)
   {
     auto key = item->text();
-    auto scr = macros_[row][MacroListItem::Script];
+    auto scr = macros_[row][static_cast<int>(MacroListItem::Script)];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
 
-    auto buttonAssigned = macros_[row][MacroListItem::ButtonNumber].toInt();
+    auto buttonAssigned = macros_[row][static_cast<int>(MacroListItem::ButtonNumber)].toInt();
     for (auto& button : buttons_)
     {
       dehighlightButton(button);
@@ -235,20 +235,20 @@ void MacroEditor::updateScripts()
 {
   if (macroListWidget_->count() > 0)
   {
-    auto row = macroListWidget_->currentRow();
+    const auto row = macroListWidget_->currentRow();
     auto key = macroListWidget_->currentItem()->text();
     auto script = scriptPlainTextEdit_->toPlainText();
-    macros_[row][MacroListItem::Script] = script;
+    macros_[row][static_cast<int>(MacroListItem::Script)] = script;
   }
 }
 
 void MacroEditor::runSelectedMacro()
 {
 #ifdef BUILD_WITH_PYTHON
-  auto row = macroListWidget_->currentRow();
+  const auto row = macroListWidget_->currentRow();
   if (row >= 0 && row < macros_.size())
   {
-    auto scr = macros_[row][MacroListItem::Script];
+    auto scr = macros_[row][static_cast<int>(MacroListItem::Script)];
 
     NetworkEditor::InEditingContext iec(SCIRunMainWindow::Instance()->networkEditor());
     PythonInterpreter::Instance().run_script(scr.toStdString());
@@ -262,8 +262,8 @@ QString MacroEditor::macroForButton(int index) const
   {
     for (const auto& macro : macros_)
     {
-      if (macro[MacroListItem::ButtonNumber].toInt() == index)
-        return macro[MacroListItem::Script];
+      if (macro[static_cast<int>(MacroListItem::ButtonNumber)].toInt() == index)
+        return macro[static_cast<int>(MacroListItem::Script)];
     }
   }
   return "";

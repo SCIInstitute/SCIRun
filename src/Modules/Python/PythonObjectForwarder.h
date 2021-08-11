@@ -183,7 +183,7 @@ namespace SCIRun
         OUTPUT_PORT(1, PythonField, Field);
         OUTPUT_PORT(2, PythonString, String);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 
     }

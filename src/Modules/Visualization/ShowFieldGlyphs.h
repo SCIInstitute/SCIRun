@@ -110,14 +110,14 @@ namespace SCIRun {
 
         void setStateDefaults() override;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       private:
         void configureInputs(
             FieldHandle pfield,
             boost::optional<FieldHandle> sfield,
             boost::optional<FieldHandle> tfield);
-        RenderState::InputPort getInput(const std::string &port_name);
+        RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 
         boost::shared_ptr<class GlyphBuilder> builder_;

@@ -38,6 +38,7 @@
 
 #include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/Name.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <Core/Algorithms/Base/AlgorithmInputBuilder.h>
@@ -476,4 +477,9 @@ std::vector<std::string> Core::Algorithms::toNameVector(const Variable::List& li
 std::vector<double> Core::Algorithms::toDoubleVector(const Variable::List& list)
 {
   return toTypedVector<double>(list, [](const Variable& v) { return v.toDouble(); });
+}
+
+std::vector<bool> Core::Algorithms::toBoolVector(const Variable::List& list)
+{
+  return toTypedVector<bool>(list, [](const Variable& v) { return v.toBool(); });
 }

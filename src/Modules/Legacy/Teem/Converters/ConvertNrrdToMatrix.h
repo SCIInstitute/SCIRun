@@ -60,7 +60,7 @@ namespace Teem {
     INPUT_PORT(2, Columns, NrrdDataType);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     Core::Datatypes::MatrixHandle create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataH,
       boost::optional<NrrdDataHandle> rowsH,

@@ -33,8 +33,8 @@
 
 #include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
-#include <Core/Algorithms/Base/Variable.h>
 #include <boost/signals2.hpp>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Application/Preferences/share.h>
 
 namespace SCIRun

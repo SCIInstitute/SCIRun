@@ -47,7 +47,7 @@ namespace Basic {
 
     INPUT_PORT(0, Input, String);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   };
 
   class SCISHARE PortFeedbackReceiver : public SCIRun::Dataflow::Networks::Module,
@@ -62,7 +62,7 @@ namespace Basic {
 
     OUTPUT_PORT(0, Output, String);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   };
 
 }}}

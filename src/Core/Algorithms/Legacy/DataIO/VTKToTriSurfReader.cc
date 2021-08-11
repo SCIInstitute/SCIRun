@@ -81,7 +81,7 @@ public:
   typedef std::vector<double> PointList;
   typedef std::vector<VMesh::index_type> ElemList;
 
-  enum DATA_TYPE
+  enum class DATA_TYPE
   {
     UNKNOWN,
     SCALAR,
@@ -92,11 +92,11 @@ public:
 
   VTKToTriSurfReaderPrivate(LoggerHandle pr)
     : pr_(pr),
-      meshType_(TRISURFMESH_E),
-      meshBasisType_(LINEARMESH_E),
-      fieldDataBasisType_(NODATA_E),
-      fieldDataType_(NONE_E),
-      vtkDataType_(UNKNOWN),
+      meshType_(mesh_info_type::TRISURFMESH_E),
+      meshBasisType_(meshbasis_info_type::LINEARMESH_E),
+      fieldDataBasisType_(databasis_info_type::NODATA_E),
+      fieldDataType_(data_info_type::NONE_E),
+      vtkDataType_(DATA_TYPE::UNKNOWN),
       POINTS_DIM(3),
       CELL_SIZE(3),
       numPointsFromFile_(0),
@@ -412,7 +412,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
       boost::split( strings, line, boost::is_any_of(" \t") );
       if (strings[0] == "SCALARS")
       {
-        vtkDataType_ = SCALAR;
+        vtkDataType_ = DATA_TYPE::SCALAR;
         if (strings.size() < ATTR_LEN)
         {
           continue;
@@ -421,43 +421,43 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
 
         if (strings[2] == "char")
         {
-          this->fieldDataType_ = CHAR_E;
+          this->fieldDataType_ = data_info_type::CHAR_E;
         }
         else if (strings[2] == "unsigned_char")
         {
-          this->fieldDataType_ = UNSIGNED_CHAR_E;
+          this->fieldDataType_ = data_info_type::UNSIGNED_CHAR_E;
         }
         else if (strings[2] == "short")
         {
-          this->fieldDataType_ = SHORT_E;
+          this->fieldDataType_ = data_info_type::SHORT_E;
         }
         else if (strings[2] == "unsigned_short")
         {
-          this->fieldDataType_ = UNSIGNED_SHORT_E;
+          this->fieldDataType_ = data_info_type::UNSIGNED_SHORT_E;
         }
         else if (strings[2] == "int")
         {
-          this->fieldDataType_ = INT_E;
+          this->fieldDataType_ = data_info_type::INT_E;
         }
         else if (strings[2] == "unsigned_int")
         {
-          this->fieldDataType_ = UNSIGNED_INT_E;
+          this->fieldDataType_ = data_info_type::UNSIGNED_INT_E;
         }
         else if (strings[2] == "long")
         {
-          this->fieldDataType_ = LONGLONG_E;
+          this->fieldDataType_ = data_info_type::LONGLONG_E;
         }
         else if (strings[2] == "unsigned_long")
         {
-          this->fieldDataType_ = UNSIGNED_LONGLONG_E;
+          this->fieldDataType_ = data_info_type::UNSIGNED_LONGLONG_E;
         }
         else if (strings[2] == "float")
         {
-          this->fieldDataType_ = FLOAT_E;
+          this->fieldDataType_ = data_info_type::FLOAT_E;
         }
         else if (strings[2] == "double")
         {
-          this->fieldDataType_ = DOUBLE_E;
+          this->fieldDataType_ = data_info_type::DOUBLE_E;
         }
         else
         {
@@ -467,7 +467,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
       }
       else if (strings[0] == "COLOR_SCALARS")
       {
-        vtkDataType_ = COLOR;
+        vtkDataType_ = DATA_TYPE::COLOR;
       }
       // TODO: vectors, tensors
     }
@@ -632,12 +632,12 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
 
     if ( matchPointData(line) )
     {
-      this->fieldDataBasisType_ = LINEARDATA_E;
+      this->fieldDataBasisType_ = databasis_info_type::LINEARDATA_E;
       data_available = true;
     }
     else if ( matchCellData(line) )
     {
-      this->fieldDataBasisType_ = CONSTANTDATA_E;
+      this->fieldDataBasisType_ = databasis_info_type::CONSTANTDATA_E;
       data_available = true;
     }
 
@@ -646,7 +646,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
       // sets field data type
       if (! parseDataDefinition(line) )
       {
-        if (this->vtkDataType_ == COLOR)
+        if (this->vtkDataType_ == DATA_TYPE::COLOR)
         {
           data_available = false;
           if (this->pr_)
@@ -696,7 +696,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
       vfield->resize_values();
       switch(this->fieldDataType_)
       {
-        case CHAR_E:
+        case data_info_type::CHAR_E:
         {
           TriSurfScalarDataReaderPrivate<char> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -710,7 +710,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case UNSIGNED_CHAR_E:
+        case data_info_type::UNSIGNED_CHAR_E:
         {
           TriSurfScalarDataReaderPrivate<unsigned char> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -724,7 +724,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case SHORT_E:
+        case data_info_type::SHORT_E:
         {
           TriSurfScalarDataReaderPrivate<short> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -738,7 +738,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case UNSIGNED_SHORT_E:
+        case data_info_type::UNSIGNED_SHORT_E:
         {
           TriSurfScalarDataReaderPrivate<unsigned short> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -752,7 +752,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case INT_E:
+        case data_info_type::INT_E:
         {
           TriSurfScalarDataReaderPrivate<int> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -766,7 +766,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case UNSIGNED_INT_E:
+        case data_info_type::UNSIGNED_INT_E:
         {
           TriSurfScalarDataReaderPrivate<unsigned int> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -780,7 +780,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case LONGLONG_E:
+        case data_info_type::LONGLONG_E:
         {
           TriSurfScalarDataReaderPrivate<long long> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -794,7 +794,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case UNSIGNED_LONGLONG_E:
+        case data_info_type::UNSIGNED_LONGLONG_E:
         {
           TriSurfScalarDataReaderPrivate<unsigned long long> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -808,7 +808,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case FLOAT_E:
+        case data_info_type::FLOAT_E:
         {
           TriSurfScalarDataReaderPrivate<float> dataReader(this->fileStream_);
           dataReader.readScalarData();
@@ -822,7 +822,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           vfield->set_values(dataReader.data_);
           break;
         }
-        case DOUBLE_E:
+        case data_info_type::DOUBLE_E:
         {
           TriSurfScalarDataReaderPrivate<double> dataReader(this->fileStream_);
           dataReader.readScalarData();

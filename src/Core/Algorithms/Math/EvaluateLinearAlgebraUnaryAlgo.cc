@@ -78,21 +78,21 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
-  case NEGATE:
+  case Operator::NEGATE:
   {
     result.reset(matrix->clone());
     NegateMatrix negate;
     result->accept(negate);
     break;
   }
-  case TRANSPOSE:
+  case Operator::TRANSPOSE:
   {
     result.reset(matrix->clone());
     impl::TransposeMatrix tr;
     result->accept(tr);
     break;
   }
-  case SCALAR_MULTIPLY:
+  case Operator::SCALAR_MULTIPLY:
   {
     auto scalar = params.scalar;
     result.reset(matrix->clone());
@@ -100,7 +100,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     result->accept(mult);
   }
   break;
-  case FUNCTION:
+  case Operator::FUNCTION:
   {
     // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result.
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.

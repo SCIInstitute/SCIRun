@@ -48,7 +48,7 @@ namespace SCIRun {
         INPUT_PORT(0, LHS, ComplexMatrix);
         INPUT_PORT(1, RHS, ComplexMatrix);
         OUTPUT_PORT(0, Solution, ComplexMatrix);
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 }
 }}
