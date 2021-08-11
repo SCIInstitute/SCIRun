@@ -409,6 +409,7 @@ MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
   else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
 #endif
+  return MouseButton::NONE;
 }
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
