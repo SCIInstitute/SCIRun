@@ -269,9 +269,12 @@ We will show the examples located in `src/Interface/Modules/Template` as example
 
 The module design file is an xml file that describes the UI structure. This file can be created and edited in the Qt editor. The image below shows the example template *ModuleDesignerFile.ui* within the Qt editor.
 
-<!-- QT-Editor -->
+:::{figure-md} fig-QT-Editor
+
 ![Template module interface design file as seen in the Qt editor](SCIRun5ModuleGeneration_figures/QT-editor.png)
-<figcaption>Template module interface design file as seen in the Qt editor</figcaption>
+
+Template module interface design file as seen in the Qt editor
+:::
 
 As shown, the user can interactively modify the placement of the widgets in the window. The Widget Box window allows the user to choose and place new objects within the window. The Property Editor allows for the modification of properties of the various objects and widgets within the UI, including size, type of input, names, etc. With the Object Inspector window, the hierarchy and organization of the UI can be changed.
 
@@ -708,11 +711,14 @@ Finally, change the name of the of the `line edit widget` to `inputstring_` and 
 
 This can be done in the *Object Inspector* or in the *Property Editor* when the appropriate object is clicked.
 
-The screenshot below shows what the module should look like in the Qt editor.
+{numref}`fig-simple-UI` shows what the module should look like in the Qt editor.
 
-<!-- simpleUI -->
+:::{figure-md} fig-simple-UI
+
 ![Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor](SCIRun5ModuleGeneration_figures/simpleUI.png)
-<figcaption>Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor.</figcaption>
+
+Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor.
+:::
 
 Now that the module UI is designed, we need to link it to the module with the module dialog code.
 
@@ -1066,11 +1072,14 @@ We will create a simple module UI for the SortMatrix module. The UI will consist
 
 The process and code for this example is very similar to the previous example.
 
-We will make the *SortMatrixDialog.ui* in the Qt editor as we did previously ([Files Needed for a New Module](#files-needed-for-a-new-module)). It may be easier to copy a previously created UI file and modify it rather than to create one from scratch. Copy the `src/Interface/Template/ModuleDesignerFile.ui` file and rename it.Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window). Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to `ascendButton_` and `descendButton_`. You will also need to make sure to change the name of the `QDialog` to `SortMatrixDialog` (also in the 'Object Inpector'). The placement of the buttons and the size of the window and boxes can be adjusted in the 'Property Editor' window. The UI should look similar to the figure below.
+We will make the *SortMatrixDialog.ui* in the Qt editor as we did previously ([Files Needed for a New Module](#files-needed-for-a-new-module)). It may be easier to copy a previously created UI file and modify it rather than to create one from scratch. Copy the `src/Interface/Template/ModuleDesignerFile.ui` file and rename it.Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window). Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to `ascendButton_` and `descendButton_`. You will also need to make sure to change the name of the `QDialog` to `SortMatrixDialog` (also in the 'Object Inpector'). The placement of the buttons and the size of the window and boxes can be adjusted in the 'Property Editor' window. The UI should look similar to {numref}`fig-algo-UI`.
 
-<!-- algoUI -->
+:::{figure-md} fig-algo-UI
+
 ![Module interface design file for the SortMatrix module as seen in the Qt editor](SCIRun5ModuleGeneration_figures/algo_ui.png)
-<figcaption>Module interface design file for the SortMatrix module as seen in the Qt editor.</figcaption>
+
+Module interface design file for the SortMatrix module as seen in the Qt editor.
+:::
 
 The *SortMatrixDialog.h* is virtually identical to the header in the previous example ([Simple Module With UI](#example-simple-module-with-ui)), except for the names, as shown here:
 
@@ -1314,15 +1323,18 @@ This would entail geting SCIRun to build with just the bare minimum of the algor
 
 #### Testing
 
-To make sure that the new SortMatrix module works, create a network with CreateMatrix, SortMatrix, PrintMatrixIntoString, and PrintDatatype as shown in the figure below. Create any matrix in CreateMatrix.
+To make sure that the new SortMatrix module works, create a network with CreateMatrix, SortMatrix, PrintMatrixIntoString, and PrintDatatype as shown in {numref}`fig-algo-Network`. Create any matrix in CreateMatrix.
 
 In PrintMatrixIntoString, change the input to have the number of columns in your input matrix.
 
-In the 4x2 matrix that shown below the format string was: `%4.2g %4.2g %4.2g %4.2g \n`.
+In the 4x2 matrix that shown in {numref}`fig-algo-Network`,the format string was: `%4.2g %4.2g %4.2g %4.2g \n`.
 
-<!-- algoNetwork -->
+:::{figure-md} fig-algo-Network
+
 ![Network for running and testing the SortMatrix module](SCIRun5ModuleGeneration_figures/algo_network.png)
-<figcaption>Network for running and testing the SortMatrix module. </figcaption>
+
+Network for running and testing the SortMatrix module.
+:::
 
 
 Alternatively, the matrix entries can be printed as a list with `%4.2g` (make sure there is a space at the beginning or end of the string).
