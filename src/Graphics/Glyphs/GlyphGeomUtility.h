@@ -56,6 +56,8 @@ public:
 
 inline double GlyphGeomUtility::spow(double e, double x)
 {
+  if (std::abs(e) < 1.0e-14)
+    return 0.0;
   if (e < 0.0)
     return -std::pow(-e, x);
   else
