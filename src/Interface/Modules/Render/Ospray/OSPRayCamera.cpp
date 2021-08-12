@@ -128,6 +128,7 @@ void OSPRayCamera::autoView()
   // The arcball class expects fov in radians
   lookat_.autoview(aabb, toRadians(fovy_));
   pos_ = lookat_.getPos();
+  target_ = lookat_.getTarget();
 }
 
 void OSPRayCamera::setSceneBoundingBox(const BBox& bbox)
