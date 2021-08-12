@@ -67,7 +67,7 @@ void OSPRayCamera::mousePress(float x, float y, MouseButton btn)
   {
     case MouseButton::LEFT:
     case MouseButton::RIGHT:
-      lookat_.doReferenceDown(glm::vec2(x, -y));
+      arcLookAt_.doReferenceDown(glm::vec2(x, -y));
     break;
 
     default:break;
@@ -79,15 +79,15 @@ void OSPRayCamera::mouseMove(float x, float y, MouseButton btn)
   switch (btn)
   {
   case MouseButton::LEFT:
-    lookat_.doRotation(glm::vec2(x, -y));
-    pos_ = lookat_.getPos();
-    up_ = lookat_.getUp();
+    arcLookAt_.doRotation(glm::vec2(x, -y));
+    pos_ = arcLookAt_.getPos();
+    up_ = arcLookAt_.getUp();
     break;
 
   case MouseButton::RIGHT:
-    lookat_.doPan(glm::vec2(x, -y));
-    pos_ = lookat_.getPos();
-    target_ = lookat_.getTarget();
+    arcLookAt_.doPan(glm::vec2(x, -y));
+    pos_ = arcLookAt_.getPos();
+    target_ = arcLookAt_.getTarget();
     break;
 
   default:
@@ -102,8 +102,8 @@ void OSPRayCamera::mouseRelease()
 
 void OSPRayCamera::mouseWheel(int delta)
 {
-  lookat_.doZoom(-delta/100.0f);
-  pos_ = lookat_.getPos();
+  arcLookAt_.doZoom(-delta/100.0f);
+  pos_ = arcLookAt_.getPos();
 }
 
 float OSPRayCamera::toRadians(float v)
@@ -126,9 +126,9 @@ void OSPRayCamera::autoView()
   spire::AABB aabb(min, max);
 
   // The arcball class expects fov in radians
-  lookat_.autoview(aabb, toRadians(fovy_));
-  pos_ = lookat_.getPos();
-  target_ = lookat_.getTarget();
+  arcLookAt_.autoview(aabb, toRadians(fovy_));
+  pos_ = arcLookAt_.getPos();
+  target_ = arcLookAt_.getTarget();
 }
 
 void OSPRayCamera::setSceneBoundingBox(const BBox& bbox)

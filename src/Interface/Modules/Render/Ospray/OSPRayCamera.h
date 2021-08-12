@@ -60,7 +60,7 @@ private:
   float aperture_   {0.0f};
   Core::Geometry::BBox sceneBBox_;
 
-  spire::ArcLookAt lookat_ {       };
+  spire::ArcLookAt arcLookAt_ {       };
   OSPCamera camera_        {nullptr};
 
   float toRadians(float v);
