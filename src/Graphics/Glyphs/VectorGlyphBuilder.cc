@@ -74,7 +74,7 @@ void VectorGlyphBuilder::setShowNormals(bool showNormals)
 
 void VectorGlyphBuilder::setShowNormalsScale(double showNormalsScale)
 {
-  showNormalsScale_ = showNormalsScale;// * (p2_ - p1_).length();
+  showNormalsScale_ = showNormalsScale * (p2_ - p1_).length();
 }
 
 void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double radius1, double radius2, bool renderBase1, bool renderBase2)
