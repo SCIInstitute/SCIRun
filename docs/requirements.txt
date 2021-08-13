@@ -7,6 +7,6 @@ sphinx
 sphinx-issues
 sphinx-markdown-tables
 sphinx-notfound-page
-sphinx-book-theme
+furo
 sphinxcontrib-bibtex
 sphinx-markdown-tables

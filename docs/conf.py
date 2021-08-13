@@ -103,7 +103,7 @@ language = 'python'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_book_theme'
+html_theme = 'furo'
 
 # html_theme = 'alabaster'
 
@@ -132,7 +132,7 @@ html_title = project
 html_logo = '_static/scirun.png'
 
 html_theme_options = {
-    'logo_only': True
+    "sidebar_hide_name": True,
 }
 
 autosectionlabel_prefix_document = True
