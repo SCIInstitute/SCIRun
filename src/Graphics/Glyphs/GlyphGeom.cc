@@ -257,8 +257,8 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       double theta = u * theta_inc;
       Vector n1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       Vector n2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      Vector p1 = radius * p1 + Vector(center);
-      Vector p2 = radius * p2 + Vector(center);
+      Vector p1 = radius * n1 + Vector(center);
+      Vector p2 = radius * n2 + Vector(center);
 
       constructor_.setOffset(prim);
       constructor_.addVertex(prim, p1, n1, color);
