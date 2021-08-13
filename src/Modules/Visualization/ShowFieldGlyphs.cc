@@ -802,20 +802,6 @@ void GlyphBuilder::renderTensors(
                      state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, mesh->get_bounding_box(), true,
                      portHandler_->getTextureMap());
-
-  // Render lines(2 eigenvalues equaling 0)
-  RenderState lineRenState = getVectorsRenderState(state);
-  glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES),
-                                 state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
-                                 colorScheme, lineRenState, mesh->get_bounding_box(),
-                                 true, portHandler_->getTextureMap());
-
-  // Render scalars(3 eigenvalues equaling 0)
-  RenderState pointRenState = getScalarsRenderState(state);
-  glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES),
-                           state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
-                           colorScheme, pointRenState, mesh->get_bounding_box(),
-                           true, portHandler_->getTextureMap());
 }
 
 void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)
