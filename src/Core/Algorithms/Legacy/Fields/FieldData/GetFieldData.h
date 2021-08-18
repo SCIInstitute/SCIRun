@@ -55,15 +55,15 @@ namespace SCIRun {
 
         private:
           template <class MatrixReturnType>
-          boost::shared_ptr<MatrixReturnType> runImplGeneric(FieldHandle input) const;
+          SharedPointer<MatrixReturnType> runImplGeneric(FieldHandle input) const;
           template <class MatrixReturnType>
-          bool GetScalarFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const;
+          bool GetScalarFieldDataV(FieldHandle input, SharedPointer<MatrixReturnType>& output) const;
           template <class ValueType>
-          bool GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<Datatypes::DenseMatrixGeneric<ValueType>>& output) const;
+          bool GetScalarFieldDataVDenseImpl(FieldHandle input, SharedPointer<Datatypes::DenseMatrixGeneric<ValueType>>& output) const;
           template <class MatrixReturnType>
-          bool GetVectorFieldDataV(FieldHandle, boost::shared_ptr<MatrixReturnType>&) const { return false; }
+          bool GetVectorFieldDataV(FieldHandle, SharedPointer<MatrixReturnType>&) const { return false; }
           template <class MatrixReturnType>
-          bool GetTensorFieldDataV(FieldHandle, boost::shared_ptr<MatrixReturnType>&) const { return false; }
+          bool GetTensorFieldDataV(FieldHandle, SharedPointer<MatrixReturnType>&) const { return false; }
         };
 
       }

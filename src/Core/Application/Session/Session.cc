@@ -32,7 +32,7 @@
 #include <Core/DatabaseManager/DatabaseManager.h>
 #include <Core/Utils/Exception.h>
 #include <boost/filesystem.hpp>
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <fstream>
 #include <locale>

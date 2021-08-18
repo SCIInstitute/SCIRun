@@ -31,7 +31,7 @@
 
 #include <QStackedWidget>
 #ifndef Q_MOC_RUN
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/scoped_ptr.hpp>
 #include <boost/bimap.hpp>
 #include <deque>
@@ -104,7 +104,7 @@ public:
   static const int widgetWidthAdjust;
 };
 
-typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
+typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 class ModuleWidget : public QStackedWidget,
   public Dataflow::Networks::ExecutableObject, public HasNotes
@@ -113,7 +113,7 @@ class ModuleWidget : public QStackedWidget,
 
 public:
   ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
-    boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+    SharedPointer<DialogErrorControl> dialogErrorControl,
     QWidget* parent = nullptr);
   ~ModuleWidget();
 
@@ -260,7 +260,7 @@ protected:
   void leaveEvent(QEvent* event) override;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:
-  boost::shared_ptr<PortWidgetManager> ports_;
+  SharedPointer<PortWidgetManager> ports_;
   std::unique_ptr<Core::Logging::SimpleScopedTimer> timer_;
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
@@ -298,8 +298,8 @@ private:
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
-  static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
-	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
+  static SharedPointer<class ModuleDialogFactory> dialogFactory_;
+	SharedPointer<DialogErrorControl> dialogErrorControl_;
 
   void movePortWidgets(int oldIndex, int newIndex);
   void addPortLayouts(int index);
@@ -322,8 +322,8 @@ private:
   ColorStateLookup colorStateLookup_;
   void fillColorStateLookup(const QString& background);
 
-  boost::shared_ptr<class ConnectionFactory> connectionFactory_;
-  boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
+  SharedPointer<class ConnectionFactory> connectionFactory_;
+  SharedPointer<class ClosestPortFinder> closestPortFinder_;
   QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;
@@ -333,7 +333,7 @@ class SubnetWidget : public ModuleWidget
 {
 	Q_OBJECT
 public:
-  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   ~SubnetWidget();
   void postLoadAction() override;
   void deleteSubnetImmediately() { deleteSubnetImmediately_ = true; }

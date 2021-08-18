@@ -34,7 +34,7 @@
 #include <QGraphicsProxyWidget>
 #include "ui_NetworkSearch.h"
 #ifndef Q_MOC_RUN
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <atomic>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>

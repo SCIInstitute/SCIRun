@@ -51,7 +51,7 @@ namespace Core
 /// @brief Application is the thread that processes all the actions in the program.
 
 struct ApplicationPrivate;
-typedef boost::shared_ptr<ApplicationPrivate> ApplicationPrivateHandle;
+typedef SharedPointer<ApplicationPrivate> ApplicationPrivateHandle;
 
 
 class SCISHARE Application : boost::noncopyable
@@ -67,7 +67,7 @@ public:
 
   void setCommandFactory(Commands::GlobalCommandFactoryHandle cmdFactory);
   CommandLine::ApplicationParametersHandle parameters() const;
-  boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
+  SharedPointer<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
 
   void executeCommandLineRequests();
 

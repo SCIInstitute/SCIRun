@@ -41,7 +41,7 @@ namespace SCIRun
     {
 
 class VTKToTriSurfReaderPrivate;
-typedef boost::shared_ptr< VTKToTriSurfReaderPrivate > ReaderPrivateHandle;
+typedef SharedPointer< VTKToTriSurfReaderPrivate > ReaderPrivateHandle;
 
 // following VTK legacy format, version 4.2
 class SCISHARE VTKToTriSurfReader

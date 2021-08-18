@@ -31,7 +31,7 @@
 #ifndef CORE_DATATYPES_PROPERTYMANAGEREXTENSIONS_H
 #define CORE_DATATYPES_PROPERTYMANAGEREXTENSIONS_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -47,7 +47,7 @@ namespace Datatypes {
     PropertyManager& properties();
     const PropertyManager& properties() const;
   private:
-    mutable boost::shared_ptr<PropertyManager> properties_;
+    mutable SharedPointer<PropertyManager> properties_;
   };
 
   SCISHARE void CopyProperties(const HasPropertyManager& from, HasPropertyManager& to);

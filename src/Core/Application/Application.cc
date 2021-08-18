@@ -199,15 +199,15 @@ namespace
       switch (type)
       {
       case NetworkEventCommands::PostModuleAdd:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.postModuleAdd.script.val(),
           prefs.postModuleAdd.enabled.val());
       case NetworkEventCommands::OnNetworkLoad:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.onNetworkLoad.script.val(),
           prefs.onNetworkLoad.enabled.val());
       case NetworkEventCommands::ApplicationStart:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.applicationStart.script.val(),
           prefs.applicationStart.enabled.val());
       }
@@ -221,9 +221,9 @@ namespace
   NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
   {
 #ifdef BUILD_WITH_PYTHON
-    return boost::make_shared<HardCodedPythonFactory>();
+    return makeShared<HardCodedPythonFactory>();
 #else
-    return boost::make_shared<NullCommandFactory>();
+    return makeShared<NullCommandFactory>();
 #endif
   }
 }

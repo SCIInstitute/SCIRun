@@ -41,18 +41,17 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  streamlineMethod_.insert(StringPair("Cell Walk", "CellWalk"));
-  streamlineMethod_.insert(StringPair("Adams-Bashforth Multi-Step", "AdamsBashforth"));
-  streamlineMethod_.insert(StringPair("Heun Method", "Heun"));
-  streamlineMethod_.insert(StringPair("Classic 4th Order Runge-Kutta", "RungeKutta"));
-  streamlineMethod_.insert(StringPair("Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"));
-
   addSpinBoxManager(maxStepsSpinBox_, Parameters::StreamlineMaxSteps);
   addDoubleSpinBoxManager(toleranceDoubleSpinBox_, Parameters::StreamlineTolerance);
   addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StreamlineStepSize);
   addComboBoxManager(directionComboBox_, Parameters::StreamlineDirection);
   addComboBoxManager(valueComboBox_, Parameters::StreamlineValue);
-  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
+  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod,
+    {{"Cell Walk", "CellWalk"},
+    {"Adams-Bashforth Multi-Step", "AdamsBashforth"},
+    {"Heun Method", "Heun"},
+    {"Classic 4th Order Runge-Kutta", "RungeKutta"},
+    {"Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"}});
   addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
   addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
   addCheckBoxManager(multithreadedCheckBox_, Parameters::UseMultithreading);

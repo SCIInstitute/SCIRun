@@ -44,7 +44,7 @@ namespace
 {
   DenseMatrixHandle matrix1()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 4));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(3, 4));
     for (int i = 0; i < m->rows(); i++)
       for (int j = 0; j < m->cols(); j++)
         (*m)(i, j) = 3.0 * i + j - 5;
@@ -53,7 +53,7 @@ namespace
 
   DenseMatrixHandle matrix2()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 5));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(5, 5));
     for (int i = 0; i < m->rows(); i++)
       for (int j = 0; j < m->cols(); j++)
         (*m)(i, j) = -3.0 * i + j + 5;
@@ -62,7 +62,7 @@ namespace
 
   DenseMatrixHandle matrix3()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(8, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(8, 3));
     for (int i = 0; i < m->rows(); i++)
       for (int j = 0; j < m->cols(); j++)
         (*m)(i, j) = 30.0 * i + j + 5;
@@ -72,7 +72,7 @@ namespace
 
   DenseMatrixHandle index_matrix_outside1()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 3));
 
     (*m)(0, 0) = 1;
     (*m)(1, 0) = 6;
@@ -85,7 +85,7 @@ namespace
 
   DenseMatrixHandle index_matrix_outside2()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 3));
 
     (*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
     (*m)(1, 0) = -3;
@@ -95,7 +95,7 @@ namespace
 
   DenseMatrixHandle index_matrix_outside3()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 3));
 
     (*m)(0, 0) = -1;
     (*m)(1, 0) = -2;
@@ -105,7 +105,7 @@ namespace
 
   DenseMatrixHandle index_matrix_outside4()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 3));
 
     (*m)(0, 0) = 9;
     (*m)(1, 0) = 4;
@@ -115,7 +115,7 @@ namespace
 
   DenseMatrixHandle index_matrix1()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 3));
 
     (*m)(0, 0) = 1;
     (*m)(1, 0) = 2;
@@ -129,7 +129,7 @@ namespace
 
   DenseMatrixHandle index_matrix2()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 1));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 1));
 
     (*m)(0, 0) = 1;
     (*m)(1, 0) = 3;
@@ -139,7 +139,7 @@ namespace
 
   DenseMatrixHandle result_matrix3_index_matrix1_rows()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(6, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(6, 3));
 
     (*m)(0, 0) = 35;
     (*m)(0, 1) = 36;
@@ -171,7 +171,7 @@ namespace
 
   DenseColumnMatrixHandle densecolumnmatrix()
   {
-    DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(10));
+    DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(10));
 
     (*m)(0) = 6;
     (*m)(1) = 8;
@@ -189,7 +189,7 @@ namespace
 
   DenseMatrixHandle densecolumnmatrix_expectedoutput()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,1));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2,1));
 
     (*m)(0) = 8;
     (*m)(1) = 5;
@@ -199,7 +199,7 @@ namespace
 
   DenseMatrixHandle densecolumnmatrix_expectedoutput2()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
 
     (*m)(0) = 8;
     (*m)(1) = 3;
@@ -211,7 +211,7 @@ namespace
 
   DenseMatrixHandle result_matrix2_index_matrix2_rows()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 2));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(5, 2));
 
     (*m)(0, 0) = 6;
     (*m)(0, 1) = 8;
@@ -229,7 +229,7 @@ namespace
 
   DenseMatrixHandle index_matrix3()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 1));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 1));
 
     (*m)(0, 0) = 0;
     (*m)(1, 0) = 1;
@@ -239,7 +239,7 @@ namespace
 
   DenseMatrixHandle index_matrix4()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1, 2));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(1, 2));
 
     (*m)(0, 0) = 1;
     (*m)(0, 1) = 0;
@@ -251,7 +251,7 @@ namespace
 
   DenseMatrixHandle result_matrix1_index_matrix34_rows()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 2));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(2, 2));
     (*m)(0, 0) = -2;
     (*m)(0, 1) = -1;
     (*m)(1, 0) = -5;
@@ -262,7 +262,7 @@ namespace
 
   DenseMatrixHandle result_Gui_Submatrix_rowsandcolumns()
   {
-   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 2));
+   DenseMatrixHandle m(makeShared<DenseMatrix>(5, 2));
 
    (*m)(0, 0) = 36;
    (*m)(0, 1) = 37;
@@ -280,7 +280,7 @@ namespace
 
  DenseMatrixHandle result_Gui_Submatrix_columnsonly()
  {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(8, 2));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(8, 2));
 
    (*m)(0, 0) = 6;
    (*m)(0, 1) = 7;
@@ -306,7 +306,7 @@ namespace
 
  DenseMatrixHandle result_Gui_Submatrix_rowsonly()
  {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(7, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(7, 3));
 
    (*m)(0, 0) = 5;
    (*m)(0, 1) = 6;
@@ -336,7 +336,7 @@ namespace
 
  DenseMatrixHandle Gui_Submatrix_rowsandcolumns_passinputthrough()
  {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(8, 3));
+    DenseMatrixHandle m(makeShared<DenseMatrix>(8, 3));
 
    (*m)(0, 0) = 5;
    (*m)(0, 1) = 6;

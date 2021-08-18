@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ViewAxisChooser</class>
+ <widget class="QWidget" name="ViewAxisChooser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>212</width>
+    <height>86</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>212</width>
+    <height>86</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Look down axis:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="lookDownComboBox_">
+     <property name="toolTip">
+      <string>Vector pointing out of the screen</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>+X</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>+Y</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>+Z</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-X</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-Y</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>-Z</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Up vector:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="upVectorComboBox_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Vector pointing up</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

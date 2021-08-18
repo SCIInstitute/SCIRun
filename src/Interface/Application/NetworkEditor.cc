@@ -122,7 +122,7 @@ void NetworkEditor::setHighResolutionExpandFactor(double factor)
   ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 }
 
-void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
+void NetworkEditor::setNetworkEditorController(SharedPointer<NetworkEditorControllerGuiProxy> controller)
 {
   if (controller_ == controller)
     return;
@@ -154,7 +154,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   }
 }
 
-boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEditorController() const
+SharedPointer<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEditorController() const
 {
   return controller_;
 }
@@ -238,7 +238,7 @@ void NetworkEditor::connectionAddedQueued(const ConnectionDescription&)
   //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }
 
-boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
+SharedPointer<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
 {
   return controller_->createDynamicPortSwitch();
 }
@@ -1255,7 +1255,7 @@ void NetworkEditor::unselectConnectionGroup()
 
 ModulePositionsHandle NetworkEditor::dumpModulePositions(ModuleFilter filter) const
 {
-  auto positions(boost::make_shared<ModulePositions>());
+  auto positions(makeShared<ModulePositions>());
   fillModulePositionMap(*positions, filter);
   for (const auto& sub : childrenNetworks_)
   {
@@ -1291,7 +1291,7 @@ void NetworkEditor::centerView()
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
 {
-  auto notes(boost::make_shared<ModuleNotes>());
+  auto notes(makeShared<ModuleNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1344,7 +1344,7 @@ namespace
 
 ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter) const
 {
-  auto notes(boost::make_shared<ConnectionNotes>());
+  auto notes(makeShared<ConnectionNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto conn = dynamic_cast<ConnectionLine*>(item))
@@ -1364,7 +1364,7 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter
 
 ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
 {
-  auto tags(boost::make_shared<ModuleTags>());
+  auto tags(makeShared<ModuleTags>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1380,7 +1380,7 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
 
 DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const
 {
-  auto disabled(boost::make_shared<DisabledComponents>());
+  auto disabled(makeShared<DisabledComponents>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1401,7 +1401,7 @@ DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modF
 
 SubnetworksHandle NetworkEditor::dumpSubnetworks(ModuleFilter modFilter) const
 {
-  auto subnets(boost::make_shared<Subnetworks>());
+  auto subnets(makeShared<Subnetworks>());
   for (const auto& child : childrenNetworks_)
   {
     child.second->get()->dumpSubnetworksImpl(child.first, *subnets, modFilter);

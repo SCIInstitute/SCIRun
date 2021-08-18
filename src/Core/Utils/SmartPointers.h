@@ -29,12 +29,14 @@
 #ifndef CORE_UTILS_SMARTPOINTERS_H
 #define CORE_UTILS_SMARTPOINTERS_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace SCIRun
 {
   template <typename T>
-  using SharedPointer = boost::shared_ptr<T>;
+  using SharedPointer = std::shared_ptr<T>;
+
+  #define makeShared std::make_shared
 }
 
 #endif

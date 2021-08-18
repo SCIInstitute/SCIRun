@@ -56,7 +56,7 @@ namespace Gui {
     Core::Algorithms::AlgorithmParameterName name_;
   };
 
-  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
+  typedef SharedPointer<WidgetSlotManager> WidgetSlotManagerPtr;
 
 }
 }

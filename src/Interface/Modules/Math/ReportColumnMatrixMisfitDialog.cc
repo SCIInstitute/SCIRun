@@ -41,12 +41,11 @@ ReportColumnMatrixMisfitDialog::ReportColumnMatrixMisfitDialog(const std::string
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  methodMap_.insert(StringPair("Correlation Coefficient", "CC"));
-  methodMap_.insert(StringPair("Inverse Correlation Coefficient", "CCinv"));
-  methodMap_.insert(StringPair("p Norm", "RMS"));
-  methodMap_.insert(StringPair("Relative RMS", "RMSrel"));
-
-  addComboBoxManager(methodComboBox_, Parameters::MisfitMethod, methodMap_);
+  addComboBoxManager(methodComboBox_, Parameters::MisfitMethod,
+    {{"Correlation Coefficient", "CC"},
+    {"Inverse Correlation Coefficient", "CCinv"},
+    {"p Norm", "RMS"},
+    {"Relative RMS", "RMSrel"}});
   addDoubleSpinBoxManager(pValueDoubleSpinBox_, Parameters::PValue);
   addDoubleLineEditManager(ccInvLineEdit_, Parameters::ccInv);
   addDoubleLineEditManager(rmsRelLineEdit_, Parameters::rmsRel);

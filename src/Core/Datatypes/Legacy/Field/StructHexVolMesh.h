@@ -105,7 +105,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<StructHexVolMesh<Basis> > handle_type;
+  typedef SharedPointer<StructHexVolMesh<Basis> > handle_type;
 
   StructHexVolMesh();
   StructHexVolMesh(size_type i, size_type j, size_type k);
@@ -788,13 +788,13 @@ public:
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructHexVolMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker()  { return boost::make_shared<StructHexVolMesh<Basis>>(); }
+  static MeshHandle mesh_maker()  { return makeShared<StructHexVolMesh<Basis>>(); }
   /// This function returns a handle for the virtual interface.
   static MeshHandle structhexvol_maker(size_type x,
 				       size_type y,
 				       size_type z)
   {
-    return boost::make_shared<StructHexVolMesh<Basis>>(x,y,z);
+    return makeShared<StructHexVolMesh<Basis>>(x,y,z);
   }
 
   Array3<Core::Geometry::Point>& get_points() { return (points_); }
@@ -1066,8 +1066,8 @@ private:
 
   Array3<Core::Geometry::Point> points_;
 
-  boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Node::index_type> >  node_grid_;
-  boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Elem::index_type> >  elem_grid_;
+  SharedPointer<SearchGridT<typename LatVolMesh<Basis>::Node::index_type> >  node_grid_;
+  SharedPointer<SearchGridT<typename LatVolMesh<Basis>::Elem::index_type> >  elem_grid_;
 
   mutable Core::Thread::Mutex                       synchronize_lock_;
   mask_type                           synchronized_;

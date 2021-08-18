@@ -31,14 +31,14 @@
 #ifndef CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H
 #define CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H
 
-#include <Dataflow/State/SimpleMapModuleState.h>
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/variant.hpp>
 #include <boost/serialization/vector.hpp>
+#include <Dataflow/State/SimpleMapModuleState.h>
+#include <boost/serialization/access.hpp>
 #include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
@@ -59,7 +59,7 @@ namespace State {
     }
   };
 
-  SCISHARE boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state);
+  SCISHARE SharedPointer<SimpleMapModuleStateXML> make_state_xml(Networks::ModuleStateHandle state);
 
 }}}
 
@@ -69,21 +69,21 @@ namespace boost {
     template<class Archive>
     void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameterName& apn, const unsigned int)
     {
-      ar & boost::serialization::make_nvp("name", apn.name_);
+      ar & make_nvp("name", apn.name_);
     }
 
     template<class Archive>
     void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int)
     {
-      ar & boost::serialization::make_nvp("name", ap.nameForXml().name_);
-      ar & boost::serialization::make_nvp("value", ap.valueForXml());
+      ar & make_nvp("name", ap.nameForXml().name_);
+      ar & make_nvp("value", ap.valueForXml());
     }
 
     template<class Archive>
     void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgoOption& opt, const unsigned int)
     {
-      ar & boost::serialization::make_nvp("option", opt.option_);
-      ar & boost::serialization::make_nvp("options", opt.options_);
+      ar & make_nvp("option", opt.option_);
+      ar & make_nvp("options", opt.options_);
     }
   }
 }

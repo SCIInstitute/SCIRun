@@ -213,7 +213,7 @@ namespace SCIRun {
           virtual Datatypes::MatrixHandle compute(const bemfield_vector& fields) const = 0;
         };
 
-        typedef boost::shared_ptr<BEMAlgoImpl> BEMAlgoPtr;
+        typedef SharedPointer<BEMAlgoImpl> BEMAlgoPtr;
 
         class SCISHARE BEMAlgoImplFactory
         {

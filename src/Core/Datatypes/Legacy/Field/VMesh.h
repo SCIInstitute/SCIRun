@@ -47,7 +47,7 @@ namespace SCIRun {
 class VMesh;
 class TypeDescription;
 
-typedef boost::shared_ptr<VMesh> VMeshHandle;
+typedef SharedPointer<VMesh> VMeshHandle;
 
 class SCISHARE VMesh {
 public:
@@ -323,8 +323,8 @@ public:
     { DElem::index_type s; size(s); return(static_cast<size_t>(s)); }
 
   /// NOTE NOT VALID FOR EACH MESH:
-  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
-  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_node_search_grid();
+  virtual SharedPointer<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
+  virtual SharedPointer<SearchGridT<SCIRun::index_type> > get_node_search_grid();
 
   /// test for special case where the mesh is empty
   /// empty meshes may need a special treatment

@@ -44,8 +44,7 @@ ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& 
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-    streamlineMethod_.insert(StringPair("Extract Node Locations", "node"));
-    streamlineMethod_.insert(StringPair("Extract Data Locations", "data"));
-
-    addComboBoxManager(option_, Parameters::Location, streamlineMethod_);
+  addComboBoxManager(option_, Parameters::Location,
+    {{"Extract Node Locations", "node"},
+    {"Extract Data Locations", "data"}});
 }

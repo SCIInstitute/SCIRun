@@ -75,7 +75,7 @@ void GetMatrixSlice::execute()
     {
       auto output = algo().run(withInputData((InputMatrix, input)));
       sendOutputFromAlgorithm(OutputMatrix, output);
-      sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
+      sendOutput(Selected_Index, makeShared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
       maxIndex = output.additionalAlgoOutput()->toInt();
       state->setValue(Parameters::MaxIndex, maxIndex);
     }

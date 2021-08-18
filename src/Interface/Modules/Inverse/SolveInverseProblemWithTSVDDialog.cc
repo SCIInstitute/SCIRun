@@ -43,12 +43,7 @@ SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  GuiStringTranslationMap lambdaMethod_;
-  lambdaMethod_.insert(StringPair("Direct entry", "single"));
-  lambdaMethod_.insert(StringPair("Slider", "slider"));
-  lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
-
+  
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
@@ -59,7 +54,10 @@ SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
-  addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
+  addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod,
+    {{"Direct entry", "single"},
+    {"Slider", "slider"},
+    {"L-curve", "lcurve"}});
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));

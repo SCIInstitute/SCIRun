@@ -76,7 +76,7 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeComplexDenseMatrix)
 {
   DescribeDatatype algo;
 
-  auto m = boost::make_shared<ComplexDenseMatrix>(2, 2);
+  auto m = makeShared<ComplexDenseMatrix>(2, 2);
   *m << complex{ 1, 2 }, complex{ 3, -1 }, complex{ 0, 1 }, complex{ -2, -1 };
 
   auto desc = algo.describe(m);

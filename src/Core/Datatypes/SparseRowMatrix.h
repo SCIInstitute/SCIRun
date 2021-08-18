@@ -219,7 +219,7 @@ namespace Datatypes {
       //typedef typename boost::numeric::ublas::matrix_row<const block_impl_type> block_row_type;
       //typedef typename block_row_type::iterator block_row_iterator;
 
-      //boost::shared_ptr<block_row_type> currentRow_;
+      //SharedPointer<block_row_type> currentRow_;
       //block_row_iterator rowIter_;
       //size_type numRowPartitions_, numColPartitions_;
       int currentRow_;

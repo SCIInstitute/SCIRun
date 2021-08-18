@@ -212,8 +212,8 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(float x, float y)
     {
-      autoRotateVector = glm::vec2(0.0, 0.0);
-      tryAutoRotate = false;
+      autoRotateVector_ = glm::vec2(0.0, 0.0);
+      tryAutoRotate_ = false;
       mCamera->mouseDownEvent(glm::vec2{x,y});
     }
 
@@ -227,7 +227,7 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseUp()
     {
-      tryAutoRotate = Preferences::Instance().autoRotateViewerOnMouseRelease;
+      tryAutoRotate_ = Preferences::Instance().autoRotateViewerOnMouseRelease;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -336,22 +336,28 @@ void SRInterface::runGCOnNextExecution()
     //----------------------------------------------------------------------------------------------
     void SRInterface::applyAutoRotation()
     {
-      if (length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
-      if (tryAutoRotate) mCamera->tryAutoRotate();
+      if (length(autoRotateVector_) > 0.1)
+        mCamera->rotate(autoRotateVector_ * autoRotateSpeed_);
+      if (tryAutoRotate_)
+        mCamera->tryAutoRotate();
     }
 
-    //----------------------------------------------------------------------------------------------
+    glm::vec2 SRInterface::autoRotateVector() const
+    {
+      return autoRotateVector_;
+    }
+
     void SRInterface::setAutoRotateVector(const glm::vec2& axis)
     {
-      tryAutoRotate = false;
-      if (autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
-      {
-        autoRotateVector = glm::vec2(0.0, 0.0);
-      }
-      else
-      {
-        autoRotateVector = axis;
-      }
+      tryAutoRotate_ = false;
+      // if (autoRotateVector_.x == axis.x && autoRotateVector_.y == axis.y)
+      // {
+      //   autoRotateVector_ = glm::vec2(0.0, 0.0);
+      // }
+      // else
+      // {
+        autoRotateVector_ = axis;
+      // }
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
@@ -361,7 +367,7 @@ void SRInterface::runGCOnNextExecution()
     glm::vec3 SRInterface::getCameraLookAt() const {return mCamera->getLookAt();}
     void SRInterface::setCameraRotation(const glm::quat& roation) {mCamera->setRotation(roation);}
     glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
-    void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
+    void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed_ = speed; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
@@ -1262,7 +1268,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-      if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) 
+      if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock())
       {
         const ren::Shader shader{ shaderMan->getIDForAsset(shaderName.c_str()) };
         mCore.addComponent(entityID, shader);
@@ -1322,7 +1328,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           GLsizei(w), GLsizei(h), 0,
           GL_RGBA,
           GL_UNSIGNED_BYTE, (GLvoid*)&font[0]));
-       
+
       }
     }
 

@@ -208,8 +208,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::Light2Inclination, 90);
   state->setValue(Parameters::Light3Inclination, 90);
   state->setValue(Parameters::ShowViewer, false);
-  state->setValue(Parameters::WindowSizeX, 200);
-  state->setValue(Parameters::WindowSizeY, 200);
+  state->setValue(Parameters::WindowSizeX, 450);
+  state->setValue(Parameters::WindowSizeY, 450);
   state->setValue(Parameters::WindowPositionX, 200);
   state->setValue(Parameters::WindowPositionY, 200);
   state->setValue(Parameters::IsFloating, true);
@@ -307,7 +307,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
 
-    const auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
@@ -348,9 +348,9 @@ void ViewScene::execute()
 
   fireTransientStateChangeSignalForGeomData();
 #ifdef BUILD_HEADLESS
-  sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
-  sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));
-  sendOutput(ScreenshotDataBlue, boost::make_shared<DenseMatrix>(0, 0));
+  sendOutput(ScreenshotDataRed, makeShared<DenseMatrix>(0, 0));
+  sendOutput(ScreenshotDataGreen, makeShared<DenseMatrix>(0, 0));
+  sendOutput(ScreenshotDataBlue, makeShared<DenseMatrix>(0, 0));
 #else
   Guard lock(screenShotMutex_.get());
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present

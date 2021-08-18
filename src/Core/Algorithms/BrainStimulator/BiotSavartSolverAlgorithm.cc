@@ -65,7 +65,7 @@ class KernelBase
         barrier_("BSV KernelBase Barrier", numprocessors_), typeOut_(t)
   {}
 
-  virtual ~KernelBase() {}
+  virtual ~KernelBase() = default;
 
   //! Local entry function, must be implemented by each specific kernel
   virtual bool integrate(FieldHandle& mesh, FieldHandle& coil, DenseMatrixHandle& outdata) = 0;
@@ -116,7 +116,7 @@ class KernelBase
     matOut_.reset(new DenseMatrix(static_cast<int>(modelSize_), 3));
 
     algo_->remark("Output matrix size: " + std::to_string(modelSize_) + "x3");
-    algo_->remark("Number of processors:  " + boost::lexical_cast<std::string>(numprocessors_));
+    algo_->remark("Number of processors:  " + std::to_string(numprocessors_));
     algo_->remark(
         "[Important] CPU usage will be very high while running this module. \r\nTo limit the "
         "number of cores used, adjust the maximum core setting in Preferences->Advanced");
@@ -186,8 +186,8 @@ class PieceWiseKernel : public KernelBase
       vcoil_->get_nodes(enodes, i);
       vcoil_->get_point(enode1, enodes[0]);
       vcoil_->get_point(enode2, enodes[1]);
-      coilNodes_.push_back(Vector(enode1));
-      coilNodes_.push_back(Vector(enode2));
+      coilNodes_.emplace_back(enode1);
+      coilNodes_.emplace_back(enode2);
     }
 
     //! Start the multi threaded
@@ -272,7 +272,7 @@ class PieceWiseKernel : public KernelBase
 
           //! Length of the curve element
           Vector diffNodes = coilNodeNext - coilNodeThis;
-          double newSegLen = diffNodes.length();
+          const double newSegLen = diffNodes.length();
 
           // first check if externally suplied integration step is available and use it
           if (extstep_ > 0) { nips = newSegLen / extstep_; }
@@ -307,8 +307,8 @@ class PieceWiseKernel : public KernelBase
           //! curve segment discretization
           for (int iip = 0; iip < nips; iip++)
           {
-            double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
-            Vector v = Interpolate(coilNodeThis, coilNodeNext, interpolant);
+            const double interpolant = static_cast<double>(iip) / static_cast<double>(nips);
+            auto v = Interpolate(coilNodeThis, coilNodeNext, interpolant);
             integrPoints.push_back(v);
           }
 
@@ -318,12 +318,12 @@ class PieceWiseKernel : public KernelBase
             const auto piip = integrPoints[iip];
             const auto piip1 = integrPoints[iip + 1];
             //! Vector connecting the infinitesimal curve-element
-            Vector Rxyz = (piip + piip1) / 2 - modelNodeV;
+            auto Rxyz = (piip + piip1) / 2 - modelNodeV;
 
             //! Infinitesimal curve-element components
-            Vector dLxyz = piip1 - piip;
+            auto dLxyz = piip1 - piip;
 
-            double Rn = Rxyz.length();
+            const double Rn = Rxyz.length();
 
             if (typeOut_ == 1)
             {
@@ -375,13 +375,14 @@ class PieceWiseKernel : public KernelBase
   //! Auto adjust accuracy of integration
   int adjustNumberOfIntegrationPoints(double len)
   {
-    int minNP = 100;  // more than 1 for sure
-    int maxNP = 200;  // no more than 1000
-    int NP = 0;
-    bool over = false;
-    bool under = false;
+    const int minNP = 100; // more than 1 for sure
+    const int maxNP = 200; // no more than 1000
+    int NP;
+    bool over;
+    bool under;
 
-    do {
+    do
+    {
       NP = ceil(len / autostep_);
 
       under = NP < minNP;
@@ -439,14 +440,12 @@ class VolumetricKernel : public KernelBase
 
     try
     {
-      for (VMesh::Node::index_type iM = begins; iM < ends; iM++)
+      for (auto iM = begins; iM < ends; ++iM)
       {
         vmesh_->get_node(modelNode, iM);
 
         //! accumulatedresult
         Vector F, R;
-        double evol = 0.0;
-        double Rl;
 
         for (VMesh::Elem::index_type iC = 0; iC < coilSize_; iC++)
         {
@@ -454,11 +453,11 @@ class VolumetricKernel : public KernelBase
 
           vcoilField_->get_center(coilCenter, iC);  // auto resolve based on basis_order
 
-          evol = vcoil_->get_volume(iC);
+          const double evol = vcoil_->get_volume(iC);
 
           R = coilCenter - modelNode;
 
-          Rl = R.length();
+          const double Rl = R.length();
 
           if (typeOut_ == 1)
           {
@@ -555,7 +554,6 @@ class DipolesKernel : public KernelBase
 
         //! accumulated result
         Vector F, R;
-        double Rl;
 
         for (VMesh::Elem::index_type iC = 0; iC < coilSize_; iC++)
         {
@@ -563,7 +561,7 @@ class DipolesKernel : public KernelBase
           vcoilField_->get_center(dipoleLocation, iC);  // auto resolve based on basis_order
 
           R = dipoleLocation - modelNode;
-          Rl = R.length();
+          double Rl = R.length();
 
           if (typeOut_ == 1)
           {
@@ -664,7 +662,7 @@ bool BiotSavartSolverAlgorithm::run(
     }
     else
     {
-      error("Pointcloud expected with linear vector data.");
+      error("Point cloud expected with linear vector data.");
       return (false);
     }
   }
@@ -698,10 +696,10 @@ AlgorithmOutput BiotSavartSolverAlgorithm::run(const AlgorithmInput& input) cons
 {
   AlgorithmOutput output;
 
-  auto mesh = input.get<Field>(Parameters::Mesh);
-  auto coil = input.get<Field>(Parameters::Coil);
+  const auto mesh = input.get<Field>(Parameters::Mesh);
+  const auto coil = input.get<Field>(Parameters::Coil);
 
-  auto oports = get(Parameters::OutType).toInt();
+  const auto oports = get(Parameters::OutType).toInt();
   std::map<int, DenseMatrixHandle> cases;
   if (oports == 3)
     cases = {{1, nullptr}, {2, nullptr}};

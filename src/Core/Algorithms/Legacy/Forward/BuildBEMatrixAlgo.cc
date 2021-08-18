@@ -988,7 +988,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
     // If all of the checks above don't flag meets_conditions as false,
     // return a value that indicates the algorithm to use is the surface-to-nodes case
     if ( meets_conditions )
-      return boost::make_shared<SurfaceAndPoints>();
+      return makeShared<SurfaceAndPoints>();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1013,7 +1013,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   // if all fields are surfaces, there exists a measurement and a source surface, then use the surface-to-surface algorithm... else fail
   if (allsurfaces && hasmeasurementsurf && hassourcesurf)
   {
-    return boost::make_shared<SurfaceToSurface>();
+    return makeShared<SurfaceToSurface>();
   }
   else
   {
@@ -1237,7 +1237,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   auto D = Y * Pss.matrix() - Pms.matrix();
 
   auto T = C.inverse() * D; // T = inv(C)*D
-  return boost::make_shared<DenseMatrix>(T);
+  return makeShared<DenseMatrix>(T);
 
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
@@ -1311,5 +1311,5 @@ MatrixHandle SurfaceAndPoints::compute(const bemfield_vector& fields) const
   make_auto_G( surface, Gss, 1.0, 0.0, area );
   make_cross_G( nodes, surface, Gns, 1.0, 0.0, area );
 
-  return boost::make_shared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
+  return makeShared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
 }

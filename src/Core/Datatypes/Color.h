@@ -77,7 +77,7 @@ namespace Datatypes {
     std::string toString() const;
   };
 
-  typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
+  typedef SharedPointer<ColorRGB> ColorRGBHandle;
 
   SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
 }}}

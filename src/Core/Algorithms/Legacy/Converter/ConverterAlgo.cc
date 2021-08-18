@@ -784,7 +784,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
     }
   }
 
-  output = boost::make_shared<String>(oss.str());
+  output = makeShared<String>(oss.str());
 
   return true;
 }

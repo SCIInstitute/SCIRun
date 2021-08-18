@@ -37,3 +37,6 @@
 #else
 #define SCISHARE
 #endif
+
+#define CTK_WIDGETS_EXPORT SCISHARE
+#define CTK_CORE_EXPORT SCISHARE

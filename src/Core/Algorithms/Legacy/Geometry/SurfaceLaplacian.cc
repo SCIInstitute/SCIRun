@@ -110,5 +110,5 @@ MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
     row_buffer[idx + 1] = k;
   }
 
-  return boost::make_shared<SparseRowMatrix>(num_nodes, num_nodes, row_buffer, col_buffer, values, nnz);
+  return makeShared<SparseRowMatrix>(num_nodes, num_nodes, row_buffer, col_buffer, values, nnz);
 }
