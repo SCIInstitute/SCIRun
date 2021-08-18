@@ -123,7 +123,7 @@ namespace SCIRun
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
-  NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>(), this),
+  NoteDisplayHelper(makeShared<ModuleWidgetNoteDisplayStrategy>(), this),
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
@@ -644,7 +644,7 @@ void ModuleProxyWidget::createPortPositionProviders()
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
-    auto pp(boost::make_shared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+    auto pp(makeShared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
 
 #ifdef MODULE_POSITION_LOGGING
     qDebug() << __FILE__ << __LINE__ << pos() << scenePos();

@@ -70,7 +70,7 @@ LinAlgFunctionCatalog::add_function(
             std::string return_type)
 {
   // Adding function to catalog
-  ParserFunctionCatalog::add_function(boost::make_shared<LinAlgFunction>(function,function_id,return_type,0));
+  ParserFunctionCatalog::add_function(makeShared<LinAlgFunction>(function,function_id,return_type,0));
 }
 
 
@@ -86,7 +86,7 @@ LinAlgFunctionCatalog::add_sym_function(
             std::string return_type)
 {
   // Adding function to catalog
-  ParserFunctionCatalog::add_function(boost::make_shared<LinAlgFunction>(function, function_id, return_type,
+  ParserFunctionCatalog::add_function(makeShared<LinAlgFunction>(function, function_id, return_type,
                             PARSER_SYMMETRIC_FUNCTION_E));
 }
 

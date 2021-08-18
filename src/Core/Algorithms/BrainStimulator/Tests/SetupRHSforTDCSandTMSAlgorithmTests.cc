@@ -63,7 +63,7 @@ namespace
 
   DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
   {
-   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,4));
+   DenseMatrixHandle m(makeShared<DenseMatrix>(2,4));
    (*m)(0,0) = 59.5343;
    (*m)(0,1) = 15.5240;
    (*m)(0,2) = 84.5013;
@@ -83,7 +83,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, Correct)
   int m=2; //2 patch electrodes for colin27
   int ref_node = 1000;
   double impedance = 5000;
-  DenseMatrixHandle contact_impedance_times_elc_surface(boost::make_shared<DenseMatrix>(2,1));
+  DenseMatrixHandle contact_impedance_times_elc_surface(makeShared<DenseMatrix>(2,1));
   (*contact_impedance_times_elc_surface)(1,0) = 16.408535;
   (*contact_impedance_times_elc_surface)(0,0) = 15.326115;
   std::vector<Variable> elc;
@@ -167,7 +167,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, Correct_scalpIsElectrodeContact)
   int m=2; //2 patch electrodes for colin27
   int ref_node = 1050;
   double impedance = 10000; // 100000 [Ohm] !!!
-  DenseMatrixHandle contact_impedance_times_elc_surface(boost::make_shared<DenseMatrix>(2,1));
+  DenseMatrixHandle contact_impedance_times_elc_surface(makeShared<DenseMatrix>(2,1));
   (*contact_impedance_times_elc_surface)(0,0) = 28.882450711537267; /// BrainStimulator expects Ohm * m^2
   (*contact_impedance_times_elc_surface)(1,0) = 30.353635349846389;
   std::vector<Variable> elc;

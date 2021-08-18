@@ -37,7 +37,7 @@ TEST(ConeWidgetTest, CanCreateSingleConeReal)
 {
   StubGeometryIDGenerator idGen;
 
-  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<RealGlyphFactory>()},
+  ConeWidget cone({{idGen, "testCone1"}, makeShared<RealGlyphFactory>()},
   {
     {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}}, true
@@ -51,7 +51,7 @@ TEST(ConeWidgetTest, CanCreateSingleConeStubbed)
 {
   StubGeometryIDGenerator idGen;
 
-  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<StubGlyphFactory>()},
+  ConeWidget cone({{idGen, "testCone1"}, makeShared<StubGlyphFactory>()},
   {
     {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}}, true
@@ -69,7 +69,7 @@ TEST(ConeWidgetTest, CanSetupConeForRotation)
     {{10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}}, true };
 
-  ConeWidget cone({{idGen, "testCone1"}, boost::make_shared<RealGlyphFactory>()}, params);
+  ConeWidget cone({{idGen, "testCone1"}, makeShared<RealGlyphFactory>()}, params);
 
   cone.addTransformParameters<Rotation>(params.cylinder.common.origin);
 

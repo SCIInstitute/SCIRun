@@ -47,6 +47,20 @@
     <file>Resources/ViewScene/lockView.png</file>
     <file>Resources/ViewScene/screenshot.png</file>
     <file>Resources/ViewScene/quickscreenshot.png</file>
+    <file>Resources/ViewScene/autorotate2.png</file>
+    <file>Resources/ViewScene/axes.png</file>
+    <file>Resources/ViewScene/materials.png</file>
+    <file>Resources/ViewScene/scaleBar.png</file>
+    <file>Resources/ViewScene/selection.png</file>
+    <file>Resources/ViewScene/fillColor.png</file>
+    <file>Resources/ViewScene/clipping.png</file>
+    <file>Resources/ViewScene/eye.png</file>
+    <file>Resources/ViewScene/fog.png</file>
+    <file>Resources/ViewScene/light.png</file>
+    <file>Resources/ViewScene/headlight.png</file>
+    <file>Resources/ViewScene/devel.png</file>
+    <file>Resources/ViewScene/link.png</file>
+    <file>Resources/ViewScene/mouse.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>

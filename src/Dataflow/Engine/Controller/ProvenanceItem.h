@@ -43,7 +43,7 @@ namespace Engine {
   class SCISHARE ProvenanceItem : boost::noncopyable
   {
   public:
-    typedef boost::shared_ptr<ProvenanceItem<Memento>> Handle;
+    typedef SharedPointer<ProvenanceItem<Memento>> Handle;
     virtual ~ProvenanceItem() {}
     virtual Memento memento() const = 0;
     virtual std::string name() const = 0;

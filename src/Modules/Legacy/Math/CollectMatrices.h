@@ -53,7 +53,7 @@ namespace SCIRun {
       protected:
         void postStateChangeInternalSignalHookup() override;
       private:
-        boost::shared_ptr<class CollectMatricesImpl> impl_;
+        SharedPointer<class CollectMatricesImpl> impl_;
         void checkForClearOutput();
 			};
 

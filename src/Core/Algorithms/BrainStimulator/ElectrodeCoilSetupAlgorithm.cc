@@ -334,7 +334,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve coil prototype positions ");
         }
 
-        auto magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(), 3ul));
+        auto magnetic_dipoles(makeShared<DenseMatrix>(fielddata->nrows(), 3ul));
 
         /// subtract the mean from the coil positions to move them accourding to GUI table entries
         double mean_loc_x = 0, mean_loc_y = 0, mean_loc_z = 0;
@@ -397,7 +397,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
             axis.push_back(coil_ny[i]);
             axis.push_back(coil_nz[i]);
             rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
-            rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
+            rotation_matrix = makeShared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
           }
 
           /// 2.2) apply rotation and move points
@@ -405,7 +405,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           {
             if (coil_x.size() - 1 >= i && coil_y.size() - 1 >= i && coil_z.size() - 1 >= i)
             {
-              DenseMatrixHandle pos_vec(boost::make_shared<DenseMatrix>(3, 1));
+              DenseMatrixHandle pos_vec(makeShared<DenseMatrix>(3, 1));
 
               (*pos_vec)(0, 0) = (*fieldnodes)(j, 0);
               (*pos_vec)(1, 0) = (*fieldnodes)(j, 1);
@@ -414,9 +414,9 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
               DenseMatrixHandle rotated_positions;
 
               if (angle == 0)
-                rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
+                rotated_positions = makeShared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
               else
-                rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
+                rotated_positions = makeShared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
 
               (*fieldnodes)(j, 0) = (*rotated_positions)(0, 0) + coil_x[i];
               (*fieldnodes)(j, 1) = (*rotated_positions)(1, 0) + coil_y[i];
@@ -446,7 +446,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
               {
                 for (int j = 0; j < fielddata->nrows(); j++)
                 {
-                  auto pos_vec(boost::make_shared<DenseMatrix>(3, 1));
+                  auto pos_vec(makeShared<DenseMatrix>(3, 1));
                   (*pos_vec)(0, 0) = (*fielddata)(j, 0);
                   (*pos_vec)(1, 0) = (*fielddata)(j, 1);
                   (*pos_vec)(2, 0) = (*fielddata)(j, 2);
@@ -454,10 +454,10 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
                   DenseMatrixHandle rotated_positions;
                   if (angle == 0 || IsNan(angle))
                   {
-                    rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
+                    rotated_positions = makeShared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
                   }
                   else
-                    rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
+                    rotated_positions = makeShared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
 
                   (*magnetic_dipoles)(j, 0) = (*rotated_positions)(0, 0);
                   (*magnetic_dipoles)(j, 1) = (*rotated_positions)(1, 0);
@@ -694,7 +694,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       if (angle != 0)
       {
         rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
-        rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
+        rotation_matrix = makeShared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
       }
       FieldHandle prototype, prototype_mesh = elc_coil_proto[elc_prototyp_map[i] - 1];
       FieldInformation fi(prototype_mesh);
@@ -745,16 +745,16 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
         for (int j = 0; j < fieldnodes->nrows(); j++)
         {
-          auto pos_vec(boost::make_shared<DenseMatrix>(3, 1));
+          auto pos_vec(makeShared<DenseMatrix>(3, 1));
 
           (*pos_vec)(0, 0) = (*fieldnodes)(j, 0);
           (*pos_vec)(1, 0) = (*fieldnodes)(j, 1);
           (*pos_vec)(2, 0) = (*fieldnodes)(j, 2);
 
           if (angle == 0)
-            rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
+            rotated_positions = makeShared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
           else
-            rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
+            rotated_positions = makeShared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
 
           (*fieldnodes)(j, 0) = (*rotated_positions)(0, 0) + elc_x[i];
           (*fieldnodes)(j, 1) = (*rotated_positions)(1, 0) + elc_y[i];

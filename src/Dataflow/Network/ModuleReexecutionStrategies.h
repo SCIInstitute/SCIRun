@@ -52,7 +52,7 @@ namespace Networks {
     virtual bool inputsChanged() const = 0;
   };
 
-  typedef boost::shared_ptr<InputsChangedChecker> InputsChangedCheckerHandle;
+  typedef SharedPointer<InputsChangedChecker> InputsChangedCheckerHandle;
 
   class SCISHARE StateChangedChecker
   {
@@ -62,7 +62,7 @@ namespace Networks {
     virtual bool newStatePresent() const = 0;
   };
 
-  typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;
+  typedef SharedPointer<StateChangedChecker> StateChangedCheckerHandle;
 
   class SCISHARE OutputPortsCachedChecker
   {
@@ -72,7 +72,7 @@ namespace Networks {
     virtual bool outputPortsCached() const = 0;
   };
 
-  typedef boost::shared_ptr<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
+  typedef SharedPointer<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
 
   class SCISHARE DynamicReexecutionStrategy : public ModuleReexecutionStrategy
   {

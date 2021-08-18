@@ -31,7 +31,7 @@
 
 #include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 
@@ -57,7 +57,6 @@ private Q_SLOTS:
   void setSliderStep(double value);
   void pullAndDisplayInfo();
 private:
-  GuiStringTranslationMap lambdaMethod_;
   LCurvePlotWidgetHelper lCurvePlotWidgetHelper_;
 };
 

@@ -37,6 +37,19 @@ SET(Interface_Modules_Render_FORMS
   ViewSceneControls.ui
   ViewOspraySceneConfig.ui
   OsprayViewer.ui
+  AutoRotateSettings.ui
+  ColorOptions.ui
+  Fog.ui
+  Materials.ui
+  ObjectSelection.ui
+  OrientationAxes.ui
+  ScaleBar.ui
+  ClippingPlanes.ui
+  InputControls.ui
+  CameraLocks.ui
+  DevControls.ui
+  LightControls.ui
+  ViewAxisChooser.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
@@ -125,6 +138,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_FREETYPE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
   ${SCI_TNY_LIBRARY}
+  ${SCI_QWT_LIBRARY}
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)

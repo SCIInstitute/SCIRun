@@ -35,25 +35,24 @@
 # pragma once
 #endif
 
-// STL includes
 #include <list>
 #include <string>
 #include <vector>
+#include <Core/Utils/SmartPointers.h>
 
-// boost includes
-#include <boost/shared_ptr.hpp>
+namespace SCIRun {
+  namespace Core
+  {
 
-namespace Core
-{
+    typedef std::vector< std::string > StringVector;
+    typedef SharedPointer<StringVector> StringVectorHandle;
+    typedef SharedPointer<const StringVector> StringVectorConstHandle;
 
-typedef std::vector< std::string > StringVector;
-typedef boost::shared_ptr< StringVector > StringVectorHandle;
-typedef boost::shared_ptr< const StringVector > StringVectorConstHandle;
+    typedef std::list< std::string > StringList;
+    typedef SharedPointer<StringList> StringListHandle;
+    typedef SharedPointer<const StringList> StringListConstHandle;
 
-typedef std::list< std::string > StringList;
-typedef boost::shared_ptr< StringList > StringListHandle;
-typedef boost::shared_ptr< const StringList > StringListConstHandle;
-
-} // End namespace Core
+  }
+}
 
 #endif

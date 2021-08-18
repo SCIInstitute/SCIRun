@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Algorithms {
 
       template <typename T>
-      boost::shared_ptr<T> optionalAlgoInput(boost::optional<boost::shared_ptr<T>> opt)
+      SharedPointer<T> optionalAlgoInput(boost::optional<SharedPointer<T>> opt)
       {
         return opt.get_value_or(nullptr);
       }
@@ -48,7 +48,7 @@ namespace SCIRun {
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
 #define withInputData(list) make_input(list)
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
-#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define get_output(outputObj, portName, type) std::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 #define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern SCIRun::Core::Algorithms::AlgorithmParameterName _init_##name(); static const SCIRun::Core::Algorithms::AlgorithmParameterName& name(_init_##name()); }
 #define ALGORITHM_PARAMETER_DEF(ns, name) SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::_init_##name() { return SCIRun::Core::Algorithms::AlgorithmParameterName(#name); }
 

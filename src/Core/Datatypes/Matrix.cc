@@ -137,13 +137,13 @@ void MultiplyMatrices::visit(DenseMatrixGeneric<double>& dense)
   switch (typeCode_)
   {
   case MatrixTypeCode::DENSE:
-    product_ = boost::make_shared<DenseMatrix>(*castMatrix::toDense(factor_) * dense);
+    product_ = makeShared<DenseMatrix>(*castMatrix::toDense(factor_) * dense);
     break;
   case MatrixTypeCode::COLUMN:
-    product_ = boost::make_shared<DenseMatrix>(*castMatrix::toColumn(factor_) * dense);
+    product_ = makeShared<DenseMatrix>(*castMatrix::toColumn(factor_) * dense);
     break;
   case MatrixTypeCode::SPARSE_ROW:
-    product_ = boost::make_shared<SparseRowMatrix>(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(dense));
+    product_ = makeShared<SparseRowMatrix>(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(dense));
     break;
   case MatrixTypeCode::NULL_MATRIX: break;
   case MatrixTypeCode::UNKNOWN: break;

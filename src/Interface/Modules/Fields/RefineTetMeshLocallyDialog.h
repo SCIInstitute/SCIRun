@@ -49,7 +49,7 @@ public:
 private Q_SLOTS:
 		//void setIsoValueEnabled();
 private:
-	//boost::shared_ptr<class RefineTetMeshLocallyDialogImpl> impl_;
+	//SharedPointer<class RefineTetMeshLocallyDialogImpl> impl_;
 	*/
 };
 

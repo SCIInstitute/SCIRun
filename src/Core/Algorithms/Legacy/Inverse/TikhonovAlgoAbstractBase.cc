@@ -282,10 +282,10 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput& input) const
 
   // Set outputs
 
-  output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
-  output[RegularizationParameter] = boost::make_shared<DenseMatrix>(1, 1, lambda);
+  output[InverseSolution] = makeShared<DenseMatrix>(solution);
+  output[RegularizationParameter] = makeShared<DenseMatrix>(1, 1, lambda);
   output[LambdaArray] = lambdamatrix;
-  output[Lambda_Index] = boost::make_shared<DenseMatrix>(1, 1, lambda_index);
+  output[Lambda_Index] = makeShared<DenseMatrix>(1, 1, lambda_index);
 
   return output;
 }

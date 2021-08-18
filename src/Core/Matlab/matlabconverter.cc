@@ -484,7 +484,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
           // There is no transpose function to operate on the same memory block
           // Hence, it is a little memory inefficient.
 
-          handle = boost::make_shared<DenseMatrix>(dm.transpose()); // SCIRun has a C++-style matrix and Matlab a FORTRAN-style matrix;
+          handle = makeShared<DenseMatrix>(dm.transpose()); // SCIRun has a C++-style matrix and Matlab a FORTRAN-style matrix;
         }
       }
       break;
@@ -518,7 +518,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
         }
         else
         {
-          handle = boost::make_shared<SparseRowMatrix>(sparse->transpose());
+          handle = makeShared<SparseRowMatrix>(sparse->transpose());
         }
       }
       break;

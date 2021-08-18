@@ -261,7 +261,7 @@ namespace
 
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
-  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>(), this),
+  NoteDisplayHelper(makeShared<ConnectionLineNoteDisplayStrategy>(), this),
   fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
@@ -290,7 +290,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   menu_ = new ConnectionMenu(this);
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
-  NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
+  NeedsScenePositionProvider::setPositionObject(makeShared<MidpointPositionerFromPorts>(fromPort_, toPort_));
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
   connect(this, SIGNAL(insertNewModule(const QMap<QString, std::string>&)),
     fromPort_, SLOT(insertNewModule(const QMap<QString, std::string>&)));

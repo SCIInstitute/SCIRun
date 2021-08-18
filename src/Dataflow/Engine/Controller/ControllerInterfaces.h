@@ -48,17 +48,17 @@ namespace Engine {
     virtual void clear() = 0;
   };
 
-  typedef boost::shared_ptr<NetworkIOInterface<Networks::NetworkFileHandle>> NetworkIOHandle;
+  typedef SharedPointer<NetworkIOInterface<Networks::NetworkFileHandle>> NetworkIOHandle;
 
   template <class Memento>
   class ProvenanceItem;
 
-  typedef boost::shared_ptr<Dataflow::Engine::ProvenanceItem<Networks::NetworkFileHandle> > ProvenanceItemHandle;
+  typedef SharedPointer<Dataflow::Engine::ProvenanceItem<Networks::NetworkFileHandle> > ProvenanceItemHandle;
 
   template <class Memento>
   class ProvenanceManager;
 
-  typedef boost::shared_ptr<Dataflow::Engine::ProvenanceManager<Networks::NetworkFileHandle> > ProvenanceManagerHandle;
+  typedef SharedPointer<Dataflow::Engine::ProvenanceManager<Networks::NetworkFileHandle> > ProvenanceManagerHandle;
 }
 }
 }

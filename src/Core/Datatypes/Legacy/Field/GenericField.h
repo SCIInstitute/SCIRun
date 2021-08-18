@@ -58,10 +58,10 @@ public:
   typedef GenericField<Mesh, Basis, FData>                 field_type;
   typedef typename FData::value_type                       value_type;
   typedef Mesh                                             mesh_type;
-  typedef boost::shared_ptr<mesh_type>                         mesh_handle_type;
+  typedef SharedPointer<mesh_type>                         mesh_handle_type;
   typedef Basis                                            basis_type;
   typedef FData                                            fdata_type;
-  typedef boost::shared_ptr<GenericField<Mesh, Basis, FData> > handle_type;
+  typedef SharedPointer<GenericField<Mesh, Basis, FData> > handle_type;
   typedef SCIRun::index_type                               index_type;
   typedef SCIRun::size_type                                size_type;
 
@@ -199,7 +199,7 @@ template <class Mesh, class Basis, class FData>
 FieldHandle
 GenericField<Mesh, Basis, FData>::field_maker()
 {
-  return boost::make_shared<GenericField<Mesh, Basis, FData>>();
+  return makeShared<GenericField<Mesh, Basis, FData>>();
 }
 
 
@@ -207,9 +207,9 @@ template <class Mesh, class Basis, class FData>
 FieldHandle
 GenericField<Mesh, Basis, FData>::field_maker_mesh(MeshHandle mesh)
 {
-  mesh_handle_type mesh_handle = boost::dynamic_pointer_cast<mesh_type>(mesh);
+  mesh_handle_type mesh_handle = std::dynamic_pointer_cast<mesh_type>(mesh);
   if (mesh_handle)
-    return boost::make_shared<GenericField<Mesh, Basis, FData>>(mesh_handle);
+    return makeShared<GenericField<Mesh, Basis, FData>>(mesh_handle);
   else
     return FieldHandle();
 }

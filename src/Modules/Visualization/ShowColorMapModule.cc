@@ -198,7 +198,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
     idname += GeometryObject::delimiter + state->getValue(ColorMapName).toString() + " (from " + id().id_ + ")";
   }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*this, idname, false));
+  auto geom(makeShared<GeometryObjectSpire>(*this, idname, false));
 
   //geom->setColorMap(cm->getColorMapName());
   geom->ibos().push_back(geomIBO);
