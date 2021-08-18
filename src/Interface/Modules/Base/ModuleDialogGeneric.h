@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Base/Name.h>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/bimap.hpp>
 #include <boost/signals2/connection.hpp>
 #endif
 #include <Interface/Modules/Base/share.h>
@@ -45,8 +44,7 @@ namespace SCIRun {
 namespace Gui {
 
   typedef std::function<void(QWidget*)> ExecutionDisablingServiceFunction;
-  typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
-  typedef GuiStringTranslationMap::value_type StringPair;
+  using StringPairs = std::initializer_list<std::tuple<std::string, std::string>>;
 
   enum class DynamicPortChange
   {
@@ -121,6 +119,7 @@ namespace Gui {
     void contextMenuEvent(QContextMenuEvent* e) override;
     void keyPressEvent(QKeyEvent* e) override;
     void fixSize();
+    static void fixSize(QWidget* widget);
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
@@ -149,8 +148,8 @@ namespace Gui {
     //////////////////////
 
     //TODO: highlight this section in code and documentation
-		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
-    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, StringPairs stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);

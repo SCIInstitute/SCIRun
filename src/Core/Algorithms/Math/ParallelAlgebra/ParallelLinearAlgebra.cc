@@ -105,7 +105,7 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
   {
     try
     {
-      DenseColumnMatrixHandle mat(boost::make_shared<DenseColumnMatrix>(data_.getSize()));
+      DenseColumnMatrixHandle mat(makeShared<DenseColumnMatrix>(data_.getSize()));
       data_.setCurrentMatrix(mat);
       data_.addVector(mat);
     }

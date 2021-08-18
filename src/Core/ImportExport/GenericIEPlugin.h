@@ -50,8 +50,8 @@ public:
   virtual std::string fileExtension() const = 0;
   virtual std::string fileMagic() const = 0;
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
+  virtual SharedPointer<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
+  virtual bool writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const = 0;
   virtual bool hasReader() const = 0;
   virtual bool hasWriter() const = 0;
@@ -80,15 +80,15 @@ public:
   bool hasReader() const override { return filereader_ != nullptr; }
   bool hasWriter() const override { return filewriter_ != nullptr; }
 
-  boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
-  bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  SharedPointer<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  bool writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
   bool equals(const GenericIEPluginInterface<Data>& other) const override;
 
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,
     const std::string &filemagic,
-    boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = nullptr,
-    bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename) = nullptr);
+    SharedPointer<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = nullptr,
+    bool (*fwriter)(Core::Logging::LoggerHandle pr, SharedPointer<Data> f, const char *filename) = nullptr);
 
   ~IEPluginLegacyAdapter();
 
@@ -99,9 +99,9 @@ private:
   const std::string fileextension_;
   const std::string filemagic_;
 
-  boost::shared_ptr<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
+  SharedPointer<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
   bool (*filewriter_)(Core::Logging::LoggerHandle pr,
-    boost::shared_ptr<Data> f, const char *filename);
+    SharedPointer<Data> f, const char *filename);
 };
 
 template <class Data>
@@ -234,8 +234,8 @@ template <class Data>
 IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
   const std::string& fextension,
   const std::string& fmagic,
-  boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename),
-  bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename))
+  SharedPointer<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename),
+  bool (*fwriter)(Core::Logging::LoggerHandle pr, SharedPointer<Data> f, const char *filename))
   : pluginname_(pname),
   fileextension_(fextension),
   filemagic_(fmagic),
@@ -291,13 +291,13 @@ IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 }
 
 template <class Data>
-boost::shared_ptr<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::LoggerHandle log) const
+SharedPointer<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filereader_(log, filename.c_str());
 }
 
 template <class Data>
-bool IEPluginLegacyAdapter<Data>::writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const
+bool IEPluginLegacyAdapter<Data>::writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filewriter_(log, f, filename.c_str());
 }

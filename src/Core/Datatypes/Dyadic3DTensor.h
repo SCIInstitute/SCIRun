@@ -30,7 +30,6 @@
 
 #include <Core/Datatypes/DyadicTensor.h>
 #include <Core/Utils/Exception.h>
-#include <unsupported/Eigen/CXX11/TensorSymmetry>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {

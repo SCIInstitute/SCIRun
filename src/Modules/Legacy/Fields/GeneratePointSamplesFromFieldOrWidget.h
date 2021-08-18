@@ -54,7 +54,7 @@ namespace SCIRun {
       private:
         void execute_random(FieldHandle ifield);
 
-        //boost::shared_ptr<class GeneratePointSamplesFromFieldOrWidgetImpl> impl_;
+        //SharedPointer<class GeneratePointSamplesFromFieldOrWidgetImpl> impl_;
       };
 
     }

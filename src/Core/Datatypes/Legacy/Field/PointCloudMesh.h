@@ -96,7 +96,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type;
 
-  typedef boost::shared_ptr<PointCloudMesh<Basis> > handle_type;
+  typedef SharedPointer<PointCloudMesh<Basis> > handle_type;
   typedef Basis                                 basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -187,7 +187,7 @@ VMesh* vmesh() override { return (vmesh_.get()); }
 
 MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// This one should go at some point, should be reroute throught the
@@ -1242,7 +1242,7 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new PointCloudMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<PointCloudMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<PointCloudMesh>(); }
 
 protected:
   template <class ARRAY, class INDEX>
@@ -1276,7 +1276,7 @@ protected:
   /// basis fns
   Basis         basis_;
 
-  boost::shared_ptr<SearchGridT<index_type> > grid_;
+  SharedPointer<SearchGridT<index_type> > grid_;
 
   /// Record which parts of the mesh are synchronized
   mask_type     synchronized_;
@@ -1287,7 +1287,7 @@ protected:
   double        epsilon2_;
 
   /// Virtual interface
-  boost::shared_ptr<VMesh> vmesh_;
+  SharedPointer<VMesh> vmesh_;
 
 };  // end class PointCloudMesh
 

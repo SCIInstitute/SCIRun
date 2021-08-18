@@ -35,6 +35,13 @@ SET(Interface_Modules_Base_FORMS
 )
 
 SET(Interface_Modules_Base_HEADERS
+  share.h
+  CustomWidgets/CTK/Core/ctkPimpl.h
+  CustomWidgets/CTK/Core/ctkUtils.h
+  CustomWidgets/CTK/ctkWidgetsUtils.h
+)
+
+SET(Interface_Modules_Base_HEADERS_M
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
   RemembersFileDialogDirectory.h
@@ -44,7 +51,15 @@ SET(Interface_Modules_Base_HEADERS
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
-  share.h
+  CustomWidgets/CTK/ctkColorPickerButton.h
+  CustomWidgets/CTK/ctkColorDialog.h
+  CustomWidgets/CTK/ctkDoubleSpinBox.h
+  CustomWidgets/CTK/ctkDoubleSpinBox_p.h
+  CustomWidgets/CTK/ctkBasePopupWidget.h
+  CustomWidgets/CTK/ctkBasePopupWidget_p.h
+  CustomWidgets/CTK/ctkPopupWidget.h
+  CustomWidgets/CTK/ctkPopupWidget_p.h
+  CustomWidgets/CTK/Core/ctkValueProxy.h
 )
 
 SET(Interface_Modules_Base_SOURCES
@@ -57,13 +72,22 @@ SET(Interface_Modules_Base_SOURCES
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
+  CustomWidgets/CTK/ctkColorPickerButton.cpp
+  CustomWidgets/CTK/ctkColorDialog.cpp
+  CustomWidgets/CTK/ctkDoubleSpinBox.cpp
+  CustomWidgets/CTK/ctkPopupWidget.cpp
+  CustomWidgets/CTK/ctkBasePopupWidget.cpp
+  CustomWidgets/CTK/Core/ctkUtils.cpp
+  CustomWidgets/CTK/Core/ctkValueProxy.cpp
+  CustomWidgets/CTK/ctkWidgetsUtils.cpp
 )
 
 QT_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS "${Interface_Modules_Base_FORMS}")
-QT_WRAP_CPP(Interface_Modules_Base_HEADERS_MOC "${Interface_Modules_Base_HEADERS}")
+QT_WRAP_CPP(Interface_Modules_Base_HEADERS_MOC "${Interface_Modules_Base_HEADERS_M}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Base
   ${Interface_Modules_Base_HEADERS}
+  ${Interface_Modules_Base_HEADERS_M}
   ${Interface_Modules_Base_FORMS_HEADERS}
   ${Interface_Modules_Base_HEADERS_MOC}
   ${Interface_Modules_Base_SOURCES}

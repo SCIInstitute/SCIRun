@@ -475,19 +475,19 @@ auto_ostream(const std::string& filename, const std::string& type, LoggerHandle 
   //       out the endianness of the machine we are on
   if (type == "Binary")
   {
-    return boost::make_shared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
+    return makeShared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
   else if (type == "Text")
   {
-    return boost::make_shared<TextPiostream>(filename, Piostream::Direction::Write, pr);
+    return makeShared<TextPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else if (type == "Fast")
   {
-    return boost::make_shared<FastPiostream>(filename, Piostream::Direction::Write, pr);
+    return makeShared<FastPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else
   {
-    return boost::make_shared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
+    return makeShared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
 }
 

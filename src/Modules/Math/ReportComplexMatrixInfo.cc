@@ -58,8 +58,8 @@ void ReportComplexMatrixInfo::execute()
 
     auto info = transient_value_cast<SCIRun::Core::Algorithms::Math::ReportComplexMatrixInfoAlgo::Outputs>(output.getTransient());
     /// @todo: requires knowledge of algorithm type
-    sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
-    sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
-    sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
+    sendOutput(NumRows, makeShared<Int32>(info.get<1>()));
+    sendOutput(NumCols, makeShared<Int32>(info.get<2>()));
+    sendOutput(NumElements, makeShared<Int32>(info.get<3>()));
   }
 }

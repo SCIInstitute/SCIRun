@@ -83,11 +83,11 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", false);
 
-  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+  SCIRun::SharedPointer<SimpleSink> sink(new SimpleSink);
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
-  boost::shared_ptr<SimpleSource> source(new SimpleSource);
+  SCIRun::SharedPointer<SimpleSource> source(new SimpleSource);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, source));
   //EXPECT_CALL(*inputModule, get_input_port(p2)).WillOnce(Return(inputPort));
   //EXPECT_CALL(*outputModule, get_output_port(p1)).WillOnce(Return(outputPort));
@@ -108,7 +108,7 @@ TEST_F(InputPortTest, CanClone)
   PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", true);
 
-  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+  SCIRun::SharedPointer<SimpleSink> sink(new SimpleSink);
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 

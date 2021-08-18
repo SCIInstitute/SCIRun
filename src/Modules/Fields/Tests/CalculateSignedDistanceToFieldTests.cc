@@ -70,7 +70,7 @@ TEST_F(CalculateSignedDistanceToFieldModuleTests, MakesAlgoDecisionBasedOnValueP
     AlgorithmParameter::Value connected = false;
     {
       //std::cout << "0ref count of algo ptr: " << csdf->getAlgorithm().use_count() << std::endl;
-      auto mockAlgo = boost::static_pointer_cast<MockAlgorithmPtr::element_type>(csdf->getAlgorithm());
+      auto mockAlgo = std::static_pointer_cast<MockAlgorithmPtr::element_type>(csdf->getAlgorithm());
       /// @todo: must remove this line. Getting strange leaking behavior without, haven't tracked it down yet.
       //this test correctly tests the oport_connected-based decision. I'll open another issue to figure out this weird fake leak.
       Mock::AllowLeak(mockAlgo.get());

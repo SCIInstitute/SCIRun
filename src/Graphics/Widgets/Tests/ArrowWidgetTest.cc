@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Geometry;
 TEST(ArrowWidgetTest, CanCreateSingleArrowReal)
 {
   StubGeometryIDGenerator idGen;
-  auto rgf = boost::make_shared<RealGlyphFactory>();
+  auto rgf = makeShared<RealGlyphFactory>();
   WidgetFactory::setGlyphFactory(rgf);
 
   ArrowWidget arrow({{idGen, "testArrow1"}, rgf},
@@ -59,7 +59,7 @@ TEST(ArrowWidgetTest, CanCreateSingleArrowReal)
 TEST(ArrowWidgetTest, CanCreateSingleArrowStubbed)
 {
   StubGeometryIDGenerator idGen;
-  auto sgf = boost::make_shared<StubGlyphFactory>();
+  auto sgf = makeShared<StubGlyphFactory>();
   WidgetFactory::setGlyphFactory(sgf);
 
   ArrowWidget arrow({{idGen, "testArrow1"}, sgf},
@@ -96,52 +96,52 @@ TEST(ArrowWidgetTest, ArrowComponentsObserveEachOther)
 
   ASSERT_TRUE(arrow != nullptr);
 
-  auto compositeArrow = boost::dynamic_pointer_cast<CompositeWidget>(arrow);
+  auto compositeArrow = std::dynamic_pointer_cast<CompositeWidget>(arrow);
   ASSERT_TRUE(compositeArrow != nullptr);
 
   WidgetList internals(compositeArrow->subwidgetBegin(), compositeArrow->subwidgetEnd());
   ASSERT_EQ(internals.size(), 4);
 
-  auto sphere = boost::dynamic_pointer_cast<SphereWidget>(internals[0]);
+  auto sphere = std::dynamic_pointer_cast<SphereWidget>(internals[0]);
   ASSERT_TRUE(sphere != nullptr);
   EXPECT_EQ("__sphere__4", sphere->name());
   EXPECT_EQ("<dummyGeomId>SphereWidget::ArrowWidget(0)(2)(4)0", sphere->uniqueID());
-  auto shaft = boost::dynamic_pointer_cast<CylinderWidget>(internals[1]);
+  auto shaft = std::dynamic_pointer_cast<CylinderWidget>(internals[1]);
   ASSERT_TRUE(shaft != nullptr);
   EXPECT_EQ("__cylinder__5", shaft->name());
   EXPECT_EQ("<dummyGeomId>CylinderWidget::ArrowWidget(1)(2)(4)0", shaft->uniqueID());
-  auto cone = boost::dynamic_pointer_cast<ConeWidget>(internals[2]);
+  auto cone = std::dynamic_pointer_cast<ConeWidget>(internals[2]);
   ASSERT_TRUE(cone != nullptr);
   EXPECT_EQ("__cone__6", cone->name());
   EXPECT_EQ("<dummyGeomId>ConeWidget::ArrowWidget(2)(2)(4)0", cone->uniqueID());
-  auto disk = boost::dynamic_pointer_cast<DiskWidget>(internals[3]);
+  auto disk = std::dynamic_pointer_cast<DiskWidget>(internals[3]);
   ASSERT_TRUE(disk != nullptr);
   EXPECT_EQ("__disk__7", disk->name());
   EXPECT_EQ("<dummyGeomId>DiskWidget::ArrowWidget(3)(2)(4)0", disk->uniqueID());
 
-  auto transEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
+  auto transEvent = makeShared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
   // sphere takes translate events
   sphere->mediate(sphere.get(), transEvent);
 
   EXPECT_EQ(transEvent->numMoves(), internals.size());
 
   // shaft takes translate events too
-  auto transEvent2 = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
+  auto transEvent2 = makeShared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "translate");
   shaft->mediate(shaft.get(), transEvent2);
   EXPECT_EQ(transEvent2->numMoves(), internals.size());
 
   // cone takes rotate events
-  auto rotateEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::ROTATE, "rotate");
+  auto rotateEvent = makeShared<StubWidgetEvent>(WidgetMovement::ROTATE, "rotate");
   cone->mediate(cone.get(), rotateEvent);
   EXPECT_EQ(rotateEvent->numMoves(), internals.size());
 
   // disk takes scale events
-  auto scaleEvent = boost::make_shared<StubWidgetEvent>(WidgetMovement::SCALE, "scale");
+  auto scaleEvent = makeShared<StubWidgetEvent>(WidgetMovement::SCALE, "scale");
   disk->mediate(disk.get(), scaleEvent);
   EXPECT_EQ(scaleEvent->numMoves(), internals.size());
 
   // disk does NOT propagate any other type of events
-  auto transEvent3 = boost::make_shared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "illicit translate");
+  auto transEvent3 = makeShared<StubWidgetEvent>(WidgetMovement::TRANSLATE, "illicit translate");
   disk->mediate(disk.get(), transEvent3);
   EXPECT_EQ(transEvent3->numMoves(), 1);
 }

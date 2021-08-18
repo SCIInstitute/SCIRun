@@ -78,9 +78,9 @@ void WidgetUpdateService::doPostSelectSetup(int x, int y, float depth)
   auto initialW = getInitialW(depth);
   auto initialPosition = screen_.positionFromClick(x, y);
 
-  auto factory = boost::make_shared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
+  auto factory = makeShared<ObjectTransformCalculatorFactory>(this, initialPosition, initialW);
   auto tcf = std::make_shared<TransformCalculatorFamily>(currentWidget_->movementType(yetAnotherEnumConversion(buttonPushed_)), factory);
-  event_ = boost::make_shared<WidgetTransformEvent>(transformer_, tcf);
+  event_ = makeShared<WidgetTransformEvent>(transformer_, tcf);
 }
 
 void WidgetUpdateService::updateWidget(int x, int y)
@@ -194,9 +194,9 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
   switch (movement)
   {
   case WidgetMovement::TRANSLATE:
-    return boost::make_shared<ObjectTranslationCalculator>(brop_, ObjectTranslationCalculator::Params({ initPos_, initW_, brop_->getStaticCameraViewProjection() }));
+    return makeShared<ObjectTranslationCalculator>(brop_, ObjectTranslationCalculator::Params({ initPos_, initW_, brop_->getStaticCameraViewProjection() }));
   case WidgetMovement::ROTATE:
-    return boost::make_shared<ObjectRotationCalculator>(brop_, ObjectRotationCalculator::Params({ initPos_, initW_, toVec3(getRotationOrigin(baseWidget->transformParameters())) }));
+    return makeShared<ObjectRotationCalculator>(brop_, ObjectRotationCalculator::Params({ initPos_, initW_, toVec3(getRotationOrigin(baseWidget->transformParameters())) }));
   case WidgetMovement::SCALE:
   {
     ObjectScaleCalculator::Params p;
@@ -205,7 +205,7 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     auto widgetTransformParameters = baseWidget->transformParameters();
     p.flipAxisWorld_ = toVec3(getScaleFlipVector(widgetTransformParameters));
     p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
-    return boost::make_shared<ObjectScaleCalculator>(brop_, p);
+    return makeShared<ObjectScaleCalculator>(brop_, p);
   }
   case WidgetMovement::SCALE_AXIS:
   {
@@ -217,7 +217,7 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     p.originWorld_ = toVec3(getRotationOrigin(widgetTransformParameters));
     p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
     p.scaleAxisIndex_ = getAxisIndex(widgetTransformParameters);
-    return boost::make_shared<ObjectScaleAxisCalculator>(brop_, p);
+    return makeShared<ObjectScaleAxisCalculator>(brop_, p);
   }
   case WidgetMovement::TRANSLATE_AXIS:
   {
@@ -226,7 +226,7 @@ ObjectTransformCalculatorPtr ObjectTransformCalculatorFactory::create(WidgetMove
     p.w_ = initW_;
     auto widgetTransformParameters = baseWidget->transformParameters();
     p.axis_ = toVec3(getAxisVector(widgetTransformParameters));
-    return boost::make_shared<ObjectAxisTranslationCalculator>(brop_, p);
+    return makeShared<ObjectAxisTranslationCalculator>(brop_, p);
   }
   default:
     return nullptr;

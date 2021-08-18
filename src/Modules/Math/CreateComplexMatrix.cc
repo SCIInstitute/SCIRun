@@ -52,7 +52,7 @@ void CreateComplexMatrix::execute()
 {
   if (needToExecute())
   {
-    auto matrix(boost::make_shared<ComplexDenseMatrix>());
+    auto matrix(makeShared<ComplexDenseMatrix>());
     try
     {
       auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();

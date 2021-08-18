@@ -67,7 +67,7 @@ AlgorithmOutput GetMatrixSliceAlgo::run(const AlgorithmInput& input) const
 
   AlgorithmOutput output;
   output[Variables::OutputMatrix] = std::get<0>(outputMatrix);
-  output.setAdditionalAlgoOutput(boost::make_shared<Variable>(Name("maxIndex"), std::get<1>(outputMatrix)));
+  output.setAdditionalAlgoOutput(makeShared<Variable>(Name("maxIndex"), std::get<1>(outputMatrix)));
 
   return output;
 }
@@ -83,14 +83,14 @@ std::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, i
     // dense case only now
     auto dense = castMatrix::toDense(matrix);
     if (dense)
-      return std::make_tuple(boost::make_shared<DenseMatrix>(dense->col(index)), max);
+      return std::make_tuple(makeShared<DenseMatrix>(dense->col(index)), max);
     else
     {
       auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
       {
         //TODO: makes a copy of the transpose. Not good. Should test out manually copying elements, trade speed for memory.
-        return std::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->getColumn(index)), max);
+        return std::make_tuple(makeShared<SparseRowMatrix>(sparse->getColumn(index)), max);
       }
       return std::make_tuple(nullptr, 0);
     }
@@ -102,12 +102,12 @@ std::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, i
 
     auto dense = castMatrix::toDense(matrix);
     if (dense)
-      return std::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);
+      return std::make_tuple(makeShared<DenseMatrix>(dense->row(index)), max);
     else
     {
       auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
-        return std::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->row(index)), max);
+        return std::make_tuple(makeShared<SparseRowMatrix>(sparse->row(index)), max);
       return std::make_tuple(nullptr, 0);
     }
   }

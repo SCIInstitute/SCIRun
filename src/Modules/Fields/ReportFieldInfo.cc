@@ -66,13 +66,13 @@ void ReportFieldInfo::execute()
   auto info = transient_value_cast<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type
 
-  sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
-  sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));
-  sendOutput(NumData, boost::make_shared<Int32>(info.numdata_));
-  sendOutput(DataMin, boost::make_shared<Double>(info.dataMin));
-  sendOutput(DataMax, boost::make_shared<Double>(info.dataMax));
-  sendOutput(FieldSize, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.size)));
-  sendOutput(FieldCenter, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.center)));
-  sendOutput(Dimensions, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.dims)));
-  sendOutput(GeomSize, boost::make_shared<Double>(info.geometricSize));
+  sendOutput(NumNodes, makeShared<Int32>(info.numnodes_));
+  sendOutput(NumElements, makeShared<Int32>(info.numelements_));
+  sendOutput(NumData, makeShared<Int32>(info.numdata_));
+  sendOutput(DataMin, makeShared<Double>(info.dataMin));
+  sendOutput(DataMax, makeShared<Double>(info.dataMax));
+  sendOutput(FieldSize, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.size)));
+  sendOutput(FieldCenter, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.center)));
+  sendOutput(Dimensions, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.dims)));
+  sendOutput(GeomSize, makeShared<Double>(info.geometricSize));
 }

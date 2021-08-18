@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <thread>
 #include <Core/Thread/Interruptible.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 

@@ -58,7 +58,7 @@ namespace Datatypes {
     typedef std::vector<index_type>            array_type;
     typedef std::vector<size_type>             dimension_type;
 
-    typedef boost::shared_ptr<MeshFacade<VirtualMeshType>> MeshFacadeHandle;
+    typedef SharedPointer<MeshFacade<VirtualMeshType>> MeshFacadeHandle;
   };
 
   // We reserve the last unsigned int value as a marker for bad mesh

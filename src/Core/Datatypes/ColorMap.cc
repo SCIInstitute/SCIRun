@@ -134,14 +134,14 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
   else 
     logError("Color map name not implemented/recognized. Returning Rainbow.");
 
-  return boost::make_shared<ColorMap>(*colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
+  return makeShared<ColorMap>(*colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::vector<ColorRGB>& colorData,
   const std::string& name, const size_t &resolution, const double &shift, const bool &invert,
   const double &rescale_scale,  const double &rescale_shift, const std::vector<double>& alphaPoints)
 {
-  return boost::make_shared<ColorMap>(colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
+  return makeShared<ColorMap>(colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
 }
 
 std::vector<std::string> StandardColorMapFactory::getList()

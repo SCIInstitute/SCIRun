@@ -33,7 +33,7 @@
 #include <vector>
 
 #include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 
 #include <Core/Utils/FileUtil.h>
 #include <Core/Utils/StringUtil.h>

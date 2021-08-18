@@ -44,10 +44,9 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  map_.insert(StringPair("Same (pass-through)", "passThrough"));
-  map_.insert(StringPair("DenseMatrix", "dense"));
-  map_.insert(StringPair("ColumnMatrix", "column"));
-  map_.insert(StringPair("SparseRowMatrix", "sparse"));
-
-  addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, map_);
+  addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, 
+    { {"Same (pass-through)", "passThrough"},
+    { "DenseMatrix", "dense" },
+    { "ColumnMatrix", "column" },
+    { "SparseRowMatrix", "sparse" } });
 }

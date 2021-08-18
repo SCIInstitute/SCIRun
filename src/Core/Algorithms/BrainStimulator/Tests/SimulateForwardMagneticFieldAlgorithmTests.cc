@@ -91,7 +91,7 @@ TEST(SimulateForwardMagneticFieldAlgoTest, TestOnLatVol)
   FieldHandle third = LoadFieldThirdModuleInput();
   FieldHandle fourth = LoadFieldFourthModuleInput();
   long nr_nodes = (long)second->vmesh()->num_nodes();
-  DenseMatrixHandle tensor_matrix(boost::make_shared<DenseMatrix>(nr_nodes,9));
+  DenseMatrixHandle tensor_matrix(makeShared<DenseMatrix>(nr_nodes,9));
 
   for (long i=0;i<nr_nodes;i++)
   {

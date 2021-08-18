@@ -29,7 +29,7 @@
 #ifndef POSITION_PROVIDER_H
 #define POSITION_PROVIDER_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <QPointF>
 
 class QGraphicsProxyWidget;
@@ -44,7 +44,7 @@ public:
   virtual QPointF currentPosition() const = 0;
 };
 
-typedef boost::shared_ptr<PositionProvider> PositionProviderPtr;
+typedef SharedPointer<PositionProvider> PositionProviderPtr;
 
 class NeedsScenePositionProvider
 {

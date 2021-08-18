@@ -44,7 +44,7 @@ namespace Core {
   namespace Algorithms {
 
 class ConverterPrivate;
-typedef boost::shared_ptr< ConverterPrivate > ConverterPrivateHandle;
+typedef SharedPointer< ConverterPrivate > ConverterPrivateHandle;
 
 class SCISHARE TriSurfSTLBinaryConverter : public AlgorithmBase
 {

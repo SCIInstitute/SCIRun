@@ -29,7 +29,7 @@
 #include <Interface/Modules/Math/CreateStandardMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <QtGui>
 

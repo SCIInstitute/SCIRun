@@ -52,11 +52,11 @@ void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, Den
 
     Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*denseInput, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-    LeftSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+    LeftSingMat = makeShared<DenseMatrix>(svd_mat.matrixU());
 
-    SingVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
+    SingVals = makeShared<DenseMatrix>(svd_mat.singularValues());
 
-    RightSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+    RightSingMat = makeShared<DenseMatrix>(svd_mat.matrixV());
   }
   else
   {

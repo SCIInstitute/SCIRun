@@ -41,7 +41,7 @@ namespace SCIRun {
 namespace Core {
   namespace Datatypes {
     // Dyadic tensors are also known as second-order tensors
-    template <typename Number, size_t Dim>
+    template <typename Number, int Dim>
     class DyadicTensorGeneric : public TensorBaseGeneric<Number, Eigen::Sizes<Dim, Dim>>
     {
      public:
@@ -51,7 +51,7 @@ namespace Core {
       using MatrixType = Eigen::Matrix<Number, Dim, Dim>;
       static const size_t MANDEL_SIZE_ = Dim + (Dim*Dim-Dim)/2;
       using MandelVector = Eigen::Matrix<Number, MANDEL_SIZE_, 1>;
-      using SizeType = long;
+      using SizeType = decltype(Dim);
 
       DyadicTensorGeneric() : parent() { parent::setZero(); }
 
@@ -617,11 +617,11 @@ namespace Core {
         }
       }
 
-      void assertEigenSize(SizeType vecDim, SizeType valDim)
+      void assertEigenSize(size_t vecDim, size_t valDim)
       {
-        if (vecDim != Dim)
+        if (static_cast<decltype(Dim)>(vecDim) != Dim)
           THROW_INVALID_ARGUMENT("The number of input eigvecs must be " + std::to_string(eigvecs_.size()));
-        if (valDim != Dim)
+        if (static_cast<decltype(Dim)>(valDim) != Dim)
           THROW_INVALID_ARGUMENT("The number of input eigvals must be " + std::to_string(eigvals_.size()));
       }
 
