@@ -46,7 +46,7 @@
 #include <map>
 #include <string>
 #include <complex>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 
 // for index and size types
 #include <Core/Datatypes/Legacy/Base/Types.h>
@@ -61,7 +61,7 @@ namespace SCIRun {
 
   typedef Persistent* (*PersistentMaker0)();
 
-  typedef boost::shared_ptr<Persistent> PersistentHandle;
+  typedef SharedPointer<Persistent> PersistentHandle;
 
 class SCISHARE PersistentTypeID {
 public:
@@ -78,8 +78,8 @@ public:
   Persistent* (*bc_maker2)();
 };
 
-  using PersistentTypeIDPtr = boost::shared_ptr<PersistentTypeID>;
-  using PiostreamPtr = boost::shared_ptr<Piostream>;
+  using PersistentTypeIDPtr = SharedPointer<PersistentTypeID>;
+  using PiostreamPtr = SharedPointer<Piostream>;
 
 SCISHARE PiostreamPtr auto_istream(const std::string& filename,
                                    Core::Logging::LoggerHandle pr = nullptr);
@@ -115,8 +115,8 @@ class SCISHARE Piostream {
     bool err;
     Endian file_endian;
 
-    boost::shared_ptr<MapPersistentInt> outpointers;
-    boost::shared_ptr<MapIntPersistent> inpointers;
+    SharedPointer<MapPersistentInt> outpointers;
+    SharedPointer<MapIntPersistent> inpointers;
 
     int current_pointer_id;
 
@@ -255,7 +255,7 @@ SCISHARE void Pio_index(Piostream& stream, index_type* data, size_type sz);
 
 /*
 template<class T>
-void PioImpl(Piostream& stream, boost::shared_ptr<T>& data, const PersistentTypeID& typeId)
+void PioImpl(Piostream& stream, SharedPointer<T>& data, const PersistentTypeID& typeId)
 {
   stream.begin_cheap_delim();
   Persistent* trep = data.get();
@@ -269,27 +269,27 @@ void PioImpl(Piostream& stream, boost::shared_ptr<T>& data, const PersistentType
 */
 
 template<class T>
-void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
+void Pio(Piostream& stream, SharedPointer<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
   stream.io(h, T::type_id);
   if (stream.reading())
   {
-    data = boost::static_pointer_cast<T>(h);
+    data = std::static_pointer_cast<T>(h);
   }
   stream.end_cheap_delim();
 }
 
 template<class T>
-void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
+void Pio2(Piostream& stream, SharedPointer<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = nullptr)
 {
   stream.begin_cheap_delim();
   PersistentHandle h = data;
   stream.io(h, T::type_id_func());
   if (stream.reading())
   {
-    data = boost::static_pointer_cast<T>(h);
+    data = std::static_pointer_cast<T>(h);
   }
   stream.end_cheap_delim();
 }

@@ -29,12 +29,12 @@
 #ifndef INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 #define INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <QDockWidget>
 
 #ifdef BUILD_WITH_PYTHON
 class PythonConsoleWidgetPrivate;
-typedef boost::shared_ptr< PythonConsoleWidgetPrivate > PythonConsoleWidgetPrivateHandle;
+typedef SCIRun::SharedPointer< PythonConsoleWidgetPrivate > PythonConsoleWidgetPrivateHandle;
 
 namespace SCIRun
 {

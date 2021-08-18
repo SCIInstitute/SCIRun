@@ -51,7 +51,7 @@ public:
   virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) = 0;
 };
 
-typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
+typedef SharedPointer<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
 
 enum class ConnectionDrawType
 {

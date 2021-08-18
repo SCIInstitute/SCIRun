@@ -44,7 +44,7 @@ namespace SCIRun {
           virtual void enqueueReadyModules() const = 0;
         };
 
-        typedef boost::shared_ptr<ProducerInterface> ProducerInterfacePtr;
+        typedef SharedPointer<ProducerInterface> ProducerInterfacePtr;
       }}
   }}
 

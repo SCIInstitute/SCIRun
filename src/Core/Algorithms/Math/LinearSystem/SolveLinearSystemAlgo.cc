@@ -102,7 +102,7 @@ SolveLinearSystemParallelAlgo::run(SparseRowMatrixHandle a, DenseColumnMatrixHan
 
   // Create output matrix
   auto size = x0->nrows();
-  x = boost::make_shared<DenseColumnMatrix>(size);
+  x = makeShared<DenseColumnMatrix>(size);
 
   // Copy output matrix pointer
   matrices.x = x;
@@ -1120,7 +1120,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!x0)
   {
     // create an x0 matrix
-    auto temp(boost::make_shared<DenseColumnMatrix>(b->nrows()));
+    auto temp(makeShared<DenseColumnMatrix>(b->nrows()));
     temp->setZero();
     x0 = temp;
   }
@@ -1214,6 +1214,6 @@ AlgorithmOutput SolveLinearSystemAlgo::run(const AlgorithmInput& input) const
   }
 
   AlgorithmOutput output;
-  output[Variables::Solution] = boost::make_shared<DenseMatrix>(solution->col(0));
+  output[Variables::Solution] = makeShared<DenseMatrix>(solution->col(0));
   return output;
 }

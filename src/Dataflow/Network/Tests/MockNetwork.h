@@ -65,7 +65,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(containsViewScene, bool());
         };
 
-        typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;
+        typedef SharedPointer<MockNetwork> MockNetworkPtr;
 
         inline ModuleHandle addModuleToNetwork(NetworkInterface& network, const std::string& moduleName)
         {

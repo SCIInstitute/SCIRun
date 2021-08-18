@@ -73,7 +73,7 @@ namespace Visualization {
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
     std::tuple<double, double> getTextPosition();
     static bool containsDescenderLetter(const std::string& text);
-    boost::shared_ptr<class TextBuilder> textBuilder_;
+    SharedPointer<class TextBuilder> textBuilder_;
     std::tuple<int,int> lastWindowSize_ { 450, 1000 };
     bool needReexecute_{ true }, executedOnce_{ false };
   };

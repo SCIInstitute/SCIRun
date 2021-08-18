@@ -69,11 +69,11 @@ using namespace SCIRun::Core::Algorithms;
 SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
-  builder_ = boost::make_shared<NetworkEditorBuilder>(this);
+  builder_ = makeShared<NetworkEditorBuilder>(this);
   dockManager_ = new DockManager(dockSpace_, this);
 
   {
-    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
+    SharedPointer<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
     GuiLog::Instance().addCustomSink(logger);
   }
 

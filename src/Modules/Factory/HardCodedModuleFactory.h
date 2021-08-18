@@ -53,7 +53,7 @@ namespace SCIRun {
         bool moduleImplementationExists(const std::string& name) const override;
       private:
         Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
-        boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
+        SharedPointer<class HardCodedModuleFactoryImpl> impl_;
       };
     }
   }

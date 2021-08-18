@@ -65,13 +65,13 @@ class ParserScriptVariable;
 // We use handles (Note these are not thread safe hence constrain them
 // to one thread) for memory management
 
-typedef boost::shared_ptr<ParserNode>                   ParserNodeHandle;
-typedef boost::shared_ptr<ParserTree>                   ParserTreeHandle;
-typedef boost::shared_ptr<ParserProgram>                ParserProgramHandle;
-typedef boost::shared_ptr<ParserVariable>               ParserVariableHandle;
-typedef boost::shared_ptr<ParserFunctionCatalog> ParserFunctionCatalogHandle;
-typedef boost::shared_ptr<ParserScriptFunction>         ParserScriptFunctionHandle;
-typedef boost::shared_ptr<ParserScriptVariable>         ParserScriptVariableHandle;
+typedef SharedPointer<ParserNode>                   ParserNodeHandle;
+typedef SharedPointer<ParserTree>                   ParserTreeHandle;
+typedef SharedPointer<ParserProgram>                ParserProgramHandle;
+typedef SharedPointer<ParserVariable>               ParserVariableHandle;
+typedef SharedPointer<ParserFunctionCatalog> ParserFunctionCatalogHandle;
+typedef SharedPointer<ParserScriptFunction>         ParserScriptFunctionHandle;
+typedef SharedPointer<ParserScriptVariable>         ParserScriptVariableHandle;
 
 // Define the four classes of parser components
 
@@ -103,21 +103,16 @@ enum {
   SCRIPT_OPTIONAL_VAR_E   = 16
 };
 
-class SCISHARE ParserVariable {
-  public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
+class SCISHARE ParserVariable
+{
   public:
     ParserVariable(std::string name, std::string type) :
-      ref_cnt(0),
       name_(name),
       type_(type),
       flags_(SCRIPT_SINGLE_VAR_E)
       {}
 
     ParserVariable(std::string name, std::string type, int flags) :
-      ref_cnt(0),
       name_(name),
       type_(type),
       flags_(flags)
@@ -150,7 +145,7 @@ class SCISHARE ParserVariable {
     int flags_;
 };
 
-typedef boost::shared_ptr<class ParserFunction> ParserFunctionHandle;
+typedef SharedPointer<class ParserFunction> ParserFunctionHandle;
 
 class SCISHARE ParserNode
 {
@@ -231,15 +226,11 @@ class SCISHARE ParserNode
 };
 
 
-class SCISHARE ParserTree {
-  public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
+class SCISHARE ParserTree
+{
   public:
     // Constructor
     ParserTree(const std::string& varname, ParserNodeHandle expression) :
-      ref_cnt(0),
       varname_(varname),
       expression_(expression),
       type_("U")
@@ -276,13 +267,11 @@ class SCISHARE ParserTree {
 
 typedef std::map<std::string,ParserVariableHandle> ParserVariableList;
 
-class SCISHARE ParserProgram {
+class SCISHARE ParserProgram
+{
   public:
-    // In order to use handles, we need to add reference counting
-    int ref_cnt;
-
-  public:
-    ParserProgram() : ref_cnt(0) {}
+    ParserProgram()
+    {}
 
     // Add an expression to a program: this is a combination of the raw
     // unparsed program code and the expression tree

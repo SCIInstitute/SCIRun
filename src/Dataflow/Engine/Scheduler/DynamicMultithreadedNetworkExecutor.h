@@ -51,7 +51,7 @@ namespace Dataflow {
     void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
   private:
     const Networks::NetworkInterface& network_;
-    boost::shared_ptr<DynamicExecutor::ExecutionThreadGroup> threadGroup_;
+    SharedPointer<DynamicExecutor::ExecutionThreadGroup> threadGroup_;
   };
 
 }}}

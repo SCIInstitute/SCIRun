@@ -34,6 +34,7 @@
 
 #include <Core/Utils/SmartPointers.h>
 #include <string>
+#include <functional>
 #include <map>
 
 

@@ -134,7 +134,7 @@ inline void copyDenseToSparse(const Core::Datatypes::DenseMatrix& from, Core::Da
 
 inline Core::Datatypes::SparseRowMatrixHandle toSparseHandle(const Core::Datatypes::DenseMatrix& dense)
 {
-  Core::Datatypes::SparseRowMatrixHandle sp(boost::make_shared<Core::Datatypes::SparseRowMatrix>(static_cast<int>(dense.rows()), static_cast<int>(dense.cols())));
+  Core::Datatypes::SparseRowMatrixHandle sp(makeShared<Core::Datatypes::SparseRowMatrix>(static_cast<int>(dense.rows()), static_cast<int>(dense.cols())));
   copyDenseToSparse(dense, *sp);
   sp->makeCompressed();
   return sp;
@@ -207,7 +207,7 @@ inline std::vector<typename Cont::value_type> to_vector(const Cont& cont)
 
 #define MAKE_DENSE_MATRIX(x) (convertDataToMatrix(to_vector(boost::assign::tuple_list_of x)))
 
-#define MAKE_DENSE_MATRIX_HANDLE(x) (boost::make_shared<SCIRun::Core::Datatypes::DenseMatrix>(MAKE_DENSE_MATRIX(x)))
+#define MAKE_DENSE_MATRIX_HANDLE(x) (makeShared<SCIRun::Core::Datatypes::DenseMatrix>(MAKE_DENSE_MATRIX(x)))
 
 #define MAKE_SPARSE_MATRIX_HANDLE(x) (toSparseHandle(MAKE_DENSE_MATRIX(x)))
 

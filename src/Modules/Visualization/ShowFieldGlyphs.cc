@@ -396,7 +396,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   if(!state->getValue(ShowFieldGlyphs::FieldName).toString().empty())
     idname += GeometryObject::delimiter + state->getValue(ShowFieldGlyphs::FieldName).toString() + " (from " + moduleId_ +")";
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(idgen, idname, true));
+  auto geom(makeShared<GeometryObjectSpire>(idgen, idname, true));
 
   if(!showScalars)
     state->setValue(ShowFieldGlyphs::ShowScalars, showScalars);

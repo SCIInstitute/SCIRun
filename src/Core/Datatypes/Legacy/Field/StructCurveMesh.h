@@ -801,9 +801,9 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructCurveMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<StructCurveMesh<Basis>>();}
+  static MeshHandle mesh_maker() { return makeShared<StructCurveMesh<Basis>>();}
   /// This function returns a handle for the virtual interface.
-  static MeshHandle structcurve_maker(size_type x) { return boost::make_shared<StructCurveMesh<Basis>>(x);}
+  static MeshHandle structcurve_maker(size_type x) { return makeShared<StructCurveMesh<Basis>>(x);}
 
   std::vector<Core::Geometry::Point>& get_points() { return (points_); }
 

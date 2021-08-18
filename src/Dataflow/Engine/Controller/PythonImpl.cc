@@ -157,27 +157,27 @@ namespace
   class PyDatatypeFactory
   {
   public:
-    static boost::shared_ptr<PyDatatype> createWrapper(DatatypeHandle data)
+    static SharedPointer<PyDatatype> createWrapper(DatatypeHandle data)
     {
       {
-        auto str = boost::dynamic_pointer_cast<String>(data);
+        auto str = std::dynamic_pointer_cast<String>(data);
         if (str)
-          return boost::make_shared<PyDatatypeString>(str);
+          return makeShared<PyDatatypeString>(str);
       }
       {
-        auto dense = boost::dynamic_pointer_cast<DenseMatrix>(data);
+        auto dense = std::dynamic_pointer_cast<DenseMatrix>(data);
         if (dense)
-          return boost::make_shared<PyDatatypeDenseMatrix>(dense);
+          return makeShared<PyDatatypeDenseMatrix>(dense);
       }
       {
-        auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(data);
+        auto sparse = std::dynamic_pointer_cast<SparseRowMatrix>(data);
         if (sparse)
-          return boost::make_shared<PyDatatypeSparseRowMatrix>(sparse);
+          return makeShared<PyDatatypeSparseRowMatrix>(sparse);
       }
       {
-        auto field = boost::dynamic_pointer_cast<Field>(data);
+        auto field = std::dynamic_pointer_cast<Field>(data);
         if (field)
-          return boost::make_shared<PyDatatypeField>(field);
+          return makeShared<PyDatatypeField>(field);
       }
       return nullptr;
     }
@@ -186,7 +186,7 @@ namespace
   class PyPortImpl : public PyPort
   {
   public:
-    PyPortImpl(boost::shared_ptr<PortDescriptionInterface> port, NetworkEditorController& nec) : port_(port), nec_(nec)
+    PyPortImpl(SharedPointer<PortDescriptionInterface> port, NetworkEditorController& nec) : port_(port), nec_(nec)
     {
     }
     std::string name() const override
@@ -218,7 +218,7 @@ namespace
 
     std::string dataTypeName() const override
     {
-      auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
+      auto output = std::dynamic_pointer_cast<OutputPortInterface>(port_);
       if (output)
         return "Output port data not available yet!";
 
@@ -230,7 +230,7 @@ namespace
       return (*data)->dynamic_type_name();
     }
 
-    boost::shared_ptr<PyDatatype> data() const override
+    SharedPointer<PyDatatype> data() const override
     {
       auto dataOpt = getDataImpl();
       if (dataOpt && *dataOpt)
@@ -247,14 +247,14 @@ namespace
   private:
     DatatypeHandleOption getDataImpl() const
     {
-      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
+      auto input = std::dynamic_pointer_cast<InputPortInterface>(port_);
       if (input)
       {
         return input->getData();
       }
       return boost::none;
     }
-    boost::shared_ptr<PortDescriptionInterface> port_;
+    SharedPointer<PortDescriptionInterface> port_;
     NetworkEditorController& nec_;
   };
 
@@ -267,7 +267,7 @@ namespace
       //wish:
       //boost::push_back(ports_,
       //  (input ? mod->inputPorts() : mod->outputPorts())
-      //  | boost::adaptors::transformed([&](boost::shared_ptr<PortDescriptionInterface> p) { return boost::make_shared<PyPortImpl>(p, nec_); })
+      //  | boost::adaptors::transformed([&](SharedPointer<PortDescriptionInterface> p) { return makeShared<PyPortImpl>(p, nec_); })
       //  );
       if (input)
       {
@@ -275,8 +275,8 @@ namespace
 
         if (mod->hasDynamicPorts())
         {
-          connections_.push_back(boost::make_shared<boost::signals2::scoped_connection>(nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); })));
-          connections_.push_back(boost::make_shared<boost::signals2::scoped_connection>(nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portRemovedSlot(mid, pid); })));
+          connections_.push_back(makeShared<boost::signals2::scoped_connection>(nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); })));
+          connections_.push_back(makeShared<boost::signals2::scoped_connection>(nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portRemovedSlot(mid, pid); })));
         }
       }
       else
@@ -285,13 +285,13 @@ namespace
       }
     }
 
-    boost::shared_ptr<PyPort> getattr(const std::string& name) override
+    SharedPointer<PyPort> getattr(const std::string& name) override
     {
-      auto port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->name(); });
+      auto port = std::find_if(ports_.begin(), ports_.end(), [&](SharedPointer<PyPortImpl> p) { return name == p->name(); });
       if (port != ports_.end())
         return *port;
 
-      port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->id(); });
+      port = std::find_if(ports_.begin(), ports_.end(), [&](SharedPointer<PyPortImpl> p) { return name == p->id(); });
       if (port != ports_.end())
         return *port;
 
@@ -300,7 +300,7 @@ namespace
       throw py::error_already_set();
     }
 
-    boost::shared_ptr<PyPort> getitem(int index) override
+    SharedPointer<PyPort> getitem(int index) override
     {
       if (index < 0)
         index += size();
@@ -319,7 +319,7 @@ namespace
 
     void reset()
     {
-      std::for_each(ports_.begin(), ports_.end(), [](boost::shared_ptr<PyPortImpl> p) { p->reset(); p.reset(); });
+      std::for_each(ports_.begin(), ports_.end(), [](SharedPointer<PyPortImpl> p) { p->reset(); p.reset(); });
       ports_.clear();
     }
   private:
@@ -337,21 +337,21 @@ namespace
     {
       ports_.clear();
       for (const auto& p : mod_->inputPorts())
-        ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+        ports_.push_back(makeShared<PyPortImpl>(p, nec_));
     }
 
     void setupOutputs()
     {
       ports_.clear();
       for (const auto& p : mod_->outputPorts())
-        ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+        ports_.push_back(makeShared<PyPortImpl>(p, nec_));
     }
 
-    std::vector<boost::shared_ptr<PyPortImpl>> ports_;
+    std::vector<SharedPointer<PyPortImpl>> ports_;
     ModuleHandle mod_;
     NetworkEditorController& nec_;
     ModuleId modId_;
-    std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> connections_;
+    std::vector<SharedPointer<boost::signals2::scoped_connection>> connections_;
   };
 
   class PyModuleImpl : public PyModule
@@ -361,8 +361,8 @@ namespace
     {
       if (module_)
       {
-        input_ = boost::make_shared<PyPortsImpl>(module_, true, nec_);
-        output_ = boost::make_shared<PyPortsImpl>(module_, false, nec_);
+        input_ = makeShared<PyPortsImpl>(module_, true, nec_);
+        output_ = makeShared<PyPortsImpl>(module_, false, nec_);
       }
       creationTime_ = boost::posix_time::second_clock::local_time();
     }
@@ -459,12 +459,12 @@ namespace
       return "[null module]";
     }
 
-    boost::shared_ptr<PyPorts> output() override
+    SharedPointer<PyPorts> output() override
     {
       return output_;
     }
 
-    boost::shared_ptr<PyPorts> input() override
+    SharedPointer<PyPorts> input() override
     {
       return input_;
     }
@@ -477,7 +477,7 @@ namespace
   private:
     ModuleHandle module_;
     NetworkEditorController& nec_;
-    boost::shared_ptr<PyPortsImpl> input_, output_;
+    SharedPointer<PyPortsImpl> input_, output_;
     boost::posix_time::ptime creationTime_;
   };
 }
@@ -525,7 +525,7 @@ void PythonImpl::executionFromPythonFinish(int)
   }
 }
 
-boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
+SharedPointer<PyModule> PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
@@ -538,7 +538,7 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 
 void PythonImpl::pythonModuleAddedSlot(const std::string&, ModuleHandle m, ModuleCounter)
 {
-  auto pyM = boost::make_shared<PyModuleImpl>(m, nec_);
+  auto pyM = makeShared<PyModuleImpl>(m, nec_);
   modules_[pyM->id()] = pyM;
 }
 
@@ -560,15 +560,15 @@ void PythonImpl::pythonModuleRemovedSlot(const ModuleId& mid)
   modules_.erase(mid);
 }
 
-std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const
+std::vector<SharedPointer<PyModule>> PythonImpl::moduleList() const
 {
-  std::vector<boost::shared_ptr<PyModule>> modules;
+  std::vector<SharedPointer<PyModule>> modules;
   boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(modules));
-  std::sort(modules.begin(), modules.end(), [](const boost::shared_ptr<PyModule> lhs, const boost::shared_ptr<PyModule> rhs) { return lhs->creationTime() < rhs->creationTime(); });
+  std::sort(modules.begin(), modules.end(), [](const SharedPointer<PyModule> lhs, const SharedPointer<PyModule> rhs) { return lhs->creationTime() < rhs->creationTime(); });
   return modules;
 }
 
-boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
+SharedPointer<PyModule> PythonImpl::findModule(const std::string& id) const
 {
   auto modIter = modules_.find(id);
   return modIter != modules_.end() ? modIter->second : nullptr;

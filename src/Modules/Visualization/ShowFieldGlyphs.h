@@ -122,7 +122,7 @@ namespace SCIRun {
         RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 
-        boost::shared_ptr<class GlyphBuilder> builder_;
+        SharedPointer<class GlyphBuilder> builder_;
 
       };
     } // Visualization

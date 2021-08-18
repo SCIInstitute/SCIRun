@@ -61,8 +61,8 @@ class ArrayMathProgramVariable;
 // As Program is stored in a large array we do not need a handle for that
 // one. These are helper classes that are located elsewhere in memory
 
-typedef boost::shared_ptr<ArrayMathProgramVariable> ArrayMathProgramVariableHandle;
-typedef boost::shared_ptr<ArrayMathProgram>         ArrayMathProgramHandle;
+typedef SharedPointer<ArrayMathProgramVariable> ArrayMathProgramVariableHandle;
+typedef SharedPointer<ArrayMathProgram>         ArrayMathProgramHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for databasing the function calls that make up the program
@@ -251,7 +251,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
     size_type     size_;
 };
 
-  typedef boost::shared_ptr<ArrayMathProgramCode> ArrayMathProgramCodePtr;
+  typedef SharedPointer<ArrayMathProgramCode> ArrayMathProgramCodePtr;
 
 
 

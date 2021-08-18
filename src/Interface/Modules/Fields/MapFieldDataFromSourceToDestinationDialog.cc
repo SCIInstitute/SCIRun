@@ -36,31 +36,19 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Gui {
-    class MapFieldDataFromSourceToDestinationDialogImpl
-    {
-    public:
-      MapFieldDataFromSourceToDestinationDialogImpl()
-      {
-        mappingNameLookup_.insert(StringPair("Linear (\"weighted\")", "interpolateddata"));
-        mappingNameLookup_.insert(StringPair("Constant mapping: each destination gets nearest source value", "closestdata"));
-        mappingNameLookup_.insert(StringPair("Constant mapping: each source projects to just one destination", "singledestination"));
-      }
-      GuiStringTranslationMap mappingNameLookup_;
-    };
-  }}
-
 MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  impl_(new MapFieldDataFromSourceToDestinationDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, impl_->mappingNameLookup_);
+  addComboBoxManager(methodComboBox_, Parameters::MappingMethod,
+    {{"Linear (\"weighted\")", "interpolateddata"},
+    {"Constant mapping: each destination gets nearest source value", "closestdata"},
+    {"Constant mapping: each source projects to just one destination", "singledestination"}}
+  );
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
   connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));

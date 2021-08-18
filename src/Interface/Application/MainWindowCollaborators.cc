@@ -984,7 +984,7 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
 {
   auto mainWin = SCIRunMainWindow::Instance();
 
-  Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
+  Core::Application::Instance().setCommandFactory(makeShared<GuiGlobalCommandFactory>());
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->initialize();
 

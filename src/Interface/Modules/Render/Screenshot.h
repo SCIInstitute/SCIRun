@@ -49,7 +49,7 @@ namespace SCIRun
       QImage getScreenshot();
       void saveScreenshot();
       void saveScreenshot(const QString& filename);
-      void saveScreenshotFromPath();
+      void saveScreenshotFromPath(bool prompt);
       QString screenshotFileFromPreferences() const;
       QString screenshotFile() const;
       Modules::Render::RGBMatrices toMatrix() const;

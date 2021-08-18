@@ -29,10 +29,14 @@
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
-#include <Dataflow/Network/NullModuleState.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/StringUtil.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
+
+#include <qwt_knob.h>
+#include <qwt_abstract_slider.h>
+//#include <qwt_dial_needle.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -46,166 +50,12 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Modules::Visualization;
 
-ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
-{
-  setupUi(this);
-
-  setHidden(true);
-  setVisible(false);
-  setWindowTitle(name);
-  setAllowedAreas(Qt::BottomDockWidgetArea);
-  setFloating(true);
-  setStyleSheet(parent->styleSheet());
-
-  setupObjectListWidget();
-
-  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
-  {
-    mouseControlComboBox_->setCurrentIndex(1);
-  }
-  else
-  {
-    mouseControlComboBox_->setCurrentIndex(0);
-  }
-
-  invertZoomCheckBox_->setChecked(SCIRun::Core::Preferences::Instance().invertMouseZoom);
-
-  updateZoomOptionVisibility();
-
-  //----------- Developer Tab--------------//
-  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
-  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
-
-  //-----------Objects Tab-----------------//
-  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
-  connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
-  connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
-  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
-  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
-  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
-    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
-
-  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
-  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
-  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
-  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
-  updateViewSceneTree();
-  groupRemoveSpinBox_->setRange(0, 0);
-
-  //-----------Render Tab-----------------//
-  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
-
-  //-----------Clipping Tab-----------------//
-  planeButtonGroup_->setId(plane1RadioButton_, 0);
-  planeButtonGroup_->setId(plane2RadioButton_, 1);
-  planeButtonGroup_->setId(plane3RadioButton_, 2);
-  planeButtonGroup_->setId(plane4RadioButton_, 3);
-  planeButtonGroup_->setId(plane5RadioButton_, 4);
-  planeButtonGroup_->setId(plane6RadioButton_, 5);
-
-  plane1RadioButton_->setStyleSheet("QRadioButton { color: rgb(219, 56, 22) }");
-  plane2RadioButton_->setStyleSheet("QRadioButton { color: rgb(242, 102, 19) }");
-  plane3RadioButton_->setStyleSheet("QRadioButton { color: rgb(205, 212, 74) }");
-  plane4RadioButton_->setStyleSheet("QRadioButton { color: rgb(87, 184, 53) }");
-  plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
-  plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
-
-  connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
-  connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
-  connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
-  connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
-  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
-  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
-  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
-  //-----------Lights Tab-----------------//
-  connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
-  connect(headlightAzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightAzimuth(int)));
-  connect(headlightInclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightInclination(int)));
-  connect(colorButton0, SIGNAL(clicked()), this, SLOT(selectLight0Color()));
-  setLabelColor(color0, lightColors[0] = Qt::white);
-
-  connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
-  connect(light1AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Azimuth(int)));
-  connect(light1InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Inclination(int)));
-  connect(colorButton1, SIGNAL(clicked()), this, SLOT(selectLight1Color()));
-  setLabelColor(color1, lightColors[1] = Qt::white);
-
-  connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
-  connect(light2AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Azimuth(int)));
-  connect(light2InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Inclination(int)));
-  connect(colorButton2, SIGNAL(clicked()), this, SLOT(selectLight2Color()));
-  setLabelColor(color2, lightColors[2] = Qt::white);
-
-  connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
-  connect(light3AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Azimuth(int)));
-  connect(light3InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Inclination(int)));
-  connect(colorButton3, SIGNAL(clicked()), this, SLOT(selectLight3Color()));
-  setLabelColor(color3, lightColors[3] = Qt::white);
-
-  connect(this, SIGNAL(updateLightColor(int)), parent, SLOT(setLightColor(int)));
-
-  //-----------Materials Tab-----------------//
-  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
-  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
-  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
-  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
-  emissionDoubleSpinBox_->setDisabled(true);
-  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
-  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
-  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
-  fogOnVisibleObjectsCheckBox_->setDisabled(true);
-  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
-  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
-  //-----------View Tab-------------------//
-  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
-  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
-  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
-  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), parent, SLOT(setDefaultOrientPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
-  connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
-  connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
-  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
-  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
-  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
-  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
-  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
-  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
-  connect(rotateRightButton_, SIGNAL(clicked()), parent, SLOT(autoRotateRight()));
-  connect(rotateLeftButton_, SIGNAL(clicked()), parent, SLOT(autoRotateLeft()));
-  connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
-  connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
-  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
-
-  //-----------Controls Tab-------------------//
-  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
-  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
-
-  setSampleColor(Qt::black);
-
-  WidgetStyleMixin::tabStyle(tabWidget);
-
-  /////Set unused widgets to be not visible
-
-  ///Object Tab
-  tabWidget->setCurrentIndex(0);
-
-  ////View Tab
-  viewOptionsGroupBox_->setEnabled(false);
-  viewOptionsGroupBox_->setVisible(false);
-  autoViewOnLoadCheckBox_->setVisible(false);
-}
-
 static bool vsdPairComp(std::pair<ViewSceneDialog*, bool> a, std::pair<ViewSceneDialog*, bool> b)
 {
   return std::get<0>(a)->getName() < std::get<0>(b)->getName();
 }
 
-void ViewSceneControlsDock::updateViewSceneTree()
+void CameraLockControls::updateViewSceneTree()
 {
   viewSceneTreeWidget_->clear();
 
@@ -238,32 +88,38 @@ void ViewSceneControlsDock::updateViewSceneTree()
   viewSceneTreeWidget_->expandAll();
 }
 
-void ViewSceneControlsDock::addGroup()
+void CameraLockControls::addGroup()
 {
   ViewSceneDialog::viewSceneManager.addGroup();
   groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
-void ViewSceneControlsDock::removeGroup()
+void CameraLockControls::removeGroup()
 {
-  uint32_t group = groupRemoveSpinBox_->value();
+  const uint32_t group = groupRemoveSpinBox_->value();
   ViewSceneDialog::viewSceneManager.removeGroup(group);
   groupRemoveSpinBox_->setRange(0, ViewSceneDialog::viewSceneManager.getGroupCount() - 1);
 }
 
-void ViewSceneControlsDock::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
+void CameraLockControls::viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column)
 {
-  QTreeWidgetItem* p = widgetItem->parent();
-  if(!p) return;
+  auto p = widgetItem->parent();
+  if (!p) return;
   uint32_t g = p->data(1, Qt::EditRole).toInt();
-  ViewSceneDialog* vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
+  const auto vs = widgetItem->data(1, Qt::EditRole).value<ViewSceneDialog*>();
   if (widgetItem->checkState(column) == Qt::Unchecked)
+  {
     ViewSceneDialog::viewSceneManager.removeViewSceneFromGroup(vs, g);
+    vs->vsLog("");
+  }
   else if (widgetItem->checkState(column) == Qt::Checked)
+  {
     ViewSceneDialog::viewSceneManager.moveViewSceneToGroup(vs, g);
+    vs->vsLog(tr("In camera lock group %1").arg(g));
+  }
 }
 
-void ViewSceneControlsDock::setSampleColor(const QColor& color)
+void ColorOptions::setSampleColor(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
@@ -271,49 +127,38 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::setLabelColor(QLabel* label, const QColor& color)
-{
-  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
-    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
-
-  label->setStyleSheet(styleSheet);
-}
-
-void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
-{
-  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
-    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
-
-  fogColorLabel_->setStyleSheet(styleSheet);
-}
-
-void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double,
-  bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+void MaterialsControls::setMaterialValues(double ambient, double diffuse, double specular, double shine, double)
 {
   ambientDoubleSpinBox_->setValue(ambient);
   diffuseDoubleSpinBox_->setValue(diffuse);
   specularDoubleSpinBox_->setValue(specular);
   shininessDoubleSpinBox_->setValue(shine);
+}
+
+void FogControls::setFogValues(bool fogVisible, bool, bool useBGColor, double fogStart, double fogEnd)
+{
   fogGroupBox_->setChecked(fogVisible);
-  fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
   fogUseBGColorCheckBox_->setChecked(useBGColor);
   fogStartDoubleSpinBox_->setValue(fogStart);
   fogEndDoubleSpinBox_->setValue(fogEnd);
 }
 
-void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-  double numTicks, double, const QString& unit)
+const QColor ScaleBarControls::buttonOutlineColor{"lightGray"};
+
+void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
 {
-  showScaleBarTextGroupBox_->setChecked(visible);
-  fontSizeSpinBox_->setValue(fontSize);
-  scaleBarLengthDoubleSpinBox_->setValue(length);
-  scaleBarHeightDoubleSpinBox_->setValue(height);
-  scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
-  numTicksSpinBox_->setValue(numTicks);
-  scaleBarUnitLineEdit_->setText(unit);
+  showScaleBarTextGroupBox_->setChecked(scale.visible);
+  fontSizeSpinBox_->setValue(scale.fontSize);
+  scaleBarLengthDoubleSpinBox_->setValue(scale.length);
+  scaleBarHeightDoubleSpinBox_->setValue(scale.height);
+  scaleBarMultiplierDoubleSpinBox_->setValue(scale.multiplier);
+  numTicksSpinBox_->setValue(scale.numTicks);
+  scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
+  if (scale.visible)
+    updateToolbarButton(ScaleBarControls::buttonOutlineColor);
 }
 
-void ViewSceneControlsDock::updateZoomOptionVisibility()
+void InputControls::updateZoomOptionVisibility()
 {
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
   {
@@ -327,14 +172,14 @@ void ViewSceneControlsDock::updateZoomOptionVisibility()
   }
 }
 
-void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal)
+void ClippingPlaneControls::updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal)
 {
   planeVisibleCheckBox_->setChecked(visible);
   showPlaneFrameCheckBox_->setChecked(showPlane);
   reversePlaneNormalCheckBox_->setChecked(reverseNormal);
 }
 
-void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
+void ClippingPlaneControls::updatePlaneControlDisplay(double x, double y, double z, double d)
 {
   QString xtext, ytext, ztext, dtext;
   if (x >= 0)
@@ -386,14 +231,14 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
 }
 
 // Set x and y sliders all the way right(100)
-void ViewSceneControlsDock::setSliderDefaultPos()
+void OrientationAxesControls::setSliderDefaultPos()
 {
   orientAxisXPos_->setValue(100);
   orientAxisYPos_->setValue(100);
 }
 
 // Set x and y sliders to half way(50)
-void ViewSceneControlsDock::setSliderCenterPos()
+void OrientationAxesControls::setSliderCenterPos()
 {
   orientAxisXPos_->setValue(50);
   orientAxisYPos_->setValue(50);
@@ -483,7 +328,7 @@ void VisibleItemManager::initializeSavedStateMap()
     for (size_t i = 0; i < item.size(); ++i)
     {
       auto name = item[i].name().name();
-      auto checked = item[i].toBool();
+      const auto checked = item[i].toBool();
 
       if (0 == i) // showfield
       {
@@ -506,12 +351,12 @@ void VisibleItemManager::addRenderItem(const QString& name)
     return;
   }
 
-  QStringList names(name);
+  const QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
-  auto topLevelItemStateIter = topLevelItemMap_.find(name);
+  const auto topLevelItemStateIter = topLevelItemMap_.find(name);
   if (topLevelItemStateIter != topLevelItemMap_.end())
   {
     if (!topLevelItemStateIter->second)
@@ -632,37 +477,364 @@ class FixMacCheckBoxes : public QStyledItemDelegate
 public:
   void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override
   {
-    QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
+    auto& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
     refToNonConstOption.showDecorationSelected = false;
     QStyledItemDelegate::paint(painter, refToNonConstOption, index);
   }
 };
 
-void ViewSceneControlsDock::setupObjectListWidget()
+void ObjectSelectionControls::setupObjectListWidget()
 {
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
-QColor ViewSceneControlsDock::getLightColor(int index) const
+AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent)
 {
-  return lightColors[index];
+  setupUi(this);
+
+  connect(rotateRightButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateRight);
+  connect(rotateLeftButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateLeft);
+  connect(rotateUpButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateUp);
+  connect(rotateDownButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateDown);
+  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
 }
 
-void ViewSceneControlsDock::selectLightColor(int index)
+ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
 {
-  QString title = index < 1 ? " Choose color for Headlight" : " Choose color for Light" + QString::number(index);
+  setupUi(this);
 
-  auto newColor = QColorDialog::getColor(lightColors[index], this, title);
+  connect(setBackgroundColorPushButton_, &QPushButton::clicked, parent, &ViewSceneDialog::assignBackgroundColor);
+}
+
+MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
+  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
+  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
+  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
+}
+
+FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), LightButtonUpdater(toolbarButton, [this]() { toggleFog(); })
+{
+  setupUi(this);
+
+  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
+  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
+  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
+  connect(this, SIGNAL(setFogTo(bool)), parent, SLOT(setFogOn(bool)));
+  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
+  qobject_cast<QGridLayout*>(fogGroupBox_->layout())->addWidget(colorPickerButton_, 3, 0, 1, 2);
+  linkedCheckable_ = [this]() { return fogGroupBox_->isChecked(); };
+  connect(this, &FogControls::lightColorUpdated, parent, &ViewSceneDialog::assignFogColor);
+  connect(fogGroupBox_, &QGroupBox::toggled, [this]() { updateLightColor(); });
+}
+
+void FogControls::toggleFog()
+{
+  auto toggle = !fogGroupBox_->isChecked();
+  fogGroupBox_->setChecked(toggle);
+  Q_EMIT setFogTo(toggle);
+}
+
+ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  setupObjectListWidget();
+
+  visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
+  connect(selectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::selectAllClicked);
+  connect(deselectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::deselectAllClicked);
+  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
+  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
+  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
+    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
+}
+
+namespace
+{
+  template <typename Checkable>
+  void toggleCheckable(Checkable* box)
+  {
+    box->setChecked(!box->isChecked());
+  }
+}
+
+OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), ButtonStylesheetToggler(toolbarButton,
+    [this]() { toggleCheckable(orientationCheckableGroupBox_); })
+{
+  setupUi(this);
+
+  connect(orientationCheckableGroupBox_, &QGroupBox::toggled,
+    [parent, this](bool b) { parent->showOrientationChecked(b); toggleButton(); }
+    );
+  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
+  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
+  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
+  connect(orientDefaultPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setDefaultOrientPos);
+  connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
+  connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
+  connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
+  linkedCheckable_ = [this]() { return orientationCheckableGroupBox_->isChecked(); };
+}
+
+void OrientationAxesControls::toggleButton()
+{
+  updateToolbarButton("lightGray");
+}
+
+ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
+{
+  setupUi(this);
+
+  connect(showScaleBarTextGroupBox_, &QGroupBox::toggled,
+    [parent, this](bool b) { parent->setScaleBarVisible(b); updateToolbarButton(buttonOutlineColor); }
+    );
+  linkedCheckable_ = [this]() { return showScaleBarTextGroupBox_->isChecked(); };
+  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
+  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
+  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
+  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
+  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
+  connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
+}
+
+ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
+  : QWidget(parent),
+  ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(planeVisibleCheckBox_); })
+{
+  setupUi(this);
+
+  planeButtonGroup_->setId(plane1RadioButton_, 0);
+  planeButtonGroup_->setId(plane2RadioButton_, 1);
+  planeButtonGroup_->setId(plane3RadioButton_, 2);
+  planeButtonGroup_->setId(plane4RadioButton_, 3);
+  planeButtonGroup_->setId(plane5RadioButton_, 4);
+  planeButtonGroup_->setId(plane6RadioButton_, 5);
+
+  plane1RadioButton_->setStyleSheet("QRadioButton { color: rgb(219, 56, 22) }");
+  plane2RadioButton_->setStyleSheet("QRadioButton { color: rgb(242, 102, 19) }");
+  plane3RadioButton_->setStyleSheet("QRadioButton { color: rgb(205, 212, 74) }");
+  plane4RadioButton_->setStyleSheet("QRadioButton { color: rgb(87, 184, 53) }");
+  plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
+  plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
+
+  connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
+  connect(planeVisibleCheckBox_, &QCheckBox::toggled,
+    [parent, this](bool b) {
+      parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }
+    );
+  linkedCheckable_ = [this]() { return planeVisibleCheckBox_->isChecked(); };
+  connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
+  connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
+  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
+  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
+  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
+  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+}
+
+InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  if (Preferences::Instance().useNewViewSceneMouseControls)
+  {
+    mouseControlComboBox_->setCurrentIndex(1);
+  }
+  else
+  {
+    mouseControlComboBox_->setCurrentIndex(0);
+  }
+
+  invertZoomCheckBox_->setChecked(Preferences::Instance().invertMouseZoom);
+
+  updateZoomOptionVisibility();
+
+  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
+  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
+  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
+  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+}
+
+CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
+  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
+  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
+  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
+  updateViewSceneTree();
+  groupRemoveSpinBox_->setRange(0, 0);
+}
+
+DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
+  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
+}
+
+ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle)
+  : toolbarButton_(toolbarButton), whatToToggle_(whatToToggle)
+{
+  QObject::connect(toolbarButton, &QPushButton::clicked, whatToToggle_);
+}
+
+LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton, std::function<void()> whatToToggle)
+  : ButtonStylesheetToggler(toolbarButton, whatToToggle)
+{
+  colorPickerButton_ = new ctkColorPickerButton("");
+  QObject::connect(colorPickerButton_, &ctkColorPickerButton::colorChanged, [this]() { updateLightColor(); });
+}
+
+LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
+  : QWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { lightCheckBox_->toggle(); }),
+    lightNumber_(lightNumber)
+{
+  setupUi(this);
+  auto lightLayout = qobject_cast<QGridLayout*>(layout());
+
+#ifndef WIN32 //TODO: link error with Qwt--try upgrading
+  lightAzimuthSlider_ = new QwtKnob(this);
+  lightAzimuthSlider_->setTotalAngle(360);
+  lightAzimuthSlider_->setScale(0, 360);
+  lightAzimuthSlider_->setScaleStepSize(45);
+  lightAzimuthSlider_->setValue(180);
+  lightAzimuthSlider_->setMarkerStyle(QwtKnob::Triangle);
+  lightAzimuthSlider_->setToolTip("Azimuth angle");
+  lightAzimuthSlider_->setKnobWidth(65);
+  lightLayout->addWidget(lightAzimuthSlider_, 1, 0);
+  auto azLabel = new QLabel("Azimuth");
+  azLabel->setAlignment(Qt::AlignCenter);
+  lightLayout->addWidget(azLabel, 2, 0);
+  lightInclinationSlider_ = new QwtKnob(this);
+  lightInclinationSlider_->setTotalAngle(180);
+  lightInclinationSlider_->setScale(0, 180);
+  lightInclinationSlider_->setScaleStepSize(45);
+  lightInclinationSlider_->setValue(90);
+  lightInclinationSlider_->setMarkerStyle(QwtKnob::Triangle);
+  lightInclinationSlider_->setToolTip("Inclination angle");
+  lightInclinationSlider_->setKnobWidth(65);
+  lightLayout->addWidget(lightInclinationSlider_, 1, 1);
+  auto incLabel = new QLabel("Inclination");
+  incLabel->setAlignment(Qt::AlignCenter);
+  lightLayout->addWidget(incLabel, 2, 1);
+
+  connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
+    [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });
+  connect(lightInclinationSlider_, &QwtKnob::valueChanged,
+    [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
+
+#endif
+
+  linkedCheckable_ = [this]() { return lightCheckBox_->isChecked(); };
+  lightLayout->addWidget(colorPickerButton_, 0, 1);
+  connect(lightCheckBox_, &QCheckBox::toggled,
+    [this, viewScene](bool value) { viewScene->toggleLight(lightNumber_, value); });
+  connect(lightCheckBox_, &QCheckBox::toggled, [this]() { updateLightColor(); });
+
+  colorPickerButton_->setColor(lightColor_ = Qt::white);
+
+  connect(this, &LightControls::lightColorUpdated, [this, viewScene]() { viewScene->setLightColor(lightNumber_); });
+
+  auto resetButton = new QPushButton("Reset angles");
+  resetButton->setMaximumWidth(85);
+  connect(resetButton, &QPushButton::clicked, this, &LightControls::resetAngles);
+  lightLayout->addWidget(resetButton, 3, 0, 1, 2, Qt::AlignCenter);
+}
+
+void LightControls::resetAngles()
+{
+  if (lightAzimuthSlider_)
+    lightAzimuthSlider_->setValue(180);
+  if (lightInclinationSlider_)
+    lightInclinationSlider_->setValue(90);
+}
+
+QColor LightButtonUpdater::color() const
+{
+  return lightColor_;
+}
+
+void ButtonStylesheetToggler::updateToolbarButton(const QColor& color)
+{
+  if (!linkedCheckable_)
+    return;
+  if (linkedCheckable_())
+  {
+    const QColor complimentary(255 - color.red(), 255 - color.green(), 255 - color.blue());
+    toolbarButton_->setStyleSheet("QPushButton { background-color: " + color.name()
+      + "; color: " + complimentary.name() + " }");
+  }
+  else
+  {
+    toolbarButton_->setStyleSheet("");
+  }
+}
+
+void LightButtonUpdater::updateLightColor()
+{
+  const auto newColor = colorPickerButton_->color();
   if (newColor.isValid())
   {
-    lightColors[index] = newColor;
-    updateLightColor(index);
-    switch (index)
-    {
-      case 0: setLabelColor(color0, newColor); break;
-      case 1: setLabelColor(color1, newColor); break;
-      case 2: setLabelColor(color2, newColor); break;
-      case 3: setLabelColor(color3, newColor); break;
-    }
+    lightColor_ = newColor;
+    lightColorUpdated();
+    updateToolbarButton(lightColor_);
   }
+}
+
+void LightButtonUpdater::setColor(const QColor& color)
+{
+  colorPickerButton_->setColor(color);
+}
+
+void LightControls::setAdditionalLightState(int azimuth, int inclination, bool on)
+{
+  if (lightAzimuthSlider_)
+    lightAzimuthSlider_->setValue(azimuth);
+  if (lightInclinationSlider_)
+    lightInclinationSlider_->setValue(inclination);
+  lightCheckBox_->setChecked(on);
+  updateLightColor();
+}
+
+ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setupUi(this);
+
+  connect(lookDownComboBox_, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
+}
+
+QString ViewAxisChooserControls::currentAxis() const
+{
+  return lookDownComboBox_->currentText();
+}
+
+void ViewAxisChooserControls::viewAxisSelected(const QString& name)
+{
+  upVectorComboBox_->clear();
+
+  if (!name.contains("X"))
+  {
+    upVectorComboBox_->addItem("+X");
+    upVectorComboBox_->addItem("-X");
+  }
+  if (!name.contains("Y"))
+  {
+    upVectorComboBox_->addItem("+Y");
+    upVectorComboBox_->addItem("-Y");
+  }
+  if (!name.contains("Z"))
+  {
+    upVectorComboBox_->addItem("+Z");
+    upVectorComboBox_->addItem("-Z");
+  }
+  upVectorComboBox_->setEnabled(true);
 }

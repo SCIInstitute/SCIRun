@@ -59,7 +59,7 @@ namespace SCIRun
         virtual void log4(const std::string& message) const = 0;
       };
 
-      typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
+      typedef SharedPointer<LogAppenderStrategy> LogAppenderStrategyPtr;
 
       SCISHARE bool useLogCheckForWindows7();
 

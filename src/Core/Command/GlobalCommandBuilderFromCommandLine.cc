@@ -29,7 +29,7 @@
 /// @todo Documentation Core/Command/GlobalCommandBuilderFromCommandLine.cc
 
 #include <iostream>
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Command/CommandQueue.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Utils/Exception.h>
@@ -47,7 +47,7 @@ using namespace SCIRun::Core::Algorithms;
   CommandQueueHandle GlobalCommandBuilderFromCommandLine::build(ApplicationParametersHandle params) const
   {
     ENSURE_NOT_NULL(params, "Application parameters");
-    auto q(boost::make_shared<CommandQueue>());
+    auto q(makeShared<CommandQueue>());
 
     if (params->help())
     {

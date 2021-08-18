@@ -223,7 +223,7 @@ void ShowField::execute()
 }
 
 RenderState GeometryBuilder::getNodeRenderState(
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+  boost::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -261,7 +261,7 @@ RenderState GeometryBuilder::getNodeRenderState(
   return renState;
 }
 
-RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getEdgeRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -300,7 +300,7 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_pt
   return renState;
 }
 
-RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getFaceRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -341,7 +341,7 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
 
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  boost::optional<SharedPointer<ColorMap>> colorMap,
   const GeometryIDGenerator& gid)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
@@ -359,7 +359,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
     idname += GeometryObject::delimiter + state_->getValue(FieldName).toString() + " (from " + moduleId_ + ")";
   }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
+  auto geom(makeShared<GeometryObjectSpire>(gid, idname, true));
 
   // todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -391,7 +391,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
 void GeometryBuilder::renderFaces(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  boost::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state, GeometryHandle geom,
   const std::string& id)
 {
@@ -469,7 +469,7 @@ namespace
   }
 
   void spiltColorMapToTextureAndCoordinates(
-    const boost::optional<boost::shared_ptr<ColorMap>>& colorMap,
+    const boost::optional<SharedPointer<ColorMap>>& colorMap,
     ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
   {
     ColorMapHandle realColorMap = nullptr;
@@ -491,7 +491,7 @@ namespace
 
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  boost::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -825,7 +825,7 @@ void GeometryBuilder::renderFacesLinear(
 
 void GeometryBuilder::renderNodes(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  boost::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -913,7 +913,7 @@ void GeometryBuilder::renderNodes(
 
 void GeometryBuilder::renderEdges(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  boost::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)

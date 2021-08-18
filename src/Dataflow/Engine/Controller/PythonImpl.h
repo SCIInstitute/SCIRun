@@ -51,10 +51,10 @@ namespace Engine {
   public:
     PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
     ~PythonImpl();
-    boost::shared_ptr<PyModule> addModule(const std::string& name) override;
+    SharedPointer<PyModule> addModule(const std::string& name) override;
     std::string removeModule(const std::string& id) override;
-    std::vector<boost::shared_ptr<PyModule>> moduleList() const override;
-    boost::shared_ptr<PyModule> findModule(const std::string& id) const override;
+    std::vector<SharedPointer<PyModule>> moduleList() const override;
+    SharedPointer<PyModule> findModule(const std::string& id) const override;
     std::string executeAll(const Networks::ExecutableLookup* lookup) override;
     std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
@@ -72,8 +72,8 @@ namespace Engine {
     void pythonModuleRemovedSlot(const Networks::ModuleId&);
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
-    boost::shared_ptr<PythonImplImpl> impl_;
-    std::map<std::string, boost::shared_ptr<PyModule>> modules_;
+    SharedPointer<PythonImplImpl> impl_;
+    std::map<std::string, SharedPointer<PyModule>> modules_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     boost::function<void()> unlock_;

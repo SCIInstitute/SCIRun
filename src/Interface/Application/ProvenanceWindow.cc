@@ -292,7 +292,7 @@ void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -301,7 +301,7 @@ void GuiActionProvenanceConverter::moduleRemoved(const ModuleId& id)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -310,7 +310,7 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -319,7 +319,7 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -328,7 +328,7 @@ void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks:
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }

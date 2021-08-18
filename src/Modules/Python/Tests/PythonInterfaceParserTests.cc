@@ -44,7 +44,7 @@ std::unique_ptr<InterfaceWithPythonCodeTranslatorImpl> makeParser()
 {
   std::string moduleId = "InterfaceWithPython:0";
   std::vector<std::string> portIds = {"InputString:0"};
-  auto state = boost::make_shared<SimpleMapModuleState>();
+  auto state = makeShared<SimpleMapModuleState>();
   for (const auto& outputVarToCheck : InterfaceWithPython::outputNameParameters())
   {
     state->setValue(Name(outputVarToCheck), std::string(""));

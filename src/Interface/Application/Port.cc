@@ -197,8 +197,8 @@ PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlig
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+  boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+  boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
@@ -746,8 +746,8 @@ void PortWidget::insertNewModule(const QMap<QString, std::string>& info)
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+  boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+  boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
@@ -756,8 +756,8 @@ InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const
 
 OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+  boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+  boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)

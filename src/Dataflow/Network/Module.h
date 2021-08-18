@@ -145,19 +145,19 @@ namespace Networks {
 /*** User-interface ****/
     // Throws if input is not present or null.
     template <class T, size_t N>
-    boost::shared_ptr<T> getRequiredInput(const StaticPortName<T,N>& port);
+    SharedPointer<T> getRequiredInput(const StaticPortName<T,N>& port);
     template <class T, size_t N>
-    boost::optional<boost::shared_ptr<T>> getOptionalInput(const StaticPortName<T,N>& port);
+    boost::optional<SharedPointer<T>> getOptionalInput(const StaticPortName<T,N>& port);
     template <class T, size_t N>
-    std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
+    std::vector<SharedPointer<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
     template <class T, size_t N>
-    std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
+    std::vector<SharedPointer<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
     // does not throw, only returns non-null
     template <class T, size_t N>
-    std::vector<boost::shared_ptr<T>> getValidDynamicInputs(const DynamicPortName<T,N>& port);
+    std::vector<SharedPointer<T>> getValidDynamicInputs(const DynamicPortName<T,N>& port);
   public: //for python
     template <class T, class D, size_t N>
-    void sendOutput(const StaticPortName<T, N>& port, boost::shared_ptr<D> data);
+    void sendOutput(const StaticPortName<T, N>& port, SharedPointer<D> data);
   protected:
     template <class T, size_t N, typename F>
     void computeOutputAndSendIfConnected(const StaticPortName<T, N>& port, F evalFunc);
@@ -197,14 +197,14 @@ namespace Networks {
     std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
     void runProgrammablePortInput();
     template <class T>
-    boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);
+    SharedPointer<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
-    boost::optional<boost::shared_ptr<T>> getOptionalInputAtIndex(const PortId& id);
+    boost::optional<SharedPointer<T>> getOptionalInputAtIndex(const PortId& id);
     template <class T>
-    boost::shared_ptr<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
+    SharedPointer<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
     friend class ModuleImpl;
-    boost::shared_ptr<class ModuleImpl> impl_;
+    SharedPointer<class ModuleImpl> impl_;
   };
 
   // ReSharper disable once CppUnusedIncludeDirective

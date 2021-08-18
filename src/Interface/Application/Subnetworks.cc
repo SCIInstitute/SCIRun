@@ -249,8 +249,8 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   {
     SubnetPortWidgetCtorArgs args { QString::fromStdString(port->get_portname()),
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
-      [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-      [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+      [this](){ return makeShared<ConnectionFactory>([this]() { return scene_; }); },
+      [this](){ return makeShared<ClosestPortFinder>([this]() { return scene_; }); },
       port.get()};
 
     PortWidget* portRepl;
@@ -261,7 +261,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
     layout->addWidget(portRepl);
     portRepl->setSceneFunc([this]() { return scene_; });
-    portRepl->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
+    portRepl->setPositionObject(makeShared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
 
     // qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
     //   << portRewiringMap2_[port->id().toString()]->id().id_.c_str();
@@ -277,8 +277,8 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   {
     SubnetPortWidgetCtorArgs args { "Test" + type,
       to_color(PortColorLookup::toColor(type.toStdString()), 230), type.toStdString(),
-      [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-      [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+      [this](){ return makeShared<ConnectionFactory>([this]() { return scene_; }); },
+      [this](){ return makeShared<ClosestPortFinder>([this]() { return scene_; }); },
       nullptr};
 
     PortWidget* testPort;
@@ -289,7 +289,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
     layout->addWidget(testPort);
     testPort->setSceneFunc([this]() { return scene_; });
-    testPort->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
+    testPort->setPositionObject(makeShared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
     offset += testPort->properWidth() + 3;
     portsBridge->addPort(testPort);
     //testPort->hide();
@@ -321,7 +321,7 @@ void NetworkEditor::setupPortHolders(ModuleHandle mod)
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", topSubnetPortHolderPositioner_);
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", bottomSubnetPortHolderPositioner_);
   portRewiringMap_.clear();
-  boost::dynamic_pointer_cast<SubnetModule>(mod)->setSubnet(this);
+  std::dynamic_pointer_cast<SubnetModule>(mod)->setSubnet(this);
 }
 
 void NetworkEditor::clearSiblingSelections()
@@ -757,7 +757,7 @@ void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
   }
 }
 
-SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent), editor_(ed), name_(name)
 {
 }

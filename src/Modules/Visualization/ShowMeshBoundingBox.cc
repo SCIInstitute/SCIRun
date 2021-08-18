@@ -152,7 +152,7 @@ GeometryHandle ShowMeshBoundingBoxImpl::makeGeometry(const GeometryIDGenerator& 
   addLinesToAxis(glyphs, y_, min, y, x, z, ColorRGB(0,1,0));
   addLinesToAxis(glyphs, z_, min, z, x, y, ColorRGB(0,0,1));
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGen, "ShowMeshBoundingBox", true));
+  auto geom(makeShared<GeometryObjectSpire>(idGen, "ShowMeshBoundingBox", true));
   glyphs.buildObject(*geom, geom->uniqueID(), false, 1.0, ColorScheme::COLOR_IN_SITU,
                      getRenderState(), bbox_, true, nullptr);
   return geom;

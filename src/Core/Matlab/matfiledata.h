@@ -78,7 +78,7 @@
 */
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 

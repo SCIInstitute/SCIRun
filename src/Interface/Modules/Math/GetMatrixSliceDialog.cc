@@ -48,9 +48,9 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
   addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
 
-  playModeMap_.insert(StringPair("Loop once", "looponce"));
-  playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));
-  addComboBoxManager(playModeComboBox_, Parameters::PlayModeType, playModeMap_);
+  addComboBoxManager(playModeComboBox_, Parameters::PlayModeType,
+    {{"Loop once", "looponce"},
+    {"Loop forever (EXPERIMENTAL)", "loopforever"}});
 
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
   connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));

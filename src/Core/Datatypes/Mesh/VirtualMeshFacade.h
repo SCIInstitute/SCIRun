@@ -44,7 +44,7 @@ namespace Datatypes {
   public:
     typedef MeshFacade<VirtualMeshType> my_base;
 
-    explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
+    explicit VirtualMeshFacade(SharedPointer<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       /// @todo: necessary? interface to vmesh
       //if (! vmesh->is_latvolmesh()
@@ -102,7 +102,7 @@ namespace Datatypes {
       return vmesh_->num_elems();
     }
   private:
-    boost::shared_ptr<VirtualMeshType> vmesh_;
+    SharedPointer<VirtualMeshType> vmesh_;
   };
 
 }}}

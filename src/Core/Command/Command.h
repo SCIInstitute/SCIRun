@@ -31,7 +31,7 @@
 #ifndef CORE_COMMAND_COMMAND_H
 #define CORE_COMMAND_COMMAND_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Algorithms/Base/AlgorithmParameterList.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Command/share.h>
@@ -67,7 +67,7 @@ namespace SCIRun
       {
       };
 
-      typedef boost::shared_ptr<ParameterizedCommand> CommandHandle;
+      typedef SharedPointer<ParameterizedCommand> CommandHandle;
 
       class SCISHARE GuiCommand : public ParameterizedCommand
       {

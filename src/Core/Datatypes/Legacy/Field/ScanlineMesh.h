@@ -106,7 +106,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type;
 
-  typedef boost::shared_ptr<ScanlineMesh<Basis> > handle_type;
+  typedef SharedPointer<ScanlineMesh<Basis> > handle_type;
   typedef Basis           basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -239,7 +239,7 @@ VMesh* vmesh() override { return (vmesh_.get()); }
 
 MeshFacadeHandle getFacade() const override
   {
-     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+     return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
 int basis_order() override { return basis_.polynomial_order(); }
@@ -633,11 +633,11 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new ScanlineMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<ScanlineMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<ScanlineMesh>(); }
   /// This function returns a handle for the virtual interface.
   static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
   {
-    return boost::make_shared<ScanlineMesh>(x,min,max);
+    return makeShared<ScanlineMesh>(x,min,max);
   }
 
   /// This function will find the closest element and the location on that
@@ -811,7 +811,7 @@ protected:
   /// the basis fn
   Basis                basis_;
 
-  boost::shared_ptr<VMesh>        vmesh_;
+  SharedPointer<VMesh>        vmesh_;
 
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
