@@ -41,7 +41,6 @@
 #include <Core/Datatypes/FieldInformation.h>
 #include <Dataflow/GuiInterface/GuiVar.h>
 #include <iostream>
-#include <boost/scoped_ptr.hpp>
 
 namespace SCIRun {
 
@@ -64,7 +63,7 @@ class CoregisterPointClouds : public Module
     GuiDouble misfitTol_;
     GuiString method_;
     int abort_;
-    boost::shared_ptr<MusilRNG> mr_;
+    std::shared_ptr<MusilRNG> mr_;
 };
 
 
@@ -160,7 +159,7 @@ CoregisterPointClouds::execute()
   int allowTranslate = allowTranslate_.get();
   std::string method = method_.get();
 
-  boost::scoped_ptr<CoregPts> coreg;
+  std::unique_ptr<CoregPts> coreg;
   if (method == "Analytic")
   {
     coreg.reset(new CoregPtsAnalytic(allowScale, allowRotate, allowTranslate));
