@@ -265,8 +265,8 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       constructor_.addVertex(prim, p2, n2, color);
       if (showNormals)
       {
-        constructor_.addLine(p1, showNormalsScale * n1, color, color);
-        constructor_.addLine(p2, showNormalsScale * n2, color, color);
+        constructor_.addLine(p1, showNormalsScale * n1 + p1, color, color);
+        constructor_.addLine(p2, showNormalsScale * n2 + p2, color, color);
       }
 
       int v1 = 1, v2 = 2;
