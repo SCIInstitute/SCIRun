@@ -30,12 +30,7 @@
 #define GRAPHICS_DATATYPES_RENDER_FIELD_STATE_H
 
 #include <Core/Datatypes/Color.h>
-<<<<<<< HEAD:src/Core/Algorithms/Visualization/RenderFieldState.h
-#include <array>
-#include <Core/Algorithms/Visualization/share.h>
-=======
 #include <Graphics/Datatypes/share.h>
->>>>>>> uncertainty_tensors:src/Graphics/Datatypes/RenderFieldState.h
 
 namespace SCIRun {
 

@@ -28,6 +28,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Visualization/ShowUncertaintyGlyphsAlgorithm.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Datatypes/Geometry.h>
@@ -130,17 +131,17 @@ GeometryHandle ShowUncertaintyGlyphsImpl::run(
   // " (from " + moduleId_ +")";
 
   RenderState renState;
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, true);
+  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, true);
   renState.mGlyphType = RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH;
   renState.defaultColor = ColorRGB(1.0, 1.0, 1.0);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
   auto vmesh = mean->vmesh();
   // std::cout << "bbox: " << vmesh->get_bounding_box() << "\n";
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(idgen, idname, true));
+  auto geom(std::make_shared<GeometryObjectSpire>(idgen, idname, true));
   constructor_.buildObject(*geom, geom->uniqueID(), true, 0.5, ColorScheme::COLOR_UNIFORM, renState,
       primIn, vmesh->get_bounding_box(), true, nullptr);
 
