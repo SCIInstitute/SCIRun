@@ -38,6 +38,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowAndEditDipoles.ui
   ShowMeshBoundingBox.ui
   ShowOrientationAxes.ui
+  ShowUncertaintyGlyphs.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -53,6 +54,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowAndEditDipolesDialog.h
   ShowMeshBoundingBoxDialog.h
   ShowOrientationAxesDialog.h
+  ShowUncertaintyGlyphsDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -67,6 +69,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowAndEditDipolesDialog.cc
   ShowMeshBoundingBoxDialog.cc
   ShowOrientationAxesDialog.cc
+  ShowUncertaintyGlyphsDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")

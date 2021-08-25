@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ShowUncertaintyGlyphs",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Visualization/ShowUncertaintyGlyphs.h"
+  },
+  "algorithm": {
+    "name": "ShowUncertaintyGlyphsAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/ShowUncertaintyGlyphsAlgorithm.h"
+  },
+  "UI": {
+    "name": "ShowUncertaintyGlyphsDialog",
+    "header": "Interface/Modules/Visualization/ShowUncertaintyGlyphsDialog.h"
+  }
+}

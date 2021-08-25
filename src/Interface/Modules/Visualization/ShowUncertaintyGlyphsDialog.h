@@ -26,40 +26,32 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
+#ifndef INTERFACE_MODULES_SHOW_UNCERTAINTY_GLYPHS_H
+#define INTERFACE_MODULES_SHOW_UNCERTAINTY_GLYPHS_H
 
-#include <gl-shaders/GLShader.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include <es-render/util/Shader.hpp>
-#include <es-render/comp/StaticVBOMan.hpp>
-#include <Graphics/Datatypes/RenderFieldState.h>
-#include <Core/Datatypes/Geometry.h>
+//This file is created from the ShowUncertaintyGlyphsDialog.ui in the module factory.
+#include <Interface/Modules/Visualization/ui_ShowUncertaintyGlyphs.h>
+#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Render {
-
-/// \todo Transition this class to use the template ShaderVBOAttribs class
-///       under utils (utils/Shader.hpp).
-struct SRRenderState
-{
-  // -- Data --
-  RenderState state;
-
-  // -- Functions --
-  SRRenderState() {}
-
-  static const char* getName() {return "SRRenderState";}
-
-  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
+namespace Gui {
+  class SCISHARE ShowUncertaintyGlyphsDialog : public ModuleDialogGeneric,
+                                               public Ui::ShowUncertaintyGlyphsDialog
   {
-    // Shouldn't need to serialize these values. They are context specific.
-    // Maybe? Will need to figure out as I go along.
-    return true;
-  }
-};
+    Q_OBJECT
 
-} // namespace Render
-} // namespace SCIRun
+  public:
+    ShowUncertaintyGlyphsDialog(const std::string& name,
+                                SCIRun::Dataflow::Networks::ModuleStateHandle state,
+                                QWidget* parent = 0);
+  private:
+    void setupTensorsTab();
+    //this function would be from pulling data from module,
+    // usually to change the UI.
+    // virtual void pull() override;
+  };
+}}
 
 #endif
