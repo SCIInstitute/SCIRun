@@ -402,7 +402,7 @@ void ComputeTensorUncertaintyAlgorithmImpl::getTensors(const FieldList& fields)
 
 MatrixHandle ComputeTensorUncertaintyAlgorithmImpl::getCovarianceMatrices() const
 {
-  auto m = boost::make_shared<DenseMatrix>(21, fieldSize_);
+  auto m = std::make_shared<DenseMatrix>(21, fieldSize_);
   for (size_t i = 0; i < fieldSize_; ++i)
   {
     m->col(i) = covarianceMatrices_[i].mandel();

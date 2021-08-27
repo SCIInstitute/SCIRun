@@ -40,8 +40,6 @@
 #include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Algorithms/Base/AlgorithmData.h>
 #include <Core/Algorithms/Math/ComputeTensorUncertaintyAlgorithm.h>
-#include <boost/smart_ptr/make_shared_object.hpp>
-#include "Core/Datatypes/MatrixFwd.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -154,5 +152,5 @@ TEST(ComputeTensorUncertaintyTest, Covariance)
   expected(0,5) = expected(5,0) = -0.4419;
   expected(1,5) = expected(5,1) = 1.3258;
 
-  assertMatricesNear(output.get<1>(), boost::make_shared<DenseMatrix>(expected.mandel()), epsilon);
+  assertMatricesNear(output.get<1>(), std::make_shared<DenseMatrix>(expected.mandel()), epsilon);
 }
