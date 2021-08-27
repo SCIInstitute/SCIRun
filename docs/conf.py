@@ -133,6 +133,14 @@ html_logo = '_static/scirun.png'
 
 html_theme_options = {
     "sidebar_hide_name": True,
+    "light_css_variables": {
+        "color-brand-primary": "#dd4040",
+        "color-brand-content": "#dd4040",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#dd4040",
+        "color-brand-content": "#dd4040",
+    },
 }
 
 autosectionlabel_prefix_document = True
