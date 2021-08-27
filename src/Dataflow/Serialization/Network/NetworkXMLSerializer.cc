@@ -73,7 +73,7 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
-  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_));
+  NetworkHandle network(makeShared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_));
   controller_->setNetwork(network);
 
   {
@@ -196,7 +196,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     }
   }
 
-  auto file(boost::make_shared<NetworkFile>());
+  auto file(makeShared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
   {

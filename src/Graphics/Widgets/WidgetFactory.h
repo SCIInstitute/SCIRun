@@ -65,7 +65,7 @@ namespace SCIRun
         template <typename WidgetIter>
         static WidgetHandle createComposite(const WidgetBaseParameters& gen, WidgetIter begin, WidgetIter end)
         {
-          return boost::make_shared<CompositeWidget>(gen, begin, end);
+          return makeShared<CompositeWidget>(gen, begin, end);
         }
 
       private:

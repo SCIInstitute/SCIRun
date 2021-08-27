@@ -438,7 +438,7 @@ namespace ThreadingPrototype
     }
   };
 
-  typedef boost::shared_ptr<Unit> UnitPtr;
+  typedef SharedPointer<Unit> UnitPtr;
 
   bool operator<(const Unit& lhs, const Unit& rhs)
   {

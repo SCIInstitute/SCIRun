@@ -28,7 +28,7 @@
 
 #include <Core/CommandLine/CommandLine.h>
 #include <boost/program_options.hpp>
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/algorithm/string/join.hpp>
 
 #include <iostream>
@@ -353,13 +353,13 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       importNetworkFile = parsed["import"].as<std::string>();
     }
 
-    return boost::make_shared<ApplicationParametersImpl>
+    return makeShared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
       pythonScriptFile,
       dataDirectory,
       importNetworkFile,
-      boost::make_shared<DeveloperParametersImpl>(
+      makeShared<DeveloperParametersImpl>(
         parseOptionalArg<std::string>(parsed, "threadMode"),
         parseOptionalArg<std::string>(parsed, "reexecuteMode"),
         parseOptionalArg<int>(parsed, "frameInitLimit"),

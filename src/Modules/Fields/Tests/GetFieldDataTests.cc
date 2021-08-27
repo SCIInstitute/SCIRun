@@ -121,7 +121,7 @@ TEST_F(GetFieldDataModuleTests, ThrowsForNullInput)
 TEST_F(GetFieldDataModuleTests, ThrowForDenseMatrixInPort)
 {
   auto test = makeModule("GetFieldData");
-	DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+	DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);
@@ -131,7 +131,7 @@ TEST_F(GetFieldDataModuleTests, ThrowForDenseMatrixInPort)
 TEST_F(GetFieldDataModuleTests, ThrowForSparseRowMatrixInPort)
 {
   auto test = makeModule("GetFieldData");
-	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 	m->insert(0,0) = 1;
 	m->insert(0,1) = 7;
 	m->insert(0,2) = 3;
@@ -149,7 +149,7 @@ TEST_F(GetFieldDataModuleTests, ThrowForSparseRowMatrixInPort)
 TEST_F(GetFieldDataModuleTests, ThrowForDenseColumnMatrixInPort)
 {
   auto test = makeModule("GetFieldData");
-	DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+	DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
 	m->setZero();
   stubPortNWithThisData(test, 0, m);
 	EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);

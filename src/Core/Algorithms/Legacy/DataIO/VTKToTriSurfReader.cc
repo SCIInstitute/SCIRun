@@ -234,7 +234,7 @@ VTKToTriSurfReaderPrivate::readPoints()
 {
   std::string line;
   PointList values;
-  std::ifstream::streampos pos = this->fileStream_.tellg();
+  auto pos = this->fileStream_.tellg();
 
   this->points_.clear();
 
@@ -268,7 +268,7 @@ VMesh::size_type
 VTKToTriSurfReaderPrivate::readElements()
 {
   std::string line;
-  std::ifstream::streampos pos = this->fileStream_.tellg();
+  auto pos = this->fileStream_.tellg();
   VMesh::size_type lineCounter = 0;
 
   this->elements_.clear();

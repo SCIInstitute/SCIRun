@@ -84,7 +84,7 @@ class SCISHARE ArrayMathFunctionCatalog : public ParserFunctionCatalog {
     static ParserFunctionCatalogHandle get_catalog();
 };
 
-typedef boost::shared_ptr<ArrayMathFunctionCatalog> ArrayMathFunctionCatalogHandle;
+typedef SharedPointer<ArrayMathFunctionCatalog> ArrayMathFunctionCatalogHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for adding Functions to the ArrayMathFunctionCatalog

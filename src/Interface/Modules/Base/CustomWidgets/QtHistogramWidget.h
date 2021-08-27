@@ -31,7 +31,7 @@
 
 #ifndef Q_MOC_RUN
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <QWidget>
 #include <Core/Math/Histogram.h>
 #include <Interface/Modules/Base/share.h>
@@ -46,7 +46,7 @@ namespace SCIRun
   namespace QtUtils
   {
     class QtHistogramWidgetPrivate;
-    typedef boost::shared_ptr< QtHistogramWidgetPrivate > QtHistogramWidgetPrivateHandle;
+    typedef SharedPointer< QtHistogramWidgetPrivate > QtHistogramWidgetPrivateHandle;
 
     class SCISHARE QtHistogramWidget : public QWidget
     {

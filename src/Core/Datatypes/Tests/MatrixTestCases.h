@@ -67,11 +67,11 @@ namespace TestUtils
   }
   static inline Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
   {
-    return Core::Datatypes::convertMatrix::toSparse(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+    return Core::Datatypes::convertMatrix::toSparse(makeShared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
   static inline Core::Datatypes::DenseColumnMatrixHandle matrix1column()
   {
-    return Core::Datatypes::convertMatrix::toColumn(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+    return Core::Datatypes::convertMatrix::toColumn(makeShared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
   static inline Core::Datatypes::DenseMatrix matrixNonSquare()
   {
@@ -86,7 +86,7 @@ namespace TestUtils
 }
 
 #define EXPECT_SPARSE_EQ(m1, m2) EXPECT_EQ(\
-  *SCIRun::Core::Datatypes::convertMatrix::toDense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m1)), \
-  *SCIRun::Core::Datatypes::convertMatrix::toDense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m2)))
+  *SCIRun::Core::Datatypes::convertMatrix::toDense(makeShared<SCIRun::Core::Datatypes::SparseRowMatrix>(m1)), \
+  *SCIRun::Core::Datatypes::convertMatrix::toDense(makeShared<SCIRun::Core::Datatypes::SparseRowMatrix>(m2)))
 
 #endif

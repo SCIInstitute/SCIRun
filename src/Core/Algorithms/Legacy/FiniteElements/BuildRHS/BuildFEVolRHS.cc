@@ -530,7 +530,7 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 		/// the main thread makes the matrix
 		if (proc_num == 0)
 		{
-		 rhsmatrix_ = boost::make_shared<DenseMatrix>(global_dimension,1);
+		 rhsmatrix_ = makeShared<DenseMatrix>(global_dimension,1);
 		}
 		success_[proc_num] = true;
 	}

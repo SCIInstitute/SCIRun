@@ -37,7 +37,7 @@ TEST(DiskWidgetTest, CanCreateSingleDiskReal)
 {
   StubGeometryIDGenerator idGen;
 
-  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<RealGlyphFactory>()},
+  DiskWidget disk({{idGen, "testDisk1"}, makeShared<RealGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}
@@ -51,7 +51,7 @@ TEST(DiskWidgetTest, CanCreateSingleDiskStubbed)
 {
   StubGeometryIDGenerator idGen;
 
-  DiskWidget disk({{idGen, "testDisk1"}, boost::make_shared<StubGlyphFactory>()},
+  DiskWidget disk({{idGen, "testDisk1"}, makeShared<StubGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}

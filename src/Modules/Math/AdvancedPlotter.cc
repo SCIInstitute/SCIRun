@@ -94,7 +94,7 @@ void LinePlotter::execute()
       for (int m = independents.size(); m < dependents.size(); ++m)
       {
         auto rowCount = dependents[m]->nrows();
-        auto indexMatrix(boost::make_shared<DenseMatrix>(rowCount, 1));
+        auto indexMatrix(makeShared<DenseMatrix>(rowCount, 1));
         for (int i = 0; i < rowCount; ++i)
           (*indexMatrix)(i, 0) = i;
         independents.push_back(indexMatrix);

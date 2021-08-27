@@ -154,7 +154,7 @@ namespace DynamicExecutor {
     //bool shouldLog_;
   };
 
-  typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;
+  typedef SharedPointer<ModuleConsumer> ModuleConsumerPtr;
 
 }}
 }}

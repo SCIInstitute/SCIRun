@@ -160,7 +160,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
-    auto c1 = boost::make_shared<Connection>(oport, iport, "test", false);
+    auto c1 = makeShared<Connection>(oport, iport, "test", false);
     printInputPorts(hasDynamic);
     ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));

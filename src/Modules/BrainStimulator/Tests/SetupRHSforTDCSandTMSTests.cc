@@ -66,7 +66,7 @@ namespace
 
   DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
   {
-   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,4));
+   DenseMatrixHandle m(makeShared<DenseMatrix>(2,4));
    (*m)(0,0) = 59.5343;
    (*m)(0,1) = 15.5240;
    (*m)(0,2) = 84.5013;

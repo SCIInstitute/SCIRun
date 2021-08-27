@@ -31,31 +31,32 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/PortInterface.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
+using namespace SCIRun;
+using namespace Dataflow::Networks;
+using namespace ReplacementImpl;
 
 ModuleFactory::~ModuleFactory() {}
 
-ModuleHandle SCIRun::Dataflow::Networks::CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName)
+ModuleHandle Dataflow::Networks::CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName)
 {
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   return factory.create(factory.lookupDescription(info));
 }
 
-bool SCIRun::Dataflow::Networks::ReplacementImpl::operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
+bool ReplacementImpl::operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
 {
   return lhs.input == rhs.input && lhs.output == rhs.output;
 }
 
-bool SCIRun::Dataflow::Networks::ReplacementImpl::operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
+bool ReplacementImpl::operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
 {
   return !(lhs == rhs);
 }
 
-bool SCIRun::Dataflow::Networks::ReplacementImpl::operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
+bool ReplacementImpl::operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
 {
   if (lhs.input == rhs.input)
     return lhs.output < rhs.output;
@@ -80,7 +81,7 @@ static void print(const std::vector<ConnectedPortTypesWithCount>& cptwc)
   std::cout << std::endl;
 }
 
-std::ostream& SCIRun::Dataflow::Networks::ReplacementImpl::operator<<(std::ostream& o, const ConnectedPortInfo& cpi)
+std::ostream& ReplacementImpl::operator<<(std::ostream& o, const ConnectedPortInfo& cpi)
 {
   o << "Connected port info: ";
   if (cpi.input.empty())
@@ -100,7 +101,7 @@ std::ostream& SCIRun::Dataflow::Networks::ReplacementImpl::operator<<(std::ostre
   return o;
 }
 
-ConnectedPortInfo SCIRun::Dataflow::Networks::ReplacementImpl::makeConnectedPortInfo(ModuleHandle module)
+ConnectedPortInfo ReplacementImpl::makeConnectedPortInfo(ModuleHandle module)
 {
   ConnectedPortInfo cpi;
   if (!module)
@@ -119,7 +120,7 @@ ConnectedPortInfo SCIRun::Dataflow::Networks::ReplacementImpl::makeConnectedPort
   return cpi;
 }
 
-boost::shared_ptr<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build()
+SharedPointer<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build()
 {
   ModuleReplacementFilter::ReplaceMap replaceMap;
 
@@ -135,7 +136,7 @@ boost::shared_ptr<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build
     std::cout << x.first << " --> " << x.second.size() << std::endl;
   }
 */
-  return boost::make_shared<ModuleReplacementFilter>(std::move(replaceMap));
+  return makeShared<ModuleReplacementFilter>(std::move(replaceMap));
 }
 
 void ModuleReplacementFilterBuilder::registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap,
@@ -206,7 +207,7 @@ namespace
   }
 }
 
-std::vector<ConnectedPortInfo> SCIRun::Dataflow::Networks::ReplacementImpl::allPossibleConnectedPortConfigs(const InputPortDescriptionList& inputPorts,
+std::vector<ConnectedPortInfo> ReplacementImpl::allPossibleConnectedPortConfigs(const InputPortDescriptionList& inputPorts,
   const OutputPortDescriptionList& outputPorts)
 {
   std::vector<ConnectedPortTypesWithCount> inputOptions, outputOptions;

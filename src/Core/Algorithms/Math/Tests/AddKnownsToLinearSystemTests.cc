@@ -49,7 +49,7 @@ namespace
 	// x vector [3; 4; 5;]
 	DenseMatrixHandle x_num ()
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 		for (int i = 0; i < m->rows(); ++ i)
 			for (int j = 0; j < m->cols(); ++ j)
 				(*m)(i, j) = i+3;
@@ -58,7 +58,7 @@ namespace
 	// x vector [1; nan; 2]
 	DenseMatrixHandle x_one_nan ()
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 		(*m)(0, 0) = 1;
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = 2;
@@ -67,7 +67,7 @@ namespace
   // x vector [3; nan; nan]
 	DenseMatrixHandle x_two_nan ()
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 		(*m)(0, 0) = 3;
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
@@ -76,7 +76,7 @@ namespace
 	// x vector [NaN; NaN; NaN;]
 	DenseMatrixHandle x_all_nan ()
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
@@ -86,7 +86,7 @@ namespace
 	// symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle LHS()
 	{
-		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+		SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 		m->insert(0,0) = 1;
 		m->insert(0,1) = 7;
 		m->insert(0,2) = 3;
@@ -102,7 +102,7 @@ namespace
 	// non symmetric LHS (stiff) matrix
 	// SparseRowMatrixHandle LHS_not_sym()
 	// {
-	// 	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	// 	SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 	// 	m->insert(0,0) = 1;
 	// 	m->insert(0,1) = 8;
 	// 	m->insert(0,2) = 3;
@@ -118,7 +118,7 @@ namespace
 	// non square LHS (Stiff) matrix
 	SparseRowMatrixHandle LHS_non_sqr()
 	{
-		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,5));
+		SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,5));
 		m->setZero();
 		m->makeCompressed();
 		return m;
@@ -127,14 +127,14 @@ namespace
 	// RHS vector of zeros
 	DenseMatrixHandle rhs_zero(int rows)
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
+		DenseMatrixHandle m(makeShared<DenseMatrix>(rows,1));
 		m->setZero();
 		return m;
 	}
 	// RHS vector [1;2;3]
 	DenseMatrixHandle rhs()
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
 		(*m)(0,0) = 1;
 		(*m)(1,0) = 2;
 		(*m)(2,0) = 3;
@@ -143,7 +143,7 @@ namespace
 	// RHS vector with NaN
 	DenseMatrixHandle rhs_nan()
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
 		(*m)(0,0) = 1;
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
@@ -182,7 +182,7 @@ TEST (AddKnownsToLinearSystemTests, RHS_Contains_NaN)
 TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
 {
   // this information was obtained from SCIRun4.7
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(0,1) = 0;
   m->insert(0,2) = 0;
@@ -193,7 +193,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
   m->insert(2,1) = 0;
   m->insert(2,2) = 1;
   m->makeCompressed();
-  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle ro(makeShared<DenseMatrix>(3,1));
   (*ro)(0,0) = 1;
   (*ro)(1,0) = 3;
   (*ro)(2,0) = 2;
@@ -219,7 +219,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
 TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
 {
   // this information was obtained from SCIRun4.7
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(0,1) = 0;
   m->insert(0,2) = 0;
@@ -230,7 +230,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
   m->insert(2,1) = -5;
   m->insert(2,2) = 6;
   m->makeCompressed();
-  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle ro(makeShared<DenseMatrix>(3,1));
   (*ro)(0,0) = 3;
   (*ro)(1,0) = -21;
   (*ro)(2,0) = -9;
@@ -256,7 +256,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
 TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
 {
   // this information was obtained from SCIRun4.7
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(0,1) = 0;
   m->insert(0,2) = 0;
@@ -267,7 +267,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
   m->insert(2,1) = 0;
   m->insert(2,2) = 1;
   m->makeCompressed();
-  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle ro(makeShared<DenseMatrix>(3,1));
   (*ro)(0,0) = 1;
   (*ro)(1,0) = 5;
   (*ro)(2,0) = 2;
@@ -293,7 +293,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
 TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
 {
   // this information was obtained from SCIRun 4.7
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(0,1) = 0;
   m->insert(0,2) = 0;
@@ -304,7 +304,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
   m->insert(2,1) = -5;
   m->insert(2,2) = 6;
   m->makeCompressed();
-  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle ro(makeShared<DenseMatrix>(3,1));
   (*ro)(0,0) = 3;
   (*ro)(1,0) = -19;
   (*ro)(2,0) = -6;

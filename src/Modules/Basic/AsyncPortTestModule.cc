@@ -64,7 +64,7 @@ void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
   // handle(field);
   counter_.fetch_add(1);
   std::cout << "Async port test. Latest data on port " << pid.toString() << " is a ";
-  auto field = boost::dynamic_pointer_cast<Field>(data);
+  auto field = std::dynamic_pointer_cast<Field>(data);
   if (field)
   {
     ReportFieldInfoAlgorithm algo;

@@ -255,7 +255,6 @@ namespace detail
       BI.tolerance2_ = tolerance_ * tolerance_;      // square error tolerance
       BI.max_steps_ = max_steps_;                  // max number of steps
       BI.vfield_ = field_;                       // the vector field
-      std::vector<Point>::iterator node_iter;
 
       // Try to find the streamline for each seed point.
       for (VMesh::Node::index_type idx = from; idx < to; ++idx)

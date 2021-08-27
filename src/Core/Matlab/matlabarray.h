@@ -84,7 +84,7 @@
 #ifndef CORE_MATLABIO_MATLABARRAY_H
 #define CORE_MATLABIO_MATLABARRAY_H 1
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Matlab/matfile.h>
 #include <iostream> //TODO
 #include <Core/Matlab/share.h>

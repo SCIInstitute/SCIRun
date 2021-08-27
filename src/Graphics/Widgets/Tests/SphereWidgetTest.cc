@@ -39,7 +39,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphereReal)
 {
   StubGeometryIDGenerator idGen;
 
-  SphereWidget sphere({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
+  SphereWidget sphere({{idGen, "testSphere1"}, makeShared<RealGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {-1,1,0}
@@ -71,7 +71,7 @@ TEST(SphereWidgetTest, CanCreateSingleSphereStubGlyphs)
 {
   StubGeometryIDGenerator idGen;
 
-  SphereWidget sphere({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
+  SphereWidget sphere({{idGen, "testSphere1"}, makeShared<StubGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {-1,1,0}

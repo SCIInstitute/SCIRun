@@ -54,5 +54,5 @@ void CreateString::execute()
 {
   stringValue_ = get_state()->getValue(InputString).toString();
 
-  sendOutput(NewString, boost::make_shared<String>(stringValue_));
+  sendOutput(NewString, makeShared<String>(stringValue_));
 }

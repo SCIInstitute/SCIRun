@@ -116,7 +116,7 @@ namespace SCIRun {
         void updateAvailableRenderOptions(FieldHandle field);
         void processMeshComponentSelection(const Core::Datatypes::ModuleFeedback& var);
 
-        boost::shared_ptr<detail::GeometryBuilder> builder_;
+        SharedPointer<detail::GeometryBuilder> builder_;
       };
 
     } // Visualization

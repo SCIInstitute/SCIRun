@@ -74,7 +74,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   }
 
   // casting rhs to be a column
-  auto rhsCol = rhs ?  convertMatrix::toColumn(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
+  auto rhsCol = rhs ?  convertMatrix::toColumn(rhs) : makeShared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
   ENSURE_NOT_NULL(rhsCol, "rhsCol");
   DenseColumnMatrix& rhsColRef = *rhsCol;
 

@@ -97,7 +97,7 @@ NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
 }
 
 template <class MatrixReturnType>
-boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
+SharedPointer<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldData");
 
@@ -121,7 +121,7 @@ boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle
     THROW_ALGORITHM_INPUT_ERROR("Invalid input field (no data)");
   }
 
-  boost::shared_ptr<MatrixReturnType> mat;
+  SharedPointer<MatrixReturnType> mat;
   if (vfield1->is_scalar())
     if (GetScalarFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_vector())
@@ -150,7 +150,7 @@ namespace SCIRun {
         }
 
         template <class ValueType>
-        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<DenseMatrixGeneric<ValueType>>& output) const
+        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, SharedPointer<DenseMatrixGeneric<ValueType>>& output) const
         {
           /// Obtain virtual interface
           VField* vfield = input->vfield();

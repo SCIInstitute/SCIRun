@@ -33,7 +33,7 @@
 #include <Core/Utils/SmartPointers.h>
 #include <boost/optional.hpp>
 // ReSharper disable once CppUnusedIncludeDirective
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Datatypes/MatrixFwd.h>
 
 namespace SCIRun {

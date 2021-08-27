@@ -45,7 +45,7 @@ namespace Math {
     using Inputs = std::tuple<Datatypes::MatrixHandle, Datatypes::MatrixHandle>;
     using Parameters = Option;
     using Outputs = Datatypes::MatrixHandle;
-    Outputs concatenateMatrices(Datatypes::MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Datatypes::Matrix>>& input_matrices, const
+    Outputs concatenateMatrices(Datatypes::MatrixHandle base_matrix, const std::vector<SharedPointer<Datatypes::Matrix>>& input_matrices, const
         Parameters& params) const;
     Outputs run(const Inputs& input, const Parameters& params) const;
     static bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params);

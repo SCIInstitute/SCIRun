@@ -64,7 +64,7 @@ namespace SCIRun {
         template <typename T>
         using matrix_type = Datatypes::SparseRowMatrixGeneric<T>;
         template <typename T>
-        using matrix_pointer_type = boost::shared_ptr<matrix_type<T>>;
+        using matrix_pointer_type = SharedPointer<matrix_type<T>>;
 
 template <typename T>
 class BuildFEMatrixAlgoImpl
@@ -895,7 +895,7 @@ FEMBuilder<T>::parallel(int proc_num)
     {
       rows_[global_dimension] = st;
       algo_->remark("Creating fematrix on main thread.");
-      fematrix_ = boost::make_shared<matrix_type<T>>(global_dimension, global_dimension, rows_.get(), allcols_.get(), st);
+      fematrix_ = makeShared<matrix_type<T>>(global_dimension, global_dimension, rows_.get(), allcols_.get(), st);
       rows_.reset();
       allcols_.reset();
     }
@@ -1139,7 +1139,7 @@ BuildFEMatrixAlgoImpl<T>::run(FieldHandle input, DenseMatrixHandle ctable, matri
       if ( (input->vmesh()->generation() != generation_) ||
           (!basis_fematrix_) )
       {
-        auto con = boost::make_shared<DenseMatrix>(nconds, 1, 0.0);
+        auto con = makeShared<DenseMatrix>(nconds, 1, 0.0);
         auto data = con->data();
 
         if (!builder.build_matrix(input, con, basis_fematrix_) )

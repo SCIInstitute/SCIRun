@@ -56,7 +56,7 @@ namespace Engine {
     {
       count->fetch_add(1);
     }
-    mutable boost::shared_ptr<boost::atomic<int>> count;
+    mutable SharedPointer<boost::atomic<int>> count;
   };
 
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
@@ -72,11 +72,11 @@ namespace Engine {
 
   struct SCISHARE DisableDynamicPortSwitch
   {
-    explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
+    explicit DisableDynamicPortSwitch(SharedPointer<DynamicPortManager> dpm);
     ~DisableDynamicPortSwitch();
   private:
     bool first_;
-    boost::shared_ptr<DynamicPortManager> dpm_;
+    SharedPointer<DynamicPortManager> dpm_;
   };
 
   /// @todo Refactoring: split this class into two classes, NetworkEditorService and Controller.
@@ -147,7 +147,7 @@ namespace Engine {
     void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
-    boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
+    SharedPointer<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 
@@ -194,9 +194,9 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
     NetworkDoneLoadingSignalType networkDoneLoading_;
 
-    boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
+    SharedPointer<DynamicPortManager> dynamicPortManager_;
     bool signalSwitch_, loadingContext_;
-    boost::shared_ptr<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
+    SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
 
     struct LoadingContext
     {
@@ -207,7 +207,7 @@ namespace Engine {
     };
   };
 
-  typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;
+  typedef SharedPointer<NetworkEditorController> NetworkEditorControllerHandle;
 
 }
 }
