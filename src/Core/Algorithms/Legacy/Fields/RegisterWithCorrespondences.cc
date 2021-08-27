@@ -613,7 +613,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runAffine(FieldHandle input, 
   trans2(1,3) = sumy;
   trans2(2,3) = sumz;
 
-  auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*trans1);
+  auto trans_out = makeShared<DenseMatrix>(trans2*rotation*trans1);
 
 
   //done with solve, make the new field
@@ -913,7 +913,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runRigid_P(FieldHandle input,
   printMatrix(scale2,"scale2");
 
 
-  auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*scale1*trans1);
+  auto trans_out = makeShared<DenseMatrix>(trans2*rotation*scale1*trans1);
 
       //done with solve, make the new field
     printMatrix(*trans_out,"transform");
@@ -971,7 +971,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runNone(FieldHandle input, Fi
 
   omesh = imesh;
 
-  return boost::make_shared<DenseMatrix>(Eigen::MatrixXd::Identity(4,4));
+  return makeShared<DenseMatrix>(Eigen::MatrixXd::Identity(4,4));
 
 }
 

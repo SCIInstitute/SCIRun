@@ -274,7 +274,7 @@ namespace SCIRun {
         boost::optional<std::string> mColorMap;
       };
 
-      typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
+      typedef SharedPointer<GeometryObjectSpire> GeometryHandle;
 
       class SCISHARE CompositeGeometryObject : public GeometryObjectSpire
       {
@@ -292,7 +292,7 @@ namespace SCIRun {
       template <typename GeomIter>
         static GeometryHandle createGeomComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
       {
-        return boost::make_shared<CompositeGeometryObject>(idGenerator, tag, begin, end);
+        return makeShared<CompositeGeometryObject>(idGenerator, tag, begin, end);
       }
     }
   }

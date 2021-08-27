@@ -97,8 +97,8 @@ TEST(AppendMatrixAlgorithmTests, AppendSquareSparseMatrix)
   for(int i=0;i<nr_rows;i++)
     m2.insert(i,i) = i+nr_rows;
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::ROWS);
-  auto out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(makeShared<SparseRowMatrix>(m1), makeShared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::ROWS);
+  auto out = std::dynamic_pointer_cast<SparseRowMatrix>(result);
 
   for (Eigen::Index k = 0; k < out->nrows(); ++k)
   {
@@ -111,8 +111,8 @@ TEST(AppendMatrixAlgorithmTests, AppendSquareSparseMatrix)
     }
   }
 
-  result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::COLUMNS);
-  out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
+  result = algo.run(AppendMatrixAlgorithm::Inputs(makeShared<SparseRowMatrix>(m1), makeShared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::Option::COLUMNS);
+  out = std::dynamic_pointer_cast<SparseRowMatrix>(result);
 
   for (Eigen::Index k = 0; k < out->nrows(); ++k)
   {
@@ -131,8 +131,8 @@ TEST(AppendMatrixAlgorithmTests, AppendDenseColumnMatrix)
 {
   AppendMatrixAlgorithm algo;
   int nr_comp1=3, nr_comp2=2; /// assumption for the code in this function: the second column vector is shorter
-  DenseColumnMatrixHandle m1(boost::make_shared<DenseColumnMatrix>(nr_comp1));
-  DenseColumnMatrixHandle m2(boost::make_shared<DenseColumnMatrix>(nr_comp2));
+  DenseColumnMatrixHandle m1(makeShared<DenseColumnMatrix>(nr_comp1));
+  DenseColumnMatrixHandle m2(makeShared<DenseColumnMatrix>(nr_comp2));
 
   for (int i=0;i<nr_comp1;i++)
     (*m1)(i) = i+1;
@@ -144,7 +144,7 @@ TEST(AppendMatrixAlgorithmTests, AppendDenseColumnMatrix)
   EXPECT_TRUE(result==nullptr);
        result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::Option::ROWS);
 
- auto out = boost::dynamic_pointer_cast<DenseColumnMatrix>(result);
+ auto out = std::dynamic_pointer_cast<DenseColumnMatrix>(result);
  for (int i = 0; i < out->nrows(); i++)
   if(i<nr_comp1)
    EXPECT_EQ((*m1)(i),(*out)(i));
@@ -164,11 +164,11 @@ TEST(AppendMatrixAlgorithmTests, MixingMatrixInputTypes)
 
   int count=0;
 
-  DenseMatrixHandle dense_mat(boost::make_shared<DenseMatrix>(nr_rows,nr_cols));
+  DenseMatrixHandle dense_mat(makeShared<DenseMatrix>(nr_rows,nr_cols));
   for(int i=0;i<nr_rows;i++)
    for(int j=0;j<nr_rows;j++)
      (*dense_mat)(i,j)=++count;
 
-  auto result = algo.run(AppendMatrixAlgorithm::Inputs(dense_mat, boost::make_shared<SparseRowMatrix>(sparse_mat)), AppendMatrixAlgorithm::Option::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(dense_mat, makeShared<SparseRowMatrix>(sparse_mat)), AppendMatrixAlgorithm::Option::ROWS);
   EXPECT_TRUE(result==nullptr);
 }

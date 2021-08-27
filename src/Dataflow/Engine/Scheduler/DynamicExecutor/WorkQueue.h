@@ -47,7 +47,7 @@ namespace Engine {
     };
 
     typedef WorkQueue<Networks::ModuleHandle>::Impl ModuleWorkQueue;
-    typedef boost::shared_ptr<ModuleWorkQueue> ModuleWorkQueuePtr;
+    typedef SharedPointer<ModuleWorkQueue> ModuleWorkQueuePtr;
 
   }}
 

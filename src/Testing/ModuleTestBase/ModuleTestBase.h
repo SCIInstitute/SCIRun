@@ -79,7 +79,7 @@ namespace SCIRun
       //MOCK_CONST_METHOD1(getOption, std::string(const AlgorithmParameterName&));
     };
 
-    typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
+    typedef SharedPointer< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
 
     class SCISHARE UseRealAlgorithmFactory
     {

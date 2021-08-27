@@ -109,6 +109,7 @@ namespace SCIRun
       virtual void setView(const glm::vec3& view, const glm::vec3& up) = 0;
       virtual void doAutoView() = 0;
       virtual void setZoomSpeed(int zoomSpeed) = 0;
+      virtual glm::vec2 autoRotateVector() const = 0;
       virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
       virtual void setAutoRotateSpeed(double speed) = 0;
       virtual void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port) = 0;

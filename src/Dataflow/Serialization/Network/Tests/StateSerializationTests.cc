@@ -61,7 +61,7 @@ TEST(SerializeStateTest, RoundTrip)
   const std::string xml1 = ostr1.str();
 
   std::istringstream istr(xml1);
-  boost::shared_ptr<SimpleMapModuleStateXML> readIn = XMLSerializer::load_xml<SimpleMapModuleStateXML>(istr);
+  SCIRun::SharedPointer<SimpleMapModuleStateXML> readIn = XMLSerializer::load_xml<SimpleMapModuleStateXML>(istr);
   ASSERT_TRUE(readIn.get() != nullptr);
   std::ostringstream ostr2;
   XMLSerializer::save_xml(*readIn, ostr2, root);

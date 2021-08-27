@@ -37,7 +37,7 @@ TEST(CylinderWidgetTest, CanCreateSingleCylinderReal)
 {
   StubGeometryIDGenerator idGen;
 
-  CylinderWidget cylinder({{idGen, "testCylinder1"}, boost::make_shared<RealGlyphFactory>()},
+  CylinderWidget cylinder({{idGen, "testCylinder1"}, makeShared<RealGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}
@@ -54,7 +54,7 @@ TEST(CylinderWidgetTest, CanCreateSingleCylinderStubbed)
 {
   StubGeometryIDGenerator idGen;
 
-  CylinderWidget cylinder({{idGen, "testCylinder1"}, boost::make_shared<StubGlyphFactory>()},
+  CylinderWidget cylinder({{idGen, "testCylinder1"}, makeShared<StubGlyphFactory>()},
   {
     {10.0, "red", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {1,1,0}, {2,2,0}

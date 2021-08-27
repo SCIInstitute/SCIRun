@@ -75,7 +75,7 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 	Q_OBJECT
 public:
 	static SCIRunMainWindow* Instance();
-  void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
+  void setController(SharedPointer<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   void initialize();
 
   //command access: extract an interface
@@ -201,14 +201,14 @@ private:
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
   QMap<QString, QMenu*> currentSubnetActions_;
-  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
-  boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
-  boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
-  boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  SharedPointer<class DialogErrorControl> dialogErrorControl_;
+  SharedPointer<class NetworkExecutionProgressBar> networkProgressBar_;
+  SharedPointer<class GuiActionProvenanceConverter> commandConverter_;
+  SharedPointer<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_ { false };
   bool skipSaveCheck_ = false;
   bool startup_;
-  boost::shared_ptr<NetworkEditorBuilder> builder_;
+  SharedPointer<NetworkEditorBuilder> builder_;
   int dockSpace_{0};
   class DockManager* dockManager_;
   static const QString saveFragmentData_;

@@ -53,7 +53,7 @@ namespace SCIRun {
           MOCK_METHOD0(disconnectAll, void());
         };
 
-        typedef boost::shared_ptr<MockModuleState> MockModuleStatePtr;
+        typedef SharedPointer<MockModuleState> MockModuleStatePtr;
 
         class MockModuleStateFactory : public ModuleStateInterfaceFactory
         {

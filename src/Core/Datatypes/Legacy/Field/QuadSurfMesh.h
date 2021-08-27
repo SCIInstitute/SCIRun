@@ -113,7 +113,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<QuadSurfMesh<Basis> > handle_type;
+  typedef SharedPointer<QuadSurfMesh<Basis> > handle_type;
   typedef Basis                         basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -336,7 +336,7 @@ QuadSurfMesh *clone() const override { return new QuadSurfMesh(*this); }
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// Access point to virtual interface
@@ -1589,7 +1589,7 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new QuadSurfMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<QuadSurfMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<QuadSurfMesh<Basis>>(); }
 
 
   //////////////////////////////////////////////////////////////////
@@ -2253,8 +2253,8 @@ protected:
   NodeNeighborMap                       node_neighbors_;
 
   std::vector<Core::Geometry::Vector>                           normals_; /// normalized per node
-  boost::shared_ptr<SearchGridT<index_type> >  node_grid_; /// Lookup grid for nodes
-  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; /// Lookup grid for elements
+  SharedPointer<SearchGridT<index_type> >  node_grid_; /// Lookup grid for nodes
+  SharedPointer<SearchGridT<index_type> >  elem_grid_; /// Lookup grid for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex         synchronize_lock_;
@@ -2272,7 +2272,7 @@ protected:
   double    epsilon2_; /// square of epsilon for squared distance comparisons
 
   /// Pointer to virtual interface
-  boost::shared_ptr<VMesh> vmesh_; /// Virtual function table
+  SharedPointer<VMesh> vmesh_; /// Virtual function table
 };
 
 

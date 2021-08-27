@@ -82,15 +82,15 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std:
 
   if(matrixType=="Zero")
   {
-    return boost::make_shared<DenseMatrix>(rows, columns, 0);
+    return makeShared<DenseMatrix>(rows, columns, 0);
   }
   else if(matrixType=="One")
   {
-    return boost::make_shared<DenseMatrix>(rows, columns, 1);
+    return makeShared<DenseMatrix>(rows, columns, 1);
   }
   else if(matrixType=="NaN")
   {
-    return boost::make_shared<DenseMatrix>(rows, columns, std::numeric_limits<double>::quiet_NaN());
+    return makeShared<DenseMatrix>(rows, columns, std::numeric_limits<double>::quiet_NaN());
   }
   else if(matrixType=="Identity")
   {
@@ -102,7 +102,7 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std:
   {
     double size = get(Parameters::Size).toDouble();
     double startPtr = get(Parameters::StartPointer).toDouble();
-    auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
+    auto outputArray=makeShared<DenseMatrix>(rows,columns);
     for(int i=0;i<rows;i++)
     {
       for(int j=0;j<columns;j++)

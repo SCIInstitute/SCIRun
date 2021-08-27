@@ -80,7 +80,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
-        boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
+        SharedPointer<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix);

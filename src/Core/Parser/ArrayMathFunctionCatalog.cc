@@ -71,7 +71,7 @@ ArrayMathFunctionCatalog::add_function(
             const std::string& function_id,
             const std::string& return_type)
 {
-  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, 0));
+  ParserFunctionCatalog::add_function(makeShared<ArrayMathFunction>(function, function_id, return_type, 0));
 }
 
 
@@ -86,7 +86,7 @@ ArrayMathFunctionCatalog::add_sym_function(
             const std::string& function_id,
             const std::string& return_type)
 {
-  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SYMMETRIC_FUNCTION_E));
+  ParserFunctionCatalog::add_function(makeShared<ArrayMathFunction>(function, function_id, return_type, PARSER_SYMMETRIC_FUNCTION_E));
 }
 
 
@@ -96,7 +96,7 @@ ArrayMathFunctionCatalog::add_seq_function(
             const std::string& function_id,
             const std::string& return_type)
 {
-  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SEQUENTIAL_FUNCTION_E));
+  ParserFunctionCatalog::add_function(makeShared<ArrayMathFunction>(function, function_id, return_type, PARSER_SEQUENTIAL_FUNCTION_E));
 }
 
 void
@@ -105,7 +105,7 @@ ArrayMathFunctionCatalog::add_sgl_function(
             const std::string& function_id,
             const std::string& return_type)
 {
-  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SINGLE_FUNCTION_E));
+  ParserFunctionCatalog::add_function(makeShared<ArrayMathFunction>(function, function_id, return_type, PARSER_SINGLE_FUNCTION_E));
 }
 
 void
@@ -114,5 +114,5 @@ ArrayMathFunctionCatalog::add_cst_function(
             const std::string& function_id,
             const std::string& return_type)
 {
-  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_CONST_FUNCTION_E));
+  ParserFunctionCatalog::add_function(makeShared<ArrayMathFunction>(function, function_id, return_type, PARSER_CONST_FUNCTION_E));
 }

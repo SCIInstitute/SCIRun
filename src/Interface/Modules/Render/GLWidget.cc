@@ -34,12 +34,9 @@
 #include <Interface/Modules/Render/GLWidget.h>
 #include <iostream>
 #include <QMouseEvent>
-#include <QWheelEvent>
 #include <QTimer>
-#include <QtDebug>
 #include <Core/Application/Application.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <ctime>
 
 namespace SCIRun {
 namespace Gui {
@@ -47,7 +44,6 @@ namespace Gui {
 const int RendererUpdateInMS = 1000 / 60;
 const double updateTime = RendererUpdateInMS / 1000.0;
 
-//------------------------------------------------------------------------------
 GLWidget::GLWidget(QWidget* parent) :
   QOpenGLWidget(parent)
 {
@@ -57,7 +53,6 @@ GLWidget::GLWidget(QWidget* parent) :
   connect(timer_, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   timer_->start(RendererUpdateInMS);}
 
-//------------------------------------------------------------------------------
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
@@ -71,7 +66,6 @@ void GLWidget::setLockZoom(bool lock)     { graphics_->setLockZoom(lock); }
 void GLWidget::setLockPanning(bool lock)  { graphics_->setLockPanning(lock); }
 void GLWidget::setLockRotation(bool lock) { graphics_->setLockRotation(lock); }
 
-//------------------------------------------------------------------------------
 void GLWidget::initializeGL()
 {
 	spire::glPlatformInit();
@@ -80,7 +74,7 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
   //set to 200ms to force promise fullfilment every frame if a good frame as been requested
-  double lUpdateTime = frameRequested_ ? 0.2 : updateTime;
+  const double lUpdateTime = frameRequested_ ? 0.2 : updateTime;
   graphics_->doFrame(lUpdateTime);
 
   if (frameRequested_ && !graphics_->hasShaderPromise())
@@ -90,7 +84,6 @@ void GLWidget::paintGL()
   }
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   event->ignore();
@@ -101,20 +94,17 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
   event->ignore();
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   makeCurrent();
   event->ignore();
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
   event->ignore();
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
   makeCurrent();
@@ -122,7 +112,6 @@ void GLWidget::resizeGL(int width, int height)
                          static_cast<size_t>(height));
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   if (graphics_)
@@ -133,7 +122,6 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   QOpenGLWidget::closeEvent(evt);
 }
 
-//------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
   if (isValid())

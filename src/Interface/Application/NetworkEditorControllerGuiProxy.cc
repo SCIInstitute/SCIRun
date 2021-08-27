@@ -38,7 +38,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller, NetworkEditor* editor)
+NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(SharedPointer<NetworkEditorController> controller, NetworkEditor* editor)
   : controller_(controller), editor_(editor)
 {
   connections_.emplace_back(controller_->connectModuleAdded([this](const std::string& name, ModuleHandle module, const ModuleCounter& count)
@@ -67,9 +67,9 @@ NetworkEditorControllerGuiProxy::~NetworkEditorControllerGuiProxy()
     c.disconnect();
 }
 
-boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditorControllerGuiProxy::withSubnet(NetworkEditor* subnet) const
+SCIRun::SharedPointer<NetworkEditorControllerGuiProxy> NetworkEditorControllerGuiProxy::withSubnet(NetworkEditor* subnet) const
 {
-  return boost::make_shared<NetworkEditorControllerGuiProxy>(controller_, subnet);
+  return makeShared<NetworkEditorControllerGuiProxy>(controller_, subnet);
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
@@ -169,7 +169,7 @@ const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModu
   return controller_->getAllAvailableModuleDescriptions();
 }
 
-boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::createDynamicPortSwitch()
+SCIRun::SharedPointer<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::createDynamicPortSwitch()
 {
   return controller_->createDynamicPortSwitch();
 }

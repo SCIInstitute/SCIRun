@@ -54,7 +54,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
         };
 
-        typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
+        typedef SharedPointer<MockPortDescription> MockPortDescriptionPtr;
 
         class MockInputPort : public InputPortInterface
         {
@@ -85,7 +85,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
         };
 
-        typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
+        typedef SharedPointer<MockInputPort> MockInputPortPtr;
 
         class MockOutputPort : public OutputPortInterface
         {
@@ -114,7 +114,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
         };
 
-        typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
+        typedef SharedPointer<MockOutputPort> MockOutputPortPtr;
 
         class MockDatatypeSink : public DatatypeSinkInterface
         {
@@ -128,7 +128,7 @@ namespace SCIRun {
           MOCK_METHOD0(forceFireDataHasChanged, void());
         };
 
-        typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;
+        typedef SharedPointer<MockDatatypeSink> MockDatatypeSinkPtr;
 
         class MockDatatypeSource : public DatatypeSourceInterface
         {
@@ -139,7 +139,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(describeData, std::string());
         };
 
-        typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;
+        typedef SharedPointer<MockDatatypeSource> MockDatatypeSourcePtr;
       }
     }
   }

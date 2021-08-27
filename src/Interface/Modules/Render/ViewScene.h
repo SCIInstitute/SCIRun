@@ -54,8 +54,8 @@ namespace SCIRun {
   namespace Gui {
 
     class GLWidget;
-    class ViewSceneControlsDock;
     class ScopedWidgetColorChanger;
+    class ViewSceneDialogImpl;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -75,9 +75,10 @@ namespace SCIRun {
       void inputMouseUpHelper();
       void inputMouseWheelHelper(int32_t delta);
       void setViewScenesToUpdate(const std::unordered_set<ViewSceneDialog*>& scenes);
-      std::string getName() {return name_;}
+      std::string getName() const;
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
+      void vsLog(const QString& msg) const;
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -103,14 +104,10 @@ namespace SCIRun {
       void runDelayedGC();
 
       //---------------- Input ---------------------------------------------------------------------
-      void viewBarButtonClicked();
-      void configurationButtonClicked();
       void resizingDone();
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void viewAxisSelected(const QString& name);
-      void viewVectorSelected(const QString& name);
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
       void adjustZoomSpeed(int value);
@@ -125,9 +122,11 @@ namespace SCIRun {
       void autoRotateLeft();
       void autoRotateUp();
       void autoRotateDown();
+      void toggleAutoRotate();
       void pullCameraRotation();
       void pullCameraLookAt();
       void pullCameraDistance();
+      void snapToViewAxis();
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
@@ -163,18 +162,9 @@ namespace SCIRun {
 
       //---------------- Lights --------------------------------------------------------------------
       void setLightColor(int index);
-      void toggleHeadLight(bool value);
-      void setHeadLightAzimuth(int value);
-      void setHeadLightInclination(int value);
-      void toggleLight1(bool value);
-      void setLight1Azimuth(int value);
-      void setLight1Inclination(int value);
-      void toggleLight2(bool value);
-      void setLight2Azimuth(int value);
-      void setLight2Inclination(int value);
-      void toggleLight3(bool value);
-      void setLight3Azimuth(int value);
-      void setLight3Inclination(int value);
+      void toggleLight(int index, bool value);
+      void setLightAzimuth(int index, int value);
+      void setLightInclination(int index, int value);
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
@@ -195,7 +185,8 @@ namespace SCIRun {
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
       void screenshotClicked();
-      void quickScreenshotClicked();
+      void quickScreenshot(bool prompt);
+      void quickScreenshotClicked() { quickScreenshot(true); }
       void saveNewGeometryChanged(int state);
 
 
@@ -235,11 +226,21 @@ namespace SCIRun {
       void addQuickScreenshotButton();
       void addViewBarButton();
       void addControlLockButton();
-      void addToolbarButton(QPushButton* button);
-      void addViewBar();
-      void addViewOptions();
+      void addAutoRotateButton();
+      void addColorOptionsButton();
+      void addLightOptionsComboBox();
+      void addFogOptionsButton();
+      void addMaterialOptionsButton();
+      void addOrientationAxesButton();
+      void addScaleBarButton();
+      void addClippingPlaneButton();
+      void addInputControlButton();
+      void addCameraLocksButton();
+      void addDeveloperControlButton();
+      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
       void addConfigurationButton();
-      void addConfigurationDock();
+      void addObjectSelectionButton();
+      void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
       void pushCameraDistance();
@@ -266,15 +267,11 @@ namespace SCIRun {
       void buildGeomClippingPlanes();
       void initializeClippingPlaneDisplay();
       void doClippingPlanes();
-      bool initializeClippingPlanes_{true};
       void buildGeometryClippingPlane(int index, bool reverseNormal, const glm::vec4& plane, const Core::Geometry::BBox& bbox);
 
       //---------------- Scale Bar -----------------------------------------------------------------
       void updateScaleBarLength();
       Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
-
-      //---------------- Lights --------------------------------------------------------------------
-      void toggleLightOnOff(int index, bool value);
 
       //---------------- Materials -----------------------------------------------------------------
       void setMaterialFactor(Render::MatFactor factor, double value);
@@ -287,74 +284,18 @@ namespace SCIRun {
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
-      struct ScaleBar
-      {
-        bool visible;
-        int fontSize;
-        double length, height, multiplier, numTicks, lineWidth;
-        std::string unit;
-        double projLength;
-      };
-
-      GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
-      Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
-      QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
-      QToolBar*                             mViewBar                      {nullptr};  ///< Tool bar for view options.
-      QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
-      QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
-      ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
-      SharedPointer<ScopedWidgetColorChanger> widgetColorChanger_         {};
-      Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
-
-      bool                                  shown_                        {false};
-      bool                                  delayGC_                      {false};
-      bool                                  delayedGCRequested_           {false};
-      bool                                  hideViewBar_                  {};
-      bool                                  invertZoom_                   {};
-      bool                                  shiftdown_                    {false};
-      bool                                  mouseButtonPressed_           {false};
-      Graphics::Datatypes::WidgetHandle     selectedWidget_;
-      Core::Datatypes::WidgetMovement       movementType_ {Core::Datatypes::NONE};
-
-      const static int                      delayAfterModuleExecution_    {200};
-      const static int                      delayAfterWidgetColorRestored_ {50};
-      int                                   delayAfterLastSelection_      {50};
-      float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
-                                                                           {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
-                                                                           {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
-
-      boost::optional<QPoint> savedPos_;
-      QColor                                bgColor_                      {};
-      QColor                                fogColor_                     {};
-      ScaleBar                              scaleBar_                     {};
-      Render::ClippingPlaneManagerPtr clippingPlaneManager_;
-      class Screenshot*                     screenshotTaker_              {nullptr};
-      bool                                  saveScreenshotOnNewGeometry_  {false};
-      bool                                  pulledSavedVisibility_        {false};
-      QTimer                                resizeTimer_                  {};
-      std::atomic<bool>                     pushingCameraState_           {false};
-
-      //geometries
-      Modules::Visualization::TextBuilder               textBuilder_        {};
-      Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
-      std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
-      std::vector<Graphics::Datatypes::WidgetHandle>    widgetHandles_      {};
-      QAction*                                          lockRotation_       {nullptr};
-      QAction*                                          lockPan_            {nullptr};
-      QAction*                                          lockZoom_           {nullptr};
-      QPushButton*                                      controlLock_        {nullptr};
-      QPushButton*                                      autoViewButton_     {nullptr};
-      QPushButton*                                      viewBarBtn_         {nullptr};
-
-      std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
+      std::unique_ptr<ViewSceneDialogImpl> impl_;
 
       friend class ViewSceneControlsDock;
-
-      std::unique_ptr<Core::GeometryIDGenerator> gid_;
-      std::string name_;
-
-      const int DIMENSIONS_ = 3;
-      const int QUATERNION_SIZE_ = 4;
+      friend class AutoRotateControls;
+      friend class ColorOptions;
+      friend class FogControls;
+      friend class MaterialsControls;
+      friend class ObjectSelectionControls;
+      friend class OrientationAxesControls;
+      friend class ScaleBarControls;
+      friend class LightControls;
+      friend class ClippingPlaneControls;
     };
 
     MouseButton getSpireButton(QMouseEvent* event);

@@ -103,7 +103,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type;
 
-  typedef boost::shared_ptr<CurveMesh<Basis> > handle_type;
+  typedef SharedPointer<CurveMesh<Basis> > handle_type;
   typedef Basis                            basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -208,7 +208,7 @@ CurveMesh *clone() const override { return new CurveMesh(*this); }
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   virtual ~CurveMesh();
@@ -1085,7 +1085,7 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new CurveMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<CurveMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<CurveMesh<Basis>>(); }
 
 
   /// Functions local to CurveMesh, the latter are not thread safe
@@ -1296,7 +1296,7 @@ protected:
   /// Pointer to virtual interface
   /// This one is created as soon as the mesh is generated
   /// Put this one in a handle as we have a virtual destructor
-  boost::shared_ptr<VMesh>           vmesh_;
+  SharedPointer<VMesh>           vmesh_;
 };
 
 

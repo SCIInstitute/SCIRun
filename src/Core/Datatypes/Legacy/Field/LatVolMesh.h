@@ -94,7 +94,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<LatVolMesh<Basis> > handle_type;
+  typedef SharedPointer<LatVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   struct LatIndex;
@@ -635,7 +635,7 @@ VMesh* vmesh() override
        return (vmesh_.get());
   }
 
-MeshFacadeHandle getFacade() const override { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
 int basis_order() override { return (basis_.polynomial_order()); }
 
@@ -1118,11 +1118,11 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new LatVolMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<LatVolMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<LatVolMesh>(); }
   /// This function returns a handle for the virtual interface.
   static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
   {
-    return boost::make_shared<LatVolMesh>(x,y,z,min,max);
+    return makeShared<LatVolMesh>(x,y,z,min,max);
   }
 
 protected:
@@ -1147,7 +1147,7 @@ protected:
   double scaled_jacobian_;
   double det_inverse_jacobian_;
 
-  boost::shared_ptr<VMesh> vmesh_;
+  SharedPointer<VMesh> vmesh_;
 };
 
 template <class Basis>
