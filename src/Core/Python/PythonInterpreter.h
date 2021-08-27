@@ -32,7 +32,7 @@
 
 #include <boost/python.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/signals2/signal.hpp>
 
 #include <Core/Utils/Singleton.h>
@@ -50,7 +50,7 @@ namespace Core
 ///@details It calls the python interpreter on a separate thread.
 
 class PythonInterpreterPrivate;
-typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
+typedef SharedPointer< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
 class SCISHARE PythonInterpreter
 {

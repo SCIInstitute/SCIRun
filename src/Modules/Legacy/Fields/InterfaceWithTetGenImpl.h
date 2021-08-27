@@ -69,7 +69,7 @@ namespace SCIRun {
         InterfaceWithTetGenImpl(Dataflow::Networks::Module* mod, const InterfaceWithTetGenInput& input);
         FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
       private:
-        boost::shared_ptr<detail::InterfaceWithTetGenImplImpl> impl_;
+        SharedPointer<detail::InterfaceWithTetGenImplImpl> impl_;
         InterfaceWithTetGenInput inputFlags_;
       };
     }

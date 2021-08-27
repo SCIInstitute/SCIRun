@@ -32,7 +32,6 @@
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
 #include <Dataflow/Network/DataflowInterfaces.h>
-#include <boost/function.hpp>
 #include <set>
 #include <Dataflow/Network/share.h>
 
@@ -42,7 +41,7 @@ namespace SCIRun
   {
     namespace Networks
     {
-      using WeakDatatypeHandle = boost::weak_ptr<Core::Datatypes::DatatypeHandle::element_type>;
+      using WeakDatatypeHandle = std::weak_ptr<Core::Datatypes::DatatypeHandle::element_type>;
 
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {

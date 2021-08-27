@@ -61,8 +61,8 @@ namespace SCIRun
         CommandHandle create(NetworkEventCommands) const override;
       };
 
-      typedef boost::shared_ptr<GlobalCommandFactory> GlobalCommandFactoryHandle;
-      typedef boost::shared_ptr<NetworkEventCommandFactory> NetworkEventCommandFactoryHandle;
+      typedef SharedPointer<GlobalCommandFactory> GlobalCommandFactoryHandle;
+      typedef SharedPointer<NetworkEventCommandFactory> NetworkEventCommandFactoryHandle;
     }
   }
 }

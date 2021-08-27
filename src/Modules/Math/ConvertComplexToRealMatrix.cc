@@ -101,7 +101,7 @@ namespace
     template <class Expr>
     MatrixHandleGeneric<typename M::value_type> operator()(Expr&& expr) const
     {
-      return boost::make_shared<M>(expr);
+      return makeShared<M>(expr);
     }
   };
 

@@ -616,7 +616,7 @@ DatatypeHandle Bundle::get(const std::string& name) const
 
 FieldHandle Bundle::getField(const std::string& name) const
 {
-  return boost::dynamic_pointer_cast<Field>(get(name));
+  return std::dynamic_pointer_cast<Field>(get(name));
 }
 
 bool Bundle::isField(const std::string& name) const
@@ -641,7 +641,7 @@ std::vector<std::string> Bundle::getFieldNames() const
 
 MatrixHandle Bundle::getMatrix(const std::string& name) const
 {
-  return boost::dynamic_pointer_cast<Matrix>(get(name));
+  return std::dynamic_pointer_cast<Matrix>(get(name));
 }
 
 bool Bundle::isMatrix(const std::string& name) const
@@ -666,7 +666,7 @@ std::vector<std::string> Bundle::getMatrixNames() const
 
 StringHandle Bundle::getString(const std::string& name) const
 {
-  return boost::dynamic_pointer_cast<String>(get(name));
+  return std::dynamic_pointer_cast<String>(get(name));
 }
 
 bool Bundle::isString(const std::string& name) const

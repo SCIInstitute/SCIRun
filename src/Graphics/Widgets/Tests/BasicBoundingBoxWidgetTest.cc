@@ -37,7 +37,7 @@ TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxReal)
 {
   StubGeometryIDGenerator idGen;
 
-  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<RealGlyphFactory>()},
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, makeShared<RealGlyphFactory>()},
   {
     {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}
@@ -54,7 +54,7 @@ TEST(BasicBoundingBoxWidgetTest, DISABLED_CanCreateSingleBoxStubbed)
 {
   StubGeometryIDGenerator idGen;
 
-  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, boost::make_shared<StubGlyphFactory>()},
+  BasicBoundingBoxWidget box({{idGen, "testSphere1"}, makeShared<StubGlyphFactory>()},
   {
     {10.0, "", {1,2,3}, {{0,0,0}, {1,1,1}}, 10},
     {{0,2,1},{{1,1,1},{1,0,1},{0,1,1}}}

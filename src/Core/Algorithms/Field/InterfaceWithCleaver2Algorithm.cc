@@ -75,8 +75,8 @@ const AlgorithmOutputName InterfaceWithCleaver2Algorithm::BackgroundFieldUsed("B
 
 namespace detail
 {
-  using CleaverScalarField = boost::shared_ptr<cleaver2::ScalarField<float>>;
-  using CleaverInputField = boost::shared_ptr<cleaver2::AbstractScalarField>;
+  using CleaverScalarField = SharedPointer<cleaver2::ScalarField<float>>;
+  using CleaverInputField = SharedPointer<cleaver2::AbstractScalarField>;
   using CleaverInputFieldList = std::vector<CleaverInputField>;
 
   static const double kDefaultAlpha = 0.4;
@@ -129,7 +129,7 @@ namespace detail
 
       // TODO DAN: add optional padding to sizing field...
       /// Padding is now optional!
-      //boost::shared_ptr<cleaver2::AbstractVolume> paddedVolume(volume);
+      //SharedPointer<cleaver2::AbstractVolume> paddedVolume(volume);
       // const bool verbose = get(Verbose).toBool();
       // const bool pad = get(Padding).toBool();
       //
@@ -198,7 +198,7 @@ namespace detail
       mesher.snapsAndWarp(verbose);
       mesher.stencilTets(verbose);
 
-      auto mesh(boost::shared_ptr<cleaver2::TetMesh>(mesher.getTetMesh()));
+      auto mesh(SharedPointer<cleaver2::TetMesh>(mesher.getTetMesh()));
 
       if (params_.reverseJacobians)
         mesh->fixVertexWindup(verbose);
@@ -296,7 +296,7 @@ namespace detail
 
       auto ptr = static_cast<float*>(vfield->fdata_pointer());
 
-      auto cleaverField = boost::make_shared<cleaver2::ScalarField<float>>(ptr, dims[0], dims[1], dims[2]);
+      auto cleaverField = makeShared<cleaver2::ScalarField<float>>(ptr, dims[0], dims[1], dims[2]);
       cleaver2::BoundingBox bb(cleaver2::vec3::zero, cleaver2::vec3(dims[0], dims[1], dims[2]));
       cleaverField->setBounds(bb);
       const auto& transform = vmesh->get_transform();
@@ -495,8 +495,8 @@ namespace detail
     Cleaver2Parameters params_;
     FieldHandle inputSizingField_, outputSizingField_, inputBackgroundMesh_, outputBackgroundMesh_;
     CleaverScalarField sizingField_;
-    boost::shared_ptr<cleaver2::TetMesh> backgroundMesh_;
-    boost::shared_ptr<cleaver2::Volume> volume_;
+    SharedPointer<cleaver2::TetMesh> backgroundMesh_;
+    SharedPointer<cleaver2::Volume> volume_;
     int x_ = 0, y_ = 0, z_ = 0;
   };
 }

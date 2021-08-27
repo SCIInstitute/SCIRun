@@ -33,7 +33,7 @@
 #include <QPushButton>
 #include <QColor>
 #ifndef Q_MOC_RUN
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <set>
 #include <vector>
 #include <Interface/Application/PositionProvider.h>
@@ -92,8 +92,8 @@ class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 public:
   PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
-    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+    boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
   virtual ~PortWidget();
@@ -207,8 +207,8 @@ private:
   ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory_;
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder_;
+  boost::function<SharedPointer<ConnectionFactory>()> connectionFactory_;
+  boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder_;
   PortActionsMenu* menu_;
   SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber_;
   //TODO
@@ -245,8 +245,8 @@ class InputPortWidget : public PortWidget
 public:
   InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
-    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+    boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
 };
@@ -256,8 +256,8 @@ class OutputPortWidget : public PortWidget
 public:
   OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
-    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    boost::function<SharedPointer<ConnectionFactory>()> connectionFactory,
+    boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
 };
@@ -267,8 +267,8 @@ struct SubnetPortWidgetCtorArgs
   QString name;
   QColor color;
   std::string datatype;
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory;
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder;
+  boost::function<SharedPointer<ConnectionFactory>()> connectionFactory;
+  boost::function<SharedPointer<ClosestPortFinder>()> closestPortFinder;
   Dataflow::Networks::PortDescriptionInterface* realPort;
 };
 

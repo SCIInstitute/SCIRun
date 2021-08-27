@@ -93,7 +93,7 @@ namespace Engine {
     static ExecutionBounds executionBounds_;
   };
 
-  typedef boost::shared_ptr<ExecutionContext> ExecutionContextHandle;
+  typedef SharedPointer<ExecutionContext> ExecutionContextHandle;
 
   template <class OrderType>
   class NetworkExecutor
@@ -105,7 +105,7 @@ namespace Engine {
   };
 
   class ModuleExecutionOrder;
-  typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
+  typedef SharedPointer<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
   template <class OrderType>
   void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
@@ -148,7 +148,7 @@ namespace Engine {
     SCIRun::Dataflow::Networks::ModuleHandle module_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
-    boost::shared_ptr<ExecuteSingleModuleImpl> orderImpl_;
+    SharedPointer<ExecuteSingleModuleImpl> orderImpl_;
   };
 
   class SCISHARE WaitsForStartupInitialization

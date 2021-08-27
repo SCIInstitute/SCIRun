@@ -154,7 +154,7 @@ Out SolveLinearSystemAlgorithm::solve(const In& input, const Parameters& params)
 
   if (x.size() != 0)
   {
-    auto solution(boost::make_shared<typename SolverType::SolutionType>(x));
+    auto solution(makeShared<typename SolverType::SolutionType>(x));
     return Out(solution, impl.tolerance_, impl.maxIterations_);
   }
   else

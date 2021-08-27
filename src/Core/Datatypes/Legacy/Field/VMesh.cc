@@ -79,13 +79,13 @@ VMesh::size(DElem::size_type& size) const
   size = 0;
 }
 
-boost::shared_ptr<SearchGridT<SCIRun::index_type> >
+SharedPointer<SearchGridT<SCIRun::index_type> >
 VMesh::get_elem_search_grid()
 {
   ASSERTFAIL("VMesh interface: get_elem_search_grid() has not been implemented");
 }
 
-boost::shared_ptr<SearchGridT<SCIRun::index_type> >
+SharedPointer<SearchGridT<SCIRun::index_type> >
 VMesh::get_node_search_grid()
 {
   ASSERTFAIL("VMesh interface: get_node_search_grid() has not been implemented");

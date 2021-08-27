@@ -50,8 +50,8 @@ class LinAlgProgramVariable;
 // As Program is stored in a large array we do not need a handle for that
 // one. These are helper classes that are located elsewhere in memory
 
-typedef boost::shared_ptr<LinAlgProgramVariable> LinAlgProgramVariableHandle;
-typedef boost::shared_ptr<LinAlgProgram>         LinAlgProgramHandle;
+typedef SharedPointer<LinAlgProgramVariable> LinAlgProgramVariableHandle;
+typedef SharedPointer<LinAlgProgram>         LinAlgProgramHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for databasing the function calls that make up the program

@@ -136,7 +136,7 @@ void OsprayViewer::portRemovedSlotImpl(const PortId&)
 
 void OsprayViewer::asyncExecute(const PortId&, DatatypeHandle data)
 {
-  auto geom = boost::dynamic_pointer_cast<OsprayGeometryObject>(data);
+  auto geom = std::dynamic_pointer_cast<OsprayGeometryObject>(data);
   if (!geom)
   {
     error("Logical error: not a geometry object on OsprayViewer");

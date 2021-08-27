@@ -39,7 +39,7 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
+SharedPointer<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
 ExecutableLookup* NetworkEditorPythonAPI::lookup_ = nullptr;
 Mutex NetworkEditorPythonAPI::pythonLock_("Python");
 std::atomic<bool> NetworkEditorPythonAPI::executeLockedFromPython_(false);
@@ -61,7 +61,7 @@ public:
   }
 };
 
-void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl)
+void NetworkEditorPythonAPI::setImpl(SharedPointer<NetworkEditorPythonInterface> impl)
 {
   if (!impl_)
   {
@@ -70,8 +70,8 @@ void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterf
 
     if (!convertersRegistered_)
     {
-      boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
-        StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+      boost::python::to_python_converter< std::vector< SharedPointer<PyModule> >,
+        StdVectorToListConverter< SharedPointer<PyModule> >, true >();
       boost::python::to_python_converter< std::vector< std::string >,
         StdVectorToListConverter< std::string >, true >();
       convertersRegistered_ = true;
@@ -89,7 +89,7 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
   lookup_ = lookup;
 }
 
-boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
+SharedPointer<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
   Guard g(pythonLock_.get());
 
@@ -124,7 +124,7 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
   }
 }
 
-std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
+std::vector<SharedPointer<PyModule>> NetworkEditorPythonAPI::modules()
 {
   Guard g(pythonLock_.get());
   return impl_->moduleList();
@@ -339,7 +339,7 @@ std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& 
 }
 
 /// @todo: bizarre reason for this return type and casting. but it works.
-boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
+SharedPointer<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
   Guard g(NetworkEditorPythonAPI::getLock().get());
   from.connect(to);
@@ -382,7 +382,7 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::stri
 }
 
 //TODO: refactor copy/paste
-boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
+SharedPointer<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
 {
   Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
 
@@ -398,7 +398,7 @@ boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_ob
   return nullptr;
 }
 
-boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object(const std::string& moduleId, const std::string& portName)
+SharedPointer<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object(const std::string& moduleId, const std::string& portName)
 {
   Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
 

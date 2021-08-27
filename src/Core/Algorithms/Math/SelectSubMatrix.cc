@@ -213,7 +213,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
 	 }
 	}
 
-  	    auto output(boost::make_shared<DenseMatrix>(mat));
+  	    auto output(makeShared<DenseMatrix>(mat));
         return output;
 
       } else
@@ -323,7 +323,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
         for (index_type j = 0; j < cols.size(); j++)
          (mat)(i,j) = dense_input_matrix->coeff(rows[i],cols[j]);
 
-      auto output(boost::make_shared<DenseMatrix>(mat));
+      auto output(makeShared<DenseMatrix>(mat));
 
       return output;
    }
@@ -336,7 +336,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
       for (index_type i = 0; i < rows.size(); i++)
         mat.row(i) = dense_input_matrix->row(rows[i]);
 
-      auto output(boost::make_shared<DenseMatrix>(mat));
+      auto output(makeShared<DenseMatrix>(mat));
 
       return output;
    }
@@ -348,7 +348,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
       for (index_type i = 0; i < cols.size(); i++)
          if (cols[i]>0) mat.col(i) = dense_input_matrix->col(cols[i]);
 
-      auto output(boost::make_shared<DenseMatrix>(mat));
+      auto output(makeShared<DenseMatrix>(mat));
 
       return output;
    }
@@ -397,7 +397,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
 	  }
      }
 
-     auto output(boost::make_shared<DenseMatrix>(mat));
+     auto output(makeShared<DenseMatrix>(mat));
      return output;
 
    } else

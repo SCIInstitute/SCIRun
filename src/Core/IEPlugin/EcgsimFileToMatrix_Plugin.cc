@@ -289,7 +289,7 @@ MatrixHandle SCIRun::EcgsimBinaryFileMatrix_reader(LoggerHandle pr, const char *
     return nullptr;
   }
 
-  auto result = boost::make_shared<DenseMatrix>(nrows, ncols);
+  auto result = makeShared<DenseMatrix>(nrows, ncols);
   std::copy(values.begin(), values.end(), result->data());
   return result;
 }

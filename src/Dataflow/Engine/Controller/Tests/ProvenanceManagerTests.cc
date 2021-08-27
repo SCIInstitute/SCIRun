@@ -49,7 +49,7 @@ public:
   MOCK_METHOD0(clear, void());
 };
 
-typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
+typedef SharedPointer<MockNetworkIO> MockNetworkIOPtr;
 
 class ProvenanceManagerTests : public ::testing::Test
 {

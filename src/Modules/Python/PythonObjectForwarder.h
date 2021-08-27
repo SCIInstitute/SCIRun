@@ -92,14 +92,14 @@ namespace SCIRun
               if (name == "string")
               {
                 auto valueStr = var.toString();
-                auto strObj = boost::make_shared<Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received");
+                auto strObj = makeShared<Datatypes::String>(!valueStr.empty() ? valueStr : "Empty string or non-string received");
                 output = strObj;
                 module_.sendOutput(stringPort, strObj);
               }
               else if (name == "int")
               {
                 auto valueInt = var.toInt();
-                output = boost::make_shared<Datatypes::DenseMatrix>(1, 1, valueInt);
+                output = makeShared<Datatypes::DenseMatrix>(1, 1, valueInt);
                 // special case, don't send, just return value
                 //module_.sendOutput(matrixPort, output);
               }
@@ -109,12 +109,12 @@ namespace SCIRun
                 if (list[0].name().name() == "list")
                 {
                   auto mat = convertToDenseMatrix(list);
-                  module_.sendOutput(matrixPort, boost::make_shared<Datatypes::DenseMatrix>(mat));
+                  module_.sendOutput(matrixPort, makeShared<Datatypes::DenseMatrix>(mat));
                 }
               }
               else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
               {
-                auto sparse = boost::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
+                auto sparse = std::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
                 if (sparse)
                 {
                   output = sparse;
@@ -123,7 +123,7 @@ namespace SCIRun
               }
               else if (var.name().name() == Core::Python::pyFieldLabel())
               {
-                auto field = boost::dynamic_pointer_cast<Core::Datatypes::Field>(var.getDatatype());
+                auto field = std::dynamic_pointer_cast<Core::Datatypes::Field>(var.getDatatype());
                 if (field)
                 {
                   output = field;

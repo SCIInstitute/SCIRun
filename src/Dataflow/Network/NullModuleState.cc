@@ -54,7 +54,7 @@ bool NullModuleState::containsKey(const Name&) const
 
 ModuleStateHandle NullModuleState::clone() const
 {
-  return boost::make_shared<NullModuleState>();
+  return makeShared<NullModuleState>();
 }
 
 boost::signals2::connection NullModuleState::connectStateChanged(state_changed_sig_t::slot_function_type)

@@ -62,13 +62,13 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
         Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(denseInputCentered, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
         //U: Left principal matrix, nxn, orthogonal
-        LeftPrinMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+        LeftPrinMat = makeShared<DenseMatrix>(svd_mat.matrixU());
 
         //S: Principal values nxm, diagonal
-        PrinVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
+        PrinVals = makeShared<DenseMatrix>(svd_mat.singularValues());
 
         //V: Right singular mxm, orthognol
-        RightPrinMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+        RightPrinMat = makeShared<DenseMatrix>(svd_mat.matrixV());
     }
     else
     {
