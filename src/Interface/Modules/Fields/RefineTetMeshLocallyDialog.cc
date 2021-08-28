@@ -29,7 +29,6 @@
 #include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-//#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -54,10 +53,4 @@ RefineTetMeshLocallyDialog::RefineTetMeshLocallyDialog(const std::string& name, 
   addCheckBoxManager(UseModuleInputField_, Parameters::RefineTetMeshLocallyUseModuleInputField);
   addSpinBoxManager(MaxNumberRefinementIterations_, Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
   addRadioButtonGroupManager({ IsoValueRadioButton_, EdgeLengthRadioButton_, VolumeRadioButton_, DihedralAngleRadioButton_}, Parameters::RefineTetMeshLocallyRadioButtons);
-/*
-  addComboBoxManager(constraintComboBox_, Parameters::AddConstraints, impl_->refineNameLookup_);
-  addComboBoxManager(refinementComboBox_, Parameters::RefineMethod);
-  addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::IsoValue);
-
-  connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled()));*/
 }

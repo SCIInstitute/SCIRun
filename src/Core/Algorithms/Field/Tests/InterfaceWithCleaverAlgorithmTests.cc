@@ -104,7 +104,7 @@ TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
   inputs.push_back(BoxSignedDistanceField(true));
   inputs.push_back(BoxSignedDistanceField(false));
 
-  auto output = boost::dynamic_pointer_cast<Field>(algo.runImpl(inputs)[Variables::OutputField]);
+  auto output = std::dynamic_pointer_cast<Field>(algo.runImpl(inputs)[Variables::OutputField]);
 
   std::cout << "Number of mesh elements: " <<  output->vmesh()->num_elems() << std::endl;
   std::cout << "Number of mesh nodes: " <<  output->vmesh()->num_nodes() << std::endl;

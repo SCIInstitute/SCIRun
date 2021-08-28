@@ -68,7 +68,7 @@ class SCISHARE MappingDataSource : public Thread::Interruptible
     bool is_tensor_;
 };
 
-typedef boost::shared_ptr<MappingDataSource> MappingDataSourceHandle;
+typedef SharedPointer<MappingDataSource> MappingDataSourceHandle;
 
 MappingDataSourceHandle SCISHARE CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo);
 

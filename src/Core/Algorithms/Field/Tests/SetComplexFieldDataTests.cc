@@ -50,7 +50,7 @@ TEST(SetComplexFieldDataTest, LatVolOnNodeScalarMat)
 
   auto latvol = CreateEmptyLatVol(2,2,3);
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2 * 2 * 3, 1, complex(1, 1));
+  auto matrix = makeShared<ComplexDenseMatrix>(2 * 2 * 3, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(latvol, matrix);
   FieldInformation fi(result);
@@ -71,7 +71,7 @@ TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
 
   auto latvol = CreateEmptyLatVol(2, 2, 3);
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
+  auto matrix = makeShared<ComplexDenseMatrix>(2, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(latvol, matrix);
 
@@ -88,7 +88,7 @@ TEST(SetComplexFieldDataTest, TetMeshOnNodeScalarMat)
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(7, 1, complex(1, 1));
+  auto matrix = makeShared<ComplexDenseMatrix>(7, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 
@@ -105,7 +105,7 @@ TEST(SetComplexFieldDataTest, TetMeshOnElemScalarMat)
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(3, 1, complex(1, 1));
+  auto matrix = makeShared<ComplexDenseMatrix>(3, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 

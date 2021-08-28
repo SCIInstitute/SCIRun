@@ -68,7 +68,7 @@ TEST_F(ConvertMatrixTypeModuleTests, ThrowsForNullMatrixInput)
 
 TEST_F(ConvertMatrixTypeModuleTests, SparseMatrixOnInputPort)
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(1,1) = 2;
   m->insert(2,2) = 3;
@@ -80,7 +80,7 @@ TEST_F(ConvertMatrixTypeModuleTests, SparseMatrixOnInputPort)
 
 TEST_F(ConvertMatrixTypeModuleTests, DenseMatrixOnInputPort)
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -91,7 +91,7 @@ TEST_F(ConvertMatrixTypeModuleTests, DenseMatrixOnInputPort)
 
 TEST_F(ConvertMatrixTypeModuleTests, ColumnMatrixOnInputPort)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;

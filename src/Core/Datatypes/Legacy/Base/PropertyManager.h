@@ -82,7 +82,7 @@ protected:
   static Persistent *maker();
 };
 
-typedef boost::shared_ptr<PropertyBase> PropertyBaseHandle;
+typedef SharedPointer<PropertyBase> PropertyBaseHandle;
 
 class SCISHARE PropertyManager;
 
@@ -263,7 +263,8 @@ void
 PropertyManager::set_property(const std::string &name,  const T& obj,
 			      bool is_transient)
 {
-  if (is_transient && (! is_frozen())) {
+  if (is_transient && (! is_frozen())) 
+  {
     std::cerr << "WARNING::PropertyManager must be frozen to store transient data"
               << " freezing now!" << std::endl;
     freeze();
@@ -280,9 +281,10 @@ PropertyManager::get_property(const std::string &name, T &ref)
   Core::Thread::Guard g(lock.get());
 
   bool ans = false;
-  map_type::iterator loc = properties_.find(name);
-  if (loc != properties_.end()) {
-    auto prop = boost::dynamic_pointer_cast<const Property<T>>(loc->second);
+  auto loc = properties_.find(name);
+  if (loc != properties_.end()) 
+  {
+    auto prop = std::dynamic_pointer_cast<const Property<T>>(loc->second);
     if (prop)
     {
       ref = prop->obj_;

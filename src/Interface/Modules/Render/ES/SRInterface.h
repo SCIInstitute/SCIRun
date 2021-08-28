@@ -108,6 +108,7 @@ namespace SCIRun
       void setLockZoom(bool lock) override;
       void setLockPanning(bool lock) override;
       void setLockRotation(bool lock) override;
+      glm::vec2 autoRotateVector() const override;
       void setAutoRotateVector(const glm::vec2& axis) override;
       void setAutoRotateSpeed(double speed) override;
       glm::mat4 getWorldToView() const override;
@@ -188,7 +189,7 @@ namespace SCIRun
 
       //---------------- Clipping Planes -----------------------------------------------------------
       double getMaxProjLength(const glm::vec3 &n);
-      
+
 
       //---------------- Data Handling ------------------------------------------------------------
       // Adds a VBO to the given entityID.
@@ -213,8 +214,7 @@ namespace SCIRun
 
       bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
       bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.
-      bool                                tryAutoRotate       {false};
-      bool                                doAutoRotateOnDrag  {false};
+      bool                                tryAutoRotate_      {false};
 
       float                               orientSize          {1.0};    //  Size of coordinate axes
       float                               orientPosX          {0.5};    //  X Position of coordinate axes
@@ -261,8 +261,8 @@ namespace SCIRun
       std::vector<glm::vec3>              mLightDirectionView {};
       std::vector<bool>                   mLightsOn           {};
 
-      glm::vec2                         autoRotateVector      {0.0, 0.0};
-      float                             autoRotateSpeed       {0.01f};
+      glm::vec2                         autoRotateVector_      {0.0, 0.0};
+      float                             autoRotateSpeed_       {0.01f};
 
       const int                         frameInitLimit_ {};
       QOpenGLContext*                   mContext        {};

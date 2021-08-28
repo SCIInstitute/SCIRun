@@ -32,7 +32,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/noncopyable.hpp>
 #include <Core/CommandLine/share.h>
 
@@ -41,7 +41,7 @@ namespace SCIRun {
     namespace CommandLine {
 
       class DeveloperParameters;
-      using DeveloperParametersPtr = boost::shared_ptr<DeveloperParameters>;
+      using DeveloperParametersPtr = SharedPointer<DeveloperParameters>;
 
       class SCISHARE ApplicationParameters : boost::noncopyable
       {
@@ -80,7 +80,7 @@ namespace SCIRun {
         virtual boost::optional<double> guiExpandFactor() const = 0;
       };
 
-      typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
+      typedef SharedPointer<ApplicationParameters> ApplicationParametersHandle;
 
       class CommandLineParserInternal;
 
@@ -91,7 +91,7 @@ namespace SCIRun {
         ApplicationParametersHandle parse(int argc, const char* argv[]) const;
         std::string describe() const;
       private:
-        boost::shared_ptr<CommandLineParserInternal> impl_;
+        SharedPointer<CommandLineParserInternal> impl_;
       };
 
 }}}

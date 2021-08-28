@@ -121,8 +121,8 @@ public:
                                      Point& point) override;
 
   VMesh::index_type* get_elems_pointer() const override;
-  boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() override { return this->mesh_->elem_grid_; }
-  boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() override { return this->mesh_->node_grid_; }
+  SharedPointer<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() override { return this->mesh_->elem_grid_; }
+  SharedPointer<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() override { return this->mesh_->node_grid_; }
 
 };
 

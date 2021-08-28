@@ -49,7 +49,7 @@ class SelectSubMatrixModuleTest : public ModuleTest
 
 DenseMatrixHandle CreateDenseMatrix()
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;
@@ -58,7 +58,7 @@ DenseMatrixHandle CreateDenseMatrix()
 
 DenseColumnMatrixHandle CreateColumnMatrix()
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -67,7 +67,7 @@ DenseColumnMatrixHandle CreateColumnMatrix()
 
 SparseRowMatrixHandle CreateSparseMatrix()
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(1,1) = 2;
   m->insert(2,2) = 3;

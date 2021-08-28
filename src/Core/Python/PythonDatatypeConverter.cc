@@ -452,7 +452,7 @@ DatatypeHandle SparseRowMatrixExtractor::operator()() const
   if (!rows.empty() && !columns.empty() && !matrixValues.empty())
   {
     auto nnz = matrixValues.size();
-    return boost::make_shared<SparseRowMatrix>(
+    return makeShared<SparseRowMatrix>(
         nrows, ncols, &rows[0], &columns[0], &matrixValues[0], nnz);
   }
 

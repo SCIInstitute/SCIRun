@@ -100,7 +100,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<StructQuadSurfMesh<Basis> > handle_type;
+  typedef SharedPointer<StructQuadSurfMesh<Basis> > handle_type;
 
   StructQuadSurfMesh();
   StructQuadSurfMesh(size_type x, size_type y);
@@ -972,9 +972,9 @@ const TypeDescription *get_type_description() const override;
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructQuadSurfMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<StructQuadSurfMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<StructQuadSurfMesh<Basis>>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle structquadsurf_maker(size_type x ,size_type y) { return boost::make_shared<StructQuadSurfMesh<Basis>>(x,y); }
+  static MeshHandle structquadsurf_maker(size_type x ,size_type y) { return makeShared<StructQuadSurfMesh<Basis>>(x,y); }
 
   Array2<Core::Geometry::Point>& get_points() { return (points_); }
 
@@ -1010,8 +1010,8 @@ protected:
   Array2<Core::Geometry::Point>  points_;
   Array2<Core::Geometry::Vector> normals_; /// normalized per node
 
-  boost::shared_ptr<SearchGridT<typename ImageMesh<Basis>::Node::index_type > > node_grid_;
-  boost::shared_ptr<SearchGridT<typename ImageMesh<Basis>::Elem::index_type > > elem_grid_;
+  SharedPointer<SearchGridT<typename ImageMesh<Basis>::Node::index_type > > node_grid_;
+  SharedPointer<SearchGridT<typename ImageMesh<Basis>::Elem::index_type > > elem_grid_;
 
   mutable Core::Thread::Mutex  synchronize_lock_;
   mask_type      synchronized_;

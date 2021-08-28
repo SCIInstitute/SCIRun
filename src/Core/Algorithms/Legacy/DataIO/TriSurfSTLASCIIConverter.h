@@ -43,7 +43,7 @@ namespace Core {
   namespace Algorithms {
 
 class AsciiConverterPrivate;
-typedef boost::shared_ptr< AsciiConverterPrivate > AsciiConverterPrivateHandle;
+typedef SharedPointer< AsciiConverterPrivate > AsciiConverterPrivateHandle;
 
 class SCISHARE TriSurfSTLASCIIConverter : public AlgorithmBase
 {

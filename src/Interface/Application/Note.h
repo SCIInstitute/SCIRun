@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_NOTE_H
 
 #include <Interface/Application/PositionProvider.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/tuple/tuple.hpp>
 #include <QString>
 #include <QFont>
@@ -66,7 +66,7 @@ namespace Gui {
     virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const = 0;
   };
 
-  typedef boost::shared_ptr<NoteDisplayStrategy> NoteDisplayStrategyPtr;
+  typedef SharedPointer<NoteDisplayStrategy> NoteDisplayStrategyPtr;
   class ModuleWidgetNoteDisplayStrategy;
   class ConnectionNoteDisplayStrategy;
 

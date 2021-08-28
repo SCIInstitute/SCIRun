@@ -56,7 +56,7 @@ namespace Engine {
 
   };
 
-  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
+  typedef SharedPointer<ExecutionStrategy> ExecutionStrategyHandle;
 
   class SCISHARE ExecutionStrategyFactory
   {
@@ -66,7 +66,7 @@ namespace Engine {
     virtual ExecutionStrategyHandle createDefault() const = 0;
   };
 
-  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
+  typedef SharedPointer<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
   using ThreadPtr = SharedPointer<std::thread>;
 
   class SCISHARE ExecutionQueueManager : public Core::Thread::Stoppable
