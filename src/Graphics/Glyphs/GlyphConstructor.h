@@ -62,7 +62,7 @@ public:
                    const Core::Datatypes::ColorMapHandle colorMap = nullptr);
 
   uint32_t setOffset(Datatypes::SpireIBO::PRIMITIVE prim);
-  bool normalsValid(Datatypes::SpireIBO::PRIMITIVE prim);
+  bool normalsValid(Datatypes::SpireIBO::PRIMITIVE prim) const;
   void addVertex(Datatypes::SpireIBO::PRIMITIVE prim, const Core::Geometry::Vector& point, const Core::Geometry::Vector& normal,
                  const Core::Datatypes::ColorRGB& color);
   void addVertex(Datatypes::SpireIBO::PRIMITIVE prim, const Core::Geometry::Vector& point, const Core::Datatypes::ColorRGB& color);
@@ -74,10 +74,11 @@ public:
   void addIndices(Datatypes::SpireIBO::PRIMITIVE prim, size_t i1, size_t i2, size_t i3);
   void addIndicesToOffset(Datatypes::SpireIBO::PRIMITIVE prim, size_t i1, size_t i2, size_t i3);
   void addIndexToOffset(Datatypes::SpireIBO::PRIMITIVE prim, size_t i);
-  size_t getCurrentIndex(Datatypes::SpireIBO::PRIMITIVE prim);
+  size_t getCurrentIndex(Datatypes::SpireIBO::PRIMITIVE prim) const;
   void popIndicesNTimes(Datatypes::SpireIBO::PRIMITIVE prim, int n);
 
 private:
+  const GlyphData& getDataConst(Datatypes::SpireIBO::PRIMITIVE prim) const;
   GlyphData& getData(Datatypes::SpireIBO::PRIMITIVE prim);
   GlyphData pointData_;
   GlyphData lineData_;

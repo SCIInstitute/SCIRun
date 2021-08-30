@@ -36,7 +36,7 @@ using namespace Graphics::Datatypes;
 GlyphConstructor::GlyphConstructor()
 {}
 
-GlyphData& GlyphConstructor::getData(SpireIBO::PRIMITIVE prim)
+const GlyphData& GlyphConstructor::getDataConst(SpireIBO::PRIMITIVE prim) const
 {
   switch(prim)
   {
@@ -55,6 +55,11 @@ GlyphData& GlyphConstructor::getData(SpireIBO::PRIMITIVE prim)
   }
 }
 
+GlyphData& GlyphConstructor::getData(SpireIBO::PRIMITIVE prim)
+{
+  return const_cast<GlyphData&>(getDataConst(prim));
+}
+
 void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
   const bool isTransparent, const double transparencyValue, const ColorScheme& colorScheme,
   RenderState state, const BBox& bbox, const bool isClippable,
@@ -62,7 +67,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 {
   for (auto prim : {SpireIBO::PRIMITIVE::POINTS, SpireIBO::PRIMITIVE::LINES, SpireIBO::PRIMITIVE::TRIANGLES})
   {
-    auto& data = getData(prim);
+    const auto& data = getDataConst(prim);
     if (data.numVBOElements_ == 0) continue;
     bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
     bool useNormals = data.normals_.size() == data.points_.size();
@@ -213,9 +218,9 @@ uint32_t GlyphConstructor::setOffset(SpireIBO::PRIMITIVE prim)
   return data.offset_;
 }
 
-bool GlyphConstructor::normalsValid(SpireIBO::PRIMITIVE prim)
+bool GlyphConstructor::normalsValid(SpireIBO::PRIMITIVE prim) const
 {
-  auto& data = getData(prim);
+  const auto& data = getDataConst(prim);
   return data.normals_.size() == data.points_.size();
 }
 
@@ -291,9 +296,9 @@ void GlyphConstructor::addIndicesToOffset(SpireIBO::PRIMITIVE prim, size_t i1, s
   addIndexToOffset(prim, i3);
 }
 
-size_t GlyphConstructor::getCurrentIndex(SpireIBO::PRIMITIVE prim)
+size_t GlyphConstructor::getCurrentIndex(SpireIBO::PRIMITIVE prim) const
 {
-  auto& data = getData(prim);
+  const auto& data = getDataConst(prim);
   return data.numVBOElements_;
 }
 
