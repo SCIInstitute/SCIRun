@@ -69,7 +69,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
-        boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
+        SharedPointer<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);

@@ -120,7 +120,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanUseFunctionSparse)
   const SparseRowMatrixHandle m(matrix1sparse()->clone());
   std::string functionArg = "x+5";
   auto result = castMatrix::toSparse(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::FUNCTION, 0.0, functionArg }));
-  auto expected = convertMatrix::toSparse(boost::make_shared<DenseMatrix>((matrix1().array() + 5).matrix()));
+  auto expected = convertMatrix::toSparse(makeShared<DenseMatrix>((matrix1().array() + 5).matrix()));
   EXPECT_SPARSE_EQ(*expected, *result);
 }
 

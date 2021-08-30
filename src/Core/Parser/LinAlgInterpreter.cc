@@ -227,7 +227,7 @@ namespace SCIRun {
       // Set the function pointer, we up cast it to the real type as the parser
       // does not know anything about this interpreter and the argument the
       // function will take in.
-      auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
+      auto func = std::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
 
       //Each function is a line in the parsed/interpreted code
       LinAlgProgramCode pc(func->get_function());
@@ -322,7 +322,7 @@ namespace SCIRun {
       pprogram->get_single_function(j, fhandle);
 
       // Set the function pointer
-      auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
+      auto func = std::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
       LinAlgProgramCode pc(func->get_function());
 
       ParserScriptVariableHandle ohandle = fhandle->get_output_var();

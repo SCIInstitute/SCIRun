@@ -40,7 +40,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 {
   using namespace SCIRun;
 
-  boost::python::class_<PyPort, boost::shared_ptr<PyPort>, boost::noncopyable>("SCIRun::PyPort", boost::python::no_init)
+  boost::python::class_<PyPort, SharedPointer<PyPort>, boost::noncopyable>("SCIRun::PyPort", boost::python::no_init)
     .add_property("name", &PyPort::name)
     .add_property("type", &PyPort::type)
     .add_property("isInput", &PyPort::isInput)
@@ -48,13 +48,13 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("connect", &PyPort::connect)
     ;
 
-  boost::python::class_<PyPorts, boost::shared_ptr<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
+  boost::python::class_<PyPorts, SharedPointer<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
     .def("__getattr__", &PyPorts::getattr)
     .def("__getitem__", &PyPorts::getitem)
     .def("__len__", &PyPorts::size)
     ;
 
-  boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
+  boost::python::class_<PyModule, SharedPointer<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
     .add_property("id", &PyModule::id)
     .add_property("stateVars", &PyModule::stateVars)
     .add_property("input", &PyModule::input)
@@ -65,7 +65,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("__setattr__", &PyModule::setattr)
     ;
 
-  boost::python::class_<PyDatatype, boost::shared_ptr<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
+  boost::python::class_<PyDatatype, SharedPointer<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
     .add_property("type", &PyDatatype::type)
     .add_property("value", &PyDatatype::value)
   ;

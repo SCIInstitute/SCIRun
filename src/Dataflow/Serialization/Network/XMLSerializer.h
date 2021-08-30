@@ -65,18 +65,18 @@ namespace Networks {
     }
 
     template <class Serializable>
-    boost::shared_ptr<Serializable> load_xml(std::istream& istr)
+    SharedPointer<Serializable> load_xml(std::istream& istr)
     {
       if (!istr.good())
         return nullptr;
       boost::archive::xml_iarchive ia(istr);
-      boost::shared_ptr<Serializable> nh(new Serializable);
+      SharedPointer<Serializable> nh(new Serializable);
       ia >> BOOST_SERIALIZATION_NVP(*nh);
       return nh;
     }
 
     template <class Serializable>
-    boost::shared_ptr<Serializable> load_xml(const std::string& filename)
+    SharedPointer<Serializable> load_xml(const std::string& filename)
     {
       std::ifstream ifs(filename.c_str());
       return load_xml<Serializable>(ifs);

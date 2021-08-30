@@ -42,11 +42,10 @@ BuildMappingMatrixDialog::BuildMappingMatrixDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  map_.insert(StringPair("Linear (\"weighted\")", "interpolateddata"));
-  map_.insert(StringPair("Constant mapping: each destination gets nearest source value", "closestdata"));
-  map_.insert(StringPair("Constant mapping: each source projects to just one destination", "singledestination"));
-
-  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, map_);
+  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, 
+    { {"Linear (\"weighted\")", "interpolateddata"},
+    { "Constant mapping: each destination gets nearest source value", "closestdata" },
+    { "Constant mapping: each source projects to just one destination", "singledestination" } });
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
 }

@@ -44,7 +44,7 @@ namespace
 {
   DenseMatrixHandle matrix1Dense()
   {
-    auto m(boost::make_shared<DenseMatrix>(3, 4));
+    auto m(makeShared<DenseMatrix>(3, 4));
     for (int i = 0; i < m->rows(); ++ i)
       for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
@@ -52,7 +52,7 @@ namespace
   }
   SparseRowMatrixHandle matrix1Sparse()
   {
-    auto m(boost::make_shared<SparseRowMatrix>(5,5));
+    auto m(makeShared<SparseRowMatrix>(5,5));
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(4,4) = 2;
@@ -62,7 +62,7 @@ namespace
   }
   DenseColumnMatrixHandle matrix1DenseColumn()
   {
-    auto m(boost::make_shared<DenseColumnMatrix>(4));
+    auto m(makeShared<DenseColumnMatrix>(4));
     m -> setZero();
     *m << 1,2,3,4;
     return m;
@@ -138,7 +138,7 @@ TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
 TEST(ReportMatrixInfoAlgorithmTests, EmptyInputDoesNotThrow)
 {
   ReportMatrixInfoAlgorithm algo;
-  auto empty(boost::make_shared<DenseMatrix>());
+  auto empty(makeShared<DenseMatrix>());
 
   auto result = algo.runImpl(empty);
   EXPECT_EQ(0, result.get<1>());

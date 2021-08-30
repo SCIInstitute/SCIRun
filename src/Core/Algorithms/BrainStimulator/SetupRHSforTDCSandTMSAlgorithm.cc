@@ -273,7 +273,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   { THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. "); }
   /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the
   /// stiffness matrix
-  lhs_knows = boost::make_shared<DenseMatrix>(mesh_num_nodes, 1);
+  lhs_knows = makeShared<DenseMatrix>(mesh_num_nodes, 1);
   for (VMesh::Node::index_type idx = 0; idx < mesh_num_nodes; idx++)
   { (*lhs_knows)(idx, 0) = std::numeric_limits<double>::quiet_NaN(); }
   (*lhs_knows)(refnode_number, 0) = 0;
@@ -795,13 +795,13 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   elc_sponge_surf_vfld->set_values(field_values);
 
   elc_elem =
-      boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
+      std::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
   elc_elem_def =
-      boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 4));
+      makeShared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 4));
   elc_elem_typ =
-      boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
+      makeShared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
   elc_con_imp =
-      boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
+      makeShared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(), 1));
 
   if (impedances.size() != elc_sponge_surf_vmesh->num_elems())
   {
@@ -934,7 +934,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
   FieldInformation fi(elc_tri_surf);
   if (fi.is_pointcloudmesh())
   {
-    auto output(boost::make_shared<DenseMatrix>(vmesh->num_nodes(), 1));
+    auto output(makeShared<DenseMatrix>(vmesh->num_nodes(), 1));
 
     auto mesh_elc_tri_surf = elc_tri_surf->vmesh();
     mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E);
@@ -966,7 +966,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
     int node_elements = vfield->vmesh()->num_nodes();
     int total_elements = node_elements + elcs_wanted.size();
 
-    DenseMatrixHandle output(boost::make_shared<DenseMatrix>(total_elements, 1));
+    DenseMatrixHandle output(makeShared<DenseMatrix>(total_elements, 1));
     int cnt = 0;
     double module_half_done = total_elements * 2;  /// half of the runtime is reserved for rhs
 

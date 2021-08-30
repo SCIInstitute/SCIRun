@@ -69,7 +69,7 @@ void ConvertMatrixToScalar::execute()
     auto dataptr = dense->data();
     const int datavalue= dataptr[0];
 
-    boost::shared_ptr<Int32> out(new Int32(datavalue));
+    SharedPointer<Int32> out(new Int32(datavalue));
 
     sendOutput(Output,out);
   }

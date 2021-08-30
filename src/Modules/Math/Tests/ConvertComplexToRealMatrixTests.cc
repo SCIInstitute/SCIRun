@@ -70,7 +70,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThrowsForNullMatrixInput)
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, SparseMatrixOnInputPort)
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(1,1) = 2;
   m->insert(2,2) = 3;
@@ -82,7 +82,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, SparseMatrixOnInputPort)
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, DenseMatrixOnInputPort)
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -93,7 +93,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, DenseMatrixOnInputPort)
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, ColumnMatrixOnInputPort)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;
@@ -105,12 +105,12 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ColumnMatrixOnInputPort)
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,2));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(2,2));
   (*m)(0,0) = 1;
   (*m)(0,1) = 2;
   (*m)(1,0) = 3;
   (*m)(1,1) = 4;
-  DenseMatrixHandle n(boost::make_shared<DenseMatrix>(2,2));
+  DenseMatrixHandle n(makeShared<DenseMatrix>(2,2));
   (*n)(0,0) = -1;
   (*n)(0,1) = -2;
   (*n)(1,0) = -3;
@@ -122,7 +122,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
   auto real2complex_output = getDataOnThisOutputPort(real2complex, 0);
 
   ASSERT_TRUE(real2complex_output != nullptr);
-  auto  real2complex_result = boost::dynamic_pointer_cast<ComplexDenseMatrix>(real2complex_output);
+  auto  real2complex_result = std::dynamic_pointer_cast<ComplexDenseMatrix>(real2complex_output);
 
   auto complex2real = makeModule("ConvertComplexToRealMatrix");
   stubPortNWithThisData(complex2real, 0, real2complex_result);
@@ -135,8 +135,8 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
   ASSERT_TRUE(complex2real_output1 != nullptr);
   ASSERT_TRUE(complex2real_output2 != nullptr);
 
-  auto  complex2real_result1 = boost::dynamic_pointer_cast<DenseMatrix>(complex2real_output1);
-  auto  complex2real_result2 = boost::dynamic_pointer_cast<DenseMatrix>(complex2real_output2);
+  auto  complex2real_result1 = std::dynamic_pointer_cast<DenseMatrix>(complex2real_output1);
+  auto  complex2real_result2 = std::dynamic_pointer_cast<DenseMatrix>(complex2real_output2);
 
   for(int x=0; x<complex2real_result1->nrows(); x++)
    for (int y=0; y<complex2real_result1->ncols(); y++)
@@ -149,7 +149,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
 TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_sparse)
 {
   auto mat_dim=3;
-  auto m(boost::make_shared<SparseRowMatrix>(mat_dim, mat_dim));
+  auto m(makeShared<SparseRowMatrix>(mat_dim, mat_dim));
   m->insert(0, 0) = 1;
   m->insert(0, 2) = 1;
   m->insert(1, 0) = 3;
@@ -157,7 +157,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_sparse)
   m->insert(2, 1) = 1;
   m->insert(2, 2) = 3;
   m->makeCompressed();
-  auto n(boost::make_shared<SparseRowMatrix>(mat_dim, mat_dim));
+  auto n(makeShared<SparseRowMatrix>(mat_dim, mat_dim));
   n->insert(0, 1) = 1;
   n->insert(0, 2) = 2;
   n->insert(1, 0) = 8;
@@ -171,7 +171,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_sparse)
   EXPECT_NO_THROW(real2complex->execute());
   auto real2complex_output = getDataOnThisOutputPort(real2complex, 0);
   ASSERT_TRUE(real2complex_output != nullptr);
-  auto  real2complex_result = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(real2complex_output);
+  auto  real2complex_result = std::dynamic_pointer_cast<ComplexSparseRowMatrix>(real2complex_output);
 
   auto complex2real = makeModule("ConvertComplexToRealMatrix");
   stubPortNWithThisData(complex2real, 0, real2complex_result);
@@ -185,8 +185,8 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_sparse)
   ASSERT_TRUE(complex2real_output1 != nullptr);
   ASSERT_TRUE(complex2real_output2 != nullptr);
 
-  auto  complex2real_result1 = boost::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output1);
-  auto  complex2real_result2 = boost::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output2);
+  auto  complex2real_result1 = std::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output1);
+  auto  complex2real_result2 = std::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output2);
 
   for (int k = 0; k <complex2real_result1 ->outerSize(); ++k)
   {

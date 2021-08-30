@@ -50,23 +50,23 @@ namespace Algorithms {
     Datatypes::DatatypeHandle& operator[](const Name& name);
 
     template <typename T>
-    boost::shared_ptr<T> get(const Name& name) const
+    SharedPointer<T> get(const Name& name) const
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? nullptr : boost::dynamic_pointer_cast<T>(it->second[0]);
+      return it == data_.end() ? nullptr : std::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
-    std::vector<boost::shared_ptr<T>> getList(const Name& name) const
+    std::vector<SharedPointer<T>> getList(const Name& name) const
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
+      return it == data_.end() ? std::vector<SharedPointer<T>>() : downcast_range<T>(it->second);
     }
 
     template <typename T>
-    void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
+    void setList(const Name& name, const std::vector<SharedPointer<T>>& list)
     {
       data_[name] = upcast_range<Datatypes::Datatype>(list);
     }

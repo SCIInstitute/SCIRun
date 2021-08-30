@@ -93,7 +93,7 @@ namespace Networks {
     {
     public:
       explicit ModuleReplacementFilterBuilder(const DirectModuleDescriptionLookupMap& map) : descMap_(map) {}
-      boost::shared_ptr<ModuleReplacementFilter> build();
+      SharedPointer<ModuleReplacementFilter> build();
     private:
       void registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap, const ModuleLookupInfo& info,
         const InputPortDescriptionList& inputPorts,

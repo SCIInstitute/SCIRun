@@ -54,7 +54,7 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName UseFieldPosition;
 
    private:
-    boost::shared_ptr<ShowOrientationAxesImpl> impl_;
+    SharedPointer<ShowOrientationAxesImpl> impl_;
   };
 }}}
 

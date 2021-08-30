@@ -233,7 +233,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
 {
   Core::Console::SaveFileCommandConsole save;
-  Core::Application::Instance().setCommandFactory(boost::make_shared<Core::Console::ConsoleGlobalCommandFactory>());
+  Core::Application::Instance().setCommandFactory(makeShared<Core::Console::ConsoleGlobalCommandFactory>());
   const char* argv[] = { "scirun.exe" };
   Core::Application::Instance().readCommandLine(1, argv);
   auto controller = Core::Application::Instance().controller();
@@ -281,7 +281,7 @@ TEST(SerializeNetworkTest, UsingConsoleSaveCommandObject)
   save.set(Variables::Filename, filename);
   ASSERT_TRUE(save.execute());
 
-  controller->setNetwork(boost::make_shared<NiceMock<MockNetwork>>());
+  controller->setNetwork(makeShared<NiceMock<MockNetwork>>());
   ASSERT_TRUE(controller->getNetwork().get() != nullptr);
   EXPECT_EQ(0, controller->getNetwork()->nmodules());
 

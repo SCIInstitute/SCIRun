@@ -170,7 +170,7 @@ GeometryHandle ShowOrientationAxesImpl::makeGeometry(const GeometryIDGenerator& 
   addOrientationArrows(glyphs, pos);
   BBox bbox = getBBox(pos);
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGen, "ShowOrientationAxes", true));
+  auto geom(makeShared<GeometryObjectSpire>(idGen, "ShowOrientationAxes", true));
   glyphs.buildObject(*geom, geom->uniqueID(), false, 1.0, ColorScheme::COLOR_IN_SITU,
                      getRenderState(), bbox, true, nullptr);
   return geom;

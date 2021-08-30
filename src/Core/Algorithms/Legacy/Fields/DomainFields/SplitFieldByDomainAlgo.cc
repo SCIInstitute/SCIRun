@@ -52,7 +52,7 @@ SplitFieldByDomainAlgo::SplitFieldByDomainAlgo()
 
 namespace {
 
-class SortSizes : public std::binary_function<index_type,index_type,bool>
+class SortSizes
 {
   public:
     explicit SortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
@@ -67,7 +67,7 @@ class SortSizes : public std::binary_function<index_type,index_type,bool>
 };
 
 
-class AscSortSizes : public std::binary_function<index_type,index_type,bool>
+class AscSortSizes
 {
   public:
     explicit AscSortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}

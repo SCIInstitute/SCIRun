@@ -48,7 +48,7 @@ namespace
         int column2 [12] = {7,6,9,8,5,7,9,3,4,5,5,9};
 
         //Puts the columns into a matrix.
-        DenseMatrixHandle inputM(boost::make_shared<DenseMatrix>(12,2));
+        DenseMatrixHandle inputM(makeShared<DenseMatrix>(12,2));
         for (int i = 0; i < inputM->rows(); i++){
             (*inputM)(i,0) = column1[i];
             (*inputM)(i,1) = column2[i];
@@ -64,7 +64,7 @@ namespace
         double centeredColumn2 [12] = {0.583333,-0.416667,2.583333,1.583333,-1.416667,0.583333,2.583333,-3.416667,-2.416667,-1.416667,-1.416667,2.583333};
 
         //Puts the columns into a matrix.
-        DenseMatrixHandle centeredM(boost::make_shared<DenseMatrix>(12,2));
+        DenseMatrixHandle centeredM(makeShared<DenseMatrix>(12,2));
         for (int i = 0; i < centeredM->rows(); i++){
             (*centeredM)(i,0) = centeredColumn1[i];
             (*centeredM)(i,1) = centeredColumn2[i];

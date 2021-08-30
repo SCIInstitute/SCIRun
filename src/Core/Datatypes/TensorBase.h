@@ -28,9 +28,13 @@
 #ifndef CORE_DATATYPES_TENSOR_BASE_H
 #define CORE_DATATYPES_TENSOR_BASE_H
 
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 #include <unsupported/Eigen/CXX11/Tensor>
+#ifndef WIN32
 #pragma GCC diagnostic error "-Wunused-parameter"
+#endif
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {

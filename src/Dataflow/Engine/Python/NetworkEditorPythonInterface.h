@@ -31,10 +31,8 @@
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 
-#include <Core/Algorithms/Base/Variable.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/python.hpp>
 #include <vector>
 #include <Dataflow/Engine/Python/share.h>
@@ -65,8 +63,8 @@ namespace SCIRun
     virtual std::string stateToString() const = 0;
 
     //ports
-    virtual boost::shared_ptr<class PyPorts> output() = 0;
-    virtual boost::shared_ptr<class PyPorts> input() = 0;
+    virtual SharedPointer<class PyPorts> output() = 0;
+    virtual SharedPointer<class PyPorts> input() = 0;
 
     //time added to network, for id sorting
     virtual boost::posix_time::ptime creationTime() const = 0;
@@ -80,7 +78,7 @@ namespace SCIRun
     virtual boost::python::object value() const = 0;
   };
 
-  class SCISHARE PyPort : public boost::enable_shared_from_this<PyPort>
+  class SCISHARE PyPort : public std::enable_shared_from_this<PyPort>
   {
   public:
     virtual ~PyPort() {}
@@ -90,7 +88,7 @@ namespace SCIRun
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;
     virtual std::string dataTypeName() const = 0; //TODO: precursor to getting actual data off of port
-    virtual boost::shared_ptr<PyDatatype> data() const = 0;
+    virtual SharedPointer<PyDatatype> data() const = 0;
   };
 
   class SCISHARE PyConnection
@@ -100,16 +98,16 @@ namespace SCIRun
     virtual std::string id() const = 0;
   };
 
-  SCISHARE boost::shared_ptr<PyPort> operator>>(const PyPort& from, const PyPort& to);
+  SCISHARE SharedPointer<PyPort> operator>>(const PyPort& from, const PyPort& to);
 
   class SCISHARE PyPorts
   {
   public:
     virtual ~PyPorts() {}
     //by name
-    virtual boost::shared_ptr<PyPort> getattr(const std::string& name) = 0;
+    virtual SharedPointer<PyPort> getattr(const std::string& name) = 0;
     //by index
-    virtual boost::shared_ptr<PyPort> getitem(int index) = 0;
+    virtual SharedPointer<PyPort> getitem(int index) = 0;
 
     virtual size_t size() const = 0;
   };
@@ -119,17 +117,17 @@ namespace SCIRun
   {
   public:
     virtual ~AddModule() {}
-    virtual boost::shared_ptr<PyModule> getattr(const std::string& name) = 0;
+    virtual SharedPointer<PyModule> getattr(const std::string& name) = 0;
   };
 
   class SCISHARE NetworkEditorPythonInterface
   {
   public:
     virtual ~NetworkEditorPythonInterface() {}
-    virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
+    virtual SharedPointer<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
-    virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const = 0;
-    virtual boost::shared_ptr<PyModule> findModule(const std::string& id) const = 0;
+    virtual std::vector<SharedPointer<PyModule>> moduleList() const = 0;
+    virtual SharedPointer<PyModule> findModule(const std::string& id) const = 0;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;

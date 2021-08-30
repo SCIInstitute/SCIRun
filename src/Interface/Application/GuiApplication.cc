@@ -31,7 +31,7 @@
 #include <Interface/Application/GuiApplication.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <iostream>
 
 using namespace SCIRun::Gui;

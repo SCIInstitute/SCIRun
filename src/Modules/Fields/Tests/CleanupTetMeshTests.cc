@@ -67,7 +67,7 @@ TEST_F(CleanupTetMeshModuleTests, ThrowsForNullInput)
 TEST_F(CleanupTetMeshModuleTests, WrongInput)
 {
   auto cvm = makeModule("CleanupTetMesh");
-	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 	m->insert(0,0) = 1;
 	m->insert(0,1) = 7;
 	m->insert(0,2) = 3;

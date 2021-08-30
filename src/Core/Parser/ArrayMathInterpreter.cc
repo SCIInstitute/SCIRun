@@ -352,7 +352,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
   {
     pprogram->get_const_function(j,fhandle);
     // Set the function pointer
-    auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
+    auto func = std::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
     ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
     ArrayMathProgramCode& pc = *pcPtr;
     pc.set_size(1);
@@ -634,7 +634,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     pprogram->get_single_function(j,fhandle);
 
     // Set the function pointer
-    auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
+    auto func = std::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
     ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
     ArrayMathProgramCode& pc = *pcPtr;
 
@@ -922,7 +922,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       pprogram->get_sequential_function(j,fhandle);
 
       // Set the function pointer
-      auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
+      auto func = std::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
       ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
       ArrayMathProgramCode& pc = *pcPtr;
 

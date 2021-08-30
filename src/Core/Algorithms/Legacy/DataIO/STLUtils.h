@@ -34,7 +34,6 @@
 #include <boost/shared_array.hpp>
 
 #include <boost/unordered_map.hpp>
-#include <functional>
 #include <list>
 
 #include <Core/GeometryPrimitives/Point.h>
@@ -45,7 +44,7 @@ namespace SCIRun {
 namespace Core {
   namespace Algorithms {
 
-struct SCISHARE PointHash : std::unary_function<Geometry::Point, std::size_t>
+struct SCISHARE PointHash
 {
   std::size_t operator()(Geometry::Point const& point) const
   {

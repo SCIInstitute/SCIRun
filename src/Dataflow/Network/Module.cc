@@ -164,11 +164,11 @@ namespace SCIRun
           has_ui_(hasUi),
           state_(stateFactory ? stateFactory->make_state(info_.module_name_) : new NullModuleState),
           metadata_(state_),
-          executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
+          executionState_(makeShared<detail::ModuleExecutionStateImpl>())
         {
           // this captures the virtual call add_input_port, which will ensure dynamic ports have their asyncExecute listener attached (solves #957)
-          iports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_input_port(boost::dynamic_pointer_cast<InputPort>(p)); });
-          oports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_output_port(boost::dynamic_pointer_cast<OutputPort>(p)); });
+          iports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_input_port(std::dynamic_pointer_cast<InputPort>(p)); });
+          oports_.setModuleDynamicAddFunc([=](PortHandle p) { return module_->add_output_port(std::dynamic_pointer_cast<OutputPort>(p)); });
         }
 
         boost::atomic<bool> inputsChanged_ { false };
@@ -186,7 +186,7 @@ namespace SCIRun
         ExecuteBeginsSignalType executeBegins_;
         ExecuteEndsSignalType executeEnds_;
         ErrorSignalType errorSignal_;
-        std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
+        std::vector<SharedPointer<boost::signals2::scoped_connection>> portConnections_;
         ModuleInterface::ExecutionSelfRequestSignalType executionSelfRequested_;
 
         ModuleReexecutionStrategyHandle reexecute_;
@@ -220,7 +220,7 @@ Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   ReexecuteStrategyFactoryHandle reexFactory)
 {
-  impl_ = boost::make_shared<ModuleImpl>(this, info, hasUi, stateFactory);
+  impl_ = makeShared<ModuleImpl>(this, info, hasUi, stateFactory);
 
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double) {});
@@ -713,7 +713,7 @@ ModuleBuilder& ModuleBuilder::add_input_port(const Port::ConstructionParams& par
 void ModuleBuilder::addInputPortImpl(const Port::ConstructionParams& params) const
 {
   DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : nullptr);
-  auto port(boost::make_shared<InputPort>(module_.get(), params, sink));
+  auto port(makeShared<InputPort>(module_.get(), params, sink));
   port->setIndex(module_->add_input_port(port));
 }
 
@@ -722,7 +722,7 @@ ModuleBuilder& ModuleBuilder::add_output_port(const Port::ConstructionParams& pa
   if (module_)
   {
     DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : nullptr);
-    auto port(boost::make_shared<OutputPort>(module_.get(), params, source));
+    auto port(makeShared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
@@ -1047,13 +1047,13 @@ ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const 
   if (reexecuteMode_ && *reexecuteMode_ == "always")
   {
     LOG_DEBUG("Using Always reexecute mode for module execution.");
-    return boost::make_shared<AlwaysReexecuteStrategy>();
+    return makeShared<AlwaysReexecuteStrategy>();
   }
 
-  return boost::make_shared<DynamicReexecutionStrategy>(
-    boost::make_shared<InputsChangedCheckerImpl>(module),
-    boost::make_shared<StateChangedCheckerImpl>(module),
-    boost::make_shared<OutputPortsCachedCheckerImpl>(module));
+  return makeShared<DynamicReexecutionStrategy>(
+    makeShared<InputsChangedCheckerImpl>(module),
+    makeShared<StateChangedCheckerImpl>(module),
+    makeShared<OutputPortsCachedCheckerImpl>(module));
 }
 
 bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement)

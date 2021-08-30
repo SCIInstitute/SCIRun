@@ -161,7 +161,7 @@ void SCIRunMainWindow::createExecuteToolbar()
   executeButton_->setDefaultAction(actionExecuteAll_);
   executeBar->addWidget(executeButton_);
 
-  networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
+  networkProgressBar_.reset(new NetworkExecutionProgressBar(makeShared<NetworkStatusImpl>(networkEditor_), this));
   executeBar->addActions(networkProgressBar_->mainActions());
   executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
     "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -249,10 +249,10 @@ void SCIRunMainWindow::setupInputWidgets()
 
 void SCIRunMainWindow::setupNetworkEditor()
 {
-  boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
+  SharedPointer<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
 
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
-  boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
+  SharedPointer<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
   ModuleLog::Instance().addCustomSink(moduleLog);
   GuiLog::Instance().setVerbose(LogSettings::Instance().verbose());
 

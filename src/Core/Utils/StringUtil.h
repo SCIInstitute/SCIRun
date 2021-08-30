@@ -37,7 +37,7 @@
 #include <vector>
 #include <iterator>
 #include <type_traits>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/atomic.hpp>
 #ifndef Q_MOC_RUN
 #include <boost/iterator/zip_iterator.hpp>
@@ -51,11 +51,11 @@ namespace Core
 {
 
 template <typename T>
-std::vector<T*> toVectorOfRawPointers(const std::vector<boost::shared_ptr<T>>& vec)
+std::vector<T*> toVectorOfRawPointers(const std::vector<SharedPointer<T>>& vec)
 {
   std::vector<T*> raws;
   raws.reserve(vec.size());
-  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](boost::shared_ptr<T> ptr) { return ptr.get(); });
+  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](SharedPointer<T> ptr) { return ptr.get(); });
   return raws;
 }
 
@@ -77,30 +77,30 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
 }
 
 template <class T, class Iter>
-std::vector<boost::shared_ptr<T>> downcast_range(Iter begin, Iter end)
+std::vector<SharedPointer<T>> downcast_range(Iter begin, Iter end)
 {
-  std::vector<boost::shared_ptr<T>> output;
-  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::dynamic_pointer_cast<T>(p); });
+  std::vector<SharedPointer<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return std::dynamic_pointer_cast<T>(p); });
   return output;
 }
 
 template <class T, class Cont>
-std::vector<boost::shared_ptr<T>> downcast_range(const Cont& container)
+std::vector<SharedPointer<T>> downcast_range(const Cont& container)
 {
   return downcast_range<T>(container.begin(), container.end());
 }
 
 template <class T, class Iter>
-std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
+std::vector<SharedPointer<T>> upcast_range(Iter begin, Iter end)
 {
   //BOOST_STATIC_ASSERT(boost::is_base_of<T, typename Iter::value_type>::value);
-  std::vector<boost::shared_ptr<T>> output;
-  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::static_pointer_cast<T>(p); });
+  std::vector<SharedPointer<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return std::static_pointer_cast<T>(p); });
   return output;
 }
 
 template <class T, class Cont>
-std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
+std::vector<SharedPointer<T>> upcast_range(const Cont& container)
 {
   return upcast_range<T>(container.begin(), container.end());
 }
