@@ -3,8 +3,10 @@ Welcome to SCIRun's documentation!
 
 .. raw:: html
 
-   <iframe src="https://player.vimeo.com/video/279319572" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-
+  <div style="padding:56.25% 0 0 0;position:relative;">
+    <iframe src="https://player.vimeo.com/video/279319572?h=f1bc24bc8d" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <script src="https://player.vimeo.com/api/player.js"></script>
 
 
 `SCIRun <https://github.com/SCIInstitute/SCIRun>`_ is a problem solving environment developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
