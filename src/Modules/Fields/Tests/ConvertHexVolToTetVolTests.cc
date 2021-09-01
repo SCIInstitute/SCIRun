@@ -62,7 +62,7 @@ class ConvertHexVolToTetVolModuleTests : public ModuleTest
 
  DenseMatrixHandle CreateDenseMatrix()
  {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,3));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,3));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;

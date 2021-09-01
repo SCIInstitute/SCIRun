@@ -30,15 +30,28 @@
 #define INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
 
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
-#include "Interface/Modules/Render/ViewScene.h"
+#include "Interface/Modules/Render/ui_AutoRotateSettings.h"
+#include "Interface/Modules/Render/ui_ColorOptions.h"
+#include "Interface/Modules/Render/ui_Materials.h"
+#include "Interface/Modules/Render/ui_Fog.h"
+#include "Interface/Modules/Render/ui_ObjectSelection.h"
+#include "Interface/Modules/Render/ui_OrientationAxes.h"
+#include "Interface/Modules/Render/ui_ScaleBar.h"
+#include "Interface/Modules/Render/ui_ClippingPlanes.h"
+#include "Interface/Modules/Render/ui_InputControls.h"
+#include "Interface/Modules/Render/ui_CameraLocks.h"
+#include "Interface/Modules/Render/ui_DevControls.h"
+#include "Interface/Modules/Render/ui_LightControls.h"
+#include "Interface/Modules/Render/ui_ViewAxisChooser.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/Render/ViewScene.h>
-#include <boost/atomic.hpp>
 #endif
-#include <QGraphicsView>
 #include <Interface/Modules/Render/share.h>
+
+class QwtKnob;
+class ctkColorPickerButton;
 
 namespace SCIRun {
   namespace Gui {
@@ -56,13 +69,13 @@ namespace SCIRun {
       void initializeSavedStateMap();
     public Q_SLOTS:
       void clear();
+      void selectAllClicked();
+      void deselectAllClicked();
     Q_SIGNALS:
       void visibleItemChange();
       void meshComponentSelectionChange(const QString& moduleId, const QString& component, bool selected);
     private Q_SLOTS:
       void updateVisible(QTreeWidgetItem* item, int column);
-      void selectAllClicked();
-      void deselectAllClicked();
       void updateState();
     private:
       void addRenderItem(const QString& name);
@@ -73,50 +86,182 @@ namespace SCIRun {
       std::map<QString, std::map<QString, bool>> secondLevelItemMap_;
     };
 
-    class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
+    class SCISHARE AutoRotateControls : public QWidget, public Ui::AutoRotateSettings
     {
       Q_OBJECT
 
     public:
-      ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
+      explicit AutoRotateControls(ViewSceneDialog* parent);
+    };
+
+    class SCISHARE ColorOptions : public QWidget, public Ui::ColorOptions
+    {
+      Q_OBJECT
+
+    public:
+      explicit ColorOptions(ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
-      void setFogColorLabel(const QColor& color);
-      void setLabelColor(QLabel* label, const QColor& color);
-      void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
-        bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
-      void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
-        double numTicks, double lineWidth, const QString& unit);
-      void updateZoomOptionVisibility();
-      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
-      void updatePlaneControlDisplay(double x, double y, double z, double d);
-      QColor getLightColor(int index) const;
+    };
 
+    class SCISHARE MaterialsControls : public QWidget, public Ui::Materials
+    {
+      Q_OBJECT
+
+    public:
+      explicit MaterialsControls(ViewSceneDialog* parent);
+      void setMaterialValues(double ambient, double diffuse, double specular, double shine, double emission);
+    };
+
+    class SCISHARE ButtonStylesheetToggler
+    {
+    public:
+      ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle);
+      void updateToolbarButton(const QColor& color);
+    protected:
+      QPushButton* toolbarButton_{nullptr};
+      std::function<bool()> linkedCheckable_;
+      std::function<void()> whatToToggle_;
+    };
+
+    class SCISHARE LightButtonUpdater : public ButtonStylesheetToggler
+    {
+    public:
+      explicit LightButtonUpdater(QPushButton* toolbarButton, std::function<void()> whatToToggle);
+      QColor color() const;
+      void setColor(const QColor& color);
+    protected:
+      ctkColorPickerButton* colorPickerButton_{nullptr};
+      QColor lightColor_;
+      void updateLightColor();
+      virtual void lightColorUpdated() = 0;
+    };
+
+    class SCISHARE FogControls : public QWidget, public Ui::Fog, public LightButtonUpdater
+    {
+      Q_OBJECT
+
+    public:
+      FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
+      void setFogValues(bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+    Q_SIGNALS:
+      void setFogTo(bool toggle);
+      void lightColorUpdated() override;
+    public Q_SLOTS:
+      void toggleFog();
+    };
+
+    class SCISHARE ObjectSelectionControls : public QWidget, public Ui::ObjectSelection
+    {
+      Q_OBJECT
+
+    public:
+      explicit ObjectSelectionControls(ViewSceneDialog* parent);
       VisibleItemManager& visibleItems() { return *visibleItems_; }
-
     private:
       void setupObjectListWidget();
-      QColor lightColors[4];
-
       std::unique_ptr<VisibleItemManager> visibleItems_;
+    };
 
-    Q_SIGNALS:
-      void updateLightColor(const int index);
+    class SCISHARE OrientationAxesControls : public QWidget, public Ui::OrientationAxes, public ButtonStylesheetToggler
+    {
+      Q_OBJECT
 
-    private Q_SLOTS:
-      void selectLightColor(int index);
-      void selectLight0Color() {selectLightColor(0);}
-      void selectLight1Color() {selectLightColor(1);}
-      void selectLight2Color() {selectLightColor(2);}
-      void selectLight3Color() {selectLightColor(3);}
+    public:
+      explicit OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
+      void toggleButton();
+    private:
       void setSliderDefaultPos();
       void setSliderCenterPos();
+    };
+
+    struct SCISHARE ScaleBarData
+    {
+      bool visible;
+      int fontSize;
+      double length, height, multiplier, numTicks, lineWidth;
+      std::string unit;
+      double projLength;
+    };
+
+    class SCISHARE ScaleBarControls : public QWidget, public Ui::ScaleBar, public ButtonStylesheetToggler
+    {
+      Q_OBJECT
+
+    public:
+      ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
+      void setScaleBarValues(const ScaleBarData& scale);
+    private:
+      static const QColor buttonOutlineColor;
+    };
+
+    class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes, public ButtonStylesheetToggler
+    {
+      Q_OBJECT
+
+    public:
+      ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
+      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
+      void updatePlaneControlDisplay(double x, double y, double z, double d);
+    };
+
+    class SCISHARE InputControls : public QWidget, public Ui::Input
+    {
+      Q_OBJECT
+
+    public:
+      explicit InputControls(ViewSceneDialog* parent);
+      void updateZoomOptionVisibility();
+    };
+
+    class SCISHARE CameraLockControls : public QWidget, public Ui::CameraLocks
+    {
+      Q_OBJECT
+
+    public:
+      explicit CameraLockControls(ViewSceneDialog* parent);
+    private Q_SLOTS:
       void updateViewSceneTree();
       void addGroup();
       void removeGroup();
       void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
+    };
 
+    class SCISHARE DeveloperControls : public QWidget, public Ui::Developer
+    {
+      Q_OBJECT
+
+    public:
+      explicit DeveloperControls(ViewSceneDialog* parent);
+    };
+
+    class SCISHARE LightControls : public QWidget, public Ui::LightControls, public LightButtonUpdater
+    {
+      Q_OBJECT
+
+    public:
+      explicit LightControls(ViewSceneDialog* parent, int lightNumber, QPushButton* toolbarButton);
+      void setAdditionalLightState(int azimuth, int inclination, bool on);
+    private:
+      int lightNumber_ {-1};
+      QwtKnob* lightAzimuthSlider_{nullptr};
+      QwtKnob* lightInclinationSlider_{ nullptr };
+
+    private Q_SLOTS:
+      void resetAngles();
+    Q_SIGNALS:
+      void lightColorUpdated() override;
+    };
+
+    class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser
+    {
+      Q_OBJECT
+    public:
+      explicit ViewAxisChooserControls(ViewSceneDialog* parent);
+      QString currentAxis() const;
+    private Q_SLOTS:
+      void viewAxisSelected(const QString& name);
     };
   }
 }
 
-#endif //INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
+#endif

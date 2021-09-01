@@ -63,7 +63,7 @@ bool AppendMatrixAlgorithm::check_dimensions(
 }
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::concatenateMatrices(
-    MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Matrix>>& input_matrices,
+    MatrixHandle base_matrix, const std::vector<SharedPointer<Matrix>>& input_matrices,
     const Parameters& params) const
 {
   if (input_matrices.empty()) 
@@ -112,9 +112,9 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const Inputs& input, c
       result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
 
     if (matrixIs::column(lhsPtr) && (result.rows() == 1 || result.cols() == 1))
-      return boost::make_shared<DenseColumnMatrix>(result);
+      return makeShared<DenseColumnMatrix>(result);
 
-    return boost::make_shared<DenseMatrix>(result);
+    return makeShared<DenseMatrix>(result);
   }
 
   if (matrixIs::sparse(lhsPtr))

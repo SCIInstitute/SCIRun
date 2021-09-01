@@ -318,7 +318,7 @@ PropertyManager::io(Piostream &stream)
       Pio(stream, name );
       PersistentHandle p;
       stream.io( p, PropertyBase::type_id );
-      properties_[name] = boost::static_pointer_cast<PropertyBase>(p);
+      properties_[name] = std::static_pointer_cast<PropertyBase>(p);
       if (version < 2 && name == "minmax")
       {
         properties_[name]->set_transient(true);

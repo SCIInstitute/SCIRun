@@ -134,7 +134,7 @@ void ReportColumnMatrixMisfit::execute()
       val = 0;
     }
     std::cout << "Error val: " << val << std::endl;
-    //sendOutput(Error_Out, boost::make_shared<Double>(val));
+    //sendOutput(Error_Out, makeShared<Double>(val));
   }
 }
 

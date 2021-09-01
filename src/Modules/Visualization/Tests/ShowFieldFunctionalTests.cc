@@ -257,7 +257,7 @@ TEST_P(ShowFieldFaceTest, FaceGenerationTest)
 
     ASSERT_TRUE(geom != nullptr);
 
-    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+    auto spireGeom = std::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
 
     int numAttributes = 2;
     if(std::get<COLORING>(params) == 1) ++numAttributes;
@@ -383,7 +383,7 @@ TEST_P(ShowFieldEdgeTest, EdgeGenerationTest)
 
     ASSERT_TRUE(geom != nullptr);
 
-    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+    auto spireGeom = std::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
 
     int numAttributes = 1;
     if(std::get<COLORING>(params) == 1) ++numAttributes;
@@ -510,7 +510,7 @@ TEST_P(ShowFieldNodeTest, NodeGenerationTest)
 
     ASSERT_TRUE(geom != nullptr);
 
-    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+    auto spireGeom = std::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
 
     int numAttributes = 1;
     if(std::get<COLORING>(params) == 1) ++numAttributes;

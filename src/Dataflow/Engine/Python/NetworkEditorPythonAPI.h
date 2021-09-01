@@ -43,7 +43,7 @@ namespace SCIRun {
   class NetworkEditorPythonInterface;
   class PyModule;
   class PyDatatype;
-  typedef boost::shared_ptr<PyModule> PyModulePtr;
+  typedef SharedPointer<PyModule> PyModulePtr;
 
   class SCISHARE NetworkEditorPythonAPI
   {
@@ -62,8 +62,8 @@ namespace SCIRun {
     //static std::string scirun_get_module_output_type(const std::string& moduleId, int portIndex);
 
     //TODO: these don't work on Mac
-    static boost::shared_ptr<PyDatatype> scirun_get_module_input_object_index(const std::string& moduleId, int portIndex);
-    static boost::shared_ptr<PyDatatype> scirun_get_module_input_object(const std::string& moduleId, const std::string& portName);
+    static SharedPointer<PyDatatype> scirun_get_module_input_object_index(const std::string& moduleId, int portIndex);
+    static SharedPointer<PyDatatype> scirun_get_module_input_object(const std::string& moduleId, const std::string& portName);
 
     //these work on all platforms
     static boost::python::object scirun_get_module_input_value_index(const std::string& moduleId, int portIndex);
@@ -78,7 +78,7 @@ namespace SCIRun {
 
     static std::string quit(bool force);
 
-    static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
+    static void setImpl(SharedPointer<NetworkEditorPythonInterface> impl);
     static void clearImpl();
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
@@ -93,7 +93,7 @@ namespace SCIRun {
 
   private:
     NetworkEditorPythonAPI() = delete;
-    static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
+    static SharedPointer<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
     static void unlock();
     static Core::Thread::Mutex pythonLock_;

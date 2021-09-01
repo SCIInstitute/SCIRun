@@ -25,29 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef INTERFACE_MODULES_MATH_CONVERTMATRIXTYPE_H
 #define INTERFACE_MODULES_MATH_CONVERTMATRIXTYPE_H
 
-#include "Interface/Modules/Math/ui_ConvertMatrixType.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Math/ui_ConvertMatrixType.h"
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ConvertMatrixTypeDialog : public ModuleDialogGeneric,
-  public Ui::ConvertMatrixType
-{
-	Q_OBJECT
+  class SCISHARE ConvertMatrixTypeDialog : public ModuleDialogGeneric, public Ui::ConvertMatrixType
+  {
+    Q_OBJECT
 
-public:
-  ConvertMatrixTypeDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
-private:
-  GuiStringTranslationMap map_;
-};
+   public:
+    ConvertMatrixTypeDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+  };
 
 }
 }

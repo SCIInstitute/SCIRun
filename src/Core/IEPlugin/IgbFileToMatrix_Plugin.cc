@@ -114,7 +114,7 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle, const char *filename)
     }
     is.close();
 
-    auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
+    auto result(makeShared<DenseMatrix>(x_size,t_size));
 
     for(size_t p=0;p<t_size;p++ )
     {

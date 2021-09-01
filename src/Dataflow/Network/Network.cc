@@ -113,7 +113,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
     try
     {
       bool virtualConnection = outputModule->checkForVirtualConnection(*inputModule);
-      connections_[id] = boost::make_shared<Connection>(
+      connections_[id] = makeShared<Connection>(
         outputModule->getOutputPort(outputPortId),
         inputModule->getInputPort(inputPortId),
         id, virtualConnection);

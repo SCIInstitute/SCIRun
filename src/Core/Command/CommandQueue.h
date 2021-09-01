@@ -50,7 +50,7 @@ namespace SCIRun
         std::vector<CommandHandle> commands_;
       };
 
-      typedef boost::shared_ptr<CommandQueue> CommandQueueHandle;
+      typedef SharedPointer<CommandQueue> CommandQueueHandle;
     }
   }
 }

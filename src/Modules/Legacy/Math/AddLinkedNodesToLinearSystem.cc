@@ -130,8 +130,8 @@ AddLinkedNodesToLinearSystem::execute()
 
     // Remove the linked nodes from the system and make sure they are the same node
 
-    sendOutput(OutputLHS, boost::make_shared<SparseRowMatrix>(*currentGeomToGrid * *A * *potentialGridToGeom));
-    sendOutput(OutputRHS, boost::make_shared<DenseColumnMatrix>(*currentGeomToGrid * *rhs));
+    sendOutput(OutputLHS, makeShared<SparseRowMatrix>(*currentGeomToGrid * *A * *potentialGridToGeom));
+    sendOutput(OutputRHS, makeShared<DenseColumnMatrix>(*currentGeomToGrid * *rhs));
     sendOutput(Mapping, potentialGridToGeom);
   }
 }

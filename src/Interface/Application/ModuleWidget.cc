@@ -338,7 +338,7 @@ namespace
   }
 }
 
-ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(id(theModule), true),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
@@ -427,7 +427,7 @@ void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
 
-  LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
+  LoggerHandle logger(makeShared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc([this](int i) { updateProgressBarSignal(i); });
   if (theModule_->hasUI())
@@ -1184,7 +1184,7 @@ void ModuleWidget::setColorUnselected()
   Q_EMIT moduleSelected(false);
 }
 
-boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
+SharedPointer<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
 double ModuleWidget::highResolutionExpandFactor_ = 1;
 
@@ -1312,6 +1312,10 @@ void ModuleWidget::toggleOptionsDialog()
           auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
           static const auto rec = QGuiApplication::screens()[0]->size();
           dockable_->move((maxX.x() + 30) % rec.width(), (maxY.y() + 30) % rec.height());
+        }
+        else
+        {
+          dockable_->move(400, 200);
         }
         positions_.append(dockable_->pos());
       }
@@ -1504,7 +1508,7 @@ void ModuleWidget::stopButtonPushed()
 {
   //TODO: doesn't quite work yet
   #if 0
-  auto stoppable = boost::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
+  auto stoppable = std::dynamic_pointer_cast<SCIRun::Core::Thread::Stoppable>(theModule_);
   if (stoppable)
     stoppable->sendStopRequest();
   #endif
@@ -1670,8 +1674,8 @@ void ModuleWidget::saveImagesFromViewScene()
 
 void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
 {
-  connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
-  closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
+  connectionFactory_ = makeShared<ConnectionFactory>(proxy);
+  closestPortFinder_ = makeShared<ClosestPortFinder>(proxy);
   ports().setSceneFunc([proxy]() { return proxy->scene(); });
 }
 

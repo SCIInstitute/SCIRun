@@ -56,7 +56,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, CoordinateVertical);
 
 MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
-ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(boost::make_shared<TextBuilder>())
+ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(makeShared<TextBuilder>())
 {
   INITIALIZE_PORT(String);
   INITIALIZE_PORT(RenderedString);
@@ -169,7 +169,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
+  auto geom(makeShared<GeometryObjectSpire>(*this, "ShowString", false));
 
   geom->ibos().push_back(geomIBO);
   geom->vbos().push_back(geomVBO);

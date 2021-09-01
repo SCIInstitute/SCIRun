@@ -116,7 +116,7 @@ public:
   typedef SCIRun::size_type                 size_type;
   typedef SCIRun::mask_type                 mask_type;
 
-  typedef boost::shared_ptr<PrismVolMesh<Basis> > handle_type;
+  typedef SharedPointer<PrismVolMesh<Basis> > handle_type;
   typedef Basis                               basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -362,7 +362,7 @@ public:
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>>();
+    return SharedPointer<Core::Datatypes::MeshFacade<VMesh>>();
   }
 
   /// This one should go at some point, should be reroute throught the
@@ -1400,7 +1400,7 @@ public:
   /// This function returns a maker for Pio.
   static Persistent* maker() { return new PrismVolMesh<Basis>; }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<PrismVolMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<PrismVolMesh<Basis>>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)
@@ -2584,8 +2584,8 @@ protected:
   std::vector<std::vector<typename Node::index_type> > node_neighbors_;
 
   std::vector<unsigned char> boundary_faces_;
-  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
-  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
+  SharedPointer<SearchGridT<index_type> >  node_grid_;
+  SharedPointer<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex                 synchronize_lock_;
@@ -2603,7 +2603,7 @@ protected:
   double                        epsilon3_;
 
   /// Pointer to virtual interface
-  boost::shared_ptr<VMesh>                 vmesh_;
+  SharedPointer<VMesh>                 vmesh_;
 };
 
 template <class Basis>

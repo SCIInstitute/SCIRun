@@ -51,7 +51,7 @@ void SendComplexScalar::execute()
   {
     ComplexDenseMatrix c(2,2);
     c << complex(1,2), complex(3,4), complex(-1,-2), complex(-3,-4);
-    auto output(boost::make_shared<ComplexDenseMatrix>(c));
+    auto output(makeShared<ComplexDenseMatrix>(c));
     sendOutput(Scalar, output);
   }
   else

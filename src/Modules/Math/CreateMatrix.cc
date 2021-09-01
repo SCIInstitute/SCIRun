@@ -55,7 +55,7 @@ void CreateMatrix::execute()
 {
   if (needToExecute())
   {
-    auto matrix(boost::make_shared<DenseMatrix>());
+    auto matrix(makeShared<DenseMatrix>());
     try
     {
       auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();

@@ -92,7 +92,7 @@ public:
   {
     if (verbose_)
       std::cout << "Creating mock algorithm named: " << name << std::endl;
-    return boost::make_shared<NiceMock<MockAlgorithm>>();
+    return makeShared<NiceMock<MockAlgorithm>>();
   }
 private:
   bool verbose_;
@@ -144,7 +144,7 @@ DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size
   if (portNum < module->numOutputPorts())
   {
     auto oport = module->outputPorts()[portNum];
-    return boost::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
+    return std::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
   }
   return nullptr;
 }

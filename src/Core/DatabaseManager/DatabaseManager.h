@@ -35,7 +35,7 @@
 
 #include <map>
 #include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/any.hpp>
 #include <boost/noncopyable.hpp>
 #include <Core/DatabaseManager/share.h>
@@ -48,9 +48,9 @@ namespace SCIRun
     {
 
 typedef std::vector< std::map< std::string, boost::any > > ResultSet;
-typedef boost::shared_ptr<ResultSet> ResultSetHandle;
+typedef SharedPointer<ResultSet> ResultSetHandle;
 
-typedef boost::shared_ptr< class DatabaseManager > DatabaseManagerHandle;
+typedef SharedPointer< class DatabaseManager > DatabaseManagerHandle;
 
 class SCISHARE DatabaseManager : boost::noncopyable
 {
@@ -95,7 +95,7 @@ public:
 		int* not_null = nullptr, int* primary_key = nullptr, int* auto_inc = nullptr );
 
 private:
-	boost::shared_ptr< class DatabaseManagerPrivate > private_;
+	SharedPointer< class DatabaseManagerPrivate > private_;
 
 public:
 	/// ESCAPEQUOTES:

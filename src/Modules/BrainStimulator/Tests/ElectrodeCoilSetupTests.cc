@@ -65,7 +65,7 @@ namespace
 
   DenseMatrixHandle TMSCoilLocation()
   {
-   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,3));
+   DenseMatrixHandle m(makeShared<DenseMatrix>(1,3));
    (*m)(0,0) = 33.6654;
    (*m)(0,1) = 34.625;
    (*m)(0,2) = 10.6;

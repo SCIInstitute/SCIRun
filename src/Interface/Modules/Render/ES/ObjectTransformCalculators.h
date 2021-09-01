@@ -32,7 +32,6 @@
 #include <Core/Datatypes/Feedback.h>
 #include <es-general/comp/Transform.hpp>
 #include <Externals/spire/arc-ball/ArcBall.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/share.h>
@@ -66,7 +65,7 @@ namespace SCIRun
       virtual glm::mat4 getStaticCameraViewProjection() = 0;
     };
 
-    class SCISHARE ObjectTransformCalculatorFactory : public boost::enable_shared_from_this<ObjectTransformCalculatorFactory>
+    class SCISHARE ObjectTransformCalculatorFactory : public std::enable_shared_from_this<ObjectTransformCalculatorFactory>
     {
     public:
       ObjectTransformCalculatorFactory(BasicRendererObjectProvider* brop, const glm::vec2& initPos, float initW);

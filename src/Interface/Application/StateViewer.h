@@ -31,7 +31,7 @@
 
 #include "ui_StateViewer.h"
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <QString>
 
 namespace SCIRun {

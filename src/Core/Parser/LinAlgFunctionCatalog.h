@@ -65,7 +65,7 @@ class SCISHARE LinAlgFunctionCatalog : public ParserFunctionCatalog {
     static ParserFunctionCatalogHandle get_catalog();
 };
 
-typedef boost::shared_ptr<LinAlgFunctionCatalog> LinAlgFunctionCatalogHandle;
+typedef SharedPointer<LinAlgFunctionCatalog> LinAlgFunctionCatalogHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for adding Functions to the LinAlgFunctionCatalog
