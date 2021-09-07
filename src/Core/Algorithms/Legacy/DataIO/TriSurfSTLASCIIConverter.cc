@@ -39,7 +39,6 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/shared_array.hpp>
 
 #include <Core/Utils/Legacy/StringUtil.h>
 
@@ -282,7 +281,7 @@ AsciiConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
       vmesh->get_center(p2, nodesFromFace[1]);
       vmesh->get_center(p3, nodesFromFace[2]);
 
-      boost::shared_array<float> normal = computeFaceNormal(p1, p2, p3);
+      auto normal = computeFaceNormal(p1, p2, p3);
       outputfile << indent_level1 << "facet normal " //<< std::fixed
                  << normal[0] << delim << normal[1] << delim << normal[2] << std::endl;
 
