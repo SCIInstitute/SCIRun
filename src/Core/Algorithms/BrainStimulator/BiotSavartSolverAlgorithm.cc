@@ -280,7 +280,7 @@ class PieceWiseKernel : public KernelBase
           {
             //! optimization
             //! only recompute integration step only if segment length changes
-            if (Abs(prevSegLen - newSegLen) > 0.00000001)
+            if (fabs(prevSegLen - newSegLen) > 0.00000001)
             {
               prevSegLen = newSegLen;
 
@@ -610,7 +610,8 @@ class DipolesKernel : public KernelBase
   }
 };
 
-bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, DenseMatrixHandle& outdata, int outtype) const
+bool BiotSavartSolverAlgorithm::run(
+    FieldHandle mesh, FieldHandle coil, DenseMatrixHandle& outdata, int outtype) const
 {
   if (!mesh)
   {

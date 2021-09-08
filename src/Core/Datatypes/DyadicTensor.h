@@ -130,10 +130,7 @@ namespace Core {
         ordering_ = OrderState::NONE;
         for (SizeType i = 0; i < Dim; ++i)
           for (SizeType j = 0; j < Dim; ++j)
-          {
-            if (mat(i, j) != mat(j, i)) THROW_INVALID_ARGUMENT("Input matrix must be symmetric.");
             (*this)(i, j) = mat(i, j);
-          }
       }
       explicit DyadicTensorGeneric(MandelVector man)
       {

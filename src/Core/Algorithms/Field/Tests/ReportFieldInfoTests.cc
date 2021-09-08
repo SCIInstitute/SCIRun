@@ -26,11 +26,11 @@
 */
 
 
+#include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 

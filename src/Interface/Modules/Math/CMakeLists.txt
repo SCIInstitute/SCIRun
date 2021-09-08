@@ -52,6 +52,7 @@ SET(Interface_Modules_Math_FORMS
   AdvancedPlotter.ui
   ResizeMatrixDialog.ui
   CreateStandardMatrixDialog.ui
+  ComputeTensorUncertainty.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -82,6 +83,7 @@ SET(Interface_Modules_Math_HEADERS
   PlotDialog.h
   ResizeMatrixDialog.h
   CreateStandardMatrixDialog.h
+  ComputeTensorUncertaintyDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -111,6 +113,7 @@ SET(Interface_Modules_Math_SOURCES
   PlotDialog.cc
   ResizeMatrixDialog.cc
   CreateStandardMatrixDialog.cc
+  ComputeTensorUncertaintyDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")
