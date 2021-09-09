@@ -72,6 +72,7 @@
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+#include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -196,4 +197,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
   addModuleDesc<CreateTestingArrow>("...", "...");
+  addModuleDesc<CompositeModuleTestGFB_FM>("2 modules in 1!", "GetFieldBoundary->FairMesh");
 }

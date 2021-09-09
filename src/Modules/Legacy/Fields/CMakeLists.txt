@@ -99,6 +99,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
+  CompositeModuleTestGFB_FM.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -213,6 +214,7 @@ SET(Modules_Legacy_Fields_SRCS
   ReorderNormalCoherently.cc
   InterfaceWithTetGen.cc
   GenerateNodeNormals.cc
+  CompositeModuleTestGFB_FM.cc
 )
 
 IF(WITH_TETGEN)
