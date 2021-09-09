@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ComputeTensorUncertainty",
+    "namespace": "Math",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Math/ComputeTensorUncertainty.h"
+  },
+  "algorithm": {
+    "name": "ComputeTensorUncertaintyAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ComputeTensorUncertaintyAlgorithm.h"
+  },
+  "UI": {
+    "name": "ComputeTensorUncertaintyDialog",
+    "header": "Interface/Modules/Math/ComputeTensorUncertaintyDialog.h"
+  }
+}
