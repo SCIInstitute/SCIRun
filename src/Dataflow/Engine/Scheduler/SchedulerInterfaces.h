@@ -48,7 +48,7 @@ namespace Engine {
   {
   public:
     virtual ~Scheduler() {}
-    virtual OrderType schedule(const Networks::NetworkInterface& network) const = 0;
+    virtual OrderType schedule(const Networks::NetworkStateInterface& network) const = 0;
   };
 
   typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
@@ -72,15 +72,15 @@ namespace Engine {
 
   struct SCISHARE ExecutionContext : boost::noncopyable
   {
-    explicit ExecutionContext(Networks::NetworkInterface& net);
-    ExecutionContext(Networks::NetworkInterface& net,
+    explicit ExecutionContext(Networks::NetworkStateInterface& net);
+    ExecutionContext(Networks::NetworkStateInterface& net,
                      const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
 
-    ExecutionContext(Networks::NetworkInterface& net,
+    ExecutionContext(Networks::NetworkStateInterface& net,
       const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network_(net), lookup_(lkp), additionalFilter_(filter) {}
 
     void preexecute();
-    Networks::NetworkInterface& network_;
+    Networks::NetworkStateInterface& network_;
     const Networks::ExecutableLookup& lookup_;
     Networks::ModuleFilter additionalFilter_;
 
@@ -142,7 +142,7 @@ namespace Engine {
   struct SCISHARE ExecuteSingleModule
   {
     ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
-      const SCIRun::Dataflow::Networks::NetworkInterface& network, bool executeUpstream);
+      const SCIRun::Dataflow::Networks::NetworkStateInterface& network, bool executeUpstream);
     bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
   private:
     SCIRun::Dataflow::Networks::ModuleHandle module_;

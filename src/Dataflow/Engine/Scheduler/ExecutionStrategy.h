@@ -67,7 +67,6 @@ namespace Engine {
   };
 
   typedef SharedPointer<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-  using ThreadPtr = SharedPointer<std::thread>;
 
   class SCISHARE ExecutionQueueManager : public Core::Thread::Stoppable
   {

@@ -42,7 +42,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-class NetworkInterface;
+class NetworkStateInterface;
 class ModuleInterface;
 class ModuleDisplayInterface;
 class ModuleStateInterface;
@@ -77,12 +77,12 @@ struct ToolkitFile;
 class NetworkGlobalSettings;
 class NetworkEditorSerializationManager;
 class ConnectionMakerService;
-class NetworkEditorControllerInterface;
+class Network;
 class ReexecuteStrategyFactory;
 class MetadataMap;
 class ModuleBuilder;
 
-typedef SharedPointer<NetworkInterface> NetworkHandle;
+typedef SharedPointer<NetworkStateInterface> NetworkHandle;
 typedef SharedPointer<ModuleInterface> ModuleHandle;
 typedef SharedPointer<ModuleStateInterface> ModuleStateHandle;
 typedef SharedPointer<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;

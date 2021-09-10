@@ -59,6 +59,40 @@ namespace Engine {
   class ProvenanceManager;
 
   typedef SharedPointer<Dataflow::Engine::ProvenanceManager<Networks::NetworkFileHandle> > ProvenanceManagerHandle;
+
+  struct SCISHARE ModuleCounter
+  {
+    ModuleCounter() : count(new boost::atomic<int>(0)) {}
+    ModuleCounter(const ModuleCounter& rhs) : count(rhs.count)
+    {
+    }
+    void increment() const
+    {
+      count->fetch_add(1);
+    }
+    mutable SharedPointer<boost::atomic<int>> count;
+  };
+
+  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
+  typedef boost::signals2::signal<void (int)> NetworkDoneLoadingSignalType;
+
+  class DynamicPortManager;
+
+  struct SCISHARE DisableDynamicPortSwitch
+  {
+    explicit DisableDynamicPortSwitch(SharedPointer<DynamicPortManager> dpm);
+    ~DisableDynamicPortSwitch();
+  private:
+    bool first_;
+    SharedPointer<DynamicPortManager> dpm_;
+  };
+
 }
 }
 }

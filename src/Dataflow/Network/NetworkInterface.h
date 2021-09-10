@@ -39,6 +39,7 @@
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
+  using ThreadPtr = SharedPointer<std::thread>;
 namespace Dataflow {
 namespace Networks {
 
@@ -71,12 +72,12 @@ namespace Networks {
   };
 
 
-  class SCISHARE NetworkInterface : public ExecutableLookup
+  class SCISHARE NetworkStateInterface : public ExecutableLookup
   {
   public:
     typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
 
-    virtual ~NetworkInterface() {}
+    virtual ~NetworkStateInterface() {}
     virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
     virtual bool remove_module(const ModuleId& id) = 0;
     virtual size_t nmodules() const = 0;
@@ -105,14 +106,15 @@ namespace Networks {
     virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
-  class SCISHARE NetworkEditorControllerInterface : public ConnectionMakerService
+  class SCISHARE NetworkInterface : public ConnectionMakerService
   {
   public:
-    virtual ~NetworkEditorControllerInterface() {}
+    virtual ~NetworkInterface() {}
     virtual NetworkHandle getNetwork() const = 0;
     virtual ModuleHandle addModule(const ModuleLookupInfo& info) = 0;
     virtual void enableSignals() = 0;
     virtual void disableSignals() = 0;
+    virtual ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) = 0;
   };
 
 }}}
