@@ -57,32 +57,20 @@ private:
   NetworkEditorControllerInterface* nec_;
 };
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory,
-  ReexecuteStrategyFactoryHandle reexFactory,
-  NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory),
-  reexFactory_(reexFactory),
-  controller_(nec), nesm_(nesm)
-{
-}
-
 ////////
 // TODO: refactor the next two functions into one
 ///////
 
-NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
+void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkEditorControllerInterface* controller, const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
-  NetworkHandle network(makeShared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_));
-  controller_->setNetwork(network);
-
   {
-    ScopedControllerSignalDisabler scsd(controller_);
+    ScopedControllerSignalDisabler scsd(controller);
     for (const auto& modPair : data.modules)
     {
       try
       {
-        auto module = controller_->addModule(modPair.second.module);
+        auto module = controller->addModule(modPair.second.module);
         module->setId(modPair.first);
         ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
         module->setState(state);
@@ -100,13 +88,14 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  auto network = controller->getNetwork();
   for (const auto& conn : connectionsSorted)
   {
     auto from = network->lookupModule(conn.out_.moduleId_);
     auto to = network->lookupModule(conn.in_.moduleId_);
 
     if (from && to)
-      controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+      controller->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     else
     {
       logError(
@@ -114,17 +103,15 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
         conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
     }
   }
-
-  return network;
 }
 
-NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const NetworkXML& data)
+NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(NetworkEditorControllerInterface* controller, const NetworkXML& data)
 {
-  auto network = controller_->getNetwork();
+  auto network = controller->getNetwork();
   NetworkAppendInfo info;
   info.newModuleStartIndex = network->nmodules();
   {
-    ScopedControllerSignalDisabler scsd(controller_);
+    ScopedControllerSignalDisabler scsd(controller);
     for (const auto& modPair : data.modules)
     {
       ModuleId newId(modPair.first);
@@ -134,7 +121,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
         ++newId;
       }
 
-      auto module = controller_->addModule(modPair.second.module);
+      auto module = controller->addModule(modPair.second.module);
 
       //std::cout << "setting module id to " << newId << std::endl;
       info.moduleIdMapping[modPair.first] = newId;
@@ -156,7 +143,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
       auto from = network->lookupModule(ModuleId(modOut->second));
       auto to = network->lookupModule(ModuleId(modIn->second));
       if (from && to)
-        controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+        controller->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     }
   }
   return info;
@@ -165,11 +152,6 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
 NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
   : nesm_(nesm)
 {}
-
-NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
-{
-  return NetworkToXML(nesm_).to_xml_data(network);
-}
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {

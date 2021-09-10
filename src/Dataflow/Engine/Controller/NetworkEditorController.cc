@@ -524,8 +524,10 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
-      theNetwork_ = conv.from_xml_data(xml->network);
+      theNetwork_ = makeShared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_);
+      NetworkXMLConverter conv;
+      conv.loadXmlDataIntoNetwork(this, xml->network);
+
       ModuleCounter modulesDone;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
@@ -603,11 +605,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
+      NetworkXMLConverter conv;
 
       auto originalConnections = theNetwork_->connections(true);
 
-      auto info = conv.appendXmlData(xml->network);
+      auto info = conv.appendXmlData(this, xml->network);
       auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
@@ -657,6 +659,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorController::clear()
 {
+  theNetwork_->clear();
   LOG_DEBUG("NetworkEditorController::clear()");
 }
 
@@ -714,12 +717,6 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 NetworkHandle NetworkEditorController::getNetwork() const
 {
   return theNetwork_;
-}
-
-void NetworkEditorController::setNetwork(NetworkHandle nh)
-{
-  ENSURE_NOT_NULL(nh, "Null network.");
-  theNetwork_ = nh;
 }
 
 NetworkGlobalSettings& NetworkEditorController::getSettings()

@@ -83,7 +83,9 @@ namespace Engine {
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread
   //   This will be done in issue #231
 
-  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
+  class SCISHARE NetworkEditorController :
+    public NetworkIOInterface<Networks::NetworkFileHandle>,
+    public Networks::NetworkEditorControllerInterface
   {
   public:
     NetworkEditorController(Networks::ModuleFactoryHandle mf,
@@ -144,7 +146,6 @@ namespace Engine {
     void disableSignals() override;
 
     Networks::NetworkHandle getNetwork() const override;
-    void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     SharedPointer<DisableDynamicPortSwitch> createDynamicPortSwitch();

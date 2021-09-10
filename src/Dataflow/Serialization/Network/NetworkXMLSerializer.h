@@ -44,11 +44,7 @@ namespace Networks {
   class SCISHARE NetworkXMLConverter : boost::noncopyable
   {
   public:
-    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory,
-      ReexecuteStrategyFactoryHandle reexFactory,
-      NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm = nullptr);
-    NetworkHandle from_xml_data(const NetworkXML& data);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
+    void loadXmlDataIntoNetwork(NetworkEditorControllerInterface* nec, const NetworkXML& data);
 
     struct NetworkAppendInfo
     {
@@ -56,14 +52,7 @@ namespace Networks {
       std::map<std::string, std::string> moduleIdMapping;
     };
 
-    NetworkAppendInfo appendXmlData(const NetworkXML& data);
-  private:
-    ModuleFactoryHandle moduleFactory_;
-    ModuleStateFactoryHandle stateFactory_;
-    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
-    ReexecuteStrategyFactoryHandle reexFactory_;
-    NetworkEditorControllerInterface* controller_;
-    NetworkEditorSerializationManager* nesm_;
+    NetworkAppendInfo appendXmlData(NetworkEditorControllerInterface* nec, const NetworkXML& data);
   };
 
   class SCISHARE NetworkToXML : boost::noncopyable

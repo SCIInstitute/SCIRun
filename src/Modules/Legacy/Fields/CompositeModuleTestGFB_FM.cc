@@ -29,9 +29,6 @@
 #include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
 
 using namespace SCIRun::Modules::Fields;
-// using namespace SCIRun::Core::Algorithms::Fields;
-// using namespace SCIRun::Dataflow::Networks;
-// using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 MODULE_INFO_DEF(CompositeModuleTestGFB_FM, MiscField, SCIRun)
