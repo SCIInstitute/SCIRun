@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Algorithms;
 class ScopedControllerSignalDisabler
 {
 public:
-  explicit ScopedControllerSignalDisabler(NetworkEditorControllerInterface* nec) : nec_(nec)
+  explicit ScopedControllerSignalDisabler(NetworkInterface* nec) : nec_(nec)
   {
     nec_->disableSignals();
   }
@@ -54,14 +54,14 @@ public:
     nec_->enableSignals();
   }
 private:
-  NetworkEditorControllerInterface* nec_;
+  NetworkInterface* nec_;
 };
 
 ////////
 // TODO: refactor the next two functions into one
 ///////
 
-void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkEditorControllerInterface* controller, const NetworkXML& data)
+void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkInterface* controller, const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
   {
@@ -105,7 +105,7 @@ void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkEditorControllerInterfac
   }
 }
 
-NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(NetworkEditorControllerInterface* controller, const NetworkXML& data)
+NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(NetworkInterface* controller, const NetworkXML& data)
 {
   auto network = controller->getNetwork();
   NetworkAppendInfo info;

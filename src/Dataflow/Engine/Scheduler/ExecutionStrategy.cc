@@ -80,7 +80,7 @@ void ExecutionQueueManager::startExecution()
   executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
 
-ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+SCIRun::ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {

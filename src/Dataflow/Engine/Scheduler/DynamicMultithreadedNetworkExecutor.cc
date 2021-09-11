@@ -52,7 +52,7 @@ namespace SCIRun {
       class DynamicMultithreadedNetworkExecutorImpl : public WaitsForStartupInitialization//, boost::noncopyable
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network,
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkStateInterface* network,
           Mutex* lock, size_t numModules, Mutex* executionLock, DynamicExecutor::ExecutionThreadGroupPtr threadGroup) :
           executeThreads_(threadGroup),
           lookup_(&context.lookup_),
@@ -90,12 +90,12 @@ namespace SCIRun {
         DynamicExecutor::ModuleWorkQueuePtr work_;
         DynamicExecutor::ModuleProducerPtr producer_;
         DynamicExecutor::ModuleConsumerPtr consumer_;
-        const NetworkInterface* network_;
+        const NetworkStateInterface* network_;
         Mutex* executionLock_;
       };
 }}}
 
-DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) :
+DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkStateInterface& network) :
   network_(network),
   threadGroup_(new DynamicExecutor::ExecutionThreadGroup)
 {

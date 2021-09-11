@@ -48,7 +48,7 @@ namespace SCIRun {
         {
         public:
           ModuleProducer(const Networks::ModuleFilter& filter,
-            const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
+            const Networks::NetworkStateInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
             scheduler_(filter), network_(network), enqueueLock_(lock),
             work_(work), doneCount_(0), badGroup_(false),
             //shouldLog_(SCIRun::Core::Logging::Log::get().verbose()),
@@ -126,7 +126,7 @@ namespace SCIRun {
           }
         private:
           BoostGraphParallelScheduler scheduler_;
-          const Networks::NetworkInterface* network_;
+          const Networks::NetworkStateInterface* network_;
           Core::Thread::Mutex* enqueueLock_;
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;

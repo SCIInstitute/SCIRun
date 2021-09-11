@@ -43,6 +43,7 @@ namespace Dataflow {
 namespace Networks {
 
 class NetworkStateInterface;
+class NetworkInterface;
 class ModuleInterface;
 class ModuleDisplayInterface;
 class ModuleStateInterface;

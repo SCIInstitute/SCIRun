@@ -64,6 +64,8 @@ namespace Engine {
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;
+    SharedPointer<DynamicPortManager> dynamicPortManager_;
+    SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
   };
 
   class SCISHARE NetworkSignalManager
@@ -76,9 +78,9 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
     NetworkDoneLoadingSignalType networkDoneLoading_;
 
-    SharedPointer<DynamicPortManager> dynamicPortManager_;
+
     bool signalSwitch_, loadingContext_;
-    SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
+
 
     struct LoadingContext
     {
@@ -159,7 +161,10 @@ namespace Engine {
     void setExecutorType(int type);
 
     /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
-    void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm) { serializationManager_ = nesm; }
+    void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm)
+    {
+      collabs_.serializationManager_ = nesm;
+    }
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
@@ -169,7 +174,7 @@ namespace Engine {
 
     void cleanUpNetwork();
 
-    const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
+    const Networks::ModuleFactory& moduleFactory() const { return *collabs_.moduleFactory_; }  //TOOD: lazy
 
     std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
 

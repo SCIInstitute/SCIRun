@@ -29,6 +29,7 @@
 #ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
+#include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
 #include <boost/atomic.hpp>
