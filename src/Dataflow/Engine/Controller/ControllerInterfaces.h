@@ -32,6 +32,8 @@
 #define ENGINE_NETWORK_CONTROLLERINTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/atomic.hpp>
+#include <boost/signals2.hpp>
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
