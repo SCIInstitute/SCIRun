@@ -53,6 +53,7 @@ SET(Modules_Math_SRCS
   AdvancedPlotter.cc
   ResizeMatrix.cc
   CreateStandardMatrix.cc
+  ComputeTensorUncertainty.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -83,6 +84,7 @@ SET(Modules_Math_HEADERS
   AdvancedPlotter.h
   ResizeMatrix.h
   CreateStandardMatrix.h
+  ComputeTensorUncertainty.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

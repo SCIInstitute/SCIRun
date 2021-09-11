@@ -43,6 +43,7 @@ SET(Algorithms_Math_SRCS
   ComputeSVD.cc
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
   ComputePCA.cc
+  ComputeTensorUncertaintyAlgorithm.cc
   CollectMatrices/CollectMatricesAlgorithm.cc
   ReportMatrixSliceMeasureAlgo.cc
   BooleanCompareAlgo.cc
@@ -68,6 +69,7 @@ SET(Algorithms_Math_HEADERS
   ComputeSVD.h
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h
   ComputePCA.h
+  ComputeTensorUncertaintyAlgorithm.h
   CollectMatrices/CollectMatricesAlgorithm.h
   ReportMatrixSliceMeasureAlgo.h
   BooleanCompareAlgo.h
