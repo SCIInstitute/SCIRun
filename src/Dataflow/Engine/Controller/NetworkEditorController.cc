@@ -529,7 +529,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       collabs_.theNetwork_ = makeShared<Network>(collabs_.moduleFactory_, collabs_.stateFactory_,
         collabs_.algoFactory_, collabs_.reexFactory_);
       NetworkXMLConverter conv;
-      conv.loadXmlDataIntoNetwork(this, xml->network);
+      conv.loadXmlDataIntoNetwork(this, xml->network.data());
 
       ModuleCounter modulesDone;
       for (size_t i = 0; i < collabs_.theNetwork_->nmodules(); ++i)
@@ -612,7 +612,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
       auto originalConnections = collabs_.theNetwork_->connections(true);
 
-      auto info = conv.appendXmlData(this, xml->network);
+      auto info = conv.appendXmlData(this, xml->network.data());
       auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < collabs_.theNetwork_->nmodules(); ++i)

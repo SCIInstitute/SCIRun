@@ -29,6 +29,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/filesystem/operations.hpp>
+#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
@@ -87,4 +88,24 @@ ToolkitFile SCIRun::Dataflow::Networks::makeToolkitFromDirectory(const boost::fi
     }
   }
   return toolkit;
+}
+
+class NetworkSerializationWrapper : public NetworkSerializationInterface
+{
+public:
+  explicit NetworkSerializationWrapper(const NetworkXML* ) {}
+  std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> modules() const override
+  {
+    return {};
+  }
+  std::vector<ConnectionDescription> sortedConnections() const override
+  {
+    return {};
+  }
+private:
+};
+
+NetworkSerializationInterfaceHandle NetworkXML::data() const
+{
+  return makeShared<NetworkSerializationWrapper>(this);
 }

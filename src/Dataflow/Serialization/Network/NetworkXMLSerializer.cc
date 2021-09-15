@@ -121,7 +121,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(Networ
         ++newId;
       }
 
-      auto module = controller->addModule(modPair.second.module);
+      auto module = controller->addModule(modPair.second.first);
 
       //std::cout << "setting module id to " << newId << std::endl;
       info.moduleIdMapping[modPair.first] = newId;
