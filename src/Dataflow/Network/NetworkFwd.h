@@ -82,6 +82,7 @@ class Network;
 class ReexecuteStrategyFactory;
 class MetadataMap;
 class ModuleBuilder;
+class NetworkSerializationInterface;
 
 typedef SharedPointer<NetworkStateInterface> NetworkHandle;
 typedef SharedPointer<ModuleInterface> ModuleHandle;
@@ -103,6 +104,7 @@ typedef SharedPointer<ModuleTags> ModuleTagsHandle;
 typedef SharedPointer<DisabledComponents> DisabledComponentsHandle;
 typedef SharedPointer<NetworkFile> NetworkFileHandle;
 typedef SharedPointer<Subnetworks> SubnetworksHandle;
+using NetworkSerializationInterfaceHandle = SharedPointer<NetworkSerializationInterface>;
 
 using ModuleDescriptionMap = std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>>;
 using ModuleFilter = std::function<bool(ModuleHandle)>;

@@ -61,19 +61,19 @@ private:
 // TODO: refactor the next two functions into one
 ///////
 
-void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkInterface* controller, const NetworkXML& data)
+void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkInterface* controller, NetworkSerializationInterfaceHandle data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
   {
     ScopedControllerSignalDisabler scsd(controller);
-    for (const auto& modPair : data.modules)
+    for (const auto& modPair : data->modules())
     {
       try
       {
-        auto module = controller->addModule(modPair.second.module);
+        auto module = controller->addModule(modPair.second.first);
         module->setId(modPair.first);
-        ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-        module->setState(state);
+        //ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
+        module->setState(modPair.second.second);
       }
       catch (Core::InvalidArgumentException& e)
       {
@@ -86,8 +86,8 @@ void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkInterface* controller, c
     }
   }
 
-  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
-  std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  auto connectionsSorted(data->sortedConnections());
+  //std::sort(connectionsSorted.begin(), connectionsSorted.end());
   auto network = controller->getNetwork();
   for (const auto& conn : connectionsSorted)
   {
@@ -105,14 +105,14 @@ void NetworkXMLConverter::loadXmlDataIntoNetwork(NetworkInterface* controller, c
   }
 }
 
-NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(NetworkInterface* controller, const NetworkXML& data)
+NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(NetworkInterface* controller, NetworkSerializationInterfaceHandle data)
 {
   auto network = controller->getNetwork();
   NetworkAppendInfo info;
   info.newModuleStartIndex = network->nmodules();
   {
     ScopedControllerSignalDisabler scsd(controller);
-    for (const auto& modPair : data.modules)
+    for (const auto& modPair : data->modules())
     {
       ModuleId newId(modPair.first);
       while (network->lookupModule(newId))
@@ -126,13 +126,13 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(Networ
       //std::cout << "setting module id to " << newId << std::endl;
       info.moduleIdMapping[modPair.first] = newId;
       module->setId(newId);
-      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-      module->setState(state);
+      //ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
+      module->setState(modPair.second.second);
     }
   }
 
-  auto connectionsSorted(data.connections);
-  std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  auto connectionsSorted(data->sortedConnections());
+  //std::sort(connectionsSorted.begin(), connectionsSorted.end());
 
   for (const auto& conn : connectionsSorted)
   {

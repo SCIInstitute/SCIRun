@@ -41,10 +41,18 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  class SCISHARE NetworkSerializationInterface
+  {
+  public:
+    virtual ~NetworkSerializationInterface() = default;
+    virtual std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> modules() const = 0;
+    virtual std::vector<ConnectionDescription> sortedConnections() const = 0;
+  };
+
   class SCISHARE NetworkXMLConverter : boost::noncopyable
   {
   public:
-    void loadXmlDataIntoNetwork(NetworkInterface* nec, const NetworkXML& data);
+    void loadXmlDataIntoNetwork(NetworkInterface* nec, NetworkSerializationInterfaceHandle data);
 
     struct NetworkAppendInfo
     {
@@ -52,7 +60,7 @@ namespace Networks {
       std::map<std::string, std::string> moduleIdMapping;
     };
 
-    NetworkAppendInfo appendXmlData(NetworkInterface* nec, const NetworkXML& data);
+    NetworkAppendInfo appendXmlData(NetworkInterface* nec, NetworkSerializationInterfaceHandle data);
   };
 
   class SCISHARE NetworkToXML : boost::noncopyable
