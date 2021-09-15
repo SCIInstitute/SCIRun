@@ -30,6 +30,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/filesystem/operations.hpp>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;

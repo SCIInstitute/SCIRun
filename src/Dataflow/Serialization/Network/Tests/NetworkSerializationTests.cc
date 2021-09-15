@@ -149,8 +149,7 @@ TEST(SerializeNetworkTest, RoundTripObject)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
   auto network = controller.getNetwork();
-  NetworkXMLConverter converter;
-  converter.loadXmlDataIntoNetwork(&controller, networkXML.data());
+  controller.loadXmlDataIntoNetwork(networkXML.data());
   ASSERT_TRUE(network.get() != nullptr);
   auto xml2 = NetworkToXML(nullptr).to_xml_data(network);
   ASSERT_TRUE(xml2.get() != nullptr);

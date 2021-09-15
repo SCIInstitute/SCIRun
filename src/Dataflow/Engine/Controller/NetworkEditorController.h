@@ -127,6 +127,9 @@ namespace Engine {
     Networks::NetworkFileHandle saveNetwork() const override;
     void loadNetwork(const Networks::NetworkFileHandle& xml) override;
 
+    void loadXmlDataIntoNetwork(Networks::NetworkSerializationInterfaceHandle data) override;
+    Networks::NetworkAppendInfo appendXmlData(Networks::NetworkSerializationInterfaceHandle data) override;
+
     Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
     void appendToNetwork(const Networks::NetworkFileHandle& xml);
 //////////////////////End: To be Pythonized///////////////////////////////

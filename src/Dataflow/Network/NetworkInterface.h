@@ -99,11 +99,25 @@ namespace Networks {
     virtual std::string toString() const = 0;
   };
 
+  class SCISHARE NetworkSerializationInterface
+  {
+  public:
+    virtual ~NetworkSerializationInterface() = default;
+    virtual std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> modules() const = 0;
+    virtual std::vector<ConnectionDescription> sortedConnections() const = 0;
+  };
+
   class SCISHARE ConnectionMakerService
   {
   public:
     virtual ~ConnectionMakerService() {}
     virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+  };
+
+  struct SCISHARE NetworkAppendInfo
+  {
+    size_t newModuleStartIndex;
+    std::map<std::string, std::string> moduleIdMapping;
   };
 
   class SCISHARE NetworkInterface : public ConnectionMakerService
@@ -115,6 +129,8 @@ namespace Networks {
     virtual void enableSignals() = 0;
     virtual void disableSignals() = 0;
     virtual ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) = 0;
+    virtual void loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data) = 0;
+    virtual NetworkAppendInfo appendXmlData(NetworkSerializationInterfaceHandle data) = 0;
   };
 
 }}}

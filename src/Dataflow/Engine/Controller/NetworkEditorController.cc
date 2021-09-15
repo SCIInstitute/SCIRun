@@ -528,8 +528,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     {
       collabs_.theNetwork_ = makeShared<Network>(collabs_.moduleFactory_, collabs_.stateFactory_,
         collabs_.algoFactory_, collabs_.reexFactory_);
-      NetworkXMLConverter conv;
-      conv.loadXmlDataIntoNetwork(this, xml->network.data());
+      loadXmlDataIntoNetwork(xml->network.data());
 
       ModuleCounter modulesDone;
       for (size_t i = 0; i < collabs_.theNetwork_->nmodules(); ++i)
@@ -608,11 +607,9 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      NetworkXMLConverter conv;
-
       auto originalConnections = collabs_.theNetwork_->connections(true);
 
-      auto info = conv.appendXmlData(this, xml->network.data());
+      auto info = appendXmlData(xml->network.data());
       auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < collabs_.theNetwork_->nmodules(); ++i)
@@ -658,6 +655,107 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       throw;
     }
   }
+}
+
+class ScopedControllerSignalDisabler
+{
+public:
+  explicit ScopedControllerSignalDisabler(NetworkInterface* nec) : nec_(nec)
+  {
+    nec_->disableSignals();
+  }
+  ~ScopedControllerSignalDisabler()
+  {
+    nec_->enableSignals();
+  }
+private:
+  NetworkInterface* nec_;
+};
+
+////////
+// TODO: refactor the next two functions into one
+///////
+
+void NetworkEditorController::loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data)
+{
+  /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
+  {
+    ScopedControllerSignalDisabler scsd(this);
+    for (const auto& modPair : data->modules())
+    {
+      try
+      {
+        auto module = addModule(modPair.second.first);
+        module->setId(modPair.first);
+        module->setState(modPair.second.second);
+      }
+      catch (Core::InvalidArgumentException& e)
+      {
+        static std::ofstream missingModulesFile(
+          (Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string(), std::ios_base::out | std::ios_base::app);
+        missingModulesFile << "File load problem: " << e.what() << std::endl;
+        logCritical("File load problem: {}", e.what());
+        throw;
+      }
+    }
+  }
+
+  auto connectionsSorted(data->sortedConnections());
+  auto network = getNetwork();
+  for (const auto& conn : connectionsSorted)
+  {
+    auto from = network->lookupModule(conn.out_.moduleId_);
+    auto to = network->lookupModule(conn.in_.moduleId_);
+
+    if (from && to)
+      requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    else
+    {
+      logError(
+        "File load error: connection not created between modules {} and {}.",
+        conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
+    }
+  }
+}
+
+NetworkAppendInfo NetworkEditorController::appendXmlData(NetworkSerializationInterfaceHandle data)
+{
+  auto network = getNetwork();
+  NetworkAppendInfo info;
+  info.newModuleStartIndex = network->nmodules();
+  {
+    ScopedControllerSignalDisabler scsd(this);
+    for (const auto& modPair : data->modules())
+    {
+      ModuleId newId(modPair.first);
+      while (network->lookupModule(newId))
+      {
+        ++newId;
+      }
+
+      auto module = addModule(modPair.second.first);
+
+      info.moduleIdMapping[modPair.first] = newId;
+      module->setId(newId);
+      module->setState(modPair.second.second);
+    }
+  }
+
+  auto connectionsSorted(data->sortedConnections());
+
+  for (const auto& conn : connectionsSorted)
+  {
+    auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);
+    auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
+    if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
+    {
+      auto from = network->lookupModule(ModuleId(modOut->second));
+      auto to = network->lookupModule(ModuleId(modIn->second));
+      if (from && to)
+        requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    }
+  }
+  return info;
 }
 
 void NetworkEditorController::clear()
