@@ -32,6 +32,7 @@
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::State;
 
 void ToolkitFile::load(std::istream& istr)
 {
@@ -93,16 +94,34 @@ ToolkitFile SCIRun::Dataflow::Networks::makeToolkitFromDirectory(const boost::fi
 class NetworkSerializationWrapper : public NetworkSerializationInterface
 {
 public:
-  explicit NetworkSerializationWrapper(const NetworkXML* ) {}
+  explicit NetworkSerializationWrapper(const NetworkXML* xml)
+  {
+    if (!xml)
+      return;
+
+    for (const auto& mod : xml->modules)
+    {
+      moduleMap_[mod.first] = { mod.second.module, makeShared<SimpleMapModuleState>(mod.second.state) };
+    }
+    for (const auto& conn : xml->connections)
+    {
+      sortedConnections_.push_back(conn);
+    }
+    std::sort(sortedConnections_.begin(), sortedConnections_.end());
+  }
+
   std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> modules() const override
   {
-    return {};
+    return moduleMap_;
   }
+
   std::vector<ConnectionDescription> sortedConnections() const override
   {
-    return {};
+    return sortedConnections_;
   }
 private:
+  std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> moduleMap_;
+  std::vector<ConnectionDescription> sortedConnections_;
 };
 
 NetworkSerializationInterfaceHandle NetworkXML::data() const
