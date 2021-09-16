@@ -136,6 +136,8 @@ namespace Networks {
     bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
     void setInfoStrings(const ModuleDescription& desc);
+    NetworkInterface* network() const override final;
+    void setNetwork(NetworkInterface* net) override final;
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();

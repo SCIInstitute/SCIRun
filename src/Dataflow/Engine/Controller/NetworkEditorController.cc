@@ -255,6 +255,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
     realModule->addPortConnection(connectPortAdded([realModule](const ModuleId& mid, const PortId& pid) { realModule->portAddedSlot(mid, pid); }));
     realModule->addPortConnection(connectPortRemoved([realModule](const ModuleId& mid, const PortId& pid) { realModule->portRemovedSlot(mid, pid); }));
   }
+  realModule->setNetwork(this);
   return realModule;
 }
 

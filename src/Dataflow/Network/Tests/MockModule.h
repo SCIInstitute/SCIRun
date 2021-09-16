@@ -101,6 +101,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(checkForVirtualConnection, bool(const ModuleInterface&));
           MOCK_METHOD0(disconnectStateListeners, void());
           MOCK_CONST_METHOD0(description, std::string());
+          MOCK_CONST_METHOD0(network, NetworkInterface*());
+          MOCK_METHOD1(setNetwork, void(NetworkInterface*));
         };
 
         typedef SharedPointer<MockModule> MockModulePtr;

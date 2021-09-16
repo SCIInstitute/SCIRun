@@ -202,6 +202,8 @@ namespace SCIRun
         std::string description_;
 
         bool returnCode_{ false };
+
+        NetworkInterface* network_ { nullptr };
       };
     }
   }
@@ -1183,4 +1185,14 @@ std::string Module::newHelpPageUrl() const
 void Module::disconnectStateListeners()
 {
   get_state()->disconnectAll();
+}
+
+NetworkInterface* Module::network() const
+{
+  return impl_->network_;
+}
+
+void Module::setNetwork(NetworkInterface* net)
+{
+  impl_->network_ = net;
 }
