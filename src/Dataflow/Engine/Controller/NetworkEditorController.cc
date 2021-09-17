@@ -88,7 +88,35 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
 }
 
-NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
+NetworkEditorController::NetworkEditorController(const NetworkEditorController& other)
+{
+  collabs_.theNetwork_.reset(new Network(other.collabs_.moduleFactory_,
+    other.collabs_.stateFactory_, other.collabs_.algoFactory_, other.collabs_.reexFactory_));
+  collabs_.moduleFactory_ = other.collabs_.moduleFactory_;
+  collabs_.stateFactory_ = other.collabs_.stateFactory_;
+  collabs_.algoFactory_ = other.collabs_.algoFactory_;
+  collabs_.reexFactory_ = other.collabs_.reexFactory_;
+  collabs_.executorFactory_ = other.collabs_.executorFactory_;
+
+  //collabs_.cmdFactory_ = other.collabs_.cmdFactory_;
+  //collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
+  collabs_.serializationManager_ = other.collabs_.serializationManager_;
+  signals_.signalSwitch_ = true;
+  signals_.loadingContext_ = false;
+
+  collabs_.dynamicPortManager_.reset(new DynamicPortManager(signals_.connectionAdded_,
+    signals_.connectionRemoved_, this));
+
+  /// @todo should this class own the network or just keep a reference?
+
+#ifdef BUILD_WITH_PYTHON
+  //NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
+#endif
+
+  //collabs_.eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
+}
+
+NetworkEditorController::NetworkEditorController(NetworkStateHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
 {
   collabs_.theNetwork_ = network;
   collabs_.executorFactory_ = executorFactory;
@@ -816,7 +844,7 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
   });
 }
 
-NetworkHandle NetworkEditorController::getNetwork() const
+NetworkStateHandle NetworkEditorController::getNetwork() const
 {
   return collabs_.theNetwork_;
 }
@@ -922,4 +950,9 @@ void NetworkEditorController::cleanUpNetwork()
 std::vector<ModuleExecutionState::Value> NetworkEditorController::moduleExecutionStates() const
 {
   return collabs_.theNetwork_ ? collabs_.theNetwork_->moduleExecutionStates() : std::vector<ModuleExecutionState::Value>();
+}
+
+NetworkHandle NetworkEditorController::createSubnetwork() const
+{
+  return NetworkHandle(new NetworkEditorController(*this));
 }

@@ -45,8 +45,8 @@ namespace Networks {
   {
   public:
     explicit NetworkToXML(NetworkEditorSerializationManager* nesm = nullptr);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter);
+    NetworkFileHandle to_xml_data(const NetworkStateHandle& network);
+    NetworkFileHandle to_xml_data(const NetworkStateHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter);
   private:
     NetworkEditorSerializationManager* nesm_;
   };

@@ -27,6 +27,7 @@
 
 
 #include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
+#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun;
@@ -47,4 +48,14 @@ void CompositeModuleTestGFB_FM::setStateDefaults()
 void CompositeModuleTestGFB_FM::execute()
 {
   remark("Basic composite module concept part 1");
+
+  auto subNet = network()->createSubnetwork();
+  if (subNet)
+  {
+    remark("Subnet created.");
+  }
+  else
+  {
+    error("Subnet null");
+  }
 }

@@ -46,12 +46,12 @@ NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
   : nesm_(nesm)
 {}
 
-NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkStateHandle& network)
 {
   return to_xml_data(network, [](ModuleHandle) { return true; }, [](const ConnectionDescription&) { return true; });
 }
 
-NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkStateHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
 {
   NetworkXML networkXML;
   auto conns = network->connections(true);

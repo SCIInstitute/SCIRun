@@ -52,7 +52,7 @@ namespace Engine {
   class SCISHARE NetworkCollaborators
   {
   public:
-    Networks::NetworkHandle theNetwork_;
+    Networks::NetworkStateHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
@@ -104,7 +104,7 @@ namespace Engine {
       Core::Commands::GlobalCommandFactoryHandle cmdFactory,
       Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = nullptr);
-    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    NetworkEditorController(Networks::NetworkStateHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
     ~NetworkEditorController();
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,6 +136,7 @@ namespace Engine {
 //////////////////////////////////////////////////////////////////////////
 
     void clear() override;
+    Networks::NetworkHandle createSubnetwork() const override;
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
@@ -156,7 +157,7 @@ namespace Engine {
     void enableSignals() override;
     void disableSignals() override;
 
-    Networks::NetworkHandle getNetwork() const override;
+    Networks::NetworkStateHandle getNetwork() const override;
     Networks::NetworkGlobalSettings& getSettings();
 
     SharedPointer<DisableDynamicPortSwitch> createDynamicPortSwitch();
@@ -184,6 +185,7 @@ namespace Engine {
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
+    NetworkEditorController(const NetworkEditorController& other);
 
     ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();

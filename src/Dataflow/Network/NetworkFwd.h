@@ -84,7 +84,8 @@ class MetadataMap;
 class ModuleBuilder;
 class NetworkSerializationInterface;
 
-typedef SharedPointer<NetworkStateInterface> NetworkHandle;
+typedef SharedPointer<NetworkStateInterface> NetworkStateHandle;
+typedef SharedPointer<NetworkInterface> NetworkHandle;
 typedef SharedPointer<ModuleInterface> ModuleHandle;
 typedef SharedPointer<ModuleStateInterface> ModuleStateHandle;
 typedef SharedPointer<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;
