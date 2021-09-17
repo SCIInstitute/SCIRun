@@ -269,7 +269,7 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   }
   printNetwork();
 
-  if (!signals_.loadingContext_)
+  if (!signals_.loadingContext_ && collabs_.eventCmdFactory_)
     collabs_.eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
 
   return realModule;
