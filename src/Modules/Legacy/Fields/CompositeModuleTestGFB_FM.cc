@@ -28,6 +28,7 @@
 
 #include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun;
@@ -266,6 +267,16 @@ void CompositeModuleTestGFB_FM::execute()
   else
   {
     error("Subnet missing modules");
+    return;
+  }
+  auto conn = subNet->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
+  if (conn && subNet->getNetwork()->nconnections() == 1)
+  {
+    remark("Created connection between 2 modules");
+  }
+  else
+  {
+    error("Connection error");
     return;
   }
 }
