@@ -40,10 +40,15 @@ class SCIRun::Modules::Fields::CompositeModuleImpl
 {
 public:
   NetworkHandle subNet_;
+
+  explicit CompositeModuleImpl(Module* module) : module_(module) { }
+  void initializeSubnet();
+private:
+  Module* module_;
 };
 
 CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM() : Module(staticInfo_, false),
-  impl_(new CompositeModuleImpl)
+  impl_(new CompositeModuleImpl(this))
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(FairedMesh);
@@ -249,42 +254,53 @@ void CompositeModuleTestGFB_FM::setStateDefaults()
 
 void CompositeModuleTestGFB_FM::execute()
 {
-  remark("Basic composite module concept part 1");
+  impl_->initializeSubnet();
 
-  impl_->subNet_ = network()->createSubnetwork();
-  if (impl_->subNet_)
+  logCritical("CompositeModuleTestGFB_FM::execute()");
+  impl_->subNet_->executeAll(nullptr);
+}
+
+void CompositeModuleImpl::initializeSubnet()
+{
+  if (!subNet_)
   {
-    remark("Subnet created.");
-  }
-  else
-  {
-    error("Subnet null");
-    return;
-  }
-  if (!impl_->subNet_->getNetwork())
-  {
-    error("Subnet's network state is null");
-    return;
-  }
-  auto gfb = impl_->subNet_->addModule({"GetFieldBoundary", "...", ",,,"});
-  auto fm = impl_->subNet_->addModule({"FairMesh", "...", ",,,"});
-  if (impl_->subNet_->getNetwork()->nmodules() == 2)
-  {
-    remark("Created subnet with 2 modules");
-  }
-  else
-  {
-    error("Subnet missing modules");
-    return;
-  }
-  auto conn = impl_->subNet_->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
-  if (conn && impl_->subNet_->getNetwork()->nconnections() == 1)
-  {
-    remark("Created connection between 2 modules");
-  }
-  else
-  {
-    error("Connection error");
-    return;
+    module_->remark("Basic composite module concept part 1");
+
+    subNet_ = module_->network()->createSubnetwork();
+    if (subNet_)
+    {
+      module_->remark("Subnet created.");
+    }
+    else
+    {
+      module_->error("Subnet null");
+      return;
+    }
+    if (!subNet_->getNetwork())
+    {
+      module_->error("Subnet's network state is null");
+      return;
+    }
+    auto gfb = subNet_->addModule({"GetFieldBoundary", "...", ",,,"});
+    auto fm = subNet_->addModule({"FairMesh", "...", ",,,"});
+    if (subNet_->getNetwork()->nmodules() == 2)
+    {
+      module_->remark("Created subnet with 2 modules");
+    }
+    else
+    {
+      module_->error("Subnet missing modules");
+      return;
+    }
+    auto conn = subNet_->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
+    if (conn && subNet_->getNetwork()->nconnections() == 1)
+    {
+      module_->remark("Created connection between 2 modules");
+    }
+    else
+    {
+      module_->error("Connection error");
+      return;
+    }
   }
 }
