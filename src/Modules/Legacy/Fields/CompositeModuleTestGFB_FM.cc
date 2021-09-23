@@ -32,10 +32,18 @@
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(CompositeModuleTestGFB_FM, MiscField, SCIRun)
 
-CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM() : Module(staticInfo_, false)
+class SCIRun::Modules::Fields::CompositeModuleImpl
+{
+public:
+  NetworkHandle subNet_;
+};
+
+CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM() : Module(staticInfo_, false),
+  impl_(new CompositeModuleImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(FairedMesh);
@@ -243,8 +251,8 @@ void CompositeModuleTestGFB_FM::execute()
 {
   remark("Basic composite module concept part 1");
 
-  auto subNet = network()->createSubnetwork();
-  if (subNet)
+  impl_->subNet_ = network()->createSubnetwork();
+  if (impl_->subNet_)
   {
     remark("Subnet created.");
   }
@@ -253,14 +261,14 @@ void CompositeModuleTestGFB_FM::execute()
     error("Subnet null");
     return;
   }
-  if (!subNet->getNetwork())
+  if (!impl_->subNet_->getNetwork())
   {
     error("Subnet's network state is null");
     return;
   }
-  auto gfb = subNet->addModule({"GetFieldBoundary", "...", ",,,"});
-  auto fm = subNet->addModule({"FairMesh", "...", ",,,"});
-  if (subNet->getNetwork()->nmodules() == 2)
+  auto gfb = impl_->subNet_->addModule({"GetFieldBoundary", "...", ",,,"});
+  auto fm = impl_->subNet_->addModule({"FairMesh", "...", ",,,"});
+  if (impl_->subNet_->getNetwork()->nmodules() == 2)
   {
     remark("Created subnet with 2 modules");
   }
@@ -269,8 +277,8 @@ void CompositeModuleTestGFB_FM::execute()
     error("Subnet missing modules");
     return;
   }
-  auto conn = subNet->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
-  if (conn && subNet->getNetwork()->nconnections() == 1)
+  auto conn = impl_->subNet_->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
+  if (conn && impl_->subNet_->getNetwork()->nconnections() == 1)
   {
     remark("Created connection between 2 modules");
   }

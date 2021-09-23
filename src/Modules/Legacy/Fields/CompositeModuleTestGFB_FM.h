@@ -32,32 +32,31 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace SCIRun::Modules::Fields
+{
+  // static const char[] InputFieldName = "InputField"
+  // static const char[] MatrixPortName = "InputMatrix"
+  // public HasInputPorts<FieldPort<InputFieldName>, MatrixPort<MatrixPortName>>
 
-      // static const char[] InputFieldName = "InputField"
-      // static const char[] MatrixPortName = "InputMatrix"
-      // public HasInputPorts<FieldPort<InputFieldName>, MatrixPort<MatrixPortName>>
+  class CompositeModuleImpl;
 
-      class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CompositeModuleTestGFB_FM();
+  class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    CompositeModuleTestGFB_FM();
 
-        void execute() override;
-        void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, FairedMesh, Field);
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, FairedMesh, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
-      };
-
-    }
-  }
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  private:
+    std::unique_ptr<CompositeModuleImpl> impl_;
+  };
 }
 
 #endif
