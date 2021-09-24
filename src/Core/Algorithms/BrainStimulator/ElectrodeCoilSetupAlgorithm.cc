@@ -796,7 +796,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         {
           BBox proto_bb = prototype->vmesh()->get_bounding_box();
           Vector proto_diameter = proto_bb.diagonal();
-          double maxi = 2 * Max(proto_diameter.x(), proto_diameter.y(), proto_diameter.z()); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes
+          double maxi = 2 * std::max({ proto_diameter.x(), proto_diameter.y(), proto_diameter.z() }); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes
 
           /// since the protoype has to be centered around coordinate origin
           /// it will envelop the scalp/electrode sponge surface at its final location (it is now!)

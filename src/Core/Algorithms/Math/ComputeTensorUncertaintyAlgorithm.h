@@ -26,50 +26,28 @@
 */
 
 
-///
-///@class Gaussian
-///@brief Support for Gaussian distributions
-///
-///@author
-///       David Weinstein
-///       Department of Computer Science
-///       University of Utah
-///
-///@date
-///       April 2002
-///
+#ifndef CORE_ALGORITHMS_FIELDS_COMPUTE_TENSOR_UNCERTAINTY_ALGORITHM_H
+#define CORE_ALGORITHMS_FIELDS_COMPUTE_TENSOR_UNCERTAINTY_ALGORITHM_H
 
-
-#ifndef SCI_GAUSSIAN_H__
-#define SCI_GAUSSIAN_H__
-
-#include <Core/Math/MusilRNG.h>
-#include <Core/Math/MiscMath.h> // for M_PI
-#include <memory>
-#include <cmath>
-
-#include <Core/Math/share.h>
-
-// Currently only used in Packages/BioPSE/Dataflow/Modules/Inverse/OptimizeConductivities.cc
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Math {
+  ALGORITHM_PARAMETER_DECL(MeanInvariantMethod);
+  ALGORITHM_PARAMETER_DECL(MeanOrientationMethod);
+  class SCISHARE ComputeTensorUncertaintyAlgorithm : public AlgorithmBase
+  {
+  public:
+    ComputeTensorUncertaintyAlgorithm();
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+    boost::tuple<FieldHandle, Datatypes::MatrixHandle> runImpl(const FieldList& fields, const AlgoOption& invariantMethod, const AlgoOption& orientationOption) const;
+    static AlgorithmOutputName MeanTensorField;
+    static AlgorithmOutputName CovarianceMatrix;
+  };
+}}}}
 
-//   http://mathworld.wolfram.com/GaussianDistribution.html
-class SCISHARE Gaussian {
-public:
-  double mean_;
-  double sigma_;
-  std::unique_ptr<MusilRNG> mr_;
-  Gaussian(double mean=0, double sigma=1, int seed=0);
-
-  //   pick a random value from this Gaussian distribution
-  //      - implemented using the Box-Muller transformation
-  inline double rand() {return sqrt(-2*log((*mr_)()))*cos(2*M_PI*(*mr_)())*sigma_+mean_;}
-
-  //   probablility that x was picked from this Gaussian distribution
-  double prob(double x) {return exp(-(x-mean_)*(x-mean_)/(2*sigma_*sigma_))/(sigma_*sqrt(2*M_PI));}
-};
-
-} // End namespace SCIRun
-
-#endif //SCI_GAUSSIAN_H__
+#endif

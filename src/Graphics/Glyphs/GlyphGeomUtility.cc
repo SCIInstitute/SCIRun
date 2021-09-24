@@ -42,7 +42,7 @@ void GlyphGeomUtility::generateTransforms(const Point& center, const Vector& nor
 
   Vector z(0, 0, 1), zrotaxis;
 
-  if((Abs(axis.x()) + Abs(axis.y())) < 1.e-5)
+  if((fabs(axis.x()) + fabs(axis.y())) < 1.e-5)
   {
     // Only x-z plane...
     zrotaxis = Vector(0, 1, 0);

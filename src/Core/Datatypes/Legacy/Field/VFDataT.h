@@ -28,6 +28,10 @@
 
 /// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT.h
 
+#ifndef VFDATAT_H
+#define VFDATAT_H
+
+#include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <Core/Datatypes/Legacy/Field/VFData.h>
 
 #include <Core/Exceptions/AssertionFailed.h>
@@ -1013,3 +1017,4 @@ VFDATAT_ACCESS_DEFINITION2(Core::Geometry::Tensor)
 
 
 }
+#endif // VFDATAT_H
