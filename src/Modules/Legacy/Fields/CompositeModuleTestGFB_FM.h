@@ -51,7 +51,7 @@ namespace SCIRun::Modules::Fields
     void setStateDefaults() override;
 
     INPUT_PORT(0, InputField, Field);
-    OUTPUT_PORT(0, FairedMesh, Field);
+    OUTPUT_PORT(0, Faired_Mesh, Field);
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   private:

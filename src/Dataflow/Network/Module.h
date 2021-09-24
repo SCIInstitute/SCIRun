@@ -160,6 +160,10 @@ namespace Networks {
   public: //for python
     template <class T, class D, size_t N>
     void sendOutput(const StaticPortName<T, N>& port, SharedPointer<D> data);
+    void removeInputPort(const PortId& id);
+    void removeOutputPort(const PortId& id);
+    virtual size_t add_input_port(InputPortHandle);
+    size_t add_output_port(OutputPortHandle);
   protected:
     template <class T, size_t N, typename F>
     void computeOutputAndSendIfConnected(const StaticPortName<T, N>& port, F evalFunc);
@@ -185,9 +189,7 @@ namespace Networks {
 
 /*** protected Dev-interface ****/
     void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
-    virtual size_t add_input_port(InputPortHandle);
-    size_t add_output_port(OutputPortHandle);
-    virtual void removeInputPort(const PortId& id);
+
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
     std::string stateMetaInfo() const;
     void copyStateToMetadata();

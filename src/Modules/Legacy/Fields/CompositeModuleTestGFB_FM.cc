@@ -27,6 +27,8 @@
 
 
 #include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
+#include <Modules/Legacy/Fields/GetFieldBoundary.h>
+#include <Modules/Legacy/Fields/FairMesh.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 
@@ -41,17 +43,17 @@ class SCIRun::Modules::Fields::CompositeModuleImpl
 public:
   NetworkHandle subNet_;
 
-  explicit CompositeModuleImpl(Module* module) : module_(module) { }
+  explicit CompositeModuleImpl(CompositeModuleTestGFB_FM* module) : module_(module) { }
   void initializeSubnet();
 private:
-  Module* module_;
+  CompositeModuleTestGFB_FM* module_;
 };
 
 CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM() : Module(staticInfo_, false),
   impl_(new CompositeModuleImpl(this))
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(FairedMesh);
+  INITIALIZE_PORT(Faired_Mesh);
 }
 
 void CompositeModuleTestGFB_FM::setStateDefaults()
@@ -282,7 +284,15 @@ void CompositeModuleImpl::initializeSubnet()
       return;
     }
     auto gfb = subNet_->addModule({"GetFieldBoundary", "...", ",,,"});
+
+    dynamic_cast<Module*>(gfb.get())->removeInputPort(dynamic_cast<GetFieldBoundary*>(gfb.get())->InputField.toId());
+    dynamic_cast<Module*>(gfb.get())->add_input_port(module_->getInputPort(module_->InputField.toId()));
+
     auto fm = subNet_->addModule({"FairMesh", "...", ",,,"});
+    dynamic_cast<Module*>(fm.get())->removeOutputPort(dynamic_cast<FairMesh*>(fm.get())->Faired_Mesh.toId());
+    dynamic_cast<Module*>(fm.get())->add_output_port(module_->getOutputPort(module_->Faired_Mesh.toId()));
+
+
     if (subNet_->getNetwork()->nmodules() == 2)
     {
       module_->remark("Created subnet with 2 modules");

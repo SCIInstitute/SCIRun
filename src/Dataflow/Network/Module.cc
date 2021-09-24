@@ -222,12 +222,14 @@ Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   ReexecuteStrategyFactoryHandle reexFactory)
 {
+  //logCritical("Module() begin: {}", );
+
   impl_ = makeShared<ModuleImpl>(this, info, hasUi, stateFactory);
 
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double) {});
 
-  LOG_TRACE("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
+  logCritical("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
 
   if (algoFactory)
   {
@@ -823,6 +825,11 @@ bool Module::oport_connected(const PortId& id) const
 void Module::removeInputPort(const PortId& id)
 {
   impl_->iports_.remove(id);
+}
+
+void Module::removeOutputPort(const PortId& id)
+{
+  impl_->oports_.remove(id);
 }
 
 void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
