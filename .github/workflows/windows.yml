@@ -45,14 +45,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: windows
-        arch: win64_msvc2017_64
+        arch: win64_msvc2019_64
         install-deps: true
 
     - name: Print out Qt directory
@@ -90,14 +90,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: windows
-        arch: win64_msvc2017_64
+        arch: win64_msvc2019_64
         install-deps: true
 
     - name: Configure
@@ -143,14 +143,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: windows
-        arch: win64_msvc2017_64
+        arch: win64_msvc2019_64
         install-deps: true
 
     - name: Configure
