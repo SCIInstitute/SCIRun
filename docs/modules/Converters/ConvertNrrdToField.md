@@ -1,22 +1,4 @@
----
-title: ConvertNrrdToField
-category: moduledocs
-module:
-  category: Converters
-  package: Teem
-tags: module
-
----
-
-# {{ page.title }}
-
-## Category
-
-**{{ page.module.category }}**
-
-## Description
-
-### Summary
+# ConvertNrrdToField
 
 This module takes a Nrrd and puts the data into a field.
 
@@ -33,7 +15,3 @@ The Teem documentation is not specific on how to deal with RHS and LHS. Hence we
 (1) if a patient specific orientation is given, we check the parity of the space directions and the parity of the objective and convert if needed, i.e. either coord parity or space parity is LHS, then we mirror.
 (2) if ScannerXYZ is given, nothing is assumed about coord parity and space parity, as it is not clear what has been defined.
 (3) in case SpaceLeft3DHanded is given, we assume space parity is LHS and coord parity is not of importance.
-
-
-{% capture url %}{% include url.md %}{% endcapture %}
-{{ url }}

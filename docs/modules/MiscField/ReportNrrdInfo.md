@@ -1,22 +1,4 @@
----
-title: ReportNrrdInfo
-category: moduledocs
-module:
-  category: Misc
-  package: Teem
-tags: module
-
----
-
-# {{ page.title }}
-
-## Category
-
-**{{ page.module.category }}**
-
-## Description
-
-### Summary
+# ReportNrrdInfo
 
 This module is used to view the attributes of Nrrd data.
 
@@ -26,7 +8,7 @@ Nrrd is both a library and a file format. The full documentation can be found at
 
 ReportNrrdInfo is purely an informational Module. It performs no modification on input data. Upon execution it displays attributes about the input Nrrd in the UI.
 
-#### Field Attributes displayed:
+## Field Attributes displayed:
 
   * **Name** - The Nrrd name.
 
@@ -43,8 +25,5 @@ ReportNrrdInfo is purely an informational Module. It performs no modification on
   * **Min** - The lower bound of the size in model space.
 
   * **Max** - The upper bound of the size in model space.
-  
+
   There are more attributes that are not reported from this module. The other attributes are listed at http://teem.sourceforge.net/nrrd/format.html.
-  
-{% capture url %}{% include url.md %}{% endcapture %}
-{{ url }}
