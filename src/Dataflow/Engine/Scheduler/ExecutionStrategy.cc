@@ -76,6 +76,7 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::startExecution()
 {
+  logCritical("startExecution");
   resetStoppability();
   executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
@@ -100,14 +101,17 @@ SCIRun::ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle c
 
 void ExecutionQueueManager::executeTopContext()
 {
-  while (true)
+  while (shouldContinue_)
   {
+    logCritical("in loop executeTopContext");
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_)
     {
+      logCritical("in loop while 0");
       somethingToExecute_.wait(lock);
       if (stopRequested())
       {
+        logCritical("stopRequested");
         return;
       }
     }
@@ -124,6 +128,7 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
   {
     ctx->preexecute();
     currentExecutor_->execute(*ctx, executionMutex_);
+    shouldContinue_ = ctx->shouldContinue();
   }
 }
 

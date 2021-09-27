@@ -497,12 +497,12 @@ boost::signals2::connection NetworkEditorController::connectInvalidConnection(co
   return signals_.invalidConnection_.connect(subscriber);
 }
 
-boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
   return ExecutionContext::connectNetworkExecutionStarts(subscriber);
 }
 
-boost::signals2::connection NetworkEditorController::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
   return ExecutionContext::connectNetworkExecutionFinished(subscriber);
 }
@@ -837,7 +837,7 @@ ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup
 
 void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 {
-  connectNetworkExecutionFinished([this](int)
+  connectStaticNetworkExecutionFinished([this](int)
   {
     //std::cout << "Execution manager thread stopped." << std::endl;
     collabs_.executionManager_.stopExecution();

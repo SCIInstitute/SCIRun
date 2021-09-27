@@ -81,8 +81,9 @@ namespace Engine {
     void operator()() { executeTopContext(); }
   private:
     void executeImpl(ExecutionContextHandle context);
-    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
+    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
     ExecutionContextQueue contexts_;
+    std::atomic<bool> shouldContinue_{true};
 
     ExecutionStrategyHandle currentExecutor_;
 

@@ -87,6 +87,8 @@ namespace Engine {
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
 
+    bool shouldContinue() const { return true; }
+
     //todo: seems like a better place for this
     static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);

@@ -496,7 +496,7 @@ namespace SCIRun {
 
 PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
-  connections_.push_back(nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); }));
+  connections_.push_back(nec_.connectStaticNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); }));
   connections_.push_back(nec_.connectModuleAdded([this](const std::string& id, ModuleHandle m, ModuleCounter mc) { pythonModuleAddedSlot(id, m, mc); }));
   connections_.push_back(nec_.connectModuleRemoved([this](const ModuleId& id) { pythonModuleRemovedSlot(id); }));
 }

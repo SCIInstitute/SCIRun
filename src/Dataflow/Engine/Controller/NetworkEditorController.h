@@ -146,8 +146,8 @@ namespace Engine {
     boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
 
-    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+    boost::signals2::connection connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    boost::signals2::connection connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
     boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
 
