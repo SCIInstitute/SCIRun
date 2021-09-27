@@ -798,9 +798,9 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup, bool keepAlive)
 {
-  return executeGeneric(lookup, ExecuteAllModules::Instance());
+  return executeGeneric(lookup, ExecuteAllModules::Instance(), keepAlive);
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
@@ -808,7 +808,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
   try
   {
     ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
-    executeGeneric(lookup, filter);
+    executeGeneric(lookup, filter, true);
   }
   catch (NetworkHasCyclesException&)
   {
@@ -823,15 +823,15 @@ void NetworkEditorController::initExecutor()
   collabs_.executionManager_.initExecutor(collabs_.executorFactory_);
 }
 
-ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
+ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter, bool keepAlive)
 {
-  return makeShared<ExecutionContext>(*collabs_.theNetwork_, lookup ? *lookup : *collabs_.theNetwork_, filter);
+  return makeShared<ExecutionContext>(*collabs_.theNetwork_, lookup ? *lookup : *collabs_.theNetwork_, filter, keepAlive);
 }
 
-ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter, bool keepAlive)
 {
   initExecutor();
-  auto context = createExecutionContext(lookup, filter);
+  auto context = createExecutionContext(lookup, filter, keepAlive);
   return collabs_.executionManager_.enqueueContext(context);
 }
 

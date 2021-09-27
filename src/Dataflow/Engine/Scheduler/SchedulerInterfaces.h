@@ -77,17 +77,19 @@ namespace Engine {
                      const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
 
     ExecutionContext(Networks::NetworkStateInterface& net,
-      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network_(net), lookup_(lkp), additionalFilter_(filter) {}
+      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter, bool keepAlive)
+      : network_(net), lookup_(lkp), additionalFilter_(filter), keepAlive_(keepAlive) {}
 
     void preexecute();
     Networks::NetworkStateInterface& network_;
     const Networks::ExecutableLookup& lookup_;
     Networks::ModuleFilter additionalFilter_;
+    bool keepAlive_{true};
 
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
 
-    bool shouldContinue() const { return true; }
+    bool shouldContinue() const { return keepAlive_; }
 
     //todo: seems like a better place for this
     static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);

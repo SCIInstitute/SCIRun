@@ -105,7 +105,7 @@ void ExecutionQueueManager::executeTopContext()
   {
     logCritical("in loop executeTopContext");
     UniqueLock lock(executionMutex_.get());
-    while (0 == contextCount_)
+    while (0 == contextCount_ && shouldContinue_)
     {
       logCritical("in loop while 0");
       somethingToExecute_.wait(lock);

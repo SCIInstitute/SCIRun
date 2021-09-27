@@ -30,11 +30,14 @@
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
 #include <Dataflow/Network/NetworkInterface.h>
+//TODO
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Engine;
 
 MODULE_INFO_DEF(CompositeModuleTestGFB_FM, MiscField, SCIRun)
 
@@ -259,7 +262,9 @@ void CompositeModuleTestGFB_FM::execute()
   impl_->initializeSubnet();
 
   logCritical("CompositeModuleTestGFB_FM::execute()");
-  impl_->subNet_->executeAll(nullptr);
+
+  auto t = impl_->subNet_->executeAll(nullptr, false);
+  t->join();
 }
 
 void CompositeModuleImpl::initializeSubnet()

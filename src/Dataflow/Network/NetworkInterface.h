@@ -128,7 +128,7 @@ namespace Networks {
     virtual ModuleHandle addModule(const ModuleLookupInfo& info) = 0;
     virtual void enableSignals() = 0;
     virtual void disableSignals() = 0;
-    virtual ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) = 0;
+    virtual ThreadPtr executeAll(const Networks::ExecutableLookup* lookup, bool keepAlive) = 0;
     virtual void loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data) = 0;
     virtual NetworkAppendInfo appendXmlData(NetworkSerializationInterfaceHandle data) = 0;
     virtual NetworkHandle createSubnetwork() const = 0;

@@ -112,7 +112,7 @@ bool ExecuteCurrentNetworkCommandConsole::execute()
   LOG_CONSOLE("Executing network...");
   Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
   Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-  auto t = Application::Instance().controller()->executeAll(nullptr);
+  auto t = Application::Instance().controller()->executeAll(nullptr, true);
   LOG_CONSOLE("Execution started.");
   t->join();
   LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");

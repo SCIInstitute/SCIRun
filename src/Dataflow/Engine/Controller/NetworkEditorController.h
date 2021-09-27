@@ -121,7 +121,7 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) override;
+    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup, bool keepAlive) override;
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     Networks::NetworkFileHandle saveNetwork() const override;
@@ -187,9 +187,9 @@ namespace Engine {
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
     NetworkEditorController(const NetworkEditorController& other);
 
-    ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter, bool keepAlive);
     void initExecutor();
-    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter, bool keepAlive);
 
     NetworkCollaborators collabs_;
     NetworkSignalManager signals_;
