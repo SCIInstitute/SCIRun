@@ -59,6 +59,8 @@ CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM() : Module(staticInfo_, fal
   INITIALIZE_PORT(Faired_Mesh);
 }
 
+CompositeModuleTestGFB_FM::~CompositeModuleTestGFB_FM() = default;
+
 void CompositeModuleTestGFB_FM::setStateDefaults()
 {
   auto state = get_state();

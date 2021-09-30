@@ -46,6 +46,7 @@ namespace SCIRun::Modules::Fields
   {
   public:
     CompositeModuleTestGFB_FM();
+    ~CompositeModuleTestGFB_FM();
 
     void execute() override;
     void setStateDefaults() override;
