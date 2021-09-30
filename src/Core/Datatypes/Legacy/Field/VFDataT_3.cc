@@ -26,14 +26,13 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_2.cc
+/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_3.cc
 
 #include <Core/Datatypes/Legacy/Field/VFDataT.h>
 
 namespace SCIRun {
 
-VFDATA_FUNCTION_SCALAR_DEFINITION(long long)
-VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned long long)
-VFDATA_FUNCTION_SCALAR_DEFINITION(int)
+VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned int)
+VFDATA_FUNCTION_SCALAR_DEFINITION(float)
 
 }
