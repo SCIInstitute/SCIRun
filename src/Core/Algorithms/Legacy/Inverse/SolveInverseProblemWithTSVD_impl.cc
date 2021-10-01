@@ -24,24 +24,22 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-	 Author: 							Jaume Coll-Font, Yesim Serinagaoglu & Alireza Ghodrati
-	 Last Modification:		September 6 2017
+         Author: 							Jaume Coll-Font, Yesim
+   Serinagaoglu & Alireza Ghodrati Last Modification:		September 6 2017
 */
 
-
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Logging/LoggerInterface.h>
 
 // Tikhonov inverse libraries
-#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
 // EIGEN LIBRARY
 #include <Eigen/Eigen>
 #include <Eigen/SVD>
-
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -51,111 +49,100 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-
-
 ///////////////////////////////////////////////////////////////////
 /////// prealocate Matrices for inverse compuation
-///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
+///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and
+///     values for posterior computations
 ///////////////////////////////////////////////////////////////////
 void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const DenseMatrix&,
-  const DenseMatrix& measuredData_ ,
-  const DenseMatrix&,
-  const DenseMatrix&,
-  const DenseMatrix& matrixU_,
-  const DenseMatrix& singularValues_,
-  const DenseMatrix& matrixV_)
+    const DenseMatrix& measuredData_, const DenseMatrix&, const DenseMatrix&,
+    const DenseMatrix& matrixU_, const DenseMatrix& singularValues_, const DenseMatrix& matrixV_)
 {
+  // alocate U and V matrices
+  svd_MatrixU = matrixU_;
+  svd_MatrixV = matrixV_;
 
-		// alocate U and V matrices
-			svd_MatrixU = matrixU_;
-			svd_MatrixV = matrixV_;
+  // alocate singular values
+  if (singularValues_.ncols() == 1) { svd_SingularValues = singularValues_; }
+  else
+  {
+    svd_SingularValues = singularValues_.diagonal();
+  }
 
-		// alocate singular values
-			if (singularValues_.ncols() == 1 ){
-				svd_SingularValues = singularValues_;
-			}
-			else{
-				svd_SingularValues = singularValues_.diagonal();
-			}
+  // Compute the projection of data y on the left singular vectors
+  Uy = svd_MatrixU.transpose() * (measuredData_);
 
-		// Compute the projection of data y on the left singular vectors
-			Uy = svd_MatrixU.transpose() * (measuredData_);
-
-		// determine rank
-	        rank = svd_SingularValues.nrows();
-
+  // determine rank
+  rank = svd_SingularValues.nrows();
 }
 
-void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const
-  DenseMatrix& forwardMatrix_, const DenseMatrix& measuredData_ ,
-  const DenseMatrix&,
-  const DenseMatrix&)
+void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const DenseMatrix& forwardMatrix_,
+    const DenseMatrix& measuredData_, const DenseMatrix&, const DenseMatrix&)
 {
+  // Compute the SVD of the forward matrix
+  Eigen::JacobiSVD<DenseMatrix::EigenBase> SVDdecomposition(
+      forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-	    // Compute the SVD of the forward matrix
-	        Eigen::JacobiSVD<DenseMatrix::EigenBase> SVDdecomposition( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  // alocate the left and right singular vectors and the singular values
+  svd_MatrixU = SVDdecomposition.matrixU();
+  svd_MatrixV = SVDdecomposition.matrixV();
+  svd_SingularValues = SVDdecomposition.singularValues();
 
-		// alocate the left and right singular vectors and the singular values
-			svd_MatrixU = SVDdecomposition.matrixU();
-			svd_MatrixV = SVDdecomposition.matrixV();
-			svd_SingularValues = SVDdecomposition.singularValues();
+  // determine rank
+  rank = SVDdecomposition.nonzeroSingularValues();
 
-	    // determine rank
-	        rank = SVDdecomposition.nonzeroSingularValues();
-
-	    // Compute the projection of data y on the left singular vectors
-	        Uy = svd_MatrixU.transpose() * (measuredData_);
+  // Compute the projection of data y on the left singular vectors
+  Uy = svd_MatrixU.transpose() * (measuredData_);
 }
 
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-DenseMatrix SolveInverseProblemWithTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
+DenseMatrix SolveInverseProblemWithTSVD_impl::computeInverseSolution(
+    double lambda, bool inverseCalculation) const
 {
+  // prealocate matrices
+  const int N = svd_MatrixV.cols();
+  const int M = svd_MatrixU.rows();
+  const int numTimeSamples = Uy.ncols();
+  DenseMatrix solution(DenseMatrix::Zero(N, numTimeSamples));
+  DenseMatrix tempInverse(DenseMatrix::Zero(N, M));
 
-    // prealocate matrices
-        const int N = svd_MatrixV.cols();
-        const int M = svd_MatrixU.rows();
-        const int numTimeSamples = Uy.ncols();
-        DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
-        DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
+  const int truncationPoint =
+      std::min({static_cast<int>(lambda), rank, static_cast<int>(9999999999999)});
 
-		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
+  // Compute inverse SolveInverseProblemWithTSVD
+  for (int rr = 0; rr < truncationPoint; rr++)
+  {
+    // evaluate filter factor
+    double singVal = svd_SingularValues[rr];
+    auto filterFactor_i = 1 / (singVal);
 
-    // Compute inverse SolveInverseProblemWithTSVD
-        for (int rr=0; rr < truncationPoint ; rr++)
-        {
-            // evaluate filter factor
-                double singVal = svd_SingularValues[rr];
-                auto filterFactor_i =  1 / ( singVal );
+    // update solution
+    solution += filterFactor_i * svd_MatrixV.col(rr) * Uy.row(rr);
 
-            // update solution
-                solution += filterFactor_i * svd_MatrixV.col(rr) * Uy.row(rr);
+    // update inverse operator
+    if (inverseCalculation)
+      tempInverse += filterFactor_i * (svd_MatrixV.col(rr) * svd_MatrixU.col(rr).transpose());
+  }
 
-            // update inverse operator
-                if (inverseCalculation)
-                    tempInverse += filterFactor_i * ( svd_MatrixV.col(rr) *  svd_MatrixU.col(rr).transpose() );
-        }
+  // output solutions
+  //   if (inverseCalculation)
+  //       inverseMatrix_.reset( new DenseMatrix(tempInverse) );
 
-    // output solutions
-    //   if (inverseCalculation)
-    //       inverseMatrix_.reset( new DenseMatrix(tempInverse) );
-
-        return solution;
+  return solution;
 }
 
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns a string of lambdas from which the L-curve is computed
 //////////////////////////////////////////////////////////////////////
-std::vector<double> SolveInverseProblemWithTSVD_impl::computeLambdaArray( double lambdaMin, double, int nLambda ) const
+std::vector<double> SolveInverseProblemWithTSVD_impl::computeLambdaArray(
+    double lambdaMin, double, int nLambda) const
 {
-	std::vector<double> lambdaArray(nLambda,0.0);
-	const double lam_step = 1;
+  std::vector<double> lambdaArray(nLambda, 0.0);
+  const double lam_step = 1;
 
-	lambdaArray[0] = lambdaMin;
-	for (int j = 1; j < nLambda; j++)
-	{
-		lambdaArray[j] = lambdaArray[j-1]  + lam_step;
-	}
-	return lambdaArray;
+  lambdaArray[0] = lambdaMin;
+  for (int j = 1; j < nLambda; j++) { lambdaArray[j] = lambdaArray[j - 1] + lam_step; }
+  return lambdaArray;
 }
