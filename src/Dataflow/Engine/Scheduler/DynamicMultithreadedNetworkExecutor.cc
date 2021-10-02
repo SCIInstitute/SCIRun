@@ -65,9 +65,8 @@ namespace SCIRun {
           executionLock_(executionLock)
         {
         }
-        ~DynamicMultithreadedNetworkExecutorImpl()
-        {
-        }
+        ~DynamicMultithreadedNetworkExecutorImpl() = default;
+
         void operator()() const
         {
           Guard g(executionLock_->get());
@@ -110,12 +109,12 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  Core::Thread::Util::launchAsyncThread(runner);
+  Util::launchAsyncThread(runner);
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const
 {
-  auto state = mh->executionState().currentState();
+  const auto state = mh->executionState().currentState();
   return state != ModuleExecutionState::Value::Completed;// || state != Networks::ModuleExecutionState::Errored;
 }
 
