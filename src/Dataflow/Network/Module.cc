@@ -229,7 +229,7 @@ Module::Module(const ModuleLookupInfo& info,
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double) {});
 
-  logCritical("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
+  LOG_TRACE("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
 
   if (algoFactory)
   {

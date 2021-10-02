@@ -138,7 +138,8 @@ void ExecutionQueueManager::stopExecution()
   {
     sendStopRequest();
     somethingToExecute_.conditionBroadcast();
-    executionLaunchThread_->join();
+    if (executionLaunchThread_->joinable())
+      executionLaunchThread_->join();
     executionLaunchThread_.reset();
   }
 }

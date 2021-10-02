@@ -184,6 +184,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
   addModuleDesc<CollectMatrices>("Real ported module", "...");
+
+  addModuleDesc<CompositeModuleTestGFB_FM>("2 modules in 1!", "GetFieldBoundary->FairMesh");
 }
 
 void ModuleDescriptionLookup::addTestingModules()
@@ -197,5 +199,4 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
   addModuleDesc<CreateTestingArrow>("...", "...");
-  addModuleDesc<CompositeModuleTestGFB_FM>("2 modules in 1!", "GetFieldBoundary->FairMesh");
 }
