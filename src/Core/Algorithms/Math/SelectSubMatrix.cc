@@ -48,15 +48,11 @@ SelectSubMatrixAlgorithm::SelectSubMatrixAlgorithm()
   addParameter(Parameters::rowEndSpinBox, 0);
 }
 
-
 MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle input_matrix, DenseMatrixHandle rows, DenseMatrixHandle cols) const
 {
-
   std::vector<index_type> sel_rows;
   std::vector<index_type> sel_cols;
 
-  try
-  {
     size_type count=0;
     if (rows)
      if (rows->nrows()>0 && rows->ncols()>0)
@@ -85,13 +81,8 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle input_matrix,
         for (index_type j=0; j < nc; j++)
            sel_cols[count++] = static_cast<index_type>((* cols)(i,j));
      }
-  }
-  catch (...)
-  {
-    THROW_ALGORITHM_INPUT_ERROR(" Could not allocate enough memory ");
-  }
 
- return run(input_matrix,sel_rows,sel_cols);
+  return run(input_matrix,sel_rows,sel_cols);
 }
 
 MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatrixHandle row_indices, DenseMatrixHandle col_indices) const
@@ -199,21 +190,19 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
           THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix did not work! ");
         }
 
-	DenseMatrix mat(row_end-row_start+1,1);
+	      auto output(makeShared<DenseMatrix>(row_end-row_start+1, 1));
 
         for (index_type i = 0; i < row_end-row_start+1; i++)
         {
-         if(i>=0 && i<mat.nrows())
+         if(i>=0 && i < output->nrows())
          {
-          mat(i,0) = (*first_column).coeff(row_start+i);
+           (*output)(i,0) = first_column->coeff(row_start+i);
          }
          else
 	 {
 	   THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");
 	 }
 	}
-
-  	    auto output(makeShared<DenseMatrix>(mat));
         return output;
 
       } else
@@ -235,7 +224,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
     THROW_ALGORITHM_INPUT_ERROR("No input matrix");
   }
 
-  if ((rows.size() == 0) && (cols.size() == 0))
+  if ((rows.empty()) && (cols.empty()))
   {
     THROW_ALGORITHM_INPUT_ERROR("No row and column indices given");
   }
@@ -263,7 +252,6 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
 
   if (sparse_matrix)
   {
-
    SparseRowMatrixFromMap::Values additionalData;
    if (rows.size()>0 && cols.size()>0) ///get only the indices intersection
    {
@@ -277,7 +265,6 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
 
       }
    }
-
    if (rows.size()>0 && cols.size()==0)
    {
      m=rows.size();
@@ -290,7 +277,6 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
       }
      }
    }
-
    if (rows.size()==0 && cols.size()>0)
    {
      n=cols.size();
@@ -303,9 +289,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
       }
      }
    }
-
    auto output_matrix = SparseRowMatrixFromMap::make(m, n, additionalData);
-
   } else
   {
    DenseMatrixHandle dense_input_matrix;
@@ -317,39 +301,31 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
 
    if (rows.size()>0 && cols.size()>0)
    {
-      DenseMatrix mat(rows.size(),cols.size());
+      auto output(makeShared<DenseMatrix>(rows.size(),cols.size()));
 
       for (index_type i = 0; i < rows.size(); i++)
         for (index_type j = 0; j < cols.size(); j++)
-         (mat)(i,j) = dense_input_matrix->coeff(rows[i],cols[j]);
-
-      auto output(makeShared<DenseMatrix>(mat));
+          (*output)(i,j) = dense_input_matrix->coeff(rows[i],cols[j]);
 
       return output;
    }
 
-
    if (rows.size()>0 && cols.size()==0)
    {
-      DenseMatrix mat(rows.size(),n);
-
+     auto output(makeShared<DenseMatrix>(rows.size(),n));
       for (index_type i = 0; i < rows.size(); i++)
-        mat.row(i) = dense_input_matrix->row(rows[i]);
-
-      auto output(makeShared<DenseMatrix>(mat));
-
+        output->row(i) = dense_input_matrix->row(rows[i]);
       return output;
    }
 
    if (rows.size()==0 && cols.size()>0)
    {
-      DenseMatrix mat(m,cols.size());
+      auto output(makeShared<DenseMatrix>(m, cols.size()));
 
       for (index_type i = 0; i < cols.size(); i++)
-         if (cols[i]>0) mat.col(i) = dense_input_matrix->col(cols[i]);
-
-      auto output(makeShared<DenseMatrix>(mat));
-
+      {
+        output->col(i) = dense_input_matrix->col(cols[i]);
+      }
       return output;
    }
    } else
@@ -366,7 +342,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
      if (cols.size()!=0)
      {
       for (index_type i = 0; i < cols.size(); i++)
-        if (cols[0]!=0)
+        if (cols[i]!=0)
 	{
            THROW_ALGORITHM_INPUT_ERROR("Column input matrix does contain bad indeces! ");
 	}
@@ -375,19 +351,16 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
      {
        THROW_ALGORITHM_INPUT_ERROR("Rows input matrix does not contain any rows! ");
      }
-
      auto first_column = castMatrix::toColumn(input_matrix);
 
      if (!first_column || first_column->nrows()<=0 || first_column->ncols()!=1)
      {
       THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix did not work! ");
      }
-
      DenseMatrix mat(rows.size(),1);
-
      for (index_type i = 0; i < rows.size(); i++)
      {
-       if(IsFinite(rows[i]) && rows[i]>0 && rows[i]<input_matrix->nrows())
+       if (IsFinite(rows[i]) && rows[i]>0 && rows[i]<input_matrix->nrows())
        {
         mat(i,0) = (*first_column).coeff(rows[i]);
        }
@@ -396,7 +369,6 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
 	    THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");
 	  }
      }
-
      auto output(makeShared<DenseMatrix>(mat));
      return output;
 
@@ -404,11 +376,8 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
    {
      THROW_ALGORITHM_INPUT_ERROR("Unknown input matrix type");
    }
-
   }
-
-  remark("Could not deal with input data.");
-  remark("Copying input matrix to output");
+  remark("Could not deal with input data. Copying input matrix to output");
   return input_matrix;
 }
 
