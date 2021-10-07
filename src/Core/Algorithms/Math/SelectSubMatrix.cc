@@ -55,6 +55,7 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(
 
   size_type count = 0;
   if (rows)
+  {
     if (rows->nrows() > 0 && rows->ncols() > 0)
     {
       index_type nr = rows->nrows(), nc = rows->ncols();
@@ -68,10 +69,11 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(
           sel_rows[count++] = static_cast<index_type>((*rows)(i, j));
         }
     }
-
+  }
   count = 0;
 
   if (cols)
+  {
     if (cols->nrows() > 0 && cols->ncols() > 0)
     {
       index_type nr = cols->nrows(), nc = cols->ncols();
@@ -82,7 +84,7 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(
         for (index_type j = 0; j < nc; j++)
           sel_cols[count++] = static_cast<index_type>((*cols)(i, j));
     }
-
+  }
   return run(input_matrix, sel_rows, sel_cols);
 }
 
@@ -96,8 +98,8 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
   }
 
   MatrixHandle sub_matrix;
-  bool row_select = get(Parameters::rowCheckBox).toBool();
-  bool col_select = get(Parameters::columnCheckBox).toBool();
+  const bool row_select = get(Parameters::rowCheckBox).toBool();
+  const bool col_select = get(Parameters::columnCheckBox).toBool();
   index_type row_start = get(Parameters::rowStartSpinBox).toInt();
   index_type row_end = get(Parameters::rowEndSpinBox).toInt();
   index_type col_start = get(Parameters::columnStartSpinBox).toInt();
@@ -148,13 +150,14 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
       col_end > input_matrix->ncols())
   {
     remark(" Specified matrix indices from UI settings exceed matrix dimensions ");
-    return MatrixHandle();
+    return nullptr;
   }
 
   if (row_indices || col_indices)
   {
     sub_matrix = get_sub_matrix(input_matrix, row_indices, col_indices);
-    if (!sub_matrix) return MatrixHandle();
+    if (!sub_matrix) 
+      return nullptr;
   }
   else  /// GUI input only
   {
@@ -164,13 +167,13 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
           castMatrix::toSparse(input_matrix)->block(row_start, col_start, row_end, col_end)));
       return mat;
     }
-    else if (matrixIs::dense(input_matrix))
+    if (matrixIs::dense(input_matrix))
     {
       DenseMatrixHandle mat(new DenseMatrix(
           castMatrix::toDense(input_matrix)->block(row_start, col_start, row_end, col_end)));
       return mat;
     }
-    else if (matrixIs::column(input_matrix))
+    if (matrixIs::column(input_matrix))
     {
       if (input_matrix->ncols() != 1)
       {
@@ -189,7 +192,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
         THROW_ALGORITHM_INPUT_ERROR("Gui row indeces exceed input matrix dimensions! ");
       }
 
-      auto first_column = castMatrix::toColumn(input_matrix);
+      const auto first_column = castMatrix::toColumn(input_matrix);
 
       if (!first_column || first_column->nrows() <= 0 || first_column->ncols() != 1)
       {
@@ -200,7 +203,10 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
 
       for (index_type i = 0; i < row_end - row_start + 1; i++)
       {
-        if (i >= 0 && i < output->nrows()) { (*output)(i, 0) = first_column->coeff(row_start + i); }
+        if (i >= 0 && i < output->nrows())
+        {
+          (*output)(i, 0) = first_column->coeff(row_start + i);
+        }
         else
         {
           THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");
@@ -208,12 +214,10 @@ MatrixHandle SelectSubMatrixAlgorithm::run(
       }
       return output;
     }
-    else
-    {
-      remark("This module needs row indices, or column indices or both from UI or input matrices");
-      remark("Copying input matrix to output");
-      sub_matrix = input_matrix;
-    }
+
+    remark("This module needs row indices, or column indices or both from UI or input matrices");
+    remark("Copying input matrix to output");
+    sub_matrix = input_matrix;
   }
 
   return sub_matrix;
@@ -253,18 +257,21 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
   if (sparse_matrix)
   {
     SparseRowMatrixFromMap::Values additionalData;
-    if (rows.size() > 0 && cols.size() > 0)  /// get only the indices intersection
+    if (!rows.empty() && !cols.empty())  /// get only the indices intersection
     {
       m = rows.size();
       n = cols.size();
-      for (index_type i = 0; i < rows.size(); i++)
-        for (index_type j = 0; j < cols.size(); j++)
+      for (auto row : rows)
+      {
+        for (auto col : cols)
         {
-          auto tmp = sparse_matrix->coeff(rows[i], cols[j]);
-          if (tmp) additionalData[rows[i]][cols[j]] = tmp;
+          auto tmp = sparse_matrix->coeff(row, col);
+          if (tmp) 
+            additionalData[row][col] = tmp;
         }
+      }
     }
-    if (rows.size() > 0 && cols.size() == 0)
+    if (!rows.empty() && cols.empty())
     {
       m = rows.size();
       for (size_t i = 0; i < rows.size(); i++)
@@ -276,7 +283,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
         }
       }
     }
-    if (rows.size() == 0 && cols.size() > 0)
+    if (rows.empty() && !cols.empty())
     {
       n = cols.size();
       for (size_t j = 0; j < cols.size(); j++)
@@ -292,14 +299,13 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
   }
   else
   {
-    DenseMatrixHandle dense_input_matrix;
     DenseColumnMatrixHandle col_dense_input_matrix;
 
     if (matrixIs::dense(input_matrix))
     {
-      dense_input_matrix = castMatrix::toDense(input_matrix);
+      auto dense_input_matrix = castMatrix::toDense(input_matrix);
 
-      if (rows.size() > 0 && cols.size() > 0)
+      if (!rows.empty() && !cols.empty())
       {
         auto output(makeShared<DenseMatrix>(rows.size(), cols.size()));
 
@@ -310,7 +316,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
         return output;
       }
 
-      if (rows.size() > 0 && cols.size() == 0)
+      if (!rows.empty() && cols.empty())
       {
         auto output(makeShared<DenseMatrix>(rows.size(), n));
         for (index_type i = 0; i < rows.size(); i++)
@@ -318,7 +324,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
         return output;
       }
 
-      if (rows.size() == 0 && cols.size() > 0)
+      if (rows.empty() && !cols.empty())
       {
         auto output(makeShared<DenseMatrix>(m, cols.size()));
 
@@ -339,37 +345,38 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix,
       {
         THROW_ALGORITHM_INPUT_ERROR("Input matrix (column) does not contain any rows! ");
       }
-      if (cols.size() != 0)
+      if (!cols.empty())
       {
-        for (index_type i = 0; i < cols.size(); i++)
-          if (cols[i] != 0)
+        for (auto col : cols)
+        {
+          if (col != 0)
           {
             THROW_ALGORITHM_INPUT_ERROR("Column input matrix does contain bad indeces! ");
           }
+        }
       }
-      if (rows.size() <= 0)
+      if (rows.empty())
       {
         THROW_ALGORITHM_INPUT_ERROR("Rows input matrix does not contain any rows! ");
       }
-      auto first_column = castMatrix::toColumn(input_matrix);
+      const auto first_column = castMatrix::toColumn(input_matrix);
 
       if (!first_column || first_column->nrows() <= 0 || first_column->ncols() != 1)
       {
         THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix did not work! ");
       }
-      DenseMatrix mat(rows.size(), 1);
+      auto output(makeShared<DenseMatrix>(rows.size(), 1));
       for (index_type i = 0; i < rows.size(); i++)
       {
         if (IsFinite(rows[i]) && rows[i] > 0 && rows[i] < input_matrix->nrows())
         {
-          mat(i, 0) = (*first_column).coeff(rows[i]);
+          (*output)(i, 0) = (*first_column).coeff(rows[i]);
         }
         else
         {
           THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");
         }
       }
-      auto output(makeShared<DenseMatrix>(mat));
       return output;
     }
     else
@@ -396,8 +403,7 @@ AlgorithmOutput SelectSubMatrixAlgorithm::run(const AlgorithmInput& input) const
   auto rowindicies = input.get<DenseMatrix>(RowIndicies);
   auto columnindicies = input.get<DenseMatrix>(ColumnIndicies);
 
-  MatrixHandle output_matrix;
-  output_matrix = run(input_matrix, rowindicies, columnindicies);
+  auto output_matrix = run(input_matrix, rowindicies, columnindicies);
 
   AlgorithmOutput output;
   output[Variables::ResultMatrix] = output_matrix;
