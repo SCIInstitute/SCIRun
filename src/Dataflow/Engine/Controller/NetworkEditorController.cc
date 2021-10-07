@@ -798,9 +798,9 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup, bool keepAlive)
+ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  return executeGeneric(lookup, ExecuteAllModules::Instance(), keepAlive);
+  return executeGeneric(lookup, ExecuteAllModules::Instance(), true);
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)

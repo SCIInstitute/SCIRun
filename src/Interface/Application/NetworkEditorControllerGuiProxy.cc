@@ -121,7 +121,7 @@ void NetworkEditorControllerGuiProxy::appendToNetwork(const NetworkFileHandle& x
 
 void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
 {
-  controller_->executeAll(&lookup, true);
+  controller_->executeAll(&lookup);
 }
 
 void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup, bool executeUpstream)

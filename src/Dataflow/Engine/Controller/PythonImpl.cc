@@ -578,7 +578,7 @@ std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
   //cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
 
-  nec_.executeAll(lookup, true);
+  nec_.executeAll(lookup);
   return "Execution started."; //TODO: attach log for execution ended event.
 }
 

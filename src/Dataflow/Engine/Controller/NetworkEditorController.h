@@ -121,7 +121,7 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup, bool keepAlive) override;
+    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) override;
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     Networks::NetworkFileHandle saveNetwork() const override;
