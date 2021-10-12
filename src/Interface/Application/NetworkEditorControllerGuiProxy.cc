@@ -119,14 +119,19 @@ void NetworkEditorControllerGuiProxy::appendToNetwork(const NetworkFileHandle& x
   controller_->appendToNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::setExecutableLookup(const ExecutableLookup* lookup)
 {
-  controller_->executeAll(&lookup);
+  controller_->setExecutableLookup(lookup);
 }
 
-void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup, bool executeUpstream)
+void NetworkEditorControllerGuiProxy::executeAll()
 {
-  controller_->executeModule(module, &lookup, executeUpstream);
+  controller_->executeAll();
+}
+
+void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, bool executeUpstream)
+{
+  controller_->executeModule(module, executeUpstream);
 }
 
 size_t NetworkEditorControllerGuiProxy::numModules() const

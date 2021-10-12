@@ -75,7 +75,7 @@ namespace Engine {
     ExecutionQueueManager();
     void initExecutor(ExecutionStrategyFactoryHandle factory);
     void setExecutionStrategy(ExecutionStrategyHandle exec);
-    ThreadPtr enqueueContext(ExecutionContextHandle context);
+    std::future<int> enqueueContext(ExecutionContextHandle context);
     void startExecution();
     void stopExecution();
     void operator()() { executeTopContext(); }

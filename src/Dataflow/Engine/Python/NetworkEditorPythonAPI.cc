@@ -141,7 +141,7 @@ std::string NetworkEditorPythonAPI::executeAll()
     pythonLock_.lock();
     executeLockedFromPython_ = true;
     //std::cout << "executionMutex_->lock call done" << boost::this_thread::get_id() << std::endl;
-    return impl_->executeAll(lookup_);
+    return impl_->executeAll();
   }
   else
   {

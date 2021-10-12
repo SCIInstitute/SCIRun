@@ -36,6 +36,7 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <vector>
+#include <future>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -128,10 +129,11 @@ namespace Networks {
     virtual ModuleHandle addModule(const ModuleLookupInfo& info) = 0;
     virtual void enableSignals() = 0;
     virtual void disableSignals() = 0;
-    virtual ThreadPtr executeAll(const ExecutableLookup* lookup) = 0;
+    virtual std::future<int> executeAll() = 0;
     virtual void loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data) = 0;
     virtual NetworkAppendInfo appendXmlData(NetworkSerializationInterfaceHandle data) = 0;
     virtual NetworkHandle createSubnetwork() const = 0;
+    virtual void setExecutableLookup(const ExecutableLookup* lookup) = 0;
   };
 
 }}}

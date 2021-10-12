@@ -70,8 +70,9 @@ namespace Engine {
     std::function<int()> errorCodeRetriever_;
   };
 
-  struct SCISHARE ExecutionContext : boost::noncopyable
+  class SCISHARE ExecutionContext : boost::noncopyable
   {
+  public:
     explicit ExecutionContext(Networks::NetworkStateInterface& net);
     ExecutionContext(Networks::NetworkStateInterface& net,
                      const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
@@ -81,20 +82,26 @@ namespace Engine {
       : network_(net), lookup_(lkp), additionalFilter_(filter), keepAlive_(keepAlive) {}
 
     void preexecute();
-    Networks::NetworkStateInterface& network_;
-    const Networks::ExecutableLookup& lookup_;
-    Networks::ModuleFilter additionalFilter_;
-    bool keepAlive_{true};
-
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
 
     bool shouldContinue() const { return keepAlive_; }
 
     //todo: seems like a better place for this
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-    static ExecutionBounds executionBounds_;
+    static boost::signals2::connection connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    static boost::signals2::connection connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+
+    Networks::NetworkStateInterface& network() const { return network_; }
+    const Networks::ExecutableLookup& lookup() const { return lookup_; }
+    Networks::ModuleFilter additionalFilter() const { return additionalFilter_; }
+    static ExecutionBounds& globalExecutionBounds() { return globalExecutionBounds_; }
+  private:
+    Networks::NetworkStateInterface& network_;
+    const Networks::ExecutableLookup& lookup_;
+    Networks::ModuleFilter additionalFilter_;
+    bool keepAlive_{true};
+    ExecutionBounds executionBounds_;
+    static ExecutionBounds globalExecutionBounds_;
   };
 
   typedef SharedPointer<ExecutionContext> ExecutionContextHandle;
@@ -117,7 +124,7 @@ namespace Engine {
     OrderType order;
     try
     {
-      order = scheduler.schedule(context.network_);
+      order = scheduler.schedule(context.network());
     }
     catch (NetworkHasCyclesException&)
     {

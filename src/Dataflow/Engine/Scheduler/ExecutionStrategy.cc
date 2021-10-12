@@ -32,15 +32,16 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ExecutionBounds ExecutionContext::executionBounds_;
+ExecutionBounds ExecutionContext::globalExecutionBounds_;
 
-boost::signals2::connection ExecutionContext::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return executionBounds_.executeStarts_.connect(subscriber);
+  return globalExecutionBounds_.executeStarts_.connect(subscriber);
 }
-boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+
+boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return executionBounds_.executeFinishes_.connect(subscriber);
+  return globalExecutionBounds_.executeFinishes_.connect(subscriber);
 }
 
 ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
@@ -76,12 +77,12 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::startExecution()
 {
-  logCritical("startExecution");
+  //logCritical("startExecution");
   resetStoppability();
   executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
 
-SCIRun::ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+std::future<int> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -96,22 +97,22 @@ SCIRun::ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle c
       startExecution();
     somethingToExecute_.conditionBroadcast();
   }
-  return executionLaunchThread_;
+  return {};
 }
 
 void ExecutionQueueManager::executeTopContext()
 {
   while (shouldContinue_)
   {
-    logCritical("in loop executeTopContext");
+    //logCritical("in loop executeTopContext");
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_ && shouldContinue_)
     {
-      logCritical("in loop while 0");
+      //logCritical("in loop while 0");
       somethingToExecute_.wait(lock);
       if (stopRequested())
       {
-        logCritical("stopRequested");
+        //logCritical("stopRequested");
         return;
       }
     }

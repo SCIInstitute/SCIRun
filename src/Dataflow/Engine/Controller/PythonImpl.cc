@@ -574,11 +574,11 @@ SharedPointer<PyModule> PythonImpl::findModule(const std::string& id) const
   return modIter != modules_.end() ? modIter->second : nullptr;
 }
 
-std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
+std::string PythonImpl::executeAll()
 {
   //cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
 
-  nec_.executeAll(lookup);
+  nec_.executeAll();
   return "Execution started."; //TODO: attach log for execution ended event.
 }
 

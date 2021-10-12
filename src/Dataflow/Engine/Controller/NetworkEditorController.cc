@@ -499,12 +499,12 @@ boost::signals2::connection NetworkEditorController::connectInvalidConnection(co
 
 boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return ExecutionContext::connectNetworkExecutionStarts(subscriber);
+  return ExecutionContext::connectGlobalNetworkExecutionStarts(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return ExecutionContext::connectNetworkExecutionFinished(subscriber);
+  return ExecutionContext::connectGlobalNetworkExecutionFinished(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
@@ -798,22 +798,27 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+std::future<int> NetworkEditorController::executeAll()
 {
-  return executeGeneric(lookup, ExecuteAllModules::Instance(), true);
+  return executeGeneric(ExecuteAllModules::Instance(), true);
 }
 
-void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
+void NetworkEditorController::setExecutableLookup(const ExecutableLookup* lookup)
+{
+  collabs_.lookup_ = lookup;
+}
+
+void NetworkEditorController::executeModule(const ModuleHandle& module, bool executeUpstream)
 {
   try
   {
     ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
-    executeGeneric(lookup, filter, true);
+    executeGeneric(filter, true);
   }
   catch (NetworkHasCyclesException&)
   {
     logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
-    ExecutionContext::executionBounds_.executeFinishes_(-1);
+    ExecutionContext::globalExecutionBounds().executeFinishes_(-1);
     return;
   }
 }
@@ -823,15 +828,16 @@ void NetworkEditorController::initExecutor()
   collabs_.executionManager_.initExecutor(collabs_.executorFactory_);
 }
 
-ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter, bool keepAlive)
+ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter, bool keepAlive)
 {
-  return makeShared<ExecutionContext>(*collabs_.theNetwork_, lookup ? *lookup : *collabs_.theNetwork_, filter, keepAlive);
+  return makeShared<ExecutionContext>(*collabs_.theNetwork_,
+    collabs_.lookup_ ? *collabs_.lookup_ : *collabs_.theNetwork_, filter, keepAlive);
 }
 
-ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter, bool keepAlive)
+std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter, bool keepAlive)
 {
   initExecutor();
-  auto context = createExecutionContext(lookup, filter, keepAlive);
+  auto context = createExecutionContext(filter, keepAlive);
   return collabs_.executionManager_.enqueueContext(context);
 }
 

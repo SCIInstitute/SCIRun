@@ -62,6 +62,7 @@ namespace Engine {
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
+    const Networks::ExecutableLookup* lookup_;
 
     ExecutionQueueManager executionManager_;
     SharedPointer<DynamicPortManager> dynamicPortManager_;
@@ -121,8 +122,8 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup) override;
-    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
+    std::future<int> executeAll() override;
+    void executeModule(const Networks::ModuleHandle& module, bool executeUpstream);
 
     Networks::NetworkFileHandle saveNetwork() const override;
     void loadNetwork(const Networks::NetworkFileHandle& xml) override;
@@ -164,6 +165,8 @@ namespace Engine {
 
     void setExecutorType(int type);
 
+    void setExecutableLookup(const SCIRun::Dataflow::Networks::ExecutableLookup* lookup) override;
+
     /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
     void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm)
     {
@@ -187,9 +190,9 @@ namespace Engine {
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
     NetworkEditorController(const NetworkEditorController& other);
 
-    ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter, bool keepAlive);
+    std::future<int> executeGeneric(Networks::ModuleFilter filter, bool keepAlive);
     void initExecutor();
-    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter, bool keepAlive);
+    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter, bool keepAlive);
 
     NetworkCollaborators collabs_;
     NetworkSignalManager signals_;

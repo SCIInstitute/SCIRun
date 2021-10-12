@@ -40,6 +40,6 @@ void DynamicParallelExecutionStrategy::execute(const ExecutionContext& context, 
 {
   auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
   BoostGraphParallelScheduler scheduler(filter);
-  DynamicMultithreadedNetworkExecutor executor(context.network_);
+  DynamicMultithreadedNetworkExecutor executor(context.network());
   executeWithCycleCheck(scheduler, executor, context, executionLock);
 }

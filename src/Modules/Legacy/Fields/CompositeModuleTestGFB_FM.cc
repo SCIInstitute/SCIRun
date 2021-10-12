@@ -265,8 +265,8 @@ void CompositeModuleTestGFB_FM::execute()
 
   logCritical("CompositeModuleTestGFB_FM::execute()");
 
-  //auto t = 
-		impl_->subNet_->executeAll(nullptr);
+  //auto t =
+		impl_->subNet_->executeAll();
   //t->join();
 }
 

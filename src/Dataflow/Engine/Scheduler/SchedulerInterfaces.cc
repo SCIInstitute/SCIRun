@@ -53,7 +53,8 @@ ExecutionContext::ExecutionContext(NetworkStateInterface& net) : network_(net), 
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
-  return executionBounds_;
+  return globalExecutionBounds();
+  //return executionBounds_;
 }
 
 void ExecutionContext::preexecute()
