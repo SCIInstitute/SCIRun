@@ -79,7 +79,10 @@ void ExecutionQueueManager::startExecution()
 {
   //logCritical("startExecution");
   resetStoppability();
-  executionLaunchThread_.reset(new std::thread(std::ref(*this)));
+  std::packaged_task<int()> task([this] { return executeTopContext(); }); // wrap the function
+  //std::future<int> f1 = task.get_future();  // get a future
+
+  executionLaunchThread_.reset(new std::thread(std::move(task)));
 }
 
 std::future<int> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
@@ -100,7 +103,7 @@ std::future<int> ExecutionQueueManager::enqueueContext(ExecutionContextHandle co
   return {};
 }
 
-void ExecutionQueueManager::executeTopContext()
+int ExecutionQueueManager::executeTopContext()
 {
   while (shouldContinue_)
   {
@@ -113,7 +116,7 @@ void ExecutionQueueManager::executeTopContext()
       if (stopRequested())
       {
         //logCritical("stopRequested");
-        return;
+        return 0;
       }
     }
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
@@ -121,6 +124,7 @@ void ExecutionQueueManager::executeTopContext()
       contextCount_.fetch_sub(1);
     }
   }
+  return 0;
 }
 
 void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)

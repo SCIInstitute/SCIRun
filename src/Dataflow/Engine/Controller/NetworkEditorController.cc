@@ -749,7 +749,7 @@ void NetworkEditorController::loadXmlDataIntoNetwork(NetworkSerializationInterfa
 
 NetworkAppendInfo NetworkEditorController::appendXmlData(NetworkSerializationInterfaceHandle data)
 {
-  auto network = getNetwork();
+  const auto network = getNetwork();
   NetworkAppendInfo info;
   info.newModuleStartIndex = network->nmodules();
   {
@@ -778,8 +778,8 @@ NetworkAppendInfo NetworkEditorController::appendXmlData(NetworkSerializationInt
     auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
     if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
     {
-      auto from = network->lookupModule(ModuleId(modOut->second));
-      auto to = network->lookupModule(ModuleId(modIn->second));
+      const auto from = network->lookupModule(ModuleId(modOut->second));
+      const auto to = network->lookupModule(ModuleId(modIn->second));
       if (from && to)
         requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     }
@@ -831,7 +831,7 @@ void NetworkEditorController::initExecutor()
 ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter, bool keepAlive)
 {
   return makeShared<ExecutionContext>(*collabs_.theNetwork_,
-    collabs_.lookup_ ? *collabs_.lookup_ : *collabs_.theNetwork_, filter, keepAlive);
+    collabs_.lookup_ ? collabs_.lookup_ : collabs_.theNetwork_.get(), filter, keepAlive);
 }
 
 std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter, bool keepAlive)

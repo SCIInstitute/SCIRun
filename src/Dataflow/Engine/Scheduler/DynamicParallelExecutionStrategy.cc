@@ -26,11 +26,9 @@
 */
 
 
-#include <iostream>
 #include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/DynamicMultithreadedNetworkExecutor.h>
-#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -38,7 +36,7 @@ using namespace SCIRun::Core::Thread;
 
 void DynamicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
+  const auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
   BoostGraphParallelScheduler scheduler(filter);
   DynamicMultithreadedNetworkExecutor executor(context.network());
   executeWithCycleCheck(scheduler, executor, context, executionLock);

@@ -62,7 +62,7 @@ namespace Engine {
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
-    const Networks::ExecutableLookup* lookup_;
+    const Networks::ExecutableLookup* lookup_ {nullptr};
 
     ExecutionQueueManager executionManager_;
     SharedPointer<DynamicPortManager> dynamicPortManager_;

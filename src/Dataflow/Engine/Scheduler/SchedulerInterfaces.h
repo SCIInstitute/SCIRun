@@ -75,10 +75,10 @@ namespace Engine {
   public:
     explicit ExecutionContext(Networks::NetworkStateInterface& net);
     ExecutionContext(Networks::NetworkStateInterface& net,
-                     const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
+                     const Networks::ExecutableLookup* lkp) : network_(net), lookup_(lkp) {}
 
     ExecutionContext(Networks::NetworkStateInterface& net,
-      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter, bool keepAlive)
+      const Networks::ExecutableLookup* lkp, Networks::ModuleFilter filter, bool keepAlive)
       : network_(net), lookup_(lkp), additionalFilter_(filter), keepAlive_(keepAlive) {}
 
     void preexecute();
@@ -92,12 +92,12 @@ namespace Engine {
     static boost::signals2::connection connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
     Networks::NetworkStateInterface& network() const { return network_; }
-    const Networks::ExecutableLookup& lookup() const { return lookup_; }
+    const Networks::ExecutableLookup* lookup() const { return lookup_; }
     Networks::ModuleFilter additionalFilter() const { return additionalFilter_; }
     static ExecutionBounds& globalExecutionBounds() { return globalExecutionBounds_; }
   private:
     Networks::NetworkStateInterface& network_;
-    const Networks::ExecutableLookup& lookup_;
+    const Networks::ExecutableLookup* lookup_;
     Networks::ModuleFilter additionalFilter_;
     bool keepAlive_{true};
     ExecutionBounds executionBounds_;

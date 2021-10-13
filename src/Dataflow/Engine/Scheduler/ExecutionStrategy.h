@@ -78,7 +78,6 @@ namespace Engine {
     std::future<int> enqueueContext(ExecutionContextHandle context);
     void startExecution();
     void stopExecution();
-    void operator()() { executeTopContext(); }
   private:
     void executeImpl(ExecutionContextHandle context);
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
@@ -92,7 +91,7 @@ namespace Engine {
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
 
-    void executeTopContext();
+    int executeTopContext();
   };
 }
 }}

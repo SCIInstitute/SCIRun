@@ -55,7 +55,7 @@ namespace SCIRun {
         DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkStateInterface* network,
           Mutex* lock, size_t numModules, Mutex* executionLock, DynamicExecutor::ExecutionThreadGroupPtr threadGroup) :
           executeThreads_(threadGroup),
-          lookup_(&context.lookup()),
+          lookup_(context.lookup()),
           bounds_(&context.bounds()),
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
@@ -84,7 +84,7 @@ namespace SCIRun {
 
       private:
         mutable DynamicExecutor::ExecutionThreadGroupPtr executeThreads_;
-        const Networks::ExecutableLookup* lookup_;
+        const ExecutableLookup* lookup_;
         const ExecutionBounds* bounds_;
         DynamicExecutor::ModuleWorkQueuePtr work_;
         DynamicExecutor::ModuleProducerPtr producer_;
