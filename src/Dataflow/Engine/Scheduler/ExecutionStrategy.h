@@ -45,7 +45,7 @@ namespace Engine {
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
+    virtual std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
     enum class Type
     {
@@ -69,20 +69,34 @@ namespace Engine {
 
   typedef SharedPointer<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
 
-  class SCISHARE ExecutionQueueManager : public Core::Thread::Stoppable
+  class SCISHARE ExecutionManager
+  {
+  public:
+    virtual ~ExecutionManager() = default;
+
+    virtual void initExecutor(ExecutionStrategyFactoryHandle factory) = 0;
+    virtual void setExecutionStrategy(ExecutionStrategyHandle exec) = 0;
+    virtual void enqueueContext(ExecutionContextHandle context) = 0;
+
+    virtual void stopExecution() = 0;
+  };
+
+  using ExecutionManagerHandle = SharedPointer<ExecutionManager>;
+
+  class SCISHARE ExecutionQueueManager : public ExecutionManager, public Core::Thread::Stoppable
   {
   public:
     ExecutionQueueManager();
-    void initExecutor(ExecutionStrategyFactoryHandle factory);
-    void setExecutionStrategy(ExecutionStrategyHandle exec);
-    std::future<int> enqueueContext(ExecutionContextHandle context);
-    void startExecution();
-    void stopExecution();
+    void initExecutor(ExecutionStrategyFactoryHandle factory) override;
+    void setExecutionStrategy(ExecutionStrategyHandle exec) override;
+    void enqueueContext(ExecutionContextHandle context) override;
+    
+    void stopExecution() override;
   private:
-    void executeImpl(ExecutionContextHandle context);
+    void startExecution();
+    std::future<int> executeImpl(ExecutionContextHandle context);
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
     ExecutionContextQueue contexts_;
-    std::atomic<bool> shouldContinue_{true};
 
     ExecutionStrategyHandle currentExecutor_;
 
@@ -91,7 +105,7 @@ namespace Engine {
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
 
-    int executeTopContext();
+    void executeTopContext();
   };
 }
 }}

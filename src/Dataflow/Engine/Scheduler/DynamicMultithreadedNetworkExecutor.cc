@@ -67,7 +67,7 @@ namespace SCIRun {
         }
         ~DynamicMultithreadedNetworkExecutorImpl() = default;
 
-        void operator()() const
+        int run() const
         {
           Guard g(executionLock_->get());
 
@@ -80,6 +80,8 @@ namespace SCIRun {
           consume.join();
           produce.join();
           executeThreads_->joinAll();
+
+          return lookup_->errorCode();
         }
 
       private:
@@ -100,16 +102,17 @@ DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const N
 {
 }
 
-void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
+std::future<int> DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
   static Mutex lock("live-scheduler");
 
   //if (Log::get().verbose())
-    LOG_TRACE("DMTNE::executeAll order received: {}", order);
+//    LOG_TRACE("DMTNE::executeAll order received: {}", order);
 
   threadGroup_->clear();
-  DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  Util::launchAsyncThread(runner);
+  auto runner = makeShared<DynamicMultithreadedNetworkExecutorImpl>(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
+
+  return std::async(std::launch::async, [runner] { return runner->run(); });
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const

@@ -64,7 +64,7 @@ namespace Engine {
     Networks::NetworkEditorSerializationManager* serializationManager_;
     const Networks::ExecutableLookup* lookup_ {nullptr};
 
-    ExecutionQueueManager executionManager_;
+    ExecutionManagerHandle executionManager_;
     SharedPointer<DynamicPortManager> dynamicPortManager_;
     SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
   };
@@ -165,7 +165,7 @@ namespace Engine {
 
     void setExecutorType(int type);
 
-    void setExecutableLookup(const SCIRun::Dataflow::Networks::ExecutableLookup* lookup) override;
+    void setExecutableLookup(const Networks::ExecutableLookup* lookup) override;
 
     /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
     void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm)
@@ -177,13 +177,13 @@ namespace Engine {
 
     const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
 
-    void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions, bool selectAll);
+    void updateModulePositions(const Networks::ModulePositions& modulePositions, bool selectAll);
 
     void cleanUpNetwork();
 
     const Networks::ModuleFactory& moduleFactory() const { return *collabs_.moduleFactory_; }  //TOOD: lazy
 
-    std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
+    std::vector<Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
 
   private:
     void printNetwork() const;
@@ -192,7 +192,7 @@ namespace Engine {
 
     std::future<int> executeGeneric(Networks::ModuleFilter filter, bool keepAlive);
     void initExecutor();
-    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter, bool keepAlive);
+    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter, bool keepAlive) const;
 
     NetworkCollaborators collabs_;
     NetworkSignalManager signals_;

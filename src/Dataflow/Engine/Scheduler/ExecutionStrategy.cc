@@ -79,13 +79,12 @@ void ExecutionQueueManager::startExecution()
 {
   //logCritical("startExecution");
   resetStoppability();
-  std::packaged_task<int()> task([this] { return executeTopContext(); }); // wrap the function
-  //std::future<int> f1 = task.get_future();  // get a future
+  auto task = [this] { executeTopContext(); }; 
 
-  executionLaunchThread_.reset(new std::thread(std::move(task)));
+  executionLaunchThread_.reset(new std::thread(task));
 }
 
-std::future<int> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -100,23 +99,20 @@ std::future<int> ExecutionQueueManager::enqueueContext(ExecutionContextHandle co
       startExecution();
     somethingToExecute_.conditionBroadcast();
   }
-  return {};
 }
 
-int ExecutionQueueManager::executeTopContext()
+void ExecutionQueueManager::executeTopContext()
 {
-  while (shouldContinue_)
+  while (true)
   {
-    //logCritical("in loop executeTopContext");
     UniqueLock lock(executionMutex_.get());
-    while (0 == contextCount_ && shouldContinue_)
+    while (0 == contextCount_)
     {
       //logCritical("in loop while 0");
       somethingToExecute_.wait(lock);
       if (stopRequested())
       {
-        //logCritical("stopRequested");
-        return 0;
+        return;
       }
     }
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
@@ -124,16 +120,14 @@ int ExecutionQueueManager::executeTopContext()
       contextCount_.fetch_sub(1);
     }
   }
-  return 0;
 }
 
-void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
+std::future<int> ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
 {
   if (currentExecutor_ && ctx)
   {
     ctx->preexecute();
-    currentExecutor_->execute(*ctx, executionMutex_);
-    shouldContinue_ = ctx->shouldContinue();
+    return currentExecutor_->execute(*ctx, executionMutex_);
   }
 }
 

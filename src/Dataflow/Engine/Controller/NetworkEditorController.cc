@@ -130,7 +130,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
-  collabs_.executionManager_.stopExecution();
+  collabs_.executionManager_->stopExecution();
 }
 
 namespace
@@ -812,23 +812,22 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, bool exe
 {
   try
   {
-    ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
+    const ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
     executeGeneric(filter, true);
   }
   catch (NetworkHasCyclesException&)
   {
     logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
     ExecutionContext::globalExecutionBounds().executeFinishes_(-1);
-    return;
   }
 }
 
 void NetworkEditorController::initExecutor()
 {
-  collabs_.executionManager_.initExecutor(collabs_.executorFactory_);
+  collabs_.executionManager_->initExecutor(collabs_.executorFactory_);
 }
 
-ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter, bool keepAlive)
+ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter, bool keepAlive) const
 {
   return makeShared<ExecutionContext>(*collabs_.theNetwork_,
     collabs_.lookup_ ? collabs_.lookup_ : collabs_.theNetwork_.get(), filter, keepAlive);
@@ -837,8 +836,8 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFil
 std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter, bool keepAlive)
 {
   initExecutor();
-  auto context = createExecutionContext(filter, keepAlive);
-  return collabs_.executionManager_.enqueueContext(context);
+  const auto context = createExecutionContext(filter, keepAlive);
+  return collabs_.executionManager_->enqueueContext(context);
 }
 
 void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
@@ -846,7 +845,7 @@ void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
   connectStaticNetworkExecutionFinished([this](int)
   {
     //std::cout << "Execution manager thread stopped." << std::endl;
-    collabs_.executionManager_.stopExecution();
+    collabs_.executionManager_->stopExecution();
   });
 }
 
@@ -862,7 +861,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  collabs_.executionManager_.setExecutionStrategy(collabs_.executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
+  collabs_.executionManager_->setExecutionStrategy(collabs_.executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const

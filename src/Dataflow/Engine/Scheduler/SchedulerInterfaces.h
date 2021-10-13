@@ -29,13 +29,14 @@
 #ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
-#include <iostream>
+#include <future>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 #include <boost/signals2.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Dataflow/Engine/Scheduler/share.h>
+
 
 namespace SCIRun {
 namespace Dataflow {
@@ -51,8 +52,8 @@ namespace Engine {
     virtual OrderType schedule(const Networks::NetworkStateInterface& network) const = 0;
   };
 
-  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
-  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
+  using ExecuteAllStartsSignalType = boost::signals2::signal<void()>;
+  using ExecuteAllFinishesSignalType = boost::signals2::signal<void(int)>;
 
   struct SCISHARE ExecutionBounds : boost::noncopyable
   {
@@ -110,16 +111,16 @@ namespace Engine {
   class NetworkExecutor
   {
   public:
-    virtual ~NetworkExecutor() {}
+    virtual ~NetworkExecutor() = default;
     //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
-    virtual void execute(const ExecutionContext& context, OrderType order, Core::Thread::Mutex& executionLock) = 0;
+    virtual std::future<int> execute(const ExecutionContext& context, OrderType order, Core::Thread::Mutex& executionLock) = 0;
   };
 
   class ModuleExecutionOrder;
   typedef SharedPointer<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
   template <class OrderType>
-  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
+  std::future<int> executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
   {
     OrderType order;
     try
@@ -131,20 +132,20 @@ namespace Engine {
       /// @todo: use real logger here--or just let this exception bubble up--needs testing.
       logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
       context.bounds().executeFinishes_(-1);
-      return;
+      return {};
     }
-    executor.execute(context, order, executionLock);
+    return executor.execute(context, order, executionLock);
   }
 
   struct SCISHARE ExecuteAllModules
   {
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const { return true; }
+    bool operator()(Networks::ModuleHandle) const { return true; }
     static const ExecuteAllModules& Instance();
   };
 
   struct SCISHARE ModuleWaitingFilter
   {
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const;
+    bool operator()(Networks::ModuleHandle mh) const;
     static const ModuleWaitingFilter& Instance();
   };
 
@@ -152,11 +153,11 @@ namespace Engine {
 
   struct SCISHARE ExecuteSingleModule
   {
-    ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
-      const SCIRun::Dataflow::Networks::NetworkStateInterface& network, bool executeUpstream);
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
+    ExecuteSingleModule(Networks::ModuleHandle mod,
+      const Networks::NetworkStateInterface& network, bool executeUpstream);
+    bool operator()(Networks::ModuleHandle) const;
   private:
-    SCIRun::Dataflow::Networks::ModuleHandle module_;
+    Networks::ModuleHandle module_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
     SharedPointer<ExecuteSingleModuleImpl> orderImpl_;

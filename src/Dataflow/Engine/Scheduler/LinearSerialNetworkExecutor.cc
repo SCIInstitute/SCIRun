@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Thread;
 
 namespace
 {
-  struct LinearExecution : public WaitsForStartupInitialization
+  struct LinearExecution : WaitsForStartupInitialization
   {
     LinearExecution(const ExecutableLookup* lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
       : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
@@ -48,7 +48,7 @@ namespace
       waitForStartupInit(*lookup_);
       Guard g(executionLock_->get());
       ScopedExecutionBoundsSignaller signaller(&bounds_, [=]() { return lookup_->errorCode(); });
-      for (const ModuleId& id : order_)
+      for (const auto& id : order_)
       {
         auto obj = lookup_->lookupExecutable(id);
         if (obj)
@@ -64,8 +64,9 @@ namespace
   };
 }
 
-void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
+std::future<int> LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
   LinearExecution runner(context.lookup(), order, context.bounds(), &executionLock);
-  Core::Thread::Util::launchAsyncThread(runner);
+  Util::launchAsyncThread(runner);
+  return {};
 }

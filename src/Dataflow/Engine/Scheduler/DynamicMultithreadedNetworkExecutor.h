@@ -48,7 +48,7 @@ namespace Dataflow {
   {
   public:
     explicit DynamicMultithreadedNetworkExecutor(const Networks::NetworkStateInterface& network);
-    void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
+    std::future<int> execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
   private:
     const Networks::NetworkStateInterface& network_;
     SharedPointer<DynamicExecutor::ExecutionThreadGroup> threadGroup_;

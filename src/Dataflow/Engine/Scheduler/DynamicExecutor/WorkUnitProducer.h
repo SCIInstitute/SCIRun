@@ -35,9 +35,10 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
-#include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
+
+#include <iostream>
 
 namespace SCIRun {
   namespace Dataflow {
@@ -115,7 +116,7 @@ namespace SCIRun {
             }
 
             if (badGroup_)
-              std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
+              logCritical("producer is done with bad group, something went wrong. probably a race condition...");
 
             //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }

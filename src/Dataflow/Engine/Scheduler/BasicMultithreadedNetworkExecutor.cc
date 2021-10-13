@@ -74,8 +74,9 @@ namespace
 
 }
 
-void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
+std::future<int> BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
   ParallelExecution runner(context.lookup(), order, context.bounds(), &executionLock);
   Util::launchAsyncThread(runner);
+  return {};
 }
