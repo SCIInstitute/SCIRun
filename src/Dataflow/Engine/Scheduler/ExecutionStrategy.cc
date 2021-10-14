@@ -34,6 +34,8 @@ using namespace SCIRun::Core::Thread;
 
 ExecutionBounds ExecutionContext::globalExecutionBounds_;
 
+ExecutionBounds& ExecutionContext::globalExecutionBounds() { return globalExecutionBounds_; }
+
 boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
   return globalExecutionBounds_.executeStarts_.connect(subscriber);
@@ -55,21 +57,25 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
   return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
 }
 
-ExecutionQueueManager::ExecutionQueueManager() :
+ExecutionManagerBase::ExecutionManagerBase() : executionMutex_("executionManager")
+{
+  
+}
+
+ExecutionQueueManager::ExecutionQueueManager() : 
   contexts_(10),
-  executionMutex_("executionQueue"),
   somethingToExecute_("executionQueue"),
   contextCount_(0)
 {
 }
 
-void ExecutionQueueManager::setExecutionStrategy(ExecutionStrategyHandle exec)
+void ExecutionManagerBase::setExecutionStrategy(ExecutionStrategyHandle exec)
 {
   Guard g(executionMutex_.get());
   currentExecutor_ = exec;
 }
 
-void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
+void ExecutionManagerBase::initExecutor(ExecutionStrategyFactoryHandle factory)
 {
   if (!currentExecutor_ && factory)
     currentExecutor_ = factory->createDefault();
@@ -122,13 +128,14 @@ void ExecutionQueueManager::executeTopContext()
   }
 }
 
-std::future<int> ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
+std::future<int> ExecutionManagerBase::executeImpl(ExecutionContextHandle context)
 {
-  if (currentExecutor_ && ctx)
+  if (currentExecutor_ && context)
   {
-    ctx->preexecute();
-    return currentExecutor_->execute(*ctx, executionMutex_);
+    context->preexecute();
+    return currentExecutor_->execute(*context, executionMutex_);
   }
+  return {};
 }
 
 void ExecutionQueueManager::stopExecution()

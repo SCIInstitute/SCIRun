@@ -190,9 +190,9 @@ namespace Engine {
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
     NetworkEditorController(const NetworkEditorController& other);
 
-    std::future<int> executeGeneric(Networks::ModuleFilter filter, bool keepAlive);
+    std::future<int> executeGeneric(Networks::ModuleFilter filter);
     void initExecutor();
-    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter, bool keepAlive) const;
+    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter) const;
 
     NetworkCollaborators collabs_;
     NetworkSignalManager signals_;

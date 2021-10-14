@@ -61,7 +61,7 @@ namespace Engine {
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
-  class SCISHARE ScopedExecutionBoundsSignaller
+  class SCISHARE ScopedExecutionBoundsSignaller : boost::noncopyable
   {
   public:
     ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, std::function<int()> errorCodeRetriever);
@@ -79,14 +79,12 @@ namespace Engine {
                      const Networks::ExecutableLookup* lkp) : network_(net), lookup_(lkp) {}
 
     ExecutionContext(Networks::NetworkStateInterface& net,
-      const Networks::ExecutableLookup* lkp, Networks::ModuleFilter filter, bool keepAlive)
-      : network_(net), lookup_(lkp), additionalFilter_(filter), keepAlive_(keepAlive) {}
+      const Networks::ExecutableLookup* lkp, Networks::ModuleFilter filter)
+      : network_(net), lookup_(lkp), additionalFilter_(filter) {}
 
     void preexecute();
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
-
-    bool shouldContinue() const { return keepAlive_; }
 
     //todo: seems like a better place for this
     static boost::signals2::connection connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
@@ -95,12 +93,11 @@ namespace Engine {
     Networks::NetworkStateInterface& network() const { return network_; }
     const Networks::ExecutableLookup* lookup() const { return lookup_; }
     Networks::ModuleFilter additionalFilter() const { return additionalFilter_; }
-    static ExecutionBounds& globalExecutionBounds() { return globalExecutionBounds_; }
+    static ExecutionBounds& globalExecutionBounds();
   private:
     Networks::NetworkStateInterface& network_;
     const Networks::ExecutableLookup* lookup_;
     Networks::ModuleFilter additionalFilter_;
-    bool keepAlive_{true};
     ExecutionBounds executionBounds_;
     static ExecutionBounds globalExecutionBounds_;
   };

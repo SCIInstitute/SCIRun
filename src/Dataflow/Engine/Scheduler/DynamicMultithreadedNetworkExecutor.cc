@@ -106,13 +106,14 @@ std::future<int> DynamicMultithreadedNetworkExecutor::execute(const ExecutionCon
 {
   static Mutex lock("live-scheduler");
 
-  //if (Log::get().verbose())
-//    LOG_TRACE("DMTNE::executeAll order received: {}", order);
-
   threadGroup_->clear();
-  auto runner = makeShared<DynamicMultithreadedNetworkExecutorImpl>(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
 
-  return std::async(std::launch::async, [runner] { return runner->run(); });
+  auto runner = makeShared<DynamicMultithreadedNetworkExecutorImpl>(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
+  std::packaged_task<int()> task([runner] { return runner->run(); });
+  auto value = task.get_future();
+  std::thread t(std::move(task));
+  t.detach();
+  return value;
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const

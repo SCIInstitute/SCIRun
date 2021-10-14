@@ -260,7 +260,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   //BasicMultithreadedNetworkExecutor executor;
   //executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
   BasicParallelExecutionStrategy strategy;
-  ExecutionContext context(matrixMathNetwork, matrixMathNetwork);
+  ExecutionContext context(matrixMathNetwork, &matrixMathNetwork);
   Mutex m("exec");
   strategy.execute(context, m);
 

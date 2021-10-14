@@ -71,6 +71,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.algoFactory_ = af;
   collabs_.reexFactory_ = reex;
   collabs_.executorFactory_ = executorFactory;
+  collabs_.executionManager_.reset(new ExecutionQueueManager);
   collabs_.cmdFactory_ = cmdFactory;
   collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
   collabs_.serializationManager_ = nesm;
@@ -97,6 +98,7 @@ NetworkEditorController::NetworkEditorController(const NetworkEditorController& 
   collabs_.algoFactory_ = other.collabs_.algoFactory_;
   collabs_.reexFactory_ = other.collabs_.reexFactory_;
   collabs_.executorFactory_ = other.collabs_.executorFactory_;
+  collabs_.executionManager_.reset(new SimpleExecutionManager);
 
   //collabs_.cmdFactory_ = other.collabs_.cmdFactory_;
   //collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
@@ -800,7 +802,7 @@ void NetworkEditorController::clear()
 
 std::future<int> NetworkEditorController::executeAll()
 {
-  return executeGeneric(ExecuteAllModules::Instance(), true);
+  return executeGeneric(ExecuteAllModules::Instance());
 }
 
 void NetworkEditorController::setExecutableLookup(const ExecutableLookup* lookup)
@@ -813,7 +815,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, bool exe
   try
   {
     const ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
-    executeGeneric(filter, true);
+    executeGeneric(filter);
   }
   catch (NetworkHasCyclesException&)
   {
@@ -827,17 +829,17 @@ void NetworkEditorController::initExecutor()
   collabs_.executionManager_->initExecutor(collabs_.executorFactory_);
 }
 
-ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter, bool keepAlive) const
+ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter) const
 {
   return makeShared<ExecutionContext>(*collabs_.theNetwork_,
-    collabs_.lookup_ ? collabs_.lookup_ : collabs_.theNetwork_.get(), filter, keepAlive);
+    collabs_.lookup_ ? collabs_.lookup_ : collabs_.theNetwork_.get(), filter);
 }
 
-std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter, bool keepAlive)
+std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter)
 {
   initExecutor();
-  const auto context = createExecutionContext(filter, keepAlive);
-  return collabs_.executionManager_->enqueueContext(context);
+  const auto context = createExecutionContext(filter);
+  return collabs_.executionManager_->execute(context);
 }
 
 void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
