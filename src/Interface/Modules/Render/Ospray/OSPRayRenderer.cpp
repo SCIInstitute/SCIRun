@@ -26,6 +26,7 @@
 */
 
 #include "OSPRayRenderer.h"
+#include <Core/GeometryPrimitives/BBox.h>
 
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
@@ -40,9 +41,12 @@
 
 #include <cstdio>
 
-using namespace SCIRun::Render;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+using namespace Render;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
 
+#ifdef WITH_OSPRAY
 //int OSPRayRenderer::osprayRendererInstances = 0;
 OSPRayDataManager OSPRayRenderer::dataManager;
 
@@ -133,13 +137,22 @@ void OSPRayRenderer::mouseWheel(int delta)
   framesAccumulated = 0;
 }
 
+void OSPRayRenderer::autoView()
+{
+  camera_->autoView();
+  ospResetAccumulation(frameBuffer_);
+  framesAccumulated = 0;
+}
+
 
 
 //Data----------------------------------------------------------------------------------------------
 void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHandle>& geometries)
 {
+  BBox bbox;
   for(auto& geometry : geometries)
   {
+    bbox.extend(geometry->box);
     //printf("ID: %d\n", geometry->id);
     switch(geometry->type)
     {
@@ -171,7 +184,7 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
       }
     }
   }
-  printf("\n");
+  camera_->setSceneBoundingBox(bbox);
 
   ospResetAccumulation(frameBuffer_);
   framesAccumulated = 0;
@@ -340,3 +353,5 @@ void OSPRayRenderer::setLightsAsObject()
     ospRelease(light);
   ospCommit(world_);
 }
+
+#endif
