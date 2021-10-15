@@ -316,7 +316,7 @@ static QPen alphaLinePen(Qt::red, 1);
 // Draw line through middle of preview
 void ColormapPreview::addDefaultLine()
 {
-  alphaPath_ = boost::make_shared<QGraphicsPathItem>();
+  alphaPath_ = makeShared<QGraphicsPathItem>();
   QPainterPath path;
 
   auto alpha = state_->getValue(Parameters::DefaultAlphaValue).toDouble();
@@ -372,7 +372,7 @@ void ColormapPreview::addPoint(const QPointF& point)
   auto item = new ColorMapPreviewPoint(point);
   scene()->addItem(item);
   previewPoints_.insert(item);
-  selectedPoint_ = boost::make_shared<ColorMapPreviewPoint>(point);
+  selectedPoint_ = makeShared<ColorMapPreviewPoint>(point);
   alphaManager_.insert(alphaPoint);
 }
 
@@ -626,7 +626,7 @@ void ColormapPreview::drawAlphaPolyline()
     addDefaultLine();
     return;
   }
-  alphaPath_ = boost::make_shared<QGraphicsPathItem>();
+  alphaPath_ = makeShared<QGraphicsPathItem>();
   alphaPath_->setPen(alphaLinePen);
 
   // Create path object and set from and to to the outer most point's y values
