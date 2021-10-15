@@ -30,16 +30,14 @@
 #define CORE_DATATYPES_VFDATA_H 1
 
 #include <Core/GeometryPrimitives/Vector.h>
+#define NOMINMAX
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Containers/Array2.h>
 #include <Core/Containers/Array3.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/CastFData.h>
-#include <string>
 #include <vector>
 #include <complex>
-#include <float.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
