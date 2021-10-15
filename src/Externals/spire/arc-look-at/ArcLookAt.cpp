@@ -119,9 +119,9 @@ glm::vec3 ArcLookAt::getUp()
 //------------------------------------------------------------------------------
 glm::vec3 ArcLookAt::getPos()
 {
-  glm::vec3 relativePos = glm::vec3(0.0f, 0.0f, -1.0f) * glm::mat3(mArcBall->getTransformation());
+  glm::vec3 relativePos = glm::vec3(0.0f, 0.0f, 1.0f) * glm::mat3(mArcBall->getTransformation());
   relativePos = glm::normalize(relativePos) * mCamDistance;
-  return relativePos - mCamLookAt;
+  return mCamLookAt + relativePos;
 }
 
 //------------------------------------------------------------------------------
