@@ -48,6 +48,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Render_Ospray
 TARGET_LINK_LIBRARIES(Interface_Modules_Render_Ospray
   Interface_Modules_Base
   Core_Algorithms_Visualization
+  Core_Datatypes
   Modules_Render
   ${LIBS}
   ospray::ospray
