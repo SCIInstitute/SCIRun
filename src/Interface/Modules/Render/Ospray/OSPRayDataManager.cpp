@@ -31,6 +31,7 @@
 #include <stdio.h>
 
 using namespace SCIRun::Render;
+using namespace SCIRun::Core::Datatypes;
 
 OSPRayDataManager::OSPRayDataManager()
 {
@@ -42,157 +43,140 @@ OSPRayDataManager::~OSPRayDataManager()
   ospShutdown();
 }
 
-OSPGeometry OSPRayDataManager::updateAndGetMesh(uint64_t id, uint64_t version,
-  float* vertices, float* normals, float* colors, float* texCoords, uint32_t* indices,
-  size_t numVertices, size_t numPolygons, uint32_t vertsPerPoly)
+OSPGeometry OSPRayDataManager::updateAndGetMesh(OsprayGeometryObject* obj, uint32_t vertsPerPoly)
 {
-  auto search = geomMap.find(id);
-  if(search != geomMap.end())
+  auto search = geomMap_.find(obj->id);
+  if(search != geomMap_.end())
   {
-    if(search->second.version == version) return search->second.geometry;
-    else                                  geomMap.erase(search);
+    if(search->second.version == obj->version) return search->second.geometry;
+    else                                  geomMap_.erase(search);
   }
-  return addMesh(id, version, vertices, normals, colors, texCoords, indices, numVertices, numPolygons, vertsPerPoly);
+  return addMesh(obj, vertsPerPoly);
 }
 
-OSPVolume OSPRayDataManager::updateAndgetStructuredVolume(uint64_t id, uint64_t version,
-  float gridOrigin[3], float gridSpacing[3], uint32_t dataSize[3], float* data)
+OSPVolume OSPRayDataManager::updateAndgetStructuredVolume(OsprayGeometryObject* obj)
 {
-  auto search = geomMap.find(id);
-  if(search != geomMap.end())
+  auto search = geomMap_.find(obj->id);
+  if(search != geomMap_.end())
   {
-    if(search->second.version == version) return search->second.volume;
-    else                                  geomMap.erase(search);
+    if(search->second.version == obj->version) return search->second.volume;
+    else                                  geomMap_.erase(search);
   }
-  return addStructuredVolume(id, version, gridOrigin, gridSpacing, dataSize, data);
+  return addStructuredVolume(obj);
 }
 
-OSPGeometry OSPRayDataManager::addMesh(uint64_t id, uint64_t version, float* vertices, float* normals, float* colors,
-  float* texCoords, uint32_t* indices, size_t numVertices, size_t numPolygons, uint32_t vertsPerPoly)
+OSPGeometry OSPRayDataManager::addMesh(OsprayGeometryObject* obj, uint32_t vertsPerPoly)
 {
-  geomMap.emplace(id, ObjectData());
-  ObjectData* obj = &geomMap[id];
+  OsprayGeometryObject::FieldData& data = obj->data;
+  float* vertices   = data.vertex.size()   > 0 ? data.vertex.data()   : nullptr;
+  float* colors     = data.color.size()    > 0 ? data.color.data()    : nullptr;
+  float* normals    = data.normal.size()   > 0 ? data.normal.data()   : nullptr;
+  float* texCoords  = data.texCoord.size() > 0 ? data.texCoord.data() : nullptr;
+  uint32_t* indices = data.index.size()    > 0 ? data.index.data()    : nullptr;
 
-  obj->geometry = ospNewGeometry("mesh");
-  obj->version = version;
+  uint32_t numVertices = data.vertex.size() / DIMENSIONS_;
+  size_t numPolygons = data.index.size() / vertsPerPoly;
 
+  geomMap_.emplace(obj->id, ObjectData());
+  ObjectData* obj_data = &geomMap_[obj->id];
+
+  obj_data->geometry = ospNewGeometry("mesh");
+  obj_data->version = obj->version;
+
+  std::vector<OSPData> sdata, odata;
+  std::vector<std::string> paramName;
   if(vertices)
   {
-    printf("v\n");
-
-    OSPData sdata = ospNewSharedData(vertices, OSP_VEC3F, numVertices);
-    OSPData odata = ospNewData(OSP_VEC3F, numVertices);
-    ospCopyData(sdata, odata);
-
-    ospSetParam(obj->geometry, "vertex.position", OSP_DATA, &odata);
-    ospRelease(sdata);
-    ospRelease(odata);
+    paramName.push_back("vertex.position");
+    sdata.push_back(ospNewSharedData(vertices, OSP_VEC3F, numVertices));
+    odata.push_back(ospNewData(OSP_VEC3F, numVertices));
   }
 
   if(normals)
   {
-    printf("n\n");
-
-    OSPData sdata = ospNewSharedData(normals, OSP_VEC3F, numVertices);
-    OSPData odata = ospNewData(OSP_VEC3F, numVertices);
-    ospCopyData(sdata, odata);
-    ospRelease(sdata);
-
-    ospSetParam(obj->geometry, "vertex.normal", OSP_DATA, &odata);
-    ospRelease(odata);
+    paramName.push_back("vertex.normal");
+    sdata.push_back(ospNewSharedData(normals, OSP_VEC3F, numVertices));
+    odata.push_back(ospNewData(OSP_VEC3F, numVertices));
   }
 
   if(colors)
   {
-    printf("c\n");
-
-    OSPData sdata = ospNewSharedData(colors, OSP_VEC4F, numVertices);
-    OSPData odata = ospNewData(OSP_VEC4F, numVertices);
-    ospCopyData(sdata, odata);
-    ospRelease(sdata);
-
-    ospSetParam(obj->geometry, "vertex.color", OSP_DATA, &odata);
-    ospRelease(odata);
+    sdata.push_back(ospNewSharedData(colors, OSP_VEC4F, numVertices));
+    paramName.push_back("vertex.color");
+    odata.push_back(ospNewData(OSP_VEC4F, numVertices));
   }
 
   if(texCoords)
   {
-    printf("t\n");
-
-    OSPData sdata = ospNewSharedData(texCoords, OSP_VEC2F, numVertices);
-    OSPData odata = ospNewData(OSP_VEC2F, numVertices);
-    ospCopyData(sdata, odata);
-    ospRelease(sdata);
-
-    ospSetParam(obj->geometry, "vertex.texcoord", OSP_DATA, &odata);
-    ospRelease(odata);
+    paramName.push_back("vertex.texcoord");
+    sdata.push_back(ospNewSharedData(texCoords, OSP_VEC2F, numVertices));
+    odata.push_back(ospNewData(OSP_VEC2F, numVertices));
   }
 
   if(indices)
   {
-    printf("i\n");
-
+    paramName.push_back("index");
     OSPDataType dataType = vertsPerPoly == 3 ? OSP_VEC3UI : OSP_VEC4UI;
-    OSPData sdata = ospNewSharedData(indices, dataType, numPolygons);
-    OSPData odata = ospNewData(dataType, numPolygons);
-    ospCopyData(sdata, odata);
-    ospRelease(sdata);
-
-    ospSetParam(obj->geometry, "index", OSP_DATA, &odata);
-    ospRelease(odata);
+    sdata.push_back(ospNewSharedData(indices, dataType, numPolygons));
+    odata.push_back(ospNewData(dataType, numPolygons));
   }
 
-  printf("\n");
+  for (int i = 0; i < sdata.size(); ++i)
+  {
+    ospCopyData(sdata[i], odata[i]);
+    ospSetParam(obj_data->geometry, paramName[i].data(), OSP_DATA, &(odata[i]));
+    ospRelease(sdata[i]);
+    ospRelease(odata[i]);
+  }
 
-  ospCommit(obj->geometry);
-  return obj->geometry;
+  ospCommit(obj_data->geometry);
+  return obj_data->geometry;
 }
 
-OSPVolume OSPRayDataManager::addStructuredVolume(uint64_t id, uint64_t version, float gridOrigin[3],
-  float gridSpacing[3], uint32_t dataSize[3], float* data)
+OSPVolume OSPRayDataManager::addStructuredVolume(OsprayGeometryObject* obj)
 {
-  geomMap.emplace(id, ObjectData());
-  ObjectData* obj = &geomMap[id];
+  geomMap_.emplace(obj->id, ObjectData());
+  ObjectData* obj_data = &geomMap_[obj->id];
 
-  obj->volume = ospNewVolume("structuredRegular");
-  obj->version = version;
+  obj_data->volume = ospNewVolume("structuredRegular");
+  obj_data->version = obj->version;
 
-  ospSetParam(obj->volume, "gridOrigin", OSP_VEC3F, gridOrigin);
-  ospSetParam(obj->volume, "gridSpacing", OSP_VEC3F, gridSpacing);
+  ospSetParam(obj_data->volume, "gridOrigin", OSP_VEC3F, obj->data.origin);
+  ospSetParam(obj_data->volume, "gridSpacing", OSP_VEC3F, obj->data.spacing);
 
   {
-    OSPData sdata = ospNewSharedData(data, OSP_FLOAT, dataSize[0], 0, dataSize[1], 0, dataSize[2], 0);
-    OSPData odata = ospNewData(OSP_FLOAT, dataSize[0], dataSize[1], dataSize[2]);
+    OSPData sdata = ospNewSharedData(obj->data.color.data(), OSP_FLOAT, obj->data.dim[0], 0, obj->data.dim[1], 0, obj->data.dim[2], 0);
+    OSPData odata = ospNewData(OSP_FLOAT, obj->data.dim[0], obj->data.dim[1], obj->data.dim[2]);
     ospCopyData(sdata, odata);
     ospRelease(sdata);
 
-    ospSetParam(obj->volume, "data", OSP_DATA, &odata);
+    ospSetParam(obj_data->volume, "data", OSP_DATA, &odata);
     ospRelease(odata);
   }
 
-  ospCommit(obj->volume);
-  return obj->volume;
+  ospCommit(obj_data->volume);
+  return obj_data->volume;
 }
 
 OSPGeometry OSPRayDataManager::getMesh(uint64_t id)
 {
-  auto search = geomMap.find(id);
-  if(search != geomMap.end())
+  auto search = geomMap_.find(id);
+  if(search != geomMap_.end())
     return search->second.geometry;
   return nullptr;
 }
 
 OSPVolume OSPRayDataManager::getVolume(uint64_t id)
 {
-  auto search = geomMap.find(id);
-  if(search != geomMap.end())
+  auto search = geomMap_.find(id);
+  if(search != geomMap_.end())
     return search->second.volume;
   return nullptr;
 }
 
 void OSPRayDataManager::removeObject(uint64_t id)
 {
-  auto search = geomMap.find(id);
-  if(search != geomMap.end())
-    geomMap.erase(search);
+  auto search = geomMap_.find(id);
+  if(search != geomMap_.end())
+    geomMap_.erase(search);
 }
