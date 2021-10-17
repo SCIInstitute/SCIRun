@@ -24,13 +24,12 @@ src/Doxyfile
 *.orig
 CMakeCache.txt
 CMakeFiles
-Makefile
+src/Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
 DartConfiguration.tcl
 cmake
 
-# docs site
-_site
-.sass-cache
+# Sphinx builds
+docs/_build/

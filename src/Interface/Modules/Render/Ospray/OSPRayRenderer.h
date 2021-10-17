@@ -30,11 +30,14 @@
 #include <vector>
 #include <cstdio>
 
+
+#ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
 
 #include "OSPRayDataManager.h"
 #include "OSPRayCamera.h"
+
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Ospray/share.h>
 
@@ -55,6 +58,7 @@ public:
   void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
   void mouseWheel(int32_t delta);
+  void autoView();
 
   //Data--------------------------------------------------------------------------------------------
   void updateGeometries(const std::vector<Core::Datatypes::OsprayGeometryObjectHandle>& geometries);
@@ -97,3 +101,5 @@ private:
 };
 
 }}
+
+#endif
