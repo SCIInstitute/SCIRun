@@ -66,3 +66,8 @@ void GeometryBuffer::asyncExecute(const Dataflow::Networks::PortId& pid, Core::D
   (void)pid;
   (void)data;
 }
+
+void GeometryBuffer::portRemovedSlotImpl(const Dataflow::Networks::PortId& pid)
+{
+  (void)pid;
+}
