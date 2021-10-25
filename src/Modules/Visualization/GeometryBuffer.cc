@@ -43,11 +43,23 @@ ALGORITHM_PARAMETER_DEF(Visualization, FrameDelay);
 
 MODULE_INFO_DEF(GeometryBuffer, Visualization, SCIRun)
 
-GeometryBuffer::GeometryBuffer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
+namespace SCIRun::Modules::Visualization
+{
+  class GeometryBufferImpl
+  {
+  public:
+    std::vector<GeometryBaseHandle> buffer_;
+  };
+}
+
+GeometryBuffer::GeometryBuffer() : ModuleWithAsyncDynamicPorts(staticInfo_, true),
+  impl_(new GeometryBufferImpl)
 {
   INITIALIZE_PORT(GeometryInput);
   INITIALIZE_PORT(GeometryOutputSeries);
 }
+
+GeometryBuffer::~GeometryBuffer() = default;
 
 void GeometryBuffer::setStateDefaults()
 {
@@ -61,13 +73,18 @@ void GeometryBuffer::execute()
 
 }
 
-void GeometryBuffer::asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data)
+void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
   (void)pid;
   (void)data;
+  logCritical("Received object!");
+
+  const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
+  impl_->buffer_.push_back(geom);
+  logCritical("Buffer is size {}", impl_->buffer_.size());
 }
 
-void GeometryBuffer::portRemovedSlotImpl(const Dataflow::Networks::PortId& pid)
+void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)
 {
   (void)pid;
 }

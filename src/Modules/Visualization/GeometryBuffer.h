@@ -54,6 +54,7 @@ namespace Visualization {
   {
   public:
     GeometryBuffer();
+    ~GeometryBuffer();
     void execute() override;
     void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
@@ -61,6 +62,8 @@ namespace Visualization {
     INPUT_PORT(0, GeometryInput, GeometryObject);
     OUTPUT_PORT(0, GeometryOutputSeries, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+  private:
+    std::unique_ptr<class GeometryBufferImpl> impl_;
   };
 }}}
 
