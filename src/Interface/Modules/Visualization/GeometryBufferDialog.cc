@@ -48,4 +48,5 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
 void GeometryBufferDialog::sendAllGeometries()
 {
   qDebug() << "sendAllGeometries";
+  state_->setValue(Parameters::SendFlag, true);
 }

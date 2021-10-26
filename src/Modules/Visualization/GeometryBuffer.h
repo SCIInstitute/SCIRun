@@ -40,6 +40,7 @@ namespace SCIRun {
 
         ALGORITHM_PARAMETER_DECL(BufferSize);
         ALGORITHM_PARAMETER_DECL(FrameDelay);
+        ALGORITHM_PARAMETER_DECL(SendFlag);
 
       }
     }
@@ -64,6 +65,7 @@ namespace Visualization {
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     std::unique_ptr<class GeometryBufferImpl> impl_;
+    void sendAllGeometries();
   };
 }}}
 

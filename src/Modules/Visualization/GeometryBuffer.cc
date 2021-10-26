@@ -28,6 +28,7 @@
 
 #include <Modules/Visualization/GeometryBuffer.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <chrono>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -40,6 +41,7 @@ using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, BufferSize);
 ALGORITHM_PARAMETER_DEF(Visualization, FrameDelay);
+ALGORITHM_PARAMETER_DEF(Visualization, SendFlag);
 
 MODULE_INFO_DEF(GeometryBuffer, Visualization, SCIRun)
 
@@ -66,11 +68,35 @@ void GeometryBuffer::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::BufferSize, 50);
   state->setValue(Parameters::FrameDelay, 1.0);
+  state->setValue(Parameters::SendFlag, false);
+  state->connectSpecificStateChanged(Parameters::SendFlag, [this]() { sendAllGeometries(); });
 }
 
 void GeometryBuffer::execute()
 {
 
+}
+
+void GeometryBuffer::sendAllGeometries()
+{
+  using namespace std::chrono_literals;
+  auto state = get_state();
+  if (state->getValue(Parameters::SendFlag).toBool())
+  {
+    logCritical("Send all geoms module {}", true);
+
+    int i = 0;
+    for (auto& geom : impl_->buffer_)
+    {
+      logCritical("Outputting geom number {}", i);
+      sendOutput(GeometryOutputSeries, geom);
+      std::this_thread::sleep_for(100ms);
+      i++;
+    }
+    impl_->buffer_.clear();
+
+  }
+  state->setValue(Parameters::SendFlag, false);
 }
 
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
