@@ -517,7 +517,7 @@
 									<name>SliceIndex</name>
 									<value object_id="_34">
 										<which>0</which>
-										<value>38</value>
+										<value>49</value>
 									</value>
 								</second>
 							</item>
@@ -585,7 +585,7 @@
 									<name>FixedMax</name>
 									<value object_id="_37">
 										<which>1</which>
-										<value>9.79297757617112907e-01</value>
+										<value>9.98045198613548235e-01</value>
 									</value>
 								</second>
 							</item>
@@ -597,7 +597,7 @@
 									<name>FixedMin</name>
 									<value object_id="_38">
 										<which>1</which>
-										<value>-9.79297757617112907e-01</value>
+										<value>-9.98045198613548235e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2082,7 +2082,7 @@
 									<name>ShowViewer</name>
 									<value object_id="_175">
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2136,7 +2136,7 @@
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_181">
 																<which>3</which>
 																<value>0</value>
@@ -2150,7 +2150,7 @@
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_183">
 																<which>3</which>
 																<value>0</value>
@@ -2171,7 +2171,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_184">
 										<which>0</which>
-										<value>400</value>
+										<value>114</value>
 									</value>
 								</second>
 							</item>
@@ -2183,7 +2183,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_185">
 										<which>0</which>
-										<value>216</value>
+										<value>226</value>
 									</value>
 								</second>
 							</item>
@@ -2824,7 +2824,7 @@
 									<name>HasNewGeometry</name>
 									<value object_id="_253">
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -3474,8 +3474,8 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.68000000000000000e+02</first>
-				<second>2.57000000000000000e+02</second>
+				<first>-1.52000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
