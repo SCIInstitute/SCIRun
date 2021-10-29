@@ -30,14 +30,11 @@
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #include <Dataflow/Network/ModuleInfoProvider.h>
-#include <Dataflow/Network/ModuleExceptions.h>
 #include <Dataflow/Network/ModuleExecutionInterfaces.h>
-#include <Dataflow/Network/ModuleIdGenerator.h>
 #include <Dataflow/Network/ModuleDisplayInterface.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/share.h>

@@ -36,6 +36,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MetadataObject.h>
 #include <Dataflow/Network/PortManager.h>
+#include <Dataflow/Network/ModuleExceptions.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>

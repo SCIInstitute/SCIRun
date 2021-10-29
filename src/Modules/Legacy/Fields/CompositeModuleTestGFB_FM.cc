@@ -293,7 +293,9 @@ void CompositeModuleImpl::initializeSubnet()
 
     const auto xml = XMLSerializer::load_xml<NetworkFile>("X:\\Dev\\r1\\SCIRun\\Release\\xml1.txt");
     subNet_->loadXmlDataIntoNetwork(xml->network.data());
-    if (subNet_->getNetwork()->nmodules() == 2)
+    auto network = subNet_->getNetwork();
+
+    if (network->nmodules() == 2)
     {
       module_->remark("Created subnet with 2 modules");
     }
@@ -303,7 +305,30 @@ void CompositeModuleImpl::initializeSubnet()
       return;
     }
 
-    const auto gfb = subNet_->getNetwork()->lookupModule({"GetFieldBoundary", 0});
+    
+    for (size_t i = 0; i < network->nmodules(); ++i) 
+    {
+      const auto module = network->module(i);
+
+      for (const auto& input : module->inputPorts())
+      {
+        if (input->nconnections() == 0 && input->get_typename() != "MetadataObject")
+        {
+          logCritical("Found input port that can be exposed: {} :: {}", module->name(), input->get_portname());
+        }
+      }
+      for (const auto& output : module->outputPorts())
+      {
+        if (output->nconnections() == 0 && output->get_typename() != "MetadataObject")
+        {
+          logCritical("Found output port that can be exposed: {} :: {}", module->name(), output->get_portname());
+        }
+      }
+
+    }
+      
+      
+      const auto gfb = network->lookupModule({"GetFieldBoundary", 0});
 
     dynamic_cast<Module*>(gfb.get())->removeInputPort(
         dynamic_cast<GetFieldBoundary*>(gfb.get())->InputField.toId());
