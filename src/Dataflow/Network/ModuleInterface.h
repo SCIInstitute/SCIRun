@@ -93,6 +93,10 @@ namespace Networks {
     virtual void disconnectStateListeners() = 0;
     virtual NetworkInterface* network() const = 0;
     virtual void setNetwork(NetworkInterface* net) = 0;
+    virtual void removeInputPort(const PortId& id) = 0;
+    virtual void removeOutputPort(const PortId& id) = 0;
+    virtual size_t add_input_port(InputPortHandle) = 0;
+    virtual size_t add_output_port(OutputPortHandle) = 0;
   };
 
   class SCISHARE ModuleInterface :

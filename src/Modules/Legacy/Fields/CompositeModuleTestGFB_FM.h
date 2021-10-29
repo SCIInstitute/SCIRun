@@ -42,7 +42,7 @@ namespace SCIRun::Modules::Fields
 
   class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
-    public Has1OutputPort<FieldPortTag>
+    public Has2OutputPorts<FieldPortTag, MatrixPortTag>
   {
   public:
     CompositeModuleTestGFB_FM();
@@ -53,6 +53,7 @@ namespace SCIRun::Modules::Fields
 
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, Faired_Mesh, Field);
+    OUTPUT_PORT(1, Mapping, Matrix);
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   private:

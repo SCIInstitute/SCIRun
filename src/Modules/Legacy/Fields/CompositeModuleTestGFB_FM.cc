@@ -59,6 +59,7 @@ CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM()
 {
   INITIALIZE_PORT(InputField)
   INITIALIZE_PORT(Faired_Mesh)
+  INITIALIZE_PORT(Mapping)
 }
 
 CompositeModuleTestGFB_FM::~CompositeModuleTestGFB_FM() = default;
@@ -293,7 +294,7 @@ void CompositeModuleImpl::initializeSubnet()
 
     const auto xml = XMLSerializer::load_xml<NetworkFile>("X:\\Dev\\r1\\SCIRun\\Release\\xml1.txt");
     subNet_->loadXmlDataIntoNetwork(xml->network.data());
-    auto network = subNet_->getNetwork();
+    const auto network = subNet_->getNetwork();
 
     if (network->nmodules() == 2)
     {
@@ -305,41 +306,53 @@ void CompositeModuleImpl::initializeSubnet()
       return;
     }
 
-    
+    auto wrapperModuleInputs = module_->inputPorts();
+    auto wrapperModuleInputsIterator = wrapperModuleInputs.begin();
+    auto wrapperModuleOutputs = module_->outputPorts();
+    auto wrapperModuleOutputsIterator = wrapperModuleOutputs.begin();
     for (size_t i = 0; i < network->nmodules(); ++i) 
     {
-      const auto module = network->module(i);
+      const auto subModule = network->module(i);
 
-      for (const auto& input : module->inputPorts())
+      for (const auto& inputPort : subModule->inputPorts())
       {
-        if (input->nconnections() == 0 && input->get_typename() != "MetadataObject")
+        if (inputPort->nconnections() == 0 && inputPort->get_typename() != "MetadataObject")
         {
-          logCritical("Found input port that can be exposed: {} :: {}", module->name(), input->get_portname());
+          auto portId = inputPort->id();
+          logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
+
+          if (subModule->id().id_ == "GetFieldBoundary")
+          {
+            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
+            subModule->removeInputPort(portId);
+            subModule->add_input_port(*wrapperModuleInputsIterator++);
+          }
         }
       }
-      for (const auto& output : module->outputPorts())
+      for (const auto& outputPort : subModule->outputPorts())
       {
-        if (output->nconnections() == 0 && output->get_typename() != "MetadataObject")
+        if (outputPort->nconnections() == 0 && outputPort->get_typename() != "MetadataObject")
         {
-          logCritical("Found output port that can be exposed: {} :: {}", module->name(), output->get_portname());
+          auto portId = outputPort->id();
+          logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
+
+          if (auto* const fm = dynamic_cast<FairMesh*>(subModule.get()))
+          {
+            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
+            fm->removeOutputPort(portId);
+            fm->add_output_port(*wrapperModuleOutputsIterator++);  
+          }
+          
+          if (auto* const gfb = dynamic_cast<GetFieldBoundary*>(subModule.get()))
+          {
+            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
+            gfb->removeOutputPort(portId);
+            gfb->add_output_port(*wrapperModuleOutputsIterator++);
+          }
         }
       }
 
     }
-      
-      
-      const auto gfb = network->lookupModule({"GetFieldBoundary", 0});
-
-    dynamic_cast<Module*>(gfb.get())->removeInputPort(
-        dynamic_cast<GetFieldBoundary*>(gfb.get())->InputField.toId());
-    dynamic_cast<Module*>(gfb.get())->add_input_port(
-        module_->getInputPort(module_->InputField.toId()));
-
-    const auto fm = subNet_->getNetwork()->lookupModule({"FairMesh",0});
-    dynamic_cast<Module*>(fm.get())->removeOutputPort(
-        dynamic_cast<FairMesh*>(fm.get())->Faired_Mesh.toId());
-    dynamic_cast<Module*>(fm.get())->add_output_port(
-        module_->getOutputPort(module_->Faired_Mesh.toId()));
     
     if (subNet_->getNetwork()->nconnections() == 1)
     {
