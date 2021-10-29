@@ -234,6 +234,8 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
+  #TODO: remove
+  Core_Serialization_Network
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
   Core_Basis

@@ -30,17 +30,19 @@
 #include <Modules/Legacy/Fields/FairMesh.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 // TODO
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Dataflow/Network/ConnectionId.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Engine;
+using namespace Dataflow::Networks;
+using namespace Dataflow::Engine;
 
 MODULE_INFO_DEF(CompositeModuleTestGFB_FM, MiscField, SCIRun)
 
-class SCIRun::Modules::Fields::CompositeModuleImpl
+class Modules::Fields::CompositeModuleImpl
 {
 public:
   NetworkHandle subNet_;
@@ -55,8 +57,8 @@ private:
 CompositeModuleTestGFB_FM::CompositeModuleTestGFB_FM()
     : Module(staticInfo_, false), impl_(new CompositeModuleImpl(this))
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(Faired_Mesh);
+  INITIALIZE_PORT(InputField)
+  INITIALIZE_PORT(Faired_Mesh)
 }
 
 CompositeModuleTestGFB_FM::~CompositeModuleTestGFB_FM() = default;
@@ -257,8 +259,6 @@ void CompositeModuleTestGFB_FM::execute()
 {
   impl_->initializeSubnet();
 
-  logCritical("CompositeModuleTestGFB_FM::execute()");
-
   auto resultFuture = impl_->subNet_->executeAll();
   resultFuture.wait();
   const auto result = resultFuture.get();
@@ -290,19 +290,9 @@ void CompositeModuleImpl::initializeSubnet()
       module_->error("Subnet's network state is null");
       return;
     }
-    const auto gfb = subNet_->addModule({"GetFieldBoundary", "...", ",,,"});
 
-    dynamic_cast<Module*>(gfb.get())->removeInputPort(
-        dynamic_cast<GetFieldBoundary*>(gfb.get())->InputField.toId());
-    dynamic_cast<Module*>(gfb.get())->add_input_port(
-        module_->getInputPort(module_->InputField.toId()));
-
-    const auto fm = subNet_->addModule({"FairMesh", "...", ",,,"});
-    dynamic_cast<Module*>(fm.get())->removeOutputPort(
-        dynamic_cast<FairMesh*>(fm.get())->Faired_Mesh.toId());
-    dynamic_cast<Module*>(fm.get())->add_output_port(
-        module_->getOutputPort(module_->Faired_Mesh.toId()));
-
+    const auto xml = XMLSerializer::load_xml<NetworkFile>("X:\\Dev\\r1\\SCIRun\\Release\\xml1.txt");
+    subNet_->loadXmlDataIntoNetwork(xml->network.data());
     if (subNet_->getNetwork()->nmodules() == 2)
     {
       module_->remark("Created subnet with 2 modules");
@@ -312,15 +302,27 @@ void CompositeModuleImpl::initializeSubnet()
       module_->error("Subnet missing modules");
       return;
     }
-    const auto conn = subNet_->requestConnection(gfb->outputPorts()[0].get(), fm->inputPorts()[0].get());
-    if (conn && subNet_->getNetwork()->nconnections() == 1)
+
+    const auto gfb = subNet_->getNetwork()->lookupModule({"GetFieldBoundary", 0});
+
+    dynamic_cast<Module*>(gfb.get())->removeInputPort(
+        dynamic_cast<GetFieldBoundary*>(gfb.get())->InputField.toId());
+    dynamic_cast<Module*>(gfb.get())->add_input_port(
+        module_->getInputPort(module_->InputField.toId()));
+
+    const auto fm = subNet_->getNetwork()->lookupModule({"FairMesh",0});
+    dynamic_cast<Module*>(fm.get())->removeOutputPort(
+        dynamic_cast<FairMesh*>(fm.get())->Faired_Mesh.toId());
+    dynamic_cast<Module*>(fm.get())->add_output_port(
+        module_->getOutputPort(module_->Faired_Mesh.toId()));
+    
+    if (subNet_->getNetwork()->nconnections() == 1)
     {
       module_->remark("Created connection between 2 modules");
     }
     else
     {
       module_->error("Connection error");
-      return;
     }
   }
 }
