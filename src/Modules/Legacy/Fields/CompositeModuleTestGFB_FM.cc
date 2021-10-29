@@ -27,8 +27,6 @@
 
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
-#include <Modules/Legacy/Fields/FairMesh.h>
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
 // TODO
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
@@ -321,7 +319,7 @@ void CompositeModuleImpl::initializeSubnet()
           auto portId = inputPort->id();
           logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
-          if (subModule->id().id_ == "GetFieldBoundary")
+          if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
           {
             logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
             subModule->removeInputPort(portId);
@@ -336,18 +334,11 @@ void CompositeModuleImpl::initializeSubnet()
           auto portId = outputPort->id();
           logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
-          if (auto* const fm = dynamic_cast<FairMesh*>(subModule.get()))
+          if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())
           {
             logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
-            fm->removeOutputPort(portId);
-            fm->add_output_port(*wrapperModuleOutputsIterator++);  
-          }
-          
-          if (auto* const gfb = dynamic_cast<GetFieldBoundary*>(subModule.get()))
-          {
-            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
-            gfb->removeOutputPort(portId);
-            gfb->add_output_port(*wrapperModuleOutputsIterator++);
+            subModule->removeOutputPort(portId);
+            subModule->add_output_port(*wrapperModuleOutputsIterator++);  
           }
         }
       }
