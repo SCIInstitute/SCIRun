@@ -39,7 +39,7 @@
 
 namespace SCIRun {
 namespace Graphics {
-struct GlyphData
+struct SCISHARE GlyphData
 {
   std::vector<Core::Geometry::Vector> points_;
   std::vector<Core::Geometry::Vector> normals_;
