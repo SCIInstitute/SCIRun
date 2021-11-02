@@ -25,16 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <iostream>
-#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/String.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
+#include <iostream>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
@@ -44,7 +43,7 @@ using namespace SCIRun::Core::Algorithms::Python;
 MODULE_INFO_DEF(CompositeModuleWithStaticPorts, Flow Control, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Python, NetworkXml)
-
+ALGORITHM_PARAMETER_DEF(Python, PortSettings)
 
 class SCIRun::Modules::Basic::CompositeModuleImpl
 {
@@ -59,115 +58,117 @@ class SCIRun::Modules::Basic::CompositeModuleImpl
 };
 
 CompositeModuleWithStaticPorts::CompositeModuleWithStaticPorts()
-  : Module(staticInfo_)
+    : Module(staticInfo_), impl_(new CompositeModuleImpl(this))
 {
-  INITIALIZE_PORT(Input0) INITIALIZE_PORT(Input1) INITIALIZE_PORT(Input2) INITIALIZE_PORT(Input3)
-  INITIALIZE_PORT(Input4) INITIALIZE_PORT(Input5) INITIALIZE_PORT(Input6) //INITIALIZE_PORT(Input7)
-  INITIALIZE_PORT(Output0) INITIALIZE_PORT(Output1) INITIALIZE_PORT(Output2) INITIALIZE_PORT(Output3)
-  INITIALIZE_PORT(Output4) INITIALIZE_PORT(Output5) INITIALIZE_PORT(Output6) INITIALIZE_PORT(Output7)
+  INITIALIZE_PORT(Input0) INITIALIZE_PORT(Input1) INITIALIZE_PORT(Input2)
+  INITIALIZE_PORT(Input3) INITIALIZE_PORT(Input4) INITIALIZE_PORT(Input5) INITIALIZE_PORT(Input6)  // INITIALIZE_PORT(Input7)
+  INITIALIZE_PORT(Output0) INITIALIZE_PORT(Output1) INITIALIZE_PORT(Output2)
+  INITIALIZE_PORT(Output3) INITIALIZE_PORT(Output4) INITIALIZE_PORT(Output5)
+  INITIALIZE_PORT(Output6) INITIALIZE_PORT(Output7)
 }
 
 CompositeModuleWithStaticPorts::~CompositeModuleWithStaticPorts() = default;
 
-
 void CompositeModuleWithStaticPorts::setStateDefaults()
 {
   get_state()->setValue(Parameters::NetworkXml, std::string());
+  get_state()->setValue(Parameters::PortSettings, std::string());
 }
 
 void CompositeModuleWithStaticPorts::execute()
 {
-  const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
-  impl_->initializeSubnet(xml);
+  if (needToExecute())
+  {
+    const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
+    impl_->initializeSubnet(xml);
 
-  auto resultFuture = impl_->subNet_->executeAll();
-  resultFuture.wait();
-  const auto result = resultFuture.get();
-  if (result != 0)
-  {
-    error("Subnetwork returned error code " + std::to_string(result) + ".");
-  }
-  else
-  {
-    remark("Subnetwork executed successfully.");
+    auto resultFuture = impl_->subNet_->executeAll();
+    resultFuture.wait();
+    const auto result = resultFuture.get();
+    if (result != 0)
+    {
+      error("Subnetwork returned error code " + std::to_string(result) + ".");
+    }
+    else
+    {
+      remark("Subnetwork executed successfully.");
+    }
   }
 }
 
 void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromState)
 {
-  if (!subNet_)
+  module_->remark("Composite module concept part 2");
+
+  subNet_ = module_->network()->createSubnetwork();
+  if (subNet_)
   {
-    module_->remark("Basic composite module concept part 1");
+    module_->remark("Subnet created.");
+  }
+  else
+  {
+    module_->error("Subnet null");
+    return;
+  }
+  if (!subNet_->getNetwork())
+  {
+    module_->error("Subnet's network state is null");
+    return;
+  }
 
-    subNet_ = module_->network()->createSubnetwork();
-    if (subNet_) { module_->remark("Subnet created."); }
-    else
+  std::istringstream istr(networkXmlFromState);
+  const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
+  subNet_->loadXmlDataIntoNetwork(xml->network.data());
+  const auto network = subNet_->getNetwork();
+
+  auto wrapperModuleInputs = module_->inputPorts();
+  auto wrapperModuleInputsIterator = wrapperModuleInputs.begin();
+  auto wrapperModuleOutputs = module_->outputPorts();
+  auto wrapperModuleOutputsIterator = wrapperModuleOutputs.begin();
+
+  module_->remark("Subnet created with " + std::to_string(network->nmodules()) + " modules and " + std::to_string(network->nconnections()) + " connections.");
+  std::ostringstream ostr;
+
+  for (size_t i = 0; i < network->nmodules(); ++i)
+  {
+    const auto subModule = network->module(i);
+
+    for (const auto& inputPort : subModule->inputPorts())
     {
-      module_->error("Subnet null");
-      return;
-    }
-    if (!subNet_->getNetwork())
-    {
-      module_->error("Subnet's network state is null");
-      return;
-    }
-
-    std::istringstream istr(networkXmlFromState);
-    const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
-    subNet_->loadXmlDataIntoNetwork(xml->network.data());
-    const auto network = subNet_->getNetwork();
-
-    if (network->nmodules() == 2) { module_->remark("Created subnet with 2 modules"); }
-    else
-    {
-      module_->error("Subnet missing modules");
-      return;
-    }
-
-    auto wrapperModuleInputs = module_->inputPorts();
-    auto wrapperModuleInputsIterator = wrapperModuleInputs.begin();
-    auto wrapperModuleOutputs = module_->outputPorts();
-    auto wrapperModuleOutputsIterator = wrapperModuleOutputs.begin();
-    for (size_t i = 0; i < network->nmodules(); ++i)
-    {
-      const auto subModule = network->module(i);
-
-      for (const auto& inputPort : subModule->inputPorts())
+      if (!inputPort->isDynamic() && inputPort->nconnections() == 0 && inputPort->get_typename() != "MetadataObject")
       {
-        if (inputPort->nconnections() == 0 && inputPort->get_typename() != "MetadataObject")
-        {
-          auto portId = inputPort->id();
-          logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
+        auto portId = inputPort->id();
+        logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
-          if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
-          {
-            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
-            subModule->removeInputPort(portId);
-            subModule->add_input_port(*wrapperModuleInputsIterator++);
-          }
-        }
-      }
-      for (const auto& outputPort : subModule->outputPorts())
-      {
-        if (outputPort->nconnections() == 0 && outputPort->get_typename() != "MetadataObject")
+        if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
         {
-          auto portId = outputPort->id();
-          logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
-
-          if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())
-          {
-            logCritical("\t\tperforming port surgery on {} {}", subModule->id().id_, portId.toString());
-            subModule->removeOutputPort(portId);
-            subModule->add_output_port(*wrapperModuleOutputsIterator++);
-          }
+          logCritical("\t\tperforming port surgery on {} :: {} --> {}", subModule->id().id_, portId.toString(), (*wrapperModuleInputsIterator)->id().toString());
+          ostr << subModule->id().id_ << "::" << portId.toString() << " --> " << (*wrapperModuleInputsIterator)->id().toString() << std::endl;
+          subModule->removeInputPort(portId);
+          (*wrapperModuleInputsIterator)->setId(portId);
+          subModule->add_input_port(*wrapperModuleInputsIterator);
+          ++wrapperModuleInputsIterator;
         }
       }
     }
-
-    if (subNet_->getNetwork()->nconnections() == 1) { module_->remark("Created connection between 2 modules"); }
-    else
+    for (const auto& outputPort : subModule->outputPorts())
     {
-      module_->error("Connection error");
+      if (outputPort->nconnections() == 0 && outputPort->get_typename() != "MetadataObject")
+      {
+        auto portId = outputPort->id();
+        logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
+
+        if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())
+        {
+          logCritical("\t\tperforming port surgery on {} :: {} --> {}", subModule->id().id_, portId.toString(), (*wrapperModuleOutputsIterator)->id().toString());
+          ostr << subModule->id().id_ << "::" << portId.toString() << " --> " << (*wrapperModuleOutputsIterator)->id().toString() << std::endl;
+          subModule->removeOutputPort(portId);
+          (*wrapperModuleOutputsIterator)->setId(portId);
+          subModule->add_output_port(*wrapperModuleOutputsIterator);
+          ++wrapperModuleOutputsIterator;
+        }
+      }
     }
   }
+  module_->get_state()->setValue(Parameters::PortSettings, ostr.str());
 }

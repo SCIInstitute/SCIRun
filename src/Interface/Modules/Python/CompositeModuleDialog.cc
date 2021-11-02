@@ -47,8 +47,10 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
   //}
 
   addPlainTextEditManager(networkXMLplainTextEdit_, Parameters::NetworkXml);
+  addPlainTextEditManager(portReportPlainTextEdit_, Parameters::PortSettings);
   //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
-  //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+  connect(clearPushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->clear(); });
+  connect(pastePushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->setPlainText(QGuiApplication::clipboard()->text()); });
 }

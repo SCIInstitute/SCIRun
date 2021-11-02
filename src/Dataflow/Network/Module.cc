@@ -424,7 +424,7 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (PortNotFoundException& e)
   {
     std::ostringstream ostr;
-    ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
+    ostr << "Port not found, it may need initializing in the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
   catch (AlgorithmParameterNotFound& e)

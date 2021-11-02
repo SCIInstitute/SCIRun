@@ -69,6 +69,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Python
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Python
   Modules_Python
+  Modules_Basic
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}

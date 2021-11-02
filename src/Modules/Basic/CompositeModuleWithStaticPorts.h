@@ -35,7 +35,8 @@
 namespace SCIRun {
   namespace Core::Algorithms::Python
   {
-    ALGORITHM_PARAMETER_DECL(NetworkXml);  
+    ALGORITHM_PARAMETER_DECL(NetworkXml);
+    ALGORITHM_PARAMETER_DECL(PortSettings);
   }
   namespace Modules {
     namespace Basic {
