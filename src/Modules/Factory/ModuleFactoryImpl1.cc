@@ -33,6 +33,7 @@
 #include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
+#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteField.h>
@@ -207,6 +208,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CollectMatrices>("Real ported module", "...");
 
   addModuleDesc<CompositeModuleTestGFB_FM>("2 modules in 1!", "GetFieldBoundary->FairMesh");
+  addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()

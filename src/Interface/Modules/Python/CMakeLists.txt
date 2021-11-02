@@ -33,7 +33,7 @@ SET(Interface_Modules_Python_FORMS
   LoopStart.ui
   #LoopIncrement.ui
   LoopEnd.ui
-  CompositeWidget.ui
+  CompositeModule.ui
 )
 
 SET(Interface_Modules_Python_HEADERS
@@ -43,7 +43,7 @@ SET(Interface_Modules_Python_HEADERS
   LoopStartDialog.h
   #LoopIncrementDialog.h
   LoopEndDialog.h
-  CompositeWidgetDialog.h
+  CompositeModuleDialog.h
   share.h
 )
 
@@ -54,7 +54,7 @@ SET(Interface_Modules_Python_SOURCES
   LoopStartDialog.cc
   #LoopIncrementDialog.cc
   LoopEndDialog.cc
-  CompositeWidgetDialog.cc
+  CompositeModuleDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS "${Interface_Modules_Python_FORMS}")

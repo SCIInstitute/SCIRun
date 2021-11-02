@@ -25,28 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
+#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
-#include <Interface/Modules/Python/CompositeModuleDialog.h>
-#include <boost/assign.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Python/ui_CompositeModule.h"
+#include <Interface/Modules/Python/share.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+namespace SCIRun {
+namespace Gui {
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
-{
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
-    ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(CompositeModuleWithStaticPorts, CompositeModuleDialog)
-  ;
+  class CodeEditor;
+
+  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
+  {
+    Q_OBJECT
+
+   public:
+    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+  };
+
 }
+}
+
+#endif

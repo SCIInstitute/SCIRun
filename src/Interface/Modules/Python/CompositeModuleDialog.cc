@@ -26,27 +26,29 @@
 */
 
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
 #include <Interface/Modules/Python/CompositeModuleDialog.h>
-#include <boost/assign.hpp>
+#include <Modules/Python/ModuleStateModifierTester.h>
+//#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+using namespace SCIRun::Core::Algorithms::Python;
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
+CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
-    ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(CompositeModuleWithStaticPorts, CompositeModuleDialog)
-  ;
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  //{
+  //  pythonCodePlainTextEdit_ = new CodeEditor(this);
+  //  tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
+  //}
+
+  //addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::StateModifyingCode);
+  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
+  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+
+  //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
 }
