@@ -33,6 +33,10 @@
 #include <Modules/Basic/share.h>
 
 namespace SCIRun {
+  namespace Core::Algorithms::Python
+  {
+    ALGORITHM_PARAMETER_DECL(NetworkXml);  
+  }
   namespace Modules {
     namespace Basic {
 
@@ -42,6 +46,7 @@ namespace SCIRun {
       {
       public:
         CompositeModuleWithStaticPorts();
+       ~CompositeModuleWithStaticPorts() override;
         void execute() override;
         void setStateDefaults() override;
 
@@ -52,7 +57,6 @@ namespace SCIRun {
         INPUT_PORT(4, Input4, Datatype);
         INPUT_PORT(5, Input5, Datatype);
         INPUT_PORT(6, Input6, Datatype);
-        //INPUT_PORT(7, Input7, Datatype);
 
         OUTPUT_PORT(0, Output0, Datatype);
         OUTPUT_PORT(1, Output1, Datatype);
@@ -64,6 +68,8 @@ namespace SCIRun {
         OUTPUT_PORT(7, Output7, Datatype);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+       private:
+        std::unique_ptr<class CompositeModuleImpl> impl_;
       };
  }}}
 

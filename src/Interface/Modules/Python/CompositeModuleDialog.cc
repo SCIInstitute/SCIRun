@@ -27,7 +27,7 @@
 
 
 #include <Interface/Modules/Python/CompositeModuleDialog.h>
-#include <Modules/Python/ModuleStateModifierTester.h>
+#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
 //#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
@@ -46,7 +46,7 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
   //  tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
   //}
 
-  //addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::StateModifyingCode);
+  addPlainTextEditManager(networkXMLplainTextEdit_, Parameters::NetworkXml);
   //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 

@@ -65,6 +65,7 @@ TARGET_LINK_LIBRARIES(Modules_Basic
   Core_Datatypes_Legacy_Field
   Algorithms_Field
   Dataflow_Network
+  Core_Serialization_Network
 )
 
 IF(BUILD_SHARED_LIBS)
