@@ -439,8 +439,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, SIGNAL(cameraDistanceChangeForwarder()), this, SLOT(pullCameraDistance()));
 
-  state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
-  connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
+  //state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
+  //connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -1127,7 +1127,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
+  Guard lock(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get());
 
   auto spire = impl_->mSpire.lock();
   if (!spire)
@@ -1219,22 +1219,15 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
 
 void ViewSceneDialog::lockMutex()
 {
-  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if (mutex)
-    mutex->lock();
+  Modules::Render::ViewSceneLockManager::get(getName())->screenShotMutex().lock();
 }
 
 void ViewSceneDialog::unblockExecution()
 {
-  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if (mutex)
-  {
-    mutex->unlock();
-    std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
-    mutex->lock();
-  }
+  auto& mutex = Modules::Render::ViewSceneLockManager::get(getName())->screenShotMutex();
+  mutex.unlock();
+  std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
+  mutex.lock();
 }
 
 void ViewSceneDialog::frameFinished()
@@ -1838,7 +1831,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
   auto geomDataPresent = false;
   {
     LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-    Guard lock(Modules::Render::ViewScene::mutex_.get());
+    Guard lock(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get());
     LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
     auto spire = impl_->mSpire.lock();
@@ -1914,7 +1907,7 @@ void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
+  Guard lock(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get());
 
   LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
 

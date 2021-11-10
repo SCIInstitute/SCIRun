@@ -46,7 +46,7 @@ namespace SCIRun
       {
         // these are transient state keys for right now
         ALGORITHM_PARAMETER_DECL(GeomData);
-        ALGORITHM_PARAMETER_DECL(VSMutex);
+        //ALGORITHM_PARAMETER_DECL(VSMutex);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
 
@@ -151,6 +151,28 @@ namespace Render {
     Core::Datatypes::DenseMatrixHandle blue;
   };
 
+  class SCISHARE ViewSceneLocks
+  {
+  public:
+    ~ViewSceneLocks();
+    Core::Thread::Mutex& staticMutexNeedToChange() { return mutex_; }
+    Core::Thread::Mutex& screenShotMutex() { return screenShotMutex_; }
+  private:
+    static Core::Thread::Mutex mutex_;
+    Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
+  };
+
+  using ViewSceneLocksPtr = std::shared_ptr<ViewSceneLocks>;
+
+  class SCISHARE ViewSceneLockManager
+  {
+  public:
+    static ViewSceneLocksPtr get(const std::string& id);
+    static void remove(const std::string& id);
+  private:
+    static std::map<std::string, ViewSceneLocksPtr> lockMap_;
+  };
+
   using ShowFieldStatesMap = std::map<std::string, Dataflow::Networks::ModuleStateHandle>;
 
 /// @class ViewScene
@@ -178,9 +200,6 @@ namespace Render {
     void execute() override;
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-
-    static Core::Thread::Mutex mutex_;
-    Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
 
     typedef SharedPointer<Core::Datatypes::GeomList> GeomListPtr;
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
