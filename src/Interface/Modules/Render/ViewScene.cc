@@ -1117,7 +1117,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
-  auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get(), "mutex1 -- newGeometryValue " + windowTitle().toStdString());
+  auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->stateMutex().get(), "mutex1 -- newGeometryValue " + windowTitle().toStdString());
 
   auto spire = impl_->mSpire.lock();
   if (!spire)
@@ -1824,7 +1824,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
   auto geomDataPresent = false;
   {
     LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-    auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get(), "mutex1 -- selectObject");
+    auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->stateMutex().get(), "mutex1 -- selectObject");
     LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
     auto spire = impl_->mSpire.lock();
@@ -1900,7 +1900,7 @@ void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
-  auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get(), "mutex1 -- restoreObjColor");
+  auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->stateMutex().get(), "mutex1 -- restoreObjColor");
 
   LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
 

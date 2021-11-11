@@ -154,7 +154,7 @@ namespace Render {
   {
   public:
     ~ViewSceneLocks();
-    Core::Thread::Mutex& staticMutexNeedToChange() { return mutex_; }
+    Core::Thread::Mutex& stateMutex() { return mutex_; }
     Core::Thread::Mutex& screenShotMutex() { return screenShotMutex_; }
   private:
     Core::Thread::Mutex mutex_ {"generalVSMutex"};

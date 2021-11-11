@@ -270,7 +270,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 {
   //lock for state modification
   {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get(), "mutex1 -- portRemovedSlotImpl");
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- portRemovedSlotImpl");
     auto loc = activeGeoms_.find(pid);
     if (loc != activeGeoms_.end())
       activeGeoms_.erase(loc);
@@ -321,7 +321,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get(), "mutex1 -- asyncExecute");
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- asyncExecute");
 
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
