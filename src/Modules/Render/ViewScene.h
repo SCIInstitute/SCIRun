@@ -46,7 +46,6 @@ namespace SCIRun
       {
         // these are transient state keys for right now
         ALGORITHM_PARAMETER_DECL(GeomData);
-        //ALGORITHM_PARAMETER_DECL(VSMutex);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
 

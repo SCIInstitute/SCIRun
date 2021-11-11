@@ -174,6 +174,7 @@ ViewScene::~ViewScene()
 
 ViewSceneLocks::~ViewSceneLocks()
 {
+  logCritical("unlocking screenShotMutex");
   screenShotMutex_.unlock();
 }
 
@@ -269,7 +270,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 {
   //lock for state modification
   {
-    Guard lock(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get());
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get(), "mutex1 -- portRemovedSlotImpl");
     auto loc = activeGeoms_.find(pid);
     if (loc != activeGeoms_.end())
       activeGeoms_.erase(loc);
@@ -320,7 +321,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
-    Guard lock(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get());
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->staticMutexNeedToChange().get(), "mutex1 -- asyncExecute");
 
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
@@ -371,7 +372,7 @@ void ViewScene::execute()
   sendOutput(ScreenshotDataGreen, makeShared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataBlue, makeShared<DenseMatrix>(0, 0));
 #else
-  Guard lock(ViewSceneLockManager::get(id().id_)->screenShotMutex().get());
+  auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->screenShotMutex().get(), "screenShotMutex -- execute()");
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
     const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
