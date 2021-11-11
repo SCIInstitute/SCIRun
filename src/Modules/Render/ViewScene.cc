@@ -372,9 +372,9 @@ void ViewScene::execute()
   sendOutput(ScreenshotDataGreen, makeShared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataBlue, makeShared<DenseMatrix>(0, 0));
 #else
-  auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->screenShotMutex().get(), "screenShotMutex -- execute()");
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->screenShotMutex().get(), "screenShotMutex -- execute()");
     const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
