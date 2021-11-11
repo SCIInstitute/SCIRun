@@ -50,7 +50,7 @@
 									<name>FunctionString</name>
 									<value object_id="_2">
 										<which>2</which>
-										<value>RESULT = sin(A*X);</value>
+										<value>RESULT = sin(A*X)</value>
 									</value>
 								</second>
 							</item>
@@ -965,7 +965,7 @@
 									<name>ShowEdges</name>
 									<value object_id="_66">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2150,7 +2150,7 @@
 															<name>Faces</name>
 															<value object_id="_181">
 																<which>3</which>
-																<value>0</value>
+																<value>1</value>
 															</value>
 														</item>
 														<item>

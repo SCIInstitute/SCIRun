@@ -268,20 +268,17 @@ void ViewScene::fireTransientStateChangeSignalForGeomData()
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
 {
-  //lock for state modification
-  {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- portRemovedSlotImpl");
-    auto loc = activeGeoms_.find(pid);
-    if (loc != activeGeoms_.end())
-      activeGeoms_.erase(loc);
-    updateTransientList();
-  }
-
+  auto loc = activeGeoms_.find(pid);
+  if (loc != activeGeoms_.end())
+    activeGeoms_.erase(loc);
+  updateTransientList();
   fireTransientStateChangeSignalForGeomData();
 }
 
 void ViewScene::updateTransientList()
 {
+  auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- updateTransientList");
+
   const auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
   auto geoms = transient_value_cast<GeomListPtr>(transient);
@@ -317,46 +314,40 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-  if (!data) return;
-  //lock for state modification
+  if (!data)
+    return;
+
+  get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
+
+  const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
+  if (!geom)
   {
-    LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- asyncExecute");
-
-    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
-
-    LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
-
-    const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
-    if (!geom)
-    {
-      error("Logical error: not a geometry object on ViewScene");
-      return;
-    }
-
-    {
-      const auto iport = getInputPort(pid);
-      auto connectedModuleId = iport->connectedModuleId();
-      if (connectedModuleId->find("ShowField") != std::string::npos)
-      {
-        const auto state = iport->stateFromConnectedModule();
-        syncMeshComponentFlags(*connectedModuleId, state);
-      }
-    }
-
-    activeGeoms_[pid] = geom;
-    LOG_DEBUG("asyncExecute added active geom to map: {}", pid.toString());
-    updateTransientList();
+    error("Logical error: not a geometry object on ViewScene");
+    return;
   }
+
+  {
+    const auto iport = getInputPort(pid);
+    auto connectedModuleId = iport->connectedModuleId();
+    if (connectedModuleId->find("ShowField") != std::string::npos)
+    {
+      const auto state = iport->stateFromConnectedModule();
+      syncMeshComponentFlags(*connectedModuleId, state);
+    }
+  }
+
+  activeGeoms_[pid] = geom;
+  LOG_DEBUG("asyncExecute added active geom to map: {}", pid.toString());
+  updateTransientList();
 }
 
 void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
 {
   if (connectedModuleId.find("ShowField:") != std::string::npos)
   {
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- syncMeshComponentFlags");
     auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
     map[connectedModuleId] = state;
-    //std::cout << "ShowFieldStates" << map << std::endl;
     get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
   }
 }

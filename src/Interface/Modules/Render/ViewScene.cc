@@ -1133,19 +1133,21 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   std::vector<std::string> validObjects;
   std::vector<GeometryBaseHandle> allGeoms;
 
-  // Grab the geomData transient value.
-  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-    if (!portGeometries)
+    // Grab the geomData transient value.
+    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+    if (geomDataTransient && !geomDataTransient->empty())
     {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return;
+      auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+      if (!portGeometries)
+      {
+        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+        return;
+      }
+      std::copy(portGeometries->begin(), portGeometries->end(), std::back_inserter(allGeoms));
     }
-    std::copy(portGeometries->begin(), portGeometries->end(), std::back_inserter(allGeoms));
   }
-
+  
   if (impl_->scaleBarGeom_ && impl_->scaleBar_.visible)
     allGeoms.emplace_back(impl_->scaleBarGeom_);
 
@@ -1901,10 +1903,9 @@ void ViewSceneDialog::restoreObjColor()
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
   auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->stateMutex().get(), "mutex1 -- restoreObjColor");
+  impl_->widgetColorChanger_.reset();
 
   LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
-
-  impl_->widgetColorChanger_.reset();
 }
 
 //--------------------------------------------------------------------------------------------------
