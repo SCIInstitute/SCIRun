@@ -69,7 +69,10 @@ void GeometryBuffer::setStateDefaults()
   state->setValue(Parameters::BufferSize, 50);
   state->setValue(Parameters::FrameDelay, 1.0);
   state->setValue(Parameters::SendFlag, false);
-  state->connectSpecificStateChanged(Parameters::SendFlag, [this]() { sendAllGeometries(); });
+  state->connectSpecificStateChanged(Parameters::SendFlag, [this]()
+    {
+      Core::Thread::Util::launchAsyncThread([this]() { sendAllGeometries(); });
+    });
 }
 
 void GeometryBuffer::execute()
@@ -90,10 +93,10 @@ void GeometryBuffer::sendAllGeometries()
     {
       logCritical("Outputting geom number {}", i);
       sendOutput(GeometryOutputSeries, geom);
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(10ms);
       i++;
     }
-    impl_->buffer_.clear();
+    //impl_->buffer_.clear();
 
   }
   state->setValue(Parameters::SendFlag, false);
