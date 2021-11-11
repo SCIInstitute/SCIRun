@@ -162,14 +162,16 @@ namespace Render {
   };
 
   using ViewSceneLocksPtr = std::shared_ptr<ViewSceneLocks>;
+  using ViewSceneLockKey = const SCIRun::Dataflow::Networks::ModuleStateInterface*;
+  using ViewSceneLockManagerMap = std::map<ViewSceneLockKey, ViewSceneLocksPtr>;
 
   class SCISHARE ViewSceneLockManager
   {
   public:
-    static ViewSceneLocksPtr get(const std::string& id);
-    static void remove(const std::string& id);
+    static ViewSceneLocksPtr get(ViewSceneLockKey id);
+    static void remove(ViewSceneLockKey id);
   private:
-    static std::map<std::string, ViewSceneLocksPtr> lockMap_;
+    static ViewSceneLockManagerMap lockMap_;
   };
 
   using ShowFieldStatesMap = std::map<std::string, Dataflow::Networks::ModuleStateHandle>;

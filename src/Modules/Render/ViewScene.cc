@@ -53,9 +53,9 @@ using namespace SCIRun::Core::Logging;
 
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
-std::map<std::string, ViewSceneLocksPtr> ViewSceneLockManager::lockMap_;
+ViewSceneLockManagerMap ViewSceneLockManager::lockMap_;
 
-ViewSceneLocksPtr ViewSceneLockManager::get(const std::string& id)
+ViewSceneLocksPtr ViewSceneLockManager::get(ViewSceneLockKey id)
 {
   auto lockIter = lockMap_.find(id);
   if (lockIter == lockMap_.end())
@@ -67,7 +67,7 @@ ViewSceneLocksPtr ViewSceneLockManager::get(const std::string& id)
   return lockIter->second;
 }
 
-void ViewSceneLockManager::remove(const std::string& id)
+void ViewSceneLockManager::remove(ViewSceneLockKey id)
 {
   lockMap_.erase(id);
 }
@@ -169,7 +169,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 
 ViewScene::~ViewScene()
 {
-  ViewSceneLockManager::remove(id().id_);
+  ViewSceneLockManager::remove(get_state().get());
 }
 
 ViewSceneLocks::~ViewSceneLocks()
@@ -277,7 +277,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 
 void ViewScene::updateTransientList()
 {
-  auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- updateTransientList");
+  auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- updateTransientList");
 
   const auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
@@ -345,7 +345,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 {
   if (connectedModuleId.find("ShowField:") != std::string::npos)
   {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->stateMutex().get(), "mutex1 -- syncMeshComponentFlags");
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- syncMeshComponentFlags");
     auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
     map[connectedModuleId] = state;
     get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
@@ -365,7 +365,7 @@ void ViewScene::execute()
 #else
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(id().id_)->screenShotMutex().get(), "screenShotMutex -- execute()");
+    auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->screenShotMutex().get(), "screenShotMutex -- execute()");
     const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
