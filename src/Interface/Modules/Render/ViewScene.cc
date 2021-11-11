@@ -203,7 +203,6 @@ namespace Gui {
 
           boost::optional<QPoint> savedPos_;
           QColor                                bgColor_                      {};
-          //QColor                                fogColor_                     {};
           ScaleBarData                              scaleBar_                     {};
           Render::ClippingPlaneManagerPtr clippingPlaneManager_;
           class Screenshot*                     screenshotTaker_              {nullptr};
@@ -213,7 +212,6 @@ namespace Gui {
           std::atomic<bool>                     pushingCameraState_           {false};
           glm::vec2 previousAutoRotate_ {0,0};
 
-          //geometries
           Modules::Visualization::TextBuilder               textBuilder_        {};
           Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
           std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
@@ -239,37 +237,31 @@ namespace Gui {
 
 }}
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
 {
   return timeSinceEpoch(std::chrono::system_clock::now()) - timeSinceEpoch(time);
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned long time) const
 {
   return timeSinceEpoch(std::chrono::system_clock::now()) - time;
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasSameMousePosition(int x, int y) const
 {
   return lastMousePressEventX_ == x && lastMousePressEventY_ == y;
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasSameCameraTansform(const glm::mat4& mat) const
 {
   return previousCameraTransform_ == mat;
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::widgetColorRestored()
 {
   timeWidgetColorRestored_ = std::chrono::system_clock::now();
@@ -439,8 +431,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, SIGNAL(cameraDistanceChangeForwarder()), this, SLOT(pullCameraDistance()));
 
-  //state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
-  //connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -1127,7 +1117,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
-  Guard lock(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get());
+  auto lock = makeNamedGuard(Modules::Render::ViewSceneLockManager::get(getName())->staticMutexNeedToChange().get(), "newGeometryValue--static " + windowTitle().toStdString());
 
   auto spire = impl_->mSpire.lock();
   if (!spire)

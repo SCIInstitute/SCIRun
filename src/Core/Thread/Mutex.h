@@ -32,6 +32,7 @@
 #include <boost/noncopyable.hpp>
 #include <thread>
 #include <mutex>
+#include <Core/Logging/Log.h>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
@@ -52,27 +53,27 @@ namespace Core
       std::mutex impl_;
     };
 
-#define LOG_DEBUG_GUARD 0
-
     template <class Lock>
     class DebugGuard : public std::lock_guard<Lock>
     {
     public:
-      explicit DebugGuard(std::mutex& mutex, const std::string& name = "") : std::lock_guard<Lock>(mutex), name_(name)
+      DebugGuard(std::mutex& mutex, const std::string& name) : std::lock_guard<Lock>(mutex), name_(name)
       {
-#if LOG_DEBUG_GUARD
-        std::cout << "DebugGuard() " << name_ << std::endl;
-#endif
+        logCritical("DebugGuard() locking complete: {}", name_);
       }
       ~DebugGuard()
       {
-#if LOG_DEBUG_GUARD
-        std::cout << "~DebugGuard() " << name_ << std::endl;
-#endif
+        logCritical("~DebugGuard() unlocking about to occur: {}", name_);
       }
     private:
       std::string name_;
     };
+
+    inline DebugGuard<std::mutex> makeNamedGuard(std::mutex& mutex, const std::string& name)
+    {
+      logCritical("DebugGuard() attempting to lock: {}", name);
+      return {mutex, name};
+    }
 
     typedef DebugGuard<std::mutex> NamedGuard;
 

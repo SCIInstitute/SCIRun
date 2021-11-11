@@ -158,7 +158,7 @@ namespace Render {
     Core::Thread::Mutex& staticMutexNeedToChange() { return mutex_; }
     Core::Thread::Mutex& screenShotMutex() { return screenShotMutex_; }
   private:
-    static Core::Thread::Mutex mutex_;
+    Core::Thread::Mutex mutex_ {"generalVSMutex"};
     Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
   };
 

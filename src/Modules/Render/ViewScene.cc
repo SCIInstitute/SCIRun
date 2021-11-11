@@ -53,8 +53,6 @@ using namespace SCIRun::Core::Logging;
 
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
-Mutex ViewSceneLocks::mutex_("ViewScene");
-
 std::map<std::string, ViewSceneLocksPtr> ViewSceneLockManager::lockMap_;
 
 ViewSceneLocksPtr ViewSceneLockManager::get(const std::string& id)
