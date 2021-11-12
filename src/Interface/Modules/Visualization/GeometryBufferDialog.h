@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/Visualization/ui_GeometryBuffer.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -41,14 +41,23 @@ class SCISHARE GeometryBufferDialog : public ModuleDialogGeneric,
 {
 	Q_OBJECT
 
-  public:
-    GeometryBufferDialog(const std::string& name,
-      SCIRun::Dataflow::Networks::ModuleStateHandle state,
-      QWidget* parent = nullptr);
-  public Q_SLOTS:
-    void sendAllGeometries();
-  };
+public:
+  GeometryBufferDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
+private Q_SLOTS:
+  void updateGeometries();
+  void incrementIndex();
+  void decrementIndex();
+  void selectFirstIndex();
+  void selectLastIndex();
+  void startPlay();
+  void stopPlay();
+};
 
-}}
+}
+}
 
 #endif

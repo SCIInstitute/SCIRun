@@ -27,13 +27,13 @@
 
 
 #include <Interface/Modules/Visualization/GeometryBufferDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Modules/Visualization/GeometryBuffer.h>
 
-using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
-using namespace SCIRun::Core::Datatypes;
 
 GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,11 +42,100 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  connect(sendAllPushButton_, &QPushButton::clicked, [this]() { sendAllGeometries(); });
+
+  addSpinBoxManager(indexSpinBox_, Parameters::GeometryIndex);
+  addSpinBoxManager(indexIncrementSpinBox_, Parameters::GeometryIncrement);
+  addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
+  //
+  // addComboBoxManager(playModeComboBox_, Parameters::PlayModeType,
+  //   {{"Loop once", "looponce"},
+  //   {"Loop forever (EXPERIMENTAL)", "loopforever"}});
+  //
+  nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
+  connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
+  previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
+  // connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
+  firstIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekBackward));
+  // connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
+  lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
+  // connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
+  //
+  // connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  //
+  playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  // connect(playButton_, SIGNAL(clicked()), this, SLOT(startPlay()));
+  pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
+  // connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
+
+  //TODO: add convenience function at ModuleDialogGeneric level
+  for (QToolButton* b : { nextIndexButton_, previousIndexButton_, firstIndexButton_, lastIndexButton_, playButton_, pauseButton_ })
+  {
+    b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  }
+
+  connect(playButton_, &QPushButton::clicked, [this]() { updateGeometries(); });
 }
 
-void GeometryBufferDialog::sendAllGeometries()
+void GeometryBufferDialog::pullSpecial()
 {
-  qDebug() << "sendAllGeometries";
+  auto max = state_->getValue(Parameters::MaxIndex).toInt();
+  indexSlider_->setMaximum(max);
+  indexSpinBox_->setMaximum(max);
+
+  // set value again in case it was greater than the hard-coded widget max.
+  auto value = state_->getValue(Parameters::GeometryIndex).toInt();
+  indexSlider_->setValue(value);
+  indexSpinBox_->setValue(value);
+
+  indexSlider_->setMinimum(0);
+
+  auto total = state_->getValue(Parameters::BufferSize).toInt();
+  sizeLabel_->setText(QString::number(total));
+}
+
+void GeometryBufferDialog::incrementIndex()
+{
+  for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
+    indexSpinBox_->stepUp();
+  updateGeometries();
+}
+
+void GeometryBufferDialog::decrementIndex()
+{
+  for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
+    indexSpinBox_->stepDown();
+  //Q_EMIT executeFromStateChangeTriggered();
+}
+
+void GeometryBufferDialog::selectFirstIndex()
+{
+  indexSpinBox_->setValue(0);
+  //Q_EMIT executeFromStateChangeTriggered();
+}
+
+void GeometryBufferDialog::selectLastIndex()
+{
+  indexSpinBox_->setValue(indexSlider_->maximum());
+  //Q_EMIT executeFromStateChangeTriggered();
+}
+
+void GeometryBufferDialog::startPlay()
+{
+  //state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PLAY));
+  //Q_EMIT executeFromStateChangeTriggered();
+  //Q_EMIT executionLoopStarted();
+  //qDebug() << " execution loop started emitted ";
+}
+
+void GeometryBufferDialog::stopPlay()
+{
+  //state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
+  //Q_EMIT executionLoopHalted();
+  //qDebug() << " execution loop halted emitted ";
+}
+
+void GeometryBufferDialog::updateGeometries()
+{
+  qDebug() << "updateGeometries";
   state_->setValue(Parameters::SendFlag, true);
 }

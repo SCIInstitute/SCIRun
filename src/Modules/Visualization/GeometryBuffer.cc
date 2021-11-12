@@ -43,6 +43,12 @@ using namespace Graphics::Datatypes;
 ALGORITHM_PARAMETER_DEF(Visualization, BufferSize);
 ALGORITHM_PARAMETER_DEF(Visualization, FrameDelay);
 ALGORITHM_PARAMETER_DEF(Visualization, SendFlag);
+ALGORITHM_PARAMETER_DEF(Visualization, GeometryIndex);
+ALGORITHM_PARAMETER_DEF(Visualization, MaxIndex);
+ALGORITHM_PARAMETER_DEF(Visualization, PlayModeActive);
+ALGORITHM_PARAMETER_DEF(Visualization, PlayModeType);
+ALGORITHM_PARAMETER_DEF(Visualization, GeometryIncrement);
+ALGORITHM_PARAMETER_DEF(Visualization, PlayModeDelay);
 
 MODULE_INFO_DEF(GeometryBuffer, Visualization, SCIRun)
 
@@ -70,6 +76,12 @@ void GeometryBuffer::setStateDefaults()
   state->setValue(Parameters::BufferSize, 50);
   state->setValue(Parameters::FrameDelay, 1.0);
   state->setValue(Parameters::SendFlag, false);
+  state->setValue(Parameters::GeometryIndex, 0);
+  state->setValue(Parameters::MaxIndex, 100);
+  state->setValue(Parameters::PlayModeActive, false);
+  state->setValue(Parameters::PlayModeType, 100);
+  state->setValue(Parameters::GeometryIncrement, 1);
+  state->setValue(Parameters::PlayModeDelay, 100);
   state->connectSpecificStateChanged(Parameters::SendFlag, [this]()
     {
       Core::Thread::Util::launchAsyncThread([this]() { sendAllGeometries(); });
@@ -117,12 +129,12 @@ void GeometryBuffer::sendAllGeometries()
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
   (void)pid;
-  (void)data;
   logCritical("Received object!");
 
   const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
   impl_->buffer_.push_back(geom);
   logCritical("Buffer is size {}", impl_->buffer_.size());
+  get_state()->setValue(Parameters::BufferSize, static_cast<int>(impl_->buffer_.size()));
 }
 
 void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)
