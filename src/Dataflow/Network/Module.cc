@@ -1177,7 +1177,7 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://sciinstitute.github.io/SCIRun/modules.html#" + name();
+  return "https://scirun.readthedocs.io/en/latest/modules/" + get_categoryname() + "/" + name() + ".html";
 }
 
 void Module::disconnectStateListeners()
