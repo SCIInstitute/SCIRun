@@ -28,6 +28,7 @@
 
 #include <Modules/Visualization/GeometryBuffer.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Dataflow/Network/Connection.h>
 #include <chrono>
 
 using namespace SCIRun;
@@ -84,6 +85,15 @@ void GeometryBuffer::sendAllGeometries()
 {
   using namespace std::chrono_literals;
   auto state = get_state();
+
+  auto outputPort = outputPorts()[0];
+  if (outputPort->nconnections() == 0)
+    return;
+
+  auto viewScene = outputPort->connection(0)->iport_->underlyingModule();
+  if (viewScene->id().id_.find("ViewScene") == std::string::npos)
+    return;
+
   if (state->getValue(Parameters::SendFlag).toBool())
   {
     logCritical("Send all geoms module {}", true);
@@ -93,6 +103,8 @@ void GeometryBuffer::sendAllGeometries()
     {
       logCritical("Outputting geom number {}", i);
       sendOutput(GeometryOutputSeries, geom);
+      viewScene->execute();
+
       std::this_thread::sleep_for(10ms);
       i++;
     }
