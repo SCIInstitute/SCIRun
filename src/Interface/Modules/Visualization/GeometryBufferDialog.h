@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/Visualization/ui_GeometryBuffer.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
