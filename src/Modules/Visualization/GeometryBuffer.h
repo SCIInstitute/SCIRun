@@ -40,13 +40,12 @@ namespace SCIRun {
 
         ALGORITHM_PARAMETER_DECL(BufferSize);
         ALGORITHM_PARAMETER_DECL(FrameDelay);
-        ALGORITHM_PARAMETER_DECL(SendFlag);
         ALGORITHM_PARAMETER_DECL(GeometryIndex);
-        ALGORITHM_PARAMETER_DECL(MaxIndex);
         ALGORITHM_PARAMETER_DECL(PlayModeActive);
         ALGORITHM_PARAMETER_DECL(PlayModeType);
         ALGORITHM_PARAMETER_DECL(GeometryIncrement);
         ALGORITHM_PARAMETER_DECL(PlayModeDelay);
+        ALGORITHM_PARAMETER_DECL(ClearFlag);
       }
     }
   }
@@ -71,6 +70,7 @@ namespace Visualization {
   private:
     std::unique_ptr<class GeometryBufferImpl> impl_;
     void sendAllGeometries();
+    void updateBufferSize();
   };
 }}}
 

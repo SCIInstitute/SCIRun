@@ -42,13 +42,12 @@ using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, BufferSize);
 ALGORITHM_PARAMETER_DEF(Visualization, FrameDelay);
-ALGORITHM_PARAMETER_DEF(Visualization, SendFlag);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIndex);
-ALGORITHM_PARAMETER_DEF(Visualization, MaxIndex);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeActive);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeType);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIncrement);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeDelay);
+ALGORITHM_PARAMETER_DEF(Visualization, ClearFlag);
 
 MODULE_INFO_DEF(GeometryBuffer, Visualization, SCIRun)
 
@@ -75,16 +74,20 @@ void GeometryBuffer::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::BufferSize, 50);
   state->setValue(Parameters::FrameDelay, 1.0);
-  state->setValue(Parameters::SendFlag, false);
   state->setValue(Parameters::GeometryIndex, 0);
-  state->setValue(Parameters::MaxIndex, 100);
   state->setValue(Parameters::PlayModeActive, false);
   state->setValue(Parameters::PlayModeType, 100);
   state->setValue(Parameters::GeometryIncrement, 1);
   state->setValue(Parameters::PlayModeDelay, 100);
-  state->connectSpecificStateChanged(Parameters::SendFlag, [this]()
+  state->setValue(Parameters::ClearFlag, false);
+  state->connectSpecificStateChanged(Parameters::PlayModeActive, [this]()
     {
       Core::Thread::Util::launchAsyncThread([this]() { sendAllGeometries(); });
+    });
+  state->connectSpecificStateChanged(Parameters::ClearFlag, [this]() 
+    {
+      impl_->buffer_.clear();
+      updateBufferSize();
     });
 }
 
@@ -98,43 +101,48 @@ void GeometryBuffer::sendAllGeometries()
   using namespace std::chrono_literals;
   auto state = get_state();
 
-  auto outputPort = outputPorts()[0];
-  if (outputPort->nconnections() == 0)
-    return;
-
-  auto viewScene = outputPort->connection(0)->iport_->underlyingModule();
-  if (viewScene->id().id_.find("ViewScene") == std::string::npos)
-    return;
-
-  if (state->getValue(Parameters::SendFlag).toBool())
+  while (state->getValue(Parameters::PlayModeActive).toBool())
   {
-    logCritical("Send all geoms module {}", true);
+    const auto& outputPort = outputPorts()[0];
+    if (outputPort->nconnections() == 0) return;
 
-    int i = 0;
-    for (auto& geom : impl_->buffer_)
+    auto viewScene = outputPort->connection(0)->iport_->underlyingModule();
+    if (viewScene->id().id_.find("ViewScene") == std::string::npos) return;
+
+    const auto frameTime = state->getValue(Parameters::PlayModeDelay).toInt();
+
+    if (state->getValue(Parameters::PlayModeActive).toBool())
     {
-      logCritical("Outputting geom number {}", i);
-      sendOutput(GeometryOutputSeries, geom);
-      viewScene->execute();
+      logCritical("Send all geoms module {}", true);
 
-      std::this_thread::sleep_for(10ms);
-      i++;
+      int i = 0;
+      for (auto& geom : impl_->buffer_)
+      {
+        state->setValue(Parameters::GeometryIndex, i);
+        logCritical("Outputting geom number {}", i);
+        sendOutput(GeometryOutputSeries, geom);
+        viewScene->execute();
+
+        std::this_thread::sleep_for(frameTime * 1ms);
+        i++;
+      }
     }
-    //impl_->buffer_.clear();
-
+    state->setValue(Parameters::PlayModeActive, false);
   }
-  state->setValue(Parameters::SendFlag, false);
+}
+
+void GeometryBuffer::updateBufferSize()
+{
+  get_state()->setValue(Parameters::BufferSize, static_cast<int>(impl_->buffer_.size()));
 }
 
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
   (void)pid;
-  logCritical("Received object!");
 
   const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
   impl_->buffer_.push_back(geom);
-  logCritical("Buffer is size {}", impl_->buffer_.size());
-  get_state()->setValue(Parameters::BufferSize, static_cast<int>(impl_->buffer_.size()));
+  updateBufferSize();
 }
 
 void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)

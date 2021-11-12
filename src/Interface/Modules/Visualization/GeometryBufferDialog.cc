@@ -73,14 +73,15 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
     b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
   }
 
-  connect(playButton_, &QPushButton::clicked, [this]() { updateGeometries(); });
+  connect(playButton_, &QPushButton::clicked, [this]() { startPlay(); });
+  connect(clearBufferPushButton_, &QPushButton::clicked, [this]() { state_->setValue(Parameters::ClearFlag, true); });
 }
 
 void GeometryBufferDialog::pullSpecial()
 {
-  auto max = state_->getValue(Parameters::MaxIndex).toInt();
-  indexSlider_->setMaximum(max);
-  indexSpinBox_->setMaximum(max);
+  auto max = state_->getValue(Parameters::BufferSize).toInt();
+  indexSlider_->setMaximum(max - 1);
+  indexSpinBox_->setMaximum(max - 1);
 
   // set value again in case it was greater than the hard-coded widget max.
   auto value = state_->getValue(Parameters::GeometryIndex).toInt();
@@ -89,15 +90,13 @@ void GeometryBufferDialog::pullSpecial()
 
   indexSlider_->setMinimum(0);
 
-  auto total = state_->getValue(Parameters::BufferSize).toInt();
-  sizeLabel_->setText(QString::number(total));
+  sizeLabel_->setText(QString::number(max));
 }
 
 void GeometryBufferDialog::incrementIndex()
 {
   for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
     indexSpinBox_->stepUp();
-  updateGeometries();
 }
 
 void GeometryBufferDialog::decrementIndex()
@@ -121,7 +120,7 @@ void GeometryBufferDialog::selectLastIndex()
 
 void GeometryBufferDialog::startPlay()
 {
-  //state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PLAY));
+  state_->setValue(Parameters::PlayModeActive, true);
   //Q_EMIT executeFromStateChangeTriggered();
   //Q_EMIT executionLoopStarted();
   //qDebug() << " execution loop started emitted ";
@@ -129,13 +128,7 @@ void GeometryBufferDialog::startPlay()
 
 void GeometryBufferDialog::stopPlay()
 {
-  //state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
+  state_->setValue(Parameters::PlayModeActive, false);
   //Q_EMIT executionLoopHalted();
   //qDebug() << " execution loop halted emitted ";
-}
-
-void GeometryBufferDialog::updateGeometries()
-{
-  qDebug() << "updateGeometries";
-  state_->setValue(Parameters::SendFlag, true);
 }

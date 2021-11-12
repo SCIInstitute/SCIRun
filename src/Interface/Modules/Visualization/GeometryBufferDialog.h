@@ -48,7 +48,6 @@ public:
 protected:
   void pullSpecial() override;
 private Q_SLOTS:
-  void updateGeometries();
   void incrementIndex();
   void decrementIndex();
   void selectFirstIndex();
