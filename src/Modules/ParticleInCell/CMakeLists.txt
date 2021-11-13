@@ -26,32 +26,30 @@
 #
 
 
-SET(Modules_PIC_SRCS
-  CreateString.cc
-  NetworkNotes.cc
+SET(Modules_ParticleInCell_SRCS
+
   GravSimple.cc
 )
 
-SET(Modules_PIC_HEADERS
-  CreateString.h
-  NetworkNotes.h
+SET(Modules_ParticleInCell_HEADERS
+
   share.h
   GravSimple.h
 )
 
-SCIRUN_ADD_LIBRARY(Modules_PIC
-  ${Modules_PIC_HEADERS}
-  ${Modules_PIC_SRCS}
+SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
+  ${Modules_ParticleInCell_HEADERS}
+  ${Modules_ParticleInCell_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Modules_PIC
+TARGET_LINK_LIBRARIES(Modules_ParticleInCell
   Dataflow_Network
   Core_Datatypes
   Algorithms_Base
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_PIC)
+  ADD_DEFINITIONS(-DBUILD_Modules_ParticleInCell)
 ENDIF(BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)

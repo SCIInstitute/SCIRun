@@ -2,10 +2,10 @@
 "module":
     {
     "name": "GravSimple",
-    "namespace": "StringManip",
+    "namespace": "ParticleInCell",
     "status": "new module",
     "description": "This is a simple module to be placed in a new PIC module category",
-    "header": "Modules/PIC/GravSimple.h"
+    "header": "Modules/ParticleInCell/GravSimple.h"
      },
 
 "algorithm":

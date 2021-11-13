@@ -26,33 +26,28 @@
 */
 
 
-/// @todo Documentation Modules/String/CreatString.h
+#include <Modules/ParticleInCell/GravSimple.h>
+#include <Core/Datatypes/String.h>
+//#include<Dataflow/Network/Module.h>                       //Note: This include statement is not needed here.  It is in the .h file.
 
-#ifndef MODULES_STRING_NETWORK_NOTES_H
-#define MODULES_STRING_NETWORK_NOTES_H
+using namespace SCIRun;
+using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/String/share.h>
+const ModuleLookupInfo GravSimple::staticInfo_("GravSimple","ParticleInCell","SCIRun");
+//MODULE_INFO_DEF("GravSimple","ParticleInCell","SCIRun");  //Note: This macro produces a compile error.  The explicit path (above) does not.
 
-namespace SCIRun {
-namespace Modules {
-namespace StringProcessing {
+GravSimple::GravSimple () : Module(staticInfo_,false)
+{
+    INITIALIZE_PORT(OutputString);
+}
 
-  class SCISHARE NetworkNotes : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<StringPortTag>,
-    public HasNoInputPorts
-  {
-  public:
-    NetworkNotes();
-    void execute() override;
-    void setStateDefaults() override;
-    OUTPUT_PORT(0, NewString, String);
-    static const Core::Algorithms::AlgorithmParameterName InputString;
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-  private:
-    std::string stringValue_;
-  };
+void GravSimple::execute()
+{
+    std::string message_string;
+    message_string="Trying to develop a new module category";
 
-}}}
-
-#endif
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
+}

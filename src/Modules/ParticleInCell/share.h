@@ -26,27 +26,14 @@
 */
 
 
-#ifndef MODULES_PIC_GravSimple_H
-#define MODULES_PIC_GravSimple_H
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
-
-namespace SCIRun {
-namespace Modules {
-namespace StringManip {
-
-class SCISHARE GravSimple : public SCIRun::Dataflow::Networks::Module,
-public HasNoInputPorts,
-public Has1OutputPort<StringPortTag>
-{
-public:
-  GravSimple();
-  virtual void execute();
-  virtual void setStateDefaults() {};
-
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
-};
-}}}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_ParticleInCell
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

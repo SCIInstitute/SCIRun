@@ -26,33 +26,27 @@
 */
 
 
-/// @todo Documentation Modules/String/CreatString.h
-
-#ifndef MODULES_STRING_CREATE_STRING_H
-#define MODULES_STRING_CREATE_STRING_H
+#ifndef MODULES_ParticleInCell_GravSimple_H
+#define MODULES_ParticleInCell_GravSimple_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/String/share.h>
+#include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace StringProcessing {
+namespace ParticleInCell {
 
-  class SCISHARE CreateString : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<StringPortTag>,
-    public HasNoInputPorts
-  {
-  public:
-    CreateString();
-    void execute() override;
-    void setStateDefaults() override;
-    OUTPUT_PORT(0, NewString, String);
-    static const Core::Algorithms::AlgorithmParameterName InputString;
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-  private:
-    std::string stringValue_;
-  };
+class SCISHARE GravSimple : public SCIRun::Dataflow::Networks::Module,
+public HasNoInputPorts,
+public Has1OutputPort<StringPortTag>
+{
+public:
+  GravSimple();
+  virtual void execute();
+  virtual void setStateDefaults() {};
 
+  OUTPUT_PORT(0, OutputString, String);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+};
 }}}
-
 #endif
