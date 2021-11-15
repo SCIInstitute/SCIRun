@@ -36,7 +36,7 @@
 namespace SCIRun {
 
   namespace Core {
-    namespace Thread {class Mutex; }}
+    namespace Thread {class NamedMutex; }}
 
 class Persistent;
 class Piostream;

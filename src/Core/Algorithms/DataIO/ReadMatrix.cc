@@ -50,10 +50,10 @@ namespace SCIRun {
         class ReadMatrixAlgorithmPrivate
         {
         public:
-          static std::mutex fileCheckMutex_;
+          static Thread::Mutex fileCheckMutex_;
         };
 
-        std::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
+        Thread::Mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
       }}}}
 
 ReadMatrixAlgorithm::ReadMatrixAlgorithm()

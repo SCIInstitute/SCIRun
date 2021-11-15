@@ -32,7 +32,6 @@
 #include <boost/noncopyable.hpp>
 #include <thread>
 #include <mutex>
-#include <Core/Logging/Log.h>
 #include <Core/Thread/share.h>
 
 namespace SCIRun
@@ -41,47 +40,30 @@ namespace Core
 {
   namespace Thread
   {
-    class SCISHARE Mutex : boost::noncopyable
+    class SCISHARE NamedMutex : public std::mutex, boost::noncopyable
     {
     public:
-      explicit Mutex(const std::string& name);
-      void lock();
-      void unlock();
-      std::mutex& get() { return impl_; }
-    private:
-      std::string name_;
-      std::mutex impl_;
-    };
-
-    template <class Lock>
-    class DebugGuard : public std::lock_guard<Lock>
-    {
-    public:
-      DebugGuard(std::mutex& mutex, const std::string& name) : std::lock_guard<Lock>(mutex), name_(name)
-      {
-        logCritical("DebugGuard() locking complete: {}", name_);
-      }
-      ~DebugGuard()
-      {
-        logCritical("~DebugGuard() unlocking about to occur: {}", name_);
-      }
+      explicit NamedMutex(const std::string& name = "[default]");
+      std::string name() const;
+      NamedMutex& get();
     private:
       std::string name_;
     };
 
-    inline DebugGuard<std::mutex> makeNamedGuard(std::mutex& mutex, const std::string& name)
+    using Mutex = NamedMutex;
+
+    class LoggedGuard : public std::lock_guard<std::mutex>
     {
-      logCritical("DebugGuard() attempting to lock: {}", name);
-      return {mutex, name};
-    }
+    public:
+      LoggedGuard(NamedMutex& mutex, const std::string& log = "");
+      ~LoggedGuard();
+    private:
+      std::string log_;
+    };
 
-    typedef DebugGuard<std::mutex> NamedGuard;
+    SCISHARE LoggedGuard makeLoggedGuard(NamedMutex& mutex, const std::string& name);
 
-#ifndef _DEBUG
-    typedef std::lock_guard<std::mutex> Guard;
-#else
-    typedef NamedGuard Guard;
-#endif
+    using Guard = LoggedGuard;
 
     // Boost threads can be created on the stack and automatically detach in the destructor.
     // std::threads halt in the destructor, or throw if still active. This function mimics

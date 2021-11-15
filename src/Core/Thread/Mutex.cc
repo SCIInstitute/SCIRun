@@ -26,26 +26,35 @@
 */
 
 
-#include <thread>
-//#include <iostream>
 #include <chrono>
+#include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun::Core::Thread;
 
-Mutex::Mutex(const std::string& name) : name_(name)
+NamedMutex::NamedMutex(const std::string& name) : name_(name)
 {
 }
 
-void Mutex::lock()
+std::string NamedMutex::name() const { return name_; }
+NamedMutex& NamedMutex::get() { return *this; }
+
+LoggedGuard::LoggedGuard(NamedMutex& mutex, const std::string& log) : std::lock_guard<std::mutex>(mutex.get()),
+  log_("[" + mutex.name() + "] :: " + log)
 {
-  impl_.lock();
+  logCritical("LoggedGuard() locking of {} complete: {}", mutex.name(), log);
 }
 
-void Mutex::unlock()
+LoggedGuard::~LoggedGuard()
 {
-  impl_.unlock();
+  logCritical("~LoggedGuard() unlocking about to occur: {}", log_);
+}
+
+LoggedGuard SCIRun::Core::Thread::makeLoggedGuard(NamedMutex& mutex, const std::string& name)
+{
+  logCritical("LoggedGuard() attempting to lock: {}", name);
+  return {mutex, name};
 }
 
 Stoppable::Stoppable() :
