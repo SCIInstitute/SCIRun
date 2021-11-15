@@ -33,6 +33,8 @@
 
 using namespace SCIRun::Core::Thread;
 
+#define LOG_GUARD 0
+
 NamedMutex::NamedMutex(const std::string& name) : name_(name)
 {
 }
@@ -43,17 +45,23 @@ NamedMutex& NamedMutex::get() { return *this; }
 LoggedGuard::LoggedGuard(NamedMutex& mutex, const std::string& log) : std::lock_guard<std::mutex>(mutex.get()),
   log_("[" + mutex.name() + "] :: " + log)
 {
+#if LOG_GUARD
   logCritical("LoggedGuard() locking of {} complete: {}", mutex.name(), log);
+#endif
 }
 
 LoggedGuard::~LoggedGuard()
 {
+#if LOG_GUARD
   logCritical("~LoggedGuard() unlocking about to occur: {}", log_);
+#endif
 }
 
 LoggedGuard SCIRun::Core::Thread::makeLoggedGuard(NamedMutex& mutex, const std::string& name)
 {
+#if LOG_GUARD
   logCritical("LoggedGuard() attempting to lock: {}", name);
+#endif
   return {mutex, name};
 }
 

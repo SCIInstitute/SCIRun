@@ -174,7 +174,7 @@ ViewScene::~ViewScene()
 
 ViewSceneLocks::~ViewSceneLocks()
 {
-  logCritical("unlocking screenShotMutex");
+  //logCritical("unlocking screenShotMutex");
   screenShotMutex_.unlock();
 }
 
@@ -277,7 +277,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 
 void ViewScene::updateTransientList()
 {
-  auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- updateTransientList");
+  auto lock = makeLoggedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- updateTransientList");
 
   const auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
@@ -345,7 +345,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 {
   if (connectedModuleId.find("ShowField:") != std::string::npos)
   {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- syncMeshComponentFlags");
+    auto lock = makeLoggedGuard(ViewSceneLockManager::get(get_state().get())->stateMutex().get(), "mutex1 -- syncMeshComponentFlags");
     auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
     map[connectedModuleId] = state;
     get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
@@ -365,7 +365,7 @@ void ViewScene::execute()
 #else
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    auto lock = makeNamedGuard(ViewSceneLockManager::get(get_state().get())->screenShotMutex().get(), "screenShotMutex -- execute()");
+    auto lock = makeLoggedGuard(ViewSceneLockManager::get(get_state().get())->screenShotMutex().get(), "screenShotMutex -- execute()");
     const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
