@@ -40,8 +40,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>458</width>
-            <height>341</height>
+            <width>430</width>
+            <height>310</height>
            </rect>
           </property>
           <attribute name="label">
@@ -76,8 +76,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>458</width>
-            <height>341</height>
+            <width>98</width>
+            <height>98</height>
            </rect>
           </property>
           <attribute name="label">
@@ -97,6 +97,11 @@
       <attribute name="title">
        <string>Module UIs</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="moduleButtonVerticalLayout_"/>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

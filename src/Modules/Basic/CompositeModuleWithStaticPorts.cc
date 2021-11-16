@@ -44,6 +44,7 @@ MODULE_INFO_DEF(CompositeModuleWithStaticPorts, Flow Control, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Python, NetworkXml)
 ALGORITHM_PARAMETER_DEF(Python, PortSettings)
+ALGORITHM_PARAMETER_DEF(Python, ModuleIdList)
 
 class SCIRun::Modules::Basic::CompositeModuleImpl
 {
@@ -93,6 +94,20 @@ void CompositeModuleWithStaticPorts::execute()
     {
       remark("Subnetwork executed successfully.");
     }
+  }
+}
+
+namespace
+{
+  ModuleIdMap makeModuleIdList(const NetworkStateInterface& net)
+  {
+    ModuleIdMap mim;
+    for (size_t i = 0; i < net.nmodules(); ++i)
+    {
+      const auto mod = net.module(i);
+      mim[mod->id().id_] = mod->name();
+    }
+    return mim;
   }
 }
 
@@ -171,4 +186,5 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     }
   }
   module_->get_state()->setValue(Parameters::PortSettings, ostr.str());
+  module_->get_state()->setTransientValue(Parameters::ModuleIdList, makeModuleIdList(*network));
 }

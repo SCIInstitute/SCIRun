@@ -41,16 +41,22 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //{
-  //  pythonCodePlainTextEdit_ = new CodeEditor(this);
-  //  tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
-  //}
 
   addPlainTextEditManager(networkXMLplainTextEdit_, Parameters::NetworkXml);
   addPlainTextEditManager(portReportPlainTextEdit_, Parameters::PortSettings);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
   connect(clearPushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->clear(); });
   connect(pastePushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->setPlainText(QGuiApplication::clipboard()->text()); });
+
+  connect(networkXMLplainTextEdit_, &QPlainTextEdit::textChanged, [this]() { updateModuleUIButtons(); });
+}
+
+void CompositeModuleDialog::updateModuleUIButtons()
+{
+  qDebug() << "void updateModuleUIButtons();";
+  auto moduleMap = transient_value_cast<SCIRun::Modules::Basic::ModuleIdMap>(state_->getTransientValue(Parameters::ModuleIdList));
+  if (moduleMap)
+  {
+    qDebug() << "found map";
+  }
 }
