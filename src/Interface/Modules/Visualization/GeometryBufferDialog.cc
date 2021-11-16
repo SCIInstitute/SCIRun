@@ -59,11 +59,12 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
   connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
-  //
-  // connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
-  //
+  connect(indexSlider_, &QSlider::sliderReleased, [this]()
+  {
+    state_->setValue(Parameters::SingleStep, true);
+  });
+
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  // connect(playButton_, SIGNAL(clicked()), this, SLOT(startPlay()));
   pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
   // connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
 
@@ -74,7 +75,8 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   }
 
   connect(playButton_, &QPushButton::clicked, [this]() { startPlay(); });
-  connect(clearBufferPushButton_, &QPushButton::clicked, [this]() { state_->setValue(Parameters::ClearFlag, true); });
+  connect(clearBufferPushButton_, &QPushButton::clicked, [this]()
+    { state_->setTransientValue(Parameters::ClearFlag, true, true); });
 }
 
 void GeometryBufferDialog::pullSpecial()

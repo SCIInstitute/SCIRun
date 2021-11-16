@@ -112,7 +112,6 @@ void GeometryBuffer::setStateDefaults()
   state->setValue(Parameters::PlayModeType, 100);
   state->setValue(Parameters::GeometryIncrement, 1);
   state->setValue(Parameters::PlayModeDelay, 100);
-  state->setValue(Parameters::ClearFlag, false);
   state->setValue(Parameters::SingleStep, false);
   state->connectSpecificStateChanged(Parameters::PlayModeActive, [this]()
     {
@@ -126,6 +125,7 @@ void GeometryBuffer::setStateDefaults()
     {
       impl_->buffer_.clear();
       impl_->updateBufferSize();
+      get_state()->setTransientValue(Parameters::ClearFlag, false, false);
     });
 }
 
@@ -209,7 +209,6 @@ void GeometryBufferImpl::sendOneSetOfGeometries(const std::vector<GeometryBaseHa
 
 void GeometryBufferImpl::updateBufferSize()
 {
-  //Guard g(impl_->lock_);
   size_t size = 0;
   if (!buffer_.empty())
   {
@@ -221,7 +220,6 @@ void GeometryBufferImpl::updateBufferSize()
 
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-  //Guard g(impl_->lock_);
   const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
   impl_->buffer_[pid.toString()].push_back(geom);
   impl_->updateBufferSize();
