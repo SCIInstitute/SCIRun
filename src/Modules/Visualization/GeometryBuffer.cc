@@ -78,7 +78,8 @@ namespace SCIRun::Modules::Visualization
       }
       return out;
     }
-    void sendOneGeometry();
+    void indexIncremented();
+    void sendOneSetOfGeometries(const std::vector<GeometryBaseHandle>& geomList);
     void sendAllGeometries();
     void updateBufferSize();
   private:
@@ -119,7 +120,7 @@ void GeometryBuffer::setStateDefaults()
     });
   state->connectSpecificStateChanged(Parameters::SingleStep, [this]()
     {
-      Core::Thread::Util::launchAsyncThread([this]() { impl_->sendOneGeometry(); });
+      Core::Thread::Util::launchAsyncThread([this]() { impl_->indexIncremented(); });
     });
   state->connectSpecificStateChanged(Parameters::ClearFlag, [this]()
     {
@@ -144,47 +145,66 @@ void GeometryBufferImpl::sendAllGeometries()
   auto outgoingBuffer = makeOutgoing();
   using namespace std::chrono_literals;
 
-  while (state->getValue(Parameters::PlayModeActive).toBool())
-  {
+  //while (state->getValue(Parameters::PlayModeActive).toBool())
+  //{
     const auto frameTime = state->getValue(Parameters::PlayModeDelay).toInt();
+    const auto startingFrame = state->getValue(Parameters::GeometryIndex).toInt();
 
     if (state->getValue(Parameters::PlayModeActive).toBool())
     {
       //logCritical("Send all geoms module {}", true);
 
-      for (const auto& geomPack : makeOutgoing())
+      for (const auto& geomPack : outgoingBuffer)
       {
         const int geomIndex = geomPack.first;
+        if (geomIndex < startingFrame)
+          continue;
+
         state->setValue(Parameters::GeometryIndex, geomIndex);
 
         const auto& geomList = geomPack.second;
-        for (size_t portIndex = 0; portIndex < geomList.size(); ++portIndex)
-        {
-          const auto outputPort = module_->outputPorts()[portIndex];
-          if (outputPort->nconnections() == 0)
-            break;
+        sendOneSetOfGeometries(geomList);
 
-          for (int j = 0; j < outputPort->nconnections(); ++j)
-          {
-            auto viewScene = outputPort->connection(j)->iport_->underlyingModule();
-            if (viewScene->id().id_.find("ViewScene") == std::string::npos)
-              break;
-
-            //logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
-            module_->send_output_handle(outputPort->id(), geomList[portIndex]);
-            viewScene->execute();
-          }
-        }
         std::this_thread::sleep_for(frameTime * 1ms);
       }
     }
     state->setValue(Parameters::PlayModeActive, false);
-  }
+  //}
 }
 
-void GeometryBufferImpl::sendOneGeometry()
+void GeometryBufferImpl::indexIncremented()
 {
-  logCritical("sendOneGeometry {}", "hi");
+  Guard g(lock_);
+
+  auto state = module_->get_state();
+  auto outgoingBuffer = makeOutgoing();
+  sendOneSetOfGeometries(outgoingBuffer[state->getValue(Parameters::GeometryIndex).toInt()]);
+
+  state->setValue(Parameters::SingleStep, false);
+}
+
+void GeometryBufferImpl::sendOneSetOfGeometries(const std::vector<GeometryBaseHandle>& geomList)
+{
+  for (size_t portIndex = 0; portIndex < geomList.size(); ++portIndex)
+  {
+    if (portIndex >= module_->numOutputPorts())
+      break;
+
+    const auto outputPort = module_->outputPorts()[portIndex];
+    if (outputPort->nconnections() == 0)
+      break;
+
+    for (int j = 0; j < outputPort->nconnections(); ++j)
+    {
+      auto viewScene = outputPort->connection(j)->iport_->underlyingModule();
+      if (viewScene->id().id_.find("ViewScene") == std::string::npos)
+        break;
+
+      //logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
+      module_->send_output_handle(outputPort->id(), geomList[portIndex]);
+      viewScene->execute();
+    }
+  }
 }
 
 void GeometryBufferImpl::updateBufferSize()
