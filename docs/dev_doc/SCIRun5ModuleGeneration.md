@@ -45,7 +45,7 @@ $git remote add upstream https://github.com/SCIInstitute/SCIRun.git
 You should be able to see both your and the original repositories when you use the command:     
 
 ```
-$git remote-v
+$git remote -v
 ```
 
 The fork is good to go, but you will need to sync the fork occasionally to keep up with the changes in the main repository. To sync your fork, use the following commands:
