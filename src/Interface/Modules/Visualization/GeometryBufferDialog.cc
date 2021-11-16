@@ -54,11 +54,11 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
   connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
   previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
-  // connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
+  connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
   firstIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekBackward));
-  // connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
+  connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
-  // connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
+  connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
   //
   // connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
   //
@@ -95,27 +95,34 @@ void GeometryBufferDialog::pullSpecial()
 
 void GeometryBufferDialog::incrementIndex()
 {
+  if (indexSlider_->value() == indexSlider_->maximum())
+    return;
+
   for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
     indexSpinBox_->stepUp();
+  state_->setValue(Parameters::SingleStep, true);
 }
 
 void GeometryBufferDialog::decrementIndex()
 {
+  if (indexSlider_->value() == 0)
+    return;
+
   for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
     indexSpinBox_->stepDown();
-  //Q_EMIT executeFromStateChangeTriggered();
+  state_->setValue(Parameters::SingleStep, true);
 }
 
 void GeometryBufferDialog::selectFirstIndex()
 {
   indexSpinBox_->setValue(0);
-  //Q_EMIT executeFromStateChangeTriggered();
+  state_->setValue(Parameters::SingleStep, true);
 }
 
 void GeometryBufferDialog::selectLastIndex()
 {
   indexSpinBox_->setValue(indexSlider_->maximum());
-  //Q_EMIT executeFromStateChangeTriggered();
+  state_->setValue(Parameters::SingleStep, true);
 }
 
 void GeometryBufferDialog::startPlay()

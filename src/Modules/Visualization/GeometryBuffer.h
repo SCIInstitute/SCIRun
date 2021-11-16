@@ -39,10 +39,10 @@ namespace SCIRun {
       namespace Visualization {
 
         ALGORITHM_PARAMETER_DECL(BufferSize);
-        ALGORITHM_PARAMETER_DECL(FrameDelay);
         ALGORITHM_PARAMETER_DECL(GeometryIndex);
         ALGORITHM_PARAMETER_DECL(PlayModeActive);
         ALGORITHM_PARAMETER_DECL(PlayModeType);
+        ALGORITHM_PARAMETER_DECL(SingleStep);
         ALGORITHM_PARAMETER_DECL(GeometryIncrement);
         ALGORITHM_PARAMETER_DECL(PlayModeDelay);
         ALGORITHM_PARAMETER_DECL(ClearFlag);
@@ -75,9 +75,8 @@ namespace Visualization {
     OUTPUT_PORT(7, GeometryOutputSeries7, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
+    friend class GeometryBufferImpl;
     std::unique_ptr<class GeometryBufferImpl> impl_;
-    void sendAllGeometries();
-    void updateBufferSize();
   };
 }}}
 

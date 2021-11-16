@@ -43,9 +43,9 @@ using namespace Core::Geometry;
 using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, BufferSize);
-ALGORITHM_PARAMETER_DEF(Visualization, FrameDelay);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIndex);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeActive);
+ALGORITHM_PARAMETER_DEF(Visualization, SingleStep);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeType);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIncrement);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeDelay);
@@ -61,6 +61,7 @@ namespace SCIRun::Modules::Visualization
   class GeometryBufferImpl
   {
   public:
+    explicit GeometryBufferImpl(GeometryBuffer* module) : module_(module) {}
     IncomingBuffer buffer_;
     Mutex lock_;
     OutgoingBuffer makeOutgoing() const
@@ -77,11 +78,16 @@ namespace SCIRun::Modules::Visualization
       }
       return out;
     }
+    void sendOneGeometry();
+    void sendAllGeometries();
+    void updateBufferSize();
+  private:
+    GeometryBuffer* module_;
   };
 }
 
 GeometryBuffer::GeometryBuffer() : ModuleWithAsyncDynamicPorts(staticInfo_, true),
-  impl_(new GeometryBufferImpl)
+  impl_(new GeometryBufferImpl(this))
 {
   INITIALIZE_PORT(GeometryInput);
   INITIALIZE_PORT(GeometryOutputSeries0);
@@ -100,21 +106,25 @@ void GeometryBuffer::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::BufferSize, 50);
-  state->setValue(Parameters::FrameDelay, 1.0);
   state->setValue(Parameters::GeometryIndex, 0);
   state->setValue(Parameters::PlayModeActive, false);
   state->setValue(Parameters::PlayModeType, 100);
   state->setValue(Parameters::GeometryIncrement, 1);
   state->setValue(Parameters::PlayModeDelay, 100);
   state->setValue(Parameters::ClearFlag, false);
+  state->setValue(Parameters::SingleStep, false);
   state->connectSpecificStateChanged(Parameters::PlayModeActive, [this]()
     {
-      Core::Thread::Util::launchAsyncThread([this]() { sendAllGeometries(); });
+      Core::Thread::Util::launchAsyncThread([this]() { impl_->sendAllGeometries(); });
+    });
+  state->connectSpecificStateChanged(Parameters::SingleStep, [this]()
+    {
+      Core::Thread::Util::launchAsyncThread([this]() { impl_->sendOneGeometry(); });
     });
   state->connectSpecificStateChanged(Parameters::ClearFlag, [this]()
     {
       impl_->buffer_.clear();
-      updateBufferSize();
+      impl_->updateBufferSize();
     });
 }
 
@@ -123,13 +133,16 @@ void GeometryBuffer::execute()
 
 }
 
-void GeometryBuffer::sendAllGeometries()
+void GeometryBufferImpl::sendAllGeometries()
 {
-  Guard g(impl_->lock_);
+  auto state = module_->get_state();
+  if (!state->getValue(Parameters::PlayModeActive).toBool())
+    return;
 
-  auto outgoingBuffer = impl_->makeOutgoing();
+  Guard g(lock_);
+
+  auto outgoingBuffer = makeOutgoing();
   using namespace std::chrono_literals;
-  auto state = get_state();
 
   while (state->getValue(Parameters::PlayModeActive).toBool())
   {
@@ -139,7 +152,7 @@ void GeometryBuffer::sendAllGeometries()
     {
       //logCritical("Send all geoms module {}", true);
 
-      for (const auto& geomPack : impl_->makeOutgoing())
+      for (const auto& geomPack : makeOutgoing())
       {
         const int geomIndex = geomPack.first;
         state->setValue(Parameters::GeometryIndex, geomIndex);
@@ -147,7 +160,7 @@ void GeometryBuffer::sendAllGeometries()
         const auto& geomList = geomPack.second;
         for (size_t portIndex = 0; portIndex < geomList.size(); ++portIndex)
         {
-          const auto outputPort = outputPorts()[portIndex];
+          const auto outputPort = module_->outputPorts()[portIndex];
           if (outputPort->nconnections() == 0)
             break;
 
@@ -158,7 +171,7 @@ void GeometryBuffer::sendAllGeometries()
               break;
 
             //logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
-            send_output_handle(outputPort->id(), geomList[portIndex]);
+            module_->send_output_handle(outputPort->id(), geomList[portIndex]);
             viewScene->execute();
           }
         }
@@ -169,16 +182,21 @@ void GeometryBuffer::sendAllGeometries()
   }
 }
 
-void GeometryBuffer::updateBufferSize()
+void GeometryBufferImpl::sendOneGeometry()
+{
+  logCritical("sendOneGeometry {}", "hi");
+}
+
+void GeometryBufferImpl::updateBufferSize()
 {
   //Guard g(impl_->lock_);
   size_t size = 0;
-  if (!impl_->buffer_.empty())
+  if (!buffer_.empty())
   {
-    size = std::accumulate(impl_->buffer_.begin(), impl_->buffer_.end(), std::numeric_limits<size_t>::max(),
+    size = std::accumulate(buffer_.begin(), buffer_.end(), std::numeric_limits<size_t>::max(),
       [](auto acc, auto p) { return std::min(acc, p.second.size()); });
   }
-  get_state()->setValue(Parameters::BufferSize, static_cast<int>(size));
+  module_->get_state()->setValue(Parameters::BufferSize, static_cast<int>(size));
 }
 
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
@@ -186,7 +204,7 @@ void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
   //Guard g(impl_->lock_);
   const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
   impl_->buffer_[pid.toString()].push_back(geom);
-  updateBufferSize();
+  impl_->updateBufferSize();
 }
 
 void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)
