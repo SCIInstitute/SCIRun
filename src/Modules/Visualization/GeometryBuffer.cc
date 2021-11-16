@@ -84,7 +84,7 @@ void GeometryBuffer::setStateDefaults()
     {
       Core::Thread::Util::launchAsyncThread([this]() { sendAllGeometries(); });
     });
-  state->connectSpecificStateChanged(Parameters::ClearFlag, [this]() 
+  state->connectSpecificStateChanged(Parameters::ClearFlag, [this]()
     {
       impl_->buffer_.clear();
       updateBufferSize();
@@ -103,7 +103,7 @@ void GeometryBuffer::sendAllGeometries()
 
   while (state->getValue(Parameters::PlayModeActive).toBool())
   {
-    const auto& outputPort = outputPorts()[0];
+    const auto outputPort = outputPorts()[0];
     if (outputPort->nconnections() == 0) return;
 
     auto viewScene = outputPort->connection(0)->iport_->underlyingModule();
