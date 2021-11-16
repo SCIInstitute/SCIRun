@@ -142,8 +142,8 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
 
         if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
         {
-          logCritical("\t\tperforming port surgery on {} :: {} --> {}", subModule->id().id_, portId.toString(), (*wrapperModuleInputsIterator)->id().toString());
-          ostr << subModule->id().id_ << "::" << portId.toString() << " --> " << (*wrapperModuleInputsIterator)->id().toString() << std::endl;
+          logCritical("\t\tperforming port surgery on {} :: {} --> Input{}", subModule->id().id_, portId.toString(), (wrapperModuleInputsIterator - wrapperModuleInputs.begin()));
+          ostr << subModule->id().id_ << "::" << portId.toString() << " --> Input" << (wrapperModuleInputsIterator - wrapperModuleInputs.begin()) << std::endl;
           subModule->removeInputPort(portId);
           (*wrapperModuleInputsIterator)->setId(portId);
           subModule->add_input_port(*wrapperModuleInputsIterator);
@@ -160,8 +160,8 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
 
         if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())
         {
-          logCritical("\t\tperforming port surgery on {} :: {} --> {}", subModule->id().id_, portId.toString(), (*wrapperModuleOutputsIterator)->id().toString());
-          ostr << subModule->id().id_ << "::" << portId.toString() << " --> " << (*wrapperModuleOutputsIterator)->id().toString() << std::endl;
+          logCritical("\t\tperforming port surgery on {} :: {} --> Output{}", subModule->id().id_, portId.toString(), (wrapperModuleOutputsIterator - wrapperModuleOutputs.begin()));
+          ostr << subModule->id().id_ << "::" << portId.toString() << " --> Output" << (wrapperModuleOutputsIterator - wrapperModuleOutputs.begin()) << std::endl;
           subModule->removeOutputPort(portId);
           (*wrapperModuleOutputsIterator)->setId(portId);
           subModule->add_output_port(*wrapperModuleOutputsIterator);
