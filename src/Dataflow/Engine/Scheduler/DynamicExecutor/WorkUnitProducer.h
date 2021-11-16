@@ -35,9 +35,10 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
-#include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
+
+#include <iostream>
 
 namespace SCIRun {
   namespace Dataflow {
@@ -48,7 +49,7 @@ namespace SCIRun {
         {
         public:
           ModuleProducer(const Networks::ModuleFilter& filter,
-            const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
+            const Networks::NetworkStateInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
             scheduler_(filter), network_(network), enqueueLock_(lock),
             work_(work), doneCount_(0), badGroup_(false),
             //shouldLog_(SCIRun::Core::Logging::Log::get().verbose()),
@@ -115,7 +116,7 @@ namespace SCIRun {
             }
 
             if (badGroup_)
-              std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
+              logCritical("producer is done with bad group, something went wrong. probably a race condition...");
 
             //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }
@@ -126,7 +127,7 @@ namespace SCIRun {
           }
         private:
           BoostGraphParallelScheduler scheduler_;
-          const Networks::NetworkInterface* network_;
+          const Networks::NetworkStateInterface* network_;
           Core::Thread::Mutex* enqueueLock_;
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;

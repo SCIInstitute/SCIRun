@@ -49,11 +49,12 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   return instance_;
 }
 
-ExecutionContext::ExecutionContext(NetworkInterface& net) : network_(net), lookup_(net) {}
+ExecutionContext::ExecutionContext(NetworkStateInterface& net) : network_(net), lookup_(&net) {}
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
-  return executionBounds_;
+  return globalExecutionBounds();
+  //return executionBounds_;
 }
 
 void ExecutionContext::preexecute()

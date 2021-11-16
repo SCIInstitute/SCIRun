@@ -30,14 +30,11 @@
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #include <Dataflow/Network/ModuleInfoProvider.h>
-#include <Dataflow/Network/ModuleExceptions.h>
 #include <Dataflow/Network/ModuleExecutionInterfaces.h>
-#include <Dataflow/Network/ModuleIdGenerator.h>
 #include <Dataflow/Network/ModuleDisplayInterface.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/share.h>
@@ -94,6 +91,12 @@ namespace Networks {
     virtual void setProgrammableInputPortEnabled(bool enable) = 0;
     virtual bool checkForVirtualConnection(const ModuleInterface& downstream) const = 0;
     virtual void disconnectStateListeners() = 0;
+    virtual NetworkInterface* network() const = 0;
+    virtual void setNetwork(NetworkInterface* net) = 0;
+    virtual void removeInputPort(const PortId& id) = 0;
+    virtual void removeOutputPort(const PortId& id) = 0;
+    virtual size_t add_input_port(InputPortHandle) = 0;
+    virtual size_t add_output_port(OutputPortHandle) = 0;
   };
 
   class SCISHARE ModuleInterface :

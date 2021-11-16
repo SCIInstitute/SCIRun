@@ -37,6 +37,7 @@ SET(Modules_Basic_SRCS
   PortFeedbackTestModules.cc
   PlaceholderModule.cc
   LoggingTester.cc
+  CompositeModuleWithStaticPorts.cc
 )
 
 SET(Modules_Basic_HEADERS
@@ -50,6 +51,7 @@ SET(Modules_Basic_HEADERS
   PortFeedbackTestModules.h
   LoggingTester.h
   PlaceholderModule.h
+  CompositeModuleWithStaticPorts.h
   share.h
 )
 
@@ -63,6 +65,7 @@ TARGET_LINK_LIBRARIES(Modules_Basic
   Core_Datatypes_Legacy_Field
   Algorithms_Field
   Dataflow_Network
+  Core_Serialization_Network
 )
 
 IF(BUILD_SHARED_LIBS)
