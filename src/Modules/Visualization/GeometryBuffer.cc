@@ -30,10 +30,12 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Dataflow/Network/Connection.h>
 #include <chrono>
+#include <numeric>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
 using namespace Core::Datatypes;
+using namespace Core::Thread;
 using namespace Dataflow::Networks;
 using namespace Core::Algorithms;
 using namespace Core::Algorithms::Visualization;
@@ -51,12 +53,30 @@ ALGORITHM_PARAMETER_DEF(Visualization, ClearFlag);
 
 MODULE_INFO_DEF(GeometryBuffer, Visualization, SCIRun)
 
+using IncomingBuffer = std::map<std::string, std::vector<GeometryBaseHandle>>;
+using OutgoingBuffer = std::map<int, std::vector<GeometryBaseHandle>>;
+
 namespace SCIRun::Modules::Visualization
 {
   class GeometryBufferImpl
   {
   public:
-    std::vector<GeometryBaseHandle> buffer_;
+    IncomingBuffer buffer_;
+    Mutex lock_;
+    OutgoingBuffer makeOutgoing() const
+    {
+      OutgoingBuffer out;
+      for (const auto& p : buffer_)
+      {
+        const auto& seq = p.second;
+        int i = 0;
+        for (const auto& g : seq)
+        {
+          out[i++].push_back(g);
+        }
+      }
+      return out;
+    }
   };
 }
 
@@ -64,7 +84,14 @@ GeometryBuffer::GeometryBuffer() : ModuleWithAsyncDynamicPorts(staticInfo_, true
   impl_(new GeometryBufferImpl)
 {
   INITIALIZE_PORT(GeometryInput);
-  INITIALIZE_PORT(GeometryOutputSeries);
+  INITIALIZE_PORT(GeometryOutputSeries0);
+  INITIALIZE_PORT(GeometryOutputSeries1);
+  INITIALIZE_PORT(GeometryOutputSeries2);
+  INITIALIZE_PORT(GeometryOutputSeries3);
+  INITIALIZE_PORT(GeometryOutputSeries4);
+  INITIALIZE_PORT(GeometryOutputSeries5);
+  INITIALIZE_PORT(GeometryOutputSeries6);
+  INITIALIZE_PORT(GeometryOutputSeries7);
 }
 
 GeometryBuffer::~GeometryBuffer() = default;
@@ -98,33 +125,44 @@ void GeometryBuffer::execute()
 
 void GeometryBuffer::sendAllGeometries()
 {
+  Guard g(impl_->lock_);
+
+  auto outgoingBuffer = impl_->makeOutgoing();
   using namespace std::chrono_literals;
   auto state = get_state();
 
   while (state->getValue(Parameters::PlayModeActive).toBool())
   {
-    const auto outputPort = outputPorts()[0];
-    if (outputPort->nconnections() == 0) return;
-
-    auto viewScene = outputPort->connection(0)->iport_->underlyingModule();
-    if (viewScene->id().id_.find("ViewScene") == std::string::npos) return;
-
     const auto frameTime = state->getValue(Parameters::PlayModeDelay).toInt();
 
     if (state->getValue(Parameters::PlayModeActive).toBool())
     {
       logCritical("Send all geoms module {}", true);
 
-      int i = 0;
-      for (auto& geom : impl_->buffer_)
+      for (const auto& geomPack : impl_->makeOutgoing())
       {
-        state->setValue(Parameters::GeometryIndex, i);
-        logCritical("Outputting geom number {}", i);
-        sendOutput(GeometryOutputSeries, geom);
-        viewScene->execute();
+        const int geomIndex = geomPack.first;
+        state->setValue(Parameters::GeometryIndex, geomIndex);
 
+        const auto& geomList = geomPack.second;
+        for (size_t portIndex = 0; portIndex < geomList.size(); ++portIndex)
+        {
+          const auto outputPort = outputPorts()[portIndex];
+          if (outputPort->nconnections() == 0)
+            break;
+
+          for (int j = 0; j < outputPort->nconnections(); ++j)
+          {
+            auto viewScene = outputPort->connection(j)->iport_->underlyingModule();
+            if (viewScene->id().id_.find("ViewScene") == std::string::npos)
+              break;
+
+            logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
+            send_output_handle(outputPort->id(), geomList[portIndex]);
+            viewScene->execute();
+          }
+        }
         std::this_thread::sleep_for(frameTime * 1ms);
-        i++;
       }
     }
     state->setValue(Parameters::PlayModeActive, false);
@@ -133,19 +171,26 @@ void GeometryBuffer::sendAllGeometries()
 
 void GeometryBuffer::updateBufferSize()
 {
-  get_state()->setValue(Parameters::BufferSize, static_cast<int>(impl_->buffer_.size()));
+  //Guard g(impl_->lock_);
+  size_t size = 0;
+  if (!impl_->buffer_.empty())
+  {
+    size = std::accumulate(impl_->buffer_.begin(), impl_->buffer_.end(), std::numeric_limits<size_t>::max(),
+      [](auto acc, auto p) { return std::min(acc, p.second.size()); });
+  }
+  get_state()->setValue(Parameters::BufferSize, static_cast<int>(size));
 }
 
 void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-  (void)pid;
-
+  //Guard g(impl_->lock_);
   const auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
-  impl_->buffer_.push_back(geom);
+  impl_->buffer_[pid.toString()].push_back(geom);
   updateBufferSize();
 }
 
 void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)
 {
-  (void)pid;
+  Guard g(impl_->lock_);
+  impl_->buffer_[pid.toString()].clear();
 }

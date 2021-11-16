@@ -55,7 +55,7 @@ namespace Visualization {
 
   class SCISHARE GeometryBuffer : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
-    public Has1OutputPort<GeometryPortTag>
+    public Has8OutputPorts<GeometryPortTag, GeometryPortTag, GeometryPortTag, GeometryPortTag, GeometryPortTag, GeometryPortTag, GeometryPortTag, GeometryPortTag>
   {
   public:
     GeometryBuffer();
@@ -65,7 +65,14 @@ namespace Visualization {
     void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
     void setStateDefaults() override;
     INPUT_PORT(0, GeometryInput, GeometryObject);
-    OUTPUT_PORT(0, GeometryOutputSeries, GeometryObject);
+    OUTPUT_PORT(0, GeometryOutputSeries0, GeometryObject);
+    OUTPUT_PORT(1, GeometryOutputSeries1, GeometryObject);
+    OUTPUT_PORT(2, GeometryOutputSeries2, GeometryObject);
+    OUTPUT_PORT(3, GeometryOutputSeries3, GeometryObject);
+    OUTPUT_PORT(4, GeometryOutputSeries4, GeometryObject);
+    OUTPUT_PORT(5, GeometryOutputSeries5, GeometryObject);
+    OUTPUT_PORT(6, GeometryOutputSeries6, GeometryObject);
+    OUTPUT_PORT(7, GeometryOutputSeries7, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     std::unique_ptr<class GeometryBufferImpl> impl_;
