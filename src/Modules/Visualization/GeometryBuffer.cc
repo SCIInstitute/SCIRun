@@ -137,7 +137,7 @@ void GeometryBuffer::sendAllGeometries()
 
     if (state->getValue(Parameters::PlayModeActive).toBool())
     {
-      logCritical("Send all geoms module {}", true);
+      //logCritical("Send all geoms module {}", true);
 
       for (const auto& geomPack : impl_->makeOutgoing())
       {
@@ -157,7 +157,7 @@ void GeometryBuffer::sendAllGeometries()
             if (viewScene->id().id_.find("ViewScene") == std::string::npos)
               break;
 
-            logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
+            //logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
             send_output_handle(outputPort->id(), geomList[portIndex]);
             viewScene->execute();
           }

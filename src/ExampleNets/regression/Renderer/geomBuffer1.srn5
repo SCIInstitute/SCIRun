@@ -557,7 +557,7 @@
 									<name>BufferSize</name>
 									<value object_id="_36">
 										<which>0</which>
-										<value>11</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -605,7 +605,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_40">
 										<which>0</which>
-										<value>0</value>
+										<value>9</value>
 									</value>
 								</second>
 							</item>
@@ -617,7 +617,7 @@
 									<name>PlayModeActive</name>
 									<value object_id="_41">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2068,28 +2068,28 @@
 												<name>listElement</name>
 												<value object_id="_154">
 													<which>1</which>
-													<value>8.08359682559967041e-01</value>
+													<value>8.08359801769256592e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_155">
 													<which>1</which>
-													<value>-9.87350493669509888e-02</value>
+													<value>-9.87350642681121826e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_156">
 													<which>1</which>
-													<value>3.74417334794998169e-01</value>
+													<value>3.74417364597320557e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_157">
 													<which>1</which>
-													<value>-4.43415820598602295e-01</value>
+													<value>-4.43415880203247070e-01</value>
 												</value>
 											</item>
 										</value>
@@ -3005,7 +3005,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_250">
 										<which>0</which>
-										<value>108</value>
+										<value>144</value>
 									</value>
 								</second>
 							</item>
@@ -3718,7 +3718,7 @@
 									<name>IsExecuting</name>
 									<value object_id="_324">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -4145,7 +4145,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>67</value>
+										<value>505</value>
 									</value>
 								</second>
 							</item>
@@ -4157,7 +4157,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_364">
 										<which>0</which>
-										<value>363</value>
+										<value>154</value>
 									</value>
 								</second>
 							</item>
@@ -5247,7 +5247,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_471">
 										<which>0</which>
-										<value>520</value>
+										<value>184</value>
 									</value>
 								</second>
 							</item>
@@ -5259,7 +5259,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_472">
 										<which>0</which>
-										<value>336</value>
+										<value>74</value>
 									</value>
 								</second>
 							</item>
@@ -5383,7 +5383,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_481">
 										<which>1</which>
-										<value>3.00000000000000000e+00</value>
+										<value>1.00168352127075195e+01</value>
 									</value>
 								</second>
 							</item>
@@ -5414,21 +5414,21 @@
 												<name>listElement</name>
 												<value object_id="_484">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>1.00000000000000000e+00</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_485">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>1.00000000000000000e+00</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_486">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>2.50000000000000000e+00</value>
 												</value>
 											</item>
 										</value>
@@ -5450,28 +5450,28 @@
 												<name>listElement</name>
 												<value object_id="_488">
 													<which>1</which>
-													<value>1.00000000000000000e+00</value>
+													<value>8.82628083229064941e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_489">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>2.25891515612602234e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_490">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>3.84542703628540039e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_491">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>-1.48551508784294128e-01</value>
 												</value>
 											</item>
 										</value>
@@ -5900,7 +5900,7 @@
 									<name>HasNewGeometry</name>
 									<value object_id="_540">
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -6297,8 +6297,46 @@
 									<value object_id="_573">
 										<which>5</which>
 										<value>
-											<count>0</count>
+											<count>1</count>
 											<item_version>0</item_version>
+											<item>
+												<name>graphicsItem</name>
+												<value object_id="_574">
+													<which>5</which>
+													<value>
+														<count>4</count>
+														<item_version>0</item_version>
+														<item>
+															<name>ShowField:2</name>
+															<value object_id="_575">
+																<which>3</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Edges</name>
+															<value object_id="_576">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Faces</name>
+															<value object_id="_577">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Nodes</name>
+															<value object_id="_578">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
 										</value>
 									</value>
 								</second>
@@ -6309,9 +6347,9 @@
 								</first>
 								<second>
 									<name>WindowPositionX</name>
-									<value object_id="_574">
+									<value object_id="_579">
 										<which>0</which>
-										<value>550</value>
+										<value>125</value>
 									</value>
 								</second>
 							</item>
@@ -6321,9 +6359,9 @@
 								</first>
 								<second>
 									<name>WindowPositionY</name>
-									<value object_id="_575">
+									<value object_id="_580">
 										<which>0</which>
-										<value>366</value>
+										<value>441</value>
 									</value>
 								</second>
 							</item>
@@ -6333,7 +6371,7 @@
 								</first>
 								<second>
 									<name>WindowSizeX</name>
-									<value object_id="_576">
+									<value object_id="_581">
 										<which>0</which>
 										<value>388</value>
 									</value>
@@ -6345,7 +6383,7 @@
 								</first>
 								<second>
 									<name>WindowSizeY</name>
-									<value object_id="_577">
+									<value object_id="_582">
 										<which>0</which>
 										<value>404</value>
 									</value>
@@ -6506,13 +6544,13 @@
 			<item>
 				<moduleId1_>GeometryBuffer:0</moduleId1_>
 				<port1_>
-					<name>GeometryOutputSeries2</name>
+					<name>GeometryOutputSeries1</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ViewScene:3</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>0</id>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>
@@ -6743,8 +6781,8 @@
 		<item>
 			<first>ViewScene:3</first>
 			<second>
-				<first>3.43000000000000000e+02</first>
-				<second>4.75000000000000000e+02</second>
+				<first>3.80000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
