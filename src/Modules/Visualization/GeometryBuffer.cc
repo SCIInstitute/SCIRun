@@ -46,7 +46,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, BufferSize);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIndex);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeActive);
 ALGORITHM_PARAMETER_DEF(Visualization, SingleStep);
-ALGORITHM_PARAMETER_DEF(Visualization, PlayModeType);
+ALGORITHM_PARAMETER_DEF(Visualization, LoopForever);
 ALGORITHM_PARAMETER_DEF(Visualization, GeometryIncrement);
 ALGORITHM_PARAMETER_DEF(Visualization, PlayModeDelay);
 ALGORITHM_PARAMETER_DEF(Visualization, ClearFlag);
@@ -109,7 +109,7 @@ void GeometryBuffer::setStateDefaults()
   state->setValue(Parameters::BufferSize, 50);
   state->setValue(Parameters::GeometryIndex, 0);
   state->setValue(Parameters::PlayModeActive, false);
-  state->setValue(Parameters::PlayModeType, 100);
+  state->setValue(Parameters::LoopForever, false);
   state->setValue(Parameters::GeometryIncrement, 1);
   state->setValue(Parameters::PlayModeDelay, 100);
   state->setValue(Parameters::SingleStep, false);
@@ -143,33 +143,36 @@ void GeometryBufferImpl::sendAllGeometries()
   Guard g(lock_);
 
   auto outgoingBuffer = makeOutgoing();
+  const auto frameTime = state->getValue(Parameters::PlayModeDelay).toInt();
+  const auto startingFrame = state->getValue(Parameters::GeometryIndex).toInt();
+  bool firstLoop = true;
+
   using namespace std::chrono_literals;
 
-  //while (state->getValue(Parameters::PlayModeActive).toBool())
-  //{
-    const auto frameTime = state->getValue(Parameters::PlayModeDelay).toInt();
-    const auto startingFrame = state->getValue(Parameters::GeometryIndex).toInt();
-
-    if (state->getValue(Parameters::PlayModeActive).toBool())
+  while (state->getValue(Parameters::PlayModeActive).toBool())
+  {
+    for (const auto& geomPack : outgoingBuffer)
     {
-      //logCritical("Send all geoms module {}", true);
+      const int geomIndex = geomPack.first;
+      if (firstLoop && geomIndex < startingFrame)
+        continue;
 
-      for (const auto& geomPack : outgoingBuffer)
-      {
-        const int geomIndex = geomPack.first;
-        if (geomIndex < startingFrame)
-          continue;
+      state->setValue(Parameters::GeometryIndex, geomIndex);
 
-        state->setValue(Parameters::GeometryIndex, geomIndex);
+      const auto& geomList = geomPack.second;
+      sendOneSetOfGeometries(geomList);
 
-        const auto& geomList = geomPack.second;
-        sendOneSetOfGeometries(geomList);
+      std::this_thread::sleep_for(frameTime * 1ms);
 
-        std::this_thread::sleep_for(frameTime * 1ms);
-      }
+      if (!state->getValue(Parameters::PlayModeActive).toBool())
+        break;
     }
-    state->setValue(Parameters::PlayModeActive, false);
-  //}
+
+    firstLoop = false;
+
+    if (!state->getValue(Parameters::LoopForever).toBool())
+      state->setValue(Parameters::PlayModeActive, false);
+  }
 }
 
 void GeometryBufferImpl::indexIncremented()

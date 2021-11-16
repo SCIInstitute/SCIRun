@@ -46,11 +46,8 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   addSpinBoxManager(indexSpinBox_, Parameters::GeometryIndex);
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::GeometryIncrement);
   addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
-  //
-  // addComboBoxManager(playModeComboBox_, Parameters::PlayModeType,
-  //   {{"Loop once", "looponce"},
-  //   {"Loop forever (EXPERIMENTAL)", "loopforever"}});
-  //
+  addCheckBoxManager(loopCheckBox_, Parameters::LoopForever);
+
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
   connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
   previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
@@ -66,7 +63,6 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
 
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
-  // connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
 
   //TODO: add convenience function at ModuleDialogGeneric level
   for (QToolButton* b : { nextIndexButton_, previousIndexButton_, firstIndexButton_, lastIndexButton_, playButton_, pauseButton_ })
@@ -75,6 +71,7 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   }
 
   connect(playButton_, &QPushButton::clicked, [this]() { startPlay(); });
+  connect(pauseButton_, &QPushButton::clicked, [this]() { stopPlay(); });
   connect(clearBufferPushButton_, &QPushButton::clicked, [this]()
     { state_->setTransientValue(Parameters::ClearFlag, true, true); });
 }
@@ -130,14 +127,9 @@ void GeometryBufferDialog::selectLastIndex()
 void GeometryBufferDialog::startPlay()
 {
   state_->setValue(Parameters::PlayModeActive, true);
-  //Q_EMIT executeFromStateChangeTriggered();
-  //Q_EMIT executionLoopStarted();
-  //qDebug() << " execution loop started emitted ";
 }
 
 void GeometryBufferDialog::stopPlay()
 {
   state_->setValue(Parameters::PlayModeActive, false);
-  //Q_EMIT executionLoopHalted();
-  //qDebug() << " execution loop halted emitted ";
 }

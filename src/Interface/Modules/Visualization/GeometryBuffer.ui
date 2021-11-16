@@ -276,28 +276,8 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Play mode</string>
+         <string>Loop</string>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="playModeComboBox_">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>30</height>
-         </size>
-        </property>
-        <item>
-         <property name="text">
-          <string>Loop once</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Loop forever (EXPERIMENTAL)</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="2" column="1">
@@ -307,6 +287,13 @@
         </property>
         <property name="singleStep">
          <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="loopCheckBox_">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>

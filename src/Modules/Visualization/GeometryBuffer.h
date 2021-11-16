@@ -41,7 +41,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(BufferSize);
         ALGORITHM_PARAMETER_DECL(GeometryIndex);
         ALGORITHM_PARAMETER_DECL(PlayModeActive);
-        ALGORITHM_PARAMETER_DECL(PlayModeType);
+        ALGORITHM_PARAMETER_DECL(LoopForever);
         ALGORITHM_PARAMETER_DECL(SingleStep);
         ALGORITHM_PARAMETER_DECL(GeometryIncrement);
         ALGORITHM_PARAMETER_DECL(PlayModeDelay);
