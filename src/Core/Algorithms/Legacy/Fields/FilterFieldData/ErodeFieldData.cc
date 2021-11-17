@@ -26,8 +26,15 @@
 */
 
 
-#include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+ErodeFieldDataAlgo()
+{
+  /// Number of iterations to perform
+  add_int("num_iterations",2);
+}
+
 
 namespace SCIRunAlgo {
 
@@ -44,7 +51,7 @@ bool ErodeFieldDataElemV(AlgoBase* algo,
                           FieldHandle& output);
 
 
-bool ErodeFieldDataAlgo::run(FieldHandle input, FieldHandle& output)
+bool ErodeFieldDataAlgo::runImpl(FieldHandle input, FieldHandle& output)
 {
   algo_start("ErodeFieldData");
 

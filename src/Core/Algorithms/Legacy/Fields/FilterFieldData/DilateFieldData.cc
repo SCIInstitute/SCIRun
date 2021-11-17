@@ -26,8 +26,14 @@
 */
 
 
-#include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+DilateFieldDataAlgo()
+{
+  /// Number of iterations to perform
+  add_int("num_iterations",2);
+}
 
 namespace SCIRunAlgo {
 
@@ -44,7 +50,7 @@ bool DilateFieldDataElemV(AlgoBase* algo,
                           FieldHandle& output);
 
 
-bool DilateFieldDataAlgo::run(FieldHandle input, FieldHandle& output)
+bool DilateFieldDataAlgo::runImpl(FieldHandle input, FieldHandle& output)
 {
   algo_start("DilateFieldData");
 

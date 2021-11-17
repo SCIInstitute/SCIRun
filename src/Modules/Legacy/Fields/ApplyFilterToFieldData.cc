@@ -26,11 +26,8 @@
 */
 
 
-#include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
-#include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
 
 namespace SCIRun {
 
@@ -40,7 +37,7 @@ using namespace SCIRunAlgo;
 /// @class ApplyFilterToFieldData
 /// @brief Applies a dilate or erode filter to a regular mesh.
 
-class ApplyFilterToFieldData : public Module {
+class  : public Module {
   public:
     ApplyFilterToFieldData(GuiContext*);
     virtual ~ApplyFilterToFieldData() {}
