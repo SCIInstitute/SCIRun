@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
       class SCISHARE ApplyFilterToFieldData : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag,FieldPortTag,MatrixPortTag>,
+        public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
@@ -46,10 +46,8 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
-        INPUT_PORT(0, Source, Field);
-        INPUT_PORT(1, Destination, Field);
-        INPUT_PORT(2, Mapping, Matrix);
-        OUTPUT_PORT(0, Output, Field);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };

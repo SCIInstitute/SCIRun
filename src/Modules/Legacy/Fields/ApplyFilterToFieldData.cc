@@ -25,60 +25,69 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
 
-namespace SCIRun {
-
 using namespace SCIRun;
-using namespace SCIRunAlgo;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+
+MODULE_INFO_DEF(ApplyFilterToFieldData, ChangeFieldData, SCIRun)
+
+ApplyFilterToFieldData::ApplyFilterToFieldData() :
+  Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
 
 /// @class ApplyFilterToFieldData
 /// @brief Applies a dilate or erode filter to a regular mesh.
 
-class  : public Module {
-  public:
-    ApplyFilterToFieldData(GuiContext*);
-    virtual ~ApplyFilterToFieldData() {}
-    virtual void execute();
+// class  : public Module {
+//   public:
+//     ApplyFilterToFieldData(GuiContext*);
+//     virtual ~ApplyFilterToFieldData() {}
+//     virtual void execute();
+//
+//   private:
+//     GuiString method_;
+//     GuiString edmethod_;
+//     GuiInt edniter_;
+//
+//     SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
+//     SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
+// };
+//
 
-  private:
-    GuiString method_;
-    GuiString edmethod_;
-    GuiInt edniter_;
+// DECLARE_MAKER(ApplyFilterToFieldData)
+//
+// ApplyFilterToFieldData::ApplyFilterToFieldData(GuiContext* ctx) :
+//   Module("ApplyFilterToFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
+//     method_(ctx->subVar("method")),
+//     edmethod_(ctx->subVar("ed-method")),
+//     edniter_(ctx->subVar("ed-iterations"))
+// {
+//   erode_algo_.set_progress_reporter(this);
+//   dilate_algo_.set_progress_reporter(this);
+// }
 
-    SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
-    SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
-};
-
-
-DECLARE_MAKER(ApplyFilterToFieldData)
-
-ApplyFilterToFieldData::ApplyFilterToFieldData(GuiContext* ctx) :
-  Module("ApplyFilterToFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-    method_(ctx->subVar("method")),
-    edmethod_(ctx->subVar("ed-method")),
-    edniter_(ctx->subVar("ed-iterations"))
+void ApplyFilterToFieldData::setStateDefaults()
 {
-  erode_algo_.set_progress_reporter(this);
-  dilate_algo_.set_progress_reporter(this);
+  setStateIntFromAlgo(Core::Algorithms::Variables::MaxIterations);
 }
-
 
 void
 ApplyFilterToFieldData::execute()
 {
-  FieldHandle input, output;
+  auto input = getRequiredInput(InputField);
 
-  get_input_handle("Field",input,true);
-
-  if (inputs_changed_ || !oport_cached("Field") || method_.changed() ||
-      edmethod_.changed() || edniter_.changed())
+  if (needToExecute())
   {
-    // Inform module that execution started
-    update_state(Executing);
-
+    #if 0
     if (method_.get() == "erodedilate")
     {
       if (edmethod_.get() == "erode")
@@ -99,11 +108,7 @@ ApplyFilterToFieldData::execute()
         if(!(dilate_algo_.run(output,output))) return;
       }
     }
-
-    // Send output to output ports
-    send_output_handle("Field",output,true);
+    #endif
+    //sendOutputFromAlgorithm(OutputField);
   }
 }
-
-
-} // End namespace SCIRun
