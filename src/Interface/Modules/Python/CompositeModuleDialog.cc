@@ -55,8 +55,11 @@ void CompositeModuleDialog::updateModuleUIButtons()
 {
   qDebug() << "void updateModuleUIButtons();";
   auto moduleMap = transient_value_cast<SCIRun::Modules::Basic::ModuleIdMap>(state_->getTransientValue(Parameters::ModuleIdList));
-  if (moduleMap)
+
+  qDebug() << "found map";
+  for (const auto& p : moduleMap)
   {
-    qDebug() << "found map";
+    qDebug() << p.first.c_str() << p.second.c_str();
   }
+
 }
