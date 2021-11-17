@@ -66,7 +66,7 @@ void CompositeModuleDialog::updateModuleUIButtons()
     hbox->addWidget(ui);
     auto log = new QPushButton(p.first.c_str() + QString(" log"));
     hbox->addWidget(log);
-    moduleButtonVerticalLayout_->addItem(hbox);
+    moduleButtonVerticalLayout_->addLayout(hbox);
   }
 
 }
