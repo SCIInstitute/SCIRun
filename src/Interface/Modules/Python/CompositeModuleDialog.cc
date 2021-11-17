@@ -61,6 +61,12 @@ void CompositeModuleDialog::updateModuleUIButtons()
   for (const auto& p : moduleMap)
   {
     qDebug() << p.first.c_str() << p.second.c_str();
+    auto hbox = new QHBoxLayout;
+    auto ui = new QPushButton(p.first.c_str());
+    hbox->addWidget(ui);
+    auto log = new QPushButton(p.first.c_str() + QString(" log"));
+    hbox->addWidget(log);
+    moduleButtonVerticalLayout_->addItem(hbox);
   }
 
 }

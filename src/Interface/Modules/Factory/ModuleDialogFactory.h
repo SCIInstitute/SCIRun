@@ -45,7 +45,7 @@ namespace SCIRun
         ExecutionDisablingServiceFunction disablerRemove);
       ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
 
-      typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
+      typedef std::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
       typedef std::map<std::string, DialogMaker> DialogMakerMap;
 
       const DialogMakerMap& getMap() const { return dialogMakerMap_; }
