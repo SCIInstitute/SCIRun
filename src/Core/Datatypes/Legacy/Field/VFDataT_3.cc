@@ -26,25 +26,13 @@
 */
 
 
-/// @todo Documentation Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h
+/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_3.cc
 
-#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
-#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
-
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/share.h>
+#include <Core/Datatypes/Legacy/Field/VFDataT.h>
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
-  {
-  public:
-    ModuleExecutionOrder schedule(const Networks::NetworkStateInterface& network) const override;
-  };
+VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned int)
+VFDATA_FUNCTION_SCALAR_DEFINITION(float)
 
-}}}
-
-#endif
+}

@@ -26,25 +26,39 @@
 */
 
 
-/// @todo Documentation Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h
+#ifndef MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
+#define MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
 
-#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
-#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/share.h>
+namespace SCIRun::Modules::Fields
+{
+  // static const char[] InputFieldName = "InputField"
+  // static const char[] MatrixPortName = "InputMatrix"
+  // public HasInputPorts<FieldPort<InputFieldName>, MatrixPort<MatrixPortName>>
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+  class CompositeModuleImpl;
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
+  class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has2OutputPorts<FieldPortTag, MatrixPortTag>
   {
   public:
-    ModuleExecutionOrder schedule(const Networks::NetworkStateInterface& network) const override;
-  };
+    CompositeModuleTestGFB_FM();
+    ~CompositeModuleTestGFB_FM() override;
 
-}}}
+    void execute() override;
+    void setStateDefaults() override;
+
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, Faired_Mesh, Field);
+    OUTPUT_PORT(1, Mapping, Matrix);
+
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  private:
+    std::unique_ptr<CompositeModuleImpl> impl_;
+  };
+}
 
 #endif
