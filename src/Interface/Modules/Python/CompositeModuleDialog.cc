@@ -48,7 +48,8 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
   connect(clearPushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->clear(); });
   connect(pastePushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->setPlainText(QGuiApplication::clipboard()->text()); });
 
-  connect(networkXMLplainTextEdit_, &QPlainTextEdit::textChanged, [this]() { updateModuleUIButtons(); });
+  state_->connectSpecificStateChanged(Parameters::ModuleIdList,
+    [this]() { updateModuleUIButtons(); });
 }
 
 void CompositeModuleDialog::updateModuleUIButtons()

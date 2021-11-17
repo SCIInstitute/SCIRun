@@ -72,17 +72,27 @@ CompositeModuleWithStaticPorts::~CompositeModuleWithStaticPorts() = default;
 
 void CompositeModuleWithStaticPorts::setStateDefaults()
 {
-  get_state()->setValue(Parameters::NetworkXml, std::string());
-  get_state()->setValue(Parameters::PortSettings, std::string());
+  auto state = get_state();
+  state->setValue(Parameters::NetworkXml, std::string());
+  state->setValue(Parameters::PortSettings, std::string());
+
+  state->connectSpecificStateChanged(Parameters::NetworkXml, [this]()
+  {
+    const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
+    impl_->initializeSubnet(xml);
+  });
 }
 
 void CompositeModuleWithStaticPorts::execute()
 {
   if (needToExecute())
   {
-    const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
-    impl_->initializeSubnet(xml);
-
+    if (!impl_->subNet_)
+    {
+      const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
+      impl_->initializeSubnet(xml);
+    }
+    
     auto resultFuture = impl_->subNet_->executeAll();
     resultFuture.wait();
     const auto result = resultFuture.get();
@@ -186,5 +196,5 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     }
   }
   module_->get_state()->setValue(Parameters::PortSettings, ostr.str());
-  module_->get_state()->setTransientValue(Parameters::ModuleIdList, makeModuleIdList(*network));
+  module_->get_state()->setTransientValue(Parameters::ModuleIdList, makeModuleIdList(*network), true);
 }
