@@ -40,7 +40,7 @@ class SCISHARE DilateFieldDataAlgo : public AlgorithmBase
 {
   public:
     DilateFieldDataAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& output);
+    bool runImpl(FieldHandle input, FieldHandle& output) const;
     AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 

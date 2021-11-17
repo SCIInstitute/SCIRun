@@ -40,7 +40,7 @@ class SCISHARE ErodeFieldDataAlgo : public AlgorithmBase
 {
   public:
     ErodeFieldDataAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& output);
+    bool runImpl(FieldHandle input, FieldHandle& output) const;
     AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
