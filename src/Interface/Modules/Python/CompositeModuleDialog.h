@@ -25,26 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
+#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-/// @todo Documentation Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h
-
-#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
-#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
-
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/share.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Python/ui_CompositeModule.h"
+#include <Interface/Modules/Python/share.h>
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+namespace Gui {
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
+  class CodeEditor;
+
+  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
   {
-  public:
-    ModuleExecutionOrder schedule(const Networks::NetworkStateInterface& network) const override;
+    Q_OBJECT
+
+   public:
+    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
   };
 
-}}}
+}
+}
 
 #endif

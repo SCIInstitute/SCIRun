@@ -496,7 +496,7 @@ namespace SCIRun {
 
 PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
-  connections_.push_back(nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); }));
+  connections_.push_back(nec_.connectStaticNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); }));
   connections_.push_back(nec_.connectModuleAdded([this](const std::string& id, ModuleHandle m, ModuleCounter mc) { pythonModuleAddedSlot(id, m, mc); }));
   connections_.push_back(nec_.connectModuleRemoved([this](const ModuleId& id) { pythonModuleRemovedSlot(id); }));
 }
@@ -574,11 +574,11 @@ SharedPointer<PyModule> PythonImpl::findModule(const std::string& id) const
   return modIter != modules_.end() ? modIter->second : nullptr;
 }
 
-std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
+std::string PythonImpl::executeAll()
 {
   //cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
 
-  nec_.executeAll(lookup);
+  nec_.executeAll();
   return "Execution started."; //TODO: attach log for execution ended event.
 }
 

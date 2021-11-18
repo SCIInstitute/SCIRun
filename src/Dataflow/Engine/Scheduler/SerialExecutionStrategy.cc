@@ -43,9 +43,9 @@ namespace Engine {
   class SerialExecutionStrategyPrivate
   {
   public:
-    void execute(const ExecutionContext& context, Mutex& executionLock)
+    std::future<int> execute(const ExecutionContext& context, Mutex& executionLock)
     {
-      executeWithCycleCheck(scheduler_, executor_, context, executionLock);
+      return executeWithCycleCheck(scheduler_, executor_, context, executionLock);
     }
   private:
     BoostGraphSerialScheduler scheduler_;
@@ -58,7 +58,7 @@ SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionSt
 {
 }
 
-void SerialExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
+std::future<int> SerialExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  impl_->execute(context, executionLock);
+  return impl_->execute(context, executionLock);
 }
