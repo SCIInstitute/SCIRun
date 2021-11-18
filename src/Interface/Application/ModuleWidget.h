@@ -106,6 +106,12 @@ public:
 
 typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
+struct ModuleDialogs
+{
+  class ModuleDialogGeneric* options_ {nullptr};
+  class ModuleLogWindow* logWindow_ {nullptr};
+};
+
 class ModuleWidget : public QStackedWidget,
   public Dataflow::Networks::ExecutableObject, public HasNotes
 {
@@ -279,7 +285,8 @@ private:
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
   std::string moduleId_;
   QString name_;
-  class ModuleDialogGeneric* dialog_;
+
+  ModuleDialogs dialogs_;
   ModuleDialogDockWidget* dockable_;
   bool firstTimeShown_{ true };
   static QList<QPoint> positions_;
@@ -295,7 +302,6 @@ private:
   void setOutputPortSpacing(bool highlighted);
   void fillReplaceWithMenu(QMenu* menu);
 
-  class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
 	SharedPointer<DialogErrorControl> dialogErrorControl_;

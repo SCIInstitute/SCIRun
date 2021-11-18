@@ -353,7 +353,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   previousModuleState_(UNSET),
   moduleId_(id(theModule)),
   name_(name),
-  dialog_(nullptr),
   dockable_(nullptr),
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(nullptr),
@@ -421,13 +420,13 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
 
 void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, mainWindowWidget());
-  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
-  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
-  connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
-  connect(logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
+  dialogs_.logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, mainWindowWidget());
+  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), dialogs_.logWindow_, SLOT(show()));
+  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), dialogs_.logWindow_, SLOT(raise()));
+  connect(dialogs_.logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+  connect(dialogs_.logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
 
-  LoggerHandle logger(makeShared<ModuleLogger>(logWindow_));
+  LoggerHandle logger(makeShared<ModuleLogger>(dialogs_.logWindow_));
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc([this](int i) { updateProgressBarSignal(i); });
   if (theModule_->hasUI())
@@ -508,8 +507,8 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   }
   connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
-  connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
-  connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  connect(display->getLogButton(), SIGNAL(clicked()), dialogs_.logWindow_, SLOT(show()));
+  connect(display->getLogButton(), SIGNAL(clicked()), dialogs_.logWindow_, SLOT(raise()));
   connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
@@ -679,7 +678,7 @@ public:
       widget->connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), widget, SLOT(incomingConnectionStateChanged(bool, int)));
       widget->ports_->addPort(w);
       ++i;
-      if (widget->dialog_ && port->isDynamic())
+      if (widget->dialogs_.options_ && port->isDynamic())
       {
         auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
         auto nameMatches = [&](const InputPortHandle& in)
@@ -691,7 +690,7 @@ public:
           && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
         if (isNotLastDynamicPortOfThisName)
           portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
-        widget->dialog_->updateFromPortChange(static_cast<int>(i), port->id().toString(), portConstructionType);
+        widget->dialogs_.options_->updateFromPortChange(static_cast<int>(i), port->id().toString(), portConstructionType);
       }
     }
   }
@@ -1040,8 +1039,8 @@ ModuleWidget::~ModuleWidget()
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
-  if (dialog_)
-    removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
+  if (dialogs_.options_)
+    removeWidgetFromExecutionDisableList(dialogs_.options_->getExecuteAction());
 
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
@@ -1054,9 +1053,9 @@ ModuleWidget::~ModuleWidget()
 
   if (deletedFromGui_)
   {
-    if (dialog_)
+    if (dialogs_.options_)
     {
-      dialog_->close();
+      dialogs_.options_->close();
     }
 
     if (dockable_)
@@ -1067,8 +1066,8 @@ ModuleWidget::~ModuleWidget()
       delete dockable_;
     }
 
-    delete logWindow_;
-    logWindow_ = nullptr;
+    delete dialogs_.logWindow_;
+    dialogs_.logWindow_ = nullptr;
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
@@ -1190,33 +1189,33 @@ void ModuleWidget::makeOptionsDialog()
 {
   if (theModule_->hasUI())
   {
-    if (!dialog_)
+    if (!dialogs_.options_)
     {
       {
         if (!ModuleDialogGeneric::factory())
           ModuleDialogGeneric::setFactory(makeShared<ModuleDialogFactory>(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
       }
-      dialog_ = ModuleDialogGeneric::factory()->makeDialog(moduleId_, theModule_->get_state());
-      addWidgetToExecutionDisableList(dialog_->getExecuteAction());
-      connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
-      connect(dialog_, SIGNAL(executeActionTriggeredViaStateChange()), this, SLOT(executeTriggeredViaStateChange()));
-      connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
-      connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
+      dialogs_.options_ = ModuleDialogGeneric::factory()->makeDialog(moduleId_, theModule_->get_state());
+      addWidgetToExecutionDisableList(dialogs_.options_->getExecuteAction());
+      connect(dialogs_.options_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
+      connect(dialogs_.options_, SIGNAL(executeActionTriggeredViaStateChange()), this, SLOT(executeTriggeredViaStateChange()));
+      connect(this, SIGNAL(moduleExecuted()), dialogs_.options_, SLOT(moduleExecuted()));
+      connect(this, SIGNAL(moduleSelected(bool)), dialogs_.options_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
-      connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
-      connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
-      connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
-      connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
-      connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
-      connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
-      connect(dialog_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
+      connect(dialogs_.options_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
+      connect(dialogs_.options_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
+      connect(dialogs_.options_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
+      connect(dialogs_.options_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
+      connect(dialogs_.options_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
+      connect(dialogs_.options_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
+      connect(dialogs_.options_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
       dockable_ = new ModuleDialogDockWidget(QString::fromStdString(moduleId_), nullptr);
-      dockable_->setObjectName(dialog_->windowTitle());
-      dockable_->setWidget(dialog_);
-      dialog_->setDockable(dockable_);
+      dockable_->setObjectName(dialogs_.options_->windowTitle());
+      dockable_->setWidget(dialogs_.options_);
+      dialogs_.options_->setDockable(dockable_);
       if (!isViewScene_)
-        dialog_->setupButtonBar();
-      dockable_->setMinimumSize(dialog_->minimumSize());
+        dialogs_.options_->setupButtonBar();
+      dockable_->setMinimumSize(dialogs_.options_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
       mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
@@ -1233,21 +1232,21 @@ void ModuleWidget::makeOptionsDialog()
 
       if (highResolutionExpandFactor_ > 1 && !isViewScene_)
       {
-        dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
-        dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
+        dialogs_.options_->setFixedHeight(dialogs_.options_->size().height() * highResolutionExpandFactor_);
+        dialogs_.options_->setFixedWidth(dialogs_.options_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
       }
 
       if (highResolutionExpandFactor_ > 1 && isViewScene_)
-        dialog_->adjustToolbar();
+        dialogs_.options_->adjustToolbar();
 
-      dialog_->pull();
+      dialogs_.options_->pull();
     }
   }
 }
 
 QDialog* ModuleWidget::dialog()
 {
-  return dialog_;
+  return dialogs_.options_;
 }
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
@@ -1256,20 +1255,20 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   {
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
-    Q_EMIT showUIrequested(dialog_);
+    Q_EMIT showUIrequested(dialogs_.options_);
   }
-  dialog_->setButtonBarTitleVisible(!isFloating);
+  dialogs_.options_->setButtonBarTitleVisible(!isFloating);
 
   if (isViewScene_) //ugh
   {
-    qobject_cast<ViewSceneDialog*>(dialog_)->setFloatingState(isFloating);
+    qobject_cast<ViewSceneDialog*>(dialogs_.options_)->setFloatingState(isFloating);
   }
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
-  if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+  if (dialogs_.options_ && !deleting_ && !networkBeingCleared_)
+    dialogs_.options_->updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1298,7 +1297,7 @@ QList<QPoint> ModuleWidget::positions_;
 
 void ModuleWidget::toggleOptionsDialog()
 {
-  if (dialog_)
+  if (dialogs_.options_)
   {
     if (dockable_->isHidden())
     {
@@ -1319,7 +1318,7 @@ void ModuleWidget::toggleOptionsDialog()
         positions_.append(dockable_->pos());
       }
       dockable_->show();
-      Q_EMIT showUIrequested(dialog_);
+      Q_EMIT showUIrequested(dialogs_.options_);
       dockable_->raise();
       dockable_->activateWindow();
       if (isViewScene_)
@@ -1377,8 +1376,8 @@ void ModuleWidget::setStartupNote(const QString& text)
 
 void ModuleWidget::createStartupNote()
 {
-  if (dialog_)
-    dialog_->createStartupNote();
+  if (dialogs_.options_)
+    dialogs_.options_->createStartupNote();
 }
 
 void ModuleWidget::updateNote(const Note& note)
@@ -1418,7 +1417,7 @@ void ModuleWidget::pinUI()
   if (dockable_)
   {
     dockable_->setFloating(false);
-    Q_EMIT showUIrequested(dialog_);
+    Q_EMIT showUIrequested(dialogs_.options_);
   }
 }
 
@@ -1451,8 +1450,8 @@ void ModuleWidget::showUI()
   if (dockable_)
   {
     dockable_->show();
-    dialog_->expand();
-    Q_EMIT showUIrequested(dialog_);
+    dialogs_.options_->expand();
+    Q_EMIT showUIrequested(dialogs_.options_);
   }
 }
 
@@ -1460,7 +1459,7 @@ void ModuleWidget::collapsePinnedDialog()
 {
   if (!isViewScene_ && dockable_ && !dockable_->isFloating())
   {
-    dialog_->collapse();
+    dialogs_.options_->collapse();
   }
 }
 
@@ -1667,7 +1666,7 @@ void ModuleWidget::saveImagesFromViewScene()
 {
   if (isViewScene_)
   {
-    qobject_cast<ViewSceneDialog*>(dialog_)->autoSaveScreenshot();
+    qobject_cast<ViewSceneDialog*>(dialogs_.options_)->autoSaveScreenshot();
   }
 }
 
