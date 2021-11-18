@@ -1029,6 +1029,26 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
   networkBeingCleared_ = false;
 }
 
+void ModuleDialogs::closeOptions()
+{
+  if (options_)
+  {
+    options_->close();
+  }
+}
+
+void ModuleDialogs::destroyLog()
+{
+  delete logWindow_;
+  logWindow_ = nullptr;
+}
+
+void ModuleDialogs::destroyOptions()
+{
+  delete options_;
+  options_ = nullptr;
+}
+
 ModuleWidget::~ModuleWidget()
 {
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
@@ -1053,10 +1073,7 @@ ModuleWidget::~ModuleWidget()
 
   if (deletedFromGui_)
   {
-    if (dialogs_.options_)
-    {
-      dialogs_.options_->close();
-    }
+    dialogs_.closeOptions();
 
     if (dockable_)
     {
@@ -1066,8 +1083,7 @@ ModuleWidget::~ModuleWidget()
       delete dockable_;
     }
 
-    delete dialogs_.logWindow_;
-    dialogs_.logWindow_ = nullptr;
+    dialogs_.destroyLog();
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }

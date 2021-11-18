@@ -106,8 +106,13 @@ public:
 
 typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
-struct ModuleDialogs
+class ModuleDialogs
 {
+public:
+  void closeOptions();
+  void destroyOptions();
+  void destroyLog();
+//private:
   class ModuleDialogGeneric* options_ {nullptr};
   class ModuleLogWindow* logWindow_ {nullptr};
 };
