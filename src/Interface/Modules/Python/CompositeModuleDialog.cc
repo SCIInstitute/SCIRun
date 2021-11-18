@@ -77,7 +77,9 @@ void CompositeModuleDialog::updateModuleUIButtons()
       auto uiLabel = p.first.id_.c_str() + QString(" UI");
       auto ui = new QPushButton(uiLabel);
       moduleUIgridLayout_->addWidget(ui, i, 0);
+      auto dialog = ModuleDialogGeneric::factory()->makeDialog(p.first.id_, module->get_state());
       connect(ui, &QPushButton::clicked, [uiLabel]() { qDebug() << uiLabel << "clicked."; });
+      connect(ui, &QPushButton::clicked, [dialog]() { dialog->show(); });
     }
     {
       auto logLabel = p.first.id_.c_str() + QString(" log");
