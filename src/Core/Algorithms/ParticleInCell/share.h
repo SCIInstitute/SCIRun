@@ -26,31 +26,14 @@
 */
 
 
-#ifndef MODULES_STRING_GravSimpleUI_H
-#define MODULES_STRING_GravSimpleUI_H
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
-
-namespace SCIRun {
-namespace Modules {
-namespace StringManip {
-
-class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
-public Has1OutputPort<StringPortTag>
-{
-public:
-  GravSimpleUI();
-  virtual void execute();
-  virtual void setStateDefaults();
-
-  INPUT_PORT(0, InputString, String);
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);       //Added this line based on an error message report
-  static Core::Algorithms::AlgorithmParameterName FormatString;
-};
-}}}
-
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Algorithms_ParticleInCell
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

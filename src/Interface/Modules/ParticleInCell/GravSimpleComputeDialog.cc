@@ -26,31 +26,19 @@
 */
 
 
-#ifndef MODULES_STRING_GravSimpleUI_H
-#define MODULES_STRING_GravSimpleUI_H
+#include <Interface/Modules/ParticleInCell/GravSimpleComputeDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-namespace Modules {
-namespace StringManip {
-
-class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
-public Has1OutputPort<StringPortTag>
-{
-public:
-  GravSimpleUI();
-  virtual void execute();
-  virtual void setStateDefaults();
-
-  INPUT_PORT(0, InputString, String);
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);       //Added this line based on an error message report
-  static Core::Algorithms::AlgorithmParameterName FormatString;
-};
-}}}
-
-
-#endif
+GravSimpleComputeDialog::GravSimpleComputeDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
+    {
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
+    }

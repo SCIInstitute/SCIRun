@@ -25,32 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ParticleInCell_GravSimpleComputeDialog_H
+#define INTERFACE_MODULES_ParticleInCell_GravSimpleComputeDialog_H
 
-#ifndef MODULES_STRING_GravSimpleUI_H
-#define MODULES_STRING_GravSimpleUI_H
-
-#include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+#include <Interface/Modules/ParticleInCell/ui_GravSimpleComputeDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace StringManip {
+namespace Gui {
 
-class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
-public Has1OutputPort<StringPortTag>
-{
-public:
-  GravSimpleUI();
-  virtual void execute();
-  virtual void setStateDefaults();
+class SCISHARE GravSimpleComputeDialog : public ModuleDialogGeneric,
+  public Ui::GravSimpleComputeDialog
+      {
+	  Q_OBJECT
 
-  INPUT_PORT(0, InputString, String);
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);       //Added this line based on an error message report
-  static Core::Algorithms::AlgorithmParameterName FormatString;
-};
-}}}
-
-
+      public:
+          GravSimpleComputeDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+      };
+}}
 #endif

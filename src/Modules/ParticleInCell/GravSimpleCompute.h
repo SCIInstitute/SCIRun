@@ -26,31 +26,31 @@
 */
 
 
-#ifndef MODULES_STRING_GravSimpleUI_H
-#define MODULES_STRING_GravSimpleUI_H
+#ifndef MODULES_PARTICLEINCELL_GravSimpleCompute_H
+#define MODULES_PARTICLEINCELL_GravSimpleCompute_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace StringManip {
+namespace Math {
 
-class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
-public Has1OutputPort<StringPortTag>
+class SCISHARE GravSimpleCompute : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<MatrixPortTag>,
+public Has1OutputPort<MatrixPortTag>
 {
 public:
-  GravSimpleUI();
+  GravSimpleCompute();
   virtual void execute();
   virtual void setStateDefaults();
 
-  INPUT_PORT(0, InputString, String);
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);       //Added this line based on an error message report
-  static Core::Algorithms::AlgorithmParameterName FormatString;
+  INPUT_PORT(0, InputMatrix, Matrix);
+  OUTPUT_PORT(0, OutputMatrix, Matrix);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
+//  static Core::Algorithms::AlgorithmParameterName FormatString;
 };
 }}}
-
-
 #endif

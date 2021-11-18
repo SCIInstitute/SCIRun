@@ -30,6 +30,7 @@ SET(Modules_ParticleInCell_SRCS
 
   GravSimple.cc
   GravSimpleUI.cc
+  GravSimpleCompute.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -37,6 +38,7 @@ SET(Modules_ParticleInCell_HEADERS
   share.h
   GravSimple.h
   GravSimpleUI.h
+  GravSimpleCompute.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

@@ -26,31 +26,40 @@
 */
 
 
-#ifndef MODULES_STRING_GravSimpleUI_H
-#define MODULES_STRING_GravSimpleUI_H
-
+#include <Modules/ParticleInCell/GravSimpleCompute.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+#include <Core/Algorithms/ParticleInCell/GravSimpleComputeAlgo.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace StringManip {
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
-public Has1OutputPort<StringPortTag>
-{
-public:
-  GravSimpleUI();
-  virtual void execute();
-  virtual void setStateDefaults();
+//SCIRun::Core::Algorithms::AlgorithmParameterName GravSimpleUI::FormatString("FormatString");
 
-  INPUT_PORT(0, InputString, String);
-  OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);       //Added this line based on an error message report
-  static Core::Algorithms::AlgorithmParameterName FormatString;
-};
-}}}
+MODULE_INFO_DEF(GravSimpleCompute,ParticleInCell,SCIRun);
 
+//const ModuleLookupInfo GravSimpleCompute::staticInfo_("GravSimpleCompute","ParticleInCell","SCIRun");
 
-#endif
+GravSimpleCompute::GravSimpleCompute() : Module(staticInfo_)
+    {
+    INITIALIZE_PORT(InputMatrix);
+    INITIALIZE_PORT(OutputMatrix);
+    }
+
+void GravSimpleCompute::setStateDefaults()
+    {
+    setStateIntFromAlgo(Variables::Method);
+    }
+
+void GravSimpleCompute::execute()
+    {
+    auto input = getRequiredInput(InputMatrix);
+    if (needToExecute())
+        {
+        setAlgoIntFromState(Variables::Method);
+        auto output = algo().run(withInputData((InputMatrix, input)));
+        sendOutputFromAlgorithm(OutputMatrix, output);
+        }
+    }
