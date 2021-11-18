@@ -74,7 +74,7 @@ namespace SCIRun {
         std::unique_ptr<class CompositeModuleImpl> impl_;
       };
 
-      using ModuleIdMap = std::map<std::string, std::string>;
+      using CompositeModuleInfoMap = std::map<Dataflow::Networks::ModuleId, Dataflow::Networks::ModuleHandle>;
  }}}
 
 #endif

@@ -109,15 +109,15 @@ void CompositeModuleWithStaticPorts::execute()
 
 namespace
 {
-  ModuleIdMap makeModuleIdList(const NetworkStateInterface& net)
+  CompositeModuleInfoMap makeModuleIdList(const NetworkStateInterface& net)
   {
-    ModuleIdMap mim;
+    CompositeModuleInfoMap cmim;
     for (size_t i = 0; i < net.nmodules(); ++i)
     {
       const auto mod = net.module(i);
-      mim[mod->id().id_] = mod->name();
+      cmim[mod->id()] = mod;
     }
-    return mim;
+    return cmim;
   }
 }
 
@@ -125,11 +125,9 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
 {
   if (networkXmlFromState.empty())
   {
-    module_->get_state()->setTransientValue(Parameters::ModuleIdList, ModuleIdMap(), true);
+    module_->get_state()->setTransientValue(Parameters::ModuleIdList, CompositeModuleInfoMap(), true);
     return;
   }
-
-  //module_->remark("Composite module concept part 2");
 
   subNet_ = module_->network()->createSubnetwork();
   if (subNet_)

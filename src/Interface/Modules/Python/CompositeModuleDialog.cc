@@ -54,7 +54,7 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
 
 void CompositeModuleDialog::updateModuleUIButtons()
 {
-  auto moduleMap = transient_value_cast<SCIRun::Modules::Basic::ModuleIdMap>(state_->getTransientValue(Parameters::ModuleIdList));
+  auto moduleMap = transient_value_cast<SCIRun::Modules::Basic::CompositeModuleInfoMap>(state_->getTransientValue(Parameters::ModuleIdList));
 
   if (moduleMap.empty())
   {
@@ -71,11 +71,20 @@ void CompositeModuleDialog::updateModuleUIButtons()
   int i = 0;
   for (const auto& p : moduleMap)
   {
-    qDebug() << p.first.c_str() << p.second.c_str();
-    auto ui = new QPushButton(p.first.c_str() + QString(" UI"));
-    auto log = new QPushButton(p.first.c_str() + QString(" log"));
-    moduleUIgridLayout_->addWidget(ui, i, 0);
-    moduleUIgridLayout_->addWidget(log, i, 1);
+    auto module = p.second;
+    if (module->hasUI())
+    {
+      auto uiLabel = p.first.id_.c_str() + QString(" UI");
+      auto ui = new QPushButton(uiLabel);
+      moduleUIgridLayout_->addWidget(ui, i, 0);
+      connect(ui, &QPushButton::clicked, [uiLabel]() { qDebug() << uiLabel << "clicked."; });
+    }
+    {
+      auto logLabel = p.first.id_.c_str() + QString(" log");
+      auto log = new QPushButton(logLabel);
+      moduleUIgridLayout_->addWidget(log, i, 1);
+      connect(log, &QPushButton::clicked, [logLabel]() { qDebug() << logLabel << "clicked."; });
+    }
     ++i;
   }
 }
