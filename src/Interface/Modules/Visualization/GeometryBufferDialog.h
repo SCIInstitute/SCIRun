@@ -26,20 +26,37 @@
 */
 
 
-/// @todo Documentation Core/PersistentFwd.h
+#ifndef INTERFACE_MODULES_GEOMETRYBUFFERDIALOG_H
+#define INTERFACE_MODULES_GEOMETRYBUFFERDIALOG_H
 
-#ifndef CORE_PERSISTENT_FWD_H
-#define CORE_PERSISTENT_FWD_H
-
-#include <Core/Persistent/share.h>
+#include "Interface/Modules/Visualization/ui_GeometryBuffer.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
+namespace Gui {
 
-  namespace Core {
-    namespace Thread {class NamedMutex; }}
+class SCISHARE GeometryBufferDialog : public ModuleDialogGeneric,
+  public Ui::GeometryBuffer
+{
+	Q_OBJECT
 
-class Persistent;
-class Piostream;
-class Piostream;
+public:
+  GeometryBufferDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
+private Q_SLOTS:
+  void incrementIndex();
+  void decrementIndex();
+  void selectFirstIndex();
+  void selectLastIndex();
+  void startPlay();
+  void stopPlay();
+};
+
 }
+}
+
 #endif
