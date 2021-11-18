@@ -52,7 +52,6 @@ namespace SCIRun
     private:
       QWidget* parentToUse_;
       DialogMakerMap dialogMakerMap_;
-      ExecutionDisablingServiceFunction disabler_;
       void addDialogsToMakerMap1();
       void addDialogsToMakerMap2();
       void addDialogsToMakerMapGenerated();
