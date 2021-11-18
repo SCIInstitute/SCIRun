@@ -52,10 +52,10 @@ namespace SCIRun {
       class DynamicMultithreadedNetworkExecutorImpl : public WaitsForStartupInitialization//, boost::noncopyable
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkStateInterface* network,
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network,
           Mutex* lock, size_t numModules, Mutex* executionLock, DynamicExecutor::ExecutionThreadGroupPtr threadGroup) :
           executeThreads_(threadGroup),
-          lookup_(context.lookup()),
+          lookup_(&context.lookup_),
           bounds_(&context.bounds()),
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
@@ -65,9 +65,10 @@ namespace SCIRun {
           executionLock_(executionLock)
         {
         }
-        ~DynamicMultithreadedNetworkExecutorImpl() = default;
-
-        int run() const
+        ~DynamicMultithreadedNetworkExecutorImpl()
+        {
+        }
+        void operator()() const
         {
           Guard g(executionLock_->get());
 
@@ -80,45 +81,41 @@ namespace SCIRun {
           consume.join();
           produce.join();
           executeThreads_->joinAll();
-
-          return lookup_->errorCode();
         }
 
       private:
         mutable DynamicExecutor::ExecutionThreadGroupPtr executeThreads_;
-        const ExecutableLookup* lookup_;
+        const Networks::ExecutableLookup* lookup_;
         const ExecutionBounds* bounds_;
         DynamicExecutor::ModuleWorkQueuePtr work_;
         DynamicExecutor::ModuleProducerPtr producer_;
         DynamicExecutor::ModuleConsumerPtr consumer_;
-        const NetworkStateInterface* network_;
+        const NetworkInterface* network_;
         Mutex* executionLock_;
       };
 }}}
 
-DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkStateInterface& network) :
+DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) :
   network_(network),
   threadGroup_(new DynamicExecutor::ExecutionThreadGroup)
 {
 }
 
-std::future<int> DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
+void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
   static Mutex lock("live-scheduler");
 
-  threadGroup_->clear();
+  //if (Log::get().verbose())
+    LOG_TRACE("DMTNE::executeAll order received: {}", order);
 
-  auto runner = makeShared<DynamicMultithreadedNetworkExecutorImpl>(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
-  std::packaged_task<int()> task([runner] { return runner->run(); });
-  auto value = task.get_future();
-  std::thread t(std::move(task));
-  t.detach();
-  return value;
+  threadGroup_->clear();
+  DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
+  Core::Thread::Util::launchAsyncThread(runner);
 }
 
 bool ModuleWaitingFilter::operator()(ModuleHandle mh) const
 {
-  const auto state = mh->executionState().currentState();
+  auto state = mh->executionState().currentState();
   return state != ModuleExecutionState::Value::Completed;// || state != Networks::ModuleExecutionState::Errored;
 }
 

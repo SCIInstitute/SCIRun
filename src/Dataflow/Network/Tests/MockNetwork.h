@@ -40,7 +40,7 @@ namespace SCIRun {
     namespace Networks {
       namespace Mocks
       {
-        class MockNetwork : public NetworkStateInterface
+        class MockNetwork : public NetworkInterface
         {
         public:
           MOCK_METHOD1(add_module, ModuleHandle(const ModuleLookupInfo&));
@@ -67,7 +67,7 @@ namespace SCIRun {
 
         typedef SharedPointer<MockNetwork> MockNetworkPtr;
 
-        inline ModuleHandle addModuleToNetwork(NetworkStateInterface& network, const std::string& moduleName)
+        inline ModuleHandle addModuleToNetwork(NetworkInterface& network, const std::string& moduleName)
         {
           ModuleLookupInfo info;
           info.module_name_ = moduleName;

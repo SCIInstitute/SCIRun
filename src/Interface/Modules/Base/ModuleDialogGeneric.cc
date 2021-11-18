@@ -347,18 +347,14 @@ public:
   std::string guiToAlgo(const std::string& key) const
   {
     if (empty())
-    {
-      return key;
-    }
+      return {};
 
     return findOrFirst(guiToAlgoLookup_, key);
   }
   std::string algoToGui(const std::string& key) const
   {
     if (empty())
-    {
-      return key;
-    }
+      return {};
 
     return findOrFirst(algoToGuiLookup_, key);
   }
@@ -421,7 +417,7 @@ public:
     const auto qstring = QString::fromStdString(stringMap_.algoToGui(value));
     if (qstring != comboBox_->currentText())
     {
-      LOG_TRACE("In new version of pull code for combobox: {} {}", value, comboBox_->findText(qstring));
+      LOG_TRACE("In new version of pull code for combobox: {}", value);
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }

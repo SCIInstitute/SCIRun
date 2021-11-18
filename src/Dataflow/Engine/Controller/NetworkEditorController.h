@@ -45,56 +45,45 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
+  struct SCISHARE ModuleCounter
+  {
+    ModuleCounter() : count(new boost::atomic<int>(0)) {}
+    ModuleCounter(const ModuleCounter& rhs) : count(rhs.count)
+    {
+      //std::cout << "ModuleCounter copied" << std::endl;
+    }
+    void increment() const
+    {
+      count->fetch_add(1);
+    }
+    mutable SharedPointer<boost::atomic<int>> count;
+  };
+
+  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
+  typedef boost::signals2::signal<void (int)> NetworkDoneLoadingSignalType;
+
+  class DynamicPortManager;
+
+  struct SCISHARE DisableDynamicPortSwitch
+  {
+    explicit DisableDynamicPortSwitch(SharedPointer<DynamicPortManager> dpm);
+    ~DisableDynamicPortSwitch();
+  private:
+    bool first_;
+    SharedPointer<DynamicPortManager> dpm_;
+  };
+
   /// @todo Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread
   //   This will be done in issue #231
 
-  class SCISHARE NetworkCollaborators
-  {
-  public:
-    Networks::NetworkStateHandle theNetwork_;
-    Networks::ModuleFactoryHandle moduleFactory_;
-    Networks::ModuleStateFactoryHandle stateFactory_;
-    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
-    Networks::ReexecuteStrategyFactoryHandle reexFactory_;
-    ExecutionStrategyHandle currentExecutor_;
-    ExecutionStrategyFactoryHandle executorFactory_;
-    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
-    Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
-    Networks::NetworkEditorSerializationManager* serializationManager_;
-    const Networks::ExecutableLookup* lookup_ {nullptr};
-
-    ExecutionManagerHandle executionManager_;
-    SharedPointer<DynamicPortManager> dynamicPortManager_;
-    SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
-  };
-
-  class SCISHARE NetworkSignalManager
-  {
-  public:
-    ModuleAddedSignalType moduleAdded_;
-    ModuleRemovedSignalType moduleRemoved_; //not used yet
-    ConnectionAddedSignalType connectionAdded_;
-    ConnectionRemovedSignalType connectionRemoved_;
-    InvalidConnectionSignalType invalidConnection_;
-    NetworkDoneLoadingSignalType networkDoneLoading_;
-
-
-    bool signalSwitch_, loadingContext_;
-
-
-    struct LoadingContext
-    {
-      explicit LoadingContext(bool& load);
-      ~LoadingContext();
-    private:
-      bool& load_;
-    };
-  };
-
-  class SCISHARE NetworkEditorController :
-    public NetworkIOInterface<Networks::NetworkFileHandle>,
-    public Networks::NetworkInterface
+  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
   {
   public:
     NetworkEditorController(Networks::ModuleFactoryHandle mf,
@@ -105,7 +94,7 @@ namespace Engine {
       Core::Commands::GlobalCommandFactoryHandle cmdFactory,
       Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = nullptr);
-    NetworkEditorController(Networks::NetworkStateHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
     ~NetworkEditorController();
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,14 +111,11 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    std::future<int> executeAll() override;
-    void executeModule(const Networks::ModuleHandle& module, bool executeUpstream);
+    ThreadPtr executeAll(const Networks::ExecutableLookup* lookup);
+    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     Networks::NetworkFileHandle saveNetwork() const override;
     void loadNetwork(const Networks::NetworkFileHandle& xml) override;
-
-    void loadXmlDataIntoNetwork(Networks::NetworkSerializationInterfaceHandle data) override;
-    Networks::NetworkAppendInfo appendXmlData(Networks::NetworkSerializationInterfaceHandle data) override;
 
     Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
     void appendToNetwork(const Networks::NetworkFileHandle& xml);
@@ -137,7 +123,6 @@ namespace Engine {
 //////////////////////////////////////////////////////////////////////////
 
     void clear() override;
-    Networks::NetworkHandle createSubnetwork() const override;
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
@@ -147,8 +132,8 @@ namespace Engine {
     boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
 
-    boost::signals2::connection connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    boost::signals2::connection connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
     boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
 
@@ -158,44 +143,68 @@ namespace Engine {
     void enableSignals() override;
     void disableSignals() override;
 
-    Networks::NetworkStateHandle getNetwork() const override;
+    Networks::NetworkHandle getNetwork() const override;
+    void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     SharedPointer<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 
-    void setExecutableLookup(const Networks::ExecutableLookup* lookup) override;
-
     /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
-    void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm)
-    {
-      collabs_.serializationManager_ = nesm;
-    }
+    void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm) { serializationManager_ = nesm; }
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
     const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
 
-    void updateModulePositions(const Networks::ModulePositions& modulePositions, bool selectAll);
+    void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions, bool selectAll);
 
     void cleanUpNetwork();
 
-    const Networks::ModuleFactory& moduleFactory() const { return *collabs_.moduleFactory_; }  //TOOD: lazy
+    const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
 
-    std::vector<Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
+    std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
 
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
-    NetworkEditorController(const NetworkEditorController& other);
 
-    std::future<int> executeGeneric(Networks::ModuleFilter filter);
+    ThreadPtr executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
-    ExecutionContextHandle createExecutionContext(Networks::ModuleFilter filter) const;
+    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
 
-    NetworkCollaborators collabs_;
-    NetworkSignalManager signals_;
+    Networks::NetworkHandle theNetwork_;
+    Networks::ModuleFactoryHandle moduleFactory_;
+    Networks::ModuleStateFactoryHandle stateFactory_;
+    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
+    Networks::ReexecuteStrategyFactoryHandle reexFactory_;
+    ExecutionStrategyHandle currentExecutor_;
+    ExecutionStrategyFactoryHandle executorFactory_;
+    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
+    Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
+    Networks::NetworkEditorSerializationManager* serializationManager_;
+
+    ExecutionQueueManager executionManager_;
+
+    ModuleAddedSignalType moduleAdded_;
+    ModuleRemovedSignalType moduleRemoved_; //not used yet
+    ConnectionAddedSignalType connectionAdded_;
+    ConnectionRemovedSignalType connectionRemoved_;
+    InvalidConnectionSignalType invalidConnection_;
+    NetworkDoneLoadingSignalType networkDoneLoading_;
+
+    SharedPointer<DynamicPortManager> dynamicPortManager_;
+    bool signalSwitch_, loadingContext_;
+    SharedPointer<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
+
+    struct LoadingContext
+    {
+      explicit LoadingContext(bool& load);
+      ~LoadingContext();
+    private:
+      bool& load_;
+    };
   };
 
   typedef SharedPointer<NetworkEditorController> NetworkEditorControllerHandle;

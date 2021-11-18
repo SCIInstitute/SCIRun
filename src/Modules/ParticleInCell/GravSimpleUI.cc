@@ -26,31 +26,45 @@
 */
 
 
-#include <Interface/Modules/Python/CompositeModuleDialog.h>
-#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
-//#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Modules/ParticleInCell/GravSimpleUI.h>
+#include <Core/Datatypes/String.h>
+//#include <Core/Datatypes/ParticleInCell.h>          //Produces a compile error
 
-using namespace SCIRun::Gui;
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Python;
 
-CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+SCIRun::Core::Algorithms::AlgorithmParameterName GravSimpleUI::FormatString("FormatString");
+
+const ModuleLookupInfo GravSimpleUI::staticInfo_("GravSimpleUI","ParticleInCell","SCIRun");
+
+GravSimpleUI::GravSimpleUI() : Module(staticInfo_)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  //{
-  //  pythonCodePlainTextEdit_ = new CodeEditor(this);
-  //  tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
-  //}
+    INITIALIZE_PORT(InputString);
+    INITIALIZE_PORT(OutputString);
+}
 
-  addPlainTextEditManager(networkXMLplainTextEdit_, Parameters::NetworkXml);
-  addPlainTextEditManager(portReportPlainTextEdit_, Parameters::PortSettings);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+void GravSimpleUI::setStateDefaults()
+{
+auto state = get_state();
+state->setValue(FormatString,std::string ("[Insert message here]"));
+}
 
-  connect(clearPushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->clear(); });
-  connect(pastePushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->setPlainText(QGuiApplication::clipboard()->text()); });
+void GravSimpleUI::execute()
+{
+    std::string message_string;
+    auto stringH = getOptionalInput(InputString);
+    auto state = get_state();
+//    message_string = state -> getValue(FormatString).toString();
+//    message_string="Trying to develop a ParticleInCell Module with a UI";
+
+    if (stringH && *stringH)
+        {
+        state -> setValue(FormatString, (*stringH) -> value());
+        }
+
+    message_string = state -> getValue(FormatString).toString();
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
 }

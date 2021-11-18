@@ -29,8 +29,9 @@
 #ifndef DATAFLOW_NETWORK_PORTNAMES_H
 #define DATAFLOW_NETWORK_PORTNAMES_H
 
+#include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
-#include <Dataflow/Network/ModuleExceptions.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/share.h>

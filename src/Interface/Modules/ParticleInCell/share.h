@@ -25,27 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
-#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include "Interface/Modules/Python/ui_CompositeModule.h"
-#include <Interface/Modules/Python/share.h>
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Gui {
-
-  class CodeEditor;
-
-  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
-  {
-    Q_OBJECT
-
-   public:
-    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-  };
-
-}
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_ParticleInCell
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

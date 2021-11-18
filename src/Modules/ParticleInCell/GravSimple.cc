@@ -28,7 +28,7 @@
 
 #include <Modules/ParticleInCell/GravSimple.h>
 #include <Core/Datatypes/String.h>
-//#include<Dataflow/Network/Module.h>                       //Note: This include statement is not needed here.  It is in the .h file.
+//#include<Dataflow/Network/Module.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 const ModuleLookupInfo GravSimple::staticInfo_("GravSimple","ParticleInCell","SCIRun");
-//MODULE_INFO_DEF("GravSimple","ParticleInCell","SCIRun");  //Note: This macro produces a compile error.  The explicit path (above) does not.
+//MODULE_INFO_DEF("GravSimple","ParticleInCell","SCIRun");
 
 GravSimple::GravSimple () : Module(staticInfo_,false)
 {

@@ -94,6 +94,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Teem_Misc
   Modules_Legacy_Teem_Converters
   Modules_Legacy_String
+  Modules_ParticleInCell
 )
 
 IF(WITH_TETGEN)

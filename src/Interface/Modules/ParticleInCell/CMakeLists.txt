@@ -26,53 +26,40 @@
 #
 
 
-SET(Interface_Modules_Python_FORMS
-  PythonObjectForwarder.ui
-  InterfaceWithPython.ui
-  ModuleStateModifierTester.ui
-  LoopStart.ui
-  #LoopIncrement.ui
-  LoopEnd.ui
+SET(Interface_Modules_ParticleInCell_FORMS
+  GravSimpleUIDialog.ui
 )
 
-SET(Interface_Modules_Python_HEADERS
-  PythonObjectForwarderDialog.h
-  InterfaceWithPythonDialog.h
-  ModuleStateModifierTesterDialog.h
-  LoopStartDialog.h
-  #LoopIncrementDialog.h
-  LoopEndDialog.h
+SET(Interface_Modules_ParticleInCell_HEADERS
   share.h
+  GravSimpleUIDialog.h
 )
 
-SET(Interface_Modules_Python_SOURCES
-  PythonObjectForwarderDialog.cc
-  InterfaceWithPythonDialog.cc
-  ModuleStateModifierTesterDialog.cc
-  LoopStartDialog.cc
-  #LoopIncrementDialog.cc
-  LoopEndDialog.cc
+SET(Interface_Modules_ParticleInCell_SOURCES
+  GravSimpleUIDialog.cc
 )
 
-QT_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS "${Interface_Modules_Python_FORMS}")
-QT_WRAP_CPP(Interface_Modules_Python_HEADERS_MOC "${Interface_Modules_Python_HEADERS}")
+QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")
+QT_WRAP_CPP(Interface_Modules_ParticleInCell_HEADERS_MOC "${Interface_Modules_ParticleInCell_HEADERS}")
 
-SCIRUN_ADD_LIBRARY(Interface_Modules_Python
-  ${Interface_Modules_Python_HEADERS}
-  ${Interface_Modules_Python_FORMS_HEADERS}
-  ${Interface_Modules_Python_HEADERS_MOC}
-  ${Interface_Modules_Python_SOURCES}
+SCIRUN_ADD_LIBRARY(Interface_Modules_ParticleInCell
+  ${Interface_Modules_ParticleInCell_HEADERS}
+  ${Interface_Modules_ParticleInCell_FORMS_HEADERS}
+  ${Interface_Modules_ParticleInCell_HEADERS_MOC}
+  ${Interface_Modules_ParticleInCell_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Python
-  Modules_Python
+TARGET_LINK_LIBRARIES(Interface_Modules_ParticleInCell
+  Modules_ParticleInCell
+  Modules_Basic
   Interface_Modules_Base
+  Modules_Legacy_Bundle
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Python)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_ParticleInCell)
 ENDIF(BUILD_SHARED_LIBS)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

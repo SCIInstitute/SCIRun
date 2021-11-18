@@ -55,7 +55,7 @@ namespace Engine {
     std::string removeModule(const std::string& id) override;
     std::vector<SharedPointer<PyModule>> moduleList() const override;
     SharedPointer<PyModule> findModule(const std::string& id) const override;
-    std::string executeAll() override;
+    std::string executeAll(const Networks::ExecutableLookup* lookup) override;
     std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     std::string saveNetwork(const std::string& filename) override;

@@ -30,9 +30,7 @@
 #define DATAFLOW_NETWORK_DEFAULTMODULEFACTORIES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/ModuleIdGenerator.h>
 #include <Dataflow/Network/share.h>
-
 
 namespace SCIRun {
 namespace Dataflow {

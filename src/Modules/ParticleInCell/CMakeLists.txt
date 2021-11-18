@@ -29,12 +29,14 @@
 SET(Modules_ParticleInCell_SRCS
 
   GravSimple.cc
+  GravSimpleUI.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
 
   share.h
   GravSimple.h
+  GravSimpleUI.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
@@ -52,4 +54,4 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_ParticleInCell)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+#SCIRUN_ADD_TEST_DIR(Tests)

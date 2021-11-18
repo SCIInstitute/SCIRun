@@ -26,13 +26,33 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_3.cc
+#ifndef MODULES_STRING_GravSimpleUI_H
+#define MODULES_STRING_GravSimpleUI_H
 
-#include <Core/Datatypes/Legacy/Field/VFDataT.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
+namespace Modules {
+namespace StringManip {
 
-VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned int)
-VFDATA_FUNCTION_SCALAR_DEFINITION(float)
+class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<StringPortTag>,
+public Has1OutputPort<StringPortTag>
+{
+public:
+  GravSimpleUI();
+  virtual void execute();
+  virtual void setStateDefaults();
 
-}
+  INPUT_PORT(0, InputString, String);
+  OUTPUT_PORT(0, OutputString, String);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
+  static Core::Algorithms::AlgorithmParameterName FormatString;
+};
+}}}
+
+
+#endif

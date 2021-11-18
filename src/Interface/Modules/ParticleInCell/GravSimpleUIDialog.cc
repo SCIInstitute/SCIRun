@@ -26,16 +26,28 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_2.cc
+#include <Interface/Modules/ParticleInCell/GravSimpleUIDialog.h>
+#include <Modules/ParticleInCell/GravSimpleUI.h>
+//#include <Core/Algorithms/Field/@ModuleName@Algo.h>
 
-#include <Core/Datatypes/Legacy/Field/VFDataT.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
 
-namespace SCIRun {
-
-VFDATA_FUNCTION_SCALAR_DEFINITION(long long)
-VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned long long)
-VFDATA_FUNCTION_SCALAR_DEFINITION(int)
-VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned int)
-VFDATA_FUNCTION_SCALAR_DEFINITION(float)
-
+GravSimpleUIDialog::GravSimpleUIDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addLineEditManager(inputstring_,GravSimpleUI::FormatString);
 }
+
+/*
+
+void @ModuleName@Dialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}
+*/

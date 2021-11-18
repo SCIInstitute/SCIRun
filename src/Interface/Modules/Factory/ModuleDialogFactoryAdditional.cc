@@ -32,7 +32,6 @@
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
-#include <Interface/Modules/Python/CompositeModuleDialog.h>
 #include <boost/assign.hpp>
 
 using namespace SCIRun::Gui;
@@ -47,6 +46,5 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
     ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(CompositeModuleWithStaticPorts, CompositeModuleDialog)
   ;
 }

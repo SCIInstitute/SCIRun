@@ -136,8 +136,6 @@ namespace Networks {
     bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
     void setInfoStrings(const ModuleDescription& desc);
-    NetworkInterface* network() const override final;
-    void setNetwork(NetworkInterface* net) override final;
     static const int TraitFlags;
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
@@ -160,10 +158,6 @@ namespace Networks {
   public: //for python
     template <class T, class D, size_t N>
     void sendOutput(const StaticPortName<T, N>& port, SharedPointer<D> data);
-    void removeInputPort(const PortId& id) override final;
-    void removeOutputPort(const PortId& id) override final;
-    size_t add_input_port(InputPortHandle) override;
-    size_t add_output_port(OutputPortHandle) override final;
   protected:
     template <class T, size_t N, typename F>
     void computeOutputAndSendIfConnected(const StaticPortName<T, N>& port, F evalFunc);
@@ -189,7 +183,9 @@ namespace Networks {
 
 /*** protected Dev-interface ****/
     void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
-
+    virtual size_t add_input_port(InputPortHandle);
+    size_t add_output_port(OutputPortHandle);
+    virtual void removeInputPort(const PortId& id);
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
     std::string stateMetaInfo() const;
     void copyStateToMetadata();

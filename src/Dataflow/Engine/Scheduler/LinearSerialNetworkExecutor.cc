@@ -37,36 +37,36 @@ using namespace SCIRun::Core::Thread;
 
 namespace
 {
-  struct LinearExecution : WaitsForStartupInitialization
+  struct LinearExecution : public WaitsForStartupInitialization
   {
-    LinearExecution(const ExecutableLookup* lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
+    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
       : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
     {
     }
     void operator()() const
     {
-      waitForStartupInit(*lookup_);
+      waitForStartupInit(lookup_);
       Guard g(executionLock_->get());
-      ScopedExecutionBoundsSignaller signaller(&bounds_, [=]() { return lookup_->errorCode(); });
-      for (const auto& id : order_)
+      bounds_.executeStarts_();
+      for (const ModuleId& id : order_)
       {
-        auto obj = lookup_->lookupExecutable(id);
+        ExecutableObject* obj = lookup_.lookupExecutable(id);
         if (obj)
         {
           obj->executeWithSignals();
         }
       }
+      bounds_.executeFinishes_(lookup_.errorCode());
     }
-    const ExecutableLookup* lookup_;
+    const ExecutableLookup& lookup_;
     ModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
     Mutex* executionLock_;
   };
 }
 
-std::future<int> LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
+void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
-  LinearExecution runner(context.lookup(), order, context.bounds(), &executionLock);
-  Util::launchAsyncThread(runner);
-  return {};
+  LinearExecution runner(context.lookup_, order, context.bounds(), &executionLock);
+  Core::Thread::Util::launchAsyncThread(runner);
 }

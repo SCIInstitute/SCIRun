@@ -25,40 +25,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_STRING_GravSimpleUIDialog_H
+#define INTERFACE_MODULES_STRING_GravSimpleUIDialog_H
 
-#ifndef MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
-#define MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
+#include <Interface/Modules/ParticleInCell/ui_GravSimpleUIDialog.h>
+//#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/ParticleInCell/share.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+namespace SCIRun {
+namespace Gui {
 
-namespace SCIRun::Modules::Fields
+class SCISHARE GravSimpleUIDialog : public ModuleDialogGeneric,
+  public Ui::GravSimpleUIDialog
 {
-  // static const char[] InputFieldName = "InputField"
-  // static const char[] MatrixPortName = "InputMatrix"
-  // public HasInputPorts<FieldPort<InputFieldName>, MatrixPort<MatrixPortName>>
+	Q_OBJECT
 
-  class CompositeModuleImpl;
-
-  class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<FieldPortTag, MatrixPortTag>
-  {
-  public:
-    CompositeModuleTestGFB_FM();
-    ~CompositeModuleTestGFB_FM() override;
-
-    void execute() override;
-    void setStateDefaults() override;
-
-    INPUT_PORT(0, InputField, Field);
-    OUTPUT_PORT(0, Faired_Mesh, Field);
-    OUTPUT_PORT(1, Mapping, Matrix);
-
-    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
-  private:
-    std::unique_ptr<CompositeModuleImpl> impl_;
-  };
-}
-
+public:
+  GravSimpleUIDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+}}
 #endif
