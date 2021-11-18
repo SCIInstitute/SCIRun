@@ -25,40 +25,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ApplyFilterToFieldDialog_H
+#define INTERFACE_MODULES_ApplyFilterToFieldDialog_H
 
-#ifndef MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
-#define MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Fields/ui_ApplyFilterToFieldData.h"
+#include <Interface/Modules/Fields/share.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+namespace SCIRun::Gui {
+class SCISHARE ApplyFilterToFieldDataDialog : public ModuleDialogGeneric, public Ui::ApplyFilterToFieldData
+{
+  Q_OBJECT
 
-namespace SCIRun {
-  namespace Core::Algorithms::Fields 
-  {
-    ALGORITHM_PARAMETER_DECL(Erode)
-    ALGORITHM_PARAMETER_DECL(Dilate)
-  }
-  namespace Modules {
-    namespace Fields {
-
-      class SCISHARE ApplyFilterToFieldData : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        ApplyFilterToFieldData();
-
-        void execute() override;
-        void setStateDefaults() override;
-
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-      };
-
-    }
-  }
+ public:
+  ApplyFilterToFieldDataDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+};
 }
 
 #endif

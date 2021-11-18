@@ -26,39 +26,25 @@
 */
 
 
-#ifndef MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
-#define MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
+#include <Interface/Modules/Fields/ApplyFilterToFieldDataDialog.h>
+#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Core::Algorithms::Fields 
-  {
-    ALGORITHM_PARAMETER_DECL(Erode)
-    ALGORITHM_PARAMETER_DECL(Dilate)
-  }
-  namespace Modules {
-    namespace Fields {
+ApplyFilterToFieldDataDialog::ApplyFilterToFieldDataDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-      class SCISHARE ApplyFilterToFieldData : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        ApplyFilterToFieldData();
-
-        void execute() override;
-        void setStateDefaults() override;
-
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-      };
-
-    }
-  }
+  addCheckBoxManager(dilateCheckBox_, Parameters::Dilate);
+  addCheckBoxManager(erodeCheckBox_, Parameters::Erode);
+  addSpinBoxManager(iterationsSpinBox_, Variables::MaxIterations);
 }
-
-#endif

@@ -27,6 +27,7 @@
 
 #include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
@@ -34,8 +35,13 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(ApplyFilterToFieldData, ChangeFieldData, SCIRun)
+
+ALGORITHM_PARAMETER_DEF(Fields, Erode)
+ALGORITHM_PARAMETER_DEF(Fields, Dilate)
 
 ApplyFilterToFieldData::ApplyFilterToFieldData() :
   Module(staticInfo_)
@@ -47,68 +53,48 @@ ApplyFilterToFieldData::ApplyFilterToFieldData() :
 /// @class ApplyFilterToFieldData
 /// @brief Applies a dilate or erode filter to a regular mesh.
 
-// class  : public Module {
-//   public:
-//     ApplyFilterToFieldData(GuiContext*);
-//     virtual ~ApplyFilterToFieldData() {}
-//     virtual void execute();
-//
-//   private:
-//     GuiString method_;
-//     GuiString edmethod_;
-//     GuiInt edniter_;
-//
-//     SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
-//     SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
-// };
-//
-
-// DECLARE_MAKER(ApplyFilterToFieldData)
-//
-// ApplyFilterToFieldData::ApplyFilterToFieldData(GuiContext* ctx) :
-//   Module("ApplyFilterToFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-//     method_(ctx->subVar("method")),
-//     edmethod_(ctx->subVar("ed-method")),
-//     edniter_(ctx->subVar("ed-iterations"))
-// {
-//   erode_algo_.set_progress_reporter(this);
-//   dilate_algo_.set_progress_reporter(this);
-// }
-
 void ApplyFilterToFieldData::setStateDefaults()
 {
-  setStateIntFromAlgo(Core::Algorithms::Variables::MaxIterations);
+  auto state = get_state();
+  state->setValue(Core::Algorithms::Variables::MaxIterations, 2);
+  state->setValue(Parameters::Erode, true);
+  state->setValue(Parameters::Dilate, false);
 }
 
-void
-ApplyFilterToFieldData::execute()
+void ApplyFilterToFieldData::execute()
 {
   auto input = getRequiredInput(InputField);
 
   if (needToExecute())
   {
-    #if 0
-    if (method_.get() == "erodedilate")
+    auto state = get_state();
+    auto iters = state->getValue(Variables::MaxIterations).toInt();
+    auto doDilate = state->getValue(Parameters::Dilate).toBool();
+    auto doErode = state->getValue(Parameters::Erode).toBool();
+    FieldHandle output;
+    // Dilate then erode
+    if (doDilate)
     {
-      if (edmethod_.get() == "erode")
+      DilateFieldDataAlgo dilate;
+      dilate.set(Variables::MaxIterations, iters);
+      if (!dilate.runImpl(input, output))
       {
-        erode_algo_.set_int("num_iterations",edniter_.get());
-        if(!(erode_algo_.run(input,output))) return;
+        THROW_ALGORITHM_PROCESSING_ERROR("Error in dilate algo");
       }
-      else  if (edmethod_.get() == "dilate")
+      
+    }
+    if (doErode)
+    {
+      ErodeFieldDataAlgo erode;
+      erode.set(Variables::MaxIterations, iters);
+      if (!erode.runImpl(input, output))
       {
-        dilate_algo_.set_int("num_iterations",edniter_.get());
-        if(!(dilate_algo_.run(input,output))) return;
-      }
-      else
-      {
-        erode_algo_.set_int("num_iterations",edniter_.get());
-        dilate_algo_.set_int("num_iterations",edniter_.get());
-        if(!(erode_algo_.run(input,output))) return;
-        if(!(dilate_algo_.run(output,output))) return;
+        THROW_ALGORITHM_PROCESSING_ERROR("Error in erode algo");
       }
     }
-    #endif
-    //sendOutputFromAlgorithm(OutputField);
+    if (doDilate || doErode)
+      sendOutput(OutputField, output);
+    else //legacy behavior--unfiltered input
+      sendOutput(OutputField, input);
   }
 }
