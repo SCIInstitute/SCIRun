@@ -38,12 +38,12 @@ namespace SCIRun
 {
   namespace Gui
   {
-    class SCISHARE ModuleDialogFactory
+    class SCISHARE ModuleDialogFactory : public ModuleDialogFactoryInterface
     {
     public:
       ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disablerAdd,
         ExecutionDisablingServiceFunction disablerRemove);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
+      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state) const override; 
 
       typedef std::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
       typedef std::map<std::string, DialogMaker> DialogMakerMap;

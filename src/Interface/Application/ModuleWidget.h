@@ -298,7 +298,6 @@ private:
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
-  static SharedPointer<class ModuleDialogFactory> dialogFactory_;
 	SharedPointer<DialogErrorControl> dialogErrorControl_;
 
   void movePortWidgets(int oldIndex, int newIndex);

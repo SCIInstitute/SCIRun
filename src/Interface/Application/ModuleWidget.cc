@@ -1184,8 +1184,6 @@ void ModuleWidget::setColorUnselected()
   Q_EMIT moduleSelected(false);
 }
 
-SharedPointer<ModuleDialogFactory> ModuleWidget::dialogFactory_;
-
 double ModuleWidget::highResolutionExpandFactor_ = 1;
 
 void ModuleWidget::makeOptionsDialog()
@@ -1194,10 +1192,11 @@ void ModuleWidget::makeOptionsDialog()
   {
     if (!dialog_)
     {
-      if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
-
-      dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
+      {
+        if (!ModuleDialogGeneric::factory())
+          ModuleDialogGeneric::setFactory(makeShared<ModuleDialogFactory>(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
+      }
+      dialog_ = ModuleDialogGeneric::factory()->makeDialog(moduleId_, theModule_->get_state());
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(dialog_, SIGNAL(executeActionTriggeredViaStateChange()), this, SLOT(executeTriggeredViaStateChange()));
