@@ -43,7 +43,7 @@ namespace SCIRun
   {
     namespace Thread
     {
-      class Mutex;
+      class NamedMutex;
     }
   }
 

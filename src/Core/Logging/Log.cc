@@ -27,7 +27,6 @@
 
 
 #include <Core/Logging/Log.h>
-#include <Core/Thread/Mutex.h>
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
@@ -121,7 +120,7 @@ Logger2 Log2::get()
     static std::mutex mutex;
     if (!logger_)
     {
-      Core::Thread::Guard g(mutex);
+      std::lock_guard<std::mutex> g(mutex);
       if (!logger_)
       {
         std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),

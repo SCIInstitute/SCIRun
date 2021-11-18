@@ -75,6 +75,7 @@ int mainImpl(int argc, const char* argv[], char **environment)
 #ifdef WIN32
 
 #include <windows.h>
+#include <shellapi.h>
 
 const char* utf8_encode(const std::wstring &wstr)
 {

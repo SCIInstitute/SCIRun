@@ -77,6 +77,7 @@ public:
 
   boost::optional<ConnectionId> firstConnectionId() const override;
   ModuleStateHandle moduleState() const override;
+  ModuleInterface* underlyingModule() const override { return module_; }
 
   /// @todo:
   // light interface

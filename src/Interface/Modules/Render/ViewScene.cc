@@ -203,7 +203,6 @@ namespace Gui {
 
           boost::optional<QPoint> savedPos_;
           QColor                                bgColor_                      {};
-          //QColor                                fogColor_                     {};
           ScaleBarData                              scaleBar_                     {};
           Render::ClippingPlaneManagerPtr clippingPlaneManager_;
           class Screenshot*                     screenshotTaker_              {nullptr};
@@ -213,7 +212,6 @@ namespace Gui {
           std::atomic<bool>                     pushingCameraState_           {false};
           glm::vec2 previousAutoRotate_ {0,0};
 
-          //geometries
           Modules::Visualization::TextBuilder               textBuilder_        {};
           Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
           std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
@@ -239,37 +237,31 @@ namespace Gui {
 
 }}
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSince(const std::chrono::system_clock::time_point& time) const
 {
   return timeSinceEpoch(std::chrono::system_clock::now()) - timeSinceEpoch(time);
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSince(unsigned long time) const
 {
   return timeSinceEpoch(std::chrono::system_clock::now()) - time;
 }
 
-//--------------------------------------------------------------------------------------------------
 unsigned long PreviousWidgetSelectionInfo::timeSinceEpoch(const std::chrono::system_clock::time_point& time) const
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count();
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasSameMousePosition(int x, int y) const
 {
   return lastMousePressEventX_ == x && lastMousePressEventY_ == y;
 }
 
-//--------------------------------------------------------------------------------------------------
 bool PreviousWidgetSelectionInfo::hasSameCameraTansform(const glm::mat4& mat) const
 {
   return previousCameraTransform_ == mat;
 }
 
-//--------------------------------------------------------------------------------------------------
 void PreviousWidgetSelectionInfo::widgetColorRestored()
 {
   timeWidgetColorRestored_ = std::chrono::system_clock::now();
@@ -439,8 +431,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, SIGNAL(cameraDistanceChangeForwarder()), this, SLOT(pullCameraDistance()));
 
-  state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
-  connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -1127,7 +1117,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
+  auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- newGeometryValue " + windowTitle().toStdString());
 
   auto spire = impl_->mSpire.lock();
   if (!spire)
@@ -1143,17 +1133,19 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   std::vector<std::string> validObjects;
   std::vector<GeometryBaseHandle> allGeoms;
 
-  // Grab the geomData transient value.
-  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-    if (!portGeometries)
+    // Grab the geomData transient value.
+    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+    if (geomDataTransient && !geomDataTransient->empty())
     {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return;
+      auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+      if (!portGeometries)
+      {
+        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+        return;
+      }
+      std::copy(portGeometries->begin(), portGeometries->end(), std::back_inserter(allGeoms));
     }
-    std::copy(portGeometries->begin(), portGeometries->end(), std::back_inserter(allGeoms));
   }
 
   if (impl_->scaleBarGeom_ && impl_->scaleBar_.visible)
@@ -1219,22 +1211,18 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
 
 void ViewSceneDialog::lockMutex()
 {
-  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if (mutex)
-    mutex->lock();
+  //logCritical("locking screenShotMutex--Dialog::lockMutex");
+  Modules::Render::ViewSceneLockManager::get(state_.get())->screenShotMutex().lock();
 }
 
 void ViewSceneDialog::unblockExecution()
 {
-  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if (mutex)
-  {
-    mutex->unlock();
-    std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
-    mutex->lock();
-  }
+  auto& mutex = Modules::Render::ViewSceneLockManager::get(state_.get())->screenShotMutex();
+  //logCritical("unlocking screenShotMutex--Dialog::unblockExecution");
+  mutex.unlock();
+  std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
+  //logCritical("locking screenShotMutex--Dialog::unblockExecution");
+  mutex.lock();
 }
 
 void ViewSceneDialog::frameFinished()
@@ -1838,7 +1826,7 @@ void ViewSceneDialog::selectObject(const int x, const int y, MouseButton button)
   auto geomDataPresent = false;
   {
     LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-    Guard lock(Modules::Render::ViewScene::mutex_.get());
+    auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- selectObject");
     LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
     auto spire = impl_->mSpire.lock();
@@ -1914,11 +1902,10 @@ void ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
-  Guard lock(Modules::Render::ViewScene::mutex_.get());
+  auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- restoreObjColor");
+  impl_->widgetColorChanger_.reset();
 
   LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
-
-  impl_->widgetColorChanger_.reset();
 }
 
 //--------------------------------------------------------------------------------------------------
