@@ -68,7 +68,6 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   ctorParams_(params),
   tagColor_(params.tagColor),
   tagName_(params.tagName),
-  dialogErrorControl_(params.dialogErrorControl),
   moduleSelectionGetter_(params.moduleSelectionGetter),
   defaultNotePositionGetter_(params.dnpg),
   preexecute_(params.preexecuteFunc),
@@ -178,7 +177,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   }
 
   latestModuleId_ = module->id().id_;
-  auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
+  auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
 
 #ifdef MODULE_POSITION_LOGGING

@@ -619,7 +619,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto subnetModule = factory.makeSubnet(name, modules, items);
   portRewiringMap_ = factory.getMap();
 
-  auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
+  auto moduleWidget = new SubnetWidget(this, name, subnetModule);
   auto proxy = setupModuleWidget(moduleWidget);
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
@@ -757,8 +757,8 @@ void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
   }
 }
 
-SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl,
-  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent), editor_(ed), name_(name)
+SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule,
+  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, parent), editor_(ed), name_(name)
 {
 }
 

@@ -32,8 +32,14 @@
 
 using namespace SCIRun::Gui;
 
-DialogErrorControl::DialogErrorControl(QWidget*) : counter_(0)
+DialogErrorControl::DialogErrorControl() : counter_(0)
 {
+}
+
+DialogErrorControl& DialogErrorControl::instance()
+{
+  static DialogErrorControl instance_;
+  return instance_;
 }
 
 bool DialogErrorControl::showDialog()

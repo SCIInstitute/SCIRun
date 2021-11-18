@@ -266,7 +266,7 @@ void SCIRunMainWindow::setupNetworkEditor()
     if (screen.height() > 1600 && screen.height() * screen.width() > 4096000) // 2560x1600
       highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
-  networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
+  networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 

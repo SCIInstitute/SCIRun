@@ -36,19 +36,17 @@ static const int MAX_DIALOGS_SHOWN = 5;
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl: public QObject
+class DialogErrorControl
 {
-	Q_OBJECT
 public:
-	explicit DialogErrorControl(QWidget* parent);
+  static DialogErrorControl& instance();
 	void increaseCounter();
 	bool showDialog();
-
-	public Q_SLOTS:
-		void resetCounter();
+	void resetCounter();
 
 private:
-		int counter_;
+  DialogErrorControl();
+	int counter_;
 };
 }
 }

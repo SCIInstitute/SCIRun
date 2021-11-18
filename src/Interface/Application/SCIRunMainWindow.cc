@@ -86,7 +86,6 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 
-  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
 
   setupPreferencesWindow();
@@ -301,7 +300,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
-  connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
+  connect(networkEditor_, &NetworkEditor::networkExecuted, []() { DialogErrorControl::instance().resetCounter(); });
 	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
 

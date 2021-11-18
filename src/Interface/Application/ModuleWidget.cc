@@ -338,7 +338,7 @@ namespace
   }
 }
 
-ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl,
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(id(theModule), true),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
@@ -353,8 +353,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   previousModuleState_(UNSET),
   moduleId_(id(theModule)),
   name_(name),
+  dialogs_(theModule),
   dockable_(nullptr),
-  dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(nullptr),
   outputPortLayout_(nullptr),
   deleting_(false),
@@ -364,11 +364,12 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   fillColorStateLookup(defaultBackgroundColor_);
 
   setupModuleActions();
-  setupLogging(ed);
+  dialogs_.setupLogging(ed, this, actionsMenu_->getAction("Show Log"));
 
   setCurrentIndex(buildDisplay(fullWidgetDisplay_.get(), name));
 
   makeOptionsDialog();
+
   createPorts(*theModule_);
   addPorts(currentIndex());
   updateProgrammablePorts();
@@ -418,19 +419,28 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   return 0;
 }
 
-void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
+void ModuleDialogs::setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction)
 {
-  dialogs_.logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, mainWindowWidget());
-  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), dialogs_.logWindow_, SLOT(show()));
-  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), dialogs_.logWindow_, SLOT(raise()));
-  connect(dialogs_.logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
-  connect(dialogs_.logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
+  //TODO: re-attach dialogErrorControl_ instance from Application level
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(module_->id().id_), displayer, mainWindowWidget());
+  if (showLogAction)
+  {
+    QObject::connect(showLogAction, SIGNAL(triggered()), logWindow_, SLOT(show()));
+    QObject::connect(showLogAction, SIGNAL(triggered()), logWindow_, SLOT(raise()));
+  }
+  else
+  {
+    qDebug() << "showLogAction null";
+  }
+  QObject::connect(logWindow_, &ModuleLogWindow::messageReceived, moduleWidget, &ModuleWidget::setLogButtonColor);
+  QObject::connect(logWindow_, &ModuleLogWindow::requestModuleVisible, moduleWidget, &ModuleWidget::requestModuleVisible);
 
-  LoggerHandle logger(makeShared<ModuleLogger>(dialogs_.logWindow_));
-  theModule_->setLogger(logger);
-  theModule_->setUpdaterFunc([this](int i) { updateProgressBarSignal(i); });
-  if (theModule_->hasUI())
-    theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
+  LoggerHandle logger(makeShared<ModuleLogger>(logWindow_));
+  module_->setLogger(logger);
+  if (moduleWidget)
+    module_->setUpdaterFunc([moduleWidget](int i) { moduleWidget->updateProgressBarSignal(i); });
+  if (module_->hasUI())
+    module_->setUiToggleFunc([moduleWidget](bool b){ if (moduleWidget->dockable()) moduleWidget->dockable()->setVisible(b); });
 }
 
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
@@ -498,6 +508,12 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
   }
 }
 
+void ModuleDialogs::connectDisplayLogButton(QAbstractButton* button)
+{
+  QObject::connect(button, SIGNAL(clicked()), logWindow_, SLOT(show()));
+  QObject::connect(button, SIGNAL(clicked()), logWindow_, SLOT(raise()));
+}
+
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 {
   connect(display->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
@@ -507,8 +523,7 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   }
   connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
-  connect(display->getLogButton(), SIGNAL(clicked()), dialogs_.logWindow_, SLOT(show()));
-  connect(display->getLogButton(), SIGNAL(clicked()), dialogs_.logWindow_, SLOT(raise()));
+  dialogs_.connectDisplayLogButton(display->getLogButton());
   connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }

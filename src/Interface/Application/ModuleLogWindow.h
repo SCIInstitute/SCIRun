@@ -38,7 +38,6 @@
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl;
 class ModuleErrorDisplayer;
 
 class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
@@ -46,7 +45,7 @@ class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 	Q_OBJECT
 
 public:
-  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, SharedPointer<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, QWidget* parent = nullptr);
   QString name() const { return moduleName_; }
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
@@ -59,7 +58,6 @@ Q_SIGNALS:
 private:
   QString moduleName_;
   ModuleErrorDisplayer* displayer_;
-	SharedPointer<DialogErrorControl> dialogErrorControl_;
 };
 
 class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface

@@ -201,7 +201,6 @@ private:
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
   QMap<QString, QMenu*> currentSubnetActions_;
-  SharedPointer<class DialogErrorControl> dialogErrorControl_;
   SharedPointer<class NetworkExecutionProgressBar> networkProgressBar_;
   SharedPointer<class GuiActionProvenanceConverter> commandConverter_;
   SharedPointer<class DefaultNotePositionGetter> defaultNotePositionGetter_;

@@ -59,7 +59,6 @@ class OutputPortWidget;
 class PositionProvider;
 class NetworkEditor;
 class PortWidgetManager;
-class DialogErrorControl;
 class ModuleDialogDockWidget;
 
 class ModuleWidgetDisplayBase
@@ -106,14 +105,22 @@ public:
 
 typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
+class ModuleErrorDisplayer;
+class ModuleWidget;
+
 class ModuleDialogs
 {
 public:
+  explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
+  void setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction);
+  void connectDisplayLogButton(QAbstractButton* button);
   void closeOptions();
   void destroyOptions();
   void destroyLog();
 //private:
   class ModuleDialogGeneric* options_ {nullptr};
+private:
+  Dataflow::Networks::ModuleHandle module_;
   class ModuleLogWindow* logWindow_ {nullptr};
 };
 
@@ -124,7 +131,6 @@ class ModuleWidget : public QStackedWidget,
 
 public:
   ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
-    SharedPointer<DialogErrorControl> dialogErrorControl,
     QWidget* parent = nullptr);
   ~ModuleWidget();
 
@@ -190,6 +196,7 @@ public:
   static QString allIcon;
 
   void setupPortSceneCollaborator(QGraphicsProxyWidget* proxy);
+  ModuleDialogDockWidget* dockable() { return dockable_; }
 
 public Q_SLOTS:
   bool executeWithSignals() override;
@@ -299,7 +306,7 @@ private:
   int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
-  void setupLogging(class ModuleErrorDisplayer* displayer);
+  void setupLogging(ModuleErrorDisplayer* displayer);
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
@@ -307,9 +314,7 @@ private:
   void setOutputPortSpacing(bool highlighted);
   void fillReplaceWithMenu(QMenu* menu);
 
-  boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
-
-	SharedPointer<DialogErrorControl> dialogErrorControl_;
+  std::unique_ptr<class ModuleActionsMenu> actionsMenu_;
 
   void movePortWidgets(int oldIndex, int newIndex);
   void addPortLayouts(int index);
@@ -343,7 +348,7 @@ class SubnetWidget : public ModuleWidget
 {
 	Q_OBJECT
 public:
-  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, QWidget* parent = nullptr);
   ~SubnetWidget();
   void postLoadAction() override;
   void deleteSubnetImmediately() { deleteSubnetImmediately_ = true; }

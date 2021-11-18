@@ -59,7 +59,6 @@ namespace SCIRun {
 
 namespace Gui {
 
-  class DialogErrorControl;
   class SubnetPortsBridgeProxyWidget;
 
   class CurrentModuleSelection
@@ -72,7 +71,7 @@ namespace Gui {
     virtual bool isClipboardXML() const = 0;
   };
 
-  //almost just want to pass a boost::function for this one.
+  //almost just want to pass a std::function for this one.
   class DefaultNotePositionGetter
   {
   public:
@@ -179,7 +178,6 @@ namespace Gui {
   class ConnectionLine;
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
-	class DialogErrorControl;
   class PortWidget;
   using PortRewiringMap = std::map<std::string, ConnectionLine*>;
 
@@ -187,7 +185,6 @@ namespace Gui {
   {
     SharedPointer<CurrentModuleSelection> moduleSelectionGetter;
     SharedPointer<DefaultNotePositionGetter> dnpg;
-    SharedPointer<DialogErrorControl> dialogErrorControl;
     PreexecuteFunc preexecuteFunc;
     TagColorFunc tagColor;
     TagNameFunc tagName;
@@ -452,7 +449,6 @@ namespace Gui {
     // unpacked constructor parameters
     TagColorFunc tagColor_;
     TagNameFunc tagName_;
-		SharedPointer<DialogErrorControl> dialogErrorControl_;
     SharedPointer<CurrentModuleSelection> moduleSelectionGetter_;
     SharedPointer<DefaultNotePositionGetter> defaultNotePositionGetter_;
     PreexecuteFunc preexecute_;

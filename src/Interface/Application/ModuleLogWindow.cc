@@ -37,9 +37,8 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, SharedPointer<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
-  displayer_(displayer),
-	dialogErrorControl_(dialogErrorControl)
+ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
+  displayer_(displayer)
 {
 	setupUi(this);
 	setModal(false);
@@ -67,9 +66,9 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  dialogErrorControl_->increaseCounter();
+  DialogErrorControl::instance().increaseCounter();
   auto errorText = "Error in " + moduleName_ + "\n" + message;
-  if (dialogErrorControl_->showDialog())
+  if (DialogErrorControl::instance().showDialog())
   {
     QMessageBox* msgBox = new QMessageBox(parentWidget());
     msgBox->setIcon(QMessageBox::Critical);
