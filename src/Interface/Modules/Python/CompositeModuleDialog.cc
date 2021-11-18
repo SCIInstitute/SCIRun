@@ -54,19 +54,28 @@ CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStat
 
 void CompositeModuleDialog::updateModuleUIButtons()
 {
-  qDebug() << "void updateModuleUIButtons();";
   auto moduleMap = transient_value_cast<SCIRun::Modules::Basic::ModuleIdMap>(state_->getTransientValue(Parameters::ModuleIdList));
 
-  qDebug() << "found map";
+  if (moduleMap.empty())
+  {
+    for (int i = 0; i < moduleUIgridLayout_->rowCount(); ++i)
+    {
+      for (int j = 0; j < moduleUIgridLayout_->columnCount(); ++j)
+      {
+        delete moduleUIgridLayout_->itemAtPosition(i, j)->widget();
+      }
+    }
+    return;
+  }
+
+  int i = 0;
   for (const auto& p : moduleMap)
   {
     qDebug() << p.first.c_str() << p.second.c_str();
-    auto hbox = new QHBoxLayout;
-    auto ui = new QPushButton(p.first.c_str());
-    hbox->addWidget(ui);
+    auto ui = new QPushButton(p.first.c_str() + QString(" UI"));
     auto log = new QPushButton(p.first.c_str() + QString(" log"));
-    hbox->addWidget(log);
-    moduleButtonVerticalLayout_->addLayout(hbox);
+    moduleUIgridLayout_->addWidget(ui, i, 0);
+    moduleUIgridLayout_->addWidget(log, i, 1);
+    ++i;
   }
-
 }

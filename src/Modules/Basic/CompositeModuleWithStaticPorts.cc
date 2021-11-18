@@ -92,7 +92,7 @@ void CompositeModuleWithStaticPorts::execute()
       const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
       impl_->initializeSubnet(xml);
     }
-    
+
     auto resultFuture = impl_->subNet_->executeAll();
     resultFuture.wait();
     const auto result = resultFuture.get();
@@ -123,7 +123,13 @@ namespace
 
 void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromState)
 {
-  module_->remark("Composite module concept part 2");
+  if (networkXmlFromState.empty())
+  {
+    module_->get_state()->setTransientValue(Parameters::ModuleIdList, ModuleIdMap(), true);
+    return;
+  }
+
+  //module_->remark("Composite module concept part 2");
 
   subNet_ = module_->network()->createSubnetwork();
   if (subNet_)
@@ -141,9 +147,17 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     return;
   }
 
-  std::istringstream istr(networkXmlFromState);
-  const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
-  subNet_->loadXmlDataIntoNetwork(xml->network.data());
+  try
+  {
+    std::istringstream istr(networkXmlFromState);
+    const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
+    subNet_->loadXmlDataIntoNetwork(xml->network.data());
+  }
+  catch (...)
+  {
+    module_->error("Error reading network xml");
+    return;
+  }
   const auto network = subNet_->getNetwork();
 
   auto wrapperModuleInputs = module_->inputPorts();
