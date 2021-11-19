@@ -1,6 +1,6 @@
 
-#ifndef CORE_ALGORITHMS_ParticleInCell_GravSimpleAlgo_H
-#define CORE_ALGORITHMS_ParticleInCell_GravSimpleAlgo_H
+#ifndef CORE_ALGORITHMS_ParticleInCell_GravSimpleComputeAlgo_H
+#define CORE_ALGORITHMS_ParticleInCell_GravSimpleComputeAlgo_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>

@@ -79,6 +79,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Core_Algorithms_Visualization
   Core_Algorithms_Legacy_FiniteElements
   Core_Algorithms_Legacy_Converter
+  Algorithms_ParticleInCell
   ${SCI_BOOST_LIBRARY}
 )
 

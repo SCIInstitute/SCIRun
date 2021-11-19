@@ -2,7 +2,7 @@
 "module":
     {
     "name": "GravSimpleCompute",
-    "namespace": "Math",
+    "namespace": "ParticleInCell",
     "status": "new module",
     "description": "This module in ParticleInCell has UI and Algo",
     "header": "Modules/ParticleInCell/GravSimpleCompute.h"
@@ -11,7 +11,7 @@
 "algorithm":
     {
     "name": "GravSimpleComputeAlgo",
-    "namespace": "Math",
+    "namespace": "ParticleInCell",
     "header": "Core/Algorithms/ParticleInCell/GravSimpleComputeAlgo.h"
     },
 

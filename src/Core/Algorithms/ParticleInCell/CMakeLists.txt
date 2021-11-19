@@ -26,20 +26,20 @@
 #
 
 
-SET(Algorithms_Math_SRCS
+SET(Algorithms_ParticleInCell_SRCS
   GravSimpleComputeAlgo.cc
 )
 
-SET(Algorithms_Math_HEADERS
+SET(Algorithms_ParticleInCell_HEADERS
   GravSimpleComputeAlgo.h
 )
 
-SCIRUN_ADD_LIBRARY(Algorithms_Math
-  ${Algorithms_Math_HEADERS}
-  ${Algorithms_Math_SRCS}
+SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell
+  ${Algorithms_ParticleInCell_HEADERS}
+  ${Algorithms_ParticleInCell_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_Math
+TARGET_LINK_LIBRARIES(Algorithms_ParticleInCell
   Core_Datatypes
   Core_Thread
   Algorithms_Base
@@ -51,4 +51,4 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_ParticleInCell)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+#SCIRUN_ADD_TEST_DIR(Tests)
