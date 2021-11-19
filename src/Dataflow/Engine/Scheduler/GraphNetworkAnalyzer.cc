@@ -42,7 +42,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Engine::NetworkGraph;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkStateInterface& network, const ModuleFilter& moduleFilter, bool precompute)
   : network_(network), moduleFilter_(moduleFilter), moduleCount_(0)
 {
   if (precompute)
@@ -185,7 +185,7 @@ namespace SCIRun
 }
 
 ExecuteSingleModule::ExecuteSingleModule(ModuleHandle mod,
-  const NetworkInterface& network,
+  const NetworkStateInterface& network,
   bool executeUpstream) : module_(mod), //network_(network),
   executeUpstream_(executeUpstream)
 {

@@ -93,33 +93,12 @@ ENDIF()
 OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
-# Travis CI build needs to be as slim as possible
-OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
-MARK_AS_ADVANCED(TRAVIS_BUILD)
-
-IF(TRAVIS_BUILD)
-  SET(BUILD_TESTING OFF)
-  SET(DOWNLOAD_TOOLKITS OFF)
-  SET(BUILD_WITH_SCIRUN_DATA OFF)
-  IF(APPLE)
-    # build everything; qt flag is in travis.yml
-  ELSE()
-    #IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-    #  SET(BUILD_HEADLESS ON)
-    #  SET(BUILD_WITH_PYTHON OFF)
-    #ELSE()
-      # try building everything with clang!
-    #ENDIF()
-  ENDIF()
-ENDIF()
-
-###########################################
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
-  IF(TRAVIS_BUILD OR UNIX)
+  IF(UNIX)
     SET(QT_MIN_VERSION "5.4")
   ELSE()
-    SET(QT_MIN_VERSION "5.13")
+    SET(QT_MIN_VERSION "5.15.2")
   ENDIF()
 
   SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
@@ -234,7 +213,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
-    "-DTRAVIS_BUILD:BOOL=${TRAVIS_BUILD}"
     "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
     "-DUSER_PYTHON_VERSION_MAJOR:STRING=${USER_PYTHON_VERSION_MAJOR}"
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"

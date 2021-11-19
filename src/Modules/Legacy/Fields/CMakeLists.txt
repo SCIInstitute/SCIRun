@@ -69,6 +69,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CreateFieldData.h
   SplitFieldByDomain.h
   ApplyMappingMatrix.h
+  ApplyFilterToFieldData.h
   MapFieldDataFromElemToNode.h
   MapFieldDataFromNodeToElem.h
   MapFieldDataOntoElems.h
@@ -99,6 +100,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
+  CompositeModuleTestGFB_FM.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -122,7 +124,7 @@ SET(Modules_Legacy_Fields_SRCS
   AlignMeshBoundingBoxes.cc
   ProjectPointsOntoMesh.cc
   GetMeshQualityField.cc
-  #ApplyFilterToFieldData.cc
+  ApplyFilterToFieldData.cc
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
@@ -213,6 +215,7 @@ SET(Modules_Legacy_Fields_SRCS
   ReorderNormalCoherently.cc
   InterfaceWithTetGen.cc
   GenerateNodeNormals.cc
+  CompositeModuleTestGFB_FM.cc
 )
 
 IF(WITH_TETGEN)
@@ -232,6 +235,8 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
+  #TODO: remove
+  Core_Serialization_Network
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
   Core_Basis

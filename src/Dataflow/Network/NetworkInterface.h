@@ -36,9 +36,11 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <vector>
+#include <future>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
+  using ThreadPtr = SharedPointer<std::thread>;
 namespace Dataflow {
 namespace Networks {
 
@@ -71,12 +73,12 @@ namespace Networks {
   };
 
 
-  class SCISHARE NetworkInterface : public ExecutableLookup
+  class SCISHARE NetworkStateInterface : public ExecutableLookup
   {
   public:
     typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
 
-    virtual ~NetworkInterface() {}
+    virtual ~NetworkStateInterface() {}
     virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
     virtual bool remove_module(const ModuleId& id) = 0;
     virtual size_t nmodules() const = 0;
@@ -98,6 +100,14 @@ namespace Networks {
     virtual std::string toString() const = 0;
   };
 
+  class SCISHARE NetworkSerializationInterface
+  {
+  public:
+    virtual ~NetworkSerializationInterface() = default;
+    virtual std::map<std::string, std::pair<ModuleLookupInfo, ModuleStateHandle>> modules() const = 0;
+    virtual std::vector<ConnectionDescription> sortedConnections() const = 0;
+  };
+
   class SCISHARE ConnectionMakerService
   {
   public:
@@ -105,15 +115,25 @@ namespace Networks {
     virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
-  class SCISHARE NetworkEditorControllerInterface : public ConnectionMakerService
+  struct SCISHARE NetworkAppendInfo
+  {
+    size_t newModuleStartIndex;
+    std::map<std::string, std::string> moduleIdMapping;
+  };
+
+  class SCISHARE NetworkInterface : public ConnectionMakerService
   {
   public:
-    virtual ~NetworkEditorControllerInterface() {}
-    virtual NetworkHandle getNetwork() const = 0;
-    virtual void setNetwork(NetworkHandle nh) = 0;
+    virtual ~NetworkInterface() {}
+    virtual NetworkStateHandle getNetwork() const = 0;
     virtual ModuleHandle addModule(const ModuleLookupInfo& info) = 0;
     virtual void enableSignals() = 0;
     virtual void disableSignals() = 0;
+    virtual std::future<int> executeAll() = 0;
+    virtual void loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data) = 0;
+    virtual NetworkAppendInfo appendXmlData(NetworkSerializationInterfaceHandle data) = 0;
+    virtual NetworkHandle createSubnetwork() const = 0;
+    virtual void setExecutableLookup(const ExecutableLookup* lookup) = 0;
   };
 
 }}}
