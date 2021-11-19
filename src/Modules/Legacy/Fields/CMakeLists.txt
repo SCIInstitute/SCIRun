@@ -69,6 +69,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CreateFieldData.h
   SplitFieldByDomain.h
   ApplyMappingMatrix.h
+  ApplyFilterToFieldData.h
   MapFieldDataFromElemToNode.h
   MapFieldDataFromNodeToElem.h
   MapFieldDataOntoElems.h
@@ -123,7 +124,7 @@ SET(Modules_Legacy_Fields_SRCS
   AlignMeshBoundingBoxes.cc
   ProjectPointsOntoMesh.cc
   GetMeshQualityField.cc
-  #ApplyFilterToFieldData.cc
+  ApplyFilterToFieldData.cc
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc

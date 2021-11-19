@@ -26,26 +26,39 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
+#ifndef MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
+#define MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
-
-  class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
+  namespace Core::Algorithms::Fields 
   {
-  public:
-			BuildMatrixOfSurfaceNormalsAlgo();
-			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
-			AlgorithmOutput run(const AlgorithmInput& input) const override;
-  };
+    ALGORITHM_PARAMETER_DECL(Erode)
+    ALGORITHM_PARAMETER_DECL(Dilate)
+  }
+  namespace Modules {
+    namespace Fields {
 
-}}}}
+      class SCISHARE ApplyFilterToFieldData : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ApplyFilterToFieldData();
+
+        void execute() override;
+        void setStateDefaults() override;
+
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
+
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+      };
+
+    }
+  }
+}
 
 #endif

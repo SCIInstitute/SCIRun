@@ -25,27 +25,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ApplyFilterToFieldDialog_H
+#define INTERFACE_MODULES_ApplyFilterToFieldDialog_H
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Fields/ui_ApplyFilterToFieldData.h"
+#include <Interface/Modules/Fields/share.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+namespace SCIRun::Gui {
+class SCISHARE ApplyFilterToFieldDataDialog : public ModuleDialogGeneric, public Ui::ApplyFilterToFieldData
+{
+  Q_OBJECT
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
-
-  class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
-  {
-  public:
-			BuildMatrixOfSurfaceNormalsAlgo();
-			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
-			AlgorithmOutput run(const AlgorithmInput& input) const override;
-  };
-
-}}}}
+ public:
+  ApplyFilterToFieldDataDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+};
+}
 
 #endif
