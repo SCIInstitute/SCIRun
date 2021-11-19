@@ -81,7 +81,7 @@ void ApplyFilterToFieldData::execute()
       {
         THROW_ALGORITHM_PROCESSING_ERROR("Error in dilate algo");
       }
-      
+      input = output;
     }
     if (doErode)
     {
