@@ -255,7 +255,7 @@ namespace
       auto output = std::dynamic_pointer_cast<OutputPortInterface>(port_);
       if (output)
       {
-        return output->getData();
+        return output->peekData();
       }
       return boost::none;
     }

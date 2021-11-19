@@ -134,6 +134,7 @@ public:
   bool isInput() const override { return false; } //boo
   bool isDynamic() const override { return false; } /// @todo: design dynamic output ports
   bool hasData() const override;
+  Core::Datatypes::DatatypeHandle peekData() const override;
   void attach(Connection* conn) override;
   PortDataDescriber getPortDataDescriber() const override;
   boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;

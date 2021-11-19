@@ -249,6 +249,11 @@ void OutputPort::attach(Connection* conn)
   Port::attach(conn);
 }
 
+DatatypeHandle OutputPort::peekData() const 
+{
+  return source_->peekData();
+}
+
 PortDataDescriber OutputPort::getPortDataDescriber() const
 {
   return [this]() { return source_->describeData(); };
