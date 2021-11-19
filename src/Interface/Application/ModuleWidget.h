@@ -48,6 +48,7 @@ class QDockWidget;
 class QProgressBar;
 class QTimeLine;
 class QGroupBox;
+class ModuleOptionsDialogConfiguration;
 class PortBuilder;
 
 namespace SCIRun {
@@ -114,13 +115,14 @@ public:
   explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
   void setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction);
   void connectDisplayLogButton(QAbstractButton* button);
+  bool hasOptions() const { return options_ != nullptr; }
   void closeOptions();
   void destroyOptions();
   void destroyLog();
-//private:
   class ModuleDialogGeneric* options_ {nullptr};
 private:
   Dataflow::Networks::ModuleHandle module_;
+
   class ModuleLogWindow* logWindow_ {nullptr};
 };
 
@@ -167,6 +169,7 @@ public:
   virtual void postLoadAction();
 
   bool guiVisible() const;
+  bool hasOptions() const;
 
   static const int SMALL_PORT_SPACING = 3;
   static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 2;
@@ -342,6 +345,7 @@ private:
   QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;
+  friend class ::ModuleOptionsDialogConfiguration;
 };
 
 class SubnetWidget : public ModuleWidget

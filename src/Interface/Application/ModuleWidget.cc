@@ -739,6 +739,11 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   builder.buildInputs(this, moduleInfoProvider);
 }
 
+bool ModuleWidget::hasOptions() const
+{
+  return dialogs_.hasOptions();
+}
+
 void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const
 {
   const auto moduleId = moduleInfoProvider.id();
@@ -1074,7 +1079,7 @@ ModuleWidget::~ModuleWidget()
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
-  if (dialogs_.options_)
+  if (hasOptions())
     removeWidgetFromExecutionDisableList(dialogs_.options_->getExecuteAction());
 
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
@@ -1216,61 +1221,85 @@ void ModuleWidget::setColorUnselected()
 
 double ModuleWidget::highResolutionExpandFactor_ = 1;
 
+class ModuleOptionsDialogConfiguration
+{
+public:
+  explicit ModuleOptionsDialogConfiguration(ModuleWidget* widget) : moduleWidget_(widget) {}
+  void config(ModuleDialogGeneric* options)
+  {
+    addWidgetToExecutionDisableList(options->getExecuteAction());
+    QObject::connect(options, SIGNAL(executeActionTriggered()), moduleWidget_, SLOT(executeButtonPushed()));
+    QObject::connect(options, SIGNAL(executeActionTriggeredViaStateChange()), moduleWidget_, SLOT(executeTriggeredViaStateChange()));
+    QObject::connect(moduleWidget_, SIGNAL(moduleExecuted()), options, SLOT(moduleExecuted()));
+    QObject::connect(moduleWidget_, SIGNAL(moduleSelected(bool)), options, SLOT(moduleSelected(bool)));
+    QObject::connect(moduleWidget_, SIGNAL(dynamicPortChanged(const std::string&, bool)), moduleWidget_, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+    QObject::connect(options, SIGNAL(setStartupNote(const QString&)), moduleWidget_, SLOT(setStartupNote(const QString&)));
+    QObject::connect(options, SIGNAL(fatalError(const QString&)), moduleWidget_, SLOT(handleDialogFatalError(const QString&)));
+    QObject::connect(options, SIGNAL(executionLoopStarted()), moduleWidget_, SIGNAL(disableWidgetDisabling()));
+    QObject::connect(options, SIGNAL(executionLoopHalted()), moduleWidget_, SIGNAL(reenableWidgetDisabling()));
+    QObject::connect(options, SIGNAL(closeButtonClicked()), moduleWidget_, SLOT(toggleOptionsDialog()));
+    QObject::connect(options, SIGNAL(helpButtonClicked()), moduleWidget_, SLOT(launchDocumentation()));
+    QObject::connect(options, SIGNAL(findButtonClicked()), moduleWidget_, SIGNAL(findInNetwork()));
+
+    configDockable(options);
+
+    if (!moduleWidget_->isViewScene_)
+      options->setupButtonBar();
+
+    if (ModuleWidget::highResolutionExpandFactor_ > 1 && !moduleWidget_->isViewScene_)
+    {
+      options->setFixedHeight(options->size().height() * ModuleWidget::highResolutionExpandFactor_);
+      options->setFixedWidth(options->size().width() * (((ModuleWidget::highResolutionExpandFactor_ - 1) * 0.5) + 1));
+    }
+
+    if (ModuleWidget::highResolutionExpandFactor_ > 1 && moduleWidget_->isViewScene_)
+      options->adjustToolbar();
+
+    options->pull();
+  }
+
+  ModuleDialogDockWidget* configDockable(ModuleDialogGeneric* options)
+  {
+    auto dockable = new ModuleDialogDockWidget(QString::fromStdString(moduleWidget_->moduleId_), nullptr);
+    dockable->setObjectName(options->windowTitle());
+    dockable->setWidget(options);
+    options->setDockable(dockable);
+
+    dockable->setMinimumSize(options->minimumSize());
+    dockable->setAllowedAreas(moduleWidget_->allowedDockArea());
+    dockable->setAutoFillBackground(true);
+    mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable);
+    dockable->setFloating(true);
+    dockable->hide();
+    QObject::connect(dockable, SIGNAL(visibilityChanged(bool)), moduleWidget_, SLOT(colorOptionsButton(bool)));
+    QObject::connect(dockable, SIGNAL(topLevelChanged(bool)), moduleWidget_, SLOT(updateDockWidgetProperties(bool)));
+
+    if (moduleWidget_->isViewScene_ && Application::Instance().parameters()->isRegressionMode())
+    {
+      dockable->show();
+      dockable->setFloating(true);
+    }
+    return dockable;
+  }
+private:
+  ModuleWidget* moduleWidget_;
+};
+
 void ModuleWidget::makeOptionsDialog()
 {
   if (theModule_->hasUI())
   {
-    if (!dialogs_.options_)
+    if (!dialogs_.hasOptions())
     {
       {
         if (!ModuleDialogGeneric::factory())
           ModuleDialogGeneric::setFactory(makeShared<ModuleDialogFactory>(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
       }
       dialogs_.options_ = ModuleDialogGeneric::factory()->makeDialog(moduleId_, theModule_->get_state());
-      addWidgetToExecutionDisableList(dialogs_.options_->getExecuteAction());
-      connect(dialogs_.options_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
-      connect(dialogs_.options_, SIGNAL(executeActionTriggeredViaStateChange()), this, SLOT(executeTriggeredViaStateChange()));
-      connect(this, SIGNAL(moduleExecuted()), dialogs_.options_, SLOT(moduleExecuted()));
-      connect(this, SIGNAL(moduleSelected(bool)), dialogs_.options_, SLOT(moduleSelected(bool)));
-      connect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
-      connect(dialogs_.options_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
-      connect(dialogs_.options_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
-      connect(dialogs_.options_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
-      connect(dialogs_.options_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
-      connect(dialogs_.options_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
-      connect(dialogs_.options_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
-      connect(dialogs_.options_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
-      dockable_ = new ModuleDialogDockWidget(QString::fromStdString(moduleId_), nullptr);
-      dockable_->setObjectName(dialogs_.options_->windowTitle());
-      dockable_->setWidget(dialogs_.options_);
-      dialogs_.options_->setDockable(dockable_);
-      if (!isViewScene_)
-        dialogs_.options_->setupButtonBar();
-      dockable_->setMinimumSize(dialogs_.options_->minimumSize());
-      dockable_->setAllowedAreas(allowedDockArea());
-      dockable_->setAutoFillBackground(true);
-      mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
-      dockable_->setFloating(true);
-      dockable_->hide();
-      connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
-      connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
-      if (isViewScene_ && Application::Instance().parameters()->isRegressionMode())
-      {
-        dockable_->show();
-        dockable_->setFloating(true);
-      }
-
-      if (highResolutionExpandFactor_ > 1 && !isViewScene_)
-      {
-        dialogs_.options_->setFixedHeight(dialogs_.options_->size().height() * highResolutionExpandFactor_);
-        dialogs_.options_->setFixedWidth(dialogs_.options_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
-      }
-
-      if (highResolutionExpandFactor_ > 1 && isViewScene_)
-        dialogs_.options_->adjustToolbar();
-
-      dialogs_.options_->pull();
+      ModuleOptionsDialogConfiguration config(this);
+      config.config(dialogs_.options_);
+      dockable_ = config.configDockable(dialogs_.options_);
     }
   }
 }
