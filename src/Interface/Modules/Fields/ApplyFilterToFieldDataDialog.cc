@@ -26,26 +26,25 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
+#include <Interface/Modules/Fields/ApplyFilterToFieldDataDialog.h>
+#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
+ApplyFilterToFieldDataDialog::ApplyFilterToFieldDataDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-  class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
-  {
-  public:
-			BuildMatrixOfSurfaceNormalsAlgo();
-			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
-			AlgorithmOutput run(const AlgorithmInput& input) const override;
-  };
-
-}}}}
-
-#endif
+  addCheckBoxManager(dilateCheckBox_, Parameters::Dilate);
+  addCheckBoxManager(erodeCheckBox_, Parameters::Erode);
+  addSpinBoxManager(iterationsSpinBox_, Variables::MaxIterations);
+}
