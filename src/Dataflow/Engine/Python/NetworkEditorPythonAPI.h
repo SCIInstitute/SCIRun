@@ -59,7 +59,6 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_transient_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_transient_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
     static std::string scirun_get_module_input_type(const std::string& moduleId, int portIndex);
-    //static std::string scirun_get_module_output_type(const std::string& moduleId, int portIndex);
 
     //TODO: these don't work on Mac
     static SharedPointer<PyDatatype> scirun_get_module_input_object_index(const std::string& moduleId, int portIndex);
@@ -70,6 +69,8 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_input_value(const std::string& moduleId, const std::string& portName);
 
     static boost::python::dict get_input_data(const std::string& moduleId);
+    static boost::python::dict get_output_data(const std::string& moduleId);
+    static std::string set_output_data(const std::string& moduleId, const boost::python::dict& outputMap);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);

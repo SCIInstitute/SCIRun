@@ -430,31 +430,48 @@ boost::python::dict NetworkEditorPythonAPI::get_input_data(const std::string& mo
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    for (int i = 0; i < module->input()->size(); ++i)
+    auto inputs = module->input();
+    for (int i = 0; i < inputs->size(); ++i)
     {
-      auto port = module->input()->getitem(i);
+      auto port = inputs->getitem(i);
       if (port && port->data())
       {
-        try
-        {
-          allInputs[port->id()] = port->data()->value();
-        }
-        catch (std::exception& e)
-        {
-          logWarning("!!! ERROR get_input_data {}", e.what());
-        }
-        catch (const char* ee)
-        {
-          logWarning("!!! ERROR get_input_data {}", ee);
-        }
-        catch (...)
-        {
-          logWarning("!!! ERROR get_input_data ???");
-        }
+        allInputs[port->id()] = port->data()->value();
       }
     }
   }
   return allInputs;
+}
+
+boost::python::dict NetworkEditorPythonAPI::get_output_data(const std::string& moduleId)
+{
+  logCritical("get_output_data {}", "begins");
+  boost::python::dict allOutputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    auto outputs = module->output();
+    logCritical("get_output_data {}", outputs->size());
+    for (int i = 0; i < outputs->size(); ++i)
+    {
+      logCritical("get_output_data {}", i);
+      auto port = outputs->getitem(i);
+      logCritical("get_output_data {}", port->id());
+      if (port && port->data())
+      {
+        logCritical("get_output_data {}", "data found");
+        allOutputs[port->id()] = port->data()->value();
+      }
+    }
+  }
+  return allOutputs;
+}
+
+std::string NetworkEditorPythonAPI::set_output_data(const std::string& moduleId, const boost::python::dict& outputMap)
+{
+  (void)moduleId;
+  (void)outputMap;
+  return "not implemented";
 }
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(const std::string& moduleId, const std::string& portName)

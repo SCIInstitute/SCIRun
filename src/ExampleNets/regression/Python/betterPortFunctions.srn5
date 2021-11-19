@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -188,6 +188,94 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateStandardMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateStandardMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Columns</name>
+								</first>
+								<second>
+									<name>Columns</name>
+									<value object_id="_11">
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MatrixType</name>
+								</first>
+								<second>
+									<name>MatrixType</name>
+									<value object_id="_12">
+										<which>2</which>
+										<value>One</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_13">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Rows</name>
+								</first>
+								<second>
+									<name>Rows</name>
+									<value object_id="_14">
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Size</name>
+								</first>
+								<second>
+									<name>Size</name>
+									<value object_id="_15">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>StartPointer</name>
+								</first>
+								<second>
+									<name>StartPointer</name>
+									<value object_id="_16">
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>InterfaceWithPython:0</first>
 				<second>
 					<module>
@@ -205,7 +293,7 @@
 								</first>
 								<second>
 									<name>InputField:0</name>
-									<value object_id="_11">
+									<value object_id="_17">
 										<which>2</which>
 										<value>fieldInput1</value>
 									</value>
@@ -217,7 +305,7 @@
 								</first>
 								<second>
 									<name>InputMatrix:0</name>
-									<value object_id="_12">
+									<value object_id="_18">
 										<which>2</which>
 										<value>matrixInput1</value>
 									</value>
@@ -229,7 +317,7 @@
 								</first>
 								<second>
 									<name>InputMatrix:1</name>
-									<value object_id="_13">
+									<value object_id="_19">
 										<which>2</which>
 										<value>matrixInput2</value>
 									</value>
@@ -241,7 +329,7 @@
 								</first>
 								<second>
 									<name>NumberOfRetries</name>
-									<value object_id="_14">
+									<value object_id="_20">
 										<which>0</which>
 										<value>50</value>
 									</value>
@@ -253,7 +341,7 @@
 								</first>
 								<second>
 									<name>PollingIntervalMilliseconds</name>
-									<value object_id="_15">
+									<value object_id="_21">
 										<which>0</which>
 										<value>200</value>
 									</value>
@@ -265,7 +353,7 @@
 								</first>
 								<second>
 									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_16">
+									<value object_id="_22">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -277,7 +365,7 @@
 								</first>
 								<second>
 									<name>PythonCode</name>
-									<value object_id="_17">
+									<value object_id="_23">
 										<which>2</which>
 										<value># Insert your Python code here. The SCIRun API package is automatically imported.
 
@@ -285,10 +373,29 @@ m = matrixInput1
 print(m)
 matrixOutput1 = m
 
+m11 = matrixInput1[1][1]
+print(m11)
+
+f = fieldInput1
+print(f)
+fieldOutput1 = f
+
+print(&quot;Fieldtype: &quot;)
+print(f[&quot;fieldtype&quot;])
+print(fieldInput1[&quot;fieldtype&quot;])
+
 mm = get_input_data(%moduleId%)
 print(mm)
 
-print(mm[&quot;InputMatrix:0&quot;])</value>
+print(mm[&quot;InputMatrix:0&quot;])
+
+print(get_input_data(&quot;ReportMatrixInfo:2&quot;))
+
+print(&quot;Here goes output:&quot;)
+print(get_output_data(%moduleId%))
+
+print(&quot;Upstream output:&quot;)
+print(get_output_data(&quot;CreateMatrix:1&quot;))</value>
 									</value>
 								</second>
 							</item>
@@ -298,7 +405,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputField1Name</name>
-									<value object_id="_18">
+									<value object_id="_24">
 										<which>2</which>
 										<value>fieldOutput1</value>
 									</value>
@@ -310,7 +417,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputField2Name</name>
-									<value object_id="_19">
+									<value object_id="_25">
 										<which>2</which>
 										<value>fieldOutput2</value>
 									</value>
@@ -322,7 +429,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputField3Name</name>
-									<value object_id="_20">
+									<value object_id="_26">
 										<which>2</which>
 										<value>fieldOutput3</value>
 									</value>
@@ -334,7 +441,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputMatrix1Name</name>
-									<value object_id="_21">
+									<value object_id="_27">
 										<which>2</which>
 										<value>matrixOutput1</value>
 									</value>
@@ -346,7 +453,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputMatrix2Name</name>
-									<value object_id="_22">
+									<value object_id="_28">
 										<which>2</which>
 										<value>matrixOutput2</value>
 									</value>
@@ -358,7 +465,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputMatrix3Name</name>
-									<value object_id="_23">
+									<value object_id="_29">
 										<which>2</which>
 										<value>matrixOutput3</value>
 									</value>
@@ -370,7 +477,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputString1Name</name>
-									<value object_id="_24">
+									<value object_id="_30">
 										<which>2</which>
 										<value>stringOutput1</value>
 									</value>
@@ -382,7 +489,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputString2Name</name>
-									<value object_id="_25">
+									<value object_id="_31">
 										<which>2</which>
 										<value>stringOutput2</value>
 									</value>
@@ -394,7 +501,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonOutputString3Name</name>
-									<value object_id="_26">
+									<value object_id="_32">
 										<which>2</which>
 										<value>stringOutput3</value>
 									</value>
@@ -406,10 +513,38 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>PythonTopLevelCode</name>
-									<value object_id="_27">
+									<value object_id="_33">
 										<which>2</which>
 										<value># Main namespace/top level context code goes here; for example, import statements and global variables.
 # This code will be executed before the &apos;Code&apos; tab, and no input/output variables are available.</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_34">
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -435,7 +570,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_28">
+									<value object_id="_35">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -463,7 +598,35 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 								</first>
 								<second>
 									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_29">
+									<value object_id="_36">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_37">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -475,7 +638,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -526,6 +689,30 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateStandardMatrix:0</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InterfaceWithPython:0</moduleId1_>
+				<port1_>
+					<name>PythonField1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>InterfaceWithPython:0</moduleId1_>
 				<port1_>
 					<name>PythonMatrix1</name>
@@ -540,7 +727,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -564,10 +751,24 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 			</second>
 		</item>
 		<item>
+			<first>CreateStandardMatrix:0</first>
+			<second>
+				<first>-4.72000000000000000e+02</first>
+				<second>1.50000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
 			<first>InterfaceWithPython:0</first>
 			<second>
 				<first>1.00000000000000000e+01</first>
 				<second>1.00000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
+			<second>
+				<first>1.90000000000000000e+01</first>
+				<second>2.73000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -584,6 +785,13 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 				<second>1.85000000000000000e+02</second>
 			</second>
 		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-4.34000000000000000e+02</first>
+				<second>1.38000000000000000e+02</second>
+			</second>
+		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
@@ -594,7 +802,7 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>6</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -609,7 +817,15 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 			<second>-1</second>
 		</item>
 		<item>
+			<first>CreateStandardMatrix:0</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>InterfaceWithPython:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -618,6 +834,10 @@ print(mm[&quot;InputMatrix:0&quot;])</value>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
