@@ -30,6 +30,7 @@
 
 #include <Python.h>
 #include <iostream>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <boost/range/adaptors.hpp>
@@ -421,6 +422,39 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value_inde
   if (pyData)
     return pyData->value();
   return {};
+}
+
+boost::python::dict NetworkEditorPythonAPI::get_input_data(const std::string& moduleId)
+{
+  boost::python::dict allInputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    for (int i = 0; i < module->input()->size(); ++i)
+    {
+      auto port = module->input()->getitem(i);
+      if (port && port->data())
+      {
+        try
+        {
+          allInputs[port->id()] = port->data()->value();
+        }
+        catch (std::exception& e)
+        {
+          logWarning("!!! ERROR get_input_data {}", e.what());
+        }
+        catch (const char* ee)
+        {
+          logWarning("!!! ERROR get_input_data {}", ee);
+        }
+        catch (...)
+        {
+          logWarning("!!! ERROR get_input_data ???");
+        }
+      }
+    }
+  }
+  return allInputs;
 }
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(const std::string& moduleId, const std::string& portName)

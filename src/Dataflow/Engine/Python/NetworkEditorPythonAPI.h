@@ -69,6 +69,8 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_input_value_index(const std::string& moduleId, int portIndex);
     static boost::python::object scirun_get_module_input_value(const std::string& moduleId, const std::string& portName);
 
+    static boost::python::dict get_input_data(const std::string& moduleId);
+
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
