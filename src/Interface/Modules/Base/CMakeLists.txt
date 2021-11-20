@@ -31,6 +31,7 @@ SET(Interface_Modules_Base_FORMS
   ParserHelp.ui
   ModuleButtonBar.ui
   SubnetDialog.ui
+  ModuleLogWindow.ui
   CustomWidgets/QtHistogramWidget.ui
 )
 
@@ -48,6 +49,8 @@ SET(Interface_Modules_Base_HEADERS_M
   WidgetSlotManagers.h
   HasParserHelpDialog.h
   ModuleButtonBar.h
+  ModuleDialogManager.h
+  ModuleLogWindow.h
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
@@ -69,6 +72,8 @@ SET(Interface_Modules_Base_SOURCES
   WidgetSlotManagers.cc
   HasParserHelpDialog.cc
   ModuleButtonBar.cc
+  ModuleDialogManager.cc
+  ModuleLogWindow.cc
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc

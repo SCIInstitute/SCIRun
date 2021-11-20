@@ -110,24 +110,6 @@ class ModuleErrorDisplayer;
 class ModuleWidget;
 class ModuleDialogGeneric;
 
-class ModuleDialogs
-{
-public:
-  explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
-  void createOptions();
-  void setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction);
-  void connectDisplayLogButton(QAbstractButton* button);
-  bool hasOptions() const { return options_ != nullptr; }
-  void closeOptions();
-  void destroyOptions();
-  void destroyLog();
-  ModuleDialogGeneric* options() { return options_; }
-  
-private:
-  Dataflow::Networks::ModuleHandle module_;
-  ModuleDialogGeneric* options_{nullptr};
-  class ModuleLogWindow* logWindow_ {nullptr};
-};
 
 class ModuleWidget : public QStackedWidget,
   public Dataflow::Networks::ExecutableObject, public HasNotes

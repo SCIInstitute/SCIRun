@@ -35,7 +35,6 @@ SET(Interface_Application_SOURCES
   GuiCommands.cc
   GuiLogger.cc
   MainWindowCollaborators.cc
-  ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   NetworkExecutionProgressBar.cc
@@ -76,7 +75,6 @@ SET(Interface_Application_HEADERS
   GuiLogger.h
   HasNotes.h
   MainWindowCollaborators.h
-  ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
   NetworkExecutionProgressBar.h
@@ -106,7 +104,6 @@ SET(Interface_Application_HEADERS
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
-  ModuleLogWindow.ui
   ConnectionStyleWizardPage.ui
   OtherSettingsWizardPage.ui
   NetworkSearch.ui
