@@ -47,11 +47,7 @@ ModuleLogWindow* ModuleDialogManager::setupLogging(ModuleErrorDisplayer* display
     QObject::connect(showLogAction, &QAction::triggered, logWindow_, &QDialog::show);
     QObject::connect(showLogAction, &QAction::triggered, logWindow_, &QDialog::raise);
   }
-  else
-  {
-    qDebug() << "showLogAction null";
-  }
-  
+
   module_->setLogger(makeShared<ModuleLogger>(logWindow_));
   return logWindow_;
 }

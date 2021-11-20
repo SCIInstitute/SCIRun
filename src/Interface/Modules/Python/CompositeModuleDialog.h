@@ -43,6 +43,7 @@ namespace Gui {
 
    public:
     CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+    ~CompositeModuleDialog();
   private:
     void updateModuleUIButtons();
     std::vector<SharedPointer<ModuleDialogManager>> dialogManagers_;
