@@ -159,6 +159,7 @@ std::vector<QGraphicsItem*> NetworkEditor::subnetItemsToMove()
   return nonCompanionItems;
 }
 
+#if 0
 void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
 {
   auto it = childrenNetworks_.find(name);
@@ -213,6 +214,7 @@ void NetworkEditor::subnetMenuActionTriggered()
     }
   }
 }
+#endif
 
 QRectF NetworkEditor::visibleRect() const
 {
@@ -225,6 +227,7 @@ NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 std::function<QPointF(const QRectF&)> NetworkEditor::topSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.topLeft(); });
 std::function<QPointF(const QRectF&)> NetworkEditor::bottomSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -40); });
 
+#if 0
 void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescriptionInterface>>& ports, const QString& name, std::function<QPointF(const QRectF&)> position)
 {
   auto portsBridge = new SubnetPortsBridgeWidget(this, name);
@@ -425,6 +428,7 @@ std::string SubnetModule::listComponentIds() const
 
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
+#endif
 
 //TODO: breaks older compilers. Will disable for now
 #if 0
@@ -468,7 +472,7 @@ namespace
 }
 
 static const char* noRecursiveSubnetsWarning = "Subnets only support a depth level of one at this time. See issue #1641.";
-
+#if 0
 void NetworkEditor::makeSubnetwork()
 {
   if (parentNetwork_)
@@ -710,6 +714,7 @@ QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsIt
 
   return pic;
 }
+#endif
 
 QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
 {
@@ -733,6 +738,7 @@ void NetworkEditor::dumpSubnetworksImpl(const QString& name, Subnetworks& data, 
   }
 }
 
+#if 0
 void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
 {
   for (const auto& sub : subnets.subnets)
@@ -774,6 +780,7 @@ SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QStrin
   QString rounded("color: white; border-radius: 7px;");
   setStyleSheet(rounded + " background-color: darkGray");
 }
+#endif
 
 void NetworkEditor::killChild(const QString& name, bool force)
 {

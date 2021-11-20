@@ -83,7 +83,8 @@ void ModuleLogWindow::popupMessageBox(const QString& message)
   }
 
   //TODO: need another limit on these?
-  displayer_->displayError(errorText, [this]() { requestModuleVisible(); });
+  if (displayer_)
+    displayer_->displayError(errorText, [this]() { requestModuleVisible(); });
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name().toStdString())

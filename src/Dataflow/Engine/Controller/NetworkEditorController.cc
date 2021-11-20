@@ -584,7 +584,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         collabs_.serializationManager_->updateModuleNotes(xml->moduleNotes);
         collabs_.serializationManager_->updateConnectionNotes(xml->connectionNotes);
         collabs_.serializationManager_->updateDisabledComponents(xml->disabledComponents);
-        collabs_.serializationManager_->updateSubnetworks(xml->subnetworks);
+        //collabs_.serializationManager_->updateSubnetworks(xml->subnetworks);
         collabs_.serializationManager_->updateModulePositions(xml->modulePositions, false);
         collabs_.serializationManager_->updateModuleTags(xml->moduleTags);
       }

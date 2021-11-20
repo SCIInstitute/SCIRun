@@ -56,7 +56,6 @@ class PortWidget;
 class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
-class NetworkEditor;
 class PortWidgetManager;
 class ModuleDialogDockWidget;
 
@@ -111,7 +110,7 @@ class ModuleWidget : public QStackedWidget,
 	Q_OBJECT
 
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
+  ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
     QWidget* parent = nullptr);
   ~ModuleWidget();
 
@@ -277,11 +276,11 @@ private:
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
-  void setupLoggingAndProgress(NetworkEditor* ed);
+  void setupLoggingAndProgress(ModuleErrorDisplayer* ed);
   std::string moduleId_;
   QString name_;
 
-  ModuleDialogs dialogs_;
+  ModuleDialogManager dialogManager_;
   ModuleDialogDockWidget* dockable_;
   bool firstTimeShown_{ true };
   static QList<QPoint> positions_;
@@ -328,6 +327,7 @@ private:
   friend class ::ModuleOptionsDialogConfiguration;
 };
 
+#if 0
 class SubnetWidget : public ModuleWidget
 {
 	Q_OBJECT
@@ -354,6 +354,7 @@ private:
   QString name_;
   std::vector<PortWidget*> ports_;
 };
+#endif
 
 }
 }

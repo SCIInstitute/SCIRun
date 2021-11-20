@@ -818,6 +818,7 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
+#if 0
 SubnetPortsBridgeProxyWidget::SubnetPortsBridgeProxyWidget(SubnetPortsBridgeWidget* ports, QGraphicsItem* parent) : QGraphicsProxyWidget(parent), ports_(ports)
 {
 }
@@ -829,3 +830,4 @@ void SubnetPortsBridgeProxyWidget::updateConnections()
     port->trackConnections();
   }
 }
+#endif

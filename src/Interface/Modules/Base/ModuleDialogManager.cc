@@ -37,11 +37,8 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-ModuleDialogManager::ModuleDialogManager()
-{
-}
 
-ModuleLogWindow* ModuleDialogs::setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent)
+ModuleLogWindow* ModuleDialogManager::setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent)
 {
   logWindow_ = new ModuleLogWindow(QString::fromStdString(module_->id().id_), displayer, parent);
   if (showLogAction)
@@ -58,13 +55,13 @@ ModuleLogWindow* ModuleDialogs::setupLogging(ModuleErrorDisplayer* displayer, QA
   return logWindow_;
 }
 
-void ModuleDialogs::connectDisplayLogButton(QAbstractButton* button)
+void ModuleDialogManager::connectDisplayLogButton(QAbstractButton* button)
 {
   QObject::connect(button, &QAbstractButton::clicked, logWindow_, &QDialog::show);
   QObject::connect(button, &QAbstractButton::clicked, logWindow_, &QDialog::raise);
 }
 
-void ModuleDialogs::closeOptions()
+void ModuleDialogManager::closeOptions()
 {
   if (options_)
   {
@@ -72,20 +69,19 @@ void ModuleDialogs::closeOptions()
   }
 }
 
-void ModuleDialogs::destroyLog()
+void ModuleDialogManager::destroyLog()
 {
   delete logWindow_;
   logWindow_ = nullptr;
 }
 
-void ModuleDialogs::destroyOptions()
+void ModuleDialogManager::destroyOptions()
 {
   delete options_;
   options_ = nullptr;
 }
 
-void ModuleDialogs::createOptions()
+void ModuleDialogManager::createOptions()
 {
-  
   options_ = ModuleDialogGeneric::factory()->makeDialog(module_->id().id_, module_->get_state());
 }

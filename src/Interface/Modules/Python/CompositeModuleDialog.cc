@@ -28,6 +28,8 @@
 
 #include <Interface/Modules/Python/CompositeModuleDialog.h>
 #include <Modules/Basic/CompositeModuleWithStaticPorts.h>
+#include <Interface/Modules/Base/ModuleDialogManager.h>
+#include <Interface/Modules/Base/ModuleLogWindow.h>
 //#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
@@ -65,28 +67,39 @@ void CompositeModuleDialog::updateModuleUIButtons()
         delete moduleUIgridLayout_->itemAtPosition(i, j)->widget();
       }
     }
+    for (auto& dialog : dialogManagers_)
+    {
+      dialog->destroyLog();
+      dialog->destroyOptions();
+    }
+    dialogManagers_.clear();
     return;
   }
 
   int i = 0;
   for (const auto& p : moduleMap)
   {
-    auto module = p.second;
-    if (module->hasUI())
+    auto mod = p.second;
+    auto dialogs = makeShared<ModuleDialogManager>(mod);
+    if (mod->hasUI())
     {
       auto uiLabel = p.first.id_.c_str() + QString(" UI");
       auto ui = new QPushButton(uiLabel);
       moduleUIgridLayout_->addWidget(ui, i, 0);
-      auto dialog = ModuleDialogGeneric::factory()->makeDialog(p.first.id_, module->get_state());
+      dialogs->createOptions();
+      auto options = dialogs->options();
       connect(ui, &QPushButton::clicked, [uiLabel]() { qDebug() << uiLabel << "clicked."; });
-      connect(ui, &QPushButton::clicked, [dialog]() { dialog->show(); });
+      connect(ui, &QPushButton::clicked, [options]() { options->show(); });
     }
     {
       auto logLabel = p.first.id_.c_str() + QString(" log");
       auto log = new QPushButton(logLabel);
       moduleUIgridLayout_->addWidget(log, i, 1);
       connect(log, &QPushButton::clicked, [logLabel]() { qDebug() << logLabel << "clicked."; });
+      auto logWindow = dialogs->setupLogging(nullptr, nullptr, this);
+      connect(log, &QPushButton::clicked, [logWindow]() { logWindow->show(); });
     }
+    dialogManagers_.push_back(dialogs);
     ++i;
   }
 }

@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULELOGWINDOW_H
 #define INTERFACE_APPLICATION_MODULELOGWINDOW_H
 
-#include "ui_ModuleLogWindow.h"
+#include "Interface/Modules/Base/ui_ModuleLogWindow.h"
 
 #include <Core/Logging/LoggerInterface.h>
 #include <Dataflow/Network/NetworkFwd.h>

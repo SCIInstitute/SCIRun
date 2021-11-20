@@ -232,8 +232,8 @@ namespace Gui {
     Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
     void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
 
-    Dataflow::Networks::SubnetworksHandle dumpSubnetworks(Dataflow::Networks::ModuleFilter filter) const override;
-    void updateSubnetworks(const Dataflow::Networks::Subnetworks& subnets) override;
+    //Dataflow::Networks::SubnetworksHandle dumpSubnetworks(Dataflow::Networks::ModuleFilter filter) const override;
+    //void updateSubnetworks(const Dataflow::Networks::Subnetworks& subnets) override;
 
     void copyNote(Dataflow::Networks::ModuleHandle from, Dataflow::Networks::ModuleHandle to) const override;
 
@@ -358,6 +358,7 @@ namespace Gui {
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
+#if 0
     void makeSubnetwork();
     void makeSubnetworkFromComponents(const QString& name,
       const std::vector<SCIRun::Dataflow::Networks::ModuleHandle>& modules,
@@ -365,7 +366,7 @@ namespace Gui {
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
     void subnetMenuActionTriggered();
-
+#endif
   Q_SIGNALS:
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();

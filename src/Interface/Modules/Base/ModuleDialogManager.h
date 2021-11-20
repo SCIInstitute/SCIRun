@@ -37,33 +37,29 @@ class QAbstractButton;
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE ModuleDialogManager
+  class SCISHARE ModuleErrorDisplayer
   {
    public:
-    ModuleDialogManager();
-  };
-
-  class ModuleErrorDisplayer
-  {
-   public:
-    virtual ~ModuleErrorDisplayer() = default;
+    virtual ~ModuleErrorDisplayer() {}
     virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 
   class ModuleDialogGeneric;
   class ModuleLogWindow;
 
-  class SCISHARE ModuleDialogs
+  class SCISHARE ModuleDialogManager
   {
    public:
-    explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
-    void createOptions();
+    explicit ModuleDialogManager(Dataflow::Networks::ModuleHandle module) : module_(module) {}
+    
     ModuleLogWindow* setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent);
     void connectDisplayLogButton(QAbstractButton* button);
+    void destroyLog();
+
+    void createOptions();
     bool hasOptions() const { return options_ != nullptr; }
     void closeOptions();
     void destroyOptions();
-    void destroyLog();
     ModuleDialogGeneric* options() { return options_; }
 
    private:
