@@ -33,8 +33,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-//using namespace SCIRun::Core::Algorithms::ParticleInCell;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 GravSimpleComputeAlgo::GravSimpleComputeAlgo()
     {

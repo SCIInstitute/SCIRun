@@ -13,13 +13,12 @@
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/share.h>
-//#include <Core/Algorithms/ParticleInCell/share.h>
+#include <Core/Algorithms/ParticleInCell/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-namespace Math {
+namespace ParticleInCell {
 
 class SCISHARE GravSimpleComputeAlgo : public AlgorithmBase
     {
