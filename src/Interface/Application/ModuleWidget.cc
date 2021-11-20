@@ -389,6 +389,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
+  connect(this, &ModuleWidget::dynamicPortChanged, this, &ModuleWidget::updateDialogForDynamicPortChange);
 
   if (theModule->isDeprecated() && !Core::Application::Instance().parameters()->isRegressionMode())
   {
@@ -1188,26 +1189,28 @@ class ModuleOptionsDialogConfiguration
 {
 public:
   explicit ModuleOptionsDialogConfiguration(ModuleWidget* widget) : moduleWidget_(widget) {}
-  void config(ModuleDialogGeneric* options)
+  ModuleDialogDockWidget* config(ModuleDialogGeneric* options)
   {
     addWidgetToExecutionDisableList(options->getExecuteAction());
-    QObject::connect(options, SIGNAL(executeActionTriggered()), moduleWidget_, SLOT(executeButtonPushed()));
-    QObject::connect(options, SIGNAL(executeActionTriggeredViaStateChange()), moduleWidget_, SLOT(executeTriggeredViaStateChange()));
-    QObject::connect(moduleWidget_, SIGNAL(moduleExecuted()), options, SLOT(moduleExecuted()));
-    QObject::connect(moduleWidget_, SIGNAL(moduleSelected(bool)), options, SLOT(moduleSelected(bool)));
-    QObject::connect(moduleWidget_, SIGNAL(dynamicPortChanged(const std::string&, bool)), moduleWidget_, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
-    QObject::connect(options, SIGNAL(setStartupNote(const QString&)), moduleWidget_, SLOT(setStartupNote(const QString&)));
-    QObject::connect(options, SIGNAL(fatalError(const QString&)), moduleWidget_, SLOT(handleDialogFatalError(const QString&)));
-    QObject::connect(options, SIGNAL(executionLoopStarted()), moduleWidget_, SIGNAL(disableWidgetDisabling()));
-    QObject::connect(options, SIGNAL(executionLoopHalted()), moduleWidget_, SIGNAL(reenableWidgetDisabling()));
-    QObject::connect(options, SIGNAL(closeButtonClicked()), moduleWidget_, SLOT(toggleOptionsDialog()));
-    QObject::connect(options, SIGNAL(helpButtonClicked()), moduleWidget_, SLOT(launchDocumentation()));
-    QObject::connect(options, SIGNAL(findButtonClicked()), moduleWidget_, SIGNAL(findInNetwork()));
+    QObject::connect(options, &ModuleDialogGeneric::executeActionTriggered, moduleWidget_, &ModuleWidget::executeButtonPushed);
+    QObject::connect(options, &ModuleDialogGeneric::executeActionTriggeredViaStateChange, moduleWidget_, &ModuleWidget::executeTriggeredViaStateChange);
+    QObject::connect(moduleWidget_, &ModuleWidget::moduleExecuted, options, &ModuleDialogGeneric::moduleExecuted);
+    QObject::connect(moduleWidget_, &ModuleWidget::moduleSelected, options, &ModuleDialogGeneric::moduleSelected);
+    
+    QObject::connect(options, &ModuleDialogGeneric::setStartupNote, moduleWidget_, &ModuleWidget::setStartupNote);
+    QObject::connect(options, &ModuleDialogGeneric::fatalError, moduleWidget_, &ModuleWidget::handleDialogFatalError);
+    QObject::connect(options, &ModuleDialogGeneric::executionLoopStarted, moduleWidget_, &ModuleWidget::disableWidgetDisabling);
+    QObject::connect(options, &ModuleDialogGeneric::executionLoopHalted, moduleWidget_, &ModuleWidget::reenableWidgetDisabling);
+    QObject::connect(options, &ModuleDialogGeneric::closeButtonClicked, moduleWidget_, &ModuleWidget::toggleOptionsDialog);
+    QObject::connect(options, &ModuleDialogGeneric::helpButtonClicked, moduleWidget_, &ModuleWidget::launchDocumentation);
+    QObject::connect(options, &ModuleDialogGeneric::findButtonClicked, moduleWidget_, &ModuleWidget::findInNetwork);
 
-    configDockable(options);
+    auto dockable = configDockable(options);
 
     if (!moduleWidget_->isViewScene_)
+    {
       options->setupButtonBar();
+    }
 
     if (ModuleWidget::highResolutionExpandFactor_ > 1 && !moduleWidget_->isViewScene_)
     {
@@ -1219,7 +1222,12 @@ public:
       options->adjustToolbar();
 
     options->pull();
+
+    return dockable;
   }
+
+private:
+  ModuleWidget* moduleWidget_;
 
   ModuleDialogDockWidget* configDockable(ModuleDialogGeneric* options)
   {
@@ -1234,8 +1242,8 @@ public:
     mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable);
     dockable->setFloating(true);
     dockable->hide();
-    QObject::connect(dockable, SIGNAL(visibilityChanged(bool)), moduleWidget_, SLOT(colorOptionsButton(bool)));
-    QObject::connect(dockable, SIGNAL(topLevelChanged(bool)), moduleWidget_, SLOT(updateDockWidgetProperties(bool)));
+    QObject::connect(dockable, &QDockWidget::visibilityChanged, moduleWidget_, &ModuleWidget::colorOptionsButton);
+    QObject::connect(dockable, &QDockWidget::topLevelChanged, moduleWidget_, &ModuleWidget::updateDockWidgetProperties);
 
     if (moduleWidget_->isViewScene_ && Application::Instance().parameters()->isRegressionMode())
     {
@@ -1244,8 +1252,6 @@ public:
     }
     return dockable;
   }
-private:
-  ModuleWidget* moduleWidget_;
 };
 
 void ModuleWidget::makeOptionsDialog()
@@ -1261,8 +1267,7 @@ void ModuleWidget::makeOptionsDialog()
       dialogManager_.createOptions();
 
       ModuleOptionsDialogConfiguration config(this);
-      config.config(dialogManager_.options());
-      dockable_ = config.configDockable(dialogManager_.options());
+      dockable_ = config.config(dialogManager_.options());
     }
   }
 }
@@ -1291,7 +1296,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialogManager_.hasOptions() && !deleting_ && !networkBeingCleared_)
-    dialogManager_.options()-> updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+    dialogManager_.options()->updateFromPortChange(numDynamicInputPortsForGuiUpdates(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
