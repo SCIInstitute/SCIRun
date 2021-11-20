@@ -460,6 +460,7 @@ QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*>) c
 }
 #endif
 
+#if 0
 namespace
 {
   QRectF updateRect(QGraphicsItem* item, QRectF rect)
@@ -475,7 +476,7 @@ namespace
 }
 
 static const char* noRecursiveSubnetsWarning = "Subnets only support a depth level of one at this time. See issue #1641.";
-#if 0
+
 void NetworkEditor::makeSubnetwork()
 {
   if (parentNetwork_)
