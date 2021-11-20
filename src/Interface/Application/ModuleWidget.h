@@ -108,21 +108,24 @@ typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 class ModuleErrorDisplayer;
 class ModuleWidget;
+class ModuleDialogGeneric;
 
 class ModuleDialogs
 {
 public:
   explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
+  void createOptions();
   void setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction);
   void connectDisplayLogButton(QAbstractButton* button);
   bool hasOptions() const { return options_ != nullptr; }
   void closeOptions();
   void destroyOptions();
   void destroyLog();
-  class ModuleDialogGeneric* options_ {nullptr};
+  ModuleDialogGeneric* options() { return options_; }
+  
 private:
   Dataflow::Networks::ModuleHandle module_;
-
+  ModuleDialogGeneric* options_{nullptr};
   class ModuleLogWindow* logWindow_ {nullptr};
 };
 
@@ -257,7 +260,7 @@ Q_SIGNALS:
   void executionDisabled(bool disabled);
   void findInNetwork();
   void showSubnetworkEditor(const QString& name);
-  void showUIrequested(class ModuleDialogGeneric* dialog);
+  void showUIrequested(ModuleDialogGeneric* dialog);
 private Q_SLOTS:
   void subnetButtonClicked();
   void updateBackgroundColorForModuleState(int moduleState);
