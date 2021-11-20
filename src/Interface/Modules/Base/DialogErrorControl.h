@@ -30,19 +30,20 @@
 #define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 
 #include <QObject>
+#include <Interface/Modules/Base/share.h>
 
-static const int MAX_DIALOGS_SHOWN = 5;
 
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl
+class SCISHARE DialogErrorControl
 {
 public:
   static DialogErrorControl& instance();
 	void increaseCounter();
 	bool showDialog();
 	void resetCounter();
+  static constexpr int MAX_DIALOGS_SHOWN = 5;
 
 private:
   DialogErrorControl();

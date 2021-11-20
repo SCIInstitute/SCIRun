@@ -28,9 +28,9 @@
 
 #include <Interface/qt_include.h>
 #include <iostream>
-#include <Interface/Application/ModuleLogWindow.h>
-#include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/ModuleLogWindow.h>
+#include <Interface/Modules/Base/ModuleDialogManager.h>
+#include <Interface/Modules/Base/DialogErrorControl.h>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;

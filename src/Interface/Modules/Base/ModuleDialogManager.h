@@ -29,22 +29,36 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_MANAGER_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_MANAGER_H
 
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Modules/Base/share.h>
+
+class QAbstractButton;
 
 namespace SCIRun {
 namespace Gui {
 
   class SCISHARE ModuleDialogManager
   {
+   public:
+    ModuleDialogManager();
   };
 
-  
+  class ModuleErrorDisplayer
+  {
+   public:
+    virtual ~ModuleErrorDisplayer() = default;
+    virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
+  };
+
+  class ModuleDialogGeneric;
+  class ModuleLogWindow;
+
   class SCISHARE ModuleDialogs
   {
    public:
     explicit ModuleDialogs(Dataflow::Networks::ModuleHandle module) : module_(module) {}
     void createOptions();
-    void setupLogging(ModuleErrorDisplayer* displayer, ModuleWidget* moduleWidget, QAction* showLogAction);
+    ModuleLogWindow* setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent);
     void connectDisplayLogButton(QAbstractButton* button);
     bool hasOptions() const { return options_ != nullptr; }
     void closeOptions();
@@ -55,7 +69,7 @@ namespace Gui {
    private:
     Dataflow::Networks::ModuleHandle module_;
     ModuleDialogGeneric* options_{nullptr};
-    class ModuleLogWindow* logWindow_{nullptr};
+    ModuleLogWindow* logWindow_{nullptr};
   };
 
 }

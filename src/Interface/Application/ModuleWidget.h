@@ -32,15 +32,13 @@
 #include <QStackedWidget>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/SmartPointers.h>
-#include <boost/scoped_ptr.hpp>
 #include <boost/bimap.hpp>
 #include <deque>
 #include <atomic>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
+#include <Interface/Modules/Base/ModuleDialogManager.h>
 #include <Core/Logging/ScopedTimeRemarker.h>
-
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #endif
 
@@ -105,10 +103,6 @@ public:
 };
 
 typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
-
-class ModuleErrorDisplayer;
-class ModuleWidget;
-class ModuleDialogGeneric;
 
 
 class ModuleWidget : public QStackedWidget,
@@ -283,6 +277,7 @@ private:
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
+  void setupLoggingAndProgress(NetworkEditor* ed);
   std::string moduleId_;
   QString name_;
 

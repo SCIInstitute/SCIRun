@@ -33,6 +33,7 @@
 
 #include <Core/Logging/LoggerInterface.h>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/share.h>
 
 
 namespace SCIRun {
@@ -40,7 +41,7 @@ namespace Gui {
 
 class ModuleErrorDisplayer;
 
-class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
+class SCISHARE ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 {
 	Q_OBJECT
 

@@ -51,6 +51,7 @@ SET(Interface_Modules_Base_HEADERS_M
   ModuleButtonBar.h
   ModuleDialogManager.h
   ModuleLogWindow.h
+  DialogErrorControl.h
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
@@ -74,6 +75,7 @@ SET(Interface_Modules_Base_SOURCES
   ModuleButtonBar.cc
   ModuleDialogManager.cc
   ModuleLogWindow.cc
+  DialogErrorControl.cc
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
@@ -104,6 +106,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Base
   Core_Math
   Core_Datatypes
   Dataflow_State
+  Core_Application_Preferences
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

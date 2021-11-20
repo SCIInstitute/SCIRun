@@ -27,11 +27,65 @@
 
 
 #include <QtGui>
+#include <QAction>
+#include <QAbstractButton>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Modules/Base/ModuleDialogManager.h>
+#include <Interface/Modules/Base/ModuleLogWindow.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
 ModuleDialogManager::ModuleDialogManager()
 {
+}
+
+ModuleLogWindow* ModuleDialogs::setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent)
+{
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(module_->id().id_), displayer, parent);
+  if (showLogAction)
+  {
+    QObject::connect(showLogAction, &QAction::triggered, logWindow_, &QDialog::show);
+    QObject::connect(showLogAction, &QAction::triggered, logWindow_, &QDialog::raise);
+  }
+  else
+  {
+    qDebug() << "showLogAction null";
+  }
+  
+  module_->setLogger(makeShared<ModuleLogger>(logWindow_));
+  return logWindow_;
+}
+
+void ModuleDialogs::connectDisplayLogButton(QAbstractButton* button)
+{
+  QObject::connect(button, &QAbstractButton::clicked, logWindow_, &QDialog::show);
+  QObject::connect(button, &QAbstractButton::clicked, logWindow_, &QDialog::raise);
+}
+
+void ModuleDialogs::closeOptions()
+{
+  if (options_)
+  {
+    options_->close();
+  }
+}
+
+void ModuleDialogs::destroyLog()
+{
+  delete logWindow_;
+  logWindow_ = nullptr;
+}
+
+void ModuleDialogs::destroyOptions()
+{
+  delete options_;
+  options_ = nullptr;
+}
+
+void ModuleDialogs::createOptions()
+{
+  
+  options_ = ModuleDialogGeneric::factory()->makeDialog(module_->id().id_, module_->get_state());
 }

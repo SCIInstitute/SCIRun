@@ -41,6 +41,7 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
+#include <Interface/Modules/Base/ModuleDialogManager.h>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Subnetworks.h>
@@ -78,13 +79,6 @@ namespace Gui {
     virtual ~DefaultNotePositionGetter() {}
     virtual NotePosition position() const = 0;
     virtual int size() const = 0;
-  };
-
-  class ModuleErrorDisplayer
-  {
-  public:
-    virtual ~ModuleErrorDisplayer() {}
-    virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 
   class FloatingTextItem : public QGraphicsTextItem

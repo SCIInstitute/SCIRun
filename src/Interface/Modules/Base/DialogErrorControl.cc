@@ -27,7 +27,7 @@
 
 
 #include <iostream>
-#include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/DialogErrorControl.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
