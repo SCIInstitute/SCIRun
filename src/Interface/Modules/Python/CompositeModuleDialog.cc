@@ -100,6 +100,7 @@ void CompositeModuleDialog::updateModuleUIButtons()
       dialogs->createOptions();
       auto options = dialogs->options();
       connect(ui, &QPushButton::clicked, [options]() { options->show(); options->raise(); });
+      options->pull();
     }
     {
       auto logLabel = p.first.id_.c_str() + QString(" log");
