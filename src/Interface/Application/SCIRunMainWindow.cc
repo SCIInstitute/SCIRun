@@ -40,7 +40,7 @@
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
-#include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
