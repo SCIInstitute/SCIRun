@@ -207,7 +207,7 @@ namespace Gui {
     explicit NetworkEditor(const NetworkEditorParameters& params, QWidget* parent = nullptr);
     NetworkEditor(const NetworkEditor& rhs) = delete;
     NetworkEditor& operator=(const NetworkEditor&) = delete;
-    ~NetworkEditor();
+    ~NetworkEditor() override;
     void setNetworkEditorController(SharedPointer<NetworkEditorControllerGuiProxy> controller);
     SharedPointer<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     Dataflow::Networks::ExecutableObject* lookupExecutable(const Dataflow::Networks::ModuleId& id) const override;
@@ -279,9 +279,11 @@ namespace Gui {
     void adjustExecuteButtonsToDownstream(bool downOnly);
 
     NetworkEditor* parentNetwork() { return parentNetwork_; }
+#if 0
     size_t childCount() const { return childrenNetworks_.size(); }
     void killChild(const QString& name, bool force);
     void sendItemsToParent();
+#endif
     bool containsModule(const std::string& moduleId) const;
 
     void hidePipesByType(const std::string& type);
@@ -393,7 +395,9 @@ namespace Gui {
     void bringToFront();
     void sendToBack();
     void searchTextChanged(const QString& text);
+#if 0
     void clearSiblingSelections();
+#endif
 
   private:
     using ModulePair = QPair<ModuleWidget*, ModuleWidget*>;
@@ -416,9 +420,11 @@ namespace Gui {
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
     QPixmap grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items);
     QString convertToTooltip(const QPixmap& pic) const;
+#if 0
     void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
+#endif
     QRectF visibleRect() const;
     void deleteImpl(QList<QGraphicsItem*> items);
     QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
@@ -457,8 +463,10 @@ namespace Gui {
     SharedPointer<ModuleEventProxy> moduleEventProxy_;
     SharedPointer<ZLevelManager> zLevelManager_;
 
+
     // tree structure
     NetworkEditor* parentNetwork_ {nullptr};
+#if 0
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
     QList<SubnetPortsBridgeProxyWidget*> subnetPortHolders_;
@@ -485,7 +493,8 @@ namespace Gui {
       (void)p;
       #endif
     }
-
+#endif
+     
     static NetworkEditor* inEditingContext_;
 
     static ConnectorFunc connectorFunc_;

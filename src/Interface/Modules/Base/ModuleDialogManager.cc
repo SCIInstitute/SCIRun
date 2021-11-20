@@ -37,6 +37,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
+ModuleErrorDisplayer::~ModuleErrorDisplayer() {}
 
 ModuleLogWindow* ModuleDialogManager::setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent)
 {

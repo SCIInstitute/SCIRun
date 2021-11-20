@@ -40,7 +40,7 @@ namespace Gui {
   class SCISHARE ModuleErrorDisplayer
   {
    public:
-    virtual ~ModuleErrorDisplayer() {}
+    virtual ~ModuleErrorDisplayer();
     virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 

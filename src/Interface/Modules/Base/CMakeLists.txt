@@ -37,6 +37,8 @@ SET(Interface_Modules_Base_FORMS
 
 SET(Interface_Modules_Base_HEADERS
   share.h
+  ModuleDialogManager.h
+  DialogErrorControl.h
   CustomWidgets/CTK/Core/ctkPimpl.h
   CustomWidgets/CTK/Core/ctkUtils.h
   CustomWidgets/CTK/ctkWidgetsUtils.h
@@ -49,9 +51,7 @@ SET(Interface_Modules_Base_HEADERS_M
   WidgetSlotManagers.h
   HasParserHelpDialog.h
   ModuleButtonBar.h
-  ModuleDialogManager.h
   ModuleLogWindow.h
-  DialogErrorControl.h
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h

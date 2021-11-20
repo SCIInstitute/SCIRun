@@ -357,10 +357,12 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
     return;
   }
 
+#if 0
   for (auto& child : childrenNetworks_)
   {
     child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName);
   }
+#endif
 }
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
@@ -457,7 +459,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
   connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
-  connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(showSubnetChild(const QString&)));
+  //connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(showSubnetChild(const QString&)));
   //disable for IBBM
   //connect(module, SIGNAL(showUIrequested(ModuleDialogGeneric*)), ctorParams_.dockManager_, SLOT(requestShow(ModuleDialogGeneric*)));
 
@@ -614,13 +616,13 @@ void NetworkEditor::logViewerDims(const QString& msg)
 void NetworkEditor::setMouseAsDragMode()
 {
   setDragMode(ScrollHandDrag);
-  tailRecurse(&NetworkEditor::setMouseAsDragMode);
+  //tailRecurse(&NetworkEditor::setMouseAsDragMode);
 }
 
 void NetworkEditor::setMouseAsSelectMode()
 {
   setDragMode(RubberBandDrag);
-  tailRecurse(&NetworkEditor::setMouseAsSelectMode);
+  //tailRecurse(&NetworkEditor::setMouseAsSelectMode);
 }
 
 void NetworkEditor::bringToFront()
@@ -1260,10 +1262,12 @@ ModulePositionsHandle NetworkEditor::dumpModulePositions(ModuleFilter filter) co
 {
   auto positions(makeShared<ModulePositions>());
   fillModulePositionMap(*positions, filter);
+#if 0
   for (const auto& sub : childrenNetworks_)
   {
     sub.second->get()->fillModulePositionMap(*positions, filter);
   }
+#endif
   return positions;
 }
 
@@ -1283,7 +1287,7 @@ void NetworkEditor::centerView()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::centerView);
+    //tailRecurse(&NetworkEditor::centerView);
     return;
   }
 
@@ -1402,15 +1406,18 @@ DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modF
   return disabled;
 }
 
+#if 0
 SubnetworksHandle NetworkEditor::dumpSubnetworks(ModuleFilter modFilter) const
 {
   auto subnets(makeShared<Subnetworks>());
+
   for (const auto& child : childrenNetworks_)
   {
     child.second->get()->dumpSubnetworksImpl(child.first, *subnets, modFilter);
   }
   return subnets;
 }
+#endif
 
 QPointF NetworkEditor::getModulePositionAdjustment(const ModulePositions& modulePositions)
 {
@@ -1461,10 +1468,12 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       }
     }
   }
+#if 0
   for (const auto& child : childrenNetworks_)
   {
     child.second->get()->updateModulePositions(modulePositions, selectAll);
   }
+#endif
 }
 
 void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
@@ -1572,12 +1581,14 @@ void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
 
 ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
+#if 0
   for (const auto& child : childrenNetworks_)
   {
     auto exec = child.second->get()->lookupExecutable(id);
     if (exec)
       return exec;
   }
+#endif
 
   auto widget = findById(scene_->items(), id.id_);
   return widget ? widget->getModuleWidget() : nullptr;
@@ -1608,11 +1619,14 @@ void NetworkEditor::clear()
   QList<QGraphicsItem*> deleteTheseFirst;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
+#if 0
     if (dynamic_cast<SubnetWidget*>(getModule(item)))
     {
       deleteTheseFirst.append(item);
     }
-    else if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
+    else 
+#endif
+    if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
     {
       auto vs = vsw->dialog();
       if (vs)
@@ -1792,7 +1806,7 @@ void NetworkEditor::selectAll()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::selectAll);
+    //tailRecurse(&NetworkEditor::selectAll);
     return;
   }
 
@@ -1806,7 +1820,7 @@ void NetworkEditor::pinAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::pinAllModuleUIs);
+    //tailRecurse(&NetworkEditor::pinAllModuleUIs);
     return;
   }
 
@@ -1822,7 +1836,7 @@ void NetworkEditor::hideAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::hideAllModuleUIs);
+    //tailRecurse(&NetworkEditor::hideAllModuleUIs);
     return;
   }
 
@@ -1858,7 +1872,7 @@ void NetworkEditor::restoreAllModuleUIs()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::restoreAllModuleUIs);
+    //tailRecurse(&NetworkEditor::restoreAllModuleUIs);
     return;
   }
 
@@ -1907,6 +1921,7 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
   logViewerDims("post-zoom: ");
 }
 
+#if 0
 void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)
 {
   for (auto& item : subnetPortHolders_)
@@ -1921,12 +1936,13 @@ void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)
     item->updateConnections();
   }
 }
+#endif
 
 void NetworkEditor::zoomIn()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::zoomIn);
+    //tailRecurse(&NetworkEditor::zoomIn);
     return;
   }
 
@@ -1936,7 +1952,9 @@ void NetworkEditor::zoomIn()
     scale(factor, factor);
     currentScale_ *= factor;
 
+#if 0
     resizeSubnetPortHolders(1.0 / factor);
+#endif
 
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
@@ -1946,7 +1964,7 @@ void NetworkEditor::zoomOut()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::zoomOut);
+    //tailRecurse(&NetworkEditor::zoomOut);
     return;
   }
 
@@ -1955,7 +1973,9 @@ void NetworkEditor::zoomOut()
     scale(1.0 / scaleFactor, 1.0 / scaleFactor);
     currentScale_ /= scaleFactor;
 
+#if 0
     resizeSubnetPortHolders(scaleFactor);
+#endif
 
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
@@ -1965,7 +1985,7 @@ void NetworkEditor::zoomReset()
 {
   if (!isActiveWindow())
   {
-    tailRecurse(&NetworkEditor::zoomReset);
+    //tailRecurse(&NetworkEditor::zoomReset);
     return;
   }
 
@@ -2269,11 +2289,13 @@ void NetworkEditor::renameTagGroupInFile()
 
 void NetworkEditor::scrollContentsBy(int dx, int dy)
 {
+#if 0
   for (auto& item : subnetPortHolders_)
   {
     item->setPos(item->pos() + QPointF(-dx / currentScale_, -dy / currentScale_));
     item->updateConnections();
   }
+#endif
   QGraphicsView::scrollContentsBy(dx, dy);
 }
 
