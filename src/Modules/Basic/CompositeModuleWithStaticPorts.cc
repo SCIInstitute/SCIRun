@@ -85,7 +85,7 @@ void CompositeModuleWithStaticPorts::setStateDefaults()
 
 void CompositeModuleWithStaticPorts::execute()
 {
-  if (needToExecute())
+  //if (needToExecute()) //TODO: complicated!!!
   {
     if (!impl_->subNet_)
     {

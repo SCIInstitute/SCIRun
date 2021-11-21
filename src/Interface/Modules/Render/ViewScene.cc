@@ -1114,7 +1114,7 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 
 void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated)
 {
-  DEBUG_LOG_LINE_INFO
+  //DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
   auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- newGeometryValue " + windowTitle().toStdString());
@@ -1194,7 +1194,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
       const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && !spire->hasObject(obj->uniqueID()))
       {
-        DEBUG_LOG_LINE_INFO
+        //DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
       }
     }
