@@ -116,6 +116,7 @@ public:
   Dataflow::Networks::PortId realId() const { return portId_; }
 
   SCIRun::Dataflow::Networks::PortId id() const override;
+  SCIRun::Dataflow::Networks::PortId externalId() const override { return id(); }
 
   void toggleLight();
   void turn_on_light();
@@ -227,6 +228,7 @@ class BlankPort : public PortWidgetBase
 public:
   explicit BlankPort(QWidget* parent);
   SCIRun::Dataflow::Networks::PortId id() const override;
+  SCIRun::Dataflow::Networks::PortId externalId() const override { return id(); }
   size_t nconnections() const override { return 0; }
   std::string get_typename() const override { return ""; }
   std::string get_portname() const override { return "<Blank>"; }

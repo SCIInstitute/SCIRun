@@ -64,6 +64,7 @@ public:
 
   PortId id() const override { return id_; }
   void setId(const PortId& id) override { id_ = id; }
+  PortId externalId() const override { return id(); }
   std::string get_typename() const override { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const override { return portName_; }

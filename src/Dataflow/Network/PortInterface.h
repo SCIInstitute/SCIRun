@@ -49,6 +49,7 @@ namespace Networks {
   public:
     virtual ~PortDescriptionInterface();
     virtual PortId id() const = 0;
+    virtual PortId externalId() const = 0;
     virtual size_t nconnections() const = 0;
     virtual std::string get_typename() const = 0;
     virtual std::string get_portname() const = 0;

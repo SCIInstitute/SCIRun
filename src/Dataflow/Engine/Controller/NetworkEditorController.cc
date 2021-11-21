@@ -445,8 +445,8 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   const auto in = from->isInput() ? from : to;
 
   const ConnectionDescription desc(
-    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
-    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->externalId()),
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->externalId()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
