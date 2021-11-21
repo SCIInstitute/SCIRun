@@ -1263,6 +1263,11 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
+  {
+    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+    parentWidget()->resize(qs);
+  }
+
   if (!impl_->shown_)
   {
     autoViewClicked();
@@ -2747,12 +2752,12 @@ void ViewSceneDialog::initializeVisibleObjects()
 
 void ViewSceneDialog::enterEvent(QEvent* event)
 {
-  qDebug() << "enterEvent" << event;
-  QDialog::enterEvent(event);
+  //qDebug() << "enterEvent" << event;
+  ModuleDialogGeneric::enterEvent(event);
 }
 
 void ViewSceneDialog::leaveEvent(QEvent* event)
 {
-  qDebug() << "leaveEvent" << event;
-  QDialog::leaveEvent(event);
+  //qDebug() << "leaveEvent" << event;
+  ModuleDialogGeneric::leaveEvent(event);
 }
