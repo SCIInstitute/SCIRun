@@ -208,8 +208,8 @@ private:
   bool skipSaveCheck_ = false;
   bool startup_;
   SharedPointer<NetworkEditorBuilder> builder_;
-  int dockSpace_{0};
-  class DockManager* dockManager_;
+  //int dockSpace_{0};
+  //class DockManager* dockManager_;
   static const QString saveFragmentData_;
   std::vector<SettingsValueInterfacePtr> settingsValues_;
 

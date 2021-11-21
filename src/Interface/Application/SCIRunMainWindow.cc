@@ -70,7 +70,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = makeShared<NetworkEditorBuilder>(this);
-  dockManager_ = new DockManager(dockSpace_, this);
+  //dockManager_ = new DockManager(dockSpace_, this);
 
   {
     SharedPointer<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
@@ -316,6 +316,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupInputWidgets();
 
   logTextBrowser_->append("Hello! Welcome to SCIRun 5.");
+
   readSettings();
 
   setCurrentFile("");

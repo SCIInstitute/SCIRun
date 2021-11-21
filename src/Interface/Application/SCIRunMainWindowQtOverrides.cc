@@ -56,7 +56,7 @@ using namespace Algorithms;
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 {
-  dockSpace_ = size().height();
+  //dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
 }
 

@@ -267,7 +267,7 @@ void SCIRunMainWindow::setupNetworkEditor()
       highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
+    tagColorFunc, tagNameFunc, highResolutionExpandFactor, nullptr }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
   builder_->connectAll(networkEditor_);
