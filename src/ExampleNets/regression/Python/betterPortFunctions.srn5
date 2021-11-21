@@ -395,7 +395,10 @@ print(&quot;Here goes output:&quot;)
 print(get_output_data(%moduleId%))
 
 print(&quot;Upstream output:&quot;)
-print(get_output_data(&quot;CreateMatrix:1&quot;))</value>
+print(get_output_data(&quot;CreateMatrix:1&quot;))
+
+# more complex:
+D = matrixInput3 - np.dot(matrixInput1,matrixInput2)</value>
 									</value>
 								</second>
 							</item>
