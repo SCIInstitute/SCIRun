@@ -38,6 +38,7 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/ModuleOptionsDialogConfiguration.h>
 #include <Interface/Modules/Base/ModuleLogWindow.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -1185,74 +1186,6 @@ void ModuleWidget::setColorUnselected()
 
 double ModuleWidget::highResolutionExpandFactor_ = 1;
 
-class ModuleOptionsDialogConfiguration
-{
-public:
-  explicit ModuleOptionsDialogConfiguration(ModuleWidget* widget) : moduleWidget_(widget) {}
-  ModuleDialogDockWidget* config(ModuleDialogGeneric* options)
-  {
-    addWidgetToExecutionDisableList(options->getExecuteAction());
-    QObject::connect(options, &ModuleDialogGeneric::executeActionTriggered, moduleWidget_, &ModuleWidget::executeButtonPushed);
-    QObject::connect(options, &ModuleDialogGeneric::executeActionTriggeredViaStateChange, moduleWidget_, &ModuleWidget::executeTriggeredViaStateChange);
-    QObject::connect(moduleWidget_, &ModuleWidget::moduleExecuted, options, &ModuleDialogGeneric::moduleExecuted);
-    QObject::connect(moduleWidget_, &ModuleWidget::moduleSelected, options, &ModuleDialogGeneric::moduleSelected);
-    
-    QObject::connect(options, &ModuleDialogGeneric::setStartupNote, moduleWidget_, &ModuleWidget::setStartupNote);
-    QObject::connect(options, &ModuleDialogGeneric::fatalError, moduleWidget_, &ModuleWidget::handleDialogFatalError);
-    QObject::connect(options, &ModuleDialogGeneric::executionLoopStarted, moduleWidget_, &ModuleWidget::disableWidgetDisabling);
-    QObject::connect(options, &ModuleDialogGeneric::executionLoopHalted, moduleWidget_, &ModuleWidget::reenableWidgetDisabling);
-    QObject::connect(options, &ModuleDialogGeneric::closeButtonClicked, moduleWidget_, &ModuleWidget::toggleOptionsDialog);
-    QObject::connect(options, &ModuleDialogGeneric::helpButtonClicked, moduleWidget_, &ModuleWidget::launchDocumentation);
-    QObject::connect(options, &ModuleDialogGeneric::findButtonClicked, moduleWidget_, &ModuleWidget::findInNetwork);
-
-    auto dockable = configDockable(options);
-
-    if (!moduleWidget_->isViewScene_)
-    {
-      options->setupButtonBar();
-    }
-
-    if (ModuleWidget::highResolutionExpandFactor_ > 1 && !moduleWidget_->isViewScene_)
-    {
-      options->setFixedHeight(options->size().height() * ModuleWidget::highResolutionExpandFactor_);
-      options->setFixedWidth(options->size().width() * (((ModuleWidget::highResolutionExpandFactor_ - 1) * 0.5) + 1));
-    }
-
-    if (ModuleWidget::highResolutionExpandFactor_ > 1 && moduleWidget_->isViewScene_)
-      options->adjustToolbar();
-
-    options->pull();
-
-    return dockable;
-  }
-
-private:
-  ModuleWidget* moduleWidget_;
-
-  ModuleDialogDockWidget* configDockable(ModuleDialogGeneric* options)
-  {
-    auto dockable = new ModuleDialogDockWidget(QString::fromStdString(moduleWidget_->moduleId_), nullptr);
-    dockable->setObjectName(options->windowTitle());
-    dockable->setWidget(options);
-    options->setDockable(dockable);
-
-    dockable->setMinimumSize(options->minimumSize());
-    dockable->setAllowedAreas(moduleWidget_->allowedDockArea());
-    dockable->setAutoFillBackground(true);
-    mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable);
-    dockable->setFloating(true);
-    dockable->hide();
-    QObject::connect(dockable, &QDockWidget::visibilityChanged, moduleWidget_, &ModuleWidget::colorOptionsButton);
-    QObject::connect(dockable, &QDockWidget::topLevelChanged, moduleWidget_, &ModuleWidget::updateDockWidgetProperties);
-
-    if (moduleWidget_->isViewScene_ && Application::Instance().parameters()->isRegressionMode())
-    {
-      dockable->show();
-      dockable->setFloating(true);
-    }
-    return dockable;
-  }
-};
 
 void ModuleWidget::makeOptionsDialog()
 {

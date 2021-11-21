@@ -62,6 +62,7 @@ SET(Interface_Application_SOURCES
   Subnetworks.cc
   MacroEditor.cc
   StateViewer.cc
+  ModuleOptionsDialogConfiguration.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -97,6 +98,7 @@ SET(Interface_Application_HEADERS
   TriggeredEventsWindow.h
   MacroEditor.h
   StateViewer.h
+  ModuleOptionsDialogConfiguration.h
 )
 
 SET(Interface_Application_FORMS

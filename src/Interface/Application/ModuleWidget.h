@@ -46,7 +46,6 @@ class QDockWidget;
 class QProgressBar;
 class QTimeLine;
 class QGroupBox;
-class ModuleOptionsDialogConfiguration;
 class PortBuilder;
 
 namespace SCIRun {
@@ -324,7 +323,7 @@ private:
   QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;
-  friend class ::ModuleOptionsDialogConfiguration;
+  friend class ModuleOptionsDialogConfiguration;
 };
 
 #if 0
