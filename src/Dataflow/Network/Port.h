@@ -62,9 +62,11 @@ public:
   Connection* connection(size_t) const override;
   bool hasConnectionCountIncreased() const override;
 
-  PortId id() const override { return id_; }
-  void setId(const PortId& id) override { id_ = id; }
-  PortId externalId() const override { return id(); }
+
+  PortId id() const override { return internalId_; }
+  void setId(const PortId& id) override { internalId_ = externalId_ = id; }
+  void setInternalId(const PortId& id) override { internalId_ = id; }
+  PortId externalId() const override { return externalId_; }
   std::string get_typename() const override { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const override { return portName_; }
@@ -87,7 +89,8 @@ protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
   size_t index_;
-  PortId id_;
+  PortId internalId_;
+  PortId externalId_;
 
   const std::string typeName_;
   const std::string portName_;

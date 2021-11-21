@@ -71,6 +71,7 @@ namespace Networks {
     void incrementIndex() { setIndex(getIndex() + 1); }
     void decrementIndex() { setIndex(getIndex() - 1); }
     virtual void setId(const PortId& id) = 0;
+    virtual void setInternalId(const PortId& id) = 0;
     virtual ModuleStateHandle moduleState() const = 0;
     virtual bool hasConnectionCountIncreased() const = 0;
     virtual ModuleInterface* underlyingModule() const = 0;

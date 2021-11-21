@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), index_(0), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
+  : module_(module), index_(0), internalId_(params.id_), externalId_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
   connectionCountIncreasedFlag_(false)
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
@@ -156,7 +156,7 @@ InputPortInterface* InputPort::clone() const
   DatatypeSinkInterfaceHandle sink(sink_->clone());
   if (!isDynamic_)
     THROW_INVALID_ARGUMENT("Cannot clone non-dynamic port.");
-  PortId cloneId(id_.id + 1, id_.name);
+  PortId cloneId(internalId_.id + 1, internalId_.name);
   return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 

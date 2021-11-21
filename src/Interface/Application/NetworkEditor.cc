@@ -253,6 +253,11 @@ boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescrip
   return id;
 }
 
+boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortWidget* from, const PortWidget* to)
+{
+  return requestConnection(from->description(), to->description());
+}
+
 namespace
 {
   const int TagTextKey = 123;
@@ -387,13 +392,13 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
       {
         const auto& newInputs = newModPorts.inputs();
         auto toConnect = std::find_if(newInputs.begin(), newInputs.end(),
-          [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
+          [&](const PortWidget* port) { return port->description()->get_typename() == iport->description()->get_typename() && port->description()->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
         {
           guiLogCritical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
           break;
         }
-        nextInputIndex = (*toConnect)->getIndex() + 1;
+        nextInputIndex = (*toConnect)->description()->getIndex() + 1;
         requestConnection(iport->connectedPorts()[0], *toConnect);
       }
     }
@@ -407,7 +412,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
       if (oport->isConnected())
       {
         auto toConnect = std::find_if(newOutputs.begin(), newOutputs.end(),
-          [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
+          [&](const PortWidget* port) { return port->description()->get_typename() == oport->description()->get_typename() && port->description()->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
         {
           guiLogCritical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
@@ -415,14 +420,14 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
         }
         auto connectedPorts = oport->connectedPorts();
         std::vector<PortWidget*> dynamicPortsNeedSpecialHandling;
-        std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->isDynamic(); });
-        connectedPorts.erase(std::remove_if(connectedPorts.begin(), connectedPorts.end(), [](const PortWidget* p) { return p->isDynamic(); }), connectedPorts.end());
+        std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->description()->isDynamic(); });
+        connectedPorts.erase(std::remove_if(connectedPorts.begin(), connectedPorts.end(), [](const PortWidget* p) { return p->description()->isDynamic(); }), connectedPorts.end());
         oport->deleteConnections();
         for (const auto& connected : connectedPorts)
         {
           requestConnection(connected, *toConnect);
         }
-        nextOutputIndex = (*toConnect)->getIndex() + 1;
+        nextOutputIndex = (*toConnect)->description()->getIndex() + 1;
       }
     }
   }
@@ -695,7 +700,7 @@ void NetworkEditor::hidePipesByType(const std::string& type)
   {
     if (auto c = dynamic_cast<ConnectionLine*>(item))
     {
-      if (type == c->connectedPorts().first->get_typename())
+      if (type == c->connectedPorts().first->description()->get_typename())
       {
         guiLogDebug("dimming {}", c->id().id_);
         conns.push_back(c);

@@ -543,7 +543,7 @@ size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
 int ModuleWidget::numDynamicInputPortsForGuiUpdates() const
 {
   const auto inputs = ports().inputs();
-  return std::count_if(inputs.begin(), inputs.end(), [](PortWidget* p) { return p->isDynamic(); });
+  return std::count_if(inputs.begin(), inputs.end(), [](PortWidget* p) { return p->description()->isDynamic(); });
 }
 
 void ModuleWidget::setupModuleActions()
@@ -668,7 +668,7 @@ public:
       auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
         portAlpha()), type,
         moduleId, port->id(),
-        i, port->isDynamic(),
+        i, port->isDynamic(), port,
         [widget]() { return widget->connectionFactory_; },
         [widget]() { return widget->closestPortFinder_; },
         {},
@@ -704,7 +704,7 @@ public:
       auto w = new OutputPortWidget(
         QString::fromStdString(port->get_portname()),
         to_color(PortColorLookup::toColor(type), portAlpha()),
-        type, moduleId, port->id(), i, port->isDynamic(),
+        type, moduleId, port->id(), i, port->isDynamic(), port,
         [widget]() { return widget->connectionFactory_; },
         [widget]() { return widget->closestPortFinder_; },
         port->getPortDataDescriber(),
@@ -943,7 +943,8 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(),
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), 
+      port,
       [this]() { return connectionFactory_; },
       [this]() { return closestPortFinder_; },
       PortDataDescriber(), this);
@@ -974,7 +975,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 
 bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout)
 {
-  auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->id() == pid; });
+  auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->description()->id() == pid; });
   if (iter != inputPorts_.end())
   {
     auto widget = *iter;
@@ -1548,7 +1549,7 @@ void ModuleWidget::updatePortSpacing(bool highlighted)
   auto port = qobject_cast<PortWidget*>(sender());
   if (port)
   {
-    if (port->isInput())
+    if (port->description()->isInput())
       setInputPortSpacing(highlighted);
     else
       setOutputPortSpacing(highlighted);
