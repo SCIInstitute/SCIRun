@@ -42,7 +42,7 @@ struct ComponentGroup
   class const_iterator;
 
   // See: http://stackoverflow.com/questions/16434681/stl-compatible-iterators-for-custom-containers
-  class iterator: public std::iterator<std::random_access_iterator_tag, T>
+  class iterator//: public std::iterator<std::random_access_iterator_tag, T>
   {
   public:
     iterator(): p_(nullptr) {}
@@ -80,7 +80,7 @@ struct ComponentGroup
     friend class const_iterator;
   };
 
-  class const_iterator: public std::iterator<std::random_access_iterator_tag, T>
+  class const_iterator//: public std::iterator<std::random_access_iterator_tag, T>
   {
   public:
     const_iterator(): p_(nullptr) {}
