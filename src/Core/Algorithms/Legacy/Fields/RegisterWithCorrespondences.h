@@ -30,7 +30,13 @@
 #define CORE_ALGORITHMS_FIELDS_REGISTERWITHCORRESPONDENCES_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <vector>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {

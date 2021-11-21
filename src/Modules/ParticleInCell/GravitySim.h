@@ -26,39 +26,26 @@
 */
 
 
-#ifndef MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
-#define MODULES_LEGACY_FIELDS_ApplyFilterToFieldData_H__
+#ifndef MODULES_ParticleInCell_GravitySim_H
+#define MODULES_ParticleInCell_GravitySim_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
-  namespace Core::Algorithms::Fields 
-  {
-    ALGORITHM_PARAMETER_DECL(Erode)
-    ALGORITHM_PARAMETER_DECL(Dilate)
-  }
-  namespace Modules {
-    namespace Fields {
+namespace Modules {
+namespace ParticleInCell {
 
-      class SCISHARE ApplyFilterToFieldData : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        ApplyFilterToFieldData();
+class SCISHARE GravitySim : public SCIRun::Dataflow::Networks::Module,
+public HasNoInputPorts,
+public HasNoOutputPorts
+{
+public:
+  GravitySim();
+  virtual void execute();
+  virtual void setStateDefaults() {};
 
-        void execute() override;
-        void setStateDefaults() override;
-
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-      };
-
-    }
-  }
-}
-
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
+};
+}}}
 #endif

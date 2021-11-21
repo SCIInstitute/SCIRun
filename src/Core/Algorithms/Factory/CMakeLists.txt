@@ -79,6 +79,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Core_Algorithms_Visualization
   Core_Algorithms_Legacy_FiniteElements
   Core_Algorithms_Legacy_Converter
+  Algorithms_ParticleInCell
   ${SCI_BOOST_LIBRARY}
 )
 
@@ -86,6 +87,6 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-IF(BUILD_TESTING)
+IF(BUILD_TESTING OR TRAVIS_BUILD)
   ADD_SUBDIRECTORY(Tests)
 ENDIF()

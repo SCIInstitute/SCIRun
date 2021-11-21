@@ -169,7 +169,7 @@ SCIRun::CreateField(const std::string& type, MeshHandle mesh)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  Guard lock(*FieldTypeIDMutex);
+  Guard lock(FieldTypeIDMutex->get());
   {
     auto it = FieldTypeIDTable->find(type);
     if (it != FieldTypeIDTable->end())
@@ -192,7 +192,7 @@ SCIRun::CreateField(const std::string& type)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  Guard lock(*FieldTypeIDMutex);
+  Guard lock(FieldTypeIDMutex->get());
   {
     std::map<std::string,FieldTypeID*>::iterator it;
     it = FieldTypeIDTable->find(type);

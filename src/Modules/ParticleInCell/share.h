@@ -26,39 +26,14 @@
 */
 
 
-#ifndef MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
-#define MODULES_FIELDS_CompositeModuleTestGFB_FM_H__
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
-
-namespace SCIRun::Modules::Fields
-{
-  // static const char[] InputFieldName = "InputField"
-  // static const char[] MatrixPortName = "InputMatrix"
-  // public HasInputPorts<FieldPort<InputFieldName>, MatrixPort<MatrixPortName>>
-
-  class CompositeModuleImpl;
-
-  class SCISHARE CompositeModuleTestGFB_FM : public Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<FieldPortTag, MatrixPortTag>
-  {
-  public:
-    CompositeModuleTestGFB_FM();
-    ~CompositeModuleTestGFB_FM() override;
-
-    void execute() override;
-    void setStateDefaults() override;
-
-    INPUT_PORT(0, InputField, Field);
-    OUTPUT_PORT(0, Faired_Mesh, Field);
-    OUTPUT_PORT(1, Mapping, Matrix);
-
-    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
-  private:
-    std::unique_ptr<CompositeModuleImpl> impl_;
-  };
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_ParticleInCell
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

@@ -179,7 +179,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
     return;
   }
 
-  Core::Thread::Guard s(map_.getLock());
+  Core::Thread::Guard s(map_.getLock().get());
   for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasReader())
@@ -195,7 +195,7 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
     return;
   }
 
-  Core::Thread::Guard s(map_.getLock());
+  Core::Thread::Guard s(map_.getLock().get());
   for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasWriter())
@@ -209,7 +209,7 @@ GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const s
   if (0 == map_.numPlugins())
     return nullptr;
 
-  Core::Thread::Guard s(map_.getLock());
+  Core::Thread::Guard s(map_.getLock().get());
   // Should check for invalid name.
   auto loc = map_.getMap().find(name);
   if (loc == map_.getMap().end())
@@ -242,7 +242,7 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
   filereader_(freader),
   filewriter_(fwriter)
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
 
   GenericIEPluginManager<Data>::getMap().createMap();
 
@@ -272,7 +272,7 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
 template <class Data>
 IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
 
   auto iter = GenericIEPluginManager<Data>::getMap().getMap().find(pluginname_);
   if (iter == GenericIEPluginManager<Data>::getMap().getMap().end())

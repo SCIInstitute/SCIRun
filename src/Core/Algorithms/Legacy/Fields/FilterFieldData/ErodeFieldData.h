@@ -29,21 +29,34 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FILTERFIELDDATA_ERODEFILTER_H
 #define CORE_ALGORITHMS_FIELDS_FILTERFIELDDATA_ERODEFILTER_H 1
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+// Datatypes that the algorithm uses
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Field.h>
 
-namespace SCIRun::Core::Algorithms::Fields
-{
+// Base class for algorithm
+#include <Core/Algorithms/Util/AlgoBase.h>
 
-class SCISHARE ErodeFieldDataAlgo : public AlgorithmBase
+// for Windows support
+#include <Core/Algorithms/Fields/share.h>
+
+namespace SCIRunAlgo {
+
+using namespace SCIRun;
+
+class SCISHARE ErodeFieldDataAlgo : public AlgoBase
 {
   public:
-    ErodeFieldDataAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& output) const;
-    AlgorithmOutput run(const AlgorithmInput &) const override;
+    /// Set defaults
+    ErodeFieldDataAlgo()
+    {
+      /// Number of iterations to perform
+      add_int("num_iterations",2);
+    }
+
+    /// run the algorithm
+    bool run(FieldHandle input, FieldHandle& output);
 };
 
-}
+} // end namespace SCIRunAlgo
 
 #endif

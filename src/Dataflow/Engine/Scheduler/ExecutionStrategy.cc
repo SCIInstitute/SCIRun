@@ -32,18 +32,15 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ExecutionBounds ExecutionContext::globalExecutionBounds_;
+ExecutionBounds ExecutionContext::executionBounds_;
 
-ExecutionBounds& ExecutionContext::globalExecutionBounds() { return globalExecutionBounds_; }
-
-boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+boost::signals2::connection ExecutionContext::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return globalExecutionBounds_.executeStarts_.connect(subscriber);
+  return executionBounds_.executeStarts_.connect(subscriber);
 }
-
-boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return globalExecutionBounds_.executeFinishes_.connect(subscriber);
+  return executionBounds_.executeFinishes_.connect(subscriber);
 }
 
 ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
@@ -57,25 +54,21 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
   return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
 }
 
-ExecutionManagerBase::ExecutionManagerBase() : executionMutex_("executionManager")
-{
-  
-}
-
-ExecutionQueueManager::ExecutionQueueManager() : 
+ExecutionQueueManager::ExecutionQueueManager() :
   contexts_(10),
+  executionMutex_("executionQueue"),
   somethingToExecute_("executionQueue"),
   contextCount_(0)
 {
 }
 
-void ExecutionManagerBase::setExecutionStrategy(ExecutionStrategyHandle exec)
+void ExecutionQueueManager::setExecutionStrategy(ExecutionStrategyHandle exec)
 {
   Guard g(executionMutex_.get());
   currentExecutor_ = exec;
 }
 
-void ExecutionManagerBase::initExecutor(ExecutionStrategyFactoryHandle factory)
+void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 {
   if (!currentExecutor_ && factory)
     currentExecutor_ = factory->createDefault();
@@ -83,14 +76,11 @@ void ExecutionManagerBase::initExecutor(ExecutionStrategyFactoryHandle factory)
 
 void ExecutionQueueManager::startExecution()
 {
-  //logCritical("startExecution");
   resetStoppability();
-  auto task = [this] { executeTopContext(); }; 
-
-  executionLaunchThread_.reset(new std::thread(task));
+  executionLaunchThread_.reset(new std::thread(std::ref(*this)));
 }
 
-void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+ThreadPtr ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -105,6 +95,7 @@ void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
       startExecution();
     somethingToExecute_.conditionBroadcast();
   }
+  return executionLaunchThread_;
 }
 
 void ExecutionQueueManager::executeTopContext()
@@ -114,7 +105,6 @@ void ExecutionQueueManager::executeTopContext()
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_)
     {
-      //logCritical("in loop while 0");
       somethingToExecute_.wait(lock);
       if (stopRequested())
       {
@@ -128,14 +118,13 @@ void ExecutionQueueManager::executeTopContext()
   }
 }
 
-std::future<int> ExecutionManagerBase::executeImpl(ExecutionContextHandle context)
+void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
 {
-  if (currentExecutor_ && context)
+  if (currentExecutor_ && ctx)
   {
-    context->preexecute();
-    return currentExecutor_->execute(*context, executionMutex_);
+    ctx->preexecute();
+    currentExecutor_->execute(*ctx, executionMutex_);
   }
-  return {};
 }
 
 void ExecutionQueueManager::stopExecution()
@@ -144,8 +133,7 @@ void ExecutionQueueManager::stopExecution()
   {
     sendStopRequest();
     somethingToExecute_.conditionBroadcast();
-    if (executionLaunchThread_->joinable())
-      executionLaunchThread_->join();
+    executionLaunchThread_->join();
     executionLaunchThread_.reset();
   }
 }

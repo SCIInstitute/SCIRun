@@ -669,7 +669,7 @@ Persistent::find_derived( const std::string& classname,
 
   {
     initialize();
-    Guard g(*persistent_mutex_);
+    Guard g(persistent_mutex_->get());
 
     iter = persistent_table_->find(classname);
     if (iter == persistent_table_->end())
@@ -700,7 +700,7 @@ Persistent::add_class(const std::string& type,
                       Persistent* (*bc_maker2)())
 {
   initialize();
-  Guard g(*persistent_mutex_);
+  Guard g(persistent_mutex_->get());
 
   MapStringPersistentID::iterator iter = persistent_table_->find(type);
 

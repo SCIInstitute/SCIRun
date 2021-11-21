@@ -26,13 +26,31 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT_3.cc
+#ifndef MODULES_PARTICLEINCELL_GravSimpleCompute_H
+#define MODULES_PARTICLEINCELL_GravSimpleCompute_H
 
-#include <Core/Datatypes/Legacy/Field/VFDataT.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
+namespace Modules {
+namespace Math {
 
-VFDATA_FUNCTION_SCALAR_DEFINITION(unsigned int)
-VFDATA_FUNCTION_SCALAR_DEFINITION(float)
+class SCISHARE GravSimpleCompute : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<MatrixPortTag>,
+public Has1OutputPort<MatrixPortTag>
+{
+public:
+  GravSimpleCompute();
+  virtual void execute();
+  virtual void setStateDefaults();
 
-}
+  INPUT_PORT(0, InputMatrix, Matrix);
+  OUTPUT_PORT(0, OutputMatrix, Matrix);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
+//  static Core::Algorithms::AlgorithmParameterName FormatString;
+};
+}}}
+#endif

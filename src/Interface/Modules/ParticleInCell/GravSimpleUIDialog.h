@@ -25,21 +25,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ApplyFilterToFieldDialog_H
-#define INTERFACE_MODULES_ApplyFilterToFieldDialog_H
+#ifndef INTERFACE_MODULES_STRING_GravSimpleUIDialog_H
+#define INTERFACE_MODULES_STRING_GravSimpleUIDialog_H
 
+#include <Interface/Modules/ParticleInCell/ui_GravSimpleUIDialog.h>
+//#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include "Interface/Modules/Fields/ui_ApplyFilterToFieldData.h"
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/ParticleInCell/share.h>
 
-namespace SCIRun::Gui {
-class SCISHARE ApplyFilterToFieldDataDialog : public ModuleDialogGeneric, public Ui::ApplyFilterToFieldData
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE GravSimpleUIDialog : public ModuleDialogGeneric,
+  public Ui::GravSimpleUIDialog
 {
-  Q_OBJECT
+	Q_OBJECT
 
- public:
-  ApplyFilterToFieldDataDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+public:
+  GravSimpleUIDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
 };
-}
-
+}}
 #endif

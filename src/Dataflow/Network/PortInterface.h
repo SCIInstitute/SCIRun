@@ -72,7 +72,6 @@ namespace Networks {
     virtual void setId(const PortId& id) = 0;
     virtual ModuleStateHandle moduleState() const = 0;
     virtual bool hasConnectionCountIncreased() const = 0;
-    virtual ModuleInterface* underlyingModule() const = 0;
   };
 
   typedef boost::signals2::signal<void(const PortId&, Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;

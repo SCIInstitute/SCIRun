@@ -88,6 +88,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Teem
   Interface_Modules_Visualization
   Interface_Modules_Python
+  Interface_Modules_ParticleInCell
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

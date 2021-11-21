@@ -263,13 +263,13 @@ void
 PropertyManager::set_property(const std::string &name,  const T& obj,
 			      bool is_transient)
 {
-  if (is_transient && (! is_frozen()))
+  if (is_transient && (! is_frozen())) 
   {
     std::cerr << "WARNING::PropertyManager must be frozen to store transient data"
               << " freezing now!" << std::endl;
     freeze();
   }
-  Core::Thread::Guard g(lock);
+  Core::Thread::Guard g(lock.get());
   properties_[name].reset(new Property<T>(obj, is_transient));
 }
 
@@ -278,11 +278,11 @@ template<class T>
 bool
 PropertyManager::get_property(const std::string &name, T &ref)
 {
-  Core::Thread::Guard g(lock);
+  Core::Thread::Guard g(lock.get());
 
   bool ans = false;
   auto loc = properties_.find(name);
-  if (loc != properties_.end())
+  if (loc != properties_.end()) 
   {
     auto prop = std::dynamic_pointer_cast<const Property<T>>(loc->second);
     if (prop)

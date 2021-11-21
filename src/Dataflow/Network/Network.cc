@@ -194,7 +194,7 @@ std::string Network::toString() const
   return ostr.str();
 }
 
-NetworkStateInterface::ConnectionDescriptionList Network::connections(bool includeVirtual) const
+NetworkInterface::ConnectionDescriptionList Network::connections(bool includeVirtual) const
 {
   Connections toDescribe;
   std::copy_if(connections_.begin(), connections_.end(), std::inserter(toDescribe, toDescribe.begin()),

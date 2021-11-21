@@ -40,30 +40,47 @@ namespace Core
 {
   namespace Thread
   {
-    class SCISHARE NamedMutex : public std::mutex, boost::noncopyable
+    class SCISHARE Mutex : boost::noncopyable
     {
     public:
-      explicit NamedMutex(const std::string& name = "[default]");
-      std::string name() const;
-      NamedMutex& get();
+      explicit Mutex(const std::string& name);
+      void lock();
+      void unlock();
+      std::mutex& get() { return impl_; }
+    private:
+      std::string name_;
+      std::mutex impl_;
+    };
+
+#define LOG_DEBUG_GUARD 0
+
+    template <class Lock>
+    class DebugGuard : public std::lock_guard<Lock>
+    {
+    public:
+      explicit DebugGuard(std::mutex& mutex, const std::string& name = "") : std::lock_guard<Lock>(mutex), name_(name)
+      {
+#if LOG_DEBUG_GUARD
+        std::cout << "DebugGuard() " << name_ << std::endl;
+#endif
+      }
+      ~DebugGuard()
+      {
+#if LOG_DEBUG_GUARD
+        std::cout << "~DebugGuard() " << name_ << std::endl;
+#endif
+      }
     private:
       std::string name_;
     };
 
-    using Mutex = NamedMutex;
+    typedef DebugGuard<std::mutex> NamedGuard;
 
-    class SCISHARE LoggedGuard : public std::lock_guard<std::mutex>
-    {
-    public:
-      LoggedGuard(NamedMutex& mutex, const std::string& log = "");
-      ~LoggedGuard();
-    private:
-      std::string log_;
-    };
-
-    SCISHARE LoggedGuard makeLoggedGuard(NamedMutex& mutex, const std::string& name);
-
-    using Guard = LoggedGuard;
+#ifndef _DEBUG
+    typedef std::lock_guard<std::mutex> Guard;
+#else
+    typedef NamedGuard Guard;
+#endif
 
     // Boost threads can be created on the stack and automatically detach in the destructor.
     // std::threads halt in the destructor, or throw if still active. This function mimics

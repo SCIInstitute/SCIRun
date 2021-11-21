@@ -26,25 +26,19 @@
 */
 
 
-#include <Interface/Modules/Fields/ApplyFilterToFieldDataDialog.h>
-#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Interface/Modules/ParticleInCell/GravSimpleComputeDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
 
-ApplyFilterToFieldDataDialog::ApplyFilterToFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
+GravSimpleComputeDialog::GravSimpleComputeDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-
-  addCheckBoxManager(dilateCheckBox_, Parameters::Dilate);
-  addCheckBoxManager(erodeCheckBox_, Parameters::Erode);
-  addSpinBoxManager(iterationsSpinBox_, Variables::MaxIterations);
-}
+    {
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
+    }

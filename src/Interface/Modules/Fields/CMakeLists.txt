@@ -78,7 +78,6 @@ SET(Interface_Modules_Fields_FORMS
   CreateImageDialog.ui
   GetCentroidsFromMeshDialog.ui
   CalculateMeshNodes.ui
-  ApplyFilterToFieldData.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -134,7 +133,6 @@ SET(Interface_Modules_Fields_HEADERS
   GetCentroidsFromMeshDialog.h
   CalculateMeshNodesDialog.h
   InterfaceWithTetGenDialog.h
-  ApplyFilterToFieldDataDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -189,7 +187,6 @@ SET(Interface_Modules_Fields_SOURCES
   GetCentroidsFromMeshDialog.cc
   CalculateMeshNodesDialog.cc
   InterfaceWithTetGenDialog.cc
-  ApplyFilterToFieldDataDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS "${Interface_Modules_Fields_FORMS}")

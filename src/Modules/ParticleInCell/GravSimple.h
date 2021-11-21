@@ -25,27 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
-#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include "Interface/Modules/Python/ui_CompositeModule.h"
-#include <Interface/Modules/Python/share.h>
+#ifndef MODULES_ParticleInCell_GravSimple_H
+#define MODULES_ParticleInCell_GravSimple_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace ParticleInCell {
 
-  class CodeEditor;
+class SCISHARE GravSimple : public SCIRun::Dataflow::Networks::Module,
+public HasNoInputPorts,
+public Has1OutputPort<StringPortTag>
+{
+public:
+  GravSimple();
+  virtual void execute();
+  virtual void setStateDefaults() {};
 
-  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
-  {
-    Q_OBJECT
-
-   public:
-    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-  };
-
-}
-}
-
+  OUTPUT_PORT(0, OutputString, String);
+//  MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+};
+}}}
 #endif

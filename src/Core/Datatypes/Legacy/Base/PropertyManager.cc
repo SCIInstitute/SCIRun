@@ -85,8 +85,8 @@ PropertyManager::PropertyManager(const PropertyManager &copy) :
   frozen_(false),
   lock("PropertyManager")
 {
-  Guard this_guard(lock);
-  Guard copy_guard(const_cast<PropertyManager&>(copy).lock);
+  Guard this_guard(lock.get());
+  Guard copy_guard(const_cast<PropertyManager&>(copy).lock.get());
 
   map_type::const_iterator pi = copy.properties_.begin();
   while (pi != copy.properties_.end())
@@ -114,13 +114,13 @@ PropertyManager::operator=(const PropertyManager &src)
 void
 PropertyManager::copy_properties(const PropertyManager* src)
 {
-  Guard this_guard(lock);
+  Guard this_guard(lock.get());
 
   clear_transient();
   frozen_ = false;
 
   {
-    Guard src_guard(const_cast<PropertyManager*>(src)->lock);
+    Guard src_guard(const_cast<PropertyManager*>(src)->lock.get());
     map_type::const_iterator pi = src->properties_.begin();
     while (pi != src->properties_.end())
     {
@@ -141,14 +141,14 @@ PropertyManager::operator==(const PropertyManager &pm)
 {
   bool result = true;
 
-  Guard g(lock);
+  Guard g(lock.get());
 
   if (nproperties() != pm.nproperties())
   {
     result = false;
   }
 
-  Guard src_guard(const_cast<PropertyManager&>(pm).lock);
+  Guard src_guard(const_cast<PropertyManager&>(pm).lock.get());
   map_type::const_iterator pi = pm.properties_.begin();
   while (result && pi != pm.properties_.end())
   {
@@ -179,7 +179,7 @@ PropertyManager::operator!=(const PropertyManager &pm)
 
 PropertyManager::~PropertyManager()
 {
-  Guard g(lock);
+  Guard g(lock.get());
   properties_.clear();
 }
 
@@ -195,7 +195,7 @@ PropertyManager::thaw()
   //ASSERT(ref_cnt <= 1);
 
   // Clean up properties.
-  Guard g(lock);
+  Guard g(lock.get());
 
   clear_transient();
   frozen_ = false;
@@ -205,7 +205,7 @@ PropertyManager::thaw()
 void
 PropertyManager::freeze()
 {
-  Guard g(lock);
+  Guard g(lock.get());
 
   frozen_ = true;
 }
@@ -214,7 +214,7 @@ PropertyManager::freeze()
 bool
 PropertyManager::is_property(const std::string &name)
 {
-  Guard g(lock);
+  Guard g(lock.get());
 
   bool ans = false;
   map_type::iterator loc = properties_.find(name);
@@ -230,7 +230,7 @@ PropertyManager::get_property_name(size_t index)
 {
   if (index < nproperties())
   {
-    Guard g(lock);
+    Guard g(lock.get());
 
     map_type::const_iterator pi = properties_.begin();
 
@@ -251,7 +251,7 @@ PropertyManager::get_property_name(size_t index)
 void
 PropertyManager::remove_property( const std::string &name )
 {
-  Guard g(lock);
+  Guard g(lock.get());
 
   map_type::iterator loc = properties_.find(name);
   if (loc != properties_.end())
@@ -295,7 +295,7 @@ PropertyManager::io(Piostream &stream)
   const int version = stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
   if ( stream.writing() )
   {
-    Guard g(lock);
+    Guard g(lock.get());
     PropertyManagerSize nprop = nproperties();
     Pio(stream, nprop);
     for (auto& p : properties_)
@@ -310,7 +310,7 @@ PropertyManager::io(Piostream &stream)
   {
     PropertyManagerSize size;
     Pio( stream, size );
-    Guard g(lock);
+    Guard g(lock.get());
 
     for (unsigned int i=0; i<size; i++ )
     {

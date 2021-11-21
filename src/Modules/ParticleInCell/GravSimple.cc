@@ -26,31 +26,28 @@
 */
 
 
-#include <Interface/Modules/Python/CompositeModuleDialog.h>
-#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
-//#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Modules/ParticleInCell/GravSimple.h>
+#include <Core/Datatypes/String.h>
+//#include<Dataflow/Network/Module.h>
 
-using namespace SCIRun::Gui;
+using namespace SCIRun;
+using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Python;
 
-CompositeModuleDialog::CompositeModuleDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+const ModuleLookupInfo GravSimple::staticInfo_("GravSimple","ParticleInCell","SCIRun");
+//MODULE_INFO_DEF("GravSimple","ParticleInCell","SCIRun");
+
+GravSimple::GravSimple () : Module(staticInfo_,false)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  //{
-  //  pythonCodePlainTextEdit_ = new CodeEditor(this);
-  //  tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
-  //}
+    INITIALIZE_PORT(OutputString);
+}
 
-  addPlainTextEditManager(networkXMLplainTextEdit_, Parameters::NetworkXml);
-  addPlainTextEditManager(portReportPlainTextEdit_, Parameters::PortSettings);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+void GravSimple::execute()
+{
+    std::string message_string;
+    message_string="Trying to develop a new module category";
 
-  connect(clearPushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->clear(); });
-  connect(pastePushButton_, &QPushButton::clicked, [this]() { networkXMLplainTextEdit_->setPlainText(QGuiApplication::clipboard()->text()); });
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
 }

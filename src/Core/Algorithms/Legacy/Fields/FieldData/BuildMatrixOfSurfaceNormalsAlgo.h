@@ -30,8 +30,11 @@
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
+//#include <Core/Algorithms/Base/AlgorithmMacros.h>
+//#include <Core/GeometryPrimitives/Vector.h>
+//#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 
 namespace SCIRun {
 namespace Core {

@@ -26,60 +26,33 @@
 */
 
 
-#include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
+#include <Core/Datatypes/FieldInformation.h>
 
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+namespace SCIRunAlgo {
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Utility;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Geometry;
-
-DilateFieldDataAlgo::DilateFieldDataAlgo()
-{
-  addParameter(Variables::MaxIterations, 2);
-}
-
-namespace detail {
 
 template<class DATA>
-bool DilateFieldDataNodeV(const AlgorithmBase* algo,
+bool DilateFieldDataNodeV(AlgoBase* algo,
                            FieldHandle input,
                            FieldHandle& output);
 
 template<class DATA>
-bool DilateFieldDataElemV(const AlgorithmBase* algo,
+bool DilateFieldDataElemV(AlgoBase* algo,
                           FieldHandle input,
                           FieldHandle& output);
-}
 
-bool DilateFieldDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
+
+bool DilateFieldDataAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  ScopedAlgorithmStatusReporter asr(this, "DilateFieldData");
+  algo_start("DilateFieldData");
 
   // Check whether we have an input field
-  if (!input)
+  if (input.get_rep() == 0)
   {
     error("No input field");
-    return (false);
+    algo_end(); return (false);
   }
 
   // Figure out what the input type and output type have to be
@@ -88,22 +61,22 @@ bool DilateFieldDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    return (false);
+    algo_end(); return (false);
   }
 
   if (fi.is_nodata())
   {
     error("There is no data defined in the input field");
-    return (false);
+    algo_end(); return (false);
   }
 
   if (!fi.is_scalar())
   {
     error("The field data is not scalar data");
-    return (false);
+    algo_end(); return (false);
   }
 
-  using namespace detail;
+
   if (fi.is_constantdata())
   {
     if (fi.is_char()) return(DilateFieldDataElemV<char>(this,input,output));
@@ -130,30 +103,32 @@ bool DilateFieldDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     if (fi.is_float()) return(DilateFieldDataNodeV<float>(this,input,output));
     if (fi.is_double()) return(DilateFieldDataNodeV<double>(this,input,output));  }
 
-  return (false);
+  algo_end(); return (false);
 }
 
 
 template <class DATA>
-bool detail::DilateFieldDataNodeV(const AlgorithmBase *algo, FieldHandle input1, FieldHandle& output)
+bool DilateFieldDataNodeV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
 {
-  int num_iter = algo->get(Variables::MaxIterations).toInt();
+  int num_iter;
+  algo->get_int("num_iterations",num_iter);
 
   /// Create output field
-  output.reset(input1->deep_clone());
+  output = input;
+  output.detach();
 
-  if (!output)
+  if (output.get_rep() == 0)
   {
     algo->error("Could not allocate output field");
-    return (false);
+    algo->algo_end(); return (false);
   }
 
-  FieldHandle buffer(input1->deep_clone());
+  input.detach();
 
-  if (!buffer)
+  if (input.get_rep() == 0)
   {
     algo->error("Could not allocate buffer field");
-    return (false);
+    algo->algo_end(); return (false);
   }
 
   VMesh* vmesh = output->vmesh();
@@ -162,7 +137,7 @@ bool detail::DilateFieldDataNodeV(const AlgorithmBase *algo, FieldHandle input1,
   VMesh::Node::size_type sz;
   vmesh->size(sz);
 
-  DATA* idata = reinterpret_cast<DATA*>(buffer->vfield()->fdata_pointer());
+  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer());
   DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer());
 
   for (int p=0; p <num_iter; p++)
@@ -184,7 +159,7 @@ bool detail::DilateFieldDataNodeV(const AlgorithmBase *algo, FieldHandle input1,
       odata[idx] = val;
     }
 
-    buffer->vfield()->copy_values(output->vfield());
+    input->vfield()->copy_values(output->vfield());
   }
 
   return (true);
@@ -192,25 +167,27 @@ bool detail::DilateFieldDataNodeV(const AlgorithmBase *algo, FieldHandle input1,
 
 
 template <class DATA>
-bool detail::DilateFieldDataElemV(const AlgorithmBase *algo, FieldHandle input1, FieldHandle& output)
+bool DilateFieldDataElemV(AlgoBase *algo, FieldHandle input, FieldHandle& output)
 {
-  int num_iter = algo->get(Variables::MaxIterations).toInt();
+  int num_iter;
+  algo->get_int("num_iterations",num_iter);
 
   /// Create output field
-  output.reset(input1->deep_clone());
+  output = input;
+  output.detach();
 
-  if (!output)
+  if (output.get_rep() == 0)
   {
     algo->error("Could not allocate output field");
-    return (false);
+    algo->algo_end(); return (false);
   }
 
-  FieldHandle buffer(input1->deep_clone());
+  input.detach();
 
-  if (!buffer)
+  if (input.get_rep() == 0)
   {
     algo->error("Could not allocate buffer field");
-    return (false);
+    algo->algo_end(); return (false);
   }
 
   VMesh* vmesh = output->vmesh();
@@ -219,7 +196,7 @@ bool detail::DilateFieldDataElemV(const AlgorithmBase *algo, FieldHandle input1,
   VMesh::Elem::size_type sz;
   vmesh->size(sz);
 
-  DATA* idata = reinterpret_cast<DATA*>(buffer->vfield()->fdata_pointer());
+  DATA* idata = reinterpret_cast<DATA*>(input->vfield()->fdata_pointer());
   DATA* odata = reinterpret_cast<DATA*>(output->vfield()->fdata_pointer());
 
   for (int p=0; p <num_iter; p++)
@@ -240,20 +217,12 @@ bool detail::DilateFieldDataElemV(const AlgorithmBase *algo, FieldHandle input1,
       odata[idx] = val;
     }
 
-    buffer->vfield()->copy_values(output->vfield());
+
+    input->vfield()->copy_values(output->vfield());
   }
 
   return (true);
 }
 
-AlgorithmOutput DilateFieldDataAlgo::run(const AlgorithmInput& input) const
-{
-  auto field = input.get<Field>(Variables::InputField);
-  FieldHandle outputField;
 
-  if (!runImpl(field, outputField))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-  AlgorithmOutput output;
-  output[Variables::OutputField] = outputField;
-  return output;
-}
+} // End namespace SCIRunAlgo

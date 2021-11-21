@@ -26,37 +26,40 @@
 */
 
 
-#ifndef INTERFACE_MODULES_GEOMETRYBUFFERDIALOG_H
-#define INTERFACE_MODULES_GEOMETRYBUFFERDIALOG_H
+#include <Modules/ParticleInCell/GravSimpleCompute.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/ParticleInCell/GravSimpleComputeAlgo.h>
 
-#include "Interface/Modules/Visualization/ui_GeometryBuffer.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Gui {
+//SCIRun::Core::Algorithms::AlgorithmParameterName GravSimpleUI::FormatString("FormatString");
 
-class SCISHARE GeometryBufferDialog : public ModuleDialogGeneric,
-  public Ui::GeometryBuffer
-{
-	Q_OBJECT
+MODULE_INFO_DEF(GravSimpleCompute,ParticleInCell,SCIRun);
 
-public:
-  GeometryBufferDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
-protected:
-  void pullSpecial() override;
-private Q_SLOTS:
-  void incrementIndex();
-  void decrementIndex();
-  void selectFirstIndex();
-  void selectLastIndex();
-  void startPlay();
-  void stopPlay();
-};
+//const ModuleLookupInfo GravSimpleCompute::staticInfo_("GravSimpleCompute","ParticleInCell","SCIRun");
 
-}
-}
+GravSimpleCompute::GravSimpleCompute() : Module(staticInfo_)
+    {
+    INITIALIZE_PORT(InputMatrix);
+    INITIALIZE_PORT(OutputMatrix);
+    }
 
-#endif
+void GravSimpleCompute::setStateDefaults()
+    {
+    setStateIntFromAlgo(Variables::Method);
+    }
+
+void GravSimpleCompute::execute()
+    {
+    auto input = getRequiredInput(InputMatrix);
+    if (needToExecute())
+        {
+        setAlgoIntFromState(Variables::Method);
+        auto output = algo().run(withInputData((InputMatrix, input)));
+        sendOutputFromAlgorithm(OutputMatrix, output);
+        }
+    }

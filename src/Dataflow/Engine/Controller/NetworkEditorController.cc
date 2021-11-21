@@ -63,68 +63,36 @@ using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
   AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory,
-  NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm)
+  NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm) :
+  theNetwork_(new Network(mf, sf, af, reex)),
+  moduleFactory_(mf),
+  stateFactory_(sf),
+  algoFactory_(af),
+  reexFactory_(reex),
+  executorFactory_(executorFactory),
+  cmdFactory_(cmdFactory),
+  eventCmdFactory_(eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>()),
+  serializationManager_(nesm),
+  signalSwitch_(true),
+  loadingContext_(false)
 {
-  collabs_.theNetwork_.reset(new Network(mf, sf, af, reex));
-  collabs_.moduleFactory_ = mf;
-  collabs_.stateFactory_ = sf;
-  collabs_.algoFactory_ = af;
-  collabs_.reexFactory_ = reex;
-  collabs_.executorFactory_ = executorFactory;
-  collabs_.executionManager_.reset(new ExecutionQueueManager);
-  collabs_.cmdFactory_ = cmdFactory;
-  collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
-  collabs_.serializationManager_ = nesm;
-  signals_.signalSwitch_ = true;
-  signals_.loadingContext_ = false;
-
-  collabs_.dynamicPortManager_.reset(new DynamicPortManager(signals_.connectionAdded_, signals_.connectionRemoved_, this));
+  dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
 
   /// @todo should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
-  NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
+  NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, cmdFactory_));
 #endif
 
-  collabs_.eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
+  eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
 }
 
-NetworkEditorController::NetworkEditorController(const NetworkEditorController& other)
+NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
+  : theNetwork_(network), executorFactory_(executorFactory),
+  eventCmdFactory_(new NullCommandFactory),
+  serializationManager_(nesm),
+  signalSwitch_(true)
 {
-  collabs_.theNetwork_.reset(new Network(other.collabs_.moduleFactory_,
-    other.collabs_.stateFactory_, other.collabs_.algoFactory_, other.collabs_.reexFactory_));
-  collabs_.moduleFactory_ = other.collabs_.moduleFactory_;
-  collabs_.stateFactory_ = other.collabs_.stateFactory_;
-  collabs_.algoFactory_ = other.collabs_.algoFactory_;
-  collabs_.reexFactory_ = other.collabs_.reexFactory_;
-  collabs_.executorFactory_ = other.collabs_.executorFactory_;
-  collabs_.executionManager_.reset(new SimpleExecutionManager);
-
-  //collabs_.cmdFactory_ = other.collabs_.cmdFactory_;
-  //collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
-  collabs_.serializationManager_ = other.collabs_.serializationManager_;
-  signals_.signalSwitch_ = true;
-  signals_.loadingContext_ = false;
-
-  collabs_.dynamicPortManager_.reset(new DynamicPortManager(signals_.connectionAdded_,
-    signals_.connectionRemoved_, this));
-
-  /// @todo should this class own the network or just keep a reference?
-
-#ifdef BUILD_WITH_PYTHON
-  //NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
-#endif
-
-  //collabs_.eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
-}
-
-NetworkEditorController::NetworkEditorController(NetworkStateHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-{
-  collabs_.theNetwork_ = network;
-  collabs_.executorFactory_ = executorFactory;
-  collabs_.eventCmdFactory_.reset(new NullCommandFactory);
-  collabs_.serializationManager_ = nesm;
-  signals_.signalSwitch_ = true;
 }
 
 NetworkEditorController::~NetworkEditorController()
@@ -132,7 +100,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
-  collabs_.executionManager_->stopExecution();
+  executionManager_.stopExecution();
 }
 
 namespace
@@ -264,37 +232,36 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
 ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
 {
   auto realModule = addModuleImpl(info);
-  if (signals_.signalSwitch_)
+  if (signalSwitch_)
   {
     static ModuleCounter dummy;
-    /*emit*/ signals_.moduleAdded_(info.module_name_, realModule, dummy);
+    /*emit*/ moduleAdded_(info.module_name_, realModule, dummy);
   }
   printNetwork();
 
-  if (!signals_.loadingContext_ && collabs_.eventCmdFactory_)
-    collabs_.eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
+  if (!loadingContext_)
+    eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
 
   return realModule;
 }
 
 ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info)
 {
-  auto realModule = collabs_.theNetwork_->add_module(info);
+  auto realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
     realModule->addPortConnection(connectPortAdded([realModule](const ModuleId& mid, const PortId& pid) { realModule->portAddedSlot(mid, pid); }));
     realModule->addPortConnection(connectPortRemoved([realModule](const ModuleId& mid, const PortId& pid) { realModule->portRemovedSlot(mid, pid); }));
   }
-  realModule->setNetwork(this);
   return realModule;
 }
 
 void NetworkEditorController::removeModule(const ModuleId& id)
 {
-  collabs_.theNetwork_->remove_module(id);
+  theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
-  /*emit*/ signals_.moduleRemoved_(id);
+  /*emit*/ moduleRemoved_(id);
 
   printNetwork();
 }
@@ -317,7 +284,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   auto newModule = addModuleImpl(module->info());
   newModule->setState(module->get_state()->clone());
   static ModuleCounter dummy;
-  signals_.moduleAdded_(id.name_, newModule, dummy);
+  moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -339,9 +306,9 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     }
   }
 
-  if (collabs_.serializationManager_)
+  if (serializationManager_)
   {
-    collabs_.serializationManager_->copyNote(module, newModule);
+    serializationManager_->copyNote(module, newModule);
   }
 
   return newModule;
@@ -384,7 +351,7 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
 {
   auto newMod = connectNewModule(portToConnect, info.newModuleName);
 
-  const auto endModule = collabs_.theNetwork_->lookupModule(ModuleId(info.endModuleId));
+  const auto endModule = theNetwork_->lookupModule(ModuleId(info.endModuleId));
 
   auto newModOutputPorts = newMod->outputPorts();
   const auto firstMatchingOutputPort = std::find_if(newModOutputPorts.begin(), newModOutputPorts.end(),
@@ -431,8 +398,8 @@ void NetworkEditorController::printNetwork() const
   /// @todo: and make this switchable
   if (false)
   {
-    if (collabs_.theNetwork_)
-      LOG_DEBUG(collabs_.theNetwork_->toString());
+    if (theNetwork_)
+      LOG_DEBUG(theNetwork_->toString());
   }
 }
 
@@ -451,97 +418,97 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
-    auto id = collabs_.theNetwork_->connect(ConnectionOutputPort(collabs_.theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
-      ConnectionInputPort(collabs_.theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
+    auto id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
+      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
-      signals_.connectionAdded_(desc);
+      connectionAdded_(desc);
 
     printNetwork();
     return id;
   }
 
   logWarning("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
-  signals_.invalidConnection_(desc);
+  invalidConnection_(desc);
   return boost::none;
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
-  if (collabs_.theNetwork_->disconnect(id))
+  if (theNetwork_->disconnect(id))
   {
-    signals_.connectionRemoved_(id);
+    connectionRemoved_(id);
   }
   printNetwork();
 }
 
 boost::signals2::connection NetworkEditorController::connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber)
 {
-  return signals_.moduleAdded_.connect(subscriber);
+  return moduleAdded_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber)
 {
-  return signals_.moduleRemoved_.connect(subscriber);
+  return moduleRemoved_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber)
 {
-  return signals_.connectionAdded_.connect(subscriber);
+  return connectionAdded_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber)
 {
-  return signals_.connectionRemoved_.connect(subscriber);
+  return connectionRemoved_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber)
 {
-  return signals_.invalidConnection_.connect(subscriber);
+  return invalidConnection_.connect(subscriber);
 }
 
-boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return ExecutionContext::connectGlobalNetworkExecutionStarts(subscriber);
+  return ExecutionContext::connectNetworkExecutionStarts(subscriber);
 }
 
-boost::signals2::connection NetworkEditorController::connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+boost::signals2::connection NetworkEditorController::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return ExecutionContext::connectGlobalNetworkExecutionFinished(subscriber);
+  return ExecutionContext::connectNetworkExecutionFinished(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
 {
-  return collabs_.dynamicPortManager_->connectPortAdded(subscriber);
+  return dynamicPortManager_->connectPortAdded(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
 {
-  return collabs_.dynamicPortManager_->connectPortRemoved(subscriber);
+  return dynamicPortManager_->connectPortRemoved(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber)
 {
-  return signals_.networkDoneLoading_.connect(subscriber);
+  return networkDoneLoading_.connect(subscriber);
 }
 
 NetworkFileHandle NetworkEditorController::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const
 {
-  NetworkToXML conv(collabs_.serializationManager_);
-  return conv.to_xml_data(collabs_.theNetwork_, modFilter, connFilter);
+  NetworkToXML conv(serializationManager_);
+  return conv.to_xml_data(theNetwork_, modFilter, connFilter);
 }
 
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
-  NetworkToXML conv(collabs_.serializationManager_);
-  return conv.to_xml_data(collabs_.theNetwork_);
+  NetworkToXML conv(serializationManager_);
+  return conv.to_xml_data(theNetwork_);
 }
 
-NetworkSignalManager::LoadingContext::LoadingContext(bool& load) : load_(load)
+NetworkEditorController::LoadingContext::LoadingContext(bool& load) : load_(load)
 {
   load_ = true;
 }
 
-NetworkSignalManager::LoadingContext::~LoadingContext()
+NetworkEditorController::LoadingContext::~LoadingContext()
 {
   load_ = false;
 }
@@ -552,41 +519,39 @@ NetworkSignalManager::LoadingContext::~LoadingContext()
 
 void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
-  NetworkSignalManager::LoadingContext ctx(signals_.loadingContext_);
+  LoadingContext ctx(loadingContext_);
   if (xml)
   {
     try
     {
-      collabs_.theNetwork_ = makeShared<Network>(collabs_.moduleFactory_, collabs_.stateFactory_,
-        collabs_.algoFactory_, collabs_.reexFactory_);
-      loadXmlDataIntoNetwork(xml->network.data());
-
+      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
+      theNetwork_ = conv.from_xml_data(xml->network);
       ModuleCounter modulesDone;
-      for (size_t i = 0; i < collabs_.theNetwork_->nmodules(); ++i)
+      for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
-        auto module = collabs_.theNetwork_->module(i);
-        signals_.moduleAdded_(module->name(), module, modulesDone);
-        signals_.networkDoneLoading_(static_cast<int>(i));
+        auto module = theNetwork_->module(i);
+        moduleAdded_(module->name(), module, modulesDone);
+        networkDoneLoading_(static_cast<int>(i));
       }
 
       {
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-        for (const auto& cd : collabs_.theNetwork_->connections(true))
+        for (const auto& cd : theNetwork_->connections(true))
         {
           auto id = ConnectionId::create(cd);
-          signals_.connectionAdded_(cd);
+          connectionAdded_(cd);
         }
       }
-      if (collabs_.serializationManager_)
+      if (serializationManager_)
       {
-        collabs_.serializationManager_->updateModuleNotes(xml->moduleNotes);
-        collabs_.serializationManager_->updateConnectionNotes(xml->connectionNotes);
-        collabs_.serializationManager_->updateDisabledComponents(xml->disabledComponents);
-        collabs_.serializationManager_->updateSubnetworks(xml->subnetworks);
-        collabs_.serializationManager_->updateModulePositions(xml->modulePositions, false);
-        collabs_.serializationManager_->updateModuleTags(xml->moduleTags);
+        serializationManager_->updateModuleNotes(xml->moduleNotes);
+        serializationManager_->updateConnectionNotes(xml->connectionNotes);
+        serializationManager_->updateDisabledComponents(xml->disabledComponents);
+        serializationManager_->updateSubnetworks(xml->subnetworks);
+        serializationManager_->updateModulePositions(xml->modulePositions, false);
+        serializationManager_->updateModuleTags(xml->moduleTags);
       }
       else
       {
@@ -594,21 +559,21 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         logInfo("module position editor unavailable, module positions at default");
 #endif
       }
-      signals_.networkDoneLoading_(static_cast<int>(collabs_.theNetwork_->nmodules()) + 1);
+      networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {
       logError("File load failed: exception while processing xml network data: {}", e.what());
-      collabs_.theNetwork_->clear();
+      theNetwork_->clear();
       throw;
     }
     catch (std::exception& ex)
     {
       logError("File load failed: exception while processing xml network data: {}", ex.what());
-      collabs_.theNetwork_->clear();
+      theNetwork_->clear();
       throw;
     }
-    collabs_.eventCmdFactory_->create(NetworkEventCommands::OnNetworkLoad)->execute();
+    eventCmdFactory_->create(NetworkEventCommands::OnNetworkLoad)->execute();
   }
 }
 
@@ -638,42 +603,44 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      auto originalConnections = collabs_.theNetwork_->connections(true);
+      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
 
-      auto info = appendXmlData(xml->network.data());
+      auto originalConnections = theNetwork_->connections(true);
+
+      auto info = conv.appendXmlData(xml->network);
       auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
-      for (size_t i = startIndex; i < collabs_.theNetwork_->nmodules(); ++i)
+      for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
-        auto module = collabs_.theNetwork_->module(i);
-        signals_.moduleAdded_(module->name(), module, modulesDone);
+        auto module = theNetwork_->module(i);
+        moduleAdded_(module->name(), module, modulesDone);
       }
 
       {
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-        for (const auto& cd : collabs_.theNetwork_->connections(true))
+        for (const auto& cd : theNetwork_->connections(true))
         {
           if (std::find(originalConnections.begin(), originalConnections.end(), cd) == originalConnections.end())
           {
             auto id = ConnectionId::create(cd);
-            signals_.connectionAdded_(cd);
+            connectionAdded_(cd);
           }
         }
       }
 
-      if (collabs_.serializationManager_)
+      if (serializationManager_)
       {
         xml->modulePositions.modulePositions = remapIdBasedContainer(xml->modulePositions.modulePositions, info.moduleIdMapping);
         shiftAppendedModules(xml->modulePositions.modulePositions);
-        collabs_.serializationManager_->updateModulePositions(xml->modulePositions, false); // need to shift everything.
+        serializationManager_->updateModulePositions(xml->modulePositions, false); // need to shift everything.
         xml->moduleNotes.notes = remapIdBasedContainer(xml->moduleNotes.notes, info.moduleIdMapping);
-        collabs_.serializationManager_->updateModuleNotes(xml->moduleNotes);
+        serializationManager_->updateModuleNotes(xml->moduleNotes);
         xml->connectionNotes.notes = remapIdBasedContainer(xml->connectionNotes.notes, info.moduleIdMapping);
-        collabs_.serializationManager_->updateConnectionNotes(xml->connectionNotes);
+        serializationManager_->updateConnectionNotes(xml->connectionNotes);
         xml->moduleTags.tags = remapIdBasedContainer(xml->moduleTags.tags, info.moduleIdMapping);
-        collabs_.serializationManager_->updateModuleTags(xml->moduleTags);
+        serializationManager_->updateModuleTags(xml->moduleTags);
         //TODO: need disabled here?
       }
       else
@@ -682,116 +649,14 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
     catch (ExceptionBase& e)
     {
       logError("File load failed: exception while processing xml network data: {}", e.what());
-      collabs_.theNetwork_->clear();
+      theNetwork_->clear();
       throw;
     }
   }
 }
 
-class ScopedControllerSignalDisabler
-{
-public:
-  explicit ScopedControllerSignalDisabler(NetworkInterface* nec) : nec_(nec)
-  {
-    nec_->disableSignals();
-  }
-  ~ScopedControllerSignalDisabler()
-  {
-    nec_->enableSignals();
-  }
-private:
-  NetworkInterface* nec_;
-};
-
-////////
-// TODO: refactor the next two functions into one
-///////
-
-void NetworkEditorController::loadXmlDataIntoNetwork(NetworkSerializationInterfaceHandle data)
-{
-  /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
-  {
-    ScopedControllerSignalDisabler scsd(this);
-    for (const auto& modPair : data->modules())
-    {
-      try
-      {
-        auto module = addModule(modPair.second.first);
-        module->setId(modPair.first);
-        module->setState(modPair.second.second);
-      }
-      catch (Core::InvalidArgumentException& e)
-      {
-        static std::ofstream missingModulesFile(
-          (Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string(), std::ios_base::out | std::ios_base::app);
-        missingModulesFile << "File load problem: " << e.what() << std::endl;
-        logCritical("File load problem: {}", e.what());
-        throw;
-      }
-    }
-  }
-
-  auto connectionsSorted(data->sortedConnections());
-  auto network = getNetwork();
-  for (const auto& conn : connectionsSorted)
-  {
-    auto from = network->lookupModule(conn.out_.moduleId_);
-    auto to = network->lookupModule(conn.in_.moduleId_);
-
-    if (from && to)
-      requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
-    else
-    {
-      logError(
-        "File load error: connection not created between modules {} and {}.",
-        conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
-    }
-  }
-}
-
-NetworkAppendInfo NetworkEditorController::appendXmlData(NetworkSerializationInterfaceHandle data)
-{
-  const auto network = getNetwork();
-  NetworkAppendInfo info;
-  info.newModuleStartIndex = network->nmodules();
-  {
-    ScopedControllerSignalDisabler scsd(this);
-    for (const auto& modPair : data->modules())
-    {
-      ModuleId newId(modPair.first);
-      while (network->lookupModule(newId))
-      {
-        ++newId;
-      }
-
-      auto module = addModule(modPair.second.first);
-
-      info.moduleIdMapping[modPair.first] = newId;
-      module->setId(newId);
-      module->setState(modPair.second.second);
-    }
-  }
-
-  auto connectionsSorted(data->sortedConnections());
-
-  for (const auto& conn : connectionsSorted)
-  {
-    auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);
-    auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
-    if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
-    {
-      const auto from = network->lookupModule(ModuleId(modOut->second));
-      const auto to = network->lookupModule(ModuleId(modIn->second));
-      if (from && to)
-        requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
-    }
-  }
-  return info;
-}
-
 void NetworkEditorController::clear()
 {
-  collabs_.theNetwork_->clear();
   LOG_DEBUG("NetworkEditorController::clear()");
 }
 
@@ -800,80 +665,81 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-std::future<int> NetworkEditorController::executeAll()
+ThreadPtr NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  return executeGeneric(ExecuteAllModules::Instance());
+  return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
-void NetworkEditorController::setExecutableLookup(const ExecutableLookup* lookup)
-{
-  collabs_.lookup_ = lookup;
-}
-
-void NetworkEditorController::executeModule(const ModuleHandle& module, bool executeUpstream)
+void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
 {
   try
   {
-    const ExecuteSingleModule filter(module, *collabs_.theNetwork_, executeUpstream);
-    executeGeneric(filter);
+    ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
+    executeGeneric(lookup, filter);
   }
   catch (NetworkHasCyclesException&)
   {
     logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
-    ExecutionContext::globalExecutionBounds().executeFinishes_(-1);
+    ExecutionContext::executionBounds_.executeFinishes_(-1);
+    return;
   }
 }
 
 void NetworkEditorController::initExecutor()
 {
-  collabs_.executionManager_->initExecutor(collabs_.executorFactory_);
+  executionManager_.initExecutor(executorFactory_);
 }
 
-ExecutionContextHandle NetworkEditorController::createExecutionContext(ModuleFilter filter) const
+ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
 {
-  return makeShared<ExecutionContext>(*collabs_.theNetwork_,
-    collabs_.lookup_ ? collabs_.lookup_ : collabs_.theNetwork_.get(), filter);
+  return makeShared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-std::future<int> NetworkEditorController::executeGeneric(ModuleFilter filter)
+ThreadPtr NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
-  const auto context = createExecutionContext(filter);
-  return collabs_.executionManager_->execute(context);
+  auto context = createExecutionContext(lookup, filter);
+  return executionManager_.enqueueContext(context);
 }
 
 void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
 {
-  connectStaticNetworkExecutionFinished([this](int)
+  connectNetworkExecutionFinished([this](int)
   {
     //std::cout << "Execution manager thread stopped." << std::endl;
-    collabs_.executionManager_->stopExecution();
+    executionManager_.stopExecution();
   });
 }
 
-NetworkStateHandle NetworkEditorController::getNetwork() const
+NetworkHandle NetworkEditorController::getNetwork() const
 {
-  return collabs_.theNetwork_;
+  return theNetwork_;
+}
+
+void NetworkEditorController::setNetwork(NetworkHandle nh)
+{
+  ENSURE_NOT_NULL(nh, "Null network.");
+  theNetwork_ = nh;
 }
 
 NetworkGlobalSettings& NetworkEditorController::getSettings()
 {
-  return collabs_.theNetwork_->settings();
+  return theNetwork_->settings();
 }
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  collabs_.executionManager_->setExecutionStrategy(collabs_.executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
+  executionManager_.setExecutionStrategy(executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
 {
-  return collabs_.moduleFactory_->getAllAvailableModuleDescriptions();
+  return moduleFactory_->getAllAvailableModuleDescriptions();
 }
 
 SharedPointer<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
 {
-  return makeShared<DisableDynamicPortSwitch>(collabs_.dynamicPortManager_);
+  return makeShared<DisableDynamicPortSwitch>(dynamicPortManager_);
 }
 
 DisableDynamicPortSwitch::DisableDynamicPortSwitch(SharedPointer<DynamicPortManager> dpm) : first_(true), dpm_(dpm)
@@ -894,43 +760,43 @@ DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
 
 void NetworkEditorController::disableSignals()
 {
-  signals_.signalSwitch_ = false;
+  signalSwitch_ = false;
 }
 
 void NetworkEditorController::enableSignals()
 {
-  signals_.signalSwitch_ = true;
+  signalSwitch_ = true;
 }
 
 const ModuleLookupInfoSet& NetworkEditorController::possibleReplacements(ModuleHandle module)
 {
-  if (!collabs_.replacementFilter_)
+  if (!replacementFilter_)
   {
-    auto descMap = collabs_.moduleFactory_->getDirectModuleDescriptionLookupMap();
+    auto descMap = moduleFactory_->getDirectModuleDescriptionLookupMap();
     ModuleReplacementFilterBuilder builder(descMap);
-    collabs_.replacementFilter_ = builder.build();
+    replacementFilter_ = builder.build();
   }
-  return collabs_.replacementFilter_->findReplacements(makeConnectedPortInfo(module));
+  return replacementFilter_->findReplacements(makeConnectedPortInfo(module));
 }
 
 void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
-  if (collabs_.serializationManager_)
+  if (serializationManager_)
   {
-    collabs_.serializationManager_->updateModulePositions(modulePositions, selectAll);
+    serializationManager_->updateModulePositions(modulePositions, selectAll);
   }
 }
 
 void NetworkEditorController::cleanUpNetwork()
 {
   auto all = [](ModuleHandle) { return true; };
-  NetworkGraphAnalyzer analyze(*collabs_.theNetwork_, all, true);
+  NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
   auto connected = analyze.connectedComponents();
 
   std::map<int, std::map<int, std::string>> modulesByComponentAndGroup;
 
   BoostGraphParallelScheduler scheduleAll(all);
-  auto order = scheduleAll.schedule(*collabs_.theNetwork_);
+  auto order = scheduleAll.schedule(*theNetwork_);
   for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
   {
     auto groupIter = order.getGroup(group);
@@ -956,10 +822,5 @@ void NetworkEditorController::cleanUpNetwork()
 
 std::vector<ModuleExecutionState::Value> NetworkEditorController::moduleExecutionStates() const
 {
-  return collabs_.theNetwork_ ? collabs_.theNetwork_->moduleExecutionStates() : std::vector<ModuleExecutionState::Value>();
-}
-
-NetworkHandle NetworkEditorController::createSubnetwork() const
-{
-  return NetworkHandle(new NetworkEditorController(*this));
+  return theNetwork_ ? theNetwork_->moduleExecutionStates() : std::vector<ModuleExecutionState::Value>();
 }

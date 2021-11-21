@@ -44,7 +44,6 @@ MODULE_INFO_DEF(AutoReadFile, DataIO, SCIRun)
 
 AutoReadFile::AutoReadFile() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(Matrix);
   INITIALIZE_PORT(Field);
 }
@@ -206,12 +205,6 @@ namespace detail
 
 void AutoReadFile::execute()
 {
-  auto fileOption = getOptionalInput(Filename);
-  if (fileOption && *fileOption)
-  {
-    get_state()->setValue(Variables::Filename, (*fileOption)->value());
-  }
-
   if (needToExecute())
   {
     const auto filename = get_state()->getValue(Variables::Filename).toFilename();

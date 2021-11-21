@@ -224,10 +224,10 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
 }
 
 
-const AlgorithmInputName ApplyMappingMatrixAlgo::Source("Source");
-const AlgorithmInputName ApplyMappingMatrixAlgo::Destination("Destination");
-const AlgorithmInputName ApplyMappingMatrixAlgo::Mapping("Mapping");
-const AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
+AlgorithmInputName ApplyMappingMatrixAlgo::Source("Source");
+AlgorithmInputName ApplyMappingMatrixAlgo::Destination("Destination");
+AlgorithmInputName ApplyMappingMatrixAlgo::Mapping("Mapping");
+AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 
 AlgorithmOutput ApplyMappingMatrixAlgo::run(const AlgorithmInput & input) const
 {

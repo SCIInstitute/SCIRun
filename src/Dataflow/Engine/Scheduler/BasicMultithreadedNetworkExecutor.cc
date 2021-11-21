@@ -26,8 +26,10 @@
 */
 
 
+#include <iostream>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Parallel.h>
 
@@ -37,7 +39,7 @@ using namespace SCIRun::Core::Thread;
 
 namespace
 {
-  struct ParallelExecution : WaitsForStartupInitialization
+  struct ParallelExecution : public WaitsForStartupInitialization
   {
     ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
       : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
@@ -51,7 +53,7 @@ namespace
       bounds_.executeStarts_();
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
       {
-        const auto groupIter = order_.getGroup(group);
+        auto groupIter = order_.getGroup(group);
 
         std::vector<boost::function<void()>> tasks;
 
@@ -74,9 +76,8 @@ namespace
 
 }
 
-std::future<int> BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
+void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
-  ParallelExecution runner(context.lookup(), order, context.bounds(), &executionLock);
-  Util::launchAsyncThread(runner);
-  return {};
+  ParallelExecution runner(&context.lookup_, order, context.bounds(), &executionLock);
+  Core::Thread::Util::launchAsyncThread(runner);
 }

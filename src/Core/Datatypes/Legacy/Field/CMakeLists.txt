@@ -96,7 +96,6 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   VFDataT_0.cc
   VFDataT_1.cc
   VFDataT_2.cc
-  VFDataT_3.cc
   VMesh.cc
 )
 

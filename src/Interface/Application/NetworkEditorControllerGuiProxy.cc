@@ -53,9 +53,9 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(SharedPointer<N
     { portAdded(mid, pid); }));
   connections_.emplace_back(controller_->connectPortRemoved([this](const ModuleId& mid, const PortId& pid)
     { portRemoved(mid, pid); }));
-  connections_.emplace_back(controller_->connectStaticNetworkExecutionStarts([this]()
+  connections_.emplace_back(controller_->connectNetworkExecutionStarts([this]()
     { executionStarted(); }));
-  connections_.emplace_back(controller_->connectStaticNetworkExecutionFinished([this](int ret)
+  connections_.emplace_back(controller_->connectNetworkExecutionFinished([this](int ret)
     { executionFinished(ret); }));
   connections_.emplace_back(controller_->connectNetworkDoneLoading([this](int nMod)
     { networkDoneLoading(nMod); }));
@@ -119,19 +119,14 @@ void NetworkEditorControllerGuiProxy::appendToNetwork(const NetworkFileHandle& x
   controller_->appendToNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::setExecutableLookup(const ExecutableLookup* lookup)
+void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
 {
-  controller_->setExecutableLookup(lookup);
+  controller_->executeAll(&lookup);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll()
+void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup, bool executeUpstream)
 {
-  controller_->executeAll();
-}
-
-void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, bool executeUpstream)
-{
-  controller_->executeModule(module, executeUpstream);
+  controller_->executeModule(module, &lookup, executeUpstream);
 }
 
 size_t NetworkEditorControllerGuiProxy::numModules() const

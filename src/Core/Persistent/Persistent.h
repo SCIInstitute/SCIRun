@@ -226,7 +226,7 @@ class SCISHARE Persistent {
 
     typedef std::map<std::string, PersistentTypeIDPtr>	MapStringPersistentID;
     static MapStringPersistentID* persistent_table_;
-    static Core::Thread::NamedMutex* persistent_mutex_;
+    static Core::Thread::Mutex* persistent_mutex_;
 
     static void initialize();
 };

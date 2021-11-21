@@ -40,9 +40,13 @@ namespace Engine {
   namespace DynamicExecutor {
 
     template <class Unit>
-    using WorkQueue = boost::lockfree::spsc_queue<Unit>;
+    class WorkQueue
+    {
+    public:
+      typedef boost::lockfree::spsc_queue<Unit> Impl;
+    };
 
-    typedef WorkQueue<Networks::ModuleHandle> ModuleWorkQueue;
+    typedef WorkQueue<Networks::ModuleHandle>::Impl ModuleWorkQueue;
     typedef SharedPointer<ModuleWorkQueue> ModuleWorkQueuePtr;
 
   }}

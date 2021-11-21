@@ -83,7 +83,6 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(connectedModuleId, boost::optional<std::string>());
           MOCK_CONST_METHOD0(stateFromConnectedModule, ModuleStateHandle());
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
-          MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());
         };
 
         typedef SharedPointer<MockInputPort> MockInputPortPtr;
@@ -113,7 +112,6 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
           MOCK_CONST_METHOD0(moduleState, ModuleStateHandle());
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
-          MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());
         };
 
         typedef SharedPointer<MockOutputPort> MockOutputPortPtr;

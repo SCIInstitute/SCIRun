@@ -73,8 +73,6 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   ResampleMesh/ResampleRegularMesh.h
   SmoothMesh/FairMesh.h
   FieldData/ConvertFieldBasisType.h
-  FilterFieldData/DilateFieldData.h
-  FilterFieldData/ErodeFieldData.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
   TransformMesh/TransformMeshWithTransform.h
@@ -152,8 +150,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/SetFieldData.cc
   FieldData/SetFieldDataToConstantValue.cc
   FieldData/SmoothVecFieldMedianAlgo.cc
-  FilterFieldData/DilateFieldData.cc
-  FilterFieldData/ErodeFieldData.cc
+  #FilterFieldData/DilateFieldData.cc
+  #FilterFieldData/ErodeFieldData.cc
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc

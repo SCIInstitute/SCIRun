@@ -42,7 +42,7 @@ namespace Engine {
   class SCISHARE BasicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
   {
   public:
-    std::future<int> execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
+    void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
   };
 
 }}}

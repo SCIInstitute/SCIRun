@@ -25,76 +25,88 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
+
+#include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
+#include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
+
+#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/Ports/FieldPort.h>
+
+namespace SCIRun {
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-
-MODULE_INFO_DEF(ApplyFilterToFieldData, ChangeFieldData, SCIRun)
-
-ALGORITHM_PARAMETER_DEF(Fields, Erode)
-ALGORITHM_PARAMETER_DEF(Fields, Dilate)
-
-ApplyFilterToFieldData::ApplyFilterToFieldData() :
-  Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
+using namespace SCIRunAlgo;
 
 /// @class ApplyFilterToFieldData
 /// @brief Applies a dilate or erode filter to a regular mesh.
 
-void ApplyFilterToFieldData::setStateDefaults()
+class ApplyFilterToFieldData : public Module {
+  public:
+    ApplyFilterToFieldData(GuiContext*);
+    virtual ~ApplyFilterToFieldData() {}
+    virtual void execute();
+
+  private:
+    GuiString method_;
+    GuiString edmethod_;
+    GuiInt edniter_;
+
+    SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
+    SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
+};
+
+
+DECLARE_MAKER(ApplyFilterToFieldData)
+
+ApplyFilterToFieldData::ApplyFilterToFieldData(GuiContext* ctx) :
+  Module("ApplyFilterToFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
+    method_(ctx->subVar("method")),
+    edmethod_(ctx->subVar("ed-method")),
+    edniter_(ctx->subVar("ed-iterations"))
 {
-  auto state = get_state();
-  state->setValue(Core::Algorithms::Variables::MaxIterations, 2);
-  state->setValue(Parameters::Erode, true);
-  state->setValue(Parameters::Dilate, false);
+  erode_algo_.set_progress_reporter(this);
+  dilate_algo_.set_progress_reporter(this);
 }
 
-void ApplyFilterToFieldData::execute()
-{
-  auto input = getRequiredInput(InputField);
 
-  if (needToExecute())
+void
+ApplyFilterToFieldData::execute()
+{
+  FieldHandle input, output;
+
+  get_input_handle("Field",input,true);
+
+  if (inputs_changed_ || !oport_cached("Field") || method_.changed() ||
+      edmethod_.changed() || edniter_.changed())
   {
-    auto state = get_state();
-    auto iters = state->getValue(Variables::MaxIterations).toInt();
-    auto doDilate = state->getValue(Parameters::Dilate).toBool();
-    auto doErode = state->getValue(Parameters::Erode).toBool();
-    FieldHandle output;
-    // Dilate then erode
-    if (doDilate)
+    // Inform module that execution started
+    update_state(Executing);
+
+    if (method_.get() == "erodedilate")
     {
-      DilateFieldDataAlgo dilate;
-      dilate.set(Variables::MaxIterations, iters);
-      if (!dilate.runImpl(input, output))
+      if (edmethod_.get() == "erode")
       {
-        THROW_ALGORITHM_PROCESSING_ERROR("Error in dilate algo");
+        erode_algo_.set_int("num_iterations",edniter_.get());
+        if(!(erode_algo_.run(input,output))) return;
       }
-      input = output;
-    }
-    if (doErode)
-    {
-      ErodeFieldDataAlgo erode;
-      erode.set(Variables::MaxIterations, iters);
-      if (!erode.runImpl(input, output))
+      else  if (edmethod_.get() == "dilate")
       {
-        THROW_ALGORITHM_PROCESSING_ERROR("Error in erode algo");
+        dilate_algo_.set_int("num_iterations",edniter_.get());
+        if(!(dilate_algo_.run(input,output))) return;
+      }
+      else
+      {
+        erode_algo_.set_int("num_iterations",edniter_.get());
+        dilate_algo_.set_int("num_iterations",edniter_.get());
+        if(!(erode_algo_.run(input,output))) return;
+        if(!(dilate_algo_.run(output,output))) return;
       }
     }
-    if (doDilate || doErode)
-      sendOutput(OutputField, output);
-    else //legacy behavior--unfiltered input
-      sendOutput(OutputField, input);
+
+    // Send output to output ports
+    send_output_handle("Field",output,true);
   }
 }
+
+
+} // End namespace SCIRun

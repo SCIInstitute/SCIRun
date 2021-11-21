@@ -137,8 +137,6 @@ void NetworkEditor::setNetworkEditorController(SharedPointer<NetworkEditorContro
 
     disconnect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-
-    controller_->setExecutableLookup(nullptr);
   }
 
   controller_ = controller;
@@ -153,8 +151,6 @@ void NetworkEditor::setNetworkEditorController(SharedPointer<NetworkEditorContro
 
     connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-
-    controller_->setExecutableLookup(this);
   }
 }
 
@@ -1552,7 +1548,7 @@ void NetworkEditor::executeAll()
 {
   preexecute_();
   // explicit type needed for older Qt and/or clang
-  std::function<void()> exec = [this]() { controller_->executeAll(); };
+  std::function<void()> exec = [this]() { controller_->executeAll(*this); };
   QtConcurrent::run(exec);
 
   //TODO: not sure about this right now.
@@ -1564,7 +1560,7 @@ void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
 {
   preexecute_();
   // explicit type needed for older Qt and/or clang
-  std::function<void()> exec = [this, &module, fromButton]() { controller_->executeModule(module, fromButton); };
+  std::function<void()> exec = [this, &module, fromButton]() { controller_->executeModule(module, *this, fromButton); };
   QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();

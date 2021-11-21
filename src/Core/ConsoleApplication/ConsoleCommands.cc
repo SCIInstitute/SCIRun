@@ -110,11 +110,11 @@ bool SaveFileCommandConsole::execute()
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   LOG_CONSOLE("Executing network...");
-  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
   Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-  auto val = Application::Instance().controller()->executeAll();
+  auto t = Application::Instance().controller()->executeAll(nullptr);
   LOG_CONSOLE("Execution started.");
-  val.wait();
+  t->join();
   LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
 
   InteractiveModeCommandConsole interactive;
@@ -129,7 +129,7 @@ QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
 bool QuitAfterExecuteCommandConsole::execute()
 {
   LOG_CONSOLE("Quit after execute is set.");
-  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code)
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code)
   {
     LOG_CONSOLE("Goodbye! Exit code: " << code);
     exit(code);
@@ -215,7 +215,7 @@ bool RunPythonScriptCommandConsole::execute()
 
     if (app.parameters()->quitAfterOneScriptedExecution())
     {
-      app.controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      app.controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
       app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
     }
 

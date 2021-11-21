@@ -37,12 +37,6 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/SVD>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <vector>
 
 #include <sstream>
 

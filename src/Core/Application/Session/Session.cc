@@ -170,7 +170,7 @@ public:
 
   void consume(const std::string& statement, const std::string& message) override
   {
-    Guard g(mutex_);
+    Guard g(mutex_.get());
     namespace pt = boost::posix_time;
     const pt::ptime now = pt::second_clock::local_time();
     static bool firstTime = true;

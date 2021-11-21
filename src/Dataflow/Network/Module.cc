@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MetadataObject.h>
 #include <Dataflow/Network/PortManager.h>
-#include <Dataflow/Network/ModuleExceptions.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
@@ -203,8 +202,6 @@ namespace SCIRun
         std::string description_;
 
         bool returnCode_{ false };
-
-        NetworkInterface* network_ { nullptr };
       };
     }
   }
@@ -223,8 +220,6 @@ Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   ReexecuteStrategyFactoryHandle reexFactory)
 {
-  //logCritical("Module() begin: {}", );
-
   impl_ = makeShared<ModuleImpl>(this, info, hasUi, stateFactory);
 
   setLogger(DefaultModuleFactories::defaultLogger_);
@@ -424,7 +419,7 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (PortNotFoundException& e)
   {
     std::ostringstream ostr;
-    ostr << "Port not found, it may need initializing in the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
+    ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
   catch (AlgorithmParameterNotFound& e)
@@ -828,11 +823,6 @@ void Module::removeInputPort(const PortId& id)
   impl_->iports_.remove(id);
 }
 
-void Module::removeOutputPort(const PortId& id)
-{
-  impl_->oports_.remove(id);
-}
-
 void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).toBool());
@@ -1187,20 +1177,10 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://scirun.readthedocs.io/en/latest/modules/" + get_categoryname() + "/" + name() + ".html";
+  return "https://sciinstitute.github.io/SCIRun/modules.html#" + name();
 }
 
 void Module::disconnectStateListeners()
 {
   get_state()->disconnectAll();
-}
-
-NetworkInterface* Module::network() const
-{
-  return impl_->network_;
-}
-
-void Module::setNetwork(NetworkInterface* net)
-{
-  impl_->network_ = net;
 }

@@ -82,7 +82,7 @@ namespace Utility
     size_t size() const { return lookup_.size(); }
 
   private:
-    mutable Thread::Mutex lock_;
+    mutable std::mutex lock_;
     std::map<std::string, CtorInfo> lookup_;
   };
 
