@@ -372,6 +372,7 @@ void ConnectionLine::trackNodes()
   }
 }
 
+#if 0
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 {
   setVisible(false);
@@ -400,6 +401,7 @@ void ConnectionLine::deleteCompanion()
     subnetCompanion_ = nullptr;
   }
 }
+#endif
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
@@ -493,7 +495,7 @@ void ConnectionLine::insertNewModule()
     { "moduleToAdd", moduleToAddName.toStdString() },
     { "endModuleId", toPortLocal->description()->getUnderlyingModuleId().id_ },
     { "inputPortName", toPortLocal->description()->get_portname() },
-    { "inputPortId", toPortLocal->description()->id().toString() }
+    { "inputPortId", toPortLocal->description()->externalId().toString() }
   });
   deleteLater();
 }

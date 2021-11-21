@@ -365,7 +365,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   fillColorStateLookup(defaultBackgroundColor_);
 
   setupModuleActions();
-  
+
   setupLoggingAndProgress(ed);
 
   setCurrentIndex(buildDisplay(fullWidgetDisplay_.get(), name));
@@ -682,14 +682,14 @@ public:
         auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
         auto nameMatches = [&](const InputPortHandle& in)
         {
-          return in->id().name == port->id().name;
+          return in->externalId().name == port->externalId().name;
         };
         auto justAddedIndex = i - 1;
         bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
           && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
         if (isNotLastDynamicPortOfThisName)
           portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
-        widget->dialogManager_.options()->updateFromPortChange(static_cast<int>(i), port->id().toString(), portConstructionType);
+        widget->dialogManager_.options()->updateFromPortChange(static_cast<int>(i), port->externalId().toString(), portConstructionType);
       }
     }
   }
@@ -942,7 +942,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->getIndex(), port->isDynamic(), 
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->getIndex(), port->isDynamic(),
       port,
       [this]() { return connectionFactory_; },
       [this]() { return closestPortFinder_; },
@@ -974,7 +974,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 
 bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout)
 {
-  auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->description()->id() == pid; });
+  auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->description()->externalId() == pid; });
   if (iter != inputPorts_.end())
   {
     auto widget = *iter;
@@ -1194,7 +1194,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialogManager_.hasOptions())
     {
       {
-        if (!ModuleDialogGeneric::factory()) 
+        if (!ModuleDialogGeneric::factory())
           ModuleDialogGeneric::setFactory(makeShared<ModuleDialogFactory>(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
       }
       dialogManager_.createOptions();
