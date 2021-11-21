@@ -35,8 +35,6 @@
 namespace SCIRun {
 namespace Gui {
 
-  class ModuleDialogManager;
-
   class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
   {
     Q_OBJECT
@@ -44,9 +42,10 @@ namespace Gui {
    public:
     CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     ~CompositeModuleDialog();
+    void pullSpecial() override;
   private:
-    void updateModuleUIButtons();
-    std::vector<SharedPointer<ModuleDialogManager>> dialogManagers_;
+    std::unique_ptr<class CompositeModuleDialogImpl> impl_;
+    friend class CompositeModuleDialogImpl;
   };
 
 }
