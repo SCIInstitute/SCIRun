@@ -92,7 +92,7 @@ class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 
 public:
   PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
-    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
+    size_t index, bool isInput, bool isDynamic,
     const SCIRun::Dataflow::Networks::PortHandle& port,
     std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
     std::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
@@ -126,7 +126,9 @@ public:
   void turn_on_light();
   void turn_off_light();
   bool isLightOn() const override { return lightOn_; }
+#if 0
   void connectToSubnetPort(PortWidget* subnetPort);
+#endif
 
   void setHighlight(bool on, bool individual = false);
   void setPositionObject(PositionProviderPtr provider) override;
@@ -199,8 +201,8 @@ private:
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
+
   const SCIRun::Dataflow::Networks::ModuleId moduleId_;
-  const SCIRun::Dataflow::Networks::PortId portId_;
   const SCIRun::Dataflow::Networks::PortHandle port_;
   size_t index_;
   const QColor color_;
@@ -252,7 +254,7 @@ class InputPortWidget : public PortWidget
 {
 public:
   InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
-    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
+    size_t index, bool isDynamic,
     const SCIRun::Dataflow::Networks::PortHandle& port,
     std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
     std::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
@@ -264,7 +266,7 @@ class OutputPortWidget : public PortWidget
 {
 public:
   OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
-    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
+    size_t index, bool isDynamic,
     const SCIRun::Dataflow::Networks::PortHandle& port,
     std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
     std::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,

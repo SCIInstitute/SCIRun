@@ -255,10 +255,10 @@ bool Network::containsViewScene() const
   return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->name() == "ViewScene"; }) != modules_.end();
 }
 
-ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
+ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->internalId())
 {
 }
 
-ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts().at(index)->id())
+ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts().at(index)->internalId())
 {
 }

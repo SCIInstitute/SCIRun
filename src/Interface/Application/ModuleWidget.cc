@@ -667,8 +667,7 @@ public:
       auto type = port->get_typename();
       auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
         portAlpha()), type,
-        moduleId, port->id(),
-        i, port->isDynamic(), port,
+        moduleId, i, port->isDynamic(), port,
         [widget]() { return widget->connectionFactory_; },
         [widget]() { return widget->closestPortFinder_; },
         {},
@@ -704,7 +703,7 @@ public:
       auto w = new OutputPortWidget(
         QString::fromStdString(port->get_portname()),
         to_color(PortColorLookup::toColor(type), portAlpha()),
-        type, moduleId, port->id(), i, port->isDynamic(), port,
+        type, moduleId, i, port->isDynamic(), port,
         [widget]() { return widget->connectionFactory_; },
         [widget]() { return widget->closestPortFinder_; },
         port->getPortDataDescriber(),
@@ -943,7 +942,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), 
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->getIndex(), port->isDynamic(), 
       port,
       [this]() { return connectionFactory_; },
       [this]() { return closestPortFinder_; },

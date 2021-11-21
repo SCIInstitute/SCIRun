@@ -174,7 +174,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     {
       if (!inputPort->isDynamic() && inputPort->nconnections() == 0 && inputPort->get_typename() != "MetadataObject")
       {
-        auto portId = inputPort->id();
+        auto portId = inputPort->internalId();
         logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
         if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
@@ -192,7 +192,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     {
       if (outputPort->nconnections() == 0 && outputPort->get_typename() != "MetadataObject")
       {
-        auto portId = outputPort->id();
+        auto portId = outputPort->internalId();
         logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
         if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())

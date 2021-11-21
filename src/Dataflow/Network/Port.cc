@@ -73,7 +73,7 @@ void Port::detach(Connection* conn)
   auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
-    LOG_DEBUG("{} Port::detach: Connection not found", id().toString());
+    LOG_DEBUG("{} Port::detach: Connection not found", internalId().toString());
   }
   connections_.erase(pos);
 }
@@ -171,7 +171,7 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
   {
     if (this->shouldTriggerDataChange())
     {
-      subscriber(this->id(), data);
+      subscriber(this->internalId(), data);
     }
   });
 }
@@ -235,7 +235,7 @@ bool OutputPort::hasData() const
   if (!source_)
     return false;
   auto ret = source_->hasData();
-  LOG_TRACE("{} OutputPort::hasData returns {}", id().toString(), ret);
+  LOG_TRACE("{} OutputPort::hasData returns {}", internalId().toString(), ret);
   return ret;
 }
 

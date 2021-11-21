@@ -63,8 +63,8 @@ public:
   bool hasConnectionCountIncreased() const override;
 
 
-  PortId id() const override { return internalId_; }
-  void setId(const PortId& id) override { internalId_ = externalId_ = id; }
+  PortId internalId() const override { return internalId_; }
+  void setId_DynamicCase(const PortId& id) override { internalId_ = externalId_ = id; }
   void setInternalId(const PortId& id) override { internalId_ = id; }
   PortId externalId() const override { return externalId_; }
   std::string get_typename() const override { return typeName_; }
@@ -126,7 +126,6 @@ private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
 };
-
 
 class SCISHARE OutputPort : public Port, public OutputPortInterface
 {

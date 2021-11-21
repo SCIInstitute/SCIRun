@@ -195,7 +195,7 @@ PortWidget::PotentialConnectionMap PortWidget::potentialConnectionsMap_;
 PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlighted_(false) {}
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
-  const PortId& portId, size_t index,
+  size_t index,
   bool isInput, bool isDynamic,
   const SCIRun::Dataflow::Networks::PortHandle& port,
   std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
@@ -203,7 +203,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
-  name_(name), moduleId_(moduleId), portId_(portId), 
+  name_(name), moduleId_(moduleId), 
   port_(port),
   index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(nullptr),
   connectionFactory_(connectionFactory),
@@ -213,16 +213,18 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
-  setToolTip(QString(name_).replace("_", " ") + (isDynamic ? ("[" + QString::number(portId_.id) + "]") : "") + " : " + QString::fromStdString(typename_));
+  const auto extId = port_->externalId();
+  setToolTip(QString(name_).replace("_", " ") + (isDynamic ? ("[" + QString::number(extId.id) + "]") : "") + " : " + QString::fromStdString(typename_));
 
   setMenu(menu_);
 
-  portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
+  portWidgetMap_[moduleId_.id_][isInput_][extId] = this;
 }
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[moduleId_.id_][isInput_].erase(portId_);
+  const auto extId = port_->externalId();
+  portWidgetMap_[moduleId_.id_][isInput_].erase(extId);
 }
 
 QSize PortWidgetBase::sizeHint() const
@@ -324,7 +326,7 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
 {
   if (!description()->isInput() && (button == Qt::MiddleButton || modifiers & Qt::ControlModifier))
   {
-    DataInfoDialog::show(getPortDataDescriber(), "Port", moduleId_.id_ + "::" + portId_.toString());
+    DataInfoDialog::show(getPortDataDescriber(), "Port", moduleId_.id_ + "::" + port_->externalId().toString());
   }
   else if (button == Qt::LeftButton)
   {
@@ -478,12 +480,13 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   }
 }
 
+#if 0
 void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
 {
   auto out = isInput_ ? subnetPort : this;
   auto in = isInput_ ? this : subnetPort;
 
-  ConnectionDescription cd { { out->moduleId_, out->portId_ }, { in->moduleId_, in->portId_ } };
+  ConnectionDescription cd { { out->moduleId_, out->port_->externalId() }, { in->moduleId_, in->port_->externalId() } };
   if (connectionFactory_ && connectionFactory_())
     connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
   else
@@ -493,6 +496,7 @@ void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
   //TODO: position provider needs adjustment
   //TODO: management of return value?
 }
+#endif
 
 void PortWidget::makeConnection(const ConnectionDescription& cd)
 {
@@ -537,8 +541,8 @@ void PortWidget::moveEvent(QMoveEvent* event)
 
 bool PortWidget::matches(const ConnectionDescription& cd) const
 {
-  return (description()->isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.portId_ == portId_)
-    || (!description()->isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.portId_ == portId_);
+  return (description()->isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.portId_ == port_->externalId())
+    || (!description()->isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.portId_ == port_->externalId());
 }
 
 bool PortWidget::sharesParentModule(const PortWidget& other) const
@@ -754,24 +758,24 @@ void PortWidget::insertNewModule(const QMap<QString, std::string>& info)
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
+  const ModuleId& moduleId, size_t index, bool isDynamic,
   const SCIRun::Dataflow::Networks::PortHandle& port,
   std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
   std::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, port, connectionFactory, closestPortFinder, portDataDescriber, parent)
+  : PortWidget(name, color, datatype, moduleId, index, true, isDynamic, port, connectionFactory, closestPortFinder, portDataDescriber, parent)
 {
 }
 
 OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
+  const ModuleId& moduleId, size_t index, bool isDynamic,
   const SCIRun::Dataflow::Networks::PortHandle& port,
   std::function<SharedPointer<ConnectionFactory>()> connectionFactory,
   std::function<SharedPointer<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, port, connectionFactory, closestPortFinder, portDataDescriber, parent)
+  : PortWidget(name, color, datatype, moduleId, index, false, isDynamic, port, connectionFactory, closestPortFinder, portDataDescriber, parent)
 {
 }
 

@@ -52,7 +52,6 @@
 #include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
-#include <Modules/Legacy/Fields/CompositeModuleTestGFB_FM.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
@@ -207,7 +206,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
   addModuleDesc<CollectMatrices>("Real ported module", "...");
 
-  addModuleDesc<CompositeModuleTestGFB_FM>("2 modules in 1!", "GetFieldBoundary->FairMesh");
   addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
 }
 

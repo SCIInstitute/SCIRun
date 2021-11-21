@@ -50,7 +50,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
-          MOCK_CONST_METHOD0(id, PortId());
+          MOCK_CONST_METHOD0(internalId, PortId());
           MOCK_CONST_METHOD0(externalId, PortId());
           MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
         };
@@ -73,9 +73,9 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(clone, InputPortInterface*());
-          MOCK_CONST_METHOD0(id, PortId());
+          MOCK_CONST_METHOD0(internalId, PortId());
           MOCK_CONST_METHOD0(externalId, PortId());
-          MOCK_METHOD1(setId, void(const PortId&));
+          MOCK_METHOD1(setId_DynamicCase, void(const PortId&));
           MOCK_METHOD1(setInternalId, void(const PortId&));
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
@@ -105,9 +105,9 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
-          MOCK_CONST_METHOD0(id, PortId());
+          MOCK_CONST_METHOD0(internalId, PortId());
           MOCK_CONST_METHOD0(externalId, PortId());
-          MOCK_METHOD1(setId, void(const PortId&));
+          MOCK_METHOD1(setId_DynamicCase, void(const PortId&));
           MOCK_METHOD1(setInternalId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
