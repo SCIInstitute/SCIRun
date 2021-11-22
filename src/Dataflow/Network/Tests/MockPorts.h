@@ -111,6 +111,7 @@ namespace SCIRun {
           MOCK_METHOD1(setInternalId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(peekData, Core::Datatypes::DatatypeHandle());
           MOCK_CONST_METHOD0(source, DatatypeSourceInterfaceHandle());
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
           MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
@@ -144,6 +145,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(send, void(DatatypeSinkInterfaceHandle));
           MOCK_CONST_METHOD0(hasData, bool());
           MOCK_CONST_METHOD0(describeData, std::string());
+          MOCK_CONST_METHOD0(peekData, Core::Datatypes::DatatypeHandle());
         };
 
         typedef SharedPointer<MockDatatypeSource> MockDatatypeSourcePtr;
