@@ -445,21 +445,21 @@ boost::python::dict NetworkEditorPythonAPI::get_input_data(const std::string& mo
 
 boost::python::dict NetworkEditorPythonAPI::get_output_data(const std::string& moduleId)
 {
-  logCritical("get_output_data {}", "begins");
+  //logCritical("get_output_data {}", "begins");
   boost::python::dict allOutputs;
   auto module = impl_->findModule(moduleId);
   if (module)
   {
     auto outputs = module->output();
-    logCritical("get_output_data {}", outputs->size());
+    //logCritical("get_output_data {}", outputs->size());
     for (int i = 0; i < outputs->size(); ++i)
     {
-      logCritical("get_output_data {}", i);
+      //logCritical("get_output_data {}", i);
       auto port = outputs->getitem(i);
-      logCritical("get_output_data {}", port->id());
+      //logCritical("get_output_data {}", port->id());
       if (port && port->data())
       {
-        logCritical("get_output_data {}", "data found");
+        //logCritical("get_output_data {}", "data found");
         allOutputs[port->id()] = port->data()->value();
       }
     }
