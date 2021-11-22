@@ -153,7 +153,7 @@ void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, con
 
         auto data = processMatlabData(ma);
 
-        send_output_handle(outputPorts()[p]->id(), data);
+        send_output_handle(outputPorts()[p]->internalId(), data);
       }
 
       StringHandle filenameH(new String(filename));

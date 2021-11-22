@@ -29,13 +29,11 @@
 SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
-  DialogErrorControl.cc
   GuiApplication.cc
   GuiCommandFactory.cc
   GuiCommands.cc
   GuiLogger.cc
   MainWindowCollaborators.cc
-  ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   NetworkExecutionProgressBar.cc
@@ -64,19 +62,18 @@ SET(Interface_Application_SOURCES
   Subnetworks.cc
   MacroEditor.cc
   StateViewer.cc
+  ModuleOptionsDialogConfiguration.cc
 )
 
 SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
-  DialogErrorControl.h
   GuiApplication.h
   GuiCommandFactory.h
   GuiCommands.h
   GuiLogger.h
   HasNotes.h
   MainWindowCollaborators.h
-  ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
   NetworkExecutionProgressBar.h
@@ -101,12 +98,12 @@ SET(Interface_Application_HEADERS
   TriggeredEventsWindow.h
   MacroEditor.h
   StateViewer.h
+  ModuleOptionsDialogConfiguration.h
 )
 
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
-  ModuleLogWindow.ui
   ConnectionStyleWizardPage.ui
   OtherSettingsWizardPage.ui
   NetworkSearch.ui

@@ -37,6 +37,7 @@ namespace SCIRun {
   {
     ALGORITHM_PARAMETER_DECL(NetworkXml);
     ALGORITHM_PARAMETER_DECL(PortSettings);
+    ALGORITHM_PARAMETER_DECL(ModuleIdList);
   }
   namespace Modules {
     namespace Basic {
@@ -72,6 +73,8 @@ namespace SCIRun {
        private:
         std::unique_ptr<class CompositeModuleImpl> impl_;
       };
+
+      using CompositeModuleInfoMap = std::map<Dataflow::Networks::ModuleId, Dataflow::Networks::ModuleHandle>;
  }}}
 
 #endif

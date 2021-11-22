@@ -48,7 +48,8 @@ namespace Networks {
   {
   public:
     virtual ~PortDescriptionInterface();
-    virtual PortId id() const = 0;
+    virtual PortId internalId() const = 0;
+    virtual PortId externalId() const = 0;
     virtual size_t nconnections() const = 0;
     virtual std::string get_typename() const = 0;
     virtual std::string get_portname() const = 0;
@@ -69,7 +70,8 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
     void incrementIndex() { setIndex(getIndex() + 1); }
     void decrementIndex() { setIndex(getIndex() - 1); }
-    virtual void setId(const PortId& id) = 0;
+    virtual void setId_DynamicCase(const PortId& id) = 0;
+    virtual void setInternalId(const PortId& id) = 0;
     virtual ModuleStateHandle moduleState() const = 0;
     virtual bool hasConnectionCountIncreased() const = 0;
     virtual ModuleInterface* underlyingModule() const = 0;

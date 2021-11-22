@@ -62,7 +62,8 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
     ON_CALL(*inputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
-    ON_CALL(*inputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*inputPort, externalId()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*inputPort, internalId()).WillByDefault(Return(PortId(d.id)));
     ON_CALL(*module, hasInputPort(d.id)).WillByDefault(Return(true));
     inputs.push_back(inputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
@@ -78,7 +79,8 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
     ON_CALL(*outputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
-    ON_CALL(*outputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*outputPort, internalId()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*outputPort, externalId()).WillByDefault(Return(PortId(d.id)));
     ON_CALL(*module, hasOutputPort(d.id)).WillByDefault(Return(true));
     outputs.push_back(outputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.

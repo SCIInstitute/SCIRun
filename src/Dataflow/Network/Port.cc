@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), index_(0), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
+  : module_(module), index_(0), internalId_(params.id_), externalId_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
   connectionCountIncreasedFlag_(false)
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
@@ -73,7 +73,7 @@ void Port::detach(Connection* conn)
   auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
-    LOG_DEBUG("{} Port::detach: Connection not found", id().toString());
+    LOG_DEBUG("{} Port::detach: Connection not found", internalId().toString());
   }
   connections_.erase(pos);
 }
@@ -156,7 +156,7 @@ InputPortInterface* InputPort::clone() const
   DatatypeSinkInterfaceHandle sink(sink_->clone());
   if (!isDynamic_)
     THROW_INVALID_ARGUMENT("Cannot clone non-dynamic port.");
-  PortId cloneId(id_.id + 1, id_.name);
+  PortId cloneId(internalId_.id + 1, internalId_.name);
   return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 
@@ -171,7 +171,7 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
   {
     if (this->shouldTriggerDataChange())
     {
-      subscriber(this->id(), data);
+      subscriber(this->internalId(), data);
     }
   });
 }
@@ -235,7 +235,7 @@ bool OutputPort::hasData() const
   if (!source_)
     return false;
   auto ret = source_->hasData();
-  LOG_TRACE("{} OutputPort::hasData returns {}", id().toString(), ret);
+  LOG_TRACE("{} OutputPort::hasData returns {}", internalId().toString(), ret);
   return ret;
 }
 

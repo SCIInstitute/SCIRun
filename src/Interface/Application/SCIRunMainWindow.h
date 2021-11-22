@@ -201,7 +201,6 @@ private:
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
   QMap<QString, QMenu*> currentSubnetActions_;
-  SharedPointer<class DialogErrorControl> dialogErrorControl_;
   SharedPointer<class NetworkExecutionProgressBar> networkProgressBar_;
   SharedPointer<class GuiActionProvenanceConverter> commandConverter_;
   SharedPointer<class DefaultNotePositionGetter> defaultNotePositionGetter_;
@@ -209,8 +208,8 @@ private:
   bool skipSaveCheck_ = false;
   bool startup_;
   SharedPointer<NetworkEditorBuilder> builder_;
-  int dockSpace_{0};
-  class DockManager* dockManager_;
+  //int dockSpace_{0};
+  //class DockManager* dockManager_;
   static const QString saveFragmentData_;
   std::vector<SettingsValueInterfacePtr> settingsValues_;
 

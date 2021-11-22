@@ -99,7 +99,7 @@ void InsertFieldsIntoBundle::execute()
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
-      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString();
+      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString();
       if (field)
       {
         auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));
