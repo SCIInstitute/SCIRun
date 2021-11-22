@@ -234,18 +234,7 @@ class BlankPort : public PortWidgetBase
 {
 public:
   explicit BlankPort(QWidget* parent);
-  //SCIRun::Dataflow::Networks::PortId id() const override;
-  //SCIRun::Dataflow::Networks::PortId externalId() const override { return id(); }
-  //size_t nconnections() const override { return 0; }
-  //std::string get_typename() const override { return ""; }
-  //std::string get_portname() const override { return "<Blank>"; }
-  //bool isInput() const override { return false; }
-  //bool isDynamic() const override { return false; }
-  //SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;// { return "<Blank>"; }
-  //size_t getIndex() const override { return 0; }
-  //boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
-
-  const SCIRun::Dataflow::Networks::PortDescriptionInterface* description() const override { return nullptr; }
+  const SCIRun::Dataflow::Networks::PortDescriptionInterface* description() const override;
   QColor color() const override;
   bool isLightOn() const override { return false; }
 };

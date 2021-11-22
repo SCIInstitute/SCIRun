@@ -203,7 +203,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
-  name_(name), moduleId_(moduleId), 
+  name_(name), moduleId_(moduleId),
   port_(port),
   index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(nullptr),
   connectionFactory_(connectionFactory),
@@ -781,18 +781,6 @@ OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, con
 
 BlankPort::BlankPort(QWidget* parent) : PortWidgetBase(parent) {}
 
-#if 0
-PortId BlankPort::id() const
-{
-  return PortId(0, "<Blank>");
-}
-
-ModuleId BlankPort::getUnderlyingModuleId() const
-{
-  return ModuleId("<Blank>");
-}
-#endif 
-
 QColor BlankPort::color() const
 {
   return QColor(0,0,0,0);
@@ -850,4 +838,28 @@ QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 
   result.setAlpha(alpha);
   return result;
+}
+
+class BlankDescription : public PortDescriptionInterface
+{
+public:
+  SCIRun::Dataflow::Networks::PortId internalId() const override
+  {
+    return PortId(0, "<Blank>");
+  }
+  SCIRun::Dataflow::Networks::PortId externalId() const override { return internalId(); }
+  size_t nconnections() const override { return 0; }
+  std::string get_typename() const override { return "<Blank>"; }
+  std::string get_portname() const override { return "<Blank>"; }
+  bool isInput() const override { return false; }
+  bool isDynamic() const override { return false; }
+  SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override { return ModuleId("<Blank>"); }
+  size_t getIndex() const override { return 0; }
+  boost::optional<SCIRun::Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
+};
+
+const SCIRun::Dataflow::Networks::PortDescriptionInterface* BlankPort::description() const
+{
+  static const BlankDescription blank;
+  return &blank;
 }
