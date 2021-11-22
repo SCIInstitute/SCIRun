@@ -30,6 +30,7 @@
 
 #include <Python.h>
 #include <iostream>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <boost/range/adaptors.hpp>
@@ -421,6 +422,56 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value_inde
   if (pyData)
     return pyData->value();
   return {};
+}
+
+boost::python::dict NetworkEditorPythonAPI::get_input_data(const std::string& moduleId)
+{
+  boost::python::dict allInputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    auto inputs = module->input();
+    for (int i = 0; i < inputs->size(); ++i)
+    {
+      auto port = inputs->getitem(i);
+      if (port && port->data())
+      {
+        allInputs[port->id()] = port->data()->value();
+      }
+    }
+  }
+  return allInputs;
+}
+
+boost::python::dict NetworkEditorPythonAPI::get_output_data(const std::string& moduleId)
+{
+  //logCritical("get_output_data {}", "begins");
+  boost::python::dict allOutputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    auto outputs = module->output();
+    //logCritical("get_output_data {}", outputs->size());
+    for (int i = 0; i < outputs->size(); ++i)
+    {
+      //logCritical("get_output_data {}", i);
+      auto port = outputs->getitem(i);
+      //logCritical("get_output_data {}", port->id());
+      if (port && port->data())
+      {
+        //logCritical("get_output_data {}", "data found");
+        allOutputs[port->id()] = port->data()->value();
+      }
+    }
+  }
+  return allOutputs;
+}
+
+std::string NetworkEditorPythonAPI::set_output_data(const std::string& moduleId, const boost::python::dict& outputMap)
+{
+  (void)moduleId;
+  (void)outputMap;
+  return "not implemented";
 }
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(const std::string& moduleId, const std::string& portName)

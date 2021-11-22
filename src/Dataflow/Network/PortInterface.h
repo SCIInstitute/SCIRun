@@ -102,6 +102,7 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
+    virtual Core::Datatypes::DatatypeHandle peekData() const = 0;
     virtual DatatypeSourceInterfaceHandle source() const = 0;
     virtual OutputPortInterface* clone() const { return nullptr; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;

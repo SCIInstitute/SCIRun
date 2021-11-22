@@ -252,6 +252,11 @@ namespace
       {
         return input->getData();
       }
+      auto output = std::dynamic_pointer_cast<OutputPortInterface>(port_);
+      if (output)
+      {
+        return output->peekData();
+      }
       return boost::none;
     }
     SharedPointer<PortDescriptionInterface> port_;

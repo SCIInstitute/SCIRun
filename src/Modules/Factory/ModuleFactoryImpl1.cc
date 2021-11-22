@@ -34,6 +34,7 @@
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
 #include <Modules/Basic/CompositeModuleWithStaticPorts.h>
+#include <Modules/Basic/CompositeModuleWithTypedStaticPorts.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteField.h>
@@ -207,6 +208,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CollectMatrices>("Real ported module", "...");
 
   addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
+  addModuleDesc<CompositeModuleWithTypedStaticPorts>("...", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()
