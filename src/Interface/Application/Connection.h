@@ -83,8 +83,10 @@ public:
   const SCIRun::Dataflow::Networks::ConnectionId& id() const { return id_; }
   bool disabled() const { return disabled_; }
   void setDisabled(bool disabled);
+#if 0
   void addSubnetCompanion(PortWidget* subnetPort);
   void deleteCompanion();
+#endif
   bool isCompanion() const { return isCompanion_; }
 public Q_SLOTS:
   void trackNodes();
@@ -120,7 +122,9 @@ private:
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
   double defaultZValue() const;
+  #if 0
   ConnectionLine* subnetCompanion_ { nullptr };
+  #endif
   bool isCompanion_{ false };
 };
 

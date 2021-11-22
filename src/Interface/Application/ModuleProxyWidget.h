@@ -115,6 +115,7 @@ namespace SCIRun
       LoopDiamondPolygon* backgroundShape_ {nullptr};
     };
 
+#if 0
     class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget
     {
     public:
@@ -123,6 +124,7 @@ namespace SCIRun
     private:
       class SubnetPortsBridgeWidget* ports_;
     };
+#endif
   }
 }
 

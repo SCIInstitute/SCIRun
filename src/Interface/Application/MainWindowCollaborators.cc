@@ -910,7 +910,7 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
         else
           editor->normalOpacityAllModuleUIs();
         });
-    QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+    //QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
   }
   // children only
   // addDockWidget(Qt::RightDockWidgetArea, subnet);

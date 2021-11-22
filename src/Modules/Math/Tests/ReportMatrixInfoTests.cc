@@ -71,7 +71,7 @@ namespace
     std::cout << "INPUTS: " << m->name() << std::endl;
     for (InputPortHandle input : m->inputPorts())
     {
-      std::cout << input->id() << " " << input->getIndex() << std::endl;
+      std::cout << input->externalId() << " " << input->getIndex() << std::endl;
     }
   }
 }
@@ -108,8 +108,8 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     Connection c(oport, iport, "test", false);
     std::cout << 1 << std::endl;
     printInputPorts(hasDynamic);
-    ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
+    ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->externalId()),
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->externalId()));
     addedSignal(desc);
 
     EXPECT_EQ(1, iport->nconnections());
@@ -130,8 +130,8 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(0, iport->nconnections());
     Connection c1(oport, iport, "test", false);
     printInputPorts(hasDynamic);
-    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
+    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->externalId()),
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->externalId()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
@@ -141,8 +141,8 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
 
     Connection c2(oport, hasDynamic->inputPorts()[1], "test", false);
     printInputPorts(hasDynamic);
-    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
+    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->externalId()),
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->externalId()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(4, hasDynamic->numInputPorts());
@@ -162,8 +162,8 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(0, iport->nconnections());
     auto c1 = makeShared<Connection>(oport, iport, "test", false);
     printInputPorts(hasDynamic);
-    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
+    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->externalId()),
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->externalId()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
@@ -171,8 +171,8 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
     printInputPorts(hasDynamic);
     Connection c2(oport, hasDynamic->inputPorts()[1], "test", false);
-    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()),
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
+    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->externalId()),
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->externalId()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(4, hasDynamic->numInputPorts());

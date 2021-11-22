@@ -132,7 +132,7 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
     if (iport->isDynamic())
     {
       ModuleBuilder builder;
-      auto newPortId = builder.cloneInputPort(module, iport->id());
+      auto newPortId = builder.cloneInputPort(module, iport->externalId());
     }
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
