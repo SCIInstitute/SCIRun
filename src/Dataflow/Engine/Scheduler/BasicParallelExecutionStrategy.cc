@@ -26,7 +26,6 @@
 */
 
 
-#include <iostream>
 #include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
@@ -36,10 +35,10 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-void BasicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
+std::future<int> BasicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
+  const auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
   BoostGraphParallelScheduler scheduler(filter);
   BasicMultithreadedNetworkExecutor executor;
-  executeWithCycleCheck(scheduler, executor, context, executionLock);
+  return executeWithCycleCheck(scheduler, executor, context, executionLock);
 }

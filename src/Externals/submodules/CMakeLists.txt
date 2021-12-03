@@ -43,13 +43,13 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/../.git")
     endif()
 endif()
 
-IF(BUILD_TESTING OR TRAVIS_BUILD)
+IF(BUILD_TESTING)
   if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Externals/submodules/googletest/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
   endif()
 ENDIF()
 
-IF(BUILD_TESTING OR TRAVIS_BUILD)
+IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(googletest)
 ENDIF()
 

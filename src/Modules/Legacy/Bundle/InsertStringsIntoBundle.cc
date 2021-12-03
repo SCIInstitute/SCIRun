@@ -91,7 +91,7 @@ void InsertStringsIntoBundle::execute()
     for (int i = 0; i < strings.size(); ++i)
     {
       auto str = strings[i];
-      auto stateName = state->getValue(Name((*stringPortNameIterator++)->id().toString())).toString();
+      auto stateName = state->getValue(Name((*stringPortNameIterator++)->internalId().toString())).toString();
       if (str)
       {
         auto name = !stateName.empty() ? stateName : ("string" + boost::lexical_cast<std::string>(i));

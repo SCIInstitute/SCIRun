@@ -29,6 +29,7 @@
 #ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
+#include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
 #include <boost/atomic.hpp>
@@ -44,7 +45,7 @@ namespace Engine {
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
+    virtual std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
     enum class Type
     {
@@ -67,31 +68,64 @@ namespace Engine {
   };
 
   typedef SharedPointer<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-  using ThreadPtr = SharedPointer<std::thread>;
 
-  class SCISHARE ExecutionQueueManager : public Core::Thread::Stoppable
+  class SCISHARE ExecutionManager
+  {
+  public:
+    virtual ~ExecutionManager() = default;
+
+    virtual void initExecutor(ExecutionStrategyFactoryHandle factory) = 0;
+    virtual void setExecutionStrategy(ExecutionStrategyHandle exec) = 0;
+    virtual std::future<int> execute(ExecutionContextHandle context) = 0;
+
+    virtual void stopExecution() = 0;
+  };
+
+  using ExecutionManagerHandle = SharedPointer<ExecutionManager>;
+
+  class SCISHARE ExecutionManagerBase : public ExecutionManager
+  {
+  public:
+    void initExecutor(ExecutionStrategyFactoryHandle factory) override;
+    void setExecutionStrategy(ExecutionStrategyHandle exec) override;
+  protected:
+    ExecutionManagerBase();
+    std::future<int> executeImpl(ExecutionContextHandle context);
+    ExecutionStrategyHandle currentExecutor_;
+    Core::Thread::Mutex executionMutex_;
+  };
+
+  class SCISHARE ExecutionQueueManager : public ExecutionManagerBase, public Core::Thread::Stoppable
   {
   public:
     ExecutionQueueManager();
-    void initExecutor(ExecutionStrategyFactoryHandle factory);
-    void setExecutionStrategy(ExecutionStrategyHandle exec);
-    ThreadPtr enqueueContext(ExecutionContextHandle context);
-    void startExecution();
-    void stopExecution();
-    void operator()() { executeTopContext(); }
+    
+    std::future<int> execute(ExecutionContextHandle context) override
+    {
+      enqueueContext(context);
+      return {};
+    }
+    
+    void stopExecution() override;
   private:
-    void executeImpl(ExecutionContextHandle context);
-    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
+    void startExecution();
+    void enqueueContext(ExecutionContextHandle context);
+    
+    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
     ExecutionContextQueue contexts_;
-
-    ExecutionStrategyHandle currentExecutor_;
-
     ThreadPtr executionLaunchThread_;
-    Core::Thread::Mutex executionMutex_;
+    
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
 
     void executeTopContext();
+  };
+
+  class SCISHARE SimpleExecutionManager : public ExecutionManagerBase
+  {
+  public:
+    std::future<int> execute(ExecutionContextHandle context) override { return executeImpl(context); }
+    void stopExecution() override {}
   };
 }
 }}

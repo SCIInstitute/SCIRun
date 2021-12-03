@@ -29,24 +29,24 @@
 #ifndef INTERFACE_APPLICATION_MODULELOGWINDOW_H
 #define INTERFACE_APPLICATION_MODULELOGWINDOW_H
 
-#include "ui_ModuleLogWindow.h"
+#include "Interface/Modules/Base/ui_ModuleLogWindow.h"
 
 #include <Core/Logging/LoggerInterface.h>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/share.h>
 
 
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl;
 class ModuleErrorDisplayer;
 
-class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
+class SCISHARE ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 {
 	Q_OBJECT
 
 public:
-  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, SharedPointer<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  explicit ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, QWidget* parent = nullptr);
   QString name() const { return moduleName_; }
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
@@ -59,7 +59,6 @@ Q_SIGNALS:
 private:
   QString moduleName_;
   ModuleErrorDisplayer* displayer_;
-	SharedPointer<DialogErrorControl> dialogErrorControl_;
 };
 
 class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface

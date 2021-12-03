@@ -48,6 +48,7 @@ namespace Networks {
     virtual void cacheData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual void send(DatatypeSinkInterfaceHandle receiver) const = 0;
     virtual bool hasData() const = 0;
+    virtual Core::Datatypes::DatatypeHandle peekData() const = 0;
     virtual std::string describeData() const = 0;
   };
 
