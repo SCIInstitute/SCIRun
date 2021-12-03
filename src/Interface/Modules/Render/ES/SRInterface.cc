@@ -781,7 +781,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       //logRendererInfo("Handling geom object on port {}", port);
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");
-      DEBUG_LOG_LINE_INFO
+      //DEBUG_LOG_LINE_INFO
 
       std::string objectName = obj->uniqueID();
       BBox bbox; // Bounding box containing all vertex buffer objects.
@@ -798,7 +798,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         return (sro.mName == objectName);
       });
 
-      DEBUG_LOG_LINE_INFO
+      //DEBUG_LOG_LINE_INFO
 
       auto vmc = mCore.getStaticComponent<ren::StaticVBOMan>();
       auto imc = mCore.getStaticComponent<ren::StaticIBOMan>();
@@ -806,13 +806,13 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
       if (std::shared_ptr<ren::VBOMan> vboMan = vmc->instance_)
       {
-        DEBUG_LOG_LINE_INFO;
+        //DEBUG_LOG_LINE_INFO;
         if (std::shared_ptr<ren::IBOMan> iboMan = imc->instance_)
         {
-          DEBUG_LOG_LINE_INFO
+          //DEBUG_LOG_LINE_INFO
           if (foundObject != mSRObjects.end())
           {
-            DEBUG_LOG_LINE_INFO
+            //DEBUG_LOG_LINE_INFO
 
             RENDERER_LOG("Iterate through each of the passes and remove their associated entity ID.");
             for (const auto& pass : foundObject->mPasses)
@@ -836,7 +836,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
             mSRObjects.erase(foundObject);
           }
 
-          DEBUG_LOG_LINE_INFO
+          //DEBUG_LOG_LINE_INFO
           RENDERER_LOG("Add vertex buffer objects.");
           std::vector<char*> vbo_buffer;
           std::vector<size_t> stride_vbo;
@@ -867,7 +867,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
             bbox.extend(vbo.boundingBox);
           }
 
-          DEBUG_LOG_LINE_INFO
+          //DEBUG_LOG_LINE_INFO
           RENDERER_LOG("Add index buffer objects.");
           nameIndex = 0;
           for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
@@ -1124,7 +1124,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           mCamera->setSceneBoundingBox(sceneBBox_);
         }
       }
-      DEBUG_LOG_LINE_INFO
+      //DEBUG_LOG_LINE_INFO
     }
 
     //----------------------------------------------------------------------------------------------

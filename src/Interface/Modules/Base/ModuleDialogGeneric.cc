@@ -46,6 +46,7 @@ using namespace SCIRun::Core::Datatypes;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 std::set<ModuleDialogGeneric*> ModuleDialogGeneric::instances_;
+ModuleDialogFactoryInterfaceHandle ModuleDialogGeneric::factory_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -1125,4 +1126,14 @@ void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
   {
     moduleDialog->postMoveEventCallback(e->pos());
   }
+}
+
+ModuleDialogFactoryInterfaceHandle ModuleDialogGeneric::factory()
+{
+  return factory_;
+}
+
+void ModuleDialogGeneric::setFactory(ModuleDialogFactoryInterfaceHandle f)
+{
+  factory_ = f;
 }

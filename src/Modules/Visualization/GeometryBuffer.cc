@@ -204,7 +204,7 @@ void GeometryBufferImpl::sendOneSetOfGeometries(const std::vector<GeometryBaseHa
         break;
 
       //logCritical("Outputting geom number {} on port {} to module {}", geomIndex, outputPort->id().toString(), viewScene->id().id_);
-      module_->send_output_handle(outputPort->id(), geomList[portIndex]);
+      module_->send_output_handle(outputPort->internalId(), geomList[portIndex]);
       viewScene->execute();
     }
   }

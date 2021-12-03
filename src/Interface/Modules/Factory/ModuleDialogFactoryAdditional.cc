@@ -49,6 +49,7 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
     ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
     ADD_MODULE_DIALOG(CompositeModuleWithStaticPorts, CompositeModuleDialog)
+    ADD_MODULE_DIALOG(CompositeModuleWithTypedStaticPorts, CompositeModuleDialog)
     ADD_MODULE_DIALOG(GeometryBuffer, GeometryBufferDialog)
   ;
 }

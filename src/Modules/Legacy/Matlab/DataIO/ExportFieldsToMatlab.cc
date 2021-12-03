@@ -118,7 +118,7 @@ void ExportFieldsToMatlab::execute()
 
     for (int i = 0; i < fields.size(); ++i)
     {
-      fieldnames.push_back(state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString());
+      fieldnames.push_back(state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString());
     }
 
     auto fieldformats = toStringVector(state->getValue(Parameters::FieldFormats).toVector());

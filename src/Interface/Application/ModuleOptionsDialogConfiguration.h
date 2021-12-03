@@ -25,30 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
-#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include "Interface/Modules/Python/ui_CompositeModule.h"
-#include <Interface/Modules/Python/share.h>
+#ifndef INTERFACE_APPLICATION_ModuleOptionsDialogConfiguration_H
+#define INTERFACE_APPLICATION_ModuleOptionsDialogConfiguration_H
+
 
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
-  {
-    Q_OBJECT
+  class ModuleWidget;
+  class ModuleDialogGeneric;
+  class ModuleDialogDockWidget;
 
-   public:
-    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-    ~CompositeModuleDialog();
-    void pullSpecial() override;
+  class ModuleOptionsDialogConfiguration
+  {
+  public:
+    explicit ModuleOptionsDialogConfiguration(ModuleWidget* widget);
+
+    ModuleDialogDockWidget* config(ModuleDialogGeneric* options);
   private:
-    std::unique_ptr<class CompositeModuleDialogImpl> impl_;
-    friend class CompositeModuleDialogImpl;
+    ModuleDialogDockWidget* configDockable(ModuleDialogGeneric* options);
+    ModuleWidget* moduleWidget_;
   };
 
 }
 }
-
 #endif

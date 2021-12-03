@@ -740,7 +740,7 @@ PortId ModuleBuilder::cloneInputPort(ModuleHandle module, const PortId& id) cons
   {
     InputPortHandle newPort(m->getInputPort(id)->clone());
     newPort->setIndex(m->add_input_port(newPort));
-    return newPort->id();
+    return newPort->internalId();
   }
   THROW_INVALID_ARGUMENT("Don't know how to clone ports on other Module types");
 }

@@ -196,7 +196,7 @@ namespace
 
     std::string id() const override
     {
-      return port_ ? port_->id().toString() : "<Null>";
+      return port_ ? port_->externalId().toString() : "<Null>";
     }
 
     std::string type() const override
@@ -251,6 +251,11 @@ namespace
       if (input)
       {
         return input->getData();
+      }
+      auto output = std::dynamic_pointer_cast<OutputPortInterface>(port_);
+      if (output)
+      {
+        return output->peekData();
       }
       return boost::none;
     }

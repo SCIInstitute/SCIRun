@@ -188,7 +188,7 @@ namespace SCIRun
 
     QList<QAction*> fillInsertModuleMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* output, ConnectionLine* conn)
     {
-      auto portTypeToMatch = output->get_typename();
+      auto portTypeToMatch = output->description()->get_typename();
 
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
@@ -232,7 +232,7 @@ namespace SCIRun
     private:
       bool eitherPortDynamic(const std::pair<PortWidget*, PortWidget*>& ports) const
       {
-        return ports.first->isDynamic() || ports.second->isDynamic();
+        return ports.first->description()->isDynamic() || ports.second->description()->isDynamic();
       }
     };
   }
@@ -372,15 +372,16 @@ void ConnectionLine::trackNodes()
   }
 }
 
+#if 0
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 {
   setVisible(false);
   ConnectionFactory f(subnetPort->sceneFunc());
 
-  auto out = subnetPort->isInput() ? fromPort_ : subnetPort;
-  auto in = subnetPort->isInput() ? subnetPort : toPort_;
+  auto out = subnetPort->description()->isInput() ? fromPort_ : subnetPort;
+  auto in = subnetPort->description()->isInput() ? subnetPort : toPort_;
 
-  ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
+  ConnectionDescription cd{ { out->description()->getUnderlyingModuleId(), out->description()->id() }, { in->description()->getUnderlyingModuleId(), in->description()->id() } };
   subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
 
   connect(subnetPort, SIGNAL(portMoved()), subnetCompanion_, SLOT(trackNodes()));
@@ -400,6 +401,7 @@ void ConnectionLine::deleteCompanion()
     subnetCompanion_ = nullptr;
   }
 }
+#endif
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
@@ -491,16 +493,16 @@ void ConnectionLine::insertNewModule()
 
   Q_EMIT insertNewModule({
     { "moduleToAdd", moduleToAddName.toStdString() },
-    { "endModuleId", toPortLocal->getUnderlyingModuleId().id_ },
-    { "inputPortName", toPortLocal->get_portname() },
-    { "inputPortId", toPortLocal->id().toString() }
+    { "endModuleId", toPortLocal->description()->getUnderlyingModuleId().id_ },
+    { "inputPortName", toPortLocal->description()->get_portname() },
+    { "inputPortId", toPortLocal->description()->externalId().toString() }
   });
   deleteLater();
 }
 
 ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 {
-	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
+	return std::make_pair(toPort_->description()->getUnderlyingModuleId(), fromPort_->description()->getUnderlyingModuleId());
 }
 
 void ConnectionLine::updateNote(const Note& note)
@@ -598,7 +600,7 @@ ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port, C
 void ConnectionInProgressManhattan::update(const QPointF& end)
 {
   lastEnd_ = end;
-  if (fromPort_->isInput())
+  if (fromPort_->description()->isInput())
     drawStrategy_->draw(this, end, fromPort_->position());
   else
     drawStrategy_->draw(this, fromPort_->position(), end);

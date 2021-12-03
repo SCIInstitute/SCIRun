@@ -25,30 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
-#define INTERFACE_MODULES_PYTHON_CompositeModuleDialog_H
 
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include "Interface/Modules/Python/ui_CompositeModule.h"
-#include <Interface/Modules/Python/share.h>
+#ifndef INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
+#define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
+
+#include <QObject>
+#include <Interface/Modules/Base/share.h>
+
 
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
-  {
-    Q_OBJECT
+class SCISHARE DialogErrorControl
+{
+public:
+  static DialogErrorControl& instance();
+	void increaseCounter();
+	bool showDialog();
+	void resetCounter();
+  static constexpr int MAX_DIALOGS_SHOWN = 5;
 
-   public:
-    CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-    ~CompositeModuleDialog();
-    void pullSpecial() override;
-  private:
-    std::unique_ptr<class CompositeModuleDialogImpl> impl_;
-    friend class CompositeModuleDialogImpl;
-  };
-
+private:
+  DialogErrorControl();
+	int counter_;
+};
 }
 }
-
 #endif
