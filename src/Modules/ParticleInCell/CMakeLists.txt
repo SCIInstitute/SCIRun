@@ -26,16 +26,34 @@
 #
 
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-#ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Python)
-ADD_SUBDIRECTORY(ParticleInCell)
+SET(Modules_ParticleInCell_SRCS
+
+  GravSimple.cc
+  GravSimpleUI.cc
+  GravSimpleCompute.cc
+  GravitySim.cc
+)
+
+SET(Modules_ParticleInCell_HEADERS
+
+  share.h
+  GravSimple.h
+  GravSimpleUI.h
+  GravSimpleCompute.h
+  GravitySim.h
+)
+
+SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
+  ${Modules_ParticleInCell_HEADERS}
+  ${Modules_ParticleInCell_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_ParticleInCell
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_Base
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_ParticleInCell)
+ENDIF(BUILD_SHARED_LIBS)

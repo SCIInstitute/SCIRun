@@ -26,16 +26,43 @@
 #
 
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-#ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Python)
-ADD_SUBDIRECTORY(ParticleInCell)
+SET(Interface_Modules_ParticleInCell_FORMS
+  GravSimpleUIDialog.ui
+  GravSimpleComputeDialog.ui
+)
+
+SET(Interface_Modules_ParticleInCell_HEADERS
+  share.h
+  GravSimpleUIDialog.h
+  GravSimpleComputeDialog.h
+)
+
+SET(Interface_Modules_ParticleInCell_SOURCES
+  GravSimpleUIDialog.cc
+  GravSimpleComputeDialog.cc
+)
+
+QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")
+QT_WRAP_CPP(Interface_Modules_ParticleInCell_HEADERS_MOC "${Interface_Modules_ParticleInCell_HEADERS}")
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_ParticleInCell
+  ${Interface_Modules_ParticleInCell_HEADERS}
+  ${Interface_Modules_ParticleInCell_FORMS_HEADERS}
+  ${Interface_Modules_ParticleInCell_HEADERS_MOC}
+  ${Interface_Modules_ParticleInCell_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_ParticleInCell
+  Modules_ParticleInCell
+  Modules_Basic
+  Interface_Modules_Base
+  Modules_Legacy_Bundle
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_ParticleInCell)
+ENDIF(BUILD_SHARED_LIBS)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
