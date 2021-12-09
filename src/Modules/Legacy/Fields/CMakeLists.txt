@@ -69,6 +69,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CreateFieldData.h
   SplitFieldByDomain.h
   ApplyMappingMatrix.h
+  ApplyFilterToFieldData.h
   MapFieldDataFromElemToNode.h
   MapFieldDataFromNodeToElem.h
   MapFieldDataOntoElems.h
@@ -99,7 +100,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
-  CompositeModuleTestGFB_FM.h
+  #CompositeModuleTestGFB_FM.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -123,7 +124,7 @@ SET(Modules_Legacy_Fields_SRCS
   AlignMeshBoundingBoxes.cc
   ProjectPointsOntoMesh.cc
   GetMeshQualityField.cc
-  #ApplyFilterToFieldData.cc
+  ApplyFilterToFieldData.cc
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
@@ -214,7 +215,7 @@ SET(Modules_Legacy_Fields_SRCS
   ReorderNormalCoherently.cc
   InterfaceWithTetGen.cc
   GenerateNodeNormals.cc
-  CompositeModuleTestGFB_FM.cc
+  #CompositeModuleTestGFB_FM.cc
 )
 
 IF(WITH_TETGEN)

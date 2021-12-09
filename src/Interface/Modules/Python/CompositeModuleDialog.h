@@ -35,14 +35,17 @@
 namespace SCIRun {
 namespace Gui {
 
-  class CodeEditor;
-
   class SCISHARE CompositeModuleDialog : public ModuleDialogGeneric, public Ui::CompositeModule
   {
     Q_OBJECT
 
    public:
     CompositeModuleDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+    ~CompositeModuleDialog();
+    void pullSpecial() override;
+  private:
+    std::unique_ptr<class CompositeModuleDialogImpl> impl_;
+    friend class CompositeModuleDialogImpl;
   };
 
 }

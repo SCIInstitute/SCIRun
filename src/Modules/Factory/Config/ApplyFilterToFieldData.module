@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ApplyFilterToFieldData",
+    "namespace": "Fields",
+    "status": "Converted.",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ApplyFilterToFieldData.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ApplyFilterToFieldDataDialog",
+    "header": "Interface/Modules/Fields/ApplyFilterToFieldDataDialog.h"
+  }
+}

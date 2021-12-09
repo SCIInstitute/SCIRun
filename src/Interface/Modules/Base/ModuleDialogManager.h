@@ -26,30 +26,49 @@
 */
 
 
-#ifndef INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
-#define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
+#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_MANAGER_H
+#define INTERFACE_APPLICATION_MODULE_DIALOG_MANAGER_H
 
-#include <QObject>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/share.h>
 
-static const int MAX_DIALOGS_SHOWN = 5;
+class QAbstractButton;
 
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl: public QObject
-{
-	Q_OBJECT
-public:
-	explicit DialogErrorControl(QWidget* parent);
-	void increaseCounter();
-	bool showDialog();
+  class SCISHARE ModuleErrorDisplayer
+  {
+   public:
+    virtual ~ModuleErrorDisplayer();
+    virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
+  };
 
-	public Q_SLOTS:
-		void resetCounter();
+  class ModuleDialogGeneric;
+  class ModuleLogWindow;
 
-private:
-		int counter_;
-};
+  class SCISHARE ModuleDialogManager
+  {
+   public:
+    explicit ModuleDialogManager(Dataflow::Networks::ModuleHandle module) : module_(module) {}
+    
+    ModuleLogWindow* setupLogging(ModuleErrorDisplayer* displayer, QAction* showLogAction, QWidget* parent);
+    void connectDisplayLogButton(QAbstractButton* button);
+    void destroyLog();
+
+    void createOptions();
+    bool hasOptions() const { return options_ != nullptr; }
+    void closeOptions();
+    void destroyOptions();
+    ModuleDialogGeneric* options() { return options_; }
+
+   private:
+    Dataflow::Networks::ModuleHandle module_;
+    ModuleDialogGeneric* options_{nullptr};
+    ModuleLogWindow* logWindow_{nullptr};
+  };
+
 }
 }
+
 #endif

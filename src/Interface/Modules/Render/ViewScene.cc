@@ -1114,7 +1114,7 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 
 void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated)
 {
-  DEBUG_LOG_LINE_INFO
+  //DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
   auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- newGeometryValue " + windowTitle().toStdString());
@@ -1194,7 +1194,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
       const auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj && !spire->hasObject(obj->uniqueID()))
       {
-        DEBUG_LOG_LINE_INFO
+        //DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
       }
     }
@@ -1263,6 +1263,11 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
+  {
+    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+    parentWidget()->resize(qs);
+  }
+
   if (!impl_->shown_)
   {
     autoViewClicked();
@@ -2743,4 +2748,16 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 void ViewSceneDialog::initializeVisibleObjects()
 {
   impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
+}
+
+void ViewSceneDialog::enterEvent(QEvent* event)
+{
+  //qDebug() << "enterEvent" << event;
+  ModuleDialogGeneric::enterEvent(event);
+}
+
+void ViewSceneDialog::leaveEvent(QEvent* event)
+{
+  //qDebug() << "leaveEvent" << event;
+  ModuleDialogGeneric::leaveEvent(event);
 }

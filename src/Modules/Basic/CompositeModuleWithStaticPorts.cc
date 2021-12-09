@@ -44,6 +44,7 @@ MODULE_INFO_DEF(CompositeModuleWithStaticPorts, Flow Control, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Python, NetworkXml)
 ALGORITHM_PARAMETER_DEF(Python, PortSettings)
+ALGORITHM_PARAMETER_DEF(Python, ModuleIdList)
 
 class SCIRun::Modules::Basic::CompositeModuleImpl
 {
@@ -71,16 +72,26 @@ CompositeModuleWithStaticPorts::~CompositeModuleWithStaticPorts() = default;
 
 void CompositeModuleWithStaticPorts::setStateDefaults()
 {
-  get_state()->setValue(Parameters::NetworkXml, std::string());
-  get_state()->setValue(Parameters::PortSettings, std::string());
+  auto state = get_state();
+  state->setValue(Parameters::NetworkXml, std::string());
+  state->setValue(Parameters::PortSettings, std::string());
+
+  state->connectSpecificStateChanged(Parameters::NetworkXml, [this]()
+  {
+    const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
+    impl_->initializeSubnet(xml);
+  });
 }
 
 void CompositeModuleWithStaticPorts::execute()
 {
-  if (needToExecute())
+  //if (needToExecute()) //TODO: complicated!!!
   {
-    const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
-    impl_->initializeSubnet(xml);
+    if (!impl_->subNet_)
+    {
+      const auto xml = get_state()->getValue(Parameters::NetworkXml).toString();
+      impl_->initializeSubnet(xml);
+    }
 
     auto resultFuture = impl_->subNet_->executeAll();
     resultFuture.wait();
@@ -96,9 +107,27 @@ void CompositeModuleWithStaticPorts::execute()
   }
 }
 
+namespace
+{
+  CompositeModuleInfoMap makeModuleIdList(const NetworkStateInterface& net)
+  {
+    CompositeModuleInfoMap cmim;
+    for (size_t i = 0; i < net.nmodules(); ++i)
+    {
+      const auto mod = net.module(i);
+      cmim[mod->id()] = mod;
+    }
+    return cmim;
+  }
+}
+
 void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromState)
 {
-  module_->remark("Composite module concept part 2");
+  if (networkXmlFromState.empty())
+  {
+    module_->get_state()->setTransientValue(Parameters::ModuleIdList, CompositeModuleInfoMap(), true);
+    return;
+  }
 
   subNet_ = module_->network()->createSubnetwork();
   if (subNet_)
@@ -116,9 +145,17 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     return;
   }
 
-  std::istringstream istr(networkXmlFromState);
-  const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
-  subNet_->loadXmlDataIntoNetwork(xml->network.data());
+  try
+  {
+    std::istringstream istr(networkXmlFromState);
+    const auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
+    subNet_->loadXmlDataIntoNetwork(xml->network.data());
+  }
+  catch (...)
+  {
+    module_->error("Error reading network xml");
+    return;
+  }
   const auto network = subNet_->getNetwork();
 
   auto wrapperModuleInputs = module_->inputPorts();
@@ -137,7 +174,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     {
       if (!inputPort->isDynamic() && inputPort->nconnections() == 0 && inputPort->get_typename() != "MetadataObject")
       {
-        auto portId = inputPort->id();
+        auto portId = inputPort->internalId();
         logCritical("Found input port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
         if (wrapperModuleInputsIterator != wrapperModuleInputs.end())
@@ -145,7 +182,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
           logCritical("\t\tperforming port surgery on {} :: {} --> Input{}", subModule->id().id_, portId.toString(), (wrapperModuleInputsIterator - wrapperModuleInputs.begin()));
           ostr << subModule->id().id_ << "::" << portId.toString() << " --> Input" << (wrapperModuleInputsIterator - wrapperModuleInputs.begin()) << std::endl;
           subModule->removeInputPort(portId);
-          (*wrapperModuleInputsIterator)->setId(portId);
+          (*wrapperModuleInputsIterator)->setInternalId(portId);
           subModule->add_input_port(*wrapperModuleInputsIterator);
           ++wrapperModuleInputsIterator;
         }
@@ -155,7 +192,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     {
       if (outputPort->nconnections() == 0 && outputPort->get_typename() != "MetadataObject")
       {
-        auto portId = outputPort->id();
+        auto portId = outputPort->internalId();
         logCritical("Found output port that can be exposed: {} :: {}", subModule->id().id_, portId.toString());
 
         if (wrapperModuleOutputsIterator != wrapperModuleOutputs.end())
@@ -163,7 +200,7 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
           logCritical("\t\tperforming port surgery on {} :: {} --> Output{}", subModule->id().id_, portId.toString(), (wrapperModuleOutputsIterator - wrapperModuleOutputs.begin()));
           ostr << subModule->id().id_ << "::" << portId.toString() << " --> Output" << (wrapperModuleOutputsIterator - wrapperModuleOutputs.begin()) << std::endl;
           subModule->removeOutputPort(portId);
-          (*wrapperModuleOutputsIterator)->setId(portId);
+          (*wrapperModuleOutputsIterator)->setInternalId(portId);
           subModule->add_output_port(*wrapperModuleOutputsIterator);
           ++wrapperModuleOutputsIterator;
         }
@@ -171,4 +208,5 @@ void CompositeModuleImpl::initializeSubnet(const std::string& networkXmlFromStat
     }
   }
   module_->get_state()->setValue(Parameters::PortSettings, ostr.str());
+  module_->get_state()->setTransientValue(Parameters::ModuleIdList, makeModuleIdList(*network), true);
 }

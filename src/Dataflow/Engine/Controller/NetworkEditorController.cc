@@ -329,7 +329,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
       auto conn = originalInputPort->connection(0);
       auto source = conn->oport_;
       if (!originalInputPort->isDynamic())
-        requestConnection(source.get(), newModule->getInputPort(originalInputPort->id()).get());
+        requestConnection(source.get(), newModule->getInputPort(originalInputPort->externalId()).get());
       else
       {
         auto toConnect = getFirstAvailableDynamicPortWithName(newModule, originalInputPort->get_portname());
@@ -409,7 +409,7 @@ ModuleHandle NetworkEditorController::insertNewModule(const PortDescriptionInter
       else //dynamic: match portId exactly, remove, then retrieve list again to find first empty dynamic port of same name.
       {
         const auto exactMatch = std::find_if(endModuleInputPortOptions.begin(), endModuleInputPortOptions.end(),
-          [&](InputPortHandle iport) { return iport->id().toString() == info.inputPortId; });
+          [&](InputPortHandle iport) { return iport->externalId().toString() == info.inputPortId; });
         if (exactMatch != endModuleInputPortOptions.end())
         {
           const auto connId = (*exactMatch)->connection(0)->id_;
@@ -445,8 +445,8 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   const auto in = from->isInput() ? from : to;
 
   const ConnectionDescription desc(
-    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
-    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->externalId()),
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->externalId()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
@@ -584,7 +584,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         collabs_.serializationManager_->updateModuleNotes(xml->moduleNotes);
         collabs_.serializationManager_->updateConnectionNotes(xml->connectionNotes);
         collabs_.serializationManager_->updateDisabledComponents(xml->disabledComponents);
-        collabs_.serializationManager_->updateSubnetworks(xml->subnetworks);
+        //collabs_.serializationManager_->updateSubnetworks(xml->subnetworks);
         collabs_.serializationManager_->updateModulePositions(xml->modulePositions, false);
         collabs_.serializationManager_->updateModuleTags(xml->moduleTags);
       }

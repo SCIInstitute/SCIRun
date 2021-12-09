@@ -52,7 +52,7 @@ namespace Core
 
     using Mutex = NamedMutex;
 
-    class LoggedGuard : public std::lock_guard<std::mutex>
+    class SCISHARE LoggedGuard : public std::lock_guard<std::mutex>
     {
     public:
       LoggedGuard(NamedMutex& mutex, const std::string& log = "");
