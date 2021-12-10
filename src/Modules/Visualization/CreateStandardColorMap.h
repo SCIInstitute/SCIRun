@@ -48,8 +48,10 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ColorMapResolution);
         ALGORITHM_PARAMETER_DECL(AlphaUserPointsVector);
         ALGORITHM_PARAMETER_DECL(AlphaFunctionVector);
+        ALGORITHM_PARAMETER_DECL(ColorMapOption);
         ALGORITHM_PARAMETER_DECL(CustomColor0);
         ALGORITHM_PARAMETER_DECL(CustomColor1);
+        ALGORITHM_PARAMETER_DECL(DefaultAlphaValue);
       }
     }
   }
@@ -71,6 +73,13 @@ namespace SCIRun
         OUTPUT_PORT(0, ColorMapObject, ColorMap);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+
+      private:
+        enum ColorMapOptionType
+        {
+          PREDEFINED,
+          CUSTOM
+        };
       };
     }
   }
