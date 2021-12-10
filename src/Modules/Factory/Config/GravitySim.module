@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "GravitySim",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "This is a module with an algorithm",
+    "header": "Modules/ParticleInCell/GravitySim.h"
+     },
+
+"algorithm":
+    {
+    "name": "GravitySimAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/GravitySimAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "N/A",
+    "header": "N/A"
+    }
+}
