@@ -26,27 +26,28 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
+#ifndef MODULES_PARTICLEINCELL_GravSimpleCompute_H
+#define MODULES_PARTICLEINCELL_GravSimpleCompute_H
+
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Modules/ParticleInCell/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+namespace SCIRun {
+namespace Modules {
+namespace Math {
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+class SCISHARE GravSimpleCompute : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<MatrixPortTag>,
+public Has1OutputPort<MatrixPortTag>
+{
+public:
+  GravSimpleCompute();
+  virtual void execute();
+  virtual void setStateDefaults();
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
-    {
-
-    }
-
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
-    }
+  INPUT_PORT(0, InputMatrix, Matrix);
+  OUTPUT_PORT(0, OutputMatrix, Matrix);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+};
+}}}
+#endif

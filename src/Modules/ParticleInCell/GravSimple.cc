@@ -26,27 +26,26 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Modules/ParticleInCell/GravSimple.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+const ModuleLookupInfo GravSimple::staticInfo_("GravSimple","ParticleInCell","SCIRun");
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
-    {
+GravSimple::GravSimple () : Module(staticInfo_,false)
+{
+    INITIALIZE_PORT(OutputString);
+}
 
-    }
+void GravSimple::execute()
+{
+    std::string message_string;
+    message_string="Trying to develop a new module category";
 
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
-    }
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
+}

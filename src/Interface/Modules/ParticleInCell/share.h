@@ -26,27 +26,14 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#undef SCISHARE
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
-
-GravitySim::GravitySim() : Module(staticInfo_,false)
-    {
-
-    }
-
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
-    }
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_ParticleInCell
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

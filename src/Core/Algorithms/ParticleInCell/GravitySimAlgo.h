@@ -22,11 +22,10 @@ namespace ParticleInCell {
 
 class SCISHARE GravitySimAlgo : public AlgorithmBase
     {
-/*
-
     public:
       GravitySimAlgo();
-*/
+//      AlgorithmOutput run(const AlgorithmInput& input) const;
+      AlgorithmOutput run(const AlgorithmInput& input) const override;  //Dans suggestion
     };
 
 }}}}

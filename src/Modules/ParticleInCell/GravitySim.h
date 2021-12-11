@@ -34,7 +34,6 @@
 
 namespace SCIRun {
 namespace Modules {
-//namespace Math {
 namespace ParticleInCell {
 
 class SCISHARE GravitySim : public SCIRun::Dataflow::Networks::Module,
@@ -44,12 +43,9 @@ public HasNoOutputPorts
 public:
   GravitySim();
   virtual void execute();
-  virtual void setStateDefaults();
+  virtual void setStateDefaults() {};
 
   MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
-//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
-//  static Core::Algorithms::AlgorithmParameterName FormatString;
 };
 }}}
 #endif

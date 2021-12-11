@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "GravSimpleUI",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "This is a module in the ParticleInCell category that has a User Interface",
+    "header": "Modules/ParticleInCell/GravSimpleUI.h"
+     },
+
+"algorithm":
+    {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+    },
+
+"UI":
+    {
+    "name": "GravSimpleUIDialog",
+    "header": "Interface/Modules/ParticleInCell/GravSimpleUIDialog.h"
+    }
+}

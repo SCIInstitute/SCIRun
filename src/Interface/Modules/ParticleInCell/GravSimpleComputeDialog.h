@@ -25,28 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ParticleInCell_GravSimpleComputeDialog_H
+#define INTERFACE_MODULES_ParticleInCell_GravSimpleComputeDialog_H
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Interface/Modules/ParticleInCell/ui_GravSimpleComputeDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+namespace SCIRun {
+namespace Gui {
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+class SCISHARE GravSimpleComputeDialog : public ModuleDialogGeneric,
+  public Ui::GravSimpleComputeDialog
+      {
+	  Q_OBJECT
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
-    {
-
-    }
-
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
-    }
+      public:
+          GravSimpleComputeDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+      };
+}}
+#endif

@@ -26,27 +26,31 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
+#ifndef MODULES_STRING_GravSimpleUI_H
+#define MODULES_STRING_GravSimpleUI_H
+
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Modules/ParticleInCell/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+namespace SCIRun {
+namespace Modules {
+namespace StringManip {
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+class SCISHARE GravSimpleUI : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<StringPortTag>,
+public Has1OutputPort<StringPortTag>
+{
+public:
+  GravSimpleUI();
+  virtual void execute();
+  virtual void setStateDefaults();
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
-    {
+  INPUT_PORT(0, InputString, String);
+  OUTPUT_PORT(0, OutputString, String);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+  static Core::Algorithms::AlgorithmParameterName FormatString;
+};
+}}}
 
-    }
 
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
-    }
+#endif

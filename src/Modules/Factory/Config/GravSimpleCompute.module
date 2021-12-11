@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "GravSimpleCompute",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "This module in ParticleInCell has UI and Algo",
+    "header": "Modules/ParticleInCell/GravSimpleCompute.h"
+     },
+
+"algorithm":
+    {
+    "name": "GravSimpleComputeAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/GravSimpleComputeAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "GravSimpleComputeDialog",
+    "header": "Interface/Modules/ParticleInCell/GravSimpleComputeDialog.h"
+    }
+}

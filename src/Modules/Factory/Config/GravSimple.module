@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "GravSimple",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "This is a simple module to be placed in a new PIC module category",
+    "header": "Modules/ParticleInCell/GravSimple.h"
+     },
+
+"algorithm":
+    {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+    },
+
+"UI":
+    {
+    "name": "N/A",
+    "header": "N/A"
+    }
+}

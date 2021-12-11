@@ -26,27 +26,36 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
+#include <Modules/ParticleInCell/GravSimpleCompute.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Core/Algorithms/ParticleInCell/GravSimpleComputeAlgo.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(GravSimpleCompute,ParticleInCell,SCIRun);
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
+GravSimpleCompute::GravSimpleCompute() : Module(staticInfo_)
     {
-
+    INITIALIZE_PORT(InputMatrix);
+    INITIALIZE_PORT(OutputMatrix);
     }
 
-void GravitySim::execute()
+void GravSimpleCompute::setStateDefaults()
     {
+    setStateIntFromAlgo(Variables::Method);
+    }
+
+void GravSimpleCompute::execute()
+    {
+    auto input = getRequiredInput(InputMatrix);
     if (needToExecute())
         {
-
+        setAlgoIntFromState(Variables::Method);
+        auto output = algo().run(withInputData((InputMatrix, input)));
+        sendOutputFromAlgorithm(OutputMatrix, output);
         }
     }

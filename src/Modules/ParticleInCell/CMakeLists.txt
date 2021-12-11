@@ -28,12 +28,18 @@
 
 SET(Modules_ParticleInCell_SRCS
 
+  GravSimple.cc
+  GravSimpleUI.cc
+  GravSimpleCompute.cc
   GravitySim.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
 
   share.h
+  GravSimple.h
+  GravSimpleUI.h
+  GravSimpleCompute.h
   GravitySim.h
 )
 

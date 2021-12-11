@@ -26,27 +26,19 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Interface/Modules/ParticleInCell/GravSimpleComputeDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
-
-GravitySim::GravitySim() : Module(staticInfo_,false)
+GravSimpleComputeDialog::GravSimpleComputeDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
     {
-
-    }
-
-void GravitySim::execute()
-    {
-    if (needToExecute())
-        {
-
-        }
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
     }

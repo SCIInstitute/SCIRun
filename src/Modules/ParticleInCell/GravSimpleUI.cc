@@ -26,27 +26,41 @@
 */
 
 
-#include <Modules/ParticleInCell/GravitySim.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimAlgo.h>
+#include <Modules/ParticleInCell/GravSimpleUI.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(GravitySim,ParticleInCell,SCIRun);
+SCIRun::Core::Algorithms::AlgorithmParameterName GravSimpleUI::FormatString("FormatString");
 
-GravitySim::GravitySim() : Module(staticInfo_,false)
+const ModuleLookupInfo GravSimpleUI::staticInfo_("GravSimpleUI","ParticleInCell","SCIRun");
+
+GravSimpleUI::GravSimpleUI() : Module(staticInfo_)
     {
-
+    INITIALIZE_PORT(InputString);
+    INITIALIZE_PORT(OutputString);
     }
 
-void GravitySim::execute()
+void GravSimpleUI::setStateDefaults()
     {
-    if (needToExecute())
-        {
+    auto state = get_state();
+    state->setValue(FormatString,std::string ("[Insert message here]"));
+    }
 
+void GravSimpleUI::execute()
+    {
+    std::string message_string;
+    auto stringH = getOptionalInput(InputString);
+    auto state = get_state();
+    if (stringH && *stringH)
+        {
+        state -> setValue(FormatString, (*stringH) -> value());
         }
+
+    message_string = state -> getValue(FormatString).toString();
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
     }

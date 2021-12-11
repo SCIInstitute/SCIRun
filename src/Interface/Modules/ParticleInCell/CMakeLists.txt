@@ -26,31 +26,43 @@
 #
 
 
-SET(Algorithms_ParticleInCell_SRCS
-  GravSimpleComputeAlgo.cc
-  GravitySimAlgo.cc
+SET(Interface_Modules_ParticleInCell_FORMS
+  GravSimpleUIDialog.ui
+  GravSimpleComputeDialog.ui
 )
 
-SET(Algorithms_ParticleInCell_HEADERS
-  GravSimpleComputeAlgo.h
-  GravitySimAlgo.h
+SET(Interface_Modules_ParticleInCell_HEADERS
+  share.h
+  GravSimpleUIDialog.h
+  GravSimpleComputeDialog.h
 )
 
-SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell
-  ${Algorithms_ParticleInCell_HEADERS}
-  ${Algorithms_ParticleInCell_SRCS}
+SET(Interface_Modules_ParticleInCell_SOURCES
+  GravSimpleUIDialog.cc
+  GravSimpleComputeDialog.cc
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_ParticleInCell
-  Core_Datatypes
-  Core_Thread
-  Algorithms_Base
-  Core_Parser
+QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")
+QT_WRAP_CPP(Interface_Modules_ParticleInCell_HEADERS_MOC "${Interface_Modules_ParticleInCell_HEADERS}")
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_ParticleInCell
+  ${Interface_Modules_ParticleInCell_HEADERS}
+  ${Interface_Modules_ParticleInCell_FORMS_HEADERS}
+  ${Interface_Modules_ParticleInCell_HEADERS_MOC}
+  ${Interface_Modules_ParticleInCell_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_ParticleInCell
+  Modules_ParticleInCell
+  Modules_Basic
+  Interface_Modules_Base
+  Modules_Legacy_Bundle
   ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_ParticleInCell)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_ParticleInCell)
 ENDIF(BUILD_SHARED_LIBS)
 
-#SCIRUN_ADD_TEST_DIR(Tests)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
