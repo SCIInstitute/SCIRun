@@ -217,11 +217,14 @@ inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double
   return ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
 }
 
-double ColorMap::alpha(double transformedValue) const
+double ColorMap::alpha(double v) const
 {
+  // This rescales the value so the alpha values match the color
+  v = clamp(static_cast<double>((v + rescale_shift_) * rescale_scale_), 0.0, 1.0);
+
   if (alphaLookup_.empty()) return 0.5;
   size_t i;
-  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
+  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < v); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;
   if (i == 0)
@@ -242,7 +245,7 @@ double ColorMap::alpha(double transformedValue) const
     endy = alphaLookup_[i + 1];
   }
 
-  double interp = (transformedValue - startx) / (endx - startx);
+  double interp = (v - startx) / (endx - startx);
   double value = ((1.0f - interp) * starty + (interp) * endy);
   return value;
 }
@@ -257,7 +260,7 @@ ColorRGB ColorMap::getColorMapVal(double v) const
 {
   double f = getTransformedValue(v);
   auto colorWithoutAlpha = readColorFromArray(colorData_, f);
-  return applyAlpha(f, colorWithoutAlpha);
+  return applyAlpha(v, colorWithoutAlpha);
 }
 
 ColorRGB ColorMap::valueToColor(double scalar) const
