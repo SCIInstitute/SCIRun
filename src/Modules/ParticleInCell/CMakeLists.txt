@@ -27,20 +27,16 @@
 
 
 SET(Modules_ParticleInCell_SRCS
-
-  GravSimple.cc
-  GravSimpleUI.cc
-  GravSimpleCompute.cc
-  GravitySim.cc
+  ElectrostaticSimulation.cc
+  GravitySimulation.cc
+  ModuleShell.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
-
   share.h
-  GravSimple.h
-  GravSimpleUI.h
-  GravSimpleCompute.h
-  GravitySim.h
+  ElectrostaticSimulation.h
+  GravitySimulation.h
+  ModuleShell.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

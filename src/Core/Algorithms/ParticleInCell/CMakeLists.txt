@@ -27,13 +27,15 @@
 
 
 SET(Algorithms_ParticleInCell_SRCS
-  GravSimpleComputeAlgo.cc
-  GravitySimAlgo.cc
+  ElectrostaticSimulationAlgo.cc
+  GravitySimulationAlgo.cc
+  ModuleShellAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
-  GravSimpleComputeAlgo.h
-  GravitySimAlgo.h
+  ElectrostaticSimulationAlgo.h
+  GravitySimulationAlgo.h
+  ModuleShellAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell
