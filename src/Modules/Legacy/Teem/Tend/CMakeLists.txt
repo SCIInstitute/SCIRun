@@ -3,8 +3,9 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
+#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,8 +26,62 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+# CMakeLists.txt for Packages/Teem/Dataflow/Modules/Tend
 
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Misc)
-ADD_SUBDIRECTORY(Converters)
-ADD_SUBDIRECTORY(Tend)
+SET(Modules_Legacy_Teem_Tend_SRCS
+  #TendAnscale.cc
+  #TendAnvol.cc
+  #TendBmat.cc
+  #TendEpireg.cc
+  #TendEstim.cc
+  #TendEval.cc
+  #TendEvalClamp.cc
+  #TendEvalPow.cc
+  #TendEvec.cc
+  #TendEvecRGB.cc
+  TendFiber.cc
+  #TendNorm.cc
+  #TendPoint.cc
+  #TendSim.cc
+  #TendSten.cc
+  #TendAnplot.cc
+  #TendAnhist.cc
+  #TendSlice.cc
+  #TendEvalAdd.cc
+  #TendEvq.cc
+  #TendExpand.cc
+  #TendMake.cc
+  #TendSatin.cc
+  #TendShrink.cc
+)
+
+SET(Modules_Legacy_Teem_Tend_HEADERS
+  TendFiber.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Teem_Tend
+  ${Modules_Legacy_Teem_Tend_SRCS}
+  ${Modules_Legacy_Teem_Tend_HEADERS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_Tend
+  Core_Datatypes
+  Core_Exceptions
+  Core_Geom
+  #Core_GeomInterface
+  Core_Geometry
+  #Dataflow_GuiInterface
+  Core_Persistent
+  Core_Thread
+  #Dataflow_TkExtensions
+  Core_Util
+  #Dataflow_Network
+  ${SCI_TEEM_LIBRARY}
+  #${SCI_PNG_LIBRARY}
+  #${SCI_ZLIB_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Teem_Tend)
+ENDIF(BUILD_SHARED_LIBS)
