@@ -72,9 +72,14 @@ auto t_index     = new int  [thread_count];
 
 class SCISHARE GravitySimulationAlgo : public AlgorithmBase
     {
+    private:
+        void initialize_particles(int ID);
+        void output_data(int ID);
+        void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], float pos_z[num_particles], float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles]);
+        void move_particles(int ID);
     public:
       GravitySimulationAlgo();
-      AlgorithmOutput run(const AlgorithmInput& input) const override;
+      AlgorithmOutput run() const override;
     };
 
 }}}}
