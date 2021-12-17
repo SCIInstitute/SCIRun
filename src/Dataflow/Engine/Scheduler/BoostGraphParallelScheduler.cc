@@ -37,7 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& filter) : filter_(filter) {}
 
-ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
+ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkStateInterface& network) const
 {
   NetworkGraphAnalyzer graphAnalyzer(network, filter_, true);
   const DirectedGraph& g = graphAnalyzer.graph();

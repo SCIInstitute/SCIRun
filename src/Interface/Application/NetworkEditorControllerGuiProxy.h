@@ -62,8 +62,8 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
-    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, bool executeUpstream);
+    void executeAll();
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool executeUpstream);
     size_t numModules() const;
     std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
     int errorCode() const;
@@ -75,6 +75,7 @@ namespace Gui {
     SharedPointer<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
     SharedPointer<NetworkEditorControllerGuiProxy> withSubnet(NetworkEditor* subnet) const;
     NetworkEditor* activeNetwork() const { return editor_; }
+    void setExecutableLookup(const SCIRun::Dataflow::Networks::ExecutableLookup* lookup);
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
     void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);

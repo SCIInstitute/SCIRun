@@ -43,7 +43,7 @@ namespace SCIRun
   {
     namespace Thread
     {
-      class Mutex;
+      class NamedMutex;
     }
   }
 
@@ -130,7 +130,7 @@ namespace SCIRun
     virtual SharedPointer<PyModule> findModule(const std::string& id) const = 0;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
-    virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
+    virtual std::string executeAll() = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string importNetwork(const std::string& filename) = 0;

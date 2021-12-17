@@ -52,6 +52,7 @@ namespace SCIRun
     //   explicit SubnetworkWindow(QWidget* parent = nullptr);
     // };
 
+#if 0
     class SubnetworkEditor : public QFrame, public Ui::SubnetEditor
     {
       Q_OBJECT
@@ -109,6 +110,7 @@ namespace SCIRun
       static int subnetCount_;
       SubnetModuleConnector connector_;
     };
+#endif
   }
 }
 

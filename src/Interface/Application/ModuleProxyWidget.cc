@@ -641,7 +641,7 @@ void ModuleProxyWidget::createPortPositionProviders()
     qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
 #endif
 
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->description()->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
     auto pp(makeShared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
@@ -818,6 +818,7 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
+#if 0
 SubnetPortsBridgeProxyWidget::SubnetPortsBridgeProxyWidget(SubnetPortsBridgeWidget* ports, QGraphicsItem* parent) : QGraphicsProxyWidget(parent), ports_(ports)
 {
 }
@@ -829,3 +830,4 @@ void SubnetPortsBridgeProxyWidget::updateConnections()
     port->trackConnections();
   }
 }
+#endif

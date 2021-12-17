@@ -26,27 +26,25 @@
 */
 
 
-#include <iostream>
-#include <Interface/Application/DialogErrorControl.h>
-#include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Modules/Fields/ApplyFilterToFieldDataDialog.h>
+#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-DialogErrorControl::DialogErrorControl(QWidget*) : counter_(0)
+ApplyFilterToFieldDataDialog::ApplyFilterToFieldDataDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-}
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-bool DialogErrorControl::showDialog()
-{
-  return Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= MAX_DIALOGS_SHOWN;
-}
-
-void DialogErrorControl::resetCounter()
-{
-	counter_ = 0;
-}
-
-void DialogErrorControl::increaseCounter()
-{
-	++counter_;
+  addCheckBoxManager(dilateCheckBox_, Parameters::Dilate);
+  addCheckBoxManager(erodeCheckBox_, Parameters::Erode);
+  addSpinBoxManager(iterationsSpinBox_, Variables::MaxIterations);
 }

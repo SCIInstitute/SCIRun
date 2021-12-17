@@ -31,11 +31,14 @@ SET(Interface_Modules_Base_FORMS
   ParserHelp.ui
   ModuleButtonBar.ui
   SubnetDialog.ui
+  ModuleLogWindow.ui
   CustomWidgets/QtHistogramWidget.ui
 )
 
 SET(Interface_Modules_Base_HEADERS
   share.h
+  ModuleDialogManager.h
+  DialogErrorControl.h
   CustomWidgets/CTK/Core/ctkPimpl.h
   CustomWidgets/CTK/Core/ctkUtils.h
   CustomWidgets/CTK/ctkWidgetsUtils.h
@@ -48,6 +51,7 @@ SET(Interface_Modules_Base_HEADERS_M
   WidgetSlotManagers.h
   HasParserHelpDialog.h
   ModuleButtonBar.h
+  ModuleLogWindow.h
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
@@ -69,6 +73,9 @@ SET(Interface_Modules_Base_SOURCES
   WidgetSlotManagers.cc
   HasParserHelpDialog.cc
   ModuleButtonBar.cc
+  ModuleDialogManager.cc
+  ModuleLogWindow.cc
+  DialogErrorControl.cc
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
@@ -99,6 +106,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Base
   Core_Math
   Core_Datatypes
   Dataflow_State
+  Core_Application_Preferences
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

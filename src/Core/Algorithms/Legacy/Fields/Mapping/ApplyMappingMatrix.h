@@ -29,17 +29,7 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
 #define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
 
-/// STL datatypes needed
-#include <algorithm>
-
-/// Datatypes used
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Math/MiscMath.h>
-/// Base for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-/// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -50,10 +40,10 @@ namespace SCIRun {
 class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
 {
   public:
-    static AlgorithmInputName Source;
-    static AlgorithmInputName Destination;
-    static AlgorithmInputName Mapping;
-    static AlgorithmOutputName Output;
+    static const AlgorithmInputName Source;
+    static const AlgorithmInputName Destination;
+    static const AlgorithmInputName Mapping;
+    static const AlgorithmOutputName Output;
     /// Algorithm defaults
     ApplyMappingMatrixAlgo();
 

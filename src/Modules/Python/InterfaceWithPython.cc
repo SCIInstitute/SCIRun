@@ -124,7 +124,7 @@ std::vector<std::string> InterfaceWithPython::connectedPortIds() const
   {
     if (port->nconnections() > 0)
     {
-      ids.push_back(port->id().toString());
+      ids.push_back(port->internalId().toString());
     }
   }
   return ids;

@@ -39,7 +39,7 @@ namespace SCIRun {
       class SCISHARE DynamicParallelExecutionStrategy : public ExecutionStrategy
       {
       public:
-        void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
+        std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
       };
 
     }

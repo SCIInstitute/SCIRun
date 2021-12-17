@@ -134,6 +134,11 @@ void SimpleSource::cacheData(DatatypeHandle data)
   data_ = data;
 }
 
+DatatypeHandle SimpleSource::peekData() const
+{
+  return data_;
+}
+
 void SimpleSource::send(DatatypeSinkInterfaceHandle receiver) const
 {
   auto sink = dynamic_cast<SimpleSink*>(receiver.get());
