@@ -42,6 +42,7 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Teem;
+using namespace SCIRun::Core::Geometry;
 
 MODULE_INFO_DEF(TendFiber, Tend, Teem)
 
@@ -258,7 +259,7 @@ TendFiberImpl::get_fibertype(const std::string &s)
 
 void TendFiber::setStateDefaults()
 {
-
+  throw "not implemented";
 }
 
 void
@@ -395,7 +396,7 @@ TendFiber::execute()
       start[2]=p.z()/spacing.z();
 
       bool failed;
-      if (failed = tenFiberTrace(impl_->tfx, nout, start))
+      if ((failed = tenFiberTrace(impl_->tfx, nout, start)))
       {
         char *err = biffGetDone(TEN);
         free(err);

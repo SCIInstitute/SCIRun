@@ -67,16 +67,10 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Teem_Tend
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_Tend
   Core_Datatypes
-  Core_Exceptions
-  Core_Geom
-  #Core_GeomInterface
-  Core_Geometry
-  #Dataflow_GuiInterface
+  Core_Datatypes_Legacy_Nrrd
+  Core_Geometry_Primitives
   Core_Persistent
-  Core_Thread
-  #Dataflow_TkExtensions
-  Core_Util
-  #Dataflow_Network
+  Dataflow_Network
   ${SCI_TEEM_LIBRARY}
   #${SCI_PNG_LIBRARY}
   #${SCI_ZLIB_LIBRARY}
