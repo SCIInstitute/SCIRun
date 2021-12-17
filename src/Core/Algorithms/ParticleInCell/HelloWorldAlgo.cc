@@ -25,27 +25,53 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include<Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
 
-#include <Modules/ParticleInCell/GravSimple.h>
-#include <Core/Datatypes/String.h>
+#include <iostream>
+#include <string>
+#include <fstream>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-const ModuleLookupInfo GravSimple::staticInfo_("GravSimple","ParticleInCell","SCIRun");
+using namespace std;
 
-GravSimple::GravSimple () : Module(staticInfo_,false)
-{
-    INITIALIZE_PORT(OutputString);
-}
+HelloWorldAlgo::HelloWorldAlgo()
+    {
 
-void GravSimple::execute()
-{
-    std::string message_string;
-    message_string="Trying to develop a new module category";
+    }
 
-    StringHandle msH(new String(message_string));
-    sendOutput(OutputString,msH);
-}
+AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
+    {
+    string str1 = "Hello";
+    string str2 = "World";
+    string str3;
+    int  len;
+
+   // copy str1 into str3
+    str3 = str1;
+    cout << "str3 : " << str3 << endl;
+
+   // concatenates str1 and str2
+    str3 = str1 + str2;
+    cout << "str1 + str2 : " << str3 << endl;
+
+   // total length of str3 after concatenation
+    len = str3.size();
+    cout << "str3.size() :  " << len << endl;
+
+   // prints the message to screen
+    string output;
+    output = "test1";
+    std::cout<<output<<std::endl;
+
+   // save a file to storage
+    ofstream myfile;
+    myfile.open ("example.txt");
+    myfile << "Hello world\n";
+    myfile.close();
+    }
+
+

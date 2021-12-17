@@ -30,6 +30,7 @@ SET(Modules_ParticleInCell_SRCS
   ElectrostaticSimulation.cc
   GravitySimulation.cc
   ModuleShell.cc
+  HelloWorld.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -37,6 +38,7 @@ SET(Modules_ParticleInCell_HEADERS
   ElectrostaticSimulation.h
   GravitySimulation.h
   ModuleShell.h
+  HelloWorld.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

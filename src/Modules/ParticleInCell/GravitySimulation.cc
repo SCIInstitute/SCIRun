@@ -43,11 +43,10 @@ GravitySimulation::GravitySimulation() : Module(staticInfo_,false)
 
 void GravitySimulation::execute()
     {
-        if (needToExecute())
+    if (needToExecute())
         {
-            str output = algo().run();
-            std::cout<<output<<std::endl;
+//        str output = algo().run();
+//        std::cout<<output<<std::endl;
         }
-
     }
 

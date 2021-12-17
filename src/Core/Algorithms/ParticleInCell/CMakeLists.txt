@@ -30,12 +30,14 @@ SET(Algorithms_ParticleInCell_SRCS
   ElectrostaticSimulationAlgo.cc
   GravitySimulationAlgo.cc
   ModuleShellAlgo.cc
+  HelloWorldAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
   ElectrostaticSimulationAlgo.h
   GravitySimulationAlgo.h
   ModuleShellAlgo.h
+  HelloWorldAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell

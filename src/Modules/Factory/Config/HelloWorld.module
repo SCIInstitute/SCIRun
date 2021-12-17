@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "HelloWorld",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "This module in ParticleInCell has a C++ program for the Algorithm",
+    "header": "Modules/ParticleInCell/HelloWorld.h"
+     },
+
+"algorithm":
+    {
+    "name": "HelloWorldAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/HelloWorldAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "N/A",
+    "header": "N/A"
+    }
+}

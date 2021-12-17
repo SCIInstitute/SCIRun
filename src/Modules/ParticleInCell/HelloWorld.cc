@@ -25,27 +25,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef MODULES_PARTICLEINCELL_GravitySim_H
-#define MODULES_PARTICLEINCELL_GravitySim_H
-
+#include <Modules/ParticleInCell/HelloWorld.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+#include <Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace ParticleInCell {
+using namespace SCIRun;
+using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-class SCISHARE GravitySim : public SCIRun::Dataflow::Networks::Module,
-public HasNoInputPorts,
-public HasNoOutputPorts
-{
-public:
-  GravitySim();
-  virtual void execute();
-  virtual void setStateDefaults() {};
+MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
 
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
-};
-}}}
-#endif
+HelloWorld::HelloWorld() : Module(staticInfo_,false)
+    {
+
+    }
+
+void HelloWorld::execute()
+    {
+    if (needToExecute())
+        {
+//        str output = algo().run();
+//        std::cout<<output<<std::endl;
+        }
+    }
+
