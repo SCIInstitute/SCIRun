@@ -31,17 +31,12 @@
 //    Date   : Mon Sep  8 09:46:49 2003
 
 #include <Modules/Legacy/Teem/Tend/TendFiber.h>
-
-//#include <Dataflow/GuiInterface/GuiVar.h>
-//#include <Dataflow/Network/Ports/NrrdPort.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-//#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <teem/ten.h>
-
-#include <sstream>
-#include <iostream>
-//#include <stdio.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
@@ -50,9 +45,26 @@ using namespace SCIRun::Core::Algorithms::Teem;
 
 MODULE_INFO_DEF(TendFiber, Tend, Teem)
 
+ALGORITHM_PARAMETER_DEF(Teem, fibertype_);
+ALGORITHM_PARAMETER_DEF(Teem, puncture_);
+ALGORITHM_PARAMETER_DEF(Teem, neighborhood_);
+ALGORITHM_PARAMETER_DEF(Teem, stepsize_);
+ALGORITHM_PARAMETER_DEF(Teem, integration_);
+ALGORITHM_PARAMETER_DEF(Teem, use_aniso_);
+ALGORITHM_PARAMETER_DEF(Teem, aniso_metric_);
+ALGORITHM_PARAMETER_DEF(Teem, aniso_thresh_);
+ALGORITHM_PARAMETER_DEF(Teem, use_length_);
+ALGORITHM_PARAMETER_DEF(Teem, length_);
+ALGORITHM_PARAMETER_DEF(Teem, use_steps_);
+ALGORITHM_PARAMETER_DEF(Teem, steps_);
+ALGORITHM_PARAMETER_DEF(Teem, use_conf_);
+ALGORITHM_PARAMETER_DEF(Teem, conf_thresh_);
+ALGORITHM_PARAMETER_DEF(Teem, kernel_);
+
 class SCIRun::Modules::Teem::TendFiberImpl
 {
   public:
+    explicit TendFiberImpl(TendFiber* module) : module_(module) {}
     ~TendFiberImpl();
     unsigned get_aniso(const std::string &s);
     unsigned get_fibertype(const std::string &s);
@@ -74,8 +86,9 @@ class SCIRun::Modules::Teem::TendFiberImpl
     // GuiDouble    conf_thresh_;
     // GuiString    kernel_;
 
-    tenFiberContext *tfx;
-    Nrrd *tfx_nrrd;
+    TendFiber* module_ {nullptr};
+    tenFiberContext *tfx {nullptr};
+    Nrrd *tfx_nrrd {nullptr};
 };
 
 TendFiber::TendFiber() : Module(staticInfo_)
@@ -220,7 +233,7 @@ TendFiberImpl::get_integration(const std::string &s)
   {
     return tenFiberIntgRK4;
   }
-  error("Unknown integration method");
+  module_->error("Unknown integration method");
   return tenFiberIntgEuler;
 }
 
@@ -239,8 +252,13 @@ TendFiberImpl::get_fibertype(const std::string &s)
   {
     return tenFiberTypeZhukov;
   }
-  error("Unknown fiber-tracing algorithm");
+  module_->error("Unknown fiber-tracing algorithm");
   return tenFiberTypeEvec1;
+}
+
+void TendFiber::setStateDefaults()
+{
+
 }
 
 void
@@ -255,30 +273,30 @@ TendFiber::execute()
     NrrdGuard nrrd_guard;
 
     // Inform module that execution started
-    update_state(Executing);
+    //update_state(Executing);
 
-    Nrrd *nin = nrrd_handle->nrrd_;
+    Nrrd*& nin = nrrd_handle->getNrrd();
 
-    VMesh *pcm = fldH->vmesh();
+    VMesh *pcm = seedPoints->vmesh();
 
-    unsigned fibertype = get_fibertype(fibertype_.get());
-    double puncture = puncture_.get();
-    double stepsize = stepsize_.get();
-    int integration = get_integration(integration_.get());
-    bool use_aniso = use_aniso_.get();
-    unsigned aniso_metric = get_aniso(aniso_metric_.get());
-    double aniso_thresh = aniso_thresh_.get();
-    bool use_length = use_length_.get();
-    double length = length_.get();
-    bool use_steps = use_steps_.get();
-    int steps = steps_.get();
-    bool use_conf = use_conf_.get();
-    double conf_thresh = conf_thresh_.get();
-    std::string kernel = kernel_.get();
+    auto state = get_state();
+    unsigned fibertype = impl_->get_fibertype(state->getValue(Parameters::fibertype_).toString());
+    double puncture = state->getValue(Parameters::puncture_).toDouble();
+    double stepsize = state->getValue(Parameters::stepsize_).toDouble();
+    int integration = impl_->get_integration(state->getValue(Parameters::integration_).toString());
+    bool use_aniso = state->getValue(Parameters::use_aniso_).toBool();
+    unsigned aniso_metric = impl_->get_aniso(state->getValue(Parameters::aniso_metric_).toString());
+    double aniso_thresh = state->getValue(Parameters::aniso_thresh_).toDouble();
+    bool use_length = state->getValue(Parameters::use_length_).toBool();
+    double length = state->getValue(Parameters::length_).toDouble();
+    bool use_steps = state->getValue(Parameters::use_steps_).toBool();
+    int steps = state->getValue(Parameters::steps_).toInt();
+    bool use_conf = state->getValue(Parameters::use_conf_).toBool();
+    double conf_thresh = state->getValue(Parameters::conf_thresh_).toDouble();
+    std::string kernel = state->getValue(Parameters::kernel_).toString();
 
     NrrdKernel *kern;
-    double p[NRRD_KERNEL_PARMS_NUM];
-    memset(p, 0, NRRD_KERNEL_PARMS_NUM * sizeof(double));
+    std::vector<double> p(NRRD_KERNEL_PARMS_NUM);
     p[0] = 1.0;
 
     if (kernel == "box")
@@ -313,13 +331,13 @@ TendFiber::execute()
       p[1] = 0.0834;
     }
 
-    if (!tfx || nin != tfx_nrrd)
+    if (!impl_->tfx || nin != impl_->tfx_nrrd)
     {
-      if (tfx)
-        tenFiberContextNix(tfx);
-      tfx = tenFiberContextNew(nin);
+      if (impl_->tfx)
+        tenFiberContextNix(impl_->tfx);
+      impl_->tfx = tenFiberContextNew(nin);
     }
-    if (!tfx)
+    if (!impl_->tfx)
     {
       char *err = biffGetDone(TEN);
       error(std::string("Failed to create the fiber context: ") + err);
@@ -332,18 +350,18 @@ TendFiber::execute()
 
     E = 0;
     if (use_aniso && !E)
-      E |= tenFiberStopSet(tfx, tenFiberStopAniso, aniso_metric, aniso_thresh);
+      E |= tenFiberStopSet(impl_->tfx, tenFiberStopAniso, aniso_metric, aniso_thresh);
     if (use_length && !E)
-      E |= tenFiberStopSet(tfx, tenFiberStopLength, length);
+      E |= tenFiberStopSet(impl_->tfx, tenFiberStopLength, length);
     if (use_steps && !E)
-      E |= tenFiberStopSet(tfx, tenFiberStopNumSteps, steps);
+      E |= tenFiberStopSet(impl_->tfx, tenFiberStopNumSteps, steps);
     if (use_conf && !E)
-      E |= tenFiberStopSet(tfx, tenFiberStopConfidence, conf_thresh);
+      E |= tenFiberStopSet(impl_->tfx, tenFiberStopConfidence, conf_thresh);
 
-    if (!E) E |= tenFiberTypeSet(tfx, fibertype);
-    if (!E) E |= tenFiberKernelSet(tfx, kern, p);
-    if (!E) E |= tenFiberIntgSet(tfx, integration);
-    if (!E) E |= tenFiberUpdate(tfx);
+    if (!E) E |= tenFiberTypeSet(impl_->tfx, fibertype);
+    if (!E) E |= tenFiberKernelSet(impl_->tfx, kern, &p[0]);
+    if (!E) E |= tenFiberIntgSet(impl_->tfx, integration);
+    if (!E) E |= tenFiberUpdate(impl_->tfx);
     if (E)
     {
       char *err = biffGetDone(TEN);
@@ -352,9 +370,9 @@ TendFiber::execute()
       return;
     }
 
-    tenFiberParmSet(tfx, tenFiberParmStepSize, stepsize);
-    tenFiberParmSet(tfx, tenFiberParmWPunct, puncture);
-    tenFiberParmSet(tfx, tenFiberParmUseIndexSpace, AIR_TRUE);
+    tenFiberParmSet(impl_->tfx, tenFiberParmStepSize, stepsize);
+    tenFiberParmSet(impl_->tfx, tenFiberParmWPunct, puncture);
+    tenFiberParmSet(impl_->tfx, tenFiberParmUseIndexSpace, AIR_TRUE);
 
     Nrrd *nout = nrrdNew();
 
@@ -362,7 +380,7 @@ TendFiber::execute()
     pcm->begin(ib);
     pcm->end(ie);
 
-    Array1<Array1<Point> > fibers;
+    std::vector<std::vector<Point>> fibers;
 
     Vector min(nin->axis[1].min, nin->axis[2].min, nin->axis[3].min);
     Vector spacing(nin->axis[1].spacing, nin->axis[2].spacing, nin->axis[3].spacing);
@@ -377,7 +395,7 @@ TendFiber::execute()
       start[2]=p.z()/spacing.z();
 
       bool failed;
-      if (failed = tenFiberTrace(tfx, nout, start))
+      if (failed = tenFiberTrace(impl_->tfx, nout, start))
       {
         char *err = biffGetDone(TEN);
         free(err);
@@ -418,6 +436,6 @@ TendFiber::execute()
       }
     }
 
-    send_output_handle("Fibers", output);
+    sendOutput(Fibers, output);
   }
 }

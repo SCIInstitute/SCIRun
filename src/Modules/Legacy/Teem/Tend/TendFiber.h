@@ -32,31 +32,27 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Teem/Misc/share.h>
 
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Teem {
-        // ALGORITHM_PARAMETER_DECL(FieldKind);
-        // ALGORITHM_PARAMETER_DECL(OType);
-        // ALGORITHM_PARAMETER_DECL(Quantity);
-        // ALGORITHM_PARAMETER_DECL(ValuesType);
-        // ALGORITHM_PARAMETER_DECL(ValuesNumParm1);
-        // ALGORITHM_PARAMETER_DECL(ValuesNumParm2);
-        // ALGORITHM_PARAMETER_DECL(ValuesNumParm3);
-        // ALGORITHM_PARAMETER_DECL(DType);
-        // ALGORITHM_PARAMETER_DECL(DNumParm1);
-        // ALGORITHM_PARAMETER_DECL(DNumParm2);
-        // ALGORITHM_PARAMETER_DECL(DNumParm3);
-        // ALGORITHM_PARAMETER_DECL(DDType);
-        // ALGORITHM_PARAMETER_DECL(DDNumParm1);
-        // ALGORITHM_PARAMETER_DECL(DDNumParm2);
-        // ALGORITHM_PARAMETER_DECL(DDNumParm3);
-      }
-    }
-  }
+namespace SCIRun::Core::Algorithms::Teem
+{
+  ALGORITHM_PARAMETER_DECL(fibertype_);
+  ALGORITHM_PARAMETER_DECL(puncture_);
+  ALGORITHM_PARAMETER_DECL(neighborhood_);
+  ALGORITHM_PARAMETER_DECL(stepsize_);
+  ALGORITHM_PARAMETER_DECL(integration_);
+  ALGORITHM_PARAMETER_DECL(use_aniso_);
+  ALGORITHM_PARAMETER_DECL(aniso_metric_);
+  ALGORITHM_PARAMETER_DECL(aniso_thresh_);
+  ALGORITHM_PARAMETER_DECL(use_length_);
+  ALGORITHM_PARAMETER_DECL(length_);
+  ALGORITHM_PARAMETER_DECL(use_steps_);
+  ALGORITHM_PARAMETER_DECL(steps_);
+  ALGORITHM_PARAMETER_DECL(use_conf_);
+  ALGORITHM_PARAMETER_DECL(conf_thresh_);
+  ALGORITHM_PARAMETER_DECL(kernel_);
+}
 
-namespace Modules {
-namespace Teem {
+namespace SCIRun::Modules::Teem
+{
 
   class SCISHARE TendFiber : public Dataflow::Networks::Module,
     public Has2InputPorts<NrrdPortTag, FieldPortTag>,
@@ -76,6 +72,6 @@ namespace Teem {
     std::unique_ptr<class TendFiberImpl> impl_;
   };
 
-}}}
+}
 
 #endif
