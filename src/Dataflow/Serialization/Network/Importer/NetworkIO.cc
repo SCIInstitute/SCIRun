@@ -210,7 +210,6 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     unconvertedModule("GetDomainStructure"),
     unconvertedModule("ConvertFieldToNrrd"),
     unconvertedModule("MergeFields"),
-    unconvertedModule("TendFiber"),
     unconvertedModule("InsertHexVolSheetAlongSurface"),
     unconvertedModule("SubsampleStructuredFieldByIndices"),
     unconvertedModule("EvaluateLinAlgGeneral"),
