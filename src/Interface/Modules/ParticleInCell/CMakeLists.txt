@@ -27,19 +27,16 @@
 
 
 SET(Interface_Modules_ParticleInCell_FORMS
-  GravSimpleUIDialog.ui
-  GravSimpleComputeDialog.ui
+
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
   share.h
-  GravSimpleUIDialog.h
-  GravSimpleComputeDialog.h
+
 )
 
 SET(Interface_Modules_ParticleInCell_SOURCES
-  GravSimpleUIDialog.cc
-  GravSimpleComputeDialog.cc
+
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

@@ -28,14 +28,6 @@
 #include<Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
 
 #include <stdio.h>
-#include <thread>
-#include <string>
-#include <fstream>
-#include <cmath>
-#include <stdlib.h>
-
-#include <time.h>
-using namespace std;
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -51,17 +43,35 @@ GravitySimulationAlgo::GravitySimulationAlgo()
 ************************ Function prototype declaratios for the GravitySim program ************************
 */
 
+void initialize_particles(int ID);
+void output_data(int ID);
+void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], float pos_z[num_particles], 
+                        float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles]);
+void move_particles(int ID);
+
 /*
 ************************ End function prototype declaratios for the GravitySim program ************************
 */
 
-AlgorithmOutput GravitySimulationAlgo::run() const
-{
+AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput& input) const
+    {
 
 /*
 ************************ Source code for the GravitySim program ************************
 */
-                                                 //Initialize program specific variables
+
+#include <thread>
+#include <string>
+#include <fstream>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <time.h>
+
+using namespace std;
+
+                                                      //Initialize program specific variables
     int ret=0;
     int iterate_end;
     thread t[thread_count];
@@ -156,9 +166,8 @@ AlgorithmOutput GravitySimulationAlgo::run() const
     delete [] t_alive;
     delete [] t_blk_size;
     delete [] t_index;
-    
-    return output_file
-}
+
+    }
 
 /*
 ************************ End of source code for the GravitySim program ************************
