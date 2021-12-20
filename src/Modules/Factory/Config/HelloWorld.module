@@ -4,7 +4,7 @@
     "name": "HelloWorld",
     "namespace": "ParticleInCell",
     "status": "new module",
-    "description": "This module in ParticleInCell has a C++ program for the Algorithm",
+    "description": "This module in ParticleInCell has a UI and a C++ program for the Algorithm",
     "header": "Modules/ParticleInCell/HelloWorld.h"
      },
 
@@ -17,7 +17,7 @@
 
 "UI":
     {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "HelloWorldDialog",
+    "header": "Interface/Modules/ParticleInCell/HelloWorldDialog.h"
     }
 }

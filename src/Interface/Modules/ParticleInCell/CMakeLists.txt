@@ -27,16 +27,16 @@
 
 
 SET(Interface_Modules_ParticleInCell_FORMS
-
+  HelloWorldDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
   share.h
-
+  HelloWorldDialog.h
 )
 
 SET(Interface_Modules_ParticleInCell_SOURCES
-
+  HelloWorldDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

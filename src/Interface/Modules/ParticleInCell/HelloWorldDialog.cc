@@ -25,36 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/HelloWorld.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
 
-using namespace SCIRun::Modules::Math;
+#include <Interface/Modules/ParticleInCell/HelloWorldDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
-
-HelloWorld::HelloWorld() : Module(staticInfo_)
+HelloWorldDialog::HelloWorldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
     {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(OutputMatrix);
-    }
-
-void HelloWorld::setStateDefaults()
-    {
-    setStateIntFromAlgo(Variables::Method);
-    }
-
-void HelloWorld::execute()
-    {
-    auto input = getRequiredInput(InputMatrix);
-    if (needToExecute())
-        {
-        setAlgoIntFromState(Variables::Method);
-        auto output = algo().run(withInputData((InputMatrix, input)));
-        sendOutputFromAlgorithm(OutputMatrix, output);
-        }
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
     }

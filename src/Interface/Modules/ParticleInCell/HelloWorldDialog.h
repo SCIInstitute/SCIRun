@@ -25,36 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/HelloWorld.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
+#ifndef INTERFACE_MODULES_ParticleInCell_HelloWorldDialog_H
+#define INTERFACE_MODULES_ParticleInCell_HelloWorldDialog_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
+#include <Interface/Modules/ParticleInCell/ui_HelloWorldDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
+namespace SCIRun {
+namespace Gui {
 
-HelloWorld::HelloWorld() : Module(staticInfo_)
-    {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(OutputMatrix);
-    }
+class SCISHARE HelloWorldDialog : public ModuleDialogGeneric,
+  public Ui::HelloWorldDialog
+      {
+	  Q_OBJECT
 
-void HelloWorld::setStateDefaults()
-    {
-    setStateIntFromAlgo(Variables::Method);
-    }
-
-void HelloWorld::execute()
-    {
-    auto input = getRequiredInput(InputMatrix);
-    if (needToExecute())
-        {
-        setAlgoIntFromState(Variables::Method);
-        auto output = algo().run(withInputData((InputMatrix, input)));
-        sendOutputFromAlgorithm(OutputMatrix, output);
-        }
-    }
+      public:
+          HelloWorldDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+      };
+}}
+#endif

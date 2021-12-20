@@ -2,6 +2,10 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_HelloWorldAlgo_H
 #define CORE_ALGORITHMS_ParticleInCell_HelloWorldAlgo_H
 
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+
 #include <string>
 #include <sstream>
 #include <vector>
@@ -16,12 +20,17 @@ namespace Core {
 namespace Algorithms {
 namespace ParticleInCell {
 
-class SCISHARE HelloWorldAlgo : public AlgorithmBase
-    {
-    public:
-      HelloWorldAlgo();
-      AlgorithmOutput run(const AlgorithmInput& input) const override;
-    };
+    class SCISHARE HelloWorldAlgo : public AlgorithmBase
+        {
+        public:
+            HelloWorldAlgo();
+            AlgorithmOutput run(const AlgorithmInput& input) const;
 
+            bool Sort(Datatypes::DenseMatrixHandle input,
+            Datatypes::DenseMatrixHandle& output, int method) const;
+
+            bool Quicksort(double* input, index_type lo, index_type hi) const;
+            index_type Partition(double* input, index_type lo, index_type hi) const;
+        };
 }}}}
 #endif
