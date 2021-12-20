@@ -27,7 +27,6 @@
 
 
 #include <Modules/ParticleInCell/ModuleShell.h>
-//#include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/ModuleShellAlgo.h>
 

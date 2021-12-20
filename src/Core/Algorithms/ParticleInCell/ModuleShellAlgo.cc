@@ -27,8 +27,6 @@
 
 #include<Core/Algorithms/ParticleInCell/ModuleShellAlgo.h>
 
-#include <stdio.h>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -43,5 +41,3 @@ AlgorithmOutput ModuleShellAlgo::run(const AlgorithmInput& input) const
     {
 
     }
-
-
