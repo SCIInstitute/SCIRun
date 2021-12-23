@@ -36,16 +36,14 @@ namespace Modules{
 namespace Math{
 
     class SCISHARE HelloWorld : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
+        public HasNoInputPorts,
+        public HasNoOutputPorts
             {
             public:
               HelloWorld();
               virtual void execute();
               virtual void setStateDefaults();
 
-              INPUT_PORT(0, InputMatrix, Matrix);
-              OUTPUT_PORT(0, OutputMatrix, Matrix);
               MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };
 }}}

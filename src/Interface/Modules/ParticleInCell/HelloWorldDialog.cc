@@ -40,5 +40,5 @@ HelloWorldDialog::HelloWorldDialog(const std::string& name, ModuleStateHandle st
     setupUi(this);
     setWindowTitle(QString::fromStdString(name));
     fixSize();
-    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
+    addRadioButtonGroupManager({dontsaveButton_ ,saveButton_}, Variables::Method);
     }

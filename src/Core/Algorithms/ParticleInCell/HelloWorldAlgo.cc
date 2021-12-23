@@ -39,10 +39,11 @@ HelloWorldAlgo::HelloWorldAlgo()
     addParameter(Variables::Method,0);
     }
 
-AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     {
-    auto input_matrix=input.get<Matrix>(Variables::InputMatrix);
     AlgorithmOutput output;
+
+/*
 
     //sparse support not fully implemented yet.
     if(!matrixIs::dense(input_matrix))
@@ -60,9 +61,49 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
 
     Sort(mat,return_matrix,method);
     output[Variables::OutputMatrix]=return_matrix;
+*/
+
+    #include <iostream>
+    #include <fstream>
+
+    using namespace std;
+
+    string str1 = "Hello";
+    string str2 = "World";
+    string str3;
+    int  num_particles;
+    auto save = get(Variables::Method).toInt();       //pull parameter from UI
+
+   // copy str1 into str3
+    str3 = str1;
+    cout << "str3 : " << str3 << endl;
+
+   // concatenates str1 and str2
+    str3 = str1 + str2;
+    cout << "str1 + str2 : " << str3 << endl;
+
+   // print num_particles
+    num_particles = 10;
+    printf("num_particles is :  %d\n", num_particles);
+
+   // prints the message to screen
+    string output_txt;
+    output_txt = "test1";
+    std::cout<<output_txt<<std::endl;
+
+   // save a file to storage
+    if(save)
+        {
+        ofstream myfile;
+        myfile.open ("example.txt");
+        myfile << "Hello world\n";
+        myfile.close();
+        }
+
     return output;
     }
 
+/*
 
 bool HelloWorldAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
     {
@@ -136,3 +177,4 @@ index_type HelloWorldAlgo::Partition(double* input, index_type lo, index_type hi
     input[hi]=tmp;
     return ind;
     }
+*/

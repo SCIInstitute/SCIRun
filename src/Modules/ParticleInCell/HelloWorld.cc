@@ -39,8 +39,8 @@ MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
 
 HelloWorld::HelloWorld() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(OutputMatrix);
+//    INITIALIZE_PORT(InputMatrix);
+//    INITIALIZE_PORT(OutputMatrix);
     }
 
 void HelloWorld::setStateDefaults()
@@ -50,11 +50,10 @@ void HelloWorld::setStateDefaults()
 
 void HelloWorld::execute()
     {
-    auto input = getRequiredInput(InputMatrix);
     if (needToExecute())
         {
         setAlgoIntFromState(Variables::Method);
-        auto output = algo().run(withInputData((InputMatrix, input)));
-        sendOutputFromAlgorithm(OutputMatrix, output);
+        AlgorithmInput input;
+        auto output=algo().run(input);
         }
     }

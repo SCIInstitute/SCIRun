@@ -26,11 +26,11 @@ namespace ParticleInCell {
             HelloWorldAlgo();
             AlgorithmOutput run(const AlgorithmInput& input) const;
 
-            bool Sort(Datatypes::DenseMatrixHandle input,
-            Datatypes::DenseMatrixHandle& output, int method) const;
+//            bool Sort(Datatypes::DenseMatrixHandle input,
+//            Datatypes::DenseMatrixHandle& output, int method) const;
 
-            bool Quicksort(double* input, index_type lo, index_type hi) const;
-            index_type Partition(double* input, index_type lo, index_type hi) const;
+//            bool Quicksort(double* input, index_type lo, index_type hi) const;
+//            index_type Partition(double* input, index_type lo, index_type hi) const;
         };
 }}}}
 #endif
