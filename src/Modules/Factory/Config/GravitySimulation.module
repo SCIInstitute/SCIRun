@@ -4,7 +4,7 @@
     "name": "GravitySimulation",
     "namespace": "ParticleInCell",
     "status": "new module",
-    "description": "This module in ParticleInCell has an Algorithm",
+    "description": "This module in ParticleInCell has a UI and Algorithm",
     "header": "Modules/ParticleInCell/GravitySimulation.h"
      },
 
@@ -17,7 +17,7 @@
 
 "UI":
     {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "GravitySimulationDialog",
+    "header": "Interface/Modules/ParticleInCell/GravitySimulationDialog.h"
     }
 }

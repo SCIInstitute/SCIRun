@@ -26,27 +26,34 @@
 */
 
 #include <Modules/ParticleInCell/GravitySimulation.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(GravitySimulation,ParticleInCell,SCIRun);
 
-GravitySimulation::GravitySimulation() : Module(staticInfo_,false)
+GravitySimulation::GravitySimulation() : Module(staticInfo_)
     {
+//    INITIALIZE_PORT(InputMatrix);
+//    INITIALIZE_PORT(OutputMatrix);
+    }
 
+void GravitySimulation::setStateDefaults()
+    {
+    setStateIntFromAlgo(Variables::Method);
     }
 
 void GravitySimulation::execute()
     {
     if (needToExecute())
         {
-//        str output = algo().run();
-//        std::cout<<output<<std::endl;
+        setAlgoIntFromState(Variables::Method);
+        AlgorithmInput input;
+        auto output=algo().run(input);
         }
     }
-

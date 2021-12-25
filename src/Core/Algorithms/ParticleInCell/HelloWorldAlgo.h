@@ -2,14 +2,13 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_HelloWorldAlgo_H
 #define CORE_ALGORITHMS_ParticleInCell_HelloWorldAlgo_H
 
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
-
 #include <string>
 #include <sstream>
 #include <vector>
 #include <algorithm>
+
+#include <iostream>
+#include <fstream>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -25,12 +24,6 @@ namespace ParticleInCell {
         public:
             HelloWorldAlgo();
             AlgorithmOutput run(const AlgorithmInput& input) const;
-
-//            bool Sort(Datatypes::DenseMatrixHandle input,
-//            Datatypes::DenseMatrixHandle& output, int method) const;
-
-//            bool Quicksort(double* input, index_type lo, index_type hi) const;
-//            index_type Partition(double* input, index_type lo, index_type hi) const;
         };
 }}}}
 #endif

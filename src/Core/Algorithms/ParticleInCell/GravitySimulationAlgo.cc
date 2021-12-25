@@ -27,8 +27,6 @@
 
 #include<Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
 
-#include <stdio.h>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -36,7 +34,7 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 GravitySimulationAlgo::GravitySimulationAlgo()
     {
-
+    addParameter(Variables::Method,0);
     }
 
 /*
@@ -49,34 +47,29 @@ void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], 
                         float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles]);
 void move_particles(int ID);
 
+
 /*
 ************************ End function prototype declaratios for the GravitySim program ************************
 */
 
-AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
     {
+    AlgorithmOutput output;
 
 /*
 ************************ Source code for the GravitySim program ************************
 */
 
-#include <thread>
-#include <string>
-#include <fstream>
-#include <cmath>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <time.h>
-
+#include <time.h>                                     //Doesn't seem to work
 using namespace std;
-
                                                       //Initialize program specific variables
-    int ret=0;
+//    int ret=0;
     int iterate_end;
     thread t[thread_count];
-    string flow="cat";
-    const char *command=flow.c_str();
+//    string flow="cat";
+//    const char *command=flow.c_str();
+    ofstream out_x, out_y, out_z;
+    auto save = get(Variables::Method).toInt();       //pull parameter from UI
 
     clock_t start = clock();
                                                       //Initialize thread block size and thread index
@@ -93,21 +86,21 @@ using namespace std;
     for(int i=0; i<thread_count; i++) t[i] = thread(initialize_particles, i);
     for(int i=0; i<thread_count; i++) t[i].join();
 
-                                                      //Create and append (concatenate) initial particle positions to the output file 
-    if(save)
+    if(save)                                          //Create and append (concatenate) initial particle positions to the output file
         {
-        for(int i=0; i<thread_count; i++) t[i] = thread(output_data, i);
-        for(int i=0; i<thread_count; i++) t[i].join();
-
-        for(int i=0; i<thread_count; i++) flow += " file"+to_string(i);
-        flow += " > " + output_file;
-        command=flow.c_str();
-        system(command);
+        out_x.open ("/home/kj/Simulation-output/pos_x.txt");
+        out_y.open ("/home/kj/Simulation-output/pos_y.txt");
+        out_z.open ("/home/kj/Simulation-output/pos_z.txt");
+        for(int i=0; i<num_particles; i++)
+            {
+            out_x << pos_x[i] <<"\n";
+            out_y << pos_y[i] <<"\n";
+            out_z << pos_z[i] <<"\n";
+            }
         }
 
     for(j=1; j<iterations; j++)                       //main loop
         {
-        flow        = "cat";
         iterate_end = thread_count;
                                                       //Create (encode) acc_field
         Generate_acc_field(pos_x, pos_y, pos_z, vel_x, vel_y, vel_z);
@@ -117,8 +110,7 @@ using namespace std;
         for(int i=0; i<thread_count; i++) t[i].join();
                                                       //Inner loop end
 
-                                                      //If all particles are dead, end the main loop
-        for(int i=0; i<thread_count; i++)
+        for(int i=0; i<thread_count; i++)             //If all particles are dead, end the main loop
             {
             iterate_end -= t_alive[i];
             t_alive[i] = 0;
@@ -129,26 +121,19 @@ using namespace std;
             {
             if(save)                                  //Append (concatenate) saved temporary files to the output file
                 {
-                for(int i=0; i<thread_count; i++) t[i] = thread(output_data, i);
-                for(int i=0; i<thread_count; i++) t[i].join();
-
-                for(int i=0; i<thread_count; i++) flow += " file"+to_string(i);
-                flow += " >> " + output_file;
-                command=flow.c_str();
-                system(command);
+                for(int i=0; i<num_particles; i++)
+                    {
+                    out_x << pos_x[i] <<"\n";
+                    out_y << pos_y[i] <<"\n";
+                    out_z << pos_z[i] <<"\n";
+                    }
                 }
             }
         }                                             //main loop end
 
-
-                                                      //Delete the temporary output files
-    if(save)
-        {
-        flow="rm file*";
-        command=flow.c_str();
-        system(command);
-        }
-
+    out_x.close();
+    out_y.close();
+    out_z.close();
     clock_t end = clock();
     printf("Program took %ld seconds\n",(end-start)/CLOCKS_PER_SEC);
 
@@ -167,6 +152,7 @@ using namespace std;
     delete [] t_blk_size;
     delete [] t_index;
 
+    return output;
     }
 
 /*
@@ -339,6 +325,7 @@ void move_particles(int ID)
             }
         }
     }
+/*
 
 void output_data(int ID)
     {
@@ -350,6 +337,4 @@ void output_data(int ID)
 
     myFile.close();
     }
-
-
-
+*/

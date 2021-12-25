@@ -2,10 +2,23 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 #define CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 
+
+
+
+
 #include <string>
 #include <sstream>
 #include <vector>
 #include <algorithm>
+
+#include <thread>
+#include <string>
+#include <iostream>                                   //here
+#include <fstream>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -15,6 +28,13 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace ParticleInCell {
+
+    class SCISHARE GravitySimulationAlgo : public AlgorithmBase
+        {
+        public:
+            GravitySimulationAlgo();
+            AlgorithmOutput run(const AlgorithmInput& input) const;
+        };
 
 /*
 ************************ Global variables used by the GravitySim program ************************
@@ -43,7 +63,7 @@ float y_max             = 100.0;
 float z_max             = 100.0;
 
 string output_file      = "P2_GravitySim.txt";
-bool save               = 1;                          //save = 0 means do not save output to file P2_GravitySim.txt.
+//bool save               = 1;                          //save = 0 means do not save output to file P2_GravitySim.txt.
                                                       //The Clementine (H1) computer processes 1,600,000 particles in a 10 second run at 100 steps per second
                                                       //in 16 seconds run time using 8 threads, 11 seconds using 16 threads and 8 seconds using 32 threads.
                                                       //H1 processed 4.8Mil particles in 21 seconds, no problems.
@@ -69,21 +89,6 @@ auto t_index     = new int  [thread_count];
 /*
 ************************ End of global variables used by the GravitySim program ************************
 */
-
-class SCISHARE GravitySimulationAlgo : public AlgorithmBase
-    {
-    private:
-/*
-
-        void initialize_particles(int ID);
-        void output_data(int ID);
-        void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], float pos_z[num_particles], float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles]);
-        void move_particles(int ID);
-*/
-    public:
-      GravitySimulationAlgo();
-      AlgorithmOutput run(const AlgorithmInput& input) const override;
-    };
 
 }}}}
 #endif
