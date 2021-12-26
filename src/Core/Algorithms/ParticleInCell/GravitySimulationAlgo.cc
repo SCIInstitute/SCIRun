@@ -55,19 +55,15 @@ void move_particles(int ID);
 AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
-
 /*
 ************************ Source code for the GravitySim program ************************
 */
 
-#include <time.h>                                     //Doesn't seem to work
+#include <time.h>
 using namespace std;
                                                       //Initialize program specific variables
-//    int ret=0;
     int iterate_end;
     thread t[thread_count];
-//    string flow="cat";
-//    const char *command=flow.c_str();
     ofstream out_x, out_y, out_z;
     auto save = get(Variables::Method).toInt();       //pull parameter from UI
 
@@ -86,11 +82,19 @@ using namespace std;
     for(int i=0; i<thread_count; i++) t[i] = thread(initialize_particles, i);
     for(int i=0; i<thread_count; i++) t[i].join();
 
+
     if(save)                                          //Create and append (concatenate) initial particle positions to the output file
         {
+                                                      //Both of the path options used below work, and specify the same location
+
         out_x.open ("/home/kj/Simulation-output/pos_x.txt");
         out_y.open ("/home/kj/Simulation-output/pos_y.txt");
         out_z.open ("/home/kj/Simulation-output/pos_z.txt");
+/*
+        out_x.open ("Simulation-output/pos_x.txt");
+        out_y.open ("Simulation-output/pos_y.txt");
+        out_z.open ("Simulation-output/pos_z.txt");
+*/
         for(int i=0; i<num_particles; i++)
             {
             out_x << pos_x[i] <<"\n";
@@ -119,7 +123,7 @@ using namespace std;
         if(iterate_end == thread_count) j = iterations;
         else                                          //If at least one particle is still alive, continue processing the main loop
             {
-            if(save)                                  //Append (concatenate) saved temporary files to the output file
+            if(save)
                 {
                 for(int i=0; i<num_particles; i++)
                     {
@@ -134,8 +138,10 @@ using namespace std;
     out_x.close();
     out_y.close();
     out_z.close();
+
     clock_t end = clock();
-    printf("Program took %ld seconds\n",(end-start)/CLOCKS_PER_SEC);
+//    printf("Program took %ld seconds\n",(end-start)/CLOCKS_PER_SEC);
+    printf("Program took %.3f seconds\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
 
     delete [] pos_x;
     delete [] pos_y;
@@ -338,3 +344,5 @@ void output_data(int ID)
     myFile.close();
     }
 */
+
+
