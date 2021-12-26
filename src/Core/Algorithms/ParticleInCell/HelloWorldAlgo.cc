@@ -26,6 +26,7 @@
 */
 
 #include<Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
+#include <time.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -44,10 +45,12 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     using namespace std;
 
     string output_txt  = "test1";
-    int  num_particles = 10;
+//    int  num_particles = 10;
     auto save = get(Variables::Method).toInt();       //pull parameter from UI
+
+    clock_t start = clock();
                                              
-    printf("Debug 1: save is :  %d\n", save);         // print save using printf
+    printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
 
     std::cout<<output_txt<<std::endl;                 // print a message using std::cout
 
@@ -55,10 +58,15 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
         {
         printf("Debug 02: save is : %d\n", save);
         ofstream myfile;
-        myfile.open ("example.txt");
+        myfile.open ("../../../Simulation-output/example.txt");
         myfile << "Hello world\n";
         myfile.close();
         }
+
+    clock_t end = clock();
+    printf("Program took %.3f seconds\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
+
+//    delete [] HW_pos_x;
 
     return output;
     }

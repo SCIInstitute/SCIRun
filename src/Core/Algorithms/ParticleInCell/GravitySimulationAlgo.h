@@ -2,18 +2,13 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 #define CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 
-
-
-
-
-#include <string>
 #include <sstream>
 #include <vector>
 #include <algorithm>
 
 #include <thread>
 #include <string>
-#include <iostream>                                   //here
+#include <iostream>
 #include <fstream>
 #include <cmath>
 #include <stdio.h>
