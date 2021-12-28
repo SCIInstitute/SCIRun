@@ -40,7 +40,7 @@ MODULE_INFO_DEF(GravitySimulation,ParticleInCell,SCIRun);
 GravitySimulation::GravitySimulation() : Module(staticInfo_)
     {
 //    INITIALIZE_PORT(InputMatrix);
-//    INITIALIZE_PORT(OutputMatrix);
+    INITIALIZE_PORT(OutputMatrix);                    //here
     }
 
 void GravitySimulation::setStateDefaults()
@@ -50,10 +50,13 @@ void GravitySimulation::setStateDefaults()
 
 void GravitySimulation::execute()
     {
-    if (needToExecute())
+
+
+    if(needToExecute())
         {
         setAlgoIntFromState(Variables::Method);
-        AlgorithmInput input;
+        AlgorithmInput input;                         //might not need this line?
         auto output=algo().run(input);
+        sendOutputFromAlgorithm(OutputMatrix,output); //here
         }
     }

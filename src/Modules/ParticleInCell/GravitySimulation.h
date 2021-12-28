@@ -34,17 +34,19 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-
     class SCISHARE GravitySimulation : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public HasNoOutputPorts
+        public Has1OutputPort<MatrixPortTag>          //here
             {
             public:
-              GravitySimulation();
-              virtual void execute();
-              virtual void setStateDefaults();
+                GravitySimulation();
+                virtual void execute();
+                virtual void setStateDefaults();
 
-              MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+
+                OUTPUT_PORT(0,OutputMatrix, Matrix);
+
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };
 }}}
 #endif

@@ -42,26 +42,19 @@
 #include<Core/Algorithms/Base/AlgorithmBase.h>
 #include<Core/Algorithms/Math/share.h>
 
-namespace SCIRun{
-    namespace Core{
-        namespace Algorithms{
-            namespace Math{
-                class SCISHARE SortMatrixAlgo : public AlgorithmBase
-                {
-                public:
-                    SortMatrixAlgo();
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Math {
+    class SCISHARE SortMatrixAlgo : public AlgorithmBase
+        {
+        public:
+            SortMatrixAlgo();
+            AlgorithmOutput run(const AlgorithmInput& input) const;
 
-                    AlgorithmOutput run(const AlgorithmInput& input) const;
-
-                    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
-
-                    bool Quicksort(double* input, index_type lo, index_type hi) const;
-
-                    index_type Partition(double* input, index_type lo, index_type hi) const;
-                };
-            }
-        }
-    }
-}
-
+            bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
+            bool Quicksort(double* input, index_type lo, index_type hi) const;
+            index_type Partition(double* input, index_type lo, index_type hi) const;
+        };
+}}}}
 #endif

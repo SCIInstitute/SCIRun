@@ -25,7 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include<Modules/Math/SortMatrix.h>
 #include<Core/Datatypes/Matrix.h>
 #include<Dataflow/Network/Module.h>
@@ -47,7 +46,6 @@ SortMatrix::SortMatrix() : Module(staticInfo_)
 void SortMatrix::setStateDefaults()
 {
     setStateIntFromAlgo(Variables::Method);
-
 }
 
 void SortMatrix::execute()
@@ -55,9 +53,9 @@ void SortMatrix::execute()
     auto input=getRequiredInput(InputMatrix);
 
     if(needToExecute())
-    {
+        {
         setAlgoIntFromState(Variables::Method);
         auto output = algo().run(withInputData((InputMatrix, input)));
         sendOutputFromAlgorithm(OutputMatrix,output);
-    }
+        }
 }

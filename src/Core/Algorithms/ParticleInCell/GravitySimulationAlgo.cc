@@ -26,6 +26,8 @@
 */
 
 #include<Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
+//#include<Core/Datatypes/MatrixTypeConversions.h>      //here
+//#include<Core/Math/MiscMath.h>                        //here
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -160,6 +162,7 @@ using namespace std;
     delete [] t_blk_size;
     delete [] t_index;
 */
+    output[Variables::OutputMatrix]=0;                //here
     return output;
     }
 
