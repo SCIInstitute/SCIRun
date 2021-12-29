@@ -59,5 +59,11 @@ void GravitySimulation::execute()
         AlgorithmInput input;                         //might not need this line?
         auto output1=algo().run(input);               //here (this line and the next)
         sendOutputFromAlgorithm(x_coordinates,output1);
+/*
+
+        sendOutput(x_coordinates, output1);
+        sendOutput(y_coordinates, output2);
+        sendOutput(z_coordinates, output3);
+*/
         }
     }

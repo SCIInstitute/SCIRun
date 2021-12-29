@@ -31,9 +31,9 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/ParticleInCell/share.h>
 
-namespace SCIRun {
+namespace SCIRun  {
 namespace Modules {
-namespace Math {
+namespace Math    {
     class SCISHARE GravitySimulation : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>          //here

@@ -55,7 +55,7 @@ void move_particles(int ID);
 
 AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
     {
-    AlgorithmOutput output, output1, output2, output3;//here
+    AlgorithmOutput output, output1, output2, output3;                    //here
 /*
 ************************ Source code for the GravitySim program ************************
 */
@@ -171,7 +171,7 @@ using namespace std;
     delete [] t_index;
 */
     output[Variables::OutputMatrix]=0;
-    return output;
+    return output1;
     }
 
 /*
