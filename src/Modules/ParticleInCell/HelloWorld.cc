@@ -39,8 +39,9 @@ MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
 
 HelloWorld::HelloWorld() : Module(staticInfo_)
     {
-//    INITIALIZE_PORT(InputMatrix);
-//    INITIALIZE_PORT(OutputMatrix);
+    INITIALIZE_PORT(x_coordinates);
+    INITIALIZE_PORT(y_coordinates);
+    INITIALIZE_PORT(z_coordinates);
     }
 
 void HelloWorld::setStateDefaults()

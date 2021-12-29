@@ -36,15 +36,16 @@ namespace Modules {
 namespace Math {
     class SCISHARE GravitySimulation : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public Has1OutputPort<MatrixPortTag>          //here
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>          //here
             {
             public:
                 GravitySimulation();
                 virtual void execute();
                 virtual void setStateDefaults();
 
-
-                OUTPUT_PORT(0,OutputMatrix, Matrix);
+                OUTPUT_PORT(0,x_coordinates, Matrix);
+                OUTPUT_PORT(1,y_coordinates, Matrix);
+                OUTPUT_PORT(2,z_coordinates, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };

@@ -40,18 +40,14 @@ HelloWorldAlgo::HelloWorldAlgo()
 
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     {
-    AlgorithmOutput output;
+    AlgorithmOutput output, output1, output2, output3;
 
     using namespace std;
 
     string output_txt  = "test1";
-//    int  num_particles = 10;
     auto save = get(Variables::Method).toInt();       //pull parameter from UI
-
     clock_t start = clock();
-                                             
     printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
-
     std::cout<<output_txt<<std::endl;                 // print a message using std::cout
 
     if(save)                                          // save a file to storage

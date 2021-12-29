@@ -37,14 +37,17 @@ namespace Math{
 
     class SCISHARE HelloWorld : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public HasNoOutputPorts
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
-              HelloWorld();
-              virtual void execute();
-              virtual void setStateDefaults();
+                HelloWorld();
+                virtual void execute();
+                virtual void setStateDefaults();
+                OUTPUT_PORT(0,x_coordinates, Matrix);
+                OUTPUT_PORT(1,y_coordinates, Matrix);
+                OUTPUT_PORT(2,z_coordinates, Matrix);
 
-              MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };
 }}}
 #endif
