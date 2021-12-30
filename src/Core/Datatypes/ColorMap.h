@@ -113,8 +113,10 @@ namespace Datatypes {
   class SCISHARE ColorMap_OSP_helper
   {
   public:
-    std::vector<float> colorList;
-    std::vector<float> opacityList;
+    std::vector<float> colorList_;
+    std::vector<float> opacityList_;
+    float min_ = 0.0;
+    float max_ = 1.0;
     explicit ColorMap_OSP_helper(ColorMapHandle cmap);
   };
 
