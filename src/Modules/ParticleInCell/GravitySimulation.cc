@@ -57,13 +57,13 @@ void GravitySimulation::execute()
         {
         setAlgoIntFromState(Variables::Method);
         AlgorithmInput input;                         //might not need this line?
-        auto output1=algo().run(input);               //here (this line and the next)
-        sendOutputFromAlgorithm(x_coordinates,output1);
-/*
+        auto output=algo().run(input);
+//        sendOutputFromAlgorithm(x_coordinates,output1);
 
-        sendOutput(x_coordinates, output1);
-        sendOutput(y_coordinates, output2);
-        sendOutput(z_coordinates, output3);
-*/
+
+                                                      //here:
+        sendOutputFromAlgorithm(x_coordinates,output);
+        sendOutputFromAlgorithm(y_coordinates,output);
+        sendOutputFromAlgorithm(z_coordinates,output);
         }
     }

@@ -43,6 +43,7 @@ int iterations          = 420;
 int j                   = 0;
 float delta_t           = 0.01;
 const int num_particles = 10;
+const int buffer_size   = 10;                         //here - added to facilitate an initial output to SCIRun
 //float alpha             = 0.3;
 
 float initial_vel_x     = 1.0;
@@ -58,7 +59,8 @@ float y_max             = 100.0;
 float z_max             = 100.0;
 
 string output_file      = "P2_GravitySim.txt";
-//bool save               = 1;                          //save = 0 means do not save output to file P2_GravitySim.txt.
+//bool save               = 1;                        //here; save is a UI entered value  save = 0 means do not save output to file P2_GravitySim.txt.
+
                                                       //The Clementine (H1) computer processes 1,600,000 particles in a 10 second run at 100 steps per second
                                                       //in 16 seconds run time using 8 threads, 11 seconds using 16 threads and 8 seconds using 32 threads.
                                                       //H1 processed 4.8Mil particles in 21 seconds, no problems.
@@ -66,20 +68,25 @@ string output_file      = "P2_GravitySim.txt";
                                                       //The HP laptop takes 63 seconds to process 1.6 Mil particles using 1 thread, 26 seconds using 4 threads,
                                                       //and 18 seconds using 8 threads.  Processing 4.8 Mil particles using 8 threads took 70 seconds.
 
-auto pos_x       = new float[num_particles];
-auto pos_y       = new float[num_particles];
-auto pos_z       = new float[num_particles];
-auto vel_x       = new float[num_particles];
-auto vel_y       = new float[num_particles];
-auto vel_z       = new float[num_particles];
-auto acc_x       = new float[num_particles];
-auto acc_y       = new float[num_particles];
-auto acc_z       = new float[num_particles];
-auto acc_field   = new float[Dim][Dim][Dim][3];
-auto p_alive     = new int  [num_particles];
-auto t_alive     = new int  [thread_count];
-auto t_blk_size  = new int  [thread_count];
-auto t_index     = new int  [thread_count];
+auto pos_x        = new float[num_particles];
+auto pos_y        = new float[num_particles];
+auto pos_z        = new float[num_particles];
+                                                      //here:
+auto buffer_pos_x = new float[buffer_size*num_particles];
+auto buffer_pos_y = new float[buffer_size*num_particles];
+auto buffer_pos_z = new float[buffer_size*num_particles];
+
+auto vel_x        = new float[num_particles];
+auto vel_y        = new float[num_particles];
+auto vel_z        = new float[num_particles];
+auto acc_x        = new float[num_particles];
+auto acc_y        = new float[num_particles];
+auto acc_z        = new float[num_particles];
+auto acc_field    = new float[Dim][Dim][Dim][3];
+auto p_alive      = new int  [num_particles];
+auto t_alive      = new int  [thread_count];
+auto t_blk_size   = new int  [thread_count];
+auto t_index      = new int  [thread_count];
 
 /*
 ************************ End of global variables used by the GravitySim program ************************
