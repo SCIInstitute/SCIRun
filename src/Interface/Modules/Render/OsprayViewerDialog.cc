@@ -224,9 +224,6 @@ void OsprayViewerDialog::addAutoViewButton()
 {
   autoViewButton_ = new QPushButton(this);
 
-  //TODO
-  autoViewButton_->setDisabled(true);
-
   autoViewButton_->setToolTip("Auto View");
   autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewButton_->setShortcut(Qt::Key_0);
@@ -308,7 +305,9 @@ void OsprayViewerDialog::autoRotateClicked()
 
 void OsprayViewerDialog::autoViewClicked()
 {
-  qDebug() << "TODO" << __FUNCTION__;
+#ifdef WITH_OSPRAY
+  renderer_->autoView();
+#endif
 }
 
 void OsprayViewerDialog::screenshotClicked()
@@ -341,7 +340,10 @@ void OsprayViewerDialog::setViewportCamera()
 
 float OsprayViewerDialog::getFloat(const Name& name) const
 {
+#ifdef WITH_OSPRAY
   return static_cast<float>(state_->getValue(name).toDouble());
+#endif
+  return 0;
 }
 
 void OsprayViewerDialog::setCameraWidgets()
@@ -394,11 +396,14 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 
 MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
+#ifdef WITH_OSPRAY
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
   else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
+#endif
+  return MouseButton::NONE;
 }
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)

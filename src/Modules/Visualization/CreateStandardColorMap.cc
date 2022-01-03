@@ -54,6 +54,8 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::AlphaUserPointsVector, Variable::List());
   state->setValue(Parameters::CustomColor0, ColorRGB(0.2, 0.2, 0.2).toString());
   state->setValue(Parameters::CustomColor1, ColorRGB(0.8, 0.8, 0.8).toString());
+  state->setValue(Parameters::ColorMapOption, ColorMapOptionType::PREDEFINED);
+  state->setValue(Parameters::DefaultAlphaValue, 0.5);
 }
 
 void CreateStandardColorMap::execute()
@@ -66,14 +68,22 @@ void CreateStandardColorMap::execute()
     auto inv = state->getValue(Parameters::ColorMapInvert).toBool();
     auto shift = state->getValue(Parameters::ColorMapShift).toDouble();
 
+    ColorMapHandle cmap;
+    std::vector<double> points;
+
     //TODO cbright: pass computed alpha function from transient state to factory
     auto alphaPoints = state->getValue(Parameters::AlphaUserPointsVector).toVector();
-    std::vector<double> points;
-    for(auto point : alphaPoints)
+    if (alphaPoints.empty())
     {
-      points.push_back(point.toVector()[0].toDouble());
-      points.push_back(point.toVector()[1].toDouble());
+      points.push_back(0.5); // The x value is arbitrary for the default line
+      points.push_back(state->getValue(Parameters::DefaultAlphaValue).toDouble());
     }
+    else
+      for(auto point : alphaPoints)
+      {
+        points.push_back(point.toVector()[0].toDouble());
+        points.push_back(point.toVector()[1].toDouble());
+      }
 
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res, 2), 256);
@@ -84,8 +94,8 @@ void CreateStandardColorMap::execute()
     customData.push_back(ColorRGB(state->getValue(Parameters::CustomColor0).toString()));
     customData.push_back(ColorRGB(state->getValue(Parameters::CustomColor1).toString()));
 
-    ColorMapHandle cmap;
-    cmap = (name == "Custom" ) ?
+    auto option = state->getValue(Parameters::ColorMapOption).toInt();
+    cmap = (option == ColorMapOptionType::CUSTOM) ?
       StandardColorMapFactory::create(customData, name, res, shift, inv, 0.5, 1.0, points) :
       StandardColorMapFactory::create(name, res, shift, inv, 0.5, 1.0, points);
 
@@ -99,5 +109,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaUserPointsVector);
 ALGORITHM_PARAMETER_DEF(Visualization, AlphaFunctionVector);
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapOption);
 ALGORITHM_PARAMETER_DEF(Visualization, CustomColor0);
 ALGORITHM_PARAMETER_DEF(Visualization, CustomColor1);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultAlphaValue);

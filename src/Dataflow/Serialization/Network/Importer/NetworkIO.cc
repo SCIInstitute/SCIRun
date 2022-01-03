@@ -192,7 +192,6 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     unconvertedModule("ShowFieldV1"),
     unconvertedModule("InterfaceWithMatlab"),
     unconvertedModule("ShowTextureSlices"),
-    unconvertedModule("ApplyFilterToFieldData"),
     unconvertedModule("CalculateLatVolGradientsAtNodes"),
     unconvertedModule("ConvertLatVolDataFromElemToNode"),
     unconvertedModule("CreateStructHex"),

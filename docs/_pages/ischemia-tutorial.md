@@ -1,1 +1,0 @@
-../_posts/2016-08-18-ischemia-tutorial.md

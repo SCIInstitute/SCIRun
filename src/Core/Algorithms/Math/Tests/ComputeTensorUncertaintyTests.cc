@@ -40,8 +40,6 @@
 #include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Algorithms/Base/AlgorithmData.h>
 #include <Core/Algorithms/Math/ComputeTensorUncertaintyAlgorithm.h>
-#include <boost/smart_ptr/make_shared_object.hpp>
-#include "Core/Datatypes/MatrixFwd.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;

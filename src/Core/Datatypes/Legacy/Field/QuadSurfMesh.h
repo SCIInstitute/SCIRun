@@ -287,7 +287,7 @@ public:
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           {
-            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_);
             while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E))
             {
               mesh_->synchronize_cond_.wait(lock);
@@ -1748,7 +1748,7 @@ protected:
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "Must call synchronize EDGES_E on QuadSurfMesh first");
     // Get the table of faces that are connected to the two nodes
-    Core::Thread::Guard nn(synchronize_lock_.get());
+    Core::Thread::Guard nn(synchronize_lock_);
 
     const std::vector<typename Face::index_type>& faces  = node_neighbors_[idx];
     array.clear();
@@ -2342,7 +2342,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
   /// We need to lock before we can copy these as these
   /// structures are generate dynamically when they are
   /// needed.
-  Core::Thread::Guard rlock(copy.synchronize_lock_.get());
+  Core::Thread::Guard rlock(copy.synchronize_lock_);
 
   points_ = copy.points_;
   faces_ = copy.faces_;
@@ -2614,7 +2614,7 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
 
   {
 
-  Core::Thread::UniqueLock lock(synchronize_lock_.get());
+  Core::Thread::UniqueLock lock(synchronize_lock_);
 
   // Only sync what hasn't been synched
   sync &= (~synchronized_);

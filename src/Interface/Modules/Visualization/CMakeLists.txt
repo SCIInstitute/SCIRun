@@ -39,6 +39,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowMeshBoundingBox.ui
   ShowOrientationAxes.ui
   ShowUncertaintyGlyphs.ui
+  GeometryBuffer.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -55,6 +56,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowMeshBoundingBoxDialog.h
   ShowOrientationAxesDialog.h
   ShowUncertaintyGlyphsDialog.h
+  GeometryBufferDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -70,6 +72,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowMeshBoundingBoxDialog.cc
   ShowOrientationAxesDialog.cc
   ShowUncertaintyGlyphsDialog.cc
+  GeometryBufferDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
