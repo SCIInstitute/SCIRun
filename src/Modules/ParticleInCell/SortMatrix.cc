@@ -25,49 +25,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/GravitySimulation.h>
+
+#include <Modules/ParticleInCell/SortMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
+#include <Core/Algorithms/ParticleInCell/SortMatrixAlgo.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(GravitySimulation,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(SortMatrix,ParticleInCell,SCIRun);
 
-GravitySimulation::GravitySimulation() : Module(staticInfo_)
+SortMatrix::SortMatrix() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(x_coordinates);                     //here
-    INITIALIZE_PORT(y_coordinates);
-    INITIALIZE_PORT(z_coordinates);
+    INITIALIZE_PORT(InputMatrix);
+    INITIALIZE_PORT(OutputMatrix);
     }
 
-void GravitySimulation::setStateDefaults()
+void SortMatrix::setStateDefaults()
     {
     setStateIntFromAlgo(Variables::Method);
     }
 
-void GravitySimulation::execute()
+void SortMatrix::execute()
     {
-
-
-    if(needToExecute())
+    auto input = getRequiredInput(InputMatrix);
+    if (needToExecute())
         {
         setAlgoIntFromState(Variables::Method);
-        AlgorithmInput input;                         //might not need this line?
-        auto output=algo().run(input);
-//        sendOutputFromAlgorithm(x_coordinates,output1);
-
-
-        sendOutputFromAlgorithm(x_coordinates,output);          //here:
-        sendOutputFromAlgorithm(y_coordinates,output);
-        sendOutputFromAlgorithm(z_coordinates,output);
-/*
-        sendOutputFromAlgorithm(outputMatrix1,output);          //here:
-        sendOutputFromAlgorithm(outputMatrix2,output);
-        sendOutputFromAlgorithm(outputMatrix3,output);
-*/
+        auto output = algo().run(withInputData((InputMatrix, input)));
+        sendOutputFromAlgorithm(OutputMatrix, output);
         }
     }

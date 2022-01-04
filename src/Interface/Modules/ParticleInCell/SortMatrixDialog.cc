@@ -25,49 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/GravitySimulation.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
 
-using namespace SCIRun::Modules::Math;
+#include <Interface/Modules/ParticleInCell/SortMatrixDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(GravitySimulation,ParticleInCell,SCIRun);
-
-GravitySimulation::GravitySimulation() : Module(staticInfo_)
+SortMatrixDialog::SortMatrixDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
     {
-    INITIALIZE_PORT(x_coordinates);                     //here
-    INITIALIZE_PORT(y_coordinates);
-    INITIALIZE_PORT(z_coordinates);
-    }
-
-void GravitySimulation::setStateDefaults()
-    {
-    setStateIntFromAlgo(Variables::Method);
-    }
-
-void GravitySimulation::execute()
-    {
-
-
-    if(needToExecute())
-        {
-        setAlgoIntFromState(Variables::Method);
-        AlgorithmInput input;                         //might not need this line?
-        auto output=algo().run(input);
-//        sendOutputFromAlgorithm(x_coordinates,output1);
-
-
-        sendOutputFromAlgorithm(x_coordinates,output);          //here:
-        sendOutputFromAlgorithm(y_coordinates,output);
-        sendOutputFromAlgorithm(z_coordinates,output);
-/*
-        sendOutputFromAlgorithm(outputMatrix1,output);          //here:
-        sendOutputFromAlgorithm(outputMatrix2,output);
-        sendOutputFromAlgorithm(outputMatrix3,output);
-*/
-        }
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({ascendButton_, descendButton_ }, Variables::Method);
     }

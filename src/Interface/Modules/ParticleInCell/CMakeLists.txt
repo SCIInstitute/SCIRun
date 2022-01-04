@@ -29,17 +29,20 @@
 SET(Interface_Modules_ParticleInCell_FORMS
   HelloWorldDialog.ui
   GravitySimulationDialog.ui
+  SortMatrixDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
   share.h
   HelloWorldDialog.h
   GravitySimulationDialog.h
+  SortMatrixDialog.h
 )
 
 SET(Interface_Modules_ParticleInCell_SOURCES
   HelloWorldDialog.cc
   GravitySimulationDialog.cc
+  SortMatrixDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

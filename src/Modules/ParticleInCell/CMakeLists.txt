@@ -31,6 +31,7 @@ SET(Modules_ParticleInCell_SRCS
   GravitySimulation.cc
   ModuleShell.cc
   HelloWorld.cc
+  SortMatrix.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -39,6 +40,7 @@ SET(Modules_ParticleInCell_HEADERS
   GravitySimulation.h
   ModuleShell.h
   HelloWorld.h
+  SortMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

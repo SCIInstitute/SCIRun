@@ -25,29 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_GravitySimulation_H
-#define MODULES_PARTICLEINCELL_GravitySimulation_H
+#ifndef MODULES_PARTICLEINCELL_SortMatrix_H
+#define MODULES_PARTICLEINCELL_SortMatrix_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/ParticleInCell/share.h>
 
-namespace SCIRun  {
+namespace SCIRun {
 namespace Modules {
-namespace Math    {
-    class SCISHARE GravitySimulation : public SCIRun::Dataflow::Networks::Module,
-        public HasNoInputPorts,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>         //here
-            {
-            public:
-                GravitySimulation();
-                virtual void execute();
-                virtual void setStateDefaults();
+namespace Math {
 
-                OUTPUT_PORT(0,x_coordinates, Matrix);                               //here
-                OUTPUT_PORT(1,y_coordinates, Matrix);
-                OUTPUT_PORT(2,z_coordinates, Matrix);
+class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
+public Has1InputPort<MatrixPortTag>,
+public Has1OutputPort<MatrixPortTag>
+{
+public:
+  SortMatrix();
+  virtual void execute();
+  virtual void setStateDefaults();
 
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-            };
+  INPUT_PORT(0, InputMatrix, Matrix);
+  OUTPUT_PORT(0, OutputMatrix, Matrix);
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+};
 }}}
 #endif

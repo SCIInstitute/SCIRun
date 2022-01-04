@@ -57,6 +57,7 @@ AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;                           //here (set it back to just output), and add the line below. Note that output_mat_0, output_mat_1, and output_mat_2 do not have parenthesis
     MatrixHandle output_mat_0, output_mat_1, output_mat_2;
+    
 
 /*
 ************************ Source code for the GravitySim program ************************
@@ -126,21 +127,20 @@ using namespace std;
         if(iterate_end == thread_count) j = iterations;
         else                                          //If at least one particle is still alive, continue processing the main loop
             {
-
                                                       //here:
-                                                      //Set up the output matrices
-            if(j==buffer_size)                        //need to work on the sendOutput part
+            if(j==buffer_size)                        //Set up the output matrices
 
                 {
-                double *data0;
-                double *data1;
-                double *data2;
-//                data0 = output_mat_0->data();
-//                data1 = output_mat_1->data();
-//                data2 = output_mat_2->data();
+/*
+
+                double *data0 = output_mat_0->data();
+                double *data1 = output_mat_1->data();
+                double *data2 = output_mat_2->data();
+
                 data0 = (double*)buffer_pos_x;
                 data1 = (double*)buffer_pos_y;
                 data2 = (double*)buffer_pos_z;
+*/
                 }
           
             if(save)
@@ -182,6 +182,22 @@ using namespace std;
     delete [] t_index;
 */
     output[Variables::OutputMatrix]=0;
+
+/*
+    output[Variables::OutputMatrix1]=output_mat_0;
+    output[Variables::OutputMatrix2]=output_mat_1;
+    output[Variables::OutputMatrix3]=output_mat_2;
+
+    output[Variables::OutputMatrix1]=0;
+    output[Variables::OutputMatrix2]=0;
+    output[Variables::OutputMatrix3]=0;
+
+    output[Variables::output_mat_0]=0;
+    output[Variables::output_mat_1]=0;
+    output[Variables::output_mat_2]=0;
+
+*/
+
     return output;
     }
 

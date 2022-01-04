@@ -31,6 +31,7 @@ SET(Algorithms_ParticleInCell_SRCS
   GravitySimulationAlgo.cc
   ModuleShellAlgo.cc
   HelloWorldAlgo.cc
+  SortMatrixAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
@@ -38,6 +39,7 @@ SET(Algorithms_ParticleInCell_HEADERS
   GravitySimulationAlgo.h
   ModuleShellAlgo.h
   HelloWorldAlgo.h
+  SortMatrixAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell

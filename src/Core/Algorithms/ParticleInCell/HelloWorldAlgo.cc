@@ -26,12 +26,14 @@
 */
 
 #include<Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
+#include<Core/Datatypes/MatrixTypeConversions.h>
+//#include<Core/Math/MiscMath.h>
 #include <time.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;;
 
 HelloWorldAlgo::HelloWorldAlgo()
     {
@@ -40,7 +42,8 @@ HelloWorldAlgo::HelloWorldAlgo()
 
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     {
-    AlgorithmOutput output, output1, output2, output3;
+    AlgorithmOutput output;
+    MatrixHandle output_mat_0;                                  //here
 
     using namespace std;
 
@@ -49,6 +52,14 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     clock_t start = clock();
     printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
     std::cout<<output_txt<<std::endl;                 // print a message using std::cout
+
+//    double *data0 = output_mat_0->data();                      //here:
+//    DenseMatrixHandle return_matrix;
+
+//    output[Variables::OutputMatrix]=return_matrix;
+
+//    double *data=output->data();
+//    data0 = (double*)HW_pos_x;
 
     if(save)                                          // save a file to storage
         {
