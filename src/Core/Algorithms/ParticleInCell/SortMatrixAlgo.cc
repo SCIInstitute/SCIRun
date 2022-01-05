@@ -65,7 +65,7 @@ AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const
     }
 
 
-bool SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
+bool SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output, int method) const
     {
     if(!input)
         {

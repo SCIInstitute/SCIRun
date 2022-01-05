@@ -56,5 +56,7 @@ void HelloWorld::execute()
         setAlgoIntFromState(Variables::Method);
         AlgorithmInput input;
         auto output=algo().run(input);
+
+        sendOutputFromAlgorithm(x_coordinates,output);        //here
         }
     }

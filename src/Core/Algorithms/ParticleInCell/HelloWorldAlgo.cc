@@ -43,7 +43,8 @@ HelloWorldAlgo::HelloWorldAlgo()
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
-    MatrixHandle output_mat_0;                                  //here
+    DenseMatrixHandle output_mat_0;                   //here and the line below
+    DenseMatrixHandle &output_mat_0_ref = output_mat_0;
 
     using namespace std;
 
@@ -53,13 +54,8 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
     std::cout<<output_txt<<std::endl;                 // print a message using std::cout
 
-//    double *data0 = output_mat_0->data();                      //here:
-//    DenseMatrixHandle return_matrix;
-
-//    output[Variables::OutputMatrix]=return_matrix;
-
-//    double *data=output->data();
-//    data0 = (double*)HW_pos_x;
+    double *data0 = output_mat_0_ref->data();         //here and the line below
+    data0 = (double*)HW_pos_x;
 
     if(save)                                          // save a file to storage
         {
@@ -74,6 +70,8 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     printf("Program took %.3f seconds\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
 
 //    delete [] HW_pos_x;
+
+    output[Variables::OutputMatrix]=output_mat_0;
 
     return output;
     }
