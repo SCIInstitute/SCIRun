@@ -39,7 +39,7 @@ int iterations          = 420;
 int j                   = 0;
 float delta_t           = 0.01;
 const int num_particles = 10;
-const int buffer_size   = 10;                         //here - added to facilitate an initial output to SCIRun
+const int buffer_size   = 1;                         //here - added to facilitate an initial output to SCIRun
 //float alpha             = 0.3;
 
 float initial_vel_x     = 1.0;

@@ -105,12 +105,15 @@ using namespace std;
         out_y.open ("/home/kj/Simulation-output/pos_y.txt");
         out_z.open ("/home/kj/Simulation-output/pos_z.txt");
 */
+/*
+
         for(int i=0; i<num_particles; i++)
             {
             out_x << pos_x[i] <<"\n";
             out_y << pos_y[i] <<"\n";
             out_z << pos_z[i] <<"\n";
             }
+*/
         }
 
     for(j=1; j<iterations; j++)                       //main loop
@@ -144,13 +147,20 @@ using namespace std;
                 data2 = (double*)buffer_pos_z;
                 }
           
-            if(save)
+//            if(save)
+            if(save && j==buffer_size)
                 {
                 for(int i=0; i<num_particles; i++)
                     {
+/*
+
                     out_x << pos_x[i] <<"\n";
                     out_y << pos_y[i] <<"\n";
                     out_z << pos_z[i] <<"\n";
+*/
+                    out_x << buffer_pos_x[i] <<"\n";
+                    out_y << buffer_pos_y[i] <<"\n";
+                    out_z << buffer_pos_z[i] <<"\n";
                     }
                 }
             }
