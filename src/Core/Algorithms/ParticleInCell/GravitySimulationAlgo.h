@@ -2,11 +2,11 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 #define CORE_ALGORITHMS_ParticleInCell_GravitySimulationAlgo_H
 
-#include<Core/Datatypes/Matrix.h>
-#include<Core/Datatypes/DenseMatrix.h>
-#include<Core/Datatypes/DenseColumnMatrix.h>
+//#include<Core/Datatypes/Matrix.h>
+//#include<Core/Datatypes/DenseMatrix.h>
+//#include<Core/Datatypes/DenseColumnMatrix.h>
 
-#include<string>
+//#include<string>
 #include<sstream>
 #include<vector>
 #include<algorithm>

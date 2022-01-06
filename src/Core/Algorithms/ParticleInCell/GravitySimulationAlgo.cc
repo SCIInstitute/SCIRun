@@ -26,8 +26,9 @@
 */
 
 #include<Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
-#include<Core/Datatypes/MatrixTypeConversions.h>      //here
-#include<Core/Math/MiscMath.h>                        //here
+#include<Core/Datatypes/MatrixTypeConversions.h>
+#include <time.h>
+#include <chrono>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -55,8 +56,11 @@ void move_particles(int ID);
 
 AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
     {
-    AlgorithmOutput output;                           //here (set it back to just output), and add the line below. Note that output_mat_0, output_mat_1, and output_mat_2 do not have parenthesis
-    MatrixHandle output_mat_0, output_mat_1, output_mat_2;
+    AlgorithmOutput output;
+    DenseMatrixHandle output_mat_0, output_mat_1, output_mat_2;
+    DenseMatrixHandle &output_mat_0_ref = output_mat_0;
+    DenseMatrixHandle &output_mat_1_ref = output_mat_1;
+    DenseMatrixHandle &output_mat_2_ref = output_mat_2;
     
 
 /*
@@ -72,6 +76,8 @@ using namespace std;
     auto save = get(Variables::Method).toInt();       //pull parameter from UI
 
     clock_t start = clock();
+    auto start_wall = chrono::high_resolution_clock::now();
+
                                                       //Initialize thread block size and thread index
     int block_size    = num_particles/thread_count;
     int thread_modulo = num_particles%thread_count;
@@ -127,20 +133,15 @@ using namespace std;
         if(iterate_end == thread_count) j = iterations;
         else                                          //If at least one particle is still alive, continue processing the main loop
             {
-                                                      //here:
-            if(j==buffer_size)                        //Set up the output matrices
-
+                                                      //Set up the output matrices to contain the xyz position buffers
+            if(j==buffer_size)
                 {
-/*
-
-                double *data0 = output_mat_0->data();
-                double *data1 = output_mat_1->data();
-                double *data2 = output_mat_2->data();
-
+                double *data0 = output_mat_0_ref->data();
+                double *data1 = output_mat_1_ref->data();
+                double *data2 = output_mat_2_ref->data();
                 data0 = (double*)buffer_pos_x;
                 data1 = (double*)buffer_pos_y;
                 data2 = (double*)buffer_pos_z;
-*/
                 }
           
             if(save)
@@ -162,8 +163,16 @@ using namespace std;
         out_z.close();
         }
 
+    auto end_wall = chrono::high_resolution_clock::now();
+    chrono::duration<double> time_taken = end_wall - start_wall;
+    printf("Program took %.6f seconds Wall Clock time\n", time_taken.count());
+
     clock_t end = clock();
-    printf("Program took %.3f seconds\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
+    printf("Program took %.3f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
+
+    output[Variables::OutputMatrix]=output_mat_0;
+    output[Variables::OutputMatrix]=output_mat_1;
+    output[Variables::OutputMatrix]=output_mat_2;
 /*
 
     delete [] pos_x;
@@ -181,22 +190,7 @@ using namespace std;
     delete [] t_blk_size;
     delete [] t_index;
 */
-    output[Variables::OutputMatrix]=0;
-
-/*
-    output[Variables::OutputMatrix1]=output_mat_0;
-    output[Variables::OutputMatrix2]=output_mat_1;
-    output[Variables::OutputMatrix3]=output_mat_2;
-
-    output[Variables::OutputMatrix1]=0;
-    output[Variables::OutputMatrix2]=0;
-    output[Variables::OutputMatrix3]=0;
-
-    output[Variables::output_mat_0]=0;
-    output[Variables::output_mat_1]=0;
-    output[Variables::output_mat_2]=0;
-
-*/
+//    output[Variables::OutputMatrix]=0;
 
     return output;
     }

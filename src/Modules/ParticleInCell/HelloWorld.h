@@ -43,9 +43,10 @@ namespace Math{
                 HelloWorld();
                 virtual void execute();
                 virtual void setStateDefaults();
-                OUTPUT_PORT(0,x_coordinates, Matrix);
-                OUTPUT_PORT(1,y_coordinates, Matrix);
-                OUTPUT_PORT(2,z_coordinates, Matrix);
+
+                OUTPUT_PORT(0, x_coordinates, Matrix);
+                OUTPUT_PORT(1, y_coordinates, Matrix);
+                OUTPUT_PORT(2, z_coordinates, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };

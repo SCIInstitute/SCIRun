@@ -57,6 +57,8 @@ void HelloWorld::execute()
         AlgorithmInput input;
         auto output=algo().run(input);
 
-        sendOutputFromAlgorithm(x_coordinates,output);        //here
+        sendOutputFromAlgorithm(x_coordinates,output);          //here
+        sendOutputFromAlgorithm(y_coordinates,output);
+        sendOutputFromAlgorithm(z_coordinates,output);
         }
     }

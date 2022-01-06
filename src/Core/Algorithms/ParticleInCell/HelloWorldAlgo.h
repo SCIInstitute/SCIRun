@@ -13,7 +13,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+//#include <time.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -39,6 +39,8 @@ using namespace std;
 
 const int HW_num_particles = 10;
 auto HW_pos_x              = new float[HW_num_particles];
+auto HW_pos_y              = new float[HW_num_particles];
+auto HW_pos_z              = new float[HW_num_particles];
 
 
 /*
