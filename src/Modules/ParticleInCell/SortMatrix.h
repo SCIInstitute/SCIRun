@@ -31,23 +31,24 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/ParticleInCell/share.h>
 
-namespace SCIRun {
+namespace SCIRun  {
 namespace Modules {
-namespace Math {
+namespace Math    {
 
-class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<MatrixPortTag>,
-public Has1OutputPort<MatrixPortTag>
-{
-public:
-  SortMatrix();
-  virtual void execute();
-  virtual void setStateDefaults();
+    class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<MatrixPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+            {
+            public:
+                SortMatrix();
+                virtual void execute();
+                virtual void setStateDefaults();
 
-  INPUT_PORT(0, InputMatrix, Matrix);
-  OUTPUT_PORT(0, OutputMatrix, Matrix);
-  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
-//  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-};
+                INPUT_PORT(0, InputMatrix, Matrix);
+                OUTPUT_PORT(0, OutputMatrix, Matrix);
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
+//                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            };
 }}}
 #endif
+

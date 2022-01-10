@@ -25,7 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Modules/ParticleInCell/SortMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
@@ -59,3 +58,6 @@ void SortMatrix::execute()
         sendOutputFromAlgorithm(OutputMatrix, output);
         }
     }
+
+
+

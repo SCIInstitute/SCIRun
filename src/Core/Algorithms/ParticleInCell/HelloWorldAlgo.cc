@@ -43,10 +43,19 @@ HelloWorldAlgo::HelloWorldAlgo()
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
+    DenseMatrixHandle output_mat_0;
+/*
+
     DenseMatrixHandle output_mat_0, output_mat_1, output_mat_2;           //here and the lines below
     DenseMatrixHandle &output_mat_0_ref = output_mat_0;
     DenseMatrixHandle &output_mat_1_ref = output_mat_1;
     DenseMatrixHandle &output_mat_2_ref = output_mat_2;
+*/
+//    auto input_matrix=input.get<Matrix>(Variables::InputMatrix);          //add these 3 lines for simple output
+//    double pos_data[10] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+//    auto input_matrix=pos_data.get<Matrix>(Variables::InputMatrix);
+//    auto mat=castMatrix::toDense(input_matrix);
+//    DenseMatrixHandle return_matrix;
 
     using namespace std;
 
@@ -57,13 +66,16 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
 //    printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
 //    std::cout<<output_txt<<std::endl;                 // print a message using std::cout
 
-    double *data0 = output_mat_0_ref->data();                             //here and the lines below
+    for(int i=0; i<10; i++) HW_pos_x[i] = i*1.0;      //here
+/*
+
+    double *data0 = output_mat_0_ref->data();         //here and the lines below
     double *data1 = output_mat_1_ref->data();
     double *data2 = output_mat_2_ref->data();
     data0 = (double*)HW_pos_x;
     data1 = (double*)HW_pos_y;
     data2 = (double*)HW_pos_z;
-
+*/
     if(save)                                          // save a file to storage
         {
         ofstream myfile;
@@ -82,8 +94,12 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
 //    delete [] HW_pos_x;
 
     output[Variables::OutputMatrix]=output_mat_0;
-    output[Variables::OutputMatrix]=output_mat_1;
-    output[Variables::OutputMatrix]=output_mat_2;
+//    output[Variables::OutputMatrix]=output_mat_1;
+//    output[Variables::OutputMatrix]=output_mat_2;
+
+//    output[Variables::OutputMatrix]=output_mat_0_ref;                     //comment out these 3 lines for simple output
+//    return_matrix.reset(new DenseMatrix(*mat));
+//    output[Variables::OutputMatrix]=return_matrix;
 
     return output;
     }

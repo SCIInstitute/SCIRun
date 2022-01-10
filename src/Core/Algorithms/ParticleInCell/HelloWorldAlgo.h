@@ -19,9 +19,9 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/ParticleInCell/share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace SCIRun         {
+namespace Core           {
+namespace Algorithms     {
 namespace ParticleInCell {
 
     class SCISHARE HelloWorldAlgo : public AlgorithmBase

@@ -59,7 +59,10 @@ AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const
     //pull parameter from UI
     auto method=get(Variables::Method).toInt();
 
-    Sort(mat,return_matrix,method);
+//    Sort(mat,return_matrix,method);                 //commented out here
+
+    return_matrix.reset(new DenseMatrix(*mat));       //added here
+
     output[Variables::OutputMatrix]=return_matrix;
     return output;
     }

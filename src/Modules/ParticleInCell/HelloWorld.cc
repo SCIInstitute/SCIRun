@@ -39,7 +39,8 @@ MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
 
 HelloWorld::HelloWorld() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(x_coordinates);
+//    INITIALIZE_PORT(x_coordinates);
+    INITIALIZE_PORT(OutputMatrix);
     INITIALIZE_PORT(y_coordinates);
     INITIALIZE_PORT(z_coordinates);
     }
@@ -57,8 +58,9 @@ void HelloWorld::execute()
         AlgorithmInput input;
         auto output=algo().run(input);
 
-        sendOutputFromAlgorithm(x_coordinates,output);          //here
-        sendOutputFromAlgorithm(y_coordinates,output);
-        sendOutputFromAlgorithm(z_coordinates,output);
+//        sendOutputFromAlgorithm(x_coordinates,output);          //here
+        sendOutputFromAlgorithm(OutputMatrix, output);
+//        sendOutputFromAlgorithm(y_coordinates,output);
+//        sendOutputFromAlgorithm(z_coordinates,output);
         }
     }

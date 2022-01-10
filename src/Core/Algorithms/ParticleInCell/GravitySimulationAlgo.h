@@ -25,6 +25,9 @@ namespace ParticleInCell {
         public:
             GravitySimulationAlgo();
             AlgorithmOutput run(const AlgorithmInput& input) const;
+            static const AlgorithmOutputName x_coordinates;
+            static const AlgorithmOutputName y_coordinates;
+            static const AlgorithmOutputName z_coordinates;
         };
 
 /*

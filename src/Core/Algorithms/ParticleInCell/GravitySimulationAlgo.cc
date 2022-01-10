@@ -35,6 +35,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
+const AlgorithmOutputName GravitySimulationAlgo::x_coordinates("x_coordinates");
+const AlgorithmOutputName GravitySimulationAlgo::y_coordinates("y_coordinates");
+const AlgorithmOutputName GravitySimulationAlgo::z_coordinates("z_coordinates");
+
 GravitySimulationAlgo::GravitySimulationAlgo()
     {
     addParameter(Variables::Method,0);
@@ -179,10 +183,16 @@ using namespace std;
 
     clock_t end = clock();
     printf("Program took %.3f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
+/*
 
     output[Variables::OutputMatrix]=output_mat_0;
     output[Variables::OutputMatrix]=output_mat_1;
     output[Variables::OutputMatrix]=output_mat_2;
+*/
+    output[x_coordinates]=output_mat_0;
+    output[y_coordinates]=output_mat_1;
+    output[z_coordinates]=output_mat_2;
+
 /*
 
     delete [] pos_x;

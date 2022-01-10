@@ -44,7 +44,7 @@ namespace Math{
                 virtual void execute();
                 virtual void setStateDefaults();
 
-                OUTPUT_PORT(0, x_coordinates, Matrix);
+                OUTPUT_PORT(0, OutputMatrix, Matrix);
                 OUTPUT_PORT(1, y_coordinates, Matrix);
                 OUTPUT_PORT(2, z_coordinates, Matrix);
 
