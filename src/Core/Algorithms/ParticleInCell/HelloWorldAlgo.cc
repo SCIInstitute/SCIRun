@@ -33,73 +33,50 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
+
+const AlgorithmOutputName HelloWorldAlgo::x_coordinates("x_coordinates");
+const AlgorithmOutputName HelloWorldAlgo::y_coordinates("y_coordinates");
+const AlgorithmOutputName HelloWorldAlgo::z_coordinates("z_coordinates");
 
 HelloWorldAlgo::HelloWorldAlgo()
     {
     addParameter(Variables::Method,0);
     }
 
-AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
+AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
     {
     AlgorithmOutput output;
-    DenseMatrixHandle output_mat_0;
-/*
-
-    DenseMatrixHandle output_mat_0, output_mat_1, output_mat_2;           //here and the lines below
+    DenseMatrixHandle output_mat_0, output_mat_1, output_mat_2;
     DenseMatrixHandle &output_mat_0_ref = output_mat_0;
     DenseMatrixHandle &output_mat_1_ref = output_mat_1;
     DenseMatrixHandle &output_mat_2_ref = output_mat_2;
-*/
-//    auto input_matrix=input.get<Matrix>(Variables::InputMatrix);          //add these 3 lines for simple output
-//    double pos_data[10] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
-//    auto input_matrix=pos_data.get<Matrix>(Variables::InputMatrix);
-//    auto mat=castMatrix::toDense(input_matrix);
-//    DenseMatrixHandle return_matrix;
-
-    using namespace std;
-
-//    string output_txt  = "test1";
-    auto save = get(Variables::Method).toInt();       //pull parameter from UI
     clock_t start = clock();
+    DenseMatrixHandle return_matrix;                                      //
+    auto save = get(Variables::Method).toInt();                           //pull parameter from UI (used to show or not show the process time instrumentation output)
+
+    auto input_matrix=input.get<Matrix>(Variables::InputMatrix);          //Need to replace this definition of input_matrix
+
+    auto mat=castMatrix::toDense(input_matrix);                           //Modify or remove this as needed once input_matrix is defined
     auto start_wall = chrono::high_resolution_clock::now();
-//    printf("Debug 1: save is:  %d HW_num_particles is: %d\n", save, HW_num_particles);         // print save using printf
-//    std::cout<<output_txt<<std::endl;                 // print a message using std::cout
 
-    for(int i=0; i<10; i++) HW_pos_x[i] = i*1.0;      //here
-/*
+    for(int i=0; i<10; i++) HW_pos_x[i] = i*1.0;
 
-    double *data0 = output_mat_0_ref->data();         //here and the lines below
-    double *data1 = output_mat_1_ref->data();
-    double *data2 = output_mat_2_ref->data();
-    data0 = (double*)HW_pos_x;
-    data1 = (double*)HW_pos_y;
-    data2 = (double*)HW_pos_z;
-*/
-    if(save)                                          // save a file to storage
-        {
-        ofstream myfile;
-        myfile.open ("../../../Simulation-output/example.txt");
-        myfile << "Hello world\n";
-        myfile.close();
-        }
+    return_matrix.reset(new DenseMatrix(*mat));                           //Modify or remove this as needed once input_matrix is defined
+
+    output[x_coordinates]=return_matrix;
+//    output[y_coordinates]=output_mat_1;                                   //add this back when all 3 matricese are implemented
+//    output[z_coordinates]=output_mat_2;                                   //add this back when all 3 matricese are implemented
 
     auto end_wall = chrono::high_resolution_clock::now();
     chrono::duration<double> time_taken = end_wall - start_wall;
-    printf("Program took %.6f seconds Wall Clock time\n", time_taken.count());
-  
-    clock_t end = clock();
-    printf("Program took %.3f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
-
+    if(save)
+        {
+        printf("Program took %.6f seconds Wall Clock time\n", time_taken.count());
+        clock_t end = clock();
+        printf("Program took %.6f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
+        }
 //    delete [] HW_pos_x;
-
-    output[Variables::OutputMatrix]=output_mat_0;
-//    output[Variables::OutputMatrix]=output_mat_1;
-//    output[Variables::OutputMatrix]=output_mat_2;
-
-//    output[Variables::OutputMatrix]=output_mat_0_ref;                     //comment out these 3 lines for simple output
-//    return_matrix.reset(new DenseMatrix(*mat));
-//    output[Variables::OutputMatrix]=return_matrix;
 
     return output;
     }

@@ -29,6 +29,9 @@ namespace ParticleInCell {
         public:
             HelloWorldAlgo();
             AlgorithmOutput run(const AlgorithmInput& input) const;
+            static const AlgorithmOutputName x_coordinates;
+            static const AlgorithmOutputName y_coordinates;
+            static const AlgorithmOutputName z_coordinates;
         };
 
 /*
@@ -39,9 +42,6 @@ using namespace std;
 
 const int HW_num_particles = 10;
 auto HW_pos_x              = new float[HW_num_particles];
-auto HW_pos_y              = new float[HW_num_particles];
-auto HW_pos_z              = new float[HW_num_particles];
-
 
 /*
 ************************ End of global variables used by HelloWorld ************************

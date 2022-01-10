@@ -41,6 +41,8 @@ SortMatrix::SortMatrix() : Module(staticInfo_)
     {
     INITIALIZE_PORT(InputMatrix);
     INITIALIZE_PORT(OutputMatrix);
+
+
     }
 
 void SortMatrix::setStateDefaults()
@@ -58,6 +60,5 @@ void SortMatrix::execute()
         sendOutputFromAlgorithm(OutputMatrix, output);
         }
     }
-
 
 
