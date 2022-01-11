@@ -27,19 +27,19 @@
 
 
 SET(Algorithms_ParticleInCell_SRCS
-  ElectrostaticSimulationAlgo.cc
-  GravitySimulationAlgo.cc
+#  ElectrostaticSimulationAlgo.cc
+#  GravitySimulationAlgo.cc
   ModuleShellAlgo.cc
   HelloWorldAlgo.cc
-  SortMatrixAlgo.cc
+#  SortMatrixAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
-  ElectrostaticSimulationAlgo.h
-  GravitySimulationAlgo.h
+#  ElectrostaticSimulationAlgo.h
+#  GravitySimulationAlgo.h
   ModuleShellAlgo.h
   HelloWorldAlgo.h
-  SortMatrixAlgo.h
+#  SortMatrixAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell
