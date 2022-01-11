@@ -47,36 +47,41 @@ HelloWorldAlgo::HelloWorldAlgo()
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
     {
     AlgorithmOutput output;
-    DenseMatrixHandle output_mat_0, output_mat_1, output_mat_2;
-    DenseMatrixHandle &output_mat_0_ref = output_mat_0;
-    DenseMatrixHandle &output_mat_1_ref = output_mat_1;
-    DenseMatrixHandle &output_mat_2_ref = output_mat_2;
-    clock_t start = clock();
-    DenseMatrixHandle return_matrix;                                      //
-    auto save = get(Variables::Method).toInt();                           //pull parameter from UI (used to show or not show the process time instrumentation output)
-
-    auto input_matrix=input.get<Matrix>(Variables::InputMatrix);          //Need to replace this definition of input_matrix
-
-    auto mat=castMatrix::toDense(input_matrix);                           //Modify or remove this as needed once input_matrix is defined
+    DenseMatrixHandle output_mat_0;
+    DenseMatrixHandle output_mat_1;
+    DenseMatrixHandle output_mat_2;
+                            
+    clock_t start   = clock();                                  //Instrumentation
     auto start_wall = chrono::high_resolution_clock::now();
+    auto save       = get(Variables::Method).toInt();                     //save is used to show or not show the process time
 
     for(int i=0; i<10; i++) HW_pos_x[i] = i*1.0;
 
-    return_matrix.reset(new DenseMatrix(*mat));                           //Modify or remove this as needed once input_matrix is defined
+    auto input_matrix_0 = input.get<Matrix>(Variables::InputMatrix);      //Modify or remove these as needed once input_matrix is defined
+    auto input_matrix_1 = input.get<Matrix>(Variables::InputMatrix);
+    auto input_matrix_2 = input.get<Matrix>(Variables::InputMatrix);
 
-    output[x_coordinates]=return_matrix;
-//    output[y_coordinates]=output_mat_1;                                   //add this back when all 3 matricese are implemented
-//    output[z_coordinates]=output_mat_2;                                   //add this back when all 3 matricese are implemented
+    auto mat_0 = castMatrix::toDense(input_matrix_0);                     //Modify or remove these as needed once input_matrix is defined
+    auto mat_1 = castMatrix::toDense(input_matrix_1);
+    auto mat_2 = castMatrix::toDense(input_matrix_2);
 
-    auto end_wall = chrono::high_resolution_clock::now();
+    output_mat_0.reset(new DenseMatrix(*mat_0));                          //Modify or remove these as needed once input_matrix is defined
+    output_mat_1.reset(new DenseMatrix(*mat_1));
+    output_mat_2.reset(new DenseMatrix(*mat_2));
+
+    output[x_coordinates] = output_mat_0;                                 //Modify these - These assignments should be as simple as: output[x_coordinates] = HW_pos_x; etc.
+    output[y_coordinates] = output_mat_1;
+    output[z_coordinates] = output_mat_2;
+
+    auto end_wall = chrono::high_resolution_clock::now();       //Instrumentation
     chrono::duration<double> time_taken = end_wall - start_wall;
+    clock_t end   = clock();
     if(save)
         {
         printf("Program took %.6f seconds Wall Clock time\n", time_taken.count());
-        clock_t end = clock();
         printf("Program took %.6f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
         }
-//    delete [] HW_pos_x;
 
+//    delete [] HW_pos_x;
     return output;
     }
