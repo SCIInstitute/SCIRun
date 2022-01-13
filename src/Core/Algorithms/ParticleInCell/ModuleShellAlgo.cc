@@ -39,5 +39,8 @@ ModuleShellAlgo::ModuleShellAlgo()
 
 AlgorithmOutput ModuleShellAlgo::run(const AlgorithmInput& input) const
     {
-
+        auto input_matrix_0 = input.get<Matrix>(Variables::InputMatrix);
+        
+        AlgorithmOutput output;
+        return output;
     }
