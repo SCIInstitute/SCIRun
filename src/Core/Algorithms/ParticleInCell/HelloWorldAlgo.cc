@@ -47,9 +47,10 @@ HelloWorldAlgo::HelloWorldAlgo()
 AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
     {
     AlgorithmOutput output;
-    DenseMatrixHandle output_mat_0;
-    DenseMatrixHandle output_mat_1;
-    DenseMatrixHandle output_mat_2;
+    size_type x=10, y = 1;
+    DenseMatrixHandle output_mat_0(x,y);
+    DenseMatrixHandle output_mat_1(x,y);
+    DenseMatrixHandle output_mat_2(x,y);
                             
     clock_t start   = clock();                                  //Instrumentation
     auto start_wall = chrono::high_resolution_clock::now();
@@ -61,13 +62,25 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput& input) const
     auto input_matrix_1 = input.get<Matrix>(Variables::InputMatrix);
     auto input_matrix_2 = input.get<Matrix>(Variables::InputMatrix);
 
-    auto mat_0 = castMatrix::toDense(input_matrix_0);                     //Modify or remove these as needed once input_matrix is defined
-    auto mat_1 = castMatrix::toDense(input_matrix_1);
-    auto mat_2 = castMatrix::toDense(input_matrix_2);
+//    auto mat_0 = castMatrix::toDense(input_matrix_0);                     //Modify or remove these as needed once input_matrix is defined
+//    auto mat_1 = castMatrix::toDense(input_matrix_1);
+//    auto mat_2 = castMatrix::toDense(input_matrix_2);
 
-    output_mat_0.reset(new DenseMatrix(*mat_0));                          //Modify or remove these as needed once input_matrix is defined
-    output_mat_1.reset(new DenseMatrix(*mat_1));
-    output_mat_2.reset(new DenseMatrix(*mat_2));
+//    output_mat_0.reset(new DenseMatrix(*mat_0));                          //Modify or remove these as needed once input_matrix is defined
+//    output_mat_1.reset(new DenseMatrix(*mat_1));
+//    output_mat_2.reset(new DenseMatrix(*mat_2));
+        
+    double *data0=output_mat_0->data();
+    double *data1=output_mat_1->data();
+    double *data2=output_mat_2->data();
+    
+    std::copy(std::begin(HW_pos_x), std::end(HW_pos_x), std::begin(data0));
+    std::copy(std::begin(HW_pos_x), std::end(HW_pos_x), std::begin(data1));
+    std::copy(std::begin(HW_pos_x), std::end(HW_pos_x), std::begin(data2));
+//    data0 = HW_pos_x;
+//    data1 = HW_pos_x;
+//    data2 = HW_pos_x;
+//
 
     output[x_coordinates] = output_mat_0;                                 //Modify these - These assignments should be as simple as: output[x_coordinates] = HW_pos_x; etc.
     output[y_coordinates] = output_mat_1;

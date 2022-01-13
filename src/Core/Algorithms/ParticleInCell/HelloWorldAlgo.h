@@ -41,7 +41,7 @@ namespace ParticleInCell {
 using namespace std;
 
 const int HW_num_particles = 10;
-auto HW_pos_x              = new float[HW_num_particles];
+auto HW_pos_x              = new double[HW_num_particles];
 
 /*
 ************************ End of global variables used by HelloWorld ************************
