@@ -36,7 +36,7 @@ namespace Modules {
 namespace Math    {
 
     class SCISHARE HelloWorld : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<MatrixPortTag>,
+        public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
@@ -44,7 +44,6 @@ namespace Math    {
                 virtual void execute();
                 virtual void setStateDefaults();
 
-                INPUT_PORT(0, InputMatrix, Matrix);
                 OUTPUT_PORT(0, x_coordinates, Matrix);
                 OUTPUT_PORT(1, y_coordinates, Matrix);
                 OUTPUT_PORT(2, z_coordinates, Matrix);
