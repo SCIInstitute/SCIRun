@@ -59,11 +59,11 @@ AlgorithmOutput HelloWorldAlgo::run(const AlgorithmInput&) const
     auto save       = get(Variables::Method).toInt();                     //save is used to show or not show the process time
 
     for(int i=0; i<10; i++) HW_pos_x[i] = i*1.0;
-printf("Debug1\n");
+
     double *data0=output_mat_0->data();               //these 3 lines compile but crash SCIRun during execution
     double *data1=output_mat_1->data();
     double *data2=output_mat_2->data();
-printf("Debug2\n");
+
     std::copy(HW_pos_x, HW_pos_x+10, data0);
     std::copy(HW_pos_x, HW_pos_x+10, data1);
     std::copy(HW_pos_x, HW_pos_x+10, data2);
