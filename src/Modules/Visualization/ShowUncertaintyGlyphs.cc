@@ -35,6 +35,7 @@ using namespace Core::Datatypes;
 using namespace Modules::Visualization;
 using namespace Core::Algorithms;
 using namespace Core::Algorithms::Visualization;
+using namespace Core::Algorithms::UncertaintyGlyphs;
 
 MODULE_INFO_DEF(ShowUncertaintyGlyphs, Visualization, SCIRun);
 
@@ -50,36 +51,44 @@ ShowUncertaintyGlyphs::ShowUncertaintyGlyphs() : GeometryGeneratingModule(static
 
 void ShowUncertaintyGlyphs::setStateDefaults()
 {
-  auto state = get_state();
+  setStateBoolFromAlgo(Parameters::ShowTensors);
+  setStateDoubleFromAlgo(Parameters::TensorsResolution);
+  // setStateDoubleFromAlgo(Parameters::TensorsUniformTransparency);
+  // setStateDoubleFromAlgo(Parameters::SuperquadricEmphasis);
+  // setStateDoubleFromAlgo(Parameters::TensorsScale);
 }
 
 void ShowUncertaintyGlyphs::execute()
 {
+  std::cout << "SUG exec\n";
   auto mean = getRequiredInput(InputField);
   auto covariance = getRequiredInput(InputMatrix);
 
+  setAlgoBoolFromState(Parameters::ShowTensors);
   if(needToExecute())
   {
+    std::cout << "SUG need to exec\n";
     auto algorithm = ShowUncertaintyGlyphsAlgorithm();
     AlgorithmInput input = withInputData((InputField, mean)(InputMatrix, covariance));
     // AlgorithmInput input = withInputData((MeanTensorField, mean));
+    std::cout << "SUG input received\n";
     auto output = algorithm.run(*this, input);
+    std::cout << "SUG output received\n";
     sendOutputFromAlgorithm(OutputGeom, output);
+    std::cout << "SUG output sent\n";
   }
 }
 
 }}}
 
 const AlgorithmParameterName ShowUncertaintyGlyphs::ShowTensorTab("ShowTensorTab");
-const AlgorithmParameterName ShowUncertaintyGlyphs::ShowTensors("ShowTensors");
+// const AlgorithmParameterName ShowUncertaintyGlyphs::ShowTensors("ShowTensors");
 // const AlgorithmParameterName ShowFieldGlyphs::TensorsDisplayType("TensorsDisplayType");
-const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsColoring("TensorsColoring");
-const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsColoringDataInput("TensorsColoringDataInput");
+// const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsColoring("TensorsColoring");
+// const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsColoringDataInput("TensorsColoringDataInput");
 const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsTransparency("TensorsTransparency");
 const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsUniformTransparencyValue("TensorsUniformTransparencyValue");
 const AlgorithmParameterName ShowUncertaintyGlyphs::SuperquadricEmphasis("SuperquadricEmphasis");
-const AlgorithmParameterName ShowUncertaintyGlyphs::NormalizeTensors("NormalizeTensors");
+// const AlgorithmParameterName ShowUncertaintyGlyphs::NormalizeTensors("NormalizeTensors");
 const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsScale("TensorsScale");
-const AlgorithmParameterName ShowUncertaintyGlyphs::RenderTensorsBelowThreshold("RenderTensorsBelowThreshold");
-const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsThreshold("TensorsThreshold");
 const AlgorithmParameterName ShowUncertaintyGlyphs::TensorsResolution("TensorsResolution");

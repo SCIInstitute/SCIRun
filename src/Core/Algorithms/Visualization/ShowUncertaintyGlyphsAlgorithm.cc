@@ -53,6 +53,13 @@ using namespace Core::Datatypes;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace Core::Algorithms::Visualization;
+using namespace UncertaintyGlyphs;
+
+ALGORITHM_PARAMETER_DEF(UncertaintyGlyphs, TensorsResolution);
+ALGORITHM_PARAMETER_DEF(UncertaintyGlyphs, ShowTensors);
+// ALGORITHM_PARAMETER_DEF(UncertaintyGlyphs, TensorsUniformTransparency);
+// ALGORITHM_PARAMETER_DEF(UncertaintyGlyphs, SuperquadricEmphasis);
+// ALGORITHM_PARAMETER_DEF(UncertaintyGlyphs, TensorsScale);
 
 using GGU = GlyphGeomUtility;
 
@@ -95,7 +102,14 @@ class ShowUncertaintyGlyphsImpl
   int resolution_ = 100;
 };
 
-ShowUncertaintyGlyphsAlgorithm::ShowUncertaintyGlyphsAlgorithm() {}
+ShowUncertaintyGlyphsAlgorithm::ShowUncertaintyGlyphsAlgorithm()
+{
+  addParameter(Parameters::ShowTensors, true);
+  addParameter(Parameters::TensorsResolution, 50);
+  // addParameter(Parameters::TensorsUniformTransparency, 0.65);
+  // addParameter(Parameters::SuperquadricEmphasis, 3.0);
+  // addParameter(Parameters::TensorsScale, 1.0);
+}
 
 ShowUncertaintyGlyphsImpl::ShowUncertaintyGlyphsImpl()
 {
@@ -243,6 +257,13 @@ void ShowUncertaintyGlyphsImpl::getPointsForField(
 AlgorithmOutput ShowUncertaintyGlyphsAlgorithm::run(
     const GeometryIDGenerator& idGen, const AlgorithmInput& input) const
 {
+  std::cout << "show tensors bool: " << get(Parameters::ShowTensors).toBool() << "\n";
+  if (!get(Parameters::ShowTensors).toBool())
+  {
+    AlgorithmOutput output;
+    return output;
+  }
+
   auto mean = input.get<Field>(Variables::InputField);
   auto covariance = input.get<Matrix>(Variables::InputMatrix);
 

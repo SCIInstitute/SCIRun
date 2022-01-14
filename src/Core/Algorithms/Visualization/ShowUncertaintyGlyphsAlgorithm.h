@@ -36,6 +36,15 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
+namespace UncertaintyGlyphs
+{
+  ALGORITHM_PARAMETER_DECL(ShowTensors);
+  ALGORITHM_PARAMETER_DECL(TensorsResolution);
+// ALGORITHM_PARAMETER_DECL(TensorsUniformTransparency);
+// ALGORITHM_PARAMETER_DECL(SuperquadricEmphasis);
+// ALGORITHM_PARAMETER_DECL(TensorsScale);
+}
+
 namespace Visualization {
   class SCISHARE ShowUncertaintyGlyphsAlgorithm : public AlgorithmBase
   {

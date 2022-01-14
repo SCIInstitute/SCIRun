@@ -54,7 +54,7 @@ namespace Visualization {
     static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
     // Tensor Controls
     static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
-    static const Core::Algorithms::AlgorithmParameterName ShowTensors;
+    // static const Core::Algorithms::AlgorithmParameterName ShowTensors;
     static const Core::Algorithms::AlgorithmParameterName TensorsColoring;
     static const Core::Algorithms::AlgorithmParameterName TensorsColoringDataInput;
     static const Core::Algorithms::AlgorithmParameterName TensorsTransparency;
