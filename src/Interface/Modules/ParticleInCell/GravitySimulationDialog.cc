@@ -25,25 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ParticleInCell_HelloWorldDialog_H
-#define INTERFACE_MODULES_ParticleInCell_HelloWorldDialog_H
 
-#include <Interface/Modules/ParticleInCell/ui_HelloWorldDialog.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/ParticleInCell/GravitySimulationDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-namespace SCIRun {
-namespace Gui {
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-class SCISHARE HelloWorldDialog : public ModuleDialogGeneric,
-  public Ui::HelloWorldDialog
-      {
-	  Q_OBJECT
-
-      public:
-          HelloWorldDialog(const std::string& name,
-            SCIRun::Dataflow::Networks::ModuleStateHandle state,
-            QWidget* parent = nullptr);
-      };
-}}
-#endif
+GravitySimulationDialog::GravitySimulationDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
+    {
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    addRadioButtonGroupManager({dontsaveButton_ ,saveButton_}, Variables::Method);
+    }

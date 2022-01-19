@@ -25,40 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/HelloWorld.h>
-#include <Core/Datatypes/Matrix.h>
+#ifndef MODULES_PARTICLEINCELL_GravitySimulation_H
+#define MODULES_PARTICLEINCELL_GravitySimulation_H
+
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/HelloWorldAlgo.h>
+#include <Modules/ParticleInCell/share.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
+namespace SCIRun  {
+namespace Modules {
+namespace Math    {
 
-MODULE_INFO_DEF(HelloWorld,ParticleInCell,SCIRun);
+    class SCISHARE GravitySimulation : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+            {
+            public:
+                GravitySimulation();
+                virtual void execute();
+                virtual void setStateDefaults();
 
-HelloWorld::HelloWorld() : Module(staticInfo_)
-    {
-    INITIALIZE_PORT(x_coordinates);
-    INITIALIZE_PORT(y_coordinates);
-    INITIALIZE_PORT(z_coordinates);
-    }
+                OUTPUT_PORT(0, x_coordinates, Matrix);
+                OUTPUT_PORT(1, y_coordinates, Matrix);
+                OUTPUT_PORT(2, z_coordinates, Matrix);
 
-void HelloWorld::setStateDefaults()
-    {
-    setStateIntFromAlgo(Variables::Method);
-    }
-
-void HelloWorld::execute()
-    {
-    if (needToExecute())
-        {
-        setAlgoIntFromState(Variables::Method);
-        AlgorithmInput input;
-        auto output=algo().run(input);
-
-        sendOutputFromAlgorithm(x_coordinates,output);
-        sendOutputFromAlgorithm(y_coordinates,output);
-        sendOutputFromAlgorithm(z_coordinates,output);
-        }
-    }
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            };
+}}}
+#endif

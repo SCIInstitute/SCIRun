@@ -28,17 +28,17 @@
 
 SET(Algorithms_ParticleInCell_SRCS
 #  ElectrostaticSimulationAlgo.cc
-#  GravitySimulationAlgo.cc
+  GravitySimulationAlgo.cc
   ModuleShellAlgo.cc
-  HelloWorldAlgo.cc
+#  HelloWorldAlgo.cc
 #  SortMatrixAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
 #  ElectrostaticSimulationAlgo.h
-#  GravitySimulationAlgo.h
+  GravitySimulationAlgo.h
   ModuleShellAlgo.h
-  HelloWorldAlgo.h
+#  HelloWorldAlgo.h
 #  SortMatrixAlgo.h
 )
 

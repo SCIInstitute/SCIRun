@@ -25,30 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_HelloWorld_H
-#define MODULES_PARTICLEINCELL_HelloWorld_H
+#ifndef INTERFACE_MODULES_ParticleInCell_GravitySimulationDialog_H
+#define INTERFACE_MODULES_ParticleInCell_GravitySimulationDialog_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+#include <Interface/Modules/ParticleInCell/ui_GravitySimulationDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-namespace SCIRun  {
-namespace Modules {
-namespace Math    {
+namespace SCIRun {
+namespace Gui {
 
-    class SCISHARE HelloWorld : public SCIRun::Dataflow::Networks::Module,
-        public HasNoInputPorts,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-            {
-            public:
-                HelloWorld();
-                virtual void execute();
-                virtual void setStateDefaults();
+class SCISHARE GravitySimulationDialog : public ModuleDialogGeneric,
+  public Ui::GravitySimulationDialog
+      {
+	  Q_OBJECT
 
-                OUTPUT_PORT(0, x_coordinates, Matrix);
-                OUTPUT_PORT(1, y_coordinates, Matrix);
-                OUTPUT_PORT(2, z_coordinates, Matrix);
-
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-            };
-}}}
+      public:
+          GravitySimulationDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+      };
+}}
 #endif
