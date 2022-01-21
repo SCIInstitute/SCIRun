@@ -48,12 +48,12 @@ std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget
 
   GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addSphere(params.point, params.common.scale, params.common.resolution, node_color);
+  glyphs.addSphere(params.point, params.common.scale, params.common.resolution, node_color, false, 0.0);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
 
   return name;
 }
@@ -72,12 +72,12 @@ std::string RealGlyphFactory::superquadric(SuperquadricParameters params, Widget
   GlyphGeom glyphs;
   ColorRGB node_color;
   glyphs.addSuperquadricSurface(params.point, params.tensor, params.common.scale,
-                                params.common.resolution, node_color, params.A, params.B);
+                                params.common.resolution, node_color, params.A, params.B, false, 0.0);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
 
   return name;
 }
@@ -119,12 +119,13 @@ std::string RealGlyphFactory::disk(DiskParameters params, WidgetBase& widget) co
 
   GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addDisk(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
+  glyphs.addDisk(params.p1, params.p2, params.common.scale, params.common.resolution,
+                 node_color, node_color, false, 0.0);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
   return name;
 }
 
@@ -141,12 +142,13 @@ std::string RealGlyphFactory::cylinder(CylinderParameters params, WidgetBase& wi
 
   GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addCylinder(params.p1, params.p2, params.common.scale, params.common.resolution, node_color, node_color);
+  glyphs.addCylinder(params.p1, params.p2, params.common.scale, params.common.resolution,
+                     node_color, node_color, false, 0.0);
 
   auto renState = getSphereRenderState(params.common.defaultColor);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
 
   return name;
 }
@@ -164,12 +166,13 @@ std::string RealGlyphFactory::cone(ConeParameters params, WidgetBase& widget) co
 
   GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addCone(params.cylinder.p1, params.cylinder.p2, params.cylinder.common.scale, params.cylinder.common.resolution, params.renderBase, node_color, node_color);
+  glyphs.addCone(params.cylinder.p1, params.cylinder.p2, params.cylinder.common.scale,
+                 params.cylinder.common.resolution, params.renderBase, node_color, node_color, false, 0.0);
 
   auto renState = getSphereRenderState(params.cylinder.common.defaultColor);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.cylinder.common.bbox);
+    colorScheme, renState, params.cylinder.common.bbox);
 
   return name;
 }
@@ -206,12 +209,13 @@ std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, Widget
   //generate triangles for the cylinders.
   for (auto edge = 0; edge < 24; edge += 2)
   {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.common.scale, num_strips, ColorRGB(), ColorRGB());
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]],
+                       params.common.scale, num_strips, ColorRGB(), ColorRGB(), false, 0.0);
   }
   //generate triangles for the spheres
   for (const auto& a : points)
   {
-    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0));
+    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0), false, 0.0);
   }
 
   std::stringstream ss;
@@ -231,7 +235,7 @@ std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, Widget
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
 
   return name;
 }
@@ -266,12 +270,13 @@ std::string RealGlyphFactory::box(BoundingBoxParameters params, WidgetBase& widg
   //generate triangles for the cylinders.
   for (auto edge = 0; edge < 24; edge += 2)
   {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], params.common.scale, num_strips, ColorRGB(), ColorRGB());
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]],
+                       params.common.scale, num_strips, ColorRGB(), ColorRGB(), false, 0.0);
   }
   //generate triangles for the spheres
   for (const auto& a : points)
   {
-    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0));
+    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0), false, 0.0);
   }
 
   std::stringstream ss;
@@ -291,7 +296,7 @@ std::string RealGlyphFactory::box(BoundingBoxParameters params, WidgetBase& widg
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, params.common.bbox);
+    colorScheme, renState, params.common.bbox);
 
   return name;
 }
