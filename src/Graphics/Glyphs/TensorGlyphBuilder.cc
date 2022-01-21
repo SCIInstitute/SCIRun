@@ -48,6 +48,16 @@ void TensorGlyphBuilder::scaleTensor(double scale)
   t_ = t_ * scale;
 }
 
+void TensorGlyphBuilder::setShowNormals(bool showNormals)
+{
+  showNormals_ = showNormals;
+}
+
+void TensorGlyphBuilder::setShowNormalsScale(double scale)
+{
+  normalDebugScale_ = scale * t_.frobeniusNorm();
+}
+
 void TensorGlyphBuilder::normalizeTensor()
 {
   t_.normalize();
@@ -130,6 +140,7 @@ void TensorGlyphBuilder::postScaleTransorms()
 
 void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool half)
 {
+  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   computeTransforms();
   postScaleTransorms();
   computeSinCosTable(half);
@@ -152,7 +163,7 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
       double cosTheta = tab1_.cos(u);
 
       // Transorm points and add to points list
-      constructor.setOffset();
+      constructor.setOffset(prim);
       for (int i = 0; i < 2; ++i)
       {
         Point point = evaluateEllipsoidPoint(sinPhi[i], cosPhi[i], sinTheta, cosTheta);
@@ -171,13 +182,15 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
           normal.safe_normalize();
         }
 
-        constructor.addVertex(pVector, normal, color_);
+        constructor.addVertex(prim, pVector, normal, color_);
+        if (showNormals_)
+          constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
       }
 
-      constructor.addIndicesToOffset(0, 1, 2);
-      constructor.addIndicesToOffset(2, 1, 3);
+      constructor.addIndicesToOffset(prim, 0, 1, 2);
+      constructor.addIndicesToOffset(prim, 2, 1, 3);
     }
-    constructor.popIndicesNTimes(6);
+    constructor.popIndicesNTimes(prim, 6);
   }
 }
 
@@ -220,6 +233,7 @@ void TensorGlyphBuilder::generateSuperquadricSurface(GlyphConstructor& construct
 
 void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B)
 {
+  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   double cl = t_.linearCertainty();
   double cp = t_.planarCertainty();
   bool linear = cl >= cp;
@@ -236,7 +250,7 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
 
     for (int u = 0; u < nu_; ++u)
     {
-      constructor.setOffset();
+      constructor.setOffset(prim);
       double sinTheta = tab1_.sin(u);
       double cosTheta = tab1_.cos(u);
 
@@ -261,14 +275,16 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
           normal.safe_normalize();
         }
 
-        constructor.addVertex(pVector, normal, color_);
+        constructor.addVertex(prim, pVector, normal, color_);
+        if (showNormals_)
+          constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
       }
 
-      constructor.addIndicesToOffset(0, 1, 2);
-      constructor.addIndicesToOffset(2, 1, 3);
+      constructor.addIndicesToOffset(prim, 0, 1, 2);
+      constructor.addIndicesToOffset(prim, 2, 1, 3);
     }
   }
-  constructor.popIndicesNTimes(6);
+  constructor.popIndicesNTimes(prim, 6);
 }
 
 Point TensorGlyphBuilder::evaluateSuperquadricNormal(bool linear, double sinPhi, double cosPhi,
@@ -360,13 +376,17 @@ void TensorGlyphBuilder::generateBox(GlyphConstructor& constructor)
 void TensorGlyphBuilder::generateBoxSide(GlyphConstructor& constructor, const Vector& p1, const Vector& p2, const Vector& p3,
                                          const Vector& p4, const Vector& normal)
 {
-  constructor.setOffset();
-  constructor.addVertex(p1, normal, color_);
-  constructor.addVertex(p2, normal, color_);
-  constructor.addVertex(p3, normal, color_);
-  constructor.addVertex(p4, normal, color_);
-  constructor.addIndicesToOffset(2, 0, 3);
-  constructor.addIndicesToOffset(1, 3, 0);
+  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
+  constructor.setOffset(prim);
+  constructor.addVertex(prim, p1, normal, color_);
+  constructor.addVertex(prim, p2, normal, color_);
+  constructor.addVertex(prim, p3, normal, color_);
+  constructor.addVertex(prim, p4, normal, color_);
+  constructor.addIndicesToOffset(prim, 2, 0, 3);
+  constructor.addIndicesToOffset(prim, 1, 3, 0);
+  if (showNormals_)
+    for (auto& p : {p1, p2, p3, p4})
+      constructor.addLine(p, p + normalDebugScale_ * normal, color_, color_);
 }
 
 std::vector<Vector> TensorGlyphBuilder::generateBoxPoints()

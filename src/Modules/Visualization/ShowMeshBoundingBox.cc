@@ -154,7 +154,7 @@ GeometryHandle ShowMeshBoundingBoxImpl::makeGeometry(const GeometryIDGenerator& 
 
   auto geom(makeShared<GeometryObjectSpire>(idGen, "ShowMeshBoundingBox", true));
   glyphs.buildObject(*geom, geom->uniqueID(), false, 1.0, ColorScheme::COLOR_IN_SITU,
-                     getRenderState(), SpireIBO::PRIMITIVE::LINES, bbox_, true, nullptr);
+                     getRenderState(), bbox_, true, nullptr);
   return geom;
 }
 
