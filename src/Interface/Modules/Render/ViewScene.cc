@@ -2145,7 +2145,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
   auto geom(makeShared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
+    colorScheme, renState, BBox(Point{}, Point{}), false, nullptr);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -2160,7 +2160,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(makeShared<GeometryObjectSpire>(*impl_->gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
+    colorScheme, renState, BBox(Point{}, Point{}), false, nullptr);
 
   impl_->clippingPlaneGeoms_.push_back(geom);
   impl_->clippingPlaneGeoms_.push_back(geom2);
