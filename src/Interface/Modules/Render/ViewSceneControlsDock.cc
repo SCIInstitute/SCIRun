@@ -587,6 +587,21 @@ void OrientationAxesControls::toggleButton()
   updateToolbarButton("lightGray");
 }
 
+ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
+  : QWidget(parent)
+{
+  setupUi(this);
+  connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotClicked()));
+  connect(screenshotPathButton_, SIGNAL(clicked()), parent, SLOT(setScreenshotDirectory()));
+  defaultPathEdit_->setText(parent->getScreenshotDirectory());
+
+}
+
+void ScreenshotControls::setScreenshotDirectory(const QString& dir)
+{
+  defaultPathEdit_->setText(dir);
+}
+
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
 {

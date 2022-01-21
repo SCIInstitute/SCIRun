@@ -187,6 +187,8 @@ namespace SCIRun {
       void screenshotClicked();
       void quickScreenshot(bool prompt);
       void quickScreenshotClicked() { quickScreenshot(true); }
+      QString getScreenshotDirectory();
+      void setScreenshotDirectory();
       void saveNewGeometryChanged(int state);
 
 
@@ -223,7 +225,6 @@ namespace SCIRun {
       void setupMaterials();
       void addAutoViewButton();
       void addScreenshotButton();
-      void addQuickScreenshotButton();
       void addViewBarButton();
       void addControlLockButton();
       void addAutoRotateButton();
@@ -293,6 +294,7 @@ namespace SCIRun {
       friend class MaterialsControls;
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
+      friend class ScreenshotControls;
       friend class ScaleBarControls;
       friend class LightControls;
       friend class ClippingPlaneControls;

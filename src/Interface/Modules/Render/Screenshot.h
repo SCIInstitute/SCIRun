@@ -53,12 +53,14 @@ namespace SCIRun
       QString screenshotFileFromPreferences() const;
       QString screenshotFile() const;
       Modules::Render::RGBMatrices toMatrix() const;
-      static QString screenshotDirectory();
+      QString screenshotDirectory();
+      void setDirectory(QString dir);
 
     private:
       QOpenGLWidget* viewport_;
       QImage screenshot_;
       uint index_;
+      QString directory_;
     };
   }
 }

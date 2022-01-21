@@ -41,25 +41,29 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   viewport_(glwidget),
   index_(0)
 {
+  directory_ = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
+
+  if (directory_.isEmpty())
+  {
+    directory_ = QDir::homePath() + QLatin1String("/scirun5screenshots");
+
+    QDir dir(directory_);
+    if (!dir.exists())
+    {
+      dir.mkpath(directory_);
+    }
+  }
+}
+
+void Screenshot::setDirectory(QString dir)
+{
+  directory_ = dir;
 }
 
 QString Screenshot::screenshotDirectory()
 {
   // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-  QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
-
-  if (filePath.isEmpty())
-  {
-    filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-
-    QDir dir(filePath);
-    if (!dir.exists())
-    {
-      dir.mkpath(filePath);
-    }
-  }
-
-  return filePath;
+  return directory_;
 }
 
 void Screenshot::takeScreenshot()
@@ -111,12 +115,12 @@ void Screenshot::saveScreenshotFromPath(bool prompt)
 
 QString Screenshot::screenshotFileFromPreferences() const
 {
-  return screenshotDirectory() + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+  return directory_ + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
 
 QString Screenshot::screenshotFile() const
 {
-  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
+  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", directory_, "*.png");
 }
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const
