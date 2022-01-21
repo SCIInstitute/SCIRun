@@ -56,7 +56,7 @@ public:
 
 inline double GlyphGeomUtility::spow(double e, double x)
 {
-  const auto EPSILON = 1.0e-6;
+  static const auto EPSILON = 1.0e-6;
   // This for round off of very small numbers.
   if (std::abs(e) < EPSILON)
     e = 0.0;
