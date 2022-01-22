@@ -306,17 +306,18 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
 
-  auto min = -cmap->getColorMapRescaleShift();
+  min_ = -cmap->getColorMapRescaleShift();
   auto range = (1.0/cmap->getColorMapRescaleScale());
-  auto v = min;
+  max_ = min_ + range;
+  auto v = min_;
   auto inc = range/colorData->size();
   for (int i = 0; i <= colorData->size(); ++i)
   {
     auto color = cmap->valueToColor(v);
-    colorList.push_back(color.r());
-    colorList.push_back(color.g());
-    colorList.push_back(color.b());
-    opacityList.push_back(color.a());
+    colorList_.push_back(color.r());
+    colorList_.push_back(color.g());
+    colorList_.push_back(color.b());
+    opacityList_.push_back(color.a());
     v += inc;
   }
 }

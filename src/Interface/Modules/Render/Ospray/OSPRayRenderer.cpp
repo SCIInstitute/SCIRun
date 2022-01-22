@@ -233,21 +233,21 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
   ospRelease(material);
 }
 
-void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tnf)
+void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tfn)
 {
-  size_t numColors = tnf.colors.size()/3;
-  OSPData colorDataTemp = ospNewSharedData(tnf.colors.data(), OSP_VEC3F, numColors);
+  size_t numColors = tfn.colors.size()/3;
+  OSPData colorDataTemp = ospNewSharedData(tfn.colors.data(), OSP_VEC3F, numColors);
   OSPData colorData = ospNewData(OSP_VEC3F, numColors);
   ospCopyData(colorDataTemp, colorData);
   ospRelease(colorDataTemp);
 
-  OSPData opacityDataTemp = ospNewSharedData(tnf.opacities.data(), OSP_FLOAT, tnf.opacities.size());
-  OSPData opacityData = ospNewData(OSP_FLOAT, tnf.opacities.size());
+  OSPData opacityDataTemp = ospNewSharedData(tfn.opacities.data(), OSP_FLOAT, tfn.opacities.size());
+  OSPData opacityData = ospNewData(OSP_FLOAT, tfn.opacities.size());
   ospCopyData(opacityDataTemp, opacityData);
   ospRelease(opacityDataTemp);
 
   OSPTransferFunction transferFunction = ospNewTransferFunction("piecewiseLinear");
-  ospSetParam(transferFunction, "valueRange", OSP_VEC2F, tnf.range.data());
+  ospSetParam(transferFunction, "valueRange", OSP_VEC2F, tfn.range.data());
   ospSetParam(transferFunction, "color", OSP_DATA, &colorData);
   ospSetParam(transferFunction, "opacity", OSP_DATA, &opacityData);
   ospCommit(transferFunction);
