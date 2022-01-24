@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "ElectroStatic",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "Electrostatic Particle In Cell simulation module",
+    "header": "Modules/ParticleInCell/ElectroStatic.h"
+     },
+
+"algorithm":
+    {
+    "name": "ElectroStaticAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "ElectroStaticDialog",
+    "header": "Interface/Modules/ParticleInCell/ElectroStaticDialog.h"
+    }
+}

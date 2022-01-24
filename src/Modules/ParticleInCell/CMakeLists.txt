@@ -27,8 +27,8 @@
 
 
 SET(Modules_ParticleInCell_SRCS
-#  ElectrostaticSimulation.cc
-  GravitySimulation.cc
+  ElectroStatic.cc
+#  GravitySimulation.cc
   ModuleShell.cc
 #  HelloWorld.cc
 #  SortMatrix.cc
@@ -36,8 +36,8 @@ SET(Modules_ParticleInCell_SRCS
 
 SET(Modules_ParticleInCell_HEADERS
   share.h
-#  ElectrostaticSimulation.h
-  GravitySimulation.h
+  ElectroStatic.h
+#  GravitySimulation.h
   ModuleShell.h
 #  HelloWorld.h
 #  SortMatrix.h

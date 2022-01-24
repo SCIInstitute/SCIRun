@@ -27,21 +27,24 @@
 
 
 SET(Interface_Modules_ParticleInCell_FORMS
+  ElectroStaticDialog.ui
 #  HelloWorldDialog.ui
-  GravitySimulationDialog.ui
+#  GravitySimulationDialog.ui
 #  SortMatrixDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
-  share.h
+  ElectroStaticDialog.h
 #  HelloWorldDialog.h
-  GravitySimulationDialog.h
+#  GravitySimulationDialog.h
 #  SortMatrixDialog.h
+  share.h
 )
 
 SET(Interface_Modules_ParticleInCell_SOURCES
+  ElectroStaticDialog.cc
 #  HelloWorldDialog.cc
-  GravitySimulationDialog.cc
+#  GravitySimulationDialog.cc
 #  SortMatrixDialog.cc
 )
 

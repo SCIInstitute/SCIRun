@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GravitySimulationDialog</class>
- <widget class="QDialog" name="GravitySimulationDialog">
+ <class>ElectroStaticDialog</class>
+ <widget class="QDialog" name="ElectroStaticDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -36,16 +36,16 @@
        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
       </property>
       <item row="3" column="0">
-       <widget class="QRadioButton" name="dontsaveButton_">
+       <widget class="QRadioButton" name="dontprinttimesButton_">
         <property name="text">
-         <string>don't save data</string>
+         <string>don't print times</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QRadioButton" name="saveButton_">
+       <widget class="QRadioButton" name="printtimesButton_">
         <property name="text">
-         <string>save data</string>
+         <string>print times</string>
         </property>
        </widget>
       </item>

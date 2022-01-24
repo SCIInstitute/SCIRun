@@ -26,19 +26,52 @@
 */
 
 
-#include <Interface/Modules/ParticleInCell/GravitySimulationDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/ParticleInCell/ElectroStatic.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
+/*
 
-using namespace SCIRun::Gui;
+//From ModuleShell
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+*/
+
+//From GravitySimulation.cc:
+
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-GravitySimulationDialog::GravitySimulationDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = nullptr */)
-  : ModuleDialogGeneric(state, parent)
+
+MODULE_INFO_DEF(ElectroStatic,ParticleInCell,SCIRun);
+
+ElectroStatic::ElectroStatic() : Module(staticInfo_)
     {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    addRadioButtonGroupManager({dontsaveButton_ ,saveButton_}, Variables::Method);
+    INITIALIZE_PORT(x_coordinates);
+    INITIALIZE_PORT(y_coordinates);
+    INITIALIZE_PORT(z_coordinates);
+    }
+
+void ElectroStatic::setStateDefaults()
+    {
+    setStateIntFromAlgo(Variables::Method);
+    }
+
+void ElectroStatic::execute()
+    {
+    if(needToExecute())
+        {
+        setAlgoIntFromState(Variables::Method);
+        AlgorithmInput input;
+        auto output=algo().run(input);
+
+        sendOutputFromAlgorithm(x_coordinates,output);
+        sendOutputFromAlgorithm(y_coordinates,output);
+        sendOutputFromAlgorithm(z_coordinates,output);
+        }
     }

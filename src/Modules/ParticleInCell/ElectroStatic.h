@@ -25,25 +25,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ParticleInCell_GravitySimulationDialog_H
-#define INTERFACE_MODULES_ParticleInCell_GravitySimulationDialog_H
+#ifndef MODULES_PARTICLEINCELL_ElectroStatic_H
+#define MODULES_PARTICLEINCELL_ElectroStatic_H
 
-#include <Interface/Modules/ParticleInCell/ui_GravitySimulationDialog.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/ParticleInCell/share.h>
 
-namespace SCIRun {
-namespace Gui {
+namespace SCIRun         {
+namespace Modules        {
+//namespace ParticleInCell {
+namespace Math    {                                 //this from GravitySimulation.h instead of the namespace ParticleInCell just above
 
-class SCISHARE GravitySimulationDialog : public ModuleDialogGeneric,
-  public Ui::GravitySimulationDialog
-      {
-	  Q_OBJECT
+    class SCISHARE ElectroStatic : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+            {
+            public:
+                ElectroStatic();
+                virtual void execute();
+                virtual void setStateDefaults();
 
-      public:
-          GravitySimulationDialog(const std::string& name,
-            SCIRun::Dataflow::Networks::ModuleStateHandle state,
-            QWidget* parent = nullptr);
-      };
-}}
+                OUTPUT_PORT(0, x_coordinates, Matrix);
+                OUTPUT_PORT(1, y_coordinates, Matrix);
+                OUTPUT_PORT(2, z_coordinates, Matrix);
+
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            };
+}}}
 #endif
