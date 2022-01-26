@@ -26,36 +26,37 @@
 */
 
 
-#include <vector>
-#include <algorithm>
-
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateFieldDataMetric.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
-CalculateFieldDataMetricAlgo()
+CalculateFieldDataMetricAlgo::CalculateFieldDataMetricAlgo()
 {
   /// keep scalar type defines whether we convert to double or not
-  add_option("method","value-mean","min|max|median|value-mean|geom-mean|sum|integral|volthreshold");
-  add_scalar("threshold",0.5);
+  addOption(Variables::Method, "value-mean", "min|max|median|value-mean|geom-mean|sum|integral|volthreshold");
+  addParameter(Threshold, 0.5);
 }
 
+const AlgorithmParameterName CalculateFieldDataMetricAlgo::Threshold("Threshold");
 
-bool
-CalculateFieldDataMetricAlgo::
-run(std::vector<FieldHandle>& input, MatrixHandle& output)
+bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, MatrixHandle& output) const
 {
-  algo_start("CalculateFieldDataMetric");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateFieldDataMetric");
 
-  if (!(input.size()))
+  if (!input.size())
   {
     error("No input fields were provided");
-    algo_end(); return (false);
+    return (false);
   }
 
   bool is_scalar = false;
@@ -69,7 +70,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       if(!(input[j]->vfield()->is_scalar()))
       {
         error("Not all fields are of the same type");
-        algo_end(); return (false);
+        return (false);
       }
     }
     else if (is_vector)
@@ -77,7 +78,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       if(!(input[j]->vfield()->is_vector()))
       {
         error("Not all fields are of the same type");
-        algo_end(); return (false);
+        return (false);
       }
     }
     else if (is_tensor)
@@ -85,7 +86,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       if(!(input[j]->vfield()->is_tensor()))
       {
         error("Not all fields are of the same type");
-        algo_end(); return (false);
+        return (false);
       }
     }
     else
@@ -96,12 +97,12 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
     }
   }
 
-  if (check_option("method","min"))
+  if (checkOption(Variables::Method, "min"))
   {
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      algo_end(); return (true);
+      return (true);
     }
     double min = DBL_MAX;
     for (size_t j=0;j<input.size();j++)
@@ -109,15 +110,15 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       double fmin;
       if (input[j]->vfield()->min(fmin)) if (fmin < min) min = fmin;
     }
-    output = new DenseMatrix(min);
-    algo_end(); return (true);
+    output.reset(new DenseMatrix(min));
+    return (true);
   }
-  else if (check_option("method","max"))
+  else if (checkOption(Variables::Method,"max"))
   {
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      algo_end(); return (true);
+      return (true);
     }
     double max = -(DBL_MAX);
     for (size_t j=0;j<input.size();j++)
@@ -125,18 +126,17 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
       double fmax;
       if(input[j]->vfield()->max(fmax)) if (fmax > max) max = fmax;
     }
-    output = new DenseMatrix(max);
-    algo_end(); return (true);
+    output.reset(new DenseMatrix(max));
+    return (true);
   }
-  else if (check_option("method","median"))
+  else if (checkOption(Variables::Method,"median"))
   {
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      algo_end(); return (true);
+      return (true);
     }
 
-    double sum = 0.0;
     std::vector<double> values;
 
     VField::size_type num_values = 0;
@@ -154,10 +154,10 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
     }
 
     std::sort(values.begin(),values.end());
-    output = new DenseMatrix(values[(values.size()/2)]);
-    algo_end(); return (true);
+    output.reset(new DenseMatrix(values[(values.size()/2)]));
+    return (true);
   }
-  else if (check_option("method","sum"))
+  else if (checkOption(Variables::Method,"sum"))
   {
     if (is_scalar)
     {
@@ -168,8 +168,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output = new DenseMatrix(sum);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(sum));
+      return (true);
     }
     else if (is_vector)
     {
@@ -180,8 +180,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output = new DenseMatrix(sum);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(sum));
+      return (true);
     }
     else if (is_tensor)
     {
@@ -192,11 +192,11 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output = new DenseMatrix(sum);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(sum));
+      return (true);
     }
   }
-  else if (check_option("method","value-mean"))
+  else if (checkOption(Variables::Method,"value-mean"))
   {
     if (is_scalar)
     {
@@ -209,8 +209,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         for (size_t i=0;i<values.size();i++) sum +=values[i];
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
-      output = new DenseMatrix(sum/vals);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(sum/vals));
+      return (true);
     }
     else if (is_vector)
     {
@@ -224,7 +224,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
       output = new DenseMatrix(sum*(1.0/vals));
-      algo_end(); return (true);
+      return (true);
     }
     else if (is_tensor)
     {
@@ -237,11 +237,11 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         for (size_t i=0;i<values.size();i++) sum +=values[i];
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
-      output = new DenseMatrix(sum*(1.0/vals));
-      algo_end(); return (true);
+      output.reset(DenseMatrix(sum*(1.0/vals)));
+      return (true);
     }
   }
-  else if (check_option("method","integral"))
+  else if (checkOption(Variables::Method,"integral"))
   {
     if (is_scalar)
     {
@@ -284,8 +284,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
           }
         }
       }
-      output = new DenseMatrix(integral);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(integral));
+      return (true);
     }
     else if (is_vector)
     {
@@ -329,7 +329,7 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         }
       }
       output = new DenseMatrix(integral);
-      algo_end(); return (true);
+      return (true);
     }
     else if (is_tensor)
     {
@@ -373,10 +373,10 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
         }
       }
       output = new DenseMatrix(integral);
-      algo_end(); return (true);
+      return (true);
     }
   }
-  else if (check_option("method","geom-mean"))
+  else if (checkOption(Variables::Method,"geom-mean"))
   {
     if (is_scalar)
     {
@@ -422,8 +422,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
           }
         }
       }
-      output = new DenseMatrix(integral/volume);
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(integral/volume));
+      return (true);
     }
     else if (is_vector)
     {
@@ -469,8 +469,8 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
           }
         }
       }
-      output = new DenseMatrix(integral*(1.0/volume));
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(integral*(1.0/volume)));
+      return (true);
     }
     else if (is_tensor)
     {
@@ -516,23 +516,31 @@ run(std::vector<FieldHandle>& input, MatrixHandle& output)
           }
         }
       }
-      output = new DenseMatrix(integral*(1.0/volume));
-      algo_end(); return (true);
+      output.reset(new DenseMatrix(integral*(1.0/volume)));
+      return (true);
     }
   }
 
-  algo_end(); return (false);
+  return (false);
 }
 
 
-bool
-CalculateFieldDataMetricAlgo::
-run(FieldHandle input, MatrixHandle& output)
+bool CalculateFieldDataMetricAlgo::runImpl(FieldHandle input, MatrixHandle& output) const
 {
-  std::vector<FieldHandle> inputs(1);
-  inputs[0] = input;
-  return(run(inputs,output));
+  std::vector<FieldHandle> inputs {input};
+  return runImpl(inputs, output);
 }
 
-
-} // namespace SCIRunAlgo
+AlgorithmOutput CalculateFieldDataMetricAlgo::run(const AlgorithmInput& input) const
+{
+  throw "not implemented";
+  // auto field = input.get<Field>(ScalarField);
+  //
+  // FieldHandle gradient;
+  // if (!run(field, gradient))
+  //   THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  //
+  // AlgorithmOutput output;
+  // output[VectorField] = gradient;
+  // return output;
+}

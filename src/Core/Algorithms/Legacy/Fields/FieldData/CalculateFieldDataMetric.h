@@ -40,9 +40,10 @@ class SCISHARE CalculateFieldDataMetricAlgo : public AlgorithmBase
 {
   public:
     CalculateFieldDataMetricAlgo();
-    bool runImpl(std::vector<FieldHandle>& input, MatrixHandle& output) const;
-    bool runImpl(FieldHandle input, MatrixHandle& output) const;
+    bool runImpl(std::vector<FieldHandle>& input, Datatypes::MatrixHandle& output) const;
+    bool runImpl(FieldHandle input, Datatypes::MatrixHandle& output) const;
     AlgorithmOutput run(const AlgorithmInput& input) const override;
+    static const AlgorithmParameterName Threshold;
 };
 
 }
