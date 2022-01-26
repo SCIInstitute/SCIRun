@@ -36,7 +36,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/ApplyMappingMatrix.h
   FieldData/BuildMatrixOfSurfaceNormalsAlgo.h
   #Mapping/ApplyMappingMatrix.h
-  #FieldData/CalculateFieldDataMetric.h
+  FieldData/CalculateFieldDataMetric.h
   FieldData/ConvertIndicesToFieldDataAlgo.h
   FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
@@ -142,7 +142,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
-  #FieldData/CalculateFieldDataMetric.cc
+  FieldData/CalculateFieldDataMetric.cc
   FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc

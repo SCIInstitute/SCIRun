@@ -26,32 +26,36 @@
 */
 
 
-#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
-#define MODULES_FIELDS_CalculateInsideWhichField_H
+#ifndef MODULES_LEGACY_FIELDS_CALCULATEFIELDDATAMETRIC_H__
+#define MODULES_LEGACY_FIELDS_CALCULATEFIELDDATAMETRIC_H__
+
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Fields {
+  namespace Modules {
+    namespace Fields {
 
-  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
-  {
-  public:
-    CalculateInsideWhichField();
-    void execute() override;
-    void setStateDefaults() override;
+      class SCISHARE CalculateFieldDataMetric : public Dataflow::Networks::Module,
+        public Has2InputPorts<DynamicPortTag<FieldPortTag>, StringPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        CalculateFieldDataMetric();
 
+        void execute() override;
+        void setStateDefaults() override;
+        HAS_DYNAMIC_PORTS
 
-    INPUT_PORT(0, InputField, Field);
-    HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(1, InputFields, Field);
-    OUTPUT_PORT(0, OutputField, Field);
+        INPUT_PORT_DYNAMIC(0, InputFields, Field);
+        INPUT_PORT(1, Function, String);
+        OUTPUT_PORT(0, Metric, DenseMatrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
-  };
-}}}
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
+      };
+
+    }
+  }
+}
 
 #endif

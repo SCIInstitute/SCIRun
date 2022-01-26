@@ -30,13 +30,21 @@
 #include <algorithm>
 
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Algorithms/Fields/FieldData/CalculateFieldDataMetric.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateFieldDataMetric.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
+
+CalculateFieldDataMetricAlgo()
+{
+  /// keep scalar type defines whether we convert to double or not
+  add_option("method","value-mean","min|max|median|value-mean|geom-mean|sum|integral|volthreshold");
+  add_scalar("threshold",0.5);
+}
+
 
 bool
 CalculateFieldDataMetricAlgo::

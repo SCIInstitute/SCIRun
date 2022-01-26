@@ -25,25 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Modules/Legacy/Fields/CalculateFieldDataMetric.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Parser/ArrayMathEngine.h>
-#include <Core/Algorithms/Fields/FieldData/CalculateFieldDataMetric.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-
-namespace SCIRun {
+//#include <Core/Algorithms/Fields/FieldData/CalculateFieldDataMetric.h>
 
 /// @class CalculateFieldDataMetric
 /// @brief Reads in a field file(s), allows parser edits to the data, and
 /// exports 1 of 7 metrics selected by the user as a matrix file.
-
+/*
 class CalculateFieldDataMetric : public Module {
   public:
     CalculateFieldDataMetric(GuiContext*);
@@ -60,9 +53,9 @@ class CalculateFieldDataMetric : public Module {
     SCIRunAlgo::CalculateFieldDataMetricAlgo algo_;
 
 };
+*/
 
 
-DECLARE_MAKER(CalculateFieldDataMetric)
 CalculateFieldDataMetric::CalculateFieldDataMetric(GuiContext* ctx)
   : Module("CalculateFieldDataMetric", ctx, Source, "ChangeFieldData", "SCIRun"),
   guimethod_(get_ctx()->subVar("method"),"value-mean"),
