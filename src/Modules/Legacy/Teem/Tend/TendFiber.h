@@ -30,7 +30,7 @@
 #define MODULES_TEEM_Tend_TendFiber_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Teem/Misc/share.h>
+#include <Modules/Legacy/Teem/Tend/share.h>
 
 namespace SCIRun::Core::Algorithms::Teem
 {
