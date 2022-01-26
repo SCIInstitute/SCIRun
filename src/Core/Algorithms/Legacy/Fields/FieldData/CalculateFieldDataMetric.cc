@@ -29,6 +29,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixAlgorithms.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateFieldDataMetric.h>
 
@@ -51,7 +52,7 @@ CalculateFieldDataMetricAlgo::CalculateFieldDataMetricAlgo()
 
 const AlgorithmParameterName CalculateFieldDataMetricAlgo::Threshold("Threshold");
 
-bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, MatrixHandle& output) const
+bool CalculateFieldDataMetricAlgo::runImpl(const std::vector<FieldHandle>& input, MatrixHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateFieldDataMetric");
 
@@ -533,16 +534,15 @@ bool CalculateFieldDataMetricAlgo::runImpl(FieldHandle input, MatrixHandle& outp
   return runImpl(inputs, output);
 }
 
-AlgorithmOutput CalculateFieldDataMetricAlgo::run(const AlgorithmInput& ) const
+AlgorithmOutput CalculateFieldDataMetricAlgo::run(const AlgorithmInput& input) const
 {
-  throw "not implemented";
-  // auto field = input.get<Field>(ScalarField);
-  //
-  // FieldHandle gradient;
-  // if (!run(field, gradient))
-  //   THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-  //
-  // AlgorithmOutput output;
-  // output[VectorField] = gradient;
-  // return output;
+  auto inputFields = input.getList<Field>(Variables::InputFields);
+
+  MatrixHandle outputMatrix;
+  if (!runImpl(inputFields, outputMatrix))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputMatrix] = outputMatrix;
+  return output;
 }

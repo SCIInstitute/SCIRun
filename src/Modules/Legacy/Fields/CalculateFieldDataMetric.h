@@ -33,6 +33,10 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Core::Algorithms::Fields
+  {
+    ALGORITHM_PARAMETER_DECL(EnableFunction)
+  }
   namespace Modules {
     namespace Fields {
 
