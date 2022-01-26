@@ -65,6 +65,8 @@ namespace SCIRun {
 #endif
 
     SCISHARE Core::Geometry::Transform matrix_to_transform(const Core::Datatypes::Matrix& matrix);
+    SCISHARE Core::Datatypes::DenseMatrixHandle matrixFromTensor(const Core::Geometry::Tensor& tensor);
+    SCISHARE Core::Datatypes::DenseMatrixHandle matrixFromVector(const Core::Geometry::Vector& tensor);
   }
 }
 

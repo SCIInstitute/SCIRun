@@ -27,6 +27,7 @@
 
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixAlgorithms.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateFieldDataMetric.h>
@@ -34,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
+using namespace SCIRun::MatrixAlgorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
@@ -104,13 +106,13 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
       error("Minimum needs scalar data");
       return (true);
     }
-    double min = DBL_MAX;
+    double min = std::numeric_limits<double>::max();
     for (size_t j=0;j<input.size();j++)
     {
       double fmin;
       if (input[j]->vfield()->min(fmin)) if (fmin < min) min = fmin;
     }
-    output.reset(new DenseMatrix(min));
+    output.reset(new DenseMatrix(1, 1, min));
     return (true);
   }
   else if (checkOption(Variables::Method,"max"))
@@ -120,7 +122,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
       error("Minimum needs scalar data");
       return (true);
     }
-    double max = -(DBL_MAX);
+    double max = -(std::numeric_limits<double>::max());
     for (size_t j=0;j<input.size();j++)
     {
       double fmax;
@@ -154,7 +156,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
     }
 
     std::sort(values.begin(),values.end());
-    output.reset(new DenseMatrix(values[(values.size()/2)]));
+    output.reset(new DenseMatrix(1, 1, values[(values.size()/2)]));
     return (true);
   }
   else if (checkOption(Variables::Method,"sum"))
@@ -168,7 +170,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output.reset(new DenseMatrix(sum));
+      output.reset(new DenseMatrix(1, 1, sum));
       return (true);
     }
     else if (is_vector)
@@ -180,7 +182,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output.reset(new DenseMatrix(sum));
+      output = matrixFromVector(sum);
       return (true);
     }
     else if (is_tensor)
@@ -192,7 +194,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         input[j]->vfield()->get_values(values);
         for (size_t i=0;i<values.size();i++) sum +=values[i];
       }
-      output.reset(new DenseMatrix(sum));
+      output = matrixFromTensor(sum);
       return (true);
     }
   }
@@ -209,7 +211,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         for (size_t i=0;i<values.size();i++) sum +=values[i];
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
-      output.reset(new DenseMatrix(sum/vals));
+      output.reset(new DenseMatrix(1, 1, sum/vals));
       return (true);
     }
     else if (is_vector)
@@ -223,7 +225,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         for (size_t i=0;i<values.size();i++) sum +=values[i];
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
-      output = new DenseMatrix(sum*(1.0/vals));
+      output = matrixFromVector(sum*(1.0/vals));
       return (true);
     }
     else if (is_tensor)
@@ -237,7 +239,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
         for (size_t i=0;i<values.size();i++) sum +=values[i];
         vals += static_cast<double>(input[j]->vfield()->num_values());
       }
-      output.reset(DenseMatrix(sum*(1.0/vals)));
+      output = matrixFromTensor(sum*(1.0/vals));
       return (true);
     }
   }
@@ -284,7 +286,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output.reset(new DenseMatrix(integral));
+      output.reset(new DenseMatrix(1, 1, integral));
       return (true);
     }
     else if (is_vector)
@@ -328,7 +330,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output = new DenseMatrix(integral);
+      output = matrixFromVector(integral);
       return (true);
     }
     else if (is_tensor)
@@ -372,7 +374,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output = new DenseMatrix(integral);
+      output = matrixFromTensor(integral);
       return (true);
     }
   }
@@ -422,7 +424,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output.reset(new DenseMatrix(integral/volume));
+      output.reset(new DenseMatrix(1, 1, integral/volume));
       return (true);
     }
     else if (is_vector)
@@ -469,7 +471,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output.reset(new DenseMatrix(integral*(1.0/volume)));
+      output = matrixFromVector(integral*(1.0/volume));
       return (true);
     }
     else if (is_tensor)
@@ -516,7 +518,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(std::vector<FieldHandle>& input, Matr
           }
         }
       }
-      output.reset(new DenseMatrix(integral*(1.0/volume)));
+      output = matrixFromTensor(integral*(1.0/volume));
       return (true);
     }
   }
@@ -531,7 +533,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(FieldHandle input, MatrixHandle& outp
   return runImpl(inputs, output);
 }
 
-AlgorithmOutput CalculateFieldDataMetricAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput CalculateFieldDataMetricAlgo::run(const AlgorithmInput& ) const
 {
   throw "not implemented";
   // auto field = input.get<Field>(ScalarField);
