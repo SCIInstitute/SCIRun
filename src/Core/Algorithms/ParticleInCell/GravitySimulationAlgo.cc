@@ -100,7 +100,7 @@ using namespace std;
         {
         iterate_end = thread_count;
                                                       //Create (encode) acc_field
-        Generate_acc_field(pos_x, pos_y, pos_z, vel_x, vel_y, vel_z);
+        Generate_acc_field();
 
                                                       //inner loop
         for(int i=0; i<thread_count; i++) t[i] = thread(move_particles, i);
@@ -149,12 +149,12 @@ using namespace std;
 ************************ Functions used by the GravitySim program ************************
 */
 
-float initial_pos_x(int i)
+float initial_pos_x()
     {
     return 0;
     }
 
-float initial_pos_y(int i)
+float initial_pos_y()
     {
     return 0.0;
     }
@@ -259,8 +259,7 @@ void initialize_particles(int ID)
         }
     }
 
-void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], float pos_z[num_particles], 
-                        float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles])
+void Generate_acc_field()
     {
     for (int k=0; k<Dim; k++) for (int i=0; i<Dim; i++) for (int m=0; m<Dim; m++)
         {

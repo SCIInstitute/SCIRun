@@ -29,18 +29,12 @@
 SET(Modules_ParticleInCell_SRCS
 #  ElectrostaticSimulation.cc
   GravitySimulation.cc
-  ModuleShell.cc
-#  HelloWorld.cc
-#  SortMatrix.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
   share.h
 #  ElectrostaticSimulation.h
   GravitySimulation.h
-  ModuleShell.h
-#  HelloWorld.h
-#  SortMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
