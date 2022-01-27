@@ -34,6 +34,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 CalculateFieldDataMetricDialog::CalculateFieldDataMetricDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,7 +44,17 @@ CalculateFieldDataMetricDialog::CalculateFieldDataMetricDialog(const std::string
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addComboBoxManager(outputTypeComboBox_, Variables::FormatString);
+  addComboBoxManager(metricComboBox_, Variables::Method,
+    {{"Minimum", "min"},
+    {"Maximum", "max"},
+    {"Median", "median"},
+    {"Value-mean", "value-mean"},
+    {"Geometry-mean", "geom-mean"},
+    {"Sum", "sum"},
+    {"Integral", "integral"},
+    {"Volthreshold", "volthreshold"}
+  });
+  addCheckBoxManager(enableFunctionCheckBox_, Parameters::EnableFunction);
   connectParserHelpButton(parserHelpButton_);
 
   {

@@ -127,9 +127,10 @@ bool CalculateFieldDataMetricAlgo::runImpl(const std::vector<FieldHandle>& input
     for (size_t j=0;j<input.size();j++)
     {
       double fmax;
-      if(input[j]->vfield()->max(fmax)) if (fmax > max) max = fmax;
+      if (input[j]->vfield()->max(fmax))
+        if (fmax > max) max = fmax;
     }
-    output.reset(new DenseMatrix(max));
+    output.reset(new DenseMatrix(1, 1, max));
     return (true);
   }
   else if (checkOption(Variables::Method,"median"))
