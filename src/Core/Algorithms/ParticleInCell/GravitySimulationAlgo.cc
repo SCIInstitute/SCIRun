@@ -49,8 +49,7 @@ GravitySimulationAlgo::GravitySimulationAlgo()
 */
 
 void initialize_particles(int ID);
-void Generate_acc_field(float pos_x[num_particles], float pos_y[num_particles], float pos_z[num_particles], 
-                        float vel_x[num_particles], float vel_y[num_particles], float vel_z[num_particles]);
+void Generate_acc_field();
 void move_particles(int ID);
 
 
@@ -236,8 +235,8 @@ void initialize_particles(int ID)
         {
         p_alive[i] = 0;                               //Set the particle alive flag to 'not alive'
 
-        pos_x[i]   = initial_pos_x(i);
-        pos_y[i]   = initial_pos_y(i);
+        pos_x[i]   = initial_pos_x();
+        pos_y[i]   = initial_pos_y();
         pos_z[i]   = initial_pos_z(i);
 
         if(!(i%sample_size_p))                        //Buffer the data to be visualized
