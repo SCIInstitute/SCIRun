@@ -665,7 +665,7 @@
 									<name>FacesColoring</name>
 									<value object_id="_45">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1120,28 +1120,28 @@
 												<name>listElement</name>
 												<value object_id="_83">
 													<which>1</which>
-													<value>9.19189095497131348e-01</value>
+													<value>9.51923429965972900e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_84">
 													<which>1</which>
-													<value>3.07087510824203491e-01</value>
+													<value>1.12148895859718323e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_85">
 													<which>1</which>
-													<value>2.38640293478965759e-01</value>
+													<value>2.84134447574615479e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_86">
 													<which>1</which>
-													<value>-6.19635954499244690e-02</value>
+													<value>2.30657570064067841e-02</value>
 												</value>
 											</item>
 										</value>

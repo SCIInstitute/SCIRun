@@ -105,7 +105,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(const std::vector<FieldHandle>& input
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      return (true);
+      return (false);
     }
     double min = std::numeric_limits<double>::max();
     for (size_t j=0;j<input.size();j++)
@@ -121,7 +121,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(const std::vector<FieldHandle>& input
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      return (true);
+      return (false);
     }
     double max = -(std::numeric_limits<double>::max());
     for (size_t j=0;j<input.size();j++)
@@ -138,7 +138,7 @@ bool CalculateFieldDataMetricAlgo::runImpl(const std::vector<FieldHandle>& input
     if (!is_scalar)
     {
       error("Minimum needs scalar data");
-      return (true);
+      return (false);
     }
 
     std::vector<double> values;
