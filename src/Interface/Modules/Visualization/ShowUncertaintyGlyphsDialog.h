@@ -48,9 +48,10 @@ namespace Gui {
                                 QWidget* parent = 0);
   private:
     void setupTensorsTab();
-    //this function would be from pulling data from module,
-    // usually to change the UI.
-    // virtual void pull() override;
+
+  private Q_SLOTS:
+    void emphasisSliderChanged(int val);
+    void emphasisSpinBoxChanged(double val);
   };
 }}
 

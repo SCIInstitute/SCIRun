@@ -28,12 +28,10 @@
 
 SET(Algorithms_Visualization_SRCS
   OsprayDataAlgorithm.cc
-  ShowUncertaintyGlyphsAlgorithm.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
-  ShowUncertaintyGlyphsAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization

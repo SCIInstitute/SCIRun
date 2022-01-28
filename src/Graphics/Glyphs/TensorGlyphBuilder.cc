@@ -72,7 +72,6 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(
   double cl = t_.linearCertainty();
   double cp = t_.planarCertainty();
   bool linear = cl >= cp;
-  std::cout << "linear: " << linear << "\n";
 
   double pPower = GlyphGeomUtility::spow((1.0 - cp), emphasis_);
   double lPower = GlyphGeomUtility::spow((1.0 - cl), emphasis_);

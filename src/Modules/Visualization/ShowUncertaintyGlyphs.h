@@ -50,20 +50,13 @@ namespace Visualization {
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
 
     static const Core::Algorithms::AlgorithmParameterName FieldName;
-    // Mesh Color
     static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
-    // Tensor Controls
-    static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
-    // static const Core::Algorithms::AlgorithmParameterName ShowTensors;
-    static const Core::Algorithms::AlgorithmParameterName TensorsColoring;
-    static const Core::Algorithms::AlgorithmParameterName TensorsColoringDataInput;
+    static const Core::Algorithms::AlgorithmParameterName ShowTensors;
     static const Core::Algorithms::AlgorithmParameterName TensorsTransparency;
     static const Core::Algorithms::AlgorithmParameterName TensorsUniformTransparencyValue;
     static const Core::Algorithms::AlgorithmParameterName SuperquadricEmphasis;
     static const Core::Algorithms::AlgorithmParameterName NormalizeTensors;
     static const Core::Algorithms::AlgorithmParameterName TensorsScale;
-    static const Core::Algorithms::AlgorithmParameterName RenderTensorsBelowThreshold;
-    static const Core::Algorithms::AlgorithmParameterName TensorsThreshold;
     static const Core::Algorithms::AlgorithmParameterName TensorsResolution;
   };
 }}}
