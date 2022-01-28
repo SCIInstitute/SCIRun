@@ -108,6 +108,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Cleanup/ReorderNormalCoherentlyAlgo.h
   MeshDerivatives/CalculateMeshCenterAlgo.h
   MeshDerivatives/GetCentroids.h
+  MeshDerivatives/CalculateBundleDifference.h
   )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -197,6 +198,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
   MeshDerivatives/ExtractSimpleIsosurfaceAlgo.cc
+  MeshDerivatives/CalculateBundleDifference.cc
   RefineMesh/RefineMesh.cc
   RefineMesh/RefineMeshCurveAlgoV.cc
   RefineMesh/RefineMeshHexVolAlgoV.cc
