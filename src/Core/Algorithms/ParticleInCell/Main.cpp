@@ -26,8 +26,8 @@ int main(int argc, char *args[])
 	/*initialize domain*/
     World world(21,21,21);
     world.setExtents({-0.1,-0.1,0},{0.1,0.1,0.2});
-    world.setTime(2e-10,10000);
-//    world.setTime(2e-10,100);
+//    world.setTime(2e-10,10000);
+    world.setTime(2e-10,100);
 
 	/*set up particle species*/
 	vector<Species> species;
@@ -78,6 +78,6 @@ int main(int argc, char *args[])
         }
 	
 	/* grab starting time*/
-	cout<<"Simulation took "<<world.getWallTime()<<" seconds";
+	cout<<"Simulation took "<<world.getWallTime()<<" seconds\n";
 	return 0;		//indicate normal exit
 }
