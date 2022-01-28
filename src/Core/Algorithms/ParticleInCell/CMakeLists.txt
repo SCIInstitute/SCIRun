@@ -27,6 +27,7 @@
 
 
 SET(Algorithms_ParticleInCell_SRCS
+  GravitySimulationAlgo.cc
   ElectroStaticAlgo.cc
   Main.cpp
   Output.cpp
@@ -36,6 +37,7 @@ SET(Algorithms_ParticleInCell_SRCS
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
+  GravitySimulationAlgo.h
   ElectroStaticAlgo.h
   Output.h
   PotentialSolver.h
