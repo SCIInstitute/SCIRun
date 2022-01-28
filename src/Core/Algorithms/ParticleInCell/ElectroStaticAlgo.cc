@@ -32,7 +32,6 @@ Also: before the ch2 code is added, save the ElectroStatic files as a PIC_shell 
 
 
 #include<Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
-//#include<Core/Math/MiscMath.h>                                //delete this if it is not needed to get the module working
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <time.h>
 #include <chrono>

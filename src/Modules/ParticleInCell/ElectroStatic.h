@@ -33,8 +33,8 @@
 
 namespace SCIRun         {
 namespace Modules        {
-//namespace ParticleInCell {
-namespace Math    {                                 //this from GravitySimulation.h instead of the namespace ParticleInCell just above
+namespace ParticleInCell {
+//namespace Math    {                                 //this from GravitySimulation.h instead of the namespace ParticleInCell just above
 
     class SCISHARE ElectroStatic : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,

@@ -29,7 +29,7 @@
 SET(Modules_ParticleInCell_SRCS
   ElectroStatic.cc
 #  GravitySimulation.cc
-  ModuleShell.cc
+#  ModuleShell.cc
 #  HelloWorld.cc
 #  SortMatrix.cc
 )
@@ -38,7 +38,7 @@ SET(Modules_ParticleInCell_HEADERS
   share.h
   ElectroStatic.h
 #  GravitySimulation.h
-  ModuleShell.h
+#  ModuleShell.h
 #  HelloWorld.h
 #  SortMatrix.h
 )

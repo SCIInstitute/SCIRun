@@ -29,7 +29,7 @@
 SET(Algorithms_ParticleInCell_SRCS
   ElectroStaticAlgo.cc
 #  GravitySimulationAlgo.cc
-  ModuleShellAlgo.cc
+#  ModuleShellAlgo.cc
 #  HelloWorldAlgo.cc
 #  SortMatrixAlgo.cc
 )
@@ -37,7 +37,7 @@ SET(Algorithms_ParticleInCell_SRCS
 SET(Algorithms_ParticleInCell_HEADERS
   ElectroStaticAlgo.h
 #  GravitySimulationAlgo.h
-  ModuleShellAlgo.h
+#  ModuleShellAlgo.h
 #  HelloWorldAlgo.h
 #  SortMatrixAlgo.h
 )
