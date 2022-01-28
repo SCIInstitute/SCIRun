@@ -58,7 +58,7 @@ NetworkEditor::~NetworkEditor()
 {
   if (parentNetwork_)
     controller_.reset();
-
+#if 0
   for (auto& child : childrenNetworks_)
   {
     child.second->get()->controller_.reset();
@@ -67,7 +67,7 @@ NetworkEditor::~NetworkEditor()
     child.second = nullptr;
   }
   childrenNetworks_.clear();
-
+#endif
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -77,6 +77,7 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
+#if 0
 SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QFrame(parent),
 editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
@@ -107,9 +108,10 @@ void SubnetworkEditor::expand()
 SubnetworkEditor::~SubnetworkEditor()
 {
 }
-
+#endif
 const char* SUBNET_PORT_ID_TO_FIND = "SUBNET_PORT_ID_TO_FIND";
 
+#if 0
 void NetworkEditor::sendItemsToParent()
 {
   if (parentNetwork_)
@@ -213,6 +215,7 @@ void NetworkEditor::subnetMenuActionTriggered()
     }
   }
 }
+#endif
 
 QRectF NetworkEditor::visibleRect() const
 {
@@ -225,6 +228,7 @@ NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 std::function<QPointF(const QRectF&)> NetworkEditor::topSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.topLeft(); });
 std::function<QPointF(const QRectF&)> NetworkEditor::bottomSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -40); });
 
+#if 0
 void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescriptionInterface>>& ports, const QString& name, std::function<QPointF(const QRectF&)> position)
 {
   auto portsBridge = new SubnetPortsBridgeWidget(this, name);
@@ -425,6 +429,7 @@ std::string SubnetModule::listComponentIds() const
 
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
+#endif
 
 //TODO: breaks older compilers. Will disable for now
 #if 0
@@ -435,10 +440,11 @@ QSet<typename Iter::value_type> toSet(Iter b, Iter e)
 }
 #endif
 
+#if 0
 QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*>) const
 {
   throw "not implemented";
-#if 0
+
   auto subnetItems = toSet(items.begin(), items.end());
   Q_FOREACH(QGraphicsItem* item, items)
   {
@@ -450,9 +456,11 @@ QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*>) c
     }
   }
   return subnetItems.values();
-#endif
-}
 
+}
+#endif
+
+#if 0
 namespace
 {
   QRectF updateRect(QGraphicsItem* item, QRectF rect)
@@ -619,7 +627,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto subnetModule = factory.makeSubnet(name, modules, items);
   portRewiringMap_ = factory.getMap();
 
-  auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
+  auto moduleWidget = new SubnetWidget(this, name, subnetModule);
   auto proxy = setupModuleWidget(moduleWidget);
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
@@ -710,6 +718,7 @@ QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsIt
 
   return pic;
 }
+#endif
 
 QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
 {
@@ -719,6 +728,7 @@ QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
   return QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
 }
 
+#if 0
 void NetworkEditor::dumpSubnetworksImpl(const QString& name, Subnetworks& data, ModuleFilter modFilter) const
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -757,8 +767,8 @@ void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
   }
 }
 
-SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, SharedPointer<DialogErrorControl> dialogErrorControl,
-  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent), editor_(ed), name_(name)
+SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule,
+  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, parent), editor_(ed), name_(name)
 {
 }
 
@@ -796,11 +806,13 @@ void NetworkEditor::killChild(const QString& name, bool force)
     }
   }
 }
+#endif
 
 void NetworkEditor::resizeEvent(QResizeEvent *event)
 {
   if (event->oldSize() != QSize(-1, -1))
   {
+#if 0
     for (auto& item : subnetPortHolders_)
     {
       item->resize(QSize(item->size().width() * (event->size().width() / static_cast<double>(event->oldSize().width())), item->size().height()));
@@ -808,11 +820,13 @@ void NetworkEditor::resizeEvent(QResizeEvent *event)
       item->setPos(item->pos() + QPointF(0, (isInput ? 0 : 1) * (event->size().height() - event->oldSize().height())));
       item->updateConnections();
     }
+#endif
   }
 
   QGraphicsView::resizeEvent(event);
 }
 
+#if 0
 SubnetModuleConnector::SubnetModuleConnector(NetworkEditor* parent) :
   parent_(parent), subnet_(nullptr)
 {
@@ -851,6 +865,12 @@ void SubnetModuleConnector::moduleAddedToSubnet(const std::string&, ModuleHandle
   }
 }
 
+void SubnetModuleConnector::connectionDeletedFromParent()
+{
+}
+
+#endif
+
 bool NetworkEditor::containsModule(const std::string& id) const
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -860,8 +880,4 @@ bool NetworkEditor::containsModule(const std::string& id) const
       return true;
   }
   return false;
-}
-
-void SubnetModuleConnector::connectionDeletedFromParent()
-{
 }

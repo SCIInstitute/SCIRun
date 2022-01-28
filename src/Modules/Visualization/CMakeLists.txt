@@ -39,6 +39,7 @@ SET(Modules_Visualization_SRCS
   CreateTestingArrow.cc
   ShowMeshBoundingBox.cc
   ShowOrientationAxes.cc
+  GeometryBuffer.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -54,6 +55,7 @@ SET(Modules_Visualization_HEADERS
   CreateTestingArrow.h
   ShowMeshBoundingBox.h
   ShowOrientationAxes.h
+  GeometryBuffer.h
   share.h
 )
 

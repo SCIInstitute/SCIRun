@@ -72,13 +72,13 @@ namespace Datatypes {
     double valueToIndex(const Core::Geometry::Vector &vector) const;
 
     std::string dynamic_type_name() const override { return "ColorMap"; }
+    double alpha(double transformedValue) const;
+    double getTransformedValue(double v) const;
 
   private:
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
-    double getTransformedValue(double v) const;
     ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
-    double alpha(double transformedValue) const;
 
     std::vector<ColorRGB> colorData_;
     std::string nameInfo_; //The colormap's name.
@@ -113,9 +113,11 @@ namespace Datatypes {
   class SCISHARE ColorMap_OSP_helper
   {
   public:
-    std::vector<float> colorList;
-    std::vector<float> opacityList;
-    explicit ColorMap_OSP_helper(const std::string& name);
+    std::vector<float> colorList_;
+    std::vector<float> opacityList_;
+    float min_ = 0.0;
+    float max_ = 1.0;
+    explicit ColorMap_OSP_helper(ColorMapHandle cmap);
   };
 
 }}}

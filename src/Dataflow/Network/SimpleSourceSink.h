@@ -92,6 +92,7 @@ namespace SCIRun
         void cacheData(Core::Datatypes::DatatypeHandle data) override;
         void send(DatatypeSinkInterfaceHandle receiver) const override;
         bool hasData() const override;
+        Core::Datatypes::DatatypeHandle peekData() const override;
         std::string describeData() const override;
 
         static void clearAllSources();

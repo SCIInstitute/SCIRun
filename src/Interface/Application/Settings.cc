@@ -374,7 +374,6 @@ void SCIRunMainWindow::readSettings()
     setting->read();
     setting->postRead();
   }
-
   //TODO: extract QSettings logic into "PreferencesIO" class
   //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
 }
@@ -383,6 +382,9 @@ void SCIRunMainWindow::writeSettings()
 {
   for (auto& setting : settingsValues_)
   {
-    setting->write();
+    if (setting)
+    {
+      setting->write();
+    }
   }
 }

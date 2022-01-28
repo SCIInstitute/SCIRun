@@ -721,33 +721,45 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   lightAzimuthSlider_->setTotalAngle(360);
   lightAzimuthSlider_->setScale(0, 360);
   lightAzimuthSlider_->setScaleStepSize(45);
-  lightAzimuthSlider_->setValue(180);
   lightAzimuthSlider_->setMarkerStyle(QwtKnob::Triangle);
-  lightAzimuthSlider_->setToolTip("Azimuth angle");
   lightAzimuthSlider_->setKnobWidth(65);
+#else
+  lightAzimuthSlider_ = new QSlider(Qt::Horizontal, this);
+  lightAzimuthSlider_->setMinimum(0);
+  lightAzimuthSlider_->setMaximum(360);
+  lightAzimuthSlider_->setPageStep(45);
+#endif
+  lightAzimuthSlider_->setValue(180);
+  lightAzimuthSlider_->setToolTip("Azimuth angle");
   lightLayout->addWidget(lightAzimuthSlider_, 1, 0);
+
   auto azLabel = new QLabel("Azimuth");
   azLabel->setAlignment(Qt::AlignCenter);
   lightLayout->addWidget(azLabel, 2, 0);
+#ifndef WIN32
   lightInclinationSlider_ = new QwtKnob(this);
   lightInclinationSlider_->setTotalAngle(180);
   lightInclinationSlider_->setScale(0, 180);
   lightInclinationSlider_->setScaleStepSize(45);
-  lightInclinationSlider_->setValue(90);
   lightInclinationSlider_->setMarkerStyle(QwtKnob::Triangle);
-  lightInclinationSlider_->setToolTip("Inclination angle");
   lightInclinationSlider_->setKnobWidth(65);
+#else
+  lightInclinationSlider_ = new QSlider(Qt::Horizontal, this);
+  lightInclinationSlider_->setMinimum(0);
+  lightInclinationSlider_->setMaximum(180);
+  lightInclinationSlider_->setPageStep(45);
+#endif
+  lightInclinationSlider_->setValue(90);
+  lightInclinationSlider_->setToolTip("Inclination angle");
   lightLayout->addWidget(lightInclinationSlider_, 1, 1);
   auto incLabel = new QLabel("Inclination");
   incLabel->setAlignment(Qt::AlignCenter);
   lightLayout->addWidget(incLabel, 2, 1);
 
-  connect(lightAzimuthSlider_, &QwtKnob::valueChanged,
+  connect(lightAzimuthSlider_, &LightSliderType::valueChanged,
     [this, viewScene](double value) { viewScene->setLightAzimuth(lightNumber_, value); });
-  connect(lightInclinationSlider_, &QwtKnob::valueChanged,
+  connect(lightInclinationSlider_, &LightSliderType::valueChanged,
     [this, viewScene](double value) { viewScene->setLightInclination(lightNumber_, value); });
-
-#endif
 
   linkedCheckable_ = [this]() { return lightCheckBox_->isChecked(); };
   lightLayout->addWidget(colorPickerButton_, 0, 1);
@@ -763,6 +775,10 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
   resetButton->setMaximumWidth(85);
   connect(resetButton, &QPushButton::clicked, this, &LightControls::resetAngles);
   lightLayout->addWidget(resetButton, 3, 0, 1, 2, Qt::AlignCenter);
+
+#ifdef WIN32
+  setMinimumHeight(120);
+#endif
 }
 
 void LightControls::resetAngles()

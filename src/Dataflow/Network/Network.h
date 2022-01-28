@@ -43,7 +43,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  class SCISHARE Network : public NetworkInterface, boost::noncopyable
+  class SCISHARE Network : public NetworkStateInterface, boost::noncopyable
   {
   public:
     using Connections = std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId>;

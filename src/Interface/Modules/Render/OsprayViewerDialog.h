@@ -33,6 +33,8 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Render/Ospray/OSPRayRenderer.h>
+#include <Interface/Modules/Render/Ospray/QOSPRayWidget.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/share.h>
@@ -40,11 +42,6 @@
 
 
 namespace SCIRun {
-
-namespace Render {
-  class QOSPRayWidget;
-  class OSPRayRenderer;
-}
 
 namespace Gui {
 

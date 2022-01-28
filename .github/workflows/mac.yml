@@ -17,11 +17,11 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: mac
         install-deps: true
@@ -74,11 +74,11 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: mac
         install-deps: true
@@ -116,11 +116,11 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.13.0
+      uses: jurplel/install-qt-action@v2.14.0
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.14.2
+        version: 5.15.2
         target: desktop
         host: mac
         install-deps: true

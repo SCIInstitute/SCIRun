@@ -40,7 +40,7 @@
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
-#include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -70,7 +70,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = makeShared<NetworkEditorBuilder>(this);
-  dockManager_ = new DockManager(dockSpace_, this);
+  //dockManager_ = new DockManager(dockSpace_, this);
 
   {
     SharedPointer<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
@@ -86,7 +86,6 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 
-  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
 
   setupPreferencesWindow();
@@ -301,7 +300,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
-  connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
+  connect(networkEditor_, &NetworkEditor::networkExecuted, []() { DialogErrorControl::instance().resetCounter(); });
 	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
 
@@ -317,6 +316,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupInputWidgets();
 
   logTextBrowser_->append("Hello! Welcome to SCIRun 5.");
+
   readSettings();
 
   setCurrentFile("");

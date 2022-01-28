@@ -33,6 +33,7 @@ SET(Interface_Modules_Python_FORMS
   LoopStart.ui
   #LoopIncrement.ui
   LoopEnd.ui
+  CompositeModule.ui
 )
 
 SET(Interface_Modules_Python_HEADERS
@@ -42,6 +43,7 @@ SET(Interface_Modules_Python_HEADERS
   LoopStartDialog.h
   #LoopIncrementDialog.h
   LoopEndDialog.h
+  CompositeModuleDialog.h
   share.h
 )
 
@@ -52,6 +54,7 @@ SET(Interface_Modules_Python_SOURCES
   LoopStartDialog.cc
   #LoopIncrementDialog.cc
   LoopEndDialog.cc
+  CompositeModuleDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS "${Interface_Modules_Python_FORMS}")
@@ -66,6 +69,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Python
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Python
   Modules_Python
+  Modules_Basic
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}

@@ -26,6 +26,7 @@
 */
 
 #include "OSPRayRenderer.h"
+#include <Core/GeometryPrimitives/BBox.h>
 
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
@@ -40,9 +41,12 @@
 
 #include <cstdio>
 
-using namespace SCIRun::Render;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+using namespace Render;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
 
+#ifdef WITH_OSPRAY
 //int OSPRayRenderer::osprayRendererInstances = 0;
 OSPRayDataManager OSPRayRenderer::dataManager;
 
@@ -133,13 +137,22 @@ void OSPRayRenderer::mouseWheel(int delta)
   framesAccumulated = 0;
 }
 
+void OSPRayRenderer::autoView()
+{
+  camera_->autoView();
+  ospResetAccumulation(frameBuffer_);
+  framesAccumulated = 0;
+}
+
 
 
 //Data----------------------------------------------------------------------------------------------
 void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHandle>& geometries)
 {
+  BBox bbox;
   for(auto& geometry : geometries)
   {
+    bbox.extend(geometry->box);
     //printf("ID: %d\n", geometry->id);
     switch(geometry->type)
     {
@@ -171,7 +184,7 @@ void OSPRayRenderer::updateGeometries(const std::vector<OsprayGeometryObjectHand
       }
     }
   }
-  printf("\n");
+  camera_->setSceneBoundingBox(bbox);
 
   ospResetAccumulation(frameBuffer_);
   framesAccumulated = 0;
@@ -220,30 +233,28 @@ void OSPRayRenderer::addMaterial(OSPGeometricModel model, OsprayGeometryObject::
   ospRelease(material);
 }
 
-void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tnf)
+void OSPRayRenderer::addTransferFunction(OSPVolumetricModel model, OsprayGeometryObject::TransferFunc& tfn)
 {
-  float valueRange[] = {0.0 , 1.0f};
-
-  size_t numColors = tnf.colors.size()/3;
-  OSPData colorDataTemp = ospNewSharedData(tnf.colors.data(), OSP_VEC3F, numColors);
+  size_t numColors = tfn.colors.size()/3;
+  OSPData colorDataTemp = ospNewSharedData(tfn.colors.data(), OSP_VEC3F, numColors);
   OSPData colorData = ospNewData(OSP_VEC3F, numColors);
   ospCopyData(colorDataTemp, colorData);
   ospRelease(colorDataTemp);
 
-  OSPData opacityDataTemp = ospNewSharedData(tnf.opacities.data(), OSP_FLOAT, tnf.opacities.size());
-  OSPData opacityData = ospNewData(OSP_FLOAT, tnf.opacities.size());
+  OSPData opacityDataTemp = ospNewSharedData(tfn.opacities.data(), OSP_FLOAT, tfn.opacities.size());
+  OSPData opacityData = ospNewData(OSP_FLOAT, tfn.opacities.size());
   ospCopyData(opacityDataTemp, opacityData);
   ospRelease(opacityDataTemp);
 
   OSPTransferFunction transferFunction = ospNewTransferFunction("piecewiseLinear");
-  ospSetParam(transferFunction, "valueRange", OSP_VEC2F, valueRange);
+  ospSetParam(transferFunction, "valueRange", OSP_VEC2F, tfn.range.data());
   ospSetParam(transferFunction, "color", OSP_DATA, &colorData);
   ospSetParam(transferFunction, "opacity", OSP_DATA, &opacityData);
   ospCommit(transferFunction);
   ospRelease(colorData);
   ospRelease(opacityData);
 
-  ospSetParam(model, "transferFunction", OSP_TRANSFER_FUNCTION, &transferFunction);
+  ospSetObject(model, "transferFunction", transferFunction);
   ospCommit(model);
   ospRelease(transferFunction);
 }
@@ -252,19 +263,7 @@ void OSPRayRenderer::addMeshToGroup(OsprayGeometryObject* geometryObject, uint32
 {
   if(!group_) addGroup();
 
-  OsprayGeometryObject::FieldData& data = geometryObject->data;
-
-  float* vertices   = data.vertex.size()   > 0 ? data.vertex.data()   : nullptr;
-  float* colors     = data.color.size()    > 0 ? data.color.data()    : nullptr;
-  float* normals    = data.normal.size()   > 0 ? data.normal.data()   : nullptr;
-  float* texCoords  = data.texCoord.size() > 0 ? data.texCoord.data() : nullptr;
-  uint32_t* indices = data.index.size()    > 0 ? data.index.data()    : nullptr;
-
-  uint32_t numVertices = data.vertex.size() / 3;
-  size_t numPolygons = data.index.size() / vertsPerPoly;
-
-  OSPGeometry geometry = dataManager.updateAndGetMesh(geometryObject->id, geometryObject->version,
-    vertices, normals, colors, texCoords, indices, numVertices, numPolygons, vertsPerPoly);
+  OSPGeometry geometry = dataManager.updateAndGetMesh(geometryObject, vertsPerPoly);
 
   OSPGeometricModel model = ospNewGeometricModel(geometry);
   addMaterial(model, geometryObject->material); //also commits changes
@@ -278,10 +277,7 @@ void OSPRayRenderer::addStructuredVolumeToGroup(OsprayGeometryObject* geometryOb
 {
   if(!group_) addGroup();
 
-  OsprayGeometryObject::FieldData& data = geometryObject->data;
-
-  OSPVolume volume = dataManager.updateAndgetStructuredVolume(geometryObject->id, geometryObject->version,
-    data.origin, data.spacing, data.dim, data.color.data());
+  OSPVolume volume = dataManager.updateAndgetStructuredVolume(geometryObject);
 
   OSPVolumetricModel model = ospNewVolumetricModel(volume);
   addTransferFunction(model, geometryObject->tfn); //also commits changes
@@ -340,3 +336,5 @@ void OSPRayRenderer::setLightsAsObject()
     ospRelease(light);
   ospCommit(world_);
 }
+
+#endif

@@ -196,7 +196,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
   ;
 }
 
-ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
+ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state) const
 {
   for (const auto& makerPair : dialogMakerMap_)
   {

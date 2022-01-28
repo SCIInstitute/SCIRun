@@ -46,6 +46,7 @@ using namespace SCIRun::Core::Datatypes;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 std::set<ModuleDialogGeneric*> ModuleDialogGeneric::instances_;
+ModuleDialogFactoryInterfaceHandle ModuleDialogGeneric::factory_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -347,14 +348,18 @@ public:
   std::string guiToAlgo(const std::string& key) const
   {
     if (empty())
-      return {};
+    {
+      return key;
+    }
 
     return findOrFirst(guiToAlgoLookup_, key);
   }
   std::string algoToGui(const std::string& key) const
   {
     if (empty())
-      return {};
+    {
+      return key;
+    }
 
     return findOrFirst(algoToGuiLookup_, key);
   }
@@ -417,7 +422,7 @@ public:
     const auto qstring = QString::fromStdString(stringMap_.algoToGui(value));
     if (qstring != comboBox_->currentText())
     {
-      LOG_TRACE("In new version of pull code for combobox: {}", value);
+      LOG_TRACE("In new version of pull code for combobox: {} {}", value, comboBox_->findText(qstring));
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }
@@ -1121,4 +1126,14 @@ void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
   {
     moduleDialog->postMoveEventCallback(e->pos());
   }
+}
+
+ModuleDialogFactoryInterfaceHandle ModuleDialogGeneric::factory()
+{
+  return factory_;
+}
+
+void ModuleDialogGeneric::setFactory(ModuleDialogFactoryInterfaceHandle f)
+{
+  factory_ = f;
 }

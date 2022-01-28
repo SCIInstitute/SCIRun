@@ -867,11 +867,6 @@ void GeometryBuilder::renderNodes(
 
   nodeTransparencyValue_ = static_cast<float>(state_->getValue(NodeTransparencyValue).toDouble());
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
-  // Use spheres...
-  if (state.get(RenderState::ActionFlags::USE_SPHERE))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
@@ -900,7 +895,7 @@ void GeometryBuilder::renderNodes(
     //accumulate VBO or IBO data
     if (state.get(RenderState::ActionFlags::USE_SPHERE))
     {
-      glyphs.addSphere(p, radius, num_strips, node_color);
+      glyphs.addSphere(p, radius, num_strips, node_color, false, 0.0);
     }
     else
     {
@@ -911,7 +906,7 @@ void GeometryBuilder::renderNodes(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
 
 
@@ -960,11 +955,6 @@ void GeometryBuilder::renderEdges(
   ss << state.get(RenderState::ActionFlags::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "edge" + ss.str();
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
-  // Use cylinders...
-  if (state.get(RenderState::ActionFlags::USE_CYLINDER))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
@@ -1034,9 +1024,9 @@ void GeometryBuilder::renderEdges(
     {
       if (state.get(RenderState::ActionFlags::USE_CYLINDER))
       {
-        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
-        glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
-        glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
+        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1], false, 0.0);
+        glyphs.addSphere(p0, radius, num_strips, edge_colors[0], false, 0.0);
+        glyphs.addSphere(p1, radius, num_strips, edge_colors[1], false, 0.0);
       }
       else
       {
@@ -1048,7 +1038,7 @@ void GeometryBuilder::renderEdges(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)

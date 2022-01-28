@@ -247,6 +247,12 @@ namespace SCIRun {
       explicit DeveloperControls(ViewSceneDialog* parent);
     };
 
+#ifndef WIN32
+#define LightSliderType QwtKnob
+#else
+#define LightSliderType QSlider
+#endif
+
     class SCISHARE LightControls : public QWidget, public Ui::LightControls, public LightButtonUpdater
     {
       Q_OBJECT
@@ -256,8 +262,8 @@ namespace SCIRun {
       void setAdditionalLightState(int azimuth, int inclination, bool on);
     private:
       int lightNumber_ {-1};
-      QwtKnob* lightAzimuthSlider_{nullptr};
-      QwtKnob* lightInclinationSlider_{ nullptr };
+      LightSliderType* lightAzimuthSlider_{nullptr};
+      LightSliderType* lightInclinationSlider_{ nullptr };
 
     private Q_SLOTS:
       void resetAngles();

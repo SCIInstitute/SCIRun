@@ -73,6 +73,9 @@ namespace Gui {
     void moveEvent(QMoveEvent* e) override;
   };
 
+  class ModuleDialogFactoryInterface;
+  using ModuleDialogFactoryInterfaceHandle = SharedPointer<ModuleDialogFactoryInterface>;
+
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
     Q_OBJECT
@@ -92,6 +95,9 @@ namespace Gui {
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
     virtual void postMoveEventCallback(const QPoint&) {}
+    //TODO
+    static ModuleDialogFactoryInterfaceHandle factory();
+    static void setFactory(ModuleDialogFactoryInterfaceHandle f);
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
@@ -206,6 +212,7 @@ namespace Gui {
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
     static std::set<ModuleDialogGeneric*> instances_;
+    static ModuleDialogFactoryInterfaceHandle factory_;
   };
 
   SCISHARE QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -222,6 +229,13 @@ namespace Gui {
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
   SCISHARE std::vector<QString> toQStringVector(const std::vector<std::string>& strVec);
+
+  class SCISHARE ModuleDialogFactoryInterface
+  {
+  public:
+    virtual ~ModuleDialogFactoryInterface() = default;
+    virtual ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state) const = 0;
+  };
 }
 }
 

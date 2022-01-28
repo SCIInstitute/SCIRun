@@ -42,7 +42,7 @@ namespace Engine {
   {
   public:
     SerialExecutionStrategy();
-    void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
+    std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
   private:
     SharedPointer<SerialExecutionStrategyPrivate> impl_;
   };

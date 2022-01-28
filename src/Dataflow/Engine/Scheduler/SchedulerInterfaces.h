@@ -29,13 +29,14 @@
 #ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
-#include <iostream>
+#include <future>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 #include <boost/signals2.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Dataflow/Engine/Scheduler/share.h>
+
 
 namespace SCIRun {
 namespace Dataflow {
@@ -48,11 +49,11 @@ namespace Engine {
   {
   public:
     virtual ~Scheduler() {}
-    virtual OrderType schedule(const Networks::NetworkInterface& network) const = 0;
+    virtual OrderType schedule(const Networks::NetworkStateInterface& network) const = 0;
   };
 
-  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
-  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
+  using ExecuteAllStartsSignalType = boost::signals2::signal<void()>;
+  using ExecuteAllFinishesSignalType = boost::signals2::signal<void(int)>;
 
   struct SCISHARE ExecutionBounds : boost::noncopyable
   {
@@ -60,7 +61,7 @@ namespace Engine {
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
-  class SCISHARE ScopedExecutionBoundsSignaller
+  class SCISHARE ScopedExecutionBoundsSignaller : boost::noncopyable
   {
   public:
     ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, std::function<int()> errorCodeRetriever);
@@ -70,27 +71,35 @@ namespace Engine {
     std::function<int()> errorCodeRetriever_;
   };
 
-  struct SCISHARE ExecutionContext : boost::noncopyable
+  class SCISHARE ExecutionContext : boost::noncopyable
   {
-    explicit ExecutionContext(Networks::NetworkInterface& net);
-    ExecutionContext(Networks::NetworkInterface& net,
-                     const Networks::ExecutableLookup& lkp) : network_(net), lookup_(lkp) {}
+  public:
+    explicit ExecutionContext(Networks::NetworkStateInterface& net);
+    ExecutionContext(Networks::NetworkStateInterface& net,
+                     const Networks::ExecutableLookup* lkp) : network_(net), lookup_(lkp) {}
 
-    ExecutionContext(Networks::NetworkInterface& net,
-      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network_(net), lookup_(lkp), additionalFilter_(filter) {}
+    ExecutionContext(Networks::NetworkStateInterface& net,
+      const Networks::ExecutableLookup* lkp, Networks::ModuleFilter filter)
+      : network_(net), lookup_(lkp), additionalFilter_(filter) {}
 
     void preexecute();
-    Networks::NetworkInterface& network_;
-    const Networks::ExecutableLookup& lookup_;
-    Networks::ModuleFilter additionalFilter_;
-
     Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
 
     //todo: seems like a better place for this
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-    static ExecutionBounds executionBounds_;
+    static boost::signals2::connection connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    static boost::signals2::connection connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+
+    Networks::NetworkStateInterface& network() const { return network_; }
+    const Networks::ExecutableLookup* lookup() const { return lookup_; }
+    Networks::ModuleFilter additionalFilter() const { return additionalFilter_; }
+    static ExecutionBounds& globalExecutionBounds();
+  private:
+    Networks::NetworkStateInterface& network_;
+    const Networks::ExecutableLookup* lookup_;
+    Networks::ModuleFilter additionalFilter_;
+    ExecutionBounds executionBounds_;
+    static ExecutionBounds globalExecutionBounds_;
   };
 
   typedef SharedPointer<ExecutionContext> ExecutionContextHandle;
@@ -99,41 +108,41 @@ namespace Engine {
   class NetworkExecutor
   {
   public:
-    virtual ~NetworkExecutor() {}
+    virtual ~NetworkExecutor() = default;
     //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
-    virtual void execute(const ExecutionContext& context, OrderType order, Core::Thread::Mutex& executionLock) = 0;
+    virtual std::future<int> execute(const ExecutionContext& context, OrderType order, Core::Thread::Mutex& executionLock) = 0;
   };
 
   class ModuleExecutionOrder;
   typedef SharedPointer<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
   template <class OrderType>
-  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
+  std::future<int> executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
   {
     OrderType order;
     try
     {
-      order = scheduler.schedule(context.network_);
+      order = scheduler.schedule(context.network());
     }
     catch (NetworkHasCyclesException&)
     {
       /// @todo: use real logger here--or just let this exception bubble up--needs testing.
       logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
       context.bounds().executeFinishes_(-1);
-      return;
+      return {};
     }
-    executor.execute(context, order, executionLock);
+    return executor.execute(context, order, executionLock);
   }
 
   struct SCISHARE ExecuteAllModules
   {
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const { return true; }
+    bool operator()(Networks::ModuleHandle) const { return true; }
     static const ExecuteAllModules& Instance();
   };
 
   struct SCISHARE ModuleWaitingFilter
   {
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const;
+    bool operator()(Networks::ModuleHandle mh) const;
     static const ModuleWaitingFilter& Instance();
   };
 
@@ -141,11 +150,11 @@ namespace Engine {
 
   struct SCISHARE ExecuteSingleModule
   {
-    ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
-      const SCIRun::Dataflow::Networks::NetworkInterface& network, bool executeUpstream);
-    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
+    ExecuteSingleModule(Networks::ModuleHandle mod,
+      const Networks::NetworkStateInterface& network, bool executeUpstream);
+    bool operator()(Networks::ModuleHandle) const;
   private:
-    SCIRun::Dataflow::Networks::ModuleHandle module_;
+    Networks::ModuleHandle module_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
     SharedPointer<ExecuteSingleModuleImpl> orderImpl_;

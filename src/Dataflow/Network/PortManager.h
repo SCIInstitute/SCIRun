@@ -104,36 +104,36 @@ template<class T>
 size_t
 PortManager<T>::add(const T& item)
 {
-  auto lastIndexWithSameName = lastIndexByName(item->id().name);
+  auto lastIndexWithSameName = lastIndexByName(item->internalId().name);
 
-  ports_[item->id()] = item;
-  isDynamic_[item->id().name] = item->isDynamic();
+  ports_[item->internalId()] = item;
+  isDynamic_[item->internalId().name] = item->isDynamic();
 
   if (item->isDynamic())
   {
-    auto availableIndex = checkDynamicPortInvariant(item->id().name);
+    auto availableIndex = checkDynamicPortInvariant(item->internalId().name);
 
     if (lastIndexWithSameName >= 0)
     {
       const auto newPortIndex = availableIndex >= 0 ? availableIndex : lastIndexWithSameName + 1;
-      DYNAMIC_PORT_LOG(std::cout << "cloned port: " << item->id().toString() << " newIndex: " << newPortIndex << std::endl);
+      DYNAMIC_PORT_LOG(std::cout << "cloned port: " << item->internalId().toString() << " newIndex: " << newPortIndex << std::endl);
 
       for (auto& portPair : ports_)
       {
-        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
+        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->internalId().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
 
         if (static_cast<int>(portPair.second->getIndex()) >= newPortIndex)
           portPair.second->incrementIndex();
       }
 
-      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
+      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->internalId().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
 
       return newPortIndex;
     }
   }
 
 
-  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;);
+  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->internalId().toString() << " newIndex: " << size() - 1 << std::endl;);
 
   return size() - 1;
 }
@@ -148,7 +148,7 @@ PortManager<T>::lastIndexByName(const std::string& name) const
     return -1;
 
   DYNAMIC_PORT_LOG(std::cout << name << "  Input port object indexes:\n");
-  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;);
+  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->internalId() << " " << input->internalId().name << " " << input->getIndex() << std::endl;);
 
   return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
 }
@@ -164,7 +164,7 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
   {
     auto port = byName[i];
     if (0 == port->nconnections() && i != lastIndex)
-      toRemove.push_back(port->id());
+      toRemove.push_back(port->internalId());
   }
   int lastRemovedIndex = -1;
   for (const auto& id : toRemove)
@@ -212,7 +212,7 @@ PortManager<T>::operator[](const PortId& id)
         throwForPortNotFound(id);
       }
       auto newPort = SharedPointer<typename T::element_type>(byName[0]->clone());
-      newPort->setId(id);
+      newPort->setId_DynamicCase(id);
       newPort->setIndex(moduleAdd_(newPort));
 
       return newPort;
@@ -272,7 +272,7 @@ std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
     ports_ | boost::adaptors::map_values
            | boost::adaptors::filtered([&](const T& port)
            {
-             return port->get_portname() == name || boost::starts_with(port->id().toString(), name);
+             return port->get_portname() == name || boost::starts_with(port->internalId().toString(), name);
            }),
       std::back_inserter(portsWithName));
 

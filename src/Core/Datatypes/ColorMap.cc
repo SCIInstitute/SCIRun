@@ -217,11 +217,14 @@ inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double
   return ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
 }
 
-double ColorMap::alpha(double transformedValue) const
+double ColorMap::alpha(double v) const
 {
+  // This rescales the value so the alpha values match the color
+  v = clamp(static_cast<double>((v + rescale_shift_) * rescale_scale_), 0.0, 1.0);
+
   if (alphaLookup_.empty()) return 0.5;
   size_t i;
-  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
+  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < v); i += 2);
 
   double startx = 0.0f, starty, endx = 1.0f, endy;
   if (i == 0)
@@ -242,7 +245,7 @@ double ColorMap::alpha(double transformedValue) const
     endy = alphaLookup_[i + 1];
   }
 
-  double interp = (transformedValue - startx) / (endx - startx);
+  double interp = (v - startx) / (endx - startx);
   double value = ((1.0f - interp) * starty + (interp) * endy);
   return value;
 }
@@ -257,7 +260,7 @@ ColorRGB ColorMap::getColorMapVal(double v) const
 {
   double f = getTransformedValue(v);
   auto colorWithoutAlpha = readColorFromArray(colorData_, f);
-  return applyAlpha(f, colorWithoutAlpha);
+  return applyAlpha(v, colorWithoutAlpha);
 }
 
 ColorRGB ColorMap::valueToColor(double scalar) const
@@ -296,59 +299,25 @@ double ColorMap::valueToIndex(Tensor &tensor) const
   return getTransformedValue(magnitude);
 }
 
-//TODO: heavily refactor
-ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
+ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 {
-  opacityList.push_back(0.5);
-  opacityList.push_back(0.5);
-
   const std::vector<ColorRGB>* colorData;
-  auto entry = standardColorMaps.find(name);
+  auto entry = standardColorMaps.find(cmap->getColorMapName());
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
 
-  for(auto& color : *colorData)
+  min_ = -cmap->getColorMapRescaleShift();
+  auto range = (1.0/cmap->getColorMapRescaleScale());
+  max_ = min_ + range;
+  auto v = min_;
+  auto inc = range/colorData->size();
+  for (int i = 0; i <= colorData->size(); ++i)
   {
-    colorList.push_back(color.r());
-    colorList.push_back(color.g());
-    colorList.push_back(color.b());
+    auto color = cmap->valueToColor(v);
+    colorList_.push_back(color.r());
+    colorList_.push_back(color.g());
+    colorList_.push_back(color.b());
+    opacityList_.push_back(color.a());
+    v += inc;
   }
-
-  /*
-  if(name.compare("Rainbow") == 0){
-    colorList.push_back(0); colorList.push_back(0);     colorList.push_back(1);
-    colorList.push_back(0); colorList.push_back(0.75);  colorList.push_back(0.75);
-    colorList.push_back(0); colorList.push_back(1);     colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0.5);   colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0);
-  }else if(name.compare("Old Rainbow") == 0){
-    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(1);
-    colorList.push_back(0); colorList.push_back(1);  colorList.push_back(1);
-    colorList.push_back(0); colorList.push_back(1);  colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
-  }else if(name.compare("Blackbody") == 0){
-    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);
-  }else if(name.compare("Grayscale") == 0){
-    colorList.push_back(0); colorList.push_back(0);     colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(1);     colorList.push_back(1);
-  }else if(name.compare("Orange,Black,Lime") == 0){
-    colorList.push_back(1); colorList.push_back(0.5); colorList.push_back(0);
-    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0);
-    colorList.push_back(0); colorList.push_back(1);   colorList.push_back(0);
-  }else if(name.compare("Darkhue") == 0){
-    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0);
-    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0.333333f);
-    colorList.push_back(0.5); colorList.push_back(0); colorList.push_back(0.5);
-    colorList.push_back(1); colorList.push_back(0);   colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0.25f*2.6666666f);
-  }else if(name.compare("BP Seismic") == 0){
-    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(1);
-    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);
-    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
-  }
-  */
 }
