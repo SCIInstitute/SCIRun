@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2008 Scientific Computing and Imaging Institute,
+   Copyright (c) 2022 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -37,23 +37,11 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/BundlePort.h>
 
-namespace SCIRunAlgo {
-
-
-int min(int a, int b){
-	if (a<=b){
-	return a; 
-	}
-	else{
-	return b;
-	}
-}
  
 bool CalculateBundleDifferenceAlgo::run(BundleHandle handle1, BundleHandle handle2, BundleHandle seedHandle,BundleHandle& outHandle1, BundleHandle& outHandle2) 
 {
   algo_start("CalculateBundleDifference",false);
 
-//!safety check
   if (handle1.get_rep() == 0)
 	{
 	error("The first bundle is missing");
@@ -72,21 +60,16 @@ bool CalculateBundleDifferenceAlgo::run(BundleHandle handle1, BundleHandle handl
 	algo_end(); return (false);
 	}
 
-//BundleHandle outHandle1; BundleHandle outHandle2;
 int tmpi=0;
 
 outHandle1=handle1;
 outHandle2=handle2;
 
-//  if (!(get_input_handle("bundle1",handle1,false))) return true;
-//  if (!(get_input_handle("bundle2",handle2,false))) return true;
-//  if (!(get_input_handle("seed",seedHandle,false))) return true;
-
 
 int numFields1 = handle1->numFields();
 int numFields2 = handle2->numFields();
 
-cout<<" the number of fields is "<<numFields1<<"  "<<numFields2<<endl;
+//cout<<" the number of fields is "<<numFields1<<"  "<<numFields2<<endl;
 
 //! deal with the empty field, if this is the case just return, do nothing
 //if ( (numFields1==0) || (numFields1==0) ) return (true);
@@ -103,27 +86,11 @@ VMesh::Node::index_type i1,i2,ic,id,si;
 VMesh* smesh;
 VMesh* imesh1;
 VMesh* imesh2;
-/*
-for (int p = 0; p < numFields1; p++)
-    {
-	fieldname=handle1->getFieldName(p);	
-	fhandle = handle1->getField(fieldname); 
-	VMesh* imesh1=fhandle->vmesh();
-	nnodes1 = imesh1->num_nodes();
-	imesh1->get_center(point,ii);
-
-    }
-
-cout<<"the number of nodes is  "<<nnodes1<<endl;
-cout<<" the value of the node is "<<point(0)<<endl;
-*/
 
 fieldnames=seedHandle->getFieldName(0);	
 fhandle_seed = seedHandle->getField(fieldnames);
 smesh=fhandle_seed->vmesh();
 nnodes_seed = smesh->num_nodes();
-
-//VMesh::Node::size_type nnodes1[int(nnodes_seed)], nnodes2[int(nnodes_seed)];
 
 VMesh::Node::size_type nnodes1, nnodes2;
 
@@ -139,11 +106,6 @@ for (int p = 0; p <nnodes_seed ; p++){
 //Change the points to coordinate
 
 
-//cout<<"the number of seed points is  "<<nnodes_seed<<endl;
-
-
-
-
 //!loop into each fiber in bundle 1
 for (int p = 0; p < numFields1; p++)
     {
@@ -151,15 +113,6 @@ for (int p = 0; p < numFields1; p++)
 	fhandle1 = handle1->getField(fieldname1); 
 	imesh1=fhandle1->vmesh();
 	nnodes1 = imesh1->num_nodes();
-
-//	for (int p2 = 0; p2 < nnodes1; p2++)
-//	{	
-//		i1=p2;	
-//		imesh1->get_center(point1,i1); 
-//		cout<<"points"<<" "<<point1/0.45<<" "<<endl;	
-//	}
-	 
-
 	}
 //!loop into each fiber in bundle 2
 for (int p = 0; p < numFields2; p++)
@@ -170,35 +123,12 @@ for (int p = 0; p < numFields2; p++)
 	nnodes2 = imesh2->num_nodes();
     }
 
-
-/*
-for (int p = 0; p < nnodes2; p++)
-    {	
-	i2=p;	
-	imesh2->get_center(point2,i2); 
-	cout<<"points"<<" "<<point2/0.45<<" "<<endl;
-    }
-*/
-
-//cout<<"the number of nodes is  "<<nnodes1<<endl;
-//cout<<"the number of nodes is  "<<nnodes2<<endl;
-
-
-
-
 //!search the corresponding fiber for the same seed point
 //!the condition for the same point is not that the difference of the x y z coordinate is 0
 //! but the difference for x,y,z coordinate is 1.0E-4, this maybe accurate enough
 
 int boundleseed1[int(nnodes_seed)][2], boundleseed2[int(nnodes_seed)][2];
 double sx, sy, sz;
-
-//for (int p=0; p<nnodes_seed; p++){
-
-//boundleseed1[p][0]=0; boundleseed1[p][1]=0;
-//boundleseed2[p][0]=0; boundleseed2[p][1]=0;
-
-//}
 
 for (int p=0; p<nnodes_seed; p++){
 		sx=points[p](0);
@@ -251,13 +181,6 @@ for (int p=0; p<nnodes_seed; p++){
   		  }
 }		
 
-//for (int p=0; p<nnodes_seed; p++){
-
-//cout<<boundleseed1[p][0]<<" "<<boundleseed1[p][1]<<endl;
-//cout<<boundleseed2[p][0]<<" "<<boundleseed2[p][1]<<endl;
-
-//}
-
 //!this part will check the order of array, whether the array for the fibers oriented in the same or 
 //! opposite direction. If not, inverse the order of the array
 
@@ -296,15 +219,7 @@ for (int p=0; p<nnodes_seed; p++){
 	else {
 		dir_label[p]=0;	
 	}
-//			cout<<" should be right"<<endl;
-//			cout<<dir_label[p]<<endl;
-//	 		cout<<" should be right"<<endl;
 }		
-
-
-
-
-
 
 int fi, bi;
 double dist, max_dist=0.0;
@@ -315,8 +230,6 @@ float max_area=0.0;
 VField* outField1;
 VField* outField2; 
 
-//cout<<"the maximum area is "<<max_area<<" "; tmpi++;
-
  
 if (check_option("method","distance_between_nodes"))
 {
@@ -325,13 +238,10 @@ if (check_option("method","distance_between_nodes"))
 			out_fieldname1=outHandle1->getFieldName(boundleseed1[p][0]);	
 			out_fhandle1 = outHandle1->getField(out_fieldname1); 
 			outField1=out_fhandle1->vfield();
-	//		outField1->set_value(0,int(points[p][1]));
 	
 			out_fieldname2=outHandle2->getFieldName(boundleseed2[p][0]);	
 			out_fhandle2 = outHandle2->getField(out_fieldname2); 
 			outField2=out_fhandle2->vfield();
-	//		outField2->set_value(0,int(points[p][1]));
-	
 			
 			fieldname1=handle1->getFieldName(boundleseed1[p][0]);	
 			fhandle1 = handle1->getField(fieldname1); 
@@ -352,13 +262,8 @@ if (check_option("method","distance_between_nodes"))
 				bi=min( (nnodes1-boundleseed1[p][1]-1),boundleseed2[p][1] );
 			}
 			else {
-				
 	
 			}
-	
-	
-	
-	//		cout<<fi<<" "<<bi<<endl;
 	
 	//this part calculate the common area of the two fiber bundles
 			
@@ -370,7 +275,6 @@ if (check_option("method","distance_between_nodes"))
 					imesh2->get_center(point2,i2);
 					dist=sqrt((point2[0]-point1[0])*(point2[0]-point1[0])+(point2[1]-point1[1])*(point2[1]-point1[1])+(point2[2]-point1[2])*(point2[2]-point1[2]));
 					if(dist>max_dist) max_dist=dist;
-		
 				}
 		
 				for (int q=0; q<bi;q++){			
@@ -390,7 +294,6 @@ if (check_option("method","distance_between_nodes"))
 					imesh2->get_center(point2,i2);
 					dist=sqrt((point2[0]-point1[0])*(point2[0]-point1[0])+(point2[1]-point1[1])*(point2[1]-point1[1])+(point2[2]-point1[2])*(point2[2]-point1[2]));
 					if(dist>max_dist) max_dist=dist;
-		
 				}
 		
 				for (int q=0; q<bi;q++){			
@@ -413,16 +316,13 @@ if (check_option("method","distance_between_nodes"))
 			for (int q=0; q<nnodes2;q++){			
 				i2=q;			 		 
 				outField2->set_value(max_dist*(1.2),i2);			 
-	
 			}
-	
 	
 	// set up the value for the seed region 
 			i1=boundleseed1[p][1];
 			i2=boundleseed2[p][1];
 			outField1->set_value( 0,i1);
 			outField2->set_value( 0,i2);
-	
 	
 	//this part calculate the common area of the two fiber bundles
 	
@@ -448,10 +348,6 @@ if (check_option("method","distance_between_nodes"))
 					dist=sqrt((point2[0]-point1[0])*(point2[0]-point1[0])+(point2[1]-point1[1])*(point2[1]-point1[1])+(point2[2]-point1[2])*(point2[2]-point1[2]));
 					if(dist>max_dist) max_dist=dist;
 		
-		//			cout<<point1[0]<<" "<<point1[1]<<" "<<point1[2]<<endl;
-		//			cout<<point2[0]<<" "<<point2[1]<<" "<<point2[2]<<endl;
-		//			cout<<dist<<endl<<endl;
-					
 					outField1->set_value( dist,i1);
 					outField2->set_value( dist,i2);	
 		
@@ -468,7 +364,6 @@ if (check_option("method","distance_between_nodes"))
 					
 					outField1->set_value( dist,i1);
 					outField2->set_value( dist,i2);
-		
 				}
 		
 				for (int q=0; q<bi;q++){			
@@ -479,27 +374,20 @@ if (check_option("method","distance_between_nodes"))
 					dist=sqrt((point2[0]-point1[0])*(point2[0]-point1[0])+(point2[1]-point1[1])*(point2[1]-point1[1])+(point2[2]-point1[2])*(point2[2]-point1[2]));
 					if(dist>max_dist) max_dist=dist;
 		
-		//			cout<<point1[0]<<" "<<point1[1]<<" "<<point1[2]<<endl;
-		//			cout<<point2[0]<<" "<<point2[1]<<" "<<point2[2]<<endl;
-		//			cout<<dist<<endl<<endl;
-					
 					outField1->set_value( dist,i1);
 					outField2->set_value( dist,i2);	
 		
 				}
 			}
-			
 		} //end for the boundleseed1 checking	
 	}
 
 	for (int p = 0; p <nnodes_seed ; p++){
-
 		 
 		if ( (boundleseed1[p][0]!=-1) & (boundleseed2[p][0]==-1) ){
 			out_fieldname1=outHandle1->getFieldName(boundleseed1[p][0]);	
 			out_fhandle1 = outHandle1->getField(out_fieldname1); 
 			outField1=out_fhandle1->vfield();
-	//		outField1->set_value(0,int(points[p][1]));
 	
 			fieldname1=handle1->getFieldName(boundleseed1[p][0]);	
 			fhandle1 = handle1->getField(fieldname1); 
@@ -518,7 +406,6 @@ if (check_option("method","distance_between_nodes"))
 			out_fieldname2=outHandle2->getFieldName(boundleseed2[p][0]);	
 			out_fhandle2 = outHandle2->getField(out_fieldname2); 
 			outField2=out_fhandle2->vfield();
-	//		outField2->set_value(0,int(points[p][1]));
 				 
 			fieldname2=handle2->getFieldName(boundleseed2[p][0]);	
 			fhandle2 = handle2->getField(fieldname2); 
@@ -528,10 +415,7 @@ if (check_option("method","distance_between_nodes"))
 			for (int q=0; q<nnodes2;q++){			
 				i2=q;			 		 
 				outField2->set_value(max_dist*(1.2),i2);			 
-	
 			}
-	
-			
 		}
 		else{
 			printf("there is a empty field \n");
@@ -545,13 +429,10 @@ else if (check_option("method","area_between_fibers"))
 			out_fieldname1=outHandle1->getFieldName(boundleseed1[p][0]);	
 			out_fhandle1 = outHandle1->getField(out_fieldname1); 
 			outField1=out_fhandle1->vfield();
-	//		outField1->set_value(0,int(points[p][1]));
 	
 			out_fieldname2=outHandle2->getFieldName(boundleseed2[p][0]);	
 			out_fhandle2 = outHandle2->getField(out_fieldname2); 
 			outField2=out_fhandle2->vfield();
-	//		outField2->set_value(0,int(points[p][1]));
-	
 			
 			fieldname1=handle1->getFieldName(boundleseed1[p][0]);	
 			fhandle1 = handle1->getField(fieldname1); 
@@ -571,10 +452,6 @@ else if (check_option("method","area_between_fibers"))
 				fi=min(boundleseed1[p][1],(nnodes2-boundleseed2[p][1]-1) );
 				bi=min( (nnodes1-boundleseed1[p][1]-1),boundleseed2[p][1] );
 			}
-	
-	
-	
-	//		cout<<fi<<" "<<bi<<endl;
 	
 	//this part calculate the common area of the two fiber bundles
 	
@@ -602,10 +479,7 @@ else if (check_option("method","area_between_fibers"))
 					area2=sqrt(s2*(s2-dist_ac)*(s2-dist_ad)*(s2-dist_cd));
 					
 					area=area1+area2;
-	//				cout<<" the area is s1 s2 dist_ab dist_cd  dist_ac dist_db dist_ad"<<s1<<" "<<s2<<" "<<dist_ab<<" "<<dist_cd<<" "<<dist_ac<<" "<<dist_db<<" "<<dist_ad<<"      ||";
 					if(area>max_area) max_area=area;
-				
-		
 				}
 		
 				for (int q=0; q<(bi-1);q++){			
@@ -632,7 +506,6 @@ else if (check_option("method","area_between_fibers"))
 					
 					area=area1+area2;
 					if(area>max_area) max_area=area;
-				
 				}
 			}
 			else{
@@ -660,8 +533,6 @@ else if (check_option("method","area_between_fibers"))
 					
 					area=area1+area2;
 					if(area>max_area) max_area=area;
-					
-		
 				}
 		
 				for (int q=0; q<(bi-1);q++){			
@@ -669,9 +540,6 @@ else if (check_option("method","area_between_fibers"))
 					imesh1->get_center(point1,i1);
 					i2=boundleseed2[p][1]-q-1;	
 					imesh2->get_center(point2,i2);
-	
-	
-	
 	
 					ic=boundleseed1[p][1]+q+2;	
 					imesh1->get_center(pointc,ic);
@@ -691,7 +559,6 @@ else if (check_option("method","area_between_fibers"))
 					
 					area=area1+area2;
 					if(area>max_area) max_area=area;			 
-	
 				}
 			}
 	
@@ -699,26 +566,18 @@ else if (check_option("method","area_between_fibers"))
 			for (int q=0; q<nnodes1;q++){			
 				i1=q;			 		 
 				outField1->set_value(max_area*(1.0),i1);			 
-	
 			}
 	//this part set up the value for all of the node in bundle 2
 			for (int q=0; q<nnodes2;q++){			
 				i2=q;			 		 
 				outField2->set_value(max_area*(1.0),i2);			 
-	
 			}
-	
-	
-	//cout<<"the maximum area is "<<max_area<<" ";
-	
-	
 	
 	// set up the value for the seed region 
 			i1=boundleseed1[p][1];
 			i2=boundleseed2[p][1];
 			outField1->set_value( 0,i1);
 			outField2->set_value( 0,i2);
-	
 	
 	//this part calculate the common area of the two fiber bundles
 	
@@ -750,7 +609,6 @@ else if (check_option("method","area_between_fibers"))
 					
 					outField1->set_value( area,i1);
 					outField2->set_value( area,i2);
-		
 				}
 		
 				for (int q=0; q<(bi-1);q++){			
@@ -780,7 +638,6 @@ else if (check_option("method","area_between_fibers"))
 					
 					outField1->set_value( area,i1);
 					outField2->set_value( area,i2); 
-		
 				}
 			}
 			else{
@@ -820,9 +677,6 @@ else if (check_option("method","area_between_fibers"))
 					i2=boundleseed2[p][1]-q-1;	
 					imesh2->get_center(point2,i2);
 	
-	
-	
-	
 					ic=boundleseed1[p][1]+q+2;	
 					imesh1->get_center(pointc,ic);
 					id=boundleseed2[p][1]-q-2;	
@@ -844,10 +698,8 @@ else if (check_option("method","area_between_fibers"))
 					
 					outField1->set_value( area,i1);
 					outField2->set_value( area,i2); 
-	
 				}
 			}
-	//		cout<<"the maximum area is "<<max_area<<" ";
 		}
 	}
 
@@ -858,7 +710,6 @@ else if (check_option("method","area_between_fibers"))
 			out_fieldname1=outHandle1->getFieldName(boundleseed1[p][0]);	
 			out_fhandle1 = outHandle1->getField(out_fieldname1); 
 			outField1=out_fhandle1->vfield();
-	//		outField1->set_value(0,int(points[p][1]));
 	
 			fieldname1=handle1->getFieldName(boundleseed1[p][0]);	
 			fhandle1 = handle1->getField(fieldname1); 
@@ -868,16 +719,13 @@ else if (check_option("method","area_between_fibers"))
 			for (int q=0; q<nnodes1;q++){			
 				i1=q;			 		 
 				outField1->set_value(max_area*(1.2),i1);			 
-	
 			}
-		
 		}
 		else if ( (boundleseed1[p][0]==-1) & (boundleseed2[p][0]!=-1) ){
 				
 			out_fieldname2=outHandle2->getFieldName(boundleseed2[p][0]);	
 			out_fhandle2 = outHandle2->getField(out_fieldname2); 
 			outField2=out_fhandle2->vfield();
-	//		outField2->set_value(0,int(points[p][1]));
 				
 			fieldname2=handle2->getFieldName(boundleseed2[p][0]);	
 			fhandle2 = handle2->getField(fieldname2); 
@@ -887,23 +735,13 @@ else if (check_option("method","area_between_fibers"))
 			for (int q=0; q<nnodes2;q++){			
 				i2=q;			 		 
 				outField2->set_value(max_area*(1.2),i2);			 
-	
 			}
-	
-			
 		}
 		else{
 			printf("there is a empty field \n");
 		}
-	}// for (int p = 0; p <nnodes_seed ; p++) ended	
-
-} //if (check_option("method","node-based")) ended
-
-
-
-algo_end(); return (true);
+	}
+} 
+return (true);
 
 }
-
-} // end namespace SCIRunAlgo
-
