@@ -30,7 +30,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/GravitySimulationAlgo.h>
 
-using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;

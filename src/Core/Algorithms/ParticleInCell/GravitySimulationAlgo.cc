@@ -71,7 +71,6 @@ AlgorithmOutput GravitySimulationAlgo::run(const AlgorithmInput&) const
 ************************ Source code for the GravitySim program ************************
 */
 
-//#include <time.h>
 using namespace std;
                                                       //Initialize program specific variables
     int iterate_end;

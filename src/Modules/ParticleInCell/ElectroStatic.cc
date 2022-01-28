@@ -30,24 +30,11 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
-/*
 
-//From ModuleShell
-
-using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-*/
-
-//From GravitySimulation.cc:
-
-//using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
-
 
 MODULE_INFO_DEF(ElectroStatic,ParticleInCell,SCIRun);
 
