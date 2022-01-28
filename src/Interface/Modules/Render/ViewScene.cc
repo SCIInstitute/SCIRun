@@ -2665,6 +2665,7 @@ QString ViewSceneDialog::getScreenshotDirectory() {
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
 
+  impl_->screenshotTaker_->setDirectory(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   return impl_->screenshotTaker_->screenshotDirectory();
 }
 
@@ -2677,10 +2678,13 @@ void ViewSceneDialog::setScreenshotDirectory() {
   //ScreenshotControls::setScreenshotDirectory(dir);
 
 
-	{
-		QSettings settings;
-		settings.setValue("screenshotDirectory", QString::fromStdString(Preferences::Instance().screenshotDirectory().string()));
-	}
+	// {
+	// 	QSettings settings;
+	// 	settings.setValue("screenshotDirectory", QString::fromStdString(Preferences::Instance().screenshotDirectory().string()));
+	// }
+
+  state_->setValue(Parameters::ScreenshotDirectory, dir.toStdString());
+
 
 }
 
@@ -2753,6 +2757,7 @@ void ViewSceneDialog::takeScreenshot()
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
 
+  impl_->screenshotTaker_->setDirectory(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   impl_->screenshotTaker_->takeScreenshot();
 }
 
