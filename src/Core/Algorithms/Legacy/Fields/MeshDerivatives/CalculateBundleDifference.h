@@ -28,25 +28,20 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateBUNDLEDIFFERENCE_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateBUNDLEDIFFERENCE_H 1
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
 
-namespace SCIRunAlgo{
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-class SCISHARE CalculateBundleDifferenceAlgo : public AlgoBase
+namespace SCIRun::Core::Algorithms::Fields
+{
+class SCISHARE CalculateBundleDifferenceAlgo : public AlgorithmBase
 {
   public:
-    //! Set defaults
-    CalculateBundleDifferenceAlgo()
-    {
-      //! The output type
-      add_option("method","distance_between_nodes","distance_between_nodes|area_between_fibers");
-    }
-  
-    //! run the algorithm
-    bool run(BundleHandle handle1, BundleHandle handle2, BundleHandle seedHandle,BundleHandle& outHandle1, BundleHandle& outHandle2);
+    CalculateBundleDifferenceAlgo();
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+    bool runImpl(Datatypes::BundleHandle handle1, Datatypes::BundleHandle handle2, Datatypes::BundleHandle seedHandle, Datatypes::BundleHandle& outHandle1, Datatypes::BundleHandle& outHandle2) const;
 };
 
-} // end namespace SCIRunAlgo
+} 
 
 #endif

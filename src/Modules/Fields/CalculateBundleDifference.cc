@@ -30,30 +30,6 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
-//
-//class CalculateBundleDifference : public Module {
-//public:
-//  CalculateBundleDifference(GuiContext*);
-//  virtual ~CalculateBundleDifference() {}
-//
-//  virtual void execute();
-//private:
-//  SCIRunAlgo::CalculateBundleDifferenceAlgo algo_;
-//  GuiString     guibundlename_;
-//  GuiString	method_;	
-//};
-//
-//
-//DECLARE_MAKER(CalculateBundleDifference)
-//  CalculateBundleDifference::CalculateBundleDifference(GuiContext* ctx):
-// 	Module("CalculateBundleDifference", ctx, Source, "Bundle", "SCIRun"),
-//	method_(get_ctx()->subVar("method"),"distance_between_nodes"),
-//      	guibundlename_(get_ctx()->subVar("bundlename",false), "")
-//{
-//	algo_.set_progress_reporter(this);
-//}
-
-
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::Fields;
