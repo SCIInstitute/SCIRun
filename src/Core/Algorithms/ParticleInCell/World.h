@@ -10,7 +10,7 @@ class Species;
 
 /*define constants*/
 namespace Const
-{
+    {
 	const double EPS_0 = 8.85418782e-12;  	// C/(V*m), vacuum permittivity
 	const double QE = 1.602176565e-19;		// C, electron charge
 	const double AMU = 1.660538921e-27;		// kg, atomic mass unit
@@ -18,19 +18,20 @@ namespace Const
 	const double K = 1.380648e-23;			// J/K, Boltzmann constant
 	const double PI = 3.141592653;			// pi
 	const double EvToK = QE/K;				// 1eV in K ~ 11604
-}
+    }
 
 /*object for sampling random numbers*/
-class Rnd {
-public:
-	//constructor: set initial random seed and distribution limits
-	Rnd(): mt_gen{std::random_device()()}, rnd_dist{0,1.0} {}
-	double operator() () {return rnd_dist(mt_gen);}
+class Rnd
+    {
+    public:
+	    //constructor: set initial random seed and distribution limits
+	    Rnd(): mt_gen{std::random_device()()}, rnd_dist{0,1.0} {}
+	    double operator() () {return rnd_dist(mt_gen);}
 
-protected:
-	std::mt19937 mt_gen;	    //random number generator
-	std::uniform_real_distribution<double> rnd_dist;  //uniform distribution
-};
+    protected:
+	    std::mt19937 mt_gen;	    //random number generator
+	    std::uniform_real_distribution<double> rnd_dist;  //uniform distribution
+    };
 
 extern Rnd rnd;		//tell the compiler that an object of type Rnd called rnd is defined somewhere
 
@@ -56,11 +57,12 @@ public:
 	double getDt() const {return dt;}
 	bool isLastTimeStep() const {return ts==num_ts-1;}
 
-	bool inBounds(double3 pos) {
+	bool inBounds(double3 pos)
+        {
 		for (int i=0;i<3;i++)
 			if (pos[i]<x0[i] || pos[i]>=xm[i]) return false;
 		return true;
-	}
+	    }
 
 	/*sets time step and number of time steps*/
 	void setTime(double dt, int num_ts) {this->dt=dt;this->num_ts=num_ts;}
@@ -69,13 +71,14 @@ public:
 	bool advanceTime() {time+=dt;ts++;return ts<=num_ts;}
 
 	/*converts physical position to logical coordinate*/
-    double3 XtoL(double3 x) const {
+    double3 XtoL(double3 x) const 
+        {
 	  	double3 lc;
 			lc[0] = (x[0]-x0(0))/dh(0);
 			lc[1] = (x[1]-x0(1))/dh(1);
 			lc[2] = (x[2]-x0(2))/dh(2);
 			return lc;
-	  }
+	    }
 
 	/*computes charge density from rho = sum(charge*den)*/
 	void computeChargeDensity(std::vector<Species> &species);
