@@ -76,14 +76,9 @@ CalculateFieldDataMetric::CalculateFieldDataMetric()
 
 void CalculateFieldDataMetric::setStateDefaults()
 {
-  // guimethod_(get_ctx()->subVar("method"),"value-mean"),
-  // guifunction_(get_ctx()->subVar("function"),"RESULT = DATA;"),
-  // guienable_function_(get_ctx()->subVar("enable-function"),0),
-  // guimetric_(get_ctx()->subVar("metric",false),"---")
   auto state = get_state();
   state->setValue(Variables::FunctionString, std::string("RESULT = DATA;"));
   state->setValue(Parameters::EnableFunction, false);
-  //state->setValue(Variables::Method, std::string("value-mean"));
   setStateStringFromAlgoOption(Variables::Method);
 }
 
