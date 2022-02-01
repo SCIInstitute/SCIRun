@@ -13,6 +13,6 @@
   },
   "UI": {
     "name": "TendFiberDialog",
-    "header": "Interface/Modules/Teem/TendFiber.h"
+    "header": "Interface/Modules/Teem/TendFiberDialog.h"
   }
 }

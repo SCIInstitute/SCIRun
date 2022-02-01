@@ -12,7 +12,7 @@
     "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateBundleDifference.h"
   },
   "UI": {
-    "name": "CalculateBundleDifference",
-    "header": "Interface/Modules/Fields/CalculateBundleDifference.h"
+    "name": "CalculateBundleDifferenceDialog",
+    "header": "Interface/Modules/Fields/CalculateBundleDifferenceDialog.h"
   }
 }
