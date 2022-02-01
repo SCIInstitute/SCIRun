@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>400</height>
+    <width>510</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>500</width>
-    <height>400</height>
+    <width>510</width>
+    <height>460</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -124,6 +124,12 @@
       </item>
       <item row="4" column="1">
        <widget class="QComboBox" name="integrationComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>0</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>Euler</string>
@@ -147,6 +153,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QComboBox" name="kernelComboBox_">
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>Box</string>
@@ -196,7 +208,14 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="fiberLengthDoubleSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="fiberLengthDoubleSpinBox_">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="numStepsCheckBox_">
@@ -206,7 +225,11 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="numStepsSpinBox_"/>
+       <widget class="QSpinBox" name="numStepsSpinBox_">
+        <property name="maximum">
+         <number>9999999</number>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QCheckBox" name="confidenceThresholdCheckBox_">
@@ -216,7 +239,14 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="confidenceThresholdDoubleSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="confidenceThresholdDoubleSpinBox_">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QCheckBox" name="anisotropyThresholdCheckBox_">
@@ -226,7 +256,134 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QComboBox" name="anisotropyThresholdComboBox_"/>
+       <widget class="QComboBox" name="anisotropyThresholdComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>250</width>
+          <height>0</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Westin's linear (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's planar (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's linear + planar (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>minimum of Cl and Cp (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's spherical (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gk's anisotropy type (first version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's linear (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's planar (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's linear + planar (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>minimum of Cl and Cp (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Westin's spherical (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gk's anisotropy type (second version)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bass+Pier's relative anisotropy</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>(Bass+Pier's fractional anisotropy)/sqrt(2)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>volume fraction = 1-(Bass+Pier's volume ratio)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>linear term in cubic characteristic polynomial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>radius of root circle is 2*sqrt(Q/9)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>phase of root circle is acos(R/Q^3)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>sqrt(Q^3 - R^2)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>R/sqrt(2*Q^3)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3*sqrt(6)*det(dev)/norm(dev) = sqrt(2)*skew</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>acos(sqrt(2)*skew)/3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>FA*(1+mode)/2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>plain old trace</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_6">
@@ -236,7 +393,17 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="thresholdDoubleSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="thresholdDoubleSpinBox_">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="minimum">
+         <double>-999999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
