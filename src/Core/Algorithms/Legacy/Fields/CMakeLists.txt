@@ -233,6 +233,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
+  Core_Datatypes_Legacy_Bundle
   Algorithms_Base
   Core_Exceptions_Legacy
   Core_Thread

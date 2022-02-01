@@ -60,6 +60,7 @@ namespace SCIRun::Modules::Teem
   {
   public:
     TendFiber();
+    ~TendFiber();
     void execute() override;
     void setStateDefaults() override;
 

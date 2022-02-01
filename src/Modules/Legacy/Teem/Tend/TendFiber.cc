@@ -119,6 +119,7 @@ TendFiberImpl::~TendFiberImpl()
   if (tfx) tenFiberContextNix(tfx);
 }
 
+TendFiber::~TendFiber() = default;
 
 unsigned
 TendFiberImpl::get_aniso(const std::string &s)
