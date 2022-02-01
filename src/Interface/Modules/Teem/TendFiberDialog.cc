@@ -27,12 +27,11 @@
 
 
 #include <Interface/Modules/Teem/TendFiberDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Legacy/Teem/Tend/TendFiber.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Teem;
 
 TendFiberDialog::TendFiberDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -40,10 +39,7 @@ TendFiberDialog::TendFiberDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  addDoubleSpinBoxManager(punctureDoubleSpinBox_, Parameters::Puncture);
 }
-//
-//void ReportNrrdInfoDialog::pullAndDisplayInfo()
-//{
-//  auto info = transient_value_cast<std::string>(state_->getTransientValue(Variables::ObjectInfo));
-//  nrrdInfoTextEdit_->setPlainText(QString::fromStdString(info));
-//}

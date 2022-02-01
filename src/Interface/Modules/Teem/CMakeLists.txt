@@ -66,6 +66,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Teem
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Teem
   Modules_Legacy_Teem_Misc
+  Modules_Legacy_Teem_Tend
   Modules_Legacy_Teem_Converters
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}

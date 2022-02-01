@@ -45,9 +45,6 @@ public:
   TendFiberDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-//  void moduleExecuted() override { pullAndDisplayInfo(); }
-//private Q_SLOTS:
-//    void pullAndDisplayInfo();
 };
 
 }

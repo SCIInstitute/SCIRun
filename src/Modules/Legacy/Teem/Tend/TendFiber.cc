@@ -46,21 +46,21 @@ using namespace SCIRun::Core::Geometry;
 
 MODULE_INFO_DEF(TendFiber, Tend, Teem)
 
-ALGORITHM_PARAMETER_DEF(Teem, fibertype_);
-ALGORITHM_PARAMETER_DEF(Teem, puncture_);
-ALGORITHM_PARAMETER_DEF(Teem, neighborhood_);
-ALGORITHM_PARAMETER_DEF(Teem, stepsize_);
-ALGORITHM_PARAMETER_DEF(Teem, integration_);
-ALGORITHM_PARAMETER_DEF(Teem, use_aniso_);
-ALGORITHM_PARAMETER_DEF(Teem, aniso_metric_);
-ALGORITHM_PARAMETER_DEF(Teem, aniso_thresh_);
-ALGORITHM_PARAMETER_DEF(Teem, use_length_);
-ALGORITHM_PARAMETER_DEF(Teem, length_);
-ALGORITHM_PARAMETER_DEF(Teem, use_steps_);
-ALGORITHM_PARAMETER_DEF(Teem, steps_);
-ALGORITHM_PARAMETER_DEF(Teem, use_conf_);
-ALGORITHM_PARAMETER_DEF(Teem, conf_thresh_);
-ALGORITHM_PARAMETER_DEF(Teem, kernel_);
+ALGORITHM_PARAMETER_DEF(Teem, FiberType);
+ALGORITHM_PARAMETER_DEF(Teem, Puncture);
+ALGORITHM_PARAMETER_DEF(Teem, Neighborhood);
+ALGORITHM_PARAMETER_DEF(Teem, StepSize);
+ALGORITHM_PARAMETER_DEF(Teem, Integration);
+ALGORITHM_PARAMETER_DEF(Teem, UseAniso);
+ALGORITHM_PARAMETER_DEF(Teem, AnisoMetric);
+ALGORITHM_PARAMETER_DEF(Teem, AnisoThreshold);
+ALGORITHM_PARAMETER_DEF(Teem, UseLength);
+ALGORITHM_PARAMETER_DEF(Teem, Length);
+ALGORITHM_PARAMETER_DEF(Teem, UseSteps);
+ALGORITHM_PARAMETER_DEF(Teem, Steps);
+ALGORITHM_PARAMETER_DEF(Teem, UseConf);
+ALGORITHM_PARAMETER_DEF(Teem, ConfThreshold);
+ALGORITHM_PARAMETER_DEF(Teem, Kernel);
 
 class SCIRun::Modules::Teem::TendFiberImpl
 {
@@ -71,45 +71,12 @@ class SCIRun::Modules::Teem::TendFiberImpl
     unsigned get_fibertype(const std::string &s);
     unsigned get_integration(const std::string &s);
 
-    // GuiString    fibertype_;
-    // GuiDouble    puncture_;
-    // GuiDouble    neighborhood_;
-    // GuiDouble    stepsize_;
-    // GuiString    integration_;
-    // GuiInt       use_aniso_;
-    // GuiString    aniso_metric_;
-    // GuiDouble    aniso_thresh_;
-    // GuiInt       use_length_;
-    // GuiDouble    length_;
-    // GuiInt       use_steps_;
-    // GuiInt       steps_;
-    // GuiInt       use_conf_;
-    // GuiDouble    conf_thresh_;
-    // GuiString    kernel_;
-
     TendFiber* module_ {nullptr};
     tenFiberContext *tfx {nullptr};
     Nrrd *tfx_nrrd {nullptr};
 };
 
 TendFiber::TendFiber() : Module(staticInfo_)
-  // fibertype_(get_ctx()->subVar("fibertype"), "tensorline"),
-  // puncture_(get_ctx()->subVar("puncture"), 0.0),
-  // neighborhood_(get_ctx()->subVar("neighborhood"), 2.0),
-  // stepsize_(get_ctx()->subVar("stepsize"), 0.01),
-  // integration_(get_ctx()->subVar("integration"), "Euler"),
-  // use_aniso_(get_ctx()->subVar("use-aniso"), 1),
-  // aniso_metric_(get_ctx()->subVar("aniso-metric"), "tenAniso_Cl2"),
-  // aniso_thresh_(get_ctx()->subVar("aniso-thresh"), 0.4),
-  // use_length_(get_ctx()->subVar("use-length"), 1),
-  // length_(get_ctx()->subVar("length"), 1),
-  // use_steps_(get_ctx()->subVar("use-steps"), 0),
-  // steps_(get_ctx()->subVar("steps"), 200),
-  // use_conf_(get_ctx()->subVar("use-conf"), 1),
-  // conf_thresh_(get_ctx()->subVar("conf-thresh"), 0.5),
-  // kernel_(get_ctx()->subVar("kernel"), "tent"),
-  // tfx(0),
-  // tfx_nrrd(0)
 {
 }
 
@@ -260,7 +227,22 @@ TendFiberImpl::get_fibertype(const std::string &s)
 
 void TendFiber::setStateDefaults()
 {
-  throw "not implemented";
+  auto state = get_state();
+  state->setValue(Parameters::FiberType, std::string("Tensorline (TL)"));
+  state->setValue(Parameters::Puncture, 0.0);
+  state->setValue(Parameters::Neighborhood, 2.0);
+  state->setValue(Parameters::StepSize, 0.01);
+  state->setValue(Parameters::Integration, std::string("Euler"));
+  state->setValue(Parameters::Kernel, std::string("tent"));
+  state->setValue(Parameters::UseAniso, true);
+  state->setValue(Parameters::AnisoMetric, std::string("tenAniso_Cl2"));
+  state->setValue(Parameters::AnisoThreshold, 0.4);
+  state->setValue(Parameters::UseLength, true);
+  state->setValue(Parameters::Length, 1.0);
+  state->setValue(Parameters::UseSteps, false);
+  state->setValue(Parameters::Steps, 200);
+  state->setValue(Parameters::UseConf, true);
+  state->setValue(Parameters::ConfThreshold, 0.5);
 }
 
 void
@@ -282,20 +264,20 @@ TendFiber::execute()
     VMesh *pcm = seedPoints->vmesh();
 
     auto state = get_state();
-    unsigned fibertype = impl_->get_fibertype(state->getValue(Parameters::fibertype_).toString());
-    double puncture = state->getValue(Parameters::puncture_).toDouble();
-    double stepsize = state->getValue(Parameters::stepsize_).toDouble();
-    int integration = impl_->get_integration(state->getValue(Parameters::integration_).toString());
-    bool use_aniso = state->getValue(Parameters::use_aniso_).toBool();
-    unsigned aniso_metric = impl_->get_aniso(state->getValue(Parameters::aniso_metric_).toString());
-    double aniso_thresh = state->getValue(Parameters::aniso_thresh_).toDouble();
-    bool use_length = state->getValue(Parameters::use_length_).toBool();
-    double length = state->getValue(Parameters::length_).toDouble();
-    bool use_steps = state->getValue(Parameters::use_steps_).toBool();
-    int steps = state->getValue(Parameters::steps_).toInt();
-    bool use_conf = state->getValue(Parameters::use_conf_).toBool();
-    double conf_thresh = state->getValue(Parameters::conf_thresh_).toDouble();
-    std::string kernel = state->getValue(Parameters::kernel_).toString();
+    unsigned fibertype = impl_->get_fibertype(state->getValue(Parameters::FiberType).toString());
+    double puncture = state->getValue(Parameters::Puncture).toDouble();
+    double stepsize = state->getValue(Parameters::StepSize).toDouble();
+    int integration = impl_->get_integration(state->getValue(Parameters::Integration).toString());
+    bool use_aniso = state->getValue(Parameters::UseAniso).toBool();
+    unsigned aniso_metric = impl_->get_aniso(state->getValue(Parameters::AnisoMetric).toString());
+    double aniso_thresh = state->getValue(Parameters::AnisoThreshold).toDouble();
+    bool use_length = state->getValue(Parameters::UseLength).toBool();
+    double length = state->getValue(Parameters::Length).toDouble();
+    bool use_steps = state->getValue(Parameters::UseSteps).toBool();
+    int steps = state->getValue(Parameters::Steps).toInt();
+    bool use_conf = state->getValue(Parameters::UseConf).toBool();
+    double conf_thresh = state->getValue(Parameters::ConfThreshold).toDouble();
+    const std::string kernel = state->getValue(Parameters::Kernel).toString();
 
     NrrdKernel *kern;
     std::vector<double> p(NRRD_KERNEL_PARMS_NUM);
@@ -419,7 +401,7 @@ TendFiber::execute()
 
     nrrdNuke(nout);
 
-    FieldInformation fi("CurveMesh",-1,"double");
+    FieldInformation fi("CurveMesh", -1, "double");
     FieldHandle output = CreateField(fi);
     VMesh* cm = output->vmesh();
     VMesh::Node::array_type a(2);
