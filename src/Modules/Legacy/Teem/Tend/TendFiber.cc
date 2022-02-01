@@ -55,7 +55,7 @@ ALGORITHM_PARAMETER_DEF(Teem, UseAniso);
 ALGORITHM_PARAMETER_DEF(Teem, AnisoMetric);
 ALGORITHM_PARAMETER_DEF(Teem, AnisoThreshold);
 ALGORITHM_PARAMETER_DEF(Teem, UseLength);
-ALGORITHM_PARAMETER_DEF(Teem, Length);
+ALGORITHM_PARAMETER_DEF(Teem, FiberLength);
 ALGORITHM_PARAMETER_DEF(Teem, UseSteps);
 ALGORITHM_PARAMETER_DEF(Teem, Steps);
 ALGORITHM_PARAMETER_DEF(Teem, UseConf);
@@ -228,7 +228,7 @@ TendFiberImpl::get_fibertype(const std::string &s)
 void TendFiber::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::FiberType, std::string("Tensorline (TL)"));
+  state->setValue(Parameters::FiberType, std::string("tensorline"));
   state->setValue(Parameters::Puncture, 0.0);
   state->setValue(Parameters::Neighborhood, 2.0);
   state->setValue(Parameters::StepSize, 0.01);
@@ -238,7 +238,7 @@ void TendFiber::setStateDefaults()
   state->setValue(Parameters::AnisoMetric, std::string("tenAniso_Cl2"));
   state->setValue(Parameters::AnisoThreshold, 0.4);
   state->setValue(Parameters::UseLength, true);
-  state->setValue(Parameters::Length, 1.0);
+  state->setValue(Parameters::FiberLength, 1.0);
   state->setValue(Parameters::UseSteps, false);
   state->setValue(Parameters::Steps, 200);
   state->setValue(Parameters::UseConf, true);
@@ -256,9 +256,6 @@ TendFiber::execute()
     // Force Teem to be locked befoer calling the Teem library
     NrrdGuard nrrd_guard;
 
-    // Inform module that execution started
-    //update_state(Executing);
-
     Nrrd*& nin = nrrd_handle->getNrrd();
 
     VMesh *pcm = seedPoints->vmesh();
@@ -272,7 +269,7 @@ TendFiber::execute()
     unsigned aniso_metric = impl_->get_aniso(state->getValue(Parameters::AnisoMetric).toString());
     double aniso_thresh = state->getValue(Parameters::AnisoThreshold).toDouble();
     bool use_length = state->getValue(Parameters::UseLength).toBool();
-    double length = state->getValue(Parameters::Length).toDouble();
+    double length = state->getValue(Parameters::FiberLength).toDouble();
     bool use_steps = state->getValue(Parameters::UseSteps).toBool();
     int steps = state->getValue(Parameters::Steps).toInt();
     bool use_conf = state->getValue(Parameters::UseConf).toBool();

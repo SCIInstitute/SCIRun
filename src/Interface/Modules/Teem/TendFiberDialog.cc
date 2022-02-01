@@ -42,4 +42,27 @@ TendFiberDialog::TendFiberDialog(const std::string& name, ModuleStateHandle stat
   fixSize();
 
   addDoubleSpinBoxManager(punctureDoubleSpinBox_, Parameters::Puncture);
+  addDoubleSpinBoxManager(neighborhoodDoubleSpinBox_, Parameters::Neighborhood);
+  addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StepSize);
+  addDoubleSpinBoxManager(fiberLengthDoubleSpinBox_, Parameters::FiberLength);
+  addDoubleSpinBoxManager(confidenceThresholdDoubleSpinBox_, Parameters::ConfThreshold);
+  addDoubleSpinBoxManager(anisotropyThresholdDoubleSpinBox_, Parameters::AnisoThreshold);
+  addSpinBoxManager(numStepsSpinBox_, Parameters::Steps);
+  addCheckBoxManager(fiberLengthCheckBox_, Parameters::UseLength);
+  addCheckBoxManager(numStepsCheckBox_, Parameters::UseSteps);
+  addCheckBoxManager(confidenceThresholdCheckBox_, Parameters::UseConf);
+  addCheckBoxManager(anisotropyThresholdCheckBox_, Parameters::UseAniso);
+  addComboBoxManager(integrationComboBox_, Parameters::Integration);
+  addComboBoxManager(fiberAlgoComboBox_, Parameters::FiberType,
+    {{"Tensorline (TL)", "tensorline"},
+    {"Major eigenvector", "evec1"},
+    {"Oriented tensors (OT)", "zhukov"}});
+  addComboBoxManager(kernelComboBox_, Parameters::Kernel,
+    {{"Tensorline (TL)", "box"},
+    {"Major eigenvector", "tent"},
+    {"Oriented tensors (OT)", "gaussian"}});
+  addComboBoxManager(anisotropyThresholdComboBox_, Parameters::AnisoMetric,
+    {{"Tensorline (TL)", "tensorline"},
+    {"Major eigenvector", "evec1"},
+    {"Oriented tensors (OT)", "zhukov"}});
 }
