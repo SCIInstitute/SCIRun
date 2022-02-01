@@ -3,9 +3,13 @@
 #include "Species.h"
 #include "Field.h"
 
+#include <iostream>
+using namespace std;
+
 /*updates velocities and positions of all particles of this species*/
-void Species::advance()
-{
+//void Species::advance()
+void Species::advance(int sample_size_p, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
+    {
 	/*get the time step*/
 	double dt = world.getDt();
 
@@ -13,9 +17,11 @@ void Species::advance()
 	double3 x0 = world.getX0();
 	double3 xm = world.getXm();
 
+    int particle_index = 0;
+
 	/*continue while particles remain*/
 	for (Particle &part: particles)
-	{
+	    {
 		/*get logical coordinate of particle's position*/
 		double3 lc = world.XtoL(part.pos);
 		
@@ -30,12 +36,33 @@ void Species::advance()
 
 		/*did this particle leave the domain? reflect back*/
 		for (int i=0;i<3;i++)
-		{
+		    {
 			if (part.pos[i]<x0[i]) {part.pos[i]=2*x0[i]-part.pos[i]; part.vel[i]*=-1.0;}
 			else if (part.pos[i]>=xm[i]) {part.pos[i]=2*xm[i]-part.pos[i]; part.vel[i]*=-1.0;}
-		}
-	}
-}
+		    }
+//Code here that captures buffered pos xyz
+
+        if(particle_index/sample_size_p == 0)
+            {
+            cout<<"Debug 2:particle index is "<<particle_index<<endl;
+            buffer_pos_x[particle_index] = part.pos[0];
+            buffer_pos_y[particle_index] = part.pos[1];
+            buffer_pos_z[particle_index] = part.pos[2];
+            }
+
+/*
+        if(particle_index/sample_size_p == 0)
+            {
+            pox_x[particle_index] = part.pos[0];
+            pox_y[particle_index] = part.pos[1];
+            pox_z[particle_index] = part.pos[2];
+            }
+*/
+      particle_index++;
+//	      if (particle_index%100 == 0) cout<<"Debug 1:particle index is "<<particle_index<<endl;
+
+	    }
+    }
 	
 /*compute number density*/
 void Species::computeNumberDensity()

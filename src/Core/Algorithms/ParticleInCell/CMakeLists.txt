@@ -29,7 +29,6 @@
 SET(Algorithms_ParticleInCell_SRCS
   GravitySimulationAlgo.cc
   ElectroStaticAlgo.cc
-  Main.cpp
   Output.cpp
   PotentialSolver.cpp
   Species.cpp

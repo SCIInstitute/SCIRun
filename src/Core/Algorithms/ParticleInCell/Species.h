@@ -39,7 +39,8 @@ public:
 	double getKE();
 
 	/*moves all particles using electric field ef[]*/
-	void advance();
+//	void advance();
+	void advance(int sample_size_p, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
 
 	/*compute number density*/
 	void computeNumberDensity();

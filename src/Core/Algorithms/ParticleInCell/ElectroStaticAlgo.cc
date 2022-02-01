@@ -58,22 +58,29 @@ AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
 /*
 ************************************************PIC varables and data collection set up, including particle initialization
 */
-
+                                                                //Variable setup
     using namespace std;
-    const int num_particles = 1000000;
-    const int iterations    = 400;
-    const int sample_size_p = 100000;
-    const int sample_size_i = 2;                              //activate this variable when the outer loop is implemented and buffered data are collected
+    double delta_t          = 2e-10;                  //should be set by User Interface input
+//    double delta_t          = .01;
+    int iterations          = 100;                    //should be set by User Interface input
+//    int iteration_count = 0;                          //part of Debug 2
+//    int iterations          = 400;
+//    const int sample_size_p = 100000;
+//    const int sample_size_i = 2;
+//    int num_particles       = 1000000;                 //should be set by User Interface input --This is for electrons only for now.
+
+    int num_particles       = 10000;
+    const int sample_size_p = 10;                     //should be set by User Interface input
+    const int sample_size_i = 100;                    //should be set by User Interface input
     const int buffer_size   = (iterations/sample_size_i)*(num_particles/sample_size_p);
-    float delta_t           = 0.01;
-    auto pos_x              = new double[num_particles];
-    auto pos_y              = new double[num_particles];
-    auto pos_z              = new double[num_particles];
+//    auto pos_x              = new double[num_particles];
+//    auto pos_y              = new double[num_particles];
+//    auto pos_z              = new double[num_particles];
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
     auto buffer_pos_z       = new double[buffer_size];
 
-                                                                //Files that are used for data collection
+                                                                //Files used for data collection
     DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size, 1));
     DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size, 1));
     DenseMatrixHandle output_mat_2(new DenseMatrix(buffer_size, 1));
@@ -81,6 +88,7 @@ AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
     clock_t start    = clock();                                 //Instrumentation
     auto start_wall  = chrono::high_resolution_clock::now();
     auto outputTimes = get(Variables::Method).toInt();          //outputTimes is used to show or not show the process time
+/*
 
     for(int i=0; i<num_particles; i++)                          //Initialization
         {
@@ -88,29 +96,29 @@ AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
         pos_y[i] = 0.0;
         pos_z[i] = 0.0;
 
-        if(!(i%sample_size_p))                                  //Buffer the data to be visualized
+        if(!(i%sample_size_p))                                  //Buffer the data
             {
             buffer_pos_x[i/sample_size_p] = pos_x[i];
             buffer_pos_y[i/sample_size_p] = pos_y[i];
             buffer_pos_z[i/sample_size_p] = pos_z[i];
             }
         }
-
+*/
 /*
 ************************************************Simulation code goes here, including the collection of buffered data inside the inner loop
 */
 
-using namespace std;		//to avoid having to write std::cout
-using namespace Const;		//to avoid having to write Const::ME
+using namespace std;
+using namespace Const;
 
 //program execution starts here
-//int main(int argc, char *args[])
 
 	//initialize domain
     World world(21,21,21);
     world.setExtents({-0.1,-0.1,0},{0.1,0.1,0.2});
 //    world.setTime(2e-10,10000);
-    world.setTime(2e-10,100);
+//    world.setTime(2e-10,100);
+    world.setTime(delta_t,iterations);
 
 	//set up particle species
 	vector<Species> species;
@@ -124,7 +132,8 @@ using namespace Const;		//to avoid having to write Const::ME
 	int3 np_ions_grid = {41,41,41};
 	int3 np_eles_grid = {21,21,21};
 	species[0].loadParticlesBoxQS(world.getX0(),world.getXm(),1e11,np_ions_grid);	//ions
-	species[1].loadParticlesBoxQS(world.getX0(),world.getXc(),1e11,np_eles_grid);	//electrons
+    species[1].loadParticlesBoxQS(world.getX0(),world.getXc(),1e11,np_eles_grid);	//electrons
+//    species[1].loadParticlesBoxQS(world.getX0(),world.getXc(),num_particles,np_eles_grid);	//electrons
 
 	//initialize potential solver and solve initial potential
     PotentialSolver solver(world,10000,1e-4);
@@ -139,7 +148,8 @@ using namespace Const;		//to avoid having to write Const::ME
         //move particles
 		for (Species &sp:species)
 		    {
-			sp.advance();
+//			sp.advance();
+			sp.advance(sample_size_p, buffer_pos_x, buffer_pos_y, buffer_pos_z);
 			sp.computeNumberDensity();
 		    }
 
@@ -152,27 +162,28 @@ using namespace Const;		//to avoid having to write Const::ME
         //obtain electric field
         solver.computeEF();
 
-		//screen and file output
-        Output::screenOutput(world,species);
-        Output::diagOutput(world,species);
+        if(outputTimes)
+            {
+		    //screen and file output
+            Output::screenOutput(world,species);
+            Output::diagOutput(world,species);
 
-		//periodically write out results
-        if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
+		    //periodically write out results
+            if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
+    //        if (world.getTs()%sample_size_i==0 || world.isLastTimeStep()) Output::fields(world, species);
+            }
         }
 	
 	// grab starting time
 	cout<<"Simulation took "<<world.getWallTime()<<" seconds\n";
-/*
-//	return 0;		//indicate normal exit
-*/
-
-
 
 /*
 ************************************************PIC data buffering.  Position this code at the end of the inner (number of particles) loop
                                                                      where j is used as the iteration index for the outer (time slice) loop
                                                                      and i is used the iteration index for the inner (number of particles) loop
 */
+/*
+
     int j=0;                                          //Change this to set j equal to the iteration index for the outer (time increment) loop
     int i=0;                                          //Change this to set i equal to the iteration index for the inner (number of particles) loop
             if(!(i%sample_size_p+j%sample_size_i))    //Buffer the data to be visualized
@@ -181,9 +192,7 @@ using namespace Const;		//to avoid having to write Const::ME
                 buffer_pos_y[(i/sample_size_p)+(j*num_particles/(sample_size_i*sample_size_p))] = pos_y[i];
                 buffer_pos_z[(i/sample_size_p)+(j*num_particles/(sample_size_i*sample_size_p))] = pos_z[i];
                 }
-
-
-
+*/
 /*
 ************************************************End of the simulation code
 */
