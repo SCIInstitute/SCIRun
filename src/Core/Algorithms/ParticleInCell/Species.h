@@ -40,7 +40,7 @@ public:
 
 	/*moves all particles using electric field ef[]*/
 //	void advance();
-	void advance(int sample_size_p, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
+	void advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
 
 	/*compute number density*/
 	void computeNumberDensity();

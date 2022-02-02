@@ -27,7 +27,6 @@
 
 #include<Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
 #include<Core/Datatypes/MatrixTypeConversions.h>
-#include <time.h>
 #include <chrono>
 
 using namespace SCIRun;
@@ -43,72 +42,43 @@ ElectroStaticAlgo::ElectroStaticAlgo()
     {
     addParameter(Variables::Method,0);
     }
-/*
-************************ Function prototype declarations ************************
-*/
-
-/*
-************************ End function prototype declarations ************************
-*/
 
 AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
 
 /*
-************************************************PIC varables and data collection set up, including particle initialization
+************************************************ Variable Setup
 */
-                                                                //Variable setup
-    using namespace std;
-    double delta_t          = 2e-10;                  //should be set by User Interface input
-//    double delta_t          = .01;
-    int iterations          = 100;                    //should be set by User Interface input
-//    int iteration_count = 0;                          //part of Debug 2
-//    int iterations          = 400;
-//    const int sample_size_p = 100000;
-//    const int sample_size_i = 2;
-//    int num_particles       = 1000000;                 //should be set by User Interface input --This is for electrons only for now.
 
-    int num_particles       = 10000;
+using namespace std;
+
+    int num_particles       = 10000;                  //should be set by User Interface input - currently set for electrons only
+    double delta_t          = 2e-10;                  //should be set by User Interface input
+    int iterations          = 100;                    //should be set by User Interface input
     const int sample_size_p = 10;                     //should be set by User Interface input
     const int sample_size_i = 100;                    //should be set by User Interface input
     const int buffer_size   = (iterations/sample_size_i)*(num_particles/sample_size_p);
-//    auto pos_x              = new double[num_particles];
-//    auto pos_y              = new double[num_particles];
-//    auto pos_z              = new double[num_particles];
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
     auto buffer_pos_z       = new double[buffer_size];
 
-                                                                //Files used for data collection
+/*
+************************************************ Output Data Setup
+*/
+
     DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size, 1));
     DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size, 1));
     DenseMatrixHandle output_mat_2(new DenseMatrix(buffer_size, 1));
+                          
+    auto start_wall  = chrono::high_resolution_clock::now();    //Set up collection of execution time
+    auto outputTimes = get(Variables::Method).toInt();          //outputTimes is used to show or not show the execution time
 
-    clock_t start    = clock();                                 //Instrumentation
-    auto start_wall  = chrono::high_resolution_clock::now();
-    auto outputTimes = get(Variables::Method).toInt();          //outputTimes is used to show or not show the process time
 /*
-
-    for(int i=0; i<num_particles; i++)                          //Initialization
-        {
-        pos_x[i] = 0.0;
-        pos_y[i] = 0.0;
-        pos_z[i] = 0.0;
-
-        if(!(i%sample_size_p))                                  //Buffer the data
-            {
-            buffer_pos_x[i/sample_size_p] = pos_x[i];
-            buffer_pos_y[i/sample_size_p] = pos_y[i];
-            buffer_pos_z[i/sample_size_p] = pos_z[i];
-            }
-        }
-*/
-/*
-************************************************Simulation code goes here, including the collection of buffered data inside the inner loop
+************************************************ Simulation Code
+                     includes collecting buffered data in buffer_pos_x, buffer_pos_y and buffer_pos_z
 */
 
-using namespace std;
 using namespace Const;
 
 //program execution starts here
@@ -133,7 +103,6 @@ using namespace Const;
 	int3 np_eles_grid = {21,21,21};
 	species[0].loadParticlesBoxQS(world.getX0(),world.getXm(),1e11,np_ions_grid);	//ions
     species[1].loadParticlesBoxQS(world.getX0(),world.getXc(),1e11,np_eles_grid);	//electrons
-//    species[1].loadParticlesBoxQS(world.getX0(),world.getXc(),num_particles,np_eles_grid);	//electrons
 
 	//initialize potential solver and solve initial potential
     PotentialSolver solver(world,10000,1e-4);
@@ -146,11 +115,13 @@ using namespace Const;
 	while(world.advanceTime())
         {
         //move particles
+        int species_index = 0;
 		for (Species &sp:species)
 		    {
 //			sp.advance();
-			sp.advance(sample_size_p, buffer_pos_x, buffer_pos_y, buffer_pos_z);
+			sp.advance(sample_size_p, sample_size_i, species_index, buffer_pos_x, buffer_pos_y, buffer_pos_z);
 			sp.computeNumberDensity();
+            species_index++;
 		    }
 
 		//compute charge density
@@ -169,8 +140,8 @@ using namespace Const;
             Output::diagOutput(world,species);
 
 		    //periodically write out results
-            if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
-    //        if (world.getTs()%sample_size_i==0 || world.isLastTimeStep()) Output::fields(world, species);
+//            if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
+            if (world.getTs()%sample_size_i==0 || world.isLastTimeStep()) Output::fields(world, species);
             }
         }
 	
@@ -178,27 +149,12 @@ using namespace Const;
 	cout<<"Simulation took "<<world.getWallTime()<<" seconds\n";
 
 /*
-************************************************PIC data buffering.  Position this code at the end of the inner (number of particles) loop
-                                                                     where j is used as the iteration index for the outer (time slice) loop
-                                                                     and i is used the iteration index for the inner (number of particles) loop
-*/
-/*
-
-    int j=0;                                          //Change this to set j equal to the iteration index for the outer (time increment) loop
-    int i=0;                                          //Change this to set i equal to the iteration index for the inner (number of particles) loop
-            if(!(i%sample_size_p+j%sample_size_i))    //Buffer the data to be visualized
-                {
-                buffer_pos_x[(i/sample_size_p)+(j*num_particles/(sample_size_i*sample_size_p))] = pos_x[i];
-                buffer_pos_y[(i/sample_size_p)+(j*num_particles/(sample_size_i*sample_size_p))] = pos_y[i];
-                buffer_pos_z[(i/sample_size_p)+(j*num_particles/(sample_size_i*sample_size_p))] = pos_z[i];
-                }
-*/
-/*
 ************************************************End of the simulation code
 */
 
 /*
-************************************************Wrap up, including instrumentation and passing buffered data to SCIRun
+************************************************Wrap Up
+                  includes posting time of execution and passing buffered data to SCIRun
 */
 
     double *data0=output_mat_0->data();
@@ -213,17 +169,12 @@ using namespace Const;
     output[y_coordinates] = output_mat_1;
     output[z_coordinates] = output_mat_2;
 
-
-    auto end_wall = chrono::high_resolution_clock::now();       //Instrumentation
-    chrono::duration<double> time_taken = end_wall - start_wall;
-    clock_t end   = clock();
     if(outputTimes)
         {
+        auto end_wall = chrono::high_resolution_clock::now();       //Execution time
+        chrono::duration<double> time_taken = end_wall - start_wall;
         printf("Program took %.6f seconds Wall Clock time\n", time_taken.count());
-        printf("Program took %.6f seconds CPU time\n",(double)((end+0.0-start)/CLOCKS_PER_SEC));
         }
 
     return output;
     }
-
-

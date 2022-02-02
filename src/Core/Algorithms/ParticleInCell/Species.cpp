@@ -8,7 +8,8 @@ using namespace std;
 
 /*updates velocities and positions of all particles of this species*/
 //void Species::advance()
-void Species::advance(int sample_size_p, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
+//Arguments are added to implement saving a set of data in a buffer
+void Species::advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
     {
 	/*get the time step*/
 	double dt = world.getDt();
@@ -17,7 +18,9 @@ void Species::advance(int sample_size_p, double buffer_pos_x[], double buffer_po
 	double3 x0 = world.getX0();
 	double3 xm = world.getXm();
 
+    //Set up the particle and buffer counters that are used to enable saving a set of data in a buffer
     int particle_index = 0;
+    int buffer_index   = 0;
 
 	/*continue while particles remain*/
 	for (Particle &part: particles)
@@ -40,47 +43,40 @@ void Species::advance(int sample_size_p, double buffer_pos_x[], double buffer_po
 			if (part.pos[i]<x0[i]) {part.pos[i]=2*x0[i]-part.pos[i]; part.vel[i]*=-1.0;}
 			else if (part.pos[i]>=xm[i]) {part.pos[i]=2*xm[i]-part.pos[i]; part.vel[i]*=-1.0;}
 		    }
-//Code here that captures buffered pos xyz
 
-        if(particle_index/sample_size_p == 0)
+        //Capture buffered xyz position data for output to SCIRun
+        if (species_index && !(world.getTs()%sample_size_i + particle_index%sample_size_p))     //To Do: Verify that the correct data is being captured
             {
-            cout<<"Debug 2:particle index is "<<particle_index<<endl;
-            buffer_pos_x[particle_index] = part.pos[0];
-            buffer_pos_y[particle_index] = part.pos[1];
-            buffer_pos_z[particle_index] = part.pos[2];
+//            cout<<"Debug 2:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
+            buffer_pos_x[buffer_index] = part.pos[0];
+            buffer_pos_y[buffer_index] = part.pos[1];
+            buffer_pos_z[buffer_index] = part.pos[2];
+            buffer_index++;
             }
 
-/*
-        if(particle_index/sample_size_p == 0)
-            {
-            pox_x[particle_index] = part.pos[0];
-            pox_y[particle_index] = part.pos[1];
-            pox_z[particle_index] = part.pos[2];
-            }
-*/
-      particle_index++;
-//	      if (particle_index%100 == 0) cout<<"Debug 1:particle index is "<<particle_index<<endl;
-
+        particle_index++;
 	    }
+
+//    cout<<"Debug 1:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
     }
 	
 /*compute number density*/
 void Species::computeNumberDensity()
-{
+    {
 	den.clear();
 	for (Particle &part:particles)
-	{
+	    {
 		double3 lc = world.XtoL(part.pos);
 		den.scatter(lc, part.mpw);
-	}
+	    }
 		
 	//divide by node volume
 	den /= world.node_vol;
-}
+    }
 
 /*adds a new particle, rewinding velocity by half dt*/
 void Species::addParticle(double3 pos, double3 vel, double mpw)
-{
+    {
 	//don't do anything (return) if pos outside domain bounds [x0,xd)
 	if (!world.inBounds(pos)) return;
 
@@ -95,11 +91,11 @@ void Species::addParticle(double3 pos, double3 vel, double mpw)
 
     //add to list
     particles.emplace_back(pos,vel,mpw);
-}
+    }
 
 /*loads randomly distributed particles in a x1-x2 box representing num_den number density*/
 void Species::loadParticlesBox(double3 x1, double3 x2, double num_den, int num_mp)
-{
+    {
 	double box_vol = (x2[0]-x1[0])*(x2[1]-x1[1])*(x2[2]-x1[2]);		//box volume
 	double num_real = num_den * box_vol;		//number of real particles
 	double mpw = num_real/num_mp;			//macroparticle weight
@@ -109,7 +105,7 @@ void Species::loadParticlesBox(double3 x1, double3 x2, double num_den, int num_m
 
 	/*load particles on an equally spaced grid*/
 	for (int p=0;p<num_mp;p++)
-	{
+	    {
 		//sample random position
 		double3 pos;
 		pos[0] = x1[0] + rnd()*(x2[0]-x1[0]);
@@ -120,13 +116,13 @@ void Species::loadParticlesBox(double3 x1, double3 x2, double num_den, int num_m
 		double3 vel {0,0,0};	//stationary particle
 
 		addParticle(pos,vel,mpw);	//add a new particle to the array
-	}
-}
+	    }
+    }
 
 /*quiet start load of num_sim[0]*num_sim[1]*num_sim[2] particles in a x1-x2 box
 representing num_den number density*/
 void Species::loadParticlesBoxQS(double3 x1, double3 x2, double num_den, int3 num_mp)
-{
+    {
 	double box_vol = (x2[0]-x1[0])*(x2[1]-x1[1])*(x2[2]-x1[2]);		//box volume
 	int num_mp_tot = (num_mp[0]-1)*(num_mp[1]-1)*(num_mp[2]-1);	//total number of simulation particles
 	double num_real = num_den * box_vol;		//number of real particles
@@ -144,7 +140,7 @@ void Species::loadParticlesBoxQS(double3 x1, double3 x2, double num_den, int3 nu
 	for (int i=0;i<num_mp[0];i++)
 		for (int j=0;j<num_mp[1];j++)
 			for (int k=0;k<num_mp[2];k++)
-			{
+			    {
 				double pos[3];
 				pos[0] = x1[0] + i*di;
 				pos[1] = x1[1] + j*dj;
@@ -164,33 +160,35 @@ void Species::loadParticlesBoxQS(double3 x1, double3 x2, double num_den, int3 nu
 				double vel[3] = {0,0,0};	//particle is stationary
 
 				addParticle(pos,vel,mpw*w);	//add a new particle to the array
-			}
-}
+			    }
+    }
 
 /*returns the number of real particles*/
-double Species::getRealCount() {
+double Species::getRealCount()
+    {
 	double mpw_sum = 0;
-	for (Particle &part:particles)
-		mpw_sum+=part.mpw;
+	for (Particle &part:particles) mpw_sum+=part.mpw;
 	return mpw_sum;
-}
+    }
 
 /* returns the species momentum*/
-double3 Species::getMomentum() {
+double3 Species::getMomentum()
+    {
 	double3 mom;
-	for (Particle &part:particles)
-		mom+=part.mpw*part.vel;
+	for (Particle &part:particles) mom+=part.mpw*part.vel;
 	return mass*mom;
-}
+    }
 
 /* returns the species kinetic energy*/
-double Species::getKE() {
+double Species::getKE()
+    {
 	double ke = 0;
 	for (Particle &part:particles)
-	{
+	    {
 		double v2 = part.vel[0]*part.vel[0] + part.vel[1]*part.vel[1] + part.vel[2]*part.vel[2];
 		ke += part.mpw*v2;
-	}
+	    }
+
 	return 0.5*mass*ke;
-}
+    }
 
