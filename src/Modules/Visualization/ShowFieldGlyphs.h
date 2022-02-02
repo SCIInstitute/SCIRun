@@ -52,6 +52,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FieldName;
         // Mesh Color
         static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        static const Core::Algorithms::AlgorithmParameterName ShowNormals;
+        static const Core::Algorithms::AlgorithmParameterName ShowNormalsScale;
         // Vector Controls
         static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
         static const Core::Algorithms::AlgorithmParameterName ShowVectors;
