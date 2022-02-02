@@ -27,12 +27,12 @@
 
 
 #include <Interface/Modules/Fields/CalculateBundleDifferenceDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateBundleDifferenceAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
 
 CalculateBundleDifferenceDialog::CalculateBundleDifferenceDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,11 +42,7 @@ CalculateBundleDifferenceDialog::CalculateBundleDifferenceDialog(const std::stri
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addComboBoxManager(method_, Parameters::Method,
-  //  {{"Average of Node Locations", "nodeCenter"},
-  //  {"Average of Element Centers", "elemCenter"},
-  //  {"Volumetric Center", "weightedElemCenter"},
-  //  {"Bounding Box Center","boundingBoxCenter"},
-  //  {"Middle Index Node","midNodeIndex"},
-  //  {"Middle Index Element","midElemIndex"}});
+  addComboBoxManager(methodComboBox_, Variables::Method,
+   {{"Distance between nodes", "distance_between_nodes"},
+   {"Area between fibers", "area_between_fibers"}});
 }
