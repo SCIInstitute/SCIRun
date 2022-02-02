@@ -56,13 +56,40 @@ TendFiberDialog::TendFiberDialog(const std::string& name, ModuleStateHandle stat
   addComboBoxManager(fiberAlgoComboBox_, Parameters::FiberType,
     {{"Tensorline (TL)", "tensorline"},
     {"Major eigenvector", "evec1"},
-    {"Oriented tensors (OT)", "zhukov"}});
+    {"Oriented tensors (OT)", "zhukov"}
+  });
   addComboBoxManager(kernelComboBox_, Parameters::Kernel,
-    {{"Tensorline (TL)", "box"},
-    {"Major eigenvector", "tent"},
-    {"Oriented tensors (OT)", "gaussian"}});
+    {{"Box", "box"},
+    {"Tent", "tent"},
+    {"Cubic (Catmull-Rom)", "cubicCR"},
+    {"Cubic (B-spline)", "cubicBS"},
+    {"Gaussian", "gaussian"},
+    {"Quartic", "quartic"}
+  });
   addComboBoxManager(anisotropyThresholdComboBox_, Parameters::AnisoMetric,
-    {{"Tensorline (TL)", "tensorline"},
-    {"Major eigenvector", "evec1"},
-    {"Oriented tensors (OT)", "zhukov"}});
+    {{"Westin's linear (first version)", "tenAniso_Cl1"},
+    {"Westin's planar (first version)", "tenAniso_Cp1"},
+    {"Westin's linear + planar (first version)", "tenAniso_Ca1"},
+    {"minimum of Cl and Cp (first version)", "tenAniso_Clpmin1"},
+    {"Westin's spherical (first version)", "tenAniso_Cs1"},
+    {"gk's anisotropy type (first version)", "tenAniso_Ct1"},
+    {"Westin's linear (second version)", "tenAniso_Cl2"},
+    {"Westin's planar (second version)", "tenAniso_Cp2"},
+    {"Westin's linear + planar (second version)", "tenAniso_Ca2"},
+    {"minimum of Cl and Cp (second version)", "tenAniso_Clpmin2"},
+    {"Westin's spherical (second version)", "tenAniso_Cs2"},
+    {"gk's anisotropy type (second version)", "tenAniso_Ct2"},
+    {"Bass+Pier's relative anisotropy", "tenAniso_RA"},
+    {"(Bass+Pier's fractional anisotropy)/sqrt(2)", "tenAniso_FA"},
+    {"volume fraction = 1-(Bass+Pier's volume ratio)", "tenAniso_VF"},
+    {"linear term in cubic characteristic polynomial", "tenAniso_B"},
+    {"radius of root circle is 2*sqrt(Q/9)", "tenAniso_Q"},
+    {"phase of root circle is acos(R/Q^3)", "tenAniso_R"},
+    {"sqrt(Q^3 - R^2)", "tenAniso_S"},
+    {"R/sqrt(2*Q^3)", "tenAniso_Skew"},
+    {"3*sqrt(6)*det(dev)/norm(dev) = sqrt(2)*skew", "tenAniso_Mode"},
+    {"acos(sqrt(2)*skew)/3", "tenAniso_Th"},
+    {"FA*(1+mode)/2", "tenAniso_Omega"},
+    {"plain old trace", "tenAniso_Tr"}
+  });
 }
