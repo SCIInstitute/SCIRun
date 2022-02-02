@@ -186,7 +186,6 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "ChooseField", "ChooseInput" },
     { "ChooseColorMap", "ChooseInput" },
     unconvertedModule("SynchronizeGeometry"),
-    unconvertedModule("CalculateBundleDifference"),
     unconvertedModule("TransformData"),
     unconvertedModule("SetFieldOrMeshStringProperty"),
     unconvertedModule("Viewer"),
