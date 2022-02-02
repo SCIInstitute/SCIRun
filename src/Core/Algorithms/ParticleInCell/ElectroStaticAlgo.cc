@@ -55,9 +55,10 @@ using namespace std;
 
     int num_particles       = 10000;                  //should be set by User Interface input - currently set for electrons only
     double delta_t          = 2e-10;                  //should be set by User Interface input
-    int iterations          = 100;                    //should be set by User Interface input
-    const int sample_size_p = 10;                     //should be set by User Interface input
+    int iterations          = 1000;                    //should be set by User Interface input
+    const int sample_size_p = 1000;                                        //should be set by User Interface input
     const int sample_size_i = 100;                    //should be set by User Interface input
+    int output_count        = 0;
     const int buffer_size   = (iterations/sample_size_i)*(num_particles/sample_size_p);
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
@@ -141,12 +142,18 @@ using namespace Const;
 
 		    //periodically write out results
 //            if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
-            if (world.getTs()%sample_size_i==0 || world.isLastTimeStep()) Output::fields(world, species);
+            if (world.getTs()%sample_size_i==0 || world.isLastTimeStep())
+                {
+                Output::fields(world, species);
+                output_count++;
+                }
             }
         }
-	
+
 	// grab starting time
 	cout<<"Simulation took "<<world.getWallTime()<<" seconds\n";
+    cout<<"There were "<< iterations/sample_size_i<< " sample(s) of "<<buffer_size<<" data elements sent to each SCIRun output port\n";
+	if(outputTimes) cout<<"There were "<<output_count<<" sample(s) output to file\n";
 
 /*
 ************************************************End of the simulation code
