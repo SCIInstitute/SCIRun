@@ -9,7 +9,9 @@ using namespace std;
 /*updates velocities and positions of all particles of this species*/
 //void Species::advance()
 //Arguments are added to implement saving a set of data in a buffer
-void Species::advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
+//void Species::advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
+                                                      //Alternate buffer implementation (below)
+void Species::advance(int sample_size_p, int sample_size_i, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
     {
 	/*get the time step*/
 	double dt = world.getDt();
@@ -20,7 +22,7 @@ void Species::advance(int sample_size_p, int sample_size_i, int species_index, d
 
     //Set up the particle and buffer counters that are used to enable saving a set of data in a buffer
     int particle_index = 0;
-    int buffer_index   = 0;
+//    int buffer_index   = 0;                           //In the alternate buffer implementation comment out this line of code
 
 	/*continue while particles remain*/
 	for (Particle &part: particles)
@@ -45,7 +47,7 @@ void Species::advance(int sample_size_p, int sample_size_i, int species_index, d
 		    }
 
         //Capture buffered xyz position data for output to SCIRun
-        if (species_index && !(world.getTs()%sample_size_i + particle_index%sample_size_p))     //To Do: Verify that the correct data is being captured
+        if (species_index && !(iterations_index%sample_size_i + particle_index%sample_size_p))    //To Do: Verify that the correct data is being captured
             {
 //            cout<<"Debug 2:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
             buffer_pos_x[buffer_index] = part.pos[0];
@@ -54,10 +56,10 @@ void Species::advance(int sample_size_p, int sample_size_i, int species_index, d
             buffer_index++;
             }
 
-        particle_index++;
+        if (species_index) particle_index++;
 	    }
 
-//    cout<<"Debug 1:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
+//    if (species_index) cout<<"Debug 1:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
     }
 	
 /*compute number density*/

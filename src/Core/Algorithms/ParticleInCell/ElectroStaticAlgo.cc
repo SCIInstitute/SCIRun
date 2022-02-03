@@ -59,6 +59,8 @@ using namespace std;
     const int sample_size_p = 1000;                                        //should be set by User Interface input
     const int sample_size_i = 100;                    //should be set by User Interface input
     int output_count        = 0;
+    int buffer_index        = 0;
+    int iterations_index    = 0;
     const int buffer_size   = (iterations/sample_size_i)*(num_particles/sample_size_p);
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
@@ -120,7 +122,7 @@ using namespace Const;
 		for (Species &sp:species)
 		    {
 //			sp.advance();
-			sp.advance(sample_size_p, sample_size_i, species_index, buffer_pos_x, buffer_pos_y, buffer_pos_z);
+            sp.advance(sample_size_p, sample_size_i, buffer_index, iterations_index, species_index, buffer_pos_x, buffer_pos_y, buffer_pos_z);
 			sp.computeNumberDensity();
             species_index++;
 		    }
@@ -141,18 +143,20 @@ using namespace Const;
             Output::diagOutput(world,species);
 
 		    //periodically write out results
-//            if (world.getTs()%100==0 || world.isLastTimeStep()) Output::fields(world, species);
             if (world.getTs()%sample_size_i==0 || world.isLastTimeStep())
                 {
                 Output::fields(world, species);
                 output_count++;
                 }
+
             }
+
+        iterations_index++;
         }
 
 	// grab starting time
 	cout<<"Simulation took "<<world.getWallTime()<<" seconds\n";
-    cout<<"There were "<< iterations/sample_size_i<< " sample(s) of "<<buffer_size<<" data elements sent to each SCIRun output port\n";
+    cout<<"There were "<< iterations/sample_size_i<< " time slices with "<<num_particles/sample_size_p<<" particles, for a total of "<<buffer_index<<" data elements sent to each SCIRun output port\n";
 	if(outputTimes) cout<<"There were "<<output_count<<" sample(s) output to file\n";
 
 /*
