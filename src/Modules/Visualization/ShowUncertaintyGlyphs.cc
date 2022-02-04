@@ -170,12 +170,11 @@ GeometryHandle ShowUncertaintyGlyphsImpl::run(
   renState.mGlyphType = RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH;
   renState.defaultColor = ColorRGB(1.0, 1.0, 1.0);
   renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
   auto vmesh = mean->vmesh();
 
   auto geom(std::make_shared<GeometryObjectSpire>(idgen, idname, true));
   constructor_.buildObject(*geom, geom->uniqueID(), true, transparency_, ColorScheme::COLOR_UNIFORM, renState,
-      primIn, vmesh->get_bounding_box(), true, nullptr);
+      vmesh->get_bounding_box(), true, nullptr);
 
   return geom;
 }

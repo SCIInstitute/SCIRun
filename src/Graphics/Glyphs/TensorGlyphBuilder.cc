@@ -98,7 +98,7 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
     double cosPhi[2] = {tab2_.cos(v), tab2_.cos(v + 1)};
     for (int u = 0; u < nu; ++u)
     {
-      constructor.setOffset();
+      constructor.setOffset(PRIM_);
       params.sinTheta = normalParams.sinTheta = tab1_.sin(u);
       params.cosTheta = normalParams.cosTheta = tab1_.cos(u);
       for (int i = 0; i < 2; ++i)
@@ -139,14 +139,14 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
         Eigen::Vector3d offsetP = p + q * rotatedNormal;
         Vector offsetPVector = Vector(offsetP.x(), offsetP.y(), offsetP.z());
 
-        constructor.addVertex(offsetPVector + centerVector, nVector, ColorRGB(1.0, 1.0, 1.0));
+        constructor.addVertex(PRIM_, offsetPVector + centerVector, nVector, ColorRGB(1.0, 1.0, 1.0));
       }
 
-      constructor.addIndicesToOffset(0, 1, 2);
-      constructor.addIndicesToOffset(2, 1, 3);
+      constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
+      constructor.addIndicesToOffset(PRIM_, 2, 1, 3);
     }
   }
-  constructor.popIndicesNTimes(6);
+  constructor.popIndicesNTimes(PRIM_, 6);
 }
 
 void UncertaintyTensorOffsetSurfaceBuilder::precalculateDifftValues(
@@ -347,7 +347,6 @@ void TensorGlyphBuilder::postScaleTransforms()
 
 void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool half)
 {
-  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   computeTransforms();
   postScaleTransforms();
   computeSinCosTable(half);
@@ -371,7 +370,7 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
       params.cosTheta = tab1_.cos(u);
 
       // Transorm points and add to points list
-      constructor.setOffset(prim);
+      constructor.setOffset(PRIM_);
       for (int i = 0; i < 2; ++i)
       {
         params.sinPhi = sinPhi[i];
@@ -392,15 +391,15 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
           normal.safe_normalize();
         }
 
-        constructor.addVertex(prim, pVector, normal, color_);
+        constructor.addVertex(PRIM_, pVector, normal, color_);
         if (showNormals_)
           constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
       }
 
-      constructor.addIndicesToOffset(prim, 0, 1, 2);
-      constructor.addIndicesToOffset(prim, 2, 1, 3);
+      constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
+      constructor.addIndicesToOffset(PRIM_, 2, 1, 3);
     }
-    constructor.popIndicesNTimes(prim, 6);
+    constructor.popIndicesNTimes(PRIM_, 6);
   }
 }
 
@@ -442,7 +441,6 @@ void TensorGlyphBuilder::generateSuperquadricSurface(GlyphConstructor& construct
 
 void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& constructor, double A, double B)
 {
-  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   double cl = t_.linearCertainty();
   double cp = t_.planarCertainty();
   bool linear = cl >= cp;
@@ -462,7 +460,7 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
 
     for (int u = 0; u < nu_; ++u)
     {
-      constructor.setOffset();
+      constructor.setOffset(PRIM_);
       params.sinTheta = tab1_.sin(u);
       params.cosTheta = tab1_.cos(u);
 
@@ -488,16 +486,16 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
           normal.safe_normalize();
         }
 
-        constructor.addVertex(prim, pVector, normal, color_);
+        constructor.addVertex(PRIM_, pVector, normal, color_);
         if (showNormals_)
           constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
       }
 
-      constructor.addIndicesToOffset(prim, 0, 1, 2);
-      constructor.addIndicesToOffset(prim, 2, 1, 3);
+      constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
+      constructor.addIndicesToOffset(PRIM_, 2, 1, 3);
     }
   }
-  constructor.popIndicesNTimes(prim, 6);
+  constructor.popIndicesNTimes(PRIM_, 6);
 }
 
 Vector TensorGlyphBuilder::evaluateSuperquadricNormal(bool linear, const SuperquadricPointParams& params)
@@ -577,14 +575,13 @@ void TensorGlyphBuilder::generateBox(GlyphConstructor& constructor)
 void TensorGlyphBuilder::generateBoxSide(GlyphConstructor& constructor, const Vector& p1, const Vector& p2, const Vector& p3,
                                          const Vector& p4, const Vector& normal)
 {
-  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
-  constructor.setOffset(prim);
-  constructor.addVertex(prim, p1, normal, color_);
-  constructor.addVertex(prim, p2, normal, color_);
-  constructor.addVertex(prim, p3, normal, color_);
-  constructor.addVertex(prim, p4, normal, color_);
-  constructor.addIndicesToOffset(prim, 2, 0, 3);
-  constructor.addIndicesToOffset(prim, 1, 3, 0);
+  constructor.setOffset(PRIM_);
+  constructor.addVertex(PRIM_, p1, normal, color_);
+  constructor.addVertex(PRIM_, p2, normal, color_);
+  constructor.addVertex(PRIM_, p3, normal, color_);
+  constructor.addVertex(PRIM_, p4, normal, color_);
+  constructor.addIndicesToOffset(PRIM_, 2, 0, 3);
+  constructor.addIndicesToOffset(PRIM_, 1, 3, 0);
   if (showNormals_)
     for (auto& p : {p1, p2, p3, p4})
       constructor.addLine(p, p + normalDebugScale_ * normal, color_, color_);
