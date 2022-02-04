@@ -51,43 +51,44 @@ public:
 
   void buildObject(Datatypes::GeometryObjectSpire& geom, const std::string& uniqueNodeID,
                    const bool isTransparent, const double transparencyValue,
-        const Datatypes::ColorScheme& colorScheme, RenderState state,
-        const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox,
-                   const bool isClippable = true,
+                   const Datatypes::ColorScheme& colorScheme, RenderState state,
+                   const Core::Geometry::BBox& bbox, const bool isClippable = true,
                    const Core::Datatypes::ColorMapHandle colorMap = nullptr);
   void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
                 double ratio, int resolution, const Core::Datatypes::ColorRGB& color1,
                 const Core::Datatypes::ColorRGB& color2, bool render_cylinder_base,
-                bool render_cone_base);
+                bool render_cone_base, bool showNormals, double showNormalsScale);
   void addSphere(const Core::Geometry::Point& p, double radius, int resolution,
-                 const Core::Datatypes::ColorRGB& color);
+                 const Core::Datatypes::ColorRGB& color, bool showNormals, double showNormalsScale);
   void addBox(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
-              Core::Datatypes::ColorRGB& color, bool normalize);
+              Core::Datatypes::ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale);
   void addEllipsoid(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
-                    int resolution, const Core::Datatypes::ColorRGB& color, bool normalize);
+                    int resolution, const Core::Datatypes::ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale);
   void addSuperquadricTensor(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
                              double scale, int resolution, const Core::Datatypes::ColorRGB& color,
-                             bool normalize, double emphasis);
+                             bool normalize, double emphasis, bool showNormals, double showNormalsScale);
   void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
                    int resolution, const Core::Datatypes::ColorRGB& color1,
                    const Core::Datatypes::ColorRGB& color2,
+                   bool showNormals, double showNormalsScale,
                    bool renderBase1 = false, bool renderBase2 = false);
   void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius1,
                    double radius2, int resolution, const Core::Datatypes::ColorRGB& color1,
                    const Core::Datatypes::ColorRGB& color2,
+                   bool showNormals, double showNormalsScale,
                    bool renderBase1 = false, bool renderBase2 = false);
   void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
                int resolution, bool renderBase, const Core::Datatypes::ColorRGB& color1,
-               const Core::Datatypes::ColorRGB& color2);
+               const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
   void addDisk(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
                int resolution, const Core::Datatypes::ColorRGB& color1,
-               const Core::Datatypes::ColorRGB& color2);
+               const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
   void addComet(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
                 int resolution, const Core::Datatypes::ColorRGB& color1,
-                const Core::Datatypes::ColorRGB& color2, double sphere_extrusion);
+                const Core::Datatypes::ColorRGB& color2, double sphere_extrusion, bool showNormals, double showNormalsScale);
   void addTorus(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
                 double major_radius, double minor_radius, int resolution,
-                const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+                const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
   void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
                         const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
                         double radius, int resolution, const Core::Datatypes::ColorRGB& color1,
@@ -103,9 +104,9 @@ public:
   void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
   void addSuperquadricSurface(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
                               double scale, int resolution, const Core::Datatypes::ColorRGB& color,
-                              double A, double B);
+                              double A, double B, bool showNormals, double showNormalsScale);
   void generateSphere(const Core::Geometry::Point& center, double radius, int resolution,
-                      const Core::Datatypes::ColorRGB& color);
+                      const Core::Datatypes::ColorRGB& color, bool showNormals, double showNormalsScale);
   void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
                      const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
                      const Core::Datatypes::ColorRGB& color);
