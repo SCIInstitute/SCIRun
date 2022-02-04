@@ -38,15 +38,15 @@ using namespace Core::Datatypes;
 using GGU = GlyphGeomUtility;
 
 UncertaintyTensorOffsetSurfaceBuilder::UncertaintyTensorOffsetSurfaceBuilder(
-    const Core::Datatypes::Dyadic3DTensor& t, const Core::Geometry::Point& center, double emphasis)
-    : TensorGlyphBuilder(t, center), emphasis_(emphasis)
+  const Core::Datatypes::Dyadic3DTensor& t, const Core::Geometry::Point& center, double emphasis,
+  const Eigen::Matrix<double, 6, 6>& covarianceMatrix)
+    : TensorGlyphBuilder(t, center), emphasis_(emphasis), covarianceMatrix_(covarianceMatrix)
 {
   h_ = 0.000001;// * t.frobeniusNorm();
   hHalf_ = h_ * 0.5;
 }
 
-void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(
-    GlyphConstructor& constructor, const Eigen::Matrix<double, 6, 6>& covarianceMatrix)
+void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstructor& constructor)
 {
   Vector centerVector = Vector(center_);
 
@@ -130,7 +130,7 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(
         qn /= h_;
         qn /= nn.norm();
         double q = std::sqrt(
-            std::abs((qn.transpose().eval() * (covarianceMatrix * qn).eval()).eval().value()));
+            std::abs((qn.transpose().eval() * (covarianceMatrix_ * qn).eval()).eval().value()));
 
         Eigen::Vector3d n = nn / nn.norm();
         Vector nVector = Vector(n.x(), n.y(), n.z());
@@ -181,6 +181,11 @@ void UncertaintyTensorOffsetSurfaceBuilder::precalculateDifftValues(
     }
     finiteDiff(i) = 0.0;
   }
+}
+
+void UncertaintyTensorOffsetSurfaceBuilder::scaleCovariance(double scale)
+{
+  covarianceMatrix_ *= std::pow(scale, 2);
 }
 
 MandelVector UncertaintyTensorOffsetSurfaceBuilder::getQn(

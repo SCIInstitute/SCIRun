@@ -193,10 +193,11 @@ void ShowUncertaintyGlyphsImpl::computeOffsetSurface(FieldHandle mean, MatrixHan
     Eigen::Matrix<double, 21, 1> mandel = denseCovariance.col(i);
     DyadicTensor<6> covT = DyadicTensor<6>(mandel);
 
-    UncertaintyTensorOffsetSurfaceBuilder builder(eigT, points_[i], emphasis_);
+    UncertaintyTensorOffsetSurfaceBuilder builder(eigT, points_[i], emphasis_, covT.asMatrix());
     builder.setResolution(resolution_);
     builder.scaleTensor(scale_);
-    builder.generateOffsetSurface(constructor_, covT.asMatrix());
+    builder.scaleCovariance(scale_);
+    builder.generateOffsetSurface(constructor_);
   }
 }
 

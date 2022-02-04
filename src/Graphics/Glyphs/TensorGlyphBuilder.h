@@ -127,10 +127,10 @@ protected:
   {
    public:
     UncertaintyTensorOffsetSurfaceBuilder(const Core::Datatypes::Dyadic3DTensor& t,
-        const Core::Geometry::Point& center, double emphasis);
-    void generateOffsetSurface(
-        GlyphConstructor& constructor, const Eigen::Matrix<double, 6, 6>& covarianceMatrix);
+        const Core::Geometry::Point& center, double emphasis, const Eigen::Matrix<double, 6, 6>& covarianceMatrix);
+    void generateOffsetSurface(GlyphConstructor& constructor);
     void precalculateDifftValues(DifftValues& vals, const MandelVector& t);
+    void scaleCovariance(double scale);
 
    private:
     double evaluateSuperquadricImpl(bool linear, const Eigen::Vector3d& p, double A, double B);
@@ -141,6 +141,7 @@ protected:
     double emphasis_ = 0.0;
     double h_;// = 0.000001;
     double hHalf_;// = 0.5 * h_;
+    Eigen::Matrix<double, 6, 6> covarianceMatrix_;
 
     //temp
     double diffT(const Eigen::Matrix<double, 6, 1>& s1,
