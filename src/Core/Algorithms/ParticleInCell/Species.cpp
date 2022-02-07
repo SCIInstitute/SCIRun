@@ -11,7 +11,7 @@ using namespace std;
 //Arguments are added to implement saving a set of data in a buffer
 //void Species::advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
                                                       //Alternate buffer implementation (below)
-void Species::advance(int sample_size_p, int sample_size_i, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
+void Species::advance(int sample_size_p, int sample_size_i, int buffer_size, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
     {
 	/*get the time step*/
 	double dt = world.getDt();
@@ -47,7 +47,7 @@ void Species::advance(int sample_size_p, int sample_size_i, int& buffer_index, i
 		    }
 
         //Capture buffered xyz position data for output to SCIRun
-        if (species_index && !(iterations_index%sample_size_i + particle_index%sample_size_p))    //To Do: Verify that the correct data is being captured
+        if (species_index && !(iterations_index%sample_size_i + particle_index%sample_size_p) && (buffer_index < buffer_size))    //To Do: Verify that the correct amount and type of data is being captured
             {
 //            cout<<"Debug 2:particle index is "<<particle_index<<" buffer index is "<<buffer_index<<endl;
             buffer_pos_x[buffer_index] = part.pos[0];

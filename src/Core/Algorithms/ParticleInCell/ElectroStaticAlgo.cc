@@ -34,6 +34,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
+ALGORITHM_PARAMETER_DEF(ParticleInCell, NumTimeSteps);
+
 const AlgorithmOutputName ElectroStaticAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName ElectroStaticAlgo::y_coordinates("y_coordinates");
 const AlgorithmOutputName ElectroStaticAlgo::z_coordinates("z_coordinates");
@@ -41,6 +43,7 @@ const AlgorithmOutputName ElectroStaticAlgo::z_coordinates("z_coordinates");
 ElectroStaticAlgo::ElectroStaticAlgo()
     {
     addParameter(Variables::Method,0);
+    addParameter(AlgorithmParameter::NumTimeSteps,10000);
     }
 
 AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
@@ -55,9 +58,13 @@ using namespace std;
 
     int num_particles       = 10000;                  //should be set by User Interface input - currently set for electrons only
     double delta_t          = 2e-10;                  //should be set by User Interface input
-    int iterations          = 1000;                    //should be set by User Interface input
-    const int sample_size_p = 1000;                                        //should be set by User Interface input
-    const int sample_size_i = 100;                    //should be set by User Interface input
+//    int iterations          = 100;                    //should be set by User Interface input
+    int iterations          = get(AlgorithmParameter::NumTimeSteps).toInt();
+//    int iterations          = 10000;
+//    const int sample_size_p = 1000;                                        //should be set by User Interface input
+    const int sample_size_p = 100;
+//    const int sample_size_i = 100;                    //should be set by User Interface input
+    const int sample_size_i = 5;
     int output_count        = 0;
     int buffer_index        = 0;
     int iterations_index    = 0;
@@ -122,7 +129,7 @@ using namespace Const;
 		for (Species &sp:species)
 		    {
 //			sp.advance();
-            sp.advance(sample_size_p, sample_size_i, buffer_index, iterations_index, species_index, buffer_pos_x, buffer_pos_y, buffer_pos_z);
+            sp.advance(sample_size_p, sample_size_i, buffer_size, buffer_index, iterations_index, species_index, buffer_pos_x, buffer_pos_y, buffer_pos_z);
 			sp.computeNumberDensity();
             species_index++;
 		    }

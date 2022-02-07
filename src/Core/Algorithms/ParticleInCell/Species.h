@@ -42,7 +42,7 @@ public:
 //	void advance();
 //	void advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
                                                       //Alternate buffer implementation (below)
-    void advance(int sample_size_p, int sample_size_i, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
+    void advance(int sample_size_p, int sample_size_i, int buffer_size, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[]);
 
 	/*compute number density*/
 	void computeNumberDensity();

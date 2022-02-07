@@ -26,6 +26,8 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
+ALGORITHM_PARAMETER_DECL(NumTimeSteps);
+
 class SCISHARE ElectroStaticAlgo : public AlgorithmBase
     {
     public:
