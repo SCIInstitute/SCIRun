@@ -29,12 +29,13 @@
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
 
+//using namespace Parameters;
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-ALGORITHM_PARAMETER_DEF(ParticleInCell, NumTimeSteps);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, NumTimeSteps);                                        //here 1
 
 const AlgorithmOutputName ElectroStaticAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName ElectroStaticAlgo::y_coordinates("y_coordinates");
@@ -42,8 +43,8 @@ const AlgorithmOutputName ElectroStaticAlgo::z_coordinates("z_coordinates");
 
 ElectroStaticAlgo::ElectroStaticAlgo()
     {
-    addParameter(Variables::Method,0);
-    addParameter(AlgorithmParameter::NumTimeSteps,10000);
+    addParameter(Variables::Method,0);;
+    addParameter(Parameters::NumTimeSteps,10000);                                     //here 2
     }
 
 AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
@@ -56,22 +57,33 @@ AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
 
 using namespace std;
 
-    int num_particles       = 10000;                  //should be set by User Interface input - currently set for electrons only
+    int num_particles       = 10000;                  //should be set by User Interface input
     double delta_t          = 2e-10;                  //should be set by User Interface input
 //    int iterations          = 100;                    //should be set by User Interface input
-    int iterations          = get(AlgorithmParameter::NumTimeSteps).toInt();
-//    int iterations          = 10000;
+
+    int iterations          = get(Parameters::NumTimeSteps).toInt();                  //here 3
+//    int iterations          = 10000;                  //To be set by the input variable NumTimeSteps (see above)
+//    int iterations          = 5000;
+
 //    const int sample_size_p = 1000;                                        //should be set by User Interface input
-    const int sample_size_p = 100;
+    const int sample_size_p = 100;                    //Using 100 for sample_size_p, 10,000 for num_particles, 5,000 iterations and 5 for sample_size_i, takes 108 seconds to run
+
 //    const int sample_size_i = 100;                    //should be set by User Interface input
-    const int sample_size_i = 5;
+
+//      const int sample_size_i = 5;                    //Using 5 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
+      const int sample_size_i = 10;                   //Using 10 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
+//      const int sample_size_i = 50;                   //Using 50 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes ?? seconds
+    
+
     int output_count        = 0;
     int buffer_index        = 0;
+    int pot_buffer_index    = 0;
     int iterations_index    = 0;
     const int buffer_size   = (iterations/sample_size_i)*(num_particles/sample_size_p);
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
     auto buffer_pos_z       = new double[buffer_size];
+    auto buffer_potential   = new double[iterations/sample_size_i][21][21][21];
 
 /*
 ************************************************ Output Data Setup
@@ -124,6 +136,21 @@ using namespace Const;
     // main loop
 	while(world.advanceTime())
         {
+        //Save electric potential for output to SCIRun
+//        if (world.getTs()%500==0 || world.isLastTimeStep())
+        if (!(iterations_index%(sample_size_i*100)) && (pot_buffer_index < iterations/sample_size_i))
+            {
+            cout<<"pot_buffer_index is "<<pot_buffer_index<<"\n";
+            for (int i=0;i<world.ni-1;i++)
+                for (int j=0;j<world.nj-1;j++)
+                    for (int k=0;k<world.nk-1;k++)
+                        {
+                        buffer_potential[pot_buffer_index][i][j][k]=world.phi[i][j][k];
+                        }
+            pot_buffer_index++;
+            }
+
+
         //move particles
         int species_index = 0;
 		for (Species &sp:species)
@@ -146,16 +173,16 @@ using namespace Const;
         if(outputTimes)
             {
 		    //screen and file output
-            Output::screenOutput(world,species);
-            Output::diagOutput(world,species);
+//            Output::screenOutput(world,species);
+//            Output::diagOutput(world,species);
 
 		    //periodically write out results
-            if (world.getTs()%sample_size_i==0 || world.isLastTimeStep())
+            if (world.getTs()%(sample_size_i*100)==0 || world.isLastTimeStep())
                 {
+                cout<<"Simulation timestep is "<<world.getTs()<<"\n";
                 Output::fields(world, species);
                 output_count++;
                 }
-
             }
 
         iterations_index++;

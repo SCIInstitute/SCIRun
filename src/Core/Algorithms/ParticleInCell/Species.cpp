@@ -9,8 +9,7 @@ using namespace std;
 /*updates velocities and positions of all particles of this species*/
 //void Species::advance()
 //Arguments are added to implement saving a set of data in a buffer
-//void Species::advance(int sample_size_p, int sample_size_i, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
-                                                      //Alternate buffer implementation (below)
+
 void Species::advance(int sample_size_p, int sample_size_i, int buffer_size, int& buffer_index, int iterations_index, int species_index, double buffer_pos_x[], double buffer_pos_y[], double buffer_pos_z[])
     {
 	/*get the time step*/
@@ -22,7 +21,6 @@ void Species::advance(int sample_size_p, int sample_size_i, int buffer_size, int
 
     //Set up the particle and buffer counters that are used to enable saving a set of data in a buffer
     int particle_index = 0;
-//    int buffer_index   = 0;                           //In the alternate buffer implementation comment out this line of code
 
 	/*continue while particles remain*/
 	for (Particle &part: particles)
@@ -100,7 +98,7 @@ void Species::loadParticlesBox(double3 x1, double3 x2, double num_den, int num_m
     {
 	double box_vol = (x2[0]-x1[0])*(x2[1]-x1[1])*(x2[2]-x1[2]);		//box volume
 	double num_real = num_den * box_vol;		//number of real particles
-	double mpw = num_real/num_mp;			//macroparticle weight
+	double mpw = num_real/num_mp;			    //macroparticle weight
 
 	/*preallocate memory for particles*/
 	particles.reserve(num_mp);
