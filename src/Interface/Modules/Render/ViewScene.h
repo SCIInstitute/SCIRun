@@ -185,8 +185,8 @@ namespace SCIRun {
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
       void screenshotClicked();
-      void quickScreenshot(bool prompt);
-      void quickScreenshotClicked() { quickScreenshot(true); }
+      void quickScreenshot();
+      void quickScreenshotClicked() { quickScreenshot(); }
       QString getScreenshotDirectory();
       void setScreenshotDirectory();
       void saveNewGeometryChanged(int state);
@@ -286,6 +286,7 @@ namespace SCIRun {
       //---------------- Misc. ---------------------------------------------------------------------
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
+      void saveScreenshot(QString directory);
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 

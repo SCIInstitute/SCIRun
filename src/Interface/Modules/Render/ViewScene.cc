@@ -1197,7 +1197,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   if (impl_->saveScreenshotOnNewGeometry_)
-    quickScreenshot(false);
+    quickScreenshot();
 }
 
 void ViewSceneDialog::lockMutex()
@@ -2644,19 +2644,22 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool)
 void ViewSceneDialog::screenshotClicked()
 {
   takeScreenshot();
-  impl_->screenshotTaker_->saveScreenshot();
+  saveScreenshot("");
 }
 
-void ViewSceneDialog::quickScreenshot(bool prompt)
+void ViewSceneDialog::quickScreenshot()
 {
   takeScreenshot();
-  impl_->screenshotTaker_->saveScreenshotFromPath(prompt);
+  saveScreenshot(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
 }
 
 QString ViewSceneDialog::getScreenshotDirectory() {
   if (!impl_->screenshotTaker_)
+  {
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
+  }
 
+  std::cout <<state_->getValue(Parameters::ScreenshotDirectory)<< "VALUE\n";
   impl_->screenshotTaker_->setDirectory(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   return impl_->screenshotTaker_->screenshotDirectory();
 }
@@ -2680,6 +2683,15 @@ void ViewSceneDialog::setScreenshotDirectory() {
 
 }
 
+void ViewSceneDialog::saveScreenshot(QString directory)
+{
+  if(directory.isEmpty())
+    impl_->screenshotTaker_->saveScreenshot(QFileDialog::getSaveFileName(impl_->mGLWidget, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png"));
+
+  else
+    impl_->screenshotTaker_->saveScreenshot(directory);
+}
+
 void ViewSceneDialog::autoSaveScreenshot()
 {
   QThread::sleep(1);
@@ -2689,7 +2701,7 @@ void ViewSceneDialog::autoSaveScreenshot()
                     .arg(windowTitle().replace(':', '-'))
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
-  impl_->screenshotTaker_->saveScreenshot(file);
+  saveScreenshot(file);
 }
 
 void ViewSceneDialog::sendBugReport()

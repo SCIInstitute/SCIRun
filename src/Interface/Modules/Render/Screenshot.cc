@@ -96,9 +96,14 @@ void Screenshot::saveScreenshot()
   }
 }
 
-void Screenshot::saveScreenshot(const QString& filename)
+void Screenshot::saveScreenshot(const QString& fileName)
 {
-  screenshot_.save(filename);
+  index_++;
+  if (!fileName.isEmpty())
+  {
+      QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_));
+    screenshot_.save(fileName + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_));
+  }
 }
 
 void Screenshot::saveScreenshotFromPath(bool prompt)

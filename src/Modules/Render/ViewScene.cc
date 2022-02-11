@@ -257,7 +257,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesY, 100);
 
   //state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
-  state->setValue(Parameters::ScreenshotDirectory, "~/scirun5screenshots");
+  state->setValue(Parameters::ScreenshotDirectory, "/Users/nids/Desktop");
 
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
