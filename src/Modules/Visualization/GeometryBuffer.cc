@@ -230,6 +230,9 @@ void GeometryBuffer::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void GeometryBuffer::portRemovedSlotImpl(const PortId& pid)
 {
-  Guard g(impl_->lock_);
-  impl_->buffer_[pid.toString()].clear();
+  if (!impl_->buffer_.empty())
+  {
+    Guard g(impl_->lock_);
+    impl_->buffer_[pid.toString()].clear();
+  }
 }
