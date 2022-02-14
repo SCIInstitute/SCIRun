@@ -85,13 +85,6 @@ QString CTK_CORE_EXPORT extensionToRegExp(const QString& extension);
 
 ///
 /// \ingroup Core
-/// Convert a list of wildcar extension filters ("*.jpg")
-/// into a regular expression string
-/// "*.jpg", "*.txt" -> "(.*\\.jpg?$|.*\\.txt?$)"
-QRegExp CTK_CORE_EXPORT nameFiltersToRegExp(const QStringList& nameFilters);
-
-///
-/// \ingroup Core
 /// Return a "smart" number of decimals needed to display (in a gui) a floating
 /// number. 16 is the max that can be returned, -1 for NaN numbers. When the
 /// number of decimals is not obvious, it defaults to defaultDecimals if it is
