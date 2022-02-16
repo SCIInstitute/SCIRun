@@ -37,9 +37,9 @@ namespace SCIRun {
     namespace Algorithms {
 
       template <typename T>
-      SharedPointer<T> optionalAlgoInput(boost::optional<SharedPointer<T>> opt)
+      SharedPointer<T> optionalAlgoInput(const std::optional<SharedPointer<T>>& opt)
       {
-        return opt.get_value_or(nullptr);
+        return opt.value_or(nullptr);
       }
 
     }}}

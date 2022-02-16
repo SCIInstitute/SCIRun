@@ -72,7 +72,7 @@ namespace Engine {
     ItemHandle redo(bool restore);
     IOType* networkIO_;
     Stack undo_, redo_;
-    boost::optional<Memento> initialState_;
+    std::optional<Memento> initialState_;
   };
 
 

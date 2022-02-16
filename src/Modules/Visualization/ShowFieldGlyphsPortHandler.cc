@@ -46,11 +46,11 @@ namespace SCIRun{
           const Module* mod,
           const RenderState renState,
           FieldHandle pf,
-          boost::optional<FieldHandle> sf,
-          boost::optional<FieldHandle> tf,
-          boost::optional<ColorMapHandle> pcolorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap)
+          std::optional<FieldHandle> sf,
+          std::optional<FieldHandle> tf,
+          std::optional<ColorMapHandle> pcolorMap,
+          std::optional<ColorMapHandle> scolorMap,
+          std::optional<ColorMapHandle> tcolorMap)
         : module_(mod), pf_handle(pf), pf_info(pf)
       {
         // Save field info

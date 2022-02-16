@@ -31,7 +31,6 @@
 
 #include <string>
 #include <vector>
-#include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Utils/ProgressReporter.h>
@@ -43,7 +42,7 @@ namespace Algorithms {
 namespace DataIO {
 namespace internal
 {
-
+#if 0
   class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
   {
   public:
@@ -52,7 +51,7 @@ namespace internal
 
     Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);
 
-    boost::optional<std::string> getMatrixContentsLine(const std::string& matStr);
+    std::optional<std::string> getMatrixContentsLine(const std::string& matStr);
 
     std::string readFile(const std::string& filename);
 
@@ -66,15 +65,15 @@ namespace internal
     typedef boost::tuple<int, int, Data> DenseData;
     typedef boost::tuple<std::string,std::string,std::string> RawDenseData;
 
-    boost::optional<RawDenseData> parseDenseMatrixString(const std::string& matString);
-    boost::optional<RawDenseData> parseColumnMatrixString(const std::string& matString);
+    std::optional<RawDenseData> parseDenseMatrixString(const std::string& matString);
+    std::optional<RawDenseData> parseColumnMatrixString(const std::string& matString);
     DenseData convertRaw(const RawDenseData& data);
-    boost::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
+    std::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
     SparseData convertRaw(const RawSparseData& data);
   private:
     const Utility::ProgressReporter* reporter_;
   };
-
+#endif
 }}}}}
 
 #endif

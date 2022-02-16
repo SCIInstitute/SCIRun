@@ -216,6 +216,8 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNegativeMaxIterations)
   EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, -1)), AlgorithmInputException);
 }
 #endif
+
+#if 0
 //todo: remove unused code
 TEST(SparseMatrixReadTest, DISABLED_RegexOfScirun4Format)
 {
@@ -371,3 +373,4 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .0001);
   }
 }
+#endif

@@ -80,8 +80,8 @@ PlotDialog::~PlotDialog()
 }
 
 void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
-  const boost::optional<double>& horizAxisOpt,
-  const boost::optional<double>& vertAxisOpt)
+  const std::optional<double>& horizAxisOpt,
+  const std::optional<double>& vertAxisOpt)
 {
   plot_->setTitle(title);
   plot_->setAxisTitle(QwtPlot::xBottom, xAxis);

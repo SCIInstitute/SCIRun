@@ -34,7 +34,6 @@
 #include <Dataflow/Network/ConnectionId.h>
 #ifndef Q_MOC_RUN
 #include <Dataflow/Network/ModuleInterface.h>
-#include <boost/optional/optional.hpp>
 #endif
 
 namespace SCIRun {
@@ -53,7 +52,7 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
-    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);

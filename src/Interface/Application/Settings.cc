@@ -232,7 +232,7 @@ public:
     settings.setValue(name_, retriever_());
   }
 private:
-  boost::optional<T> value_;
+  std::optional<T> value_;
   const QString name_;
   ReadConverter<T> readConverter_;
   std::function<void(const T&)> postRead_;

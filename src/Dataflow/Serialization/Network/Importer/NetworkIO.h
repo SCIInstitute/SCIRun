@@ -61,7 +61,7 @@ namespace Networks {
   public:
     LegacyNetworkStateConversion();
     void readImporterMap(std::istream& file);
-    boost::optional<NewNameAndValueConverter> getStateConverter(const std::string& moduleName, const std::string& oldStateName) const;
+    std::optional<NewNameAndValueConverter> getStateConverter(const std::string& moduleName, const std::string& oldStateName) const;
   private:
     StateConverterLookupByModule nameAndValLookup_;
   };

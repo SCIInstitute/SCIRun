@@ -89,7 +89,7 @@ void NetworkEditorControllerGuiProxy::removeModule(const ModuleId& id)
   controller_->removeModule(id);
 }
 
-boost::optional<ConnectionId> NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+std::optional<ConnectionId> NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   return controller_->requestConnection(from, to);
 }

@@ -246,14 +246,14 @@ SharedPointer<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler
   return controller_->createDynamicPortSwitch();
 }
 
-boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+std::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   auto id = controller_->requestConnection(from, to);
   Q_EMIT modified();
   return id;
 }
 
-boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortWidget* from, const PortWidget* to)
+std::optional<ConnectionId> NetworkEditor::requestConnection(const PortWidget* from, const PortWidget* to)
 {
   return requestConnection(from->description(), to->description());
 }
@@ -1629,7 +1629,7 @@ void NetworkEditor::clear()
     {
       deleteTheseFirst.append(item);
     }
-    else 
+    else
 #endif
     if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
     {

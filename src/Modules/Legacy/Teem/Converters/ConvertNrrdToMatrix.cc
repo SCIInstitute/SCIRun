@@ -85,9 +85,9 @@ ConvertNrrdToMatrix::execute()
 }
 
 MatrixHandle
-ConvertNrrdToMatrix::create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataHOpt,
-boost::optional<NrrdDataHandle> rowsHOpt,
-boost::optional<NrrdDataHandle> colsHOpt, int cols)
+ConvertNrrdToMatrix::create_matrix_from_nrrds(std::optional<NrrdDataHandle> dataHOpt,
+std::optional<NrrdDataHandle> rowsHOpt,
+std::optional<NrrdDataHandle> colsHOpt, int cols)
 {
   // Determine if we have data, rows, columns to indicate whether it is
   // a dense or sparse matrix

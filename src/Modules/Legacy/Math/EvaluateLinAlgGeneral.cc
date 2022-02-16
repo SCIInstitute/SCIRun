@@ -82,7 +82,7 @@ void
 EvaluateLinearAlgebraGeneral::execute()
 {
   const int NUM_PORTS = 5;
-  std::vector<boost::optional<MatrixHandle>> imatrix;
+  std::vector<std::optional<MatrixHandle>> imatrix;
   std::vector<MatrixHandle> omatrix(NUM_PORTS);
 
   imatrix.push_back(getOptionalInput(i1));

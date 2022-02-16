@@ -84,7 +84,7 @@ namespace SCIRun
         int widgetid_;
         double l2norm_;
         bool color_changed_;
-          GeometryHandle buildWidgetObject(const boost::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
+          GeometryHandle buildWidgetObject(const std::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
         RenderState getWidgetRenderState(ModuleStateHandle state);
         Transform previousTransform_;
       };
@@ -209,7 +209,7 @@ void GenerateSinglePointProbeFromField::execute()
   }
 }
 
-FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
+FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional<FieldHandle> ifieldOption)
 {
   FieldHandle ifield;
   const double THRESHOLD = 1e-6;
@@ -483,7 +483,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   return index;
 }
 
-GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(const boost::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
+GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(const std::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
   using namespace Parameters;
   auto mesh = ofield->vmesh();
