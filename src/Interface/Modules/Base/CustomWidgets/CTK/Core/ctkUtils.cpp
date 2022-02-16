@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QString>
 #include <QStringList>
+#include <QSize>
 
 #include "ctkUtils.h"
 
@@ -375,4 +376,10 @@ QString ctk::internalPathFromAbsolute(const QString& absolutePath, const QString
   {
     return absolutePath;
   }
+}
+
+//TODO:
+QSize ctk::globalStrutReplacement()
+{
+  return {0,0};
 }

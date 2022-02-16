@@ -172,6 +172,7 @@ QString CTK_CORE_EXPORT absolutePathFromInternal(const QString& internalPath, co
 /// Absolute path can be retrieved from an internal path using absolutePathFromInternal function.
 QString CTK_CORE_EXPORT internalPathFromAbsolute(const QString& absolutePath, const QString& basePath);
 
+QSize CTK_CORE_EXPORT globalStrutReplacement();
 }
 
 #endif

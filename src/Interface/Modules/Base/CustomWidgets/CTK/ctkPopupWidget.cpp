@@ -20,7 +20,6 @@
 
 // Qt includes
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDialog>
 #include <QDir>
 #include <QEvent>
@@ -477,7 +476,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         // the popup instantly...
         QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
         }
-      else 
+      else
         {
         // ... except if the popup is closing, we want to reopen it as sooon as
         // possible.
