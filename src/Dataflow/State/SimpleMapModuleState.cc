@@ -149,7 +149,7 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
 {
   //print();
   auto i = transientStateMap_.find(name.name());
-  return i != transientStateMap_.end() && !i->second.empty() ? boost::make_optional(i->second) : TransientValueOption();
+  return i != transientStateMap_.end() && !i->second.empty() ? std::optional(i->second) : TransientValueOption();
 }
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)

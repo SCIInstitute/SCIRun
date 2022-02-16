@@ -116,7 +116,7 @@ namespace Networks {
   template <class T>
   T transient_value_cast(const ModuleStateInterface::TransientValueOption& x)
   {
-    return x ? any_cast_or_default_<T>(*x) : T();
+    return x.has_value() ? any_cast_or_default_<T>(*x) : T();
   }
 
   template <class T>
