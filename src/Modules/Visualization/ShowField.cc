@@ -472,10 +472,12 @@ namespace
     const std::optional<SharedPointer<ColorMap>>& colorMap,
     ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
   {
-    ColorMapHandle realColorMap = nullptr;
+    ColorMapHandle realColorMap;
 
-    if(colorMap) realColorMap = colorMap.get();
-    else realColorMap = StandardColorMapFactory::create();
+    if (colorMap)
+      realColorMap = *colorMap;
+    else
+      realColorMap = StandardColorMapFactory::create();
 
     textureMap = StandardColorMapFactory::create(
       realColorMap->getColorData(), realColorMap->getColorMapName(),
@@ -875,7 +877,6 @@ void GeometryBuilder::renderNodes(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
@@ -968,7 +969,6 @@ void GeometryBuilder::renderEdges(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)

@@ -855,7 +855,7 @@ public:
   bool isDynamic() const override { return false; }
   SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override { return ModuleId("<Blank>"); }
   size_t getIndex() const override { return 0; }
-  std::optional<SCIRun::Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
+  std::optional<SCIRun::Dataflow::Networks::ConnectionId> firstConnectionId() const override { return std::nullopt; }
 };
 
 const SCIRun::Dataflow::Networks::PortDescriptionInterface* BlankPort::description() const

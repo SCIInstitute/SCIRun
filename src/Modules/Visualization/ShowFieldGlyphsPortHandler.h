@@ -66,7 +66,7 @@ namespace SCIRun{
         Graphics::Datatypes::ColorScheme colorScheme;
         RenderState::GlyphInputPort colorInput;
         Core::Datatypes::ColorRGB defaultColor;
-        std::optional<Core::Datatypes::ColorMapHandle> colorMap;
+        Core::Datatypes::ColorMapHandle colorMap_;
         Core::Datatypes::ColorMapHandle coordinateMap {nullptr}, textureMap {nullptr};
         std::optional<Core::Geometry::Tensor> pinputTensor, sinputTensor, tinputTensor;
         std::optional<Core::Geometry::Vector> pinputVector, sinputVector, tinputVector;
