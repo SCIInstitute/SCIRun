@@ -1007,7 +1007,7 @@ enum class ModuleWidgetPages
   BUTTON_PAGE
 };
 
-void ModuleWidget::enterEvent(QEvent* event)
+void ModuleWidget::enterEvent(Q_ENTER_EVENT_CLASS* event)
 {
   previousPageIndex_ = currentIndex();
   movePortWidgets(previousPageIndex_, static_cast<int>(ModuleWidgetPages::BUTTON_PAGE));

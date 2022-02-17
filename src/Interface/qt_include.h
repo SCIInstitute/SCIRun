@@ -33,3 +33,9 @@
 #else
 #define WIDTH_FUNC horizontalAdvance
 #endif
+
+#ifdef QT6_IN_USE_NEED_TO_CHANGE_THIS
+#define Q_ENTER_EVENT_CLASS QEnterEvent
+#else
+#define Q_ENTER_EVENT_CLASS QEvent
+#endif

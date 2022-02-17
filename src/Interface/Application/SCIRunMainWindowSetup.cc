@@ -512,15 +512,18 @@ void SCIRunMainWindow::setupTagManagerWindow()
   addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define QT5_VERSION_STRING "+Qt" TOSTRING(QT5_VERSION)
+#if (defined(__arm__) && defined(__APPLE__))
+#define SCIRUN_CPU_VERSION "(a64)"
+#else
+#define SCIRUN_CPU_VERSION "(x86)"
+#endif
 
 void SCIRunMainWindow::setupVersionButton()
 {
-  auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
-  qVersion += QT5_VERSION_STRING;
-  versionButton_ = new QPushButton("Version: " + qVersion);
+  auto qver = QString::fromStdString(VersionInfo::GIT_VERSION_TAG) + "+Qt";
+  qver += qVersion();
+  qver += SCIRUN_CPU_VERSION;
+  versionButton_ = new QPushButton("Version: " + qver);
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
   versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");

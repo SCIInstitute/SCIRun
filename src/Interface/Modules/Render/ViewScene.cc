@@ -2749,15 +2749,3 @@ void ViewSceneDialog::initializeVisibleObjects()
 {
   impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
 }
-
-void ViewSceneDialog::enterEvent(QEvent* event)
-{
-  //qDebug() << "enterEvent" << event;
-  ModuleDialogGeneric::enterEvent(event);
-}
-
-void ViewSceneDialog::leaveEvent(QEvent* event)
-{
-  //qDebug() << "leaveEvent" << event;
-  ModuleDialogGeneric::leaveEvent(event);
-}

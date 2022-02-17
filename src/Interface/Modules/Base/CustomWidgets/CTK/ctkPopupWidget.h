@@ -23,6 +23,7 @@
 
 // CTK includes
 #include "ctkBasePopupWidget.h"
+#include <Interface/qt_include.h>
 
 class ctkPopupWidgetPrivate;
 
@@ -113,7 +114,7 @@ public:
 
 protected:
   void leaveEvent(QEvent* event) override;
-  void enterEvent(QEvent* event) override;
+  void enterEvent(Q_ENTER_EVENT_CLASS* event) override;
   bool eventFilter(QObject* obj, QEvent* event) override;
 
   /// Widget the popup is attached to. It opens right under \a baseWidget
