@@ -94,19 +94,24 @@ OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
 # Configure Qt
+
+SET(DEFAULT_QT_MIN_VERSION "5.15.2")
+
+set(SCIRUN_QT_MIN_VERSION ${DEFAULT_QT_MIN_VERSION} CACHE STRING "Qt version")
+set_property(CACHE SCIRUN_QT_MIN_VERSION PROPERTY STRINGS 5.15.2 6.2)
+string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST ${SCIRUN_QT_MIN_VERSION})
+list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
+
 IF(NOT BUILD_HEADLESS)
-  IF(UNIX)
-    SET(QT_MIN_VERSION "5.4")
-  ELSE()
-    SET(QT_MIN_VERSION "5.15.2")
-  ENDIF()
 
-  SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
+  SET(Qt_PATH "" CACHE PATH "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
 
-  IF(IS_DIRECTORY ${Qt5_PATH})
-    FIND_PACKAGE(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED HINTS ${Qt5_PATH})
+  IF(IS_DIRECTORY ${Qt_PATH})
+    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED HINTS ${Qt_PATH})
   ELSE()
-    MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    MESSAGE(SEND_ERROR "Set Qt_PATH to directory where Qt is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
   ENDIF()
 
   IF(APPLE)
@@ -211,6 +216,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
