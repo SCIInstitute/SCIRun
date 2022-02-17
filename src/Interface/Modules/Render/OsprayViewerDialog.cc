@@ -433,12 +433,9 @@ void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
   #endif
 }
 
-//TODO:
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
 {
   #ifdef WITH_OSPRAY
-  renderer_->mouseWheel(event->delta());
+  renderer_->mouseWheel(event->angleDelta().y());
   #endif
 }

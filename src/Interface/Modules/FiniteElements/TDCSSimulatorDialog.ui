@@ -120,7 +120,7 @@
        <enum>Checked</enum>
       </property>
       <property name="flags">
-       <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
       </property>
      </item>
      <item row="0" column="2">
@@ -355,7 +355,7 @@
            <enum>Checked</enum>
           </property>
           <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
           </property>
          </item>
          <item row="2" column="0">

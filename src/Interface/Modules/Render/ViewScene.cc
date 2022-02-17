@@ -1415,6 +1415,27 @@ MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
   return btn;
 }
 
+namespace
+{
+  auto xPos(QMouseEvent* e)
+  {
+    #ifdef QT6_IN_USE_NEED_TO_CHANGE_THIS
+      return e->position().x();
+    #else
+      return e->x();
+    #endif
+  }
+
+  auto yPos(QMouseEvent* e)
+  {
+    #ifdef QT6_IN_USE_NEED_TO_CHANGE_THIS
+      return e->position().y();
+    #else
+      return e->y();
+    #endif
+  }
+}
+
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
   if (!clickedInViewer(event))
@@ -1423,8 +1444,8 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   auto spire = impl_->mSpire.lock();
   if (!spire) return;
 
-  const int x_window = event->x() - impl_->mGLWidget->pos().x();
-  const int y_window = event->y() - impl_->mGLWidget->pos().y();
+  const int x_window = xPos(event) - impl_->mGLWidget->pos().x();
+  const int y_window = yPos(event) - impl_->mGLWidget->pos().y();
 
   const auto btn = getSpireButton(event);
 
@@ -1463,7 +1484,7 @@ bool ViewSceneDialog::canSelectWidget()
 
 bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 {
-  return childAt(e->x(), e->y()) == impl_->mGLWidget;
+  return childAt(xPos(e), yPos(e)) == impl_->mGLWidget;
 }
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
@@ -1474,13 +1495,13 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   }
 
   const auto btn = getSpireButton(event);
-  if (!tryWidgetSelection(event->x(), event->y(), btn))
+  if (!tryWidgetSelection(xPos(event), yPos(event), btn))
   {
     auto spire = impl_->mSpire.lock();
     if (!spire) return;
 
-    int x_window = event->x() - impl_->mGLWidget->pos().x();
-    int y_window = event->y() - impl_->mGLWidget->pos().y();
+    int x_window = xPos(event) - impl_->mGLWidget->pos().x();
+    int y_window = yPos(event) - impl_->mGLWidget->pos().y();
 
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
@@ -1488,7 +1509,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     for (auto* vsd : impl_->viewScenesToUpdate)
       vsd->inputMouseDownHelper(x_ss, y_ss);
   }
-  impl_->previousWidgetInfo_.setMousePosition(event->x(), event->y());
+  impl_->previousWidgetInfo_.setMousePosition(xPos(event), yPos(event));
 }
 
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
@@ -1502,7 +1523,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     if (widgetMoved)
     {
       Q_EMIT mousePressSignalForGeometryObjectFeedback(
-               event->x(), event->y(), impl_->selectedWidget_->uniqueID());
+               xPos(event), yPos(event), impl_->selectedWidget_->uniqueID());
       impl_->previousWidgetInfo_.setFrameIsFinished(false);
     }
     else
@@ -1528,14 +1549,14 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   impl_->mouseButtonPressed_ = false;
 }
 
-//TODO!!!
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {
   if (!impl_->selectedWidget_)
   {
     for (auto* vsd : impl_->viewScenesToUpdate)
-      vsd->inputMouseWheelHelper(event->delta());
+    {
+      vsd->inputMouseWheelHelper(event->angleDelta().y());
+    }
   }
 }
 

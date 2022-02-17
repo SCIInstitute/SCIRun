@@ -1566,7 +1566,7 @@ void NetworkEditor::executeAll()
   preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this]() { controller_->executeAll(); };
-  QtConcurrent::run(exec);
+  (void)QtConcurrent::run(exec);
 
   //TODO: not sure about this right now.
   //Q_EMIT modified();
@@ -1578,7 +1578,7 @@ void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
   preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this, &module, fromButton]() { controller_->executeModule(module, fromButton); };
-  QtConcurrent::run(exec);
+  (void)QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -1909,7 +1909,7 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
   {
     setTransformationAnchor(AnchorUnderMouse);
 
-    if (event->delta() > 0)
+    if (event->angleDelta().x() > 0)
     {
       zoomIn();
     }
