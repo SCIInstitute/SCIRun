@@ -34,8 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 
-ShowUncertaintyGlyphsDialog::ShowUncertaintyGlyphsDialog(const std::string& name,
-                                                         ModuleStateHandle state,
+ShowUncertaintyGlyphsDialog::ShowUncertaintyGlyphsDialog(ModuleStateHandle state,
                                                          QWidget* parent)
 : ModuleDialogGeneric(state, parent)
 {
