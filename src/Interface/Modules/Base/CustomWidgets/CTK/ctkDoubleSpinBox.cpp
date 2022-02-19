@@ -356,6 +356,7 @@ void ctkDoubleSpinBoxPrivate::editorTextChanged(const QString& text)
 
 namespace
 {
+  #pragma GCC diagnostic ignored "-Wunused-function"
   bool isPrint(const QChar& sep)
   {
     return sep.isPrint();
