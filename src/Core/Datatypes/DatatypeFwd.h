@@ -30,6 +30,7 @@
 #define CORE_DATATYPES_DATATYPE_FWD_H
 
 #include <vector>
+#include <optional>
 #include <Core/Utils/SmartPointers.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Utils/SmartPointers.h>

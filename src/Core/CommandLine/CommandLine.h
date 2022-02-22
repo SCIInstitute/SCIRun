@@ -30,6 +30,7 @@
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H
 
 #include <string>
+#include <optional>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/SmartPointers.h>
 #include <boost/noncopyable.hpp>

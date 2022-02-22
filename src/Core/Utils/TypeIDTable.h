@@ -33,6 +33,7 @@
 
 #include <Core/Thread/Mutex.h>
 #include <map>
+#include <optional>
 #include <boost/noncopyable.hpp>
 #include <Core/Utils/share.h>
 
