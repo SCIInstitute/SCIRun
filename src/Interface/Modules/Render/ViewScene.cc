@@ -449,6 +449,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   glLayout->addWidget(impl_->toolBar2_, 1, 0);
   glLayout->update();
 
+  addLineEditManager(impl_->screenshotControls_->defaultPathEdit_, Parameters::ScreenshotDirectory);
+
   viewSceneManager.addViewScene(this);
 }
 
@@ -2653,20 +2655,11 @@ void ViewSceneDialog::quickScreenshot()
   saveScreenshot(getScreenshotFileName(), true);
 }
 
-QString ViewSceneDialog::getScreenshotDirectory() {
-  if (!impl_->screenshotTaker_)
-  {
-    impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
-  }
-
-  return QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString());
-}
-
 void ViewSceneDialog::setScreenshotDirectory() {
 
   auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   //impl_->screenshotTaker_->screenshotDirectory();
-  impl_->screenshotControls_->defaultPathEdit_->setText(dir);
+//  impl_->screenshotControls_->defaultPathEdit_->setText(dir);
   //ScreenshotControls::setScreenshotDirectory(dir);
 
 

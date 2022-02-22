@@ -593,13 +593,8 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
   setupUi(this);
   connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotClicked()));
   connect(screenshotPathButton_, SIGNAL(clicked()), parent, SLOT(setScreenshotDirectory()));
-  defaultPathEdit_->setText(parent->getScreenshotDirectory());
 
-}
-
-void ScreenshotControls::setScreenshotDirectory(const QString& dir)
-{
-  defaultPathEdit_->setText(dir);
+  //defaultPathEdit_->setText(parent->getScreenshotDirectory());
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
