@@ -286,7 +286,8 @@ namespace SCIRun {
       //---------------- Misc. ---------------------------------------------------------------------
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
-      void saveScreenshot(QString directory);
+      void saveScreenshot(QString directory, bool prompt);
+      QString getScreenshotFileName();
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 

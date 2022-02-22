@@ -41,29 +41,6 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   viewport_(glwidget),
   index_(0)
 {
-  directory_ = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
-
-  if (directory_.isEmpty())
-  {
-    directory_ = QDir::homePath() + QLatin1String("/scirun5screenshots");
-
-    QDir dir(directory_);
-    if (!dir.exists())
-    {
-      dir.mkpath(directory_);
-    }
-  }
-}
-
-void Screenshot::setDirectory(QString dir)
-{
-  directory_ = dir;
-}
-
-QString Screenshot::screenshotDirectory()
-{
-  // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-  return directory_;
 }
 
 void Screenshot::takeScreenshot()
@@ -85,47 +62,11 @@ QImage Screenshot::getScreenshot()
   return image;
 }
 
-void Screenshot::saveScreenshot()
-{
-  index_++;
-  const auto fileName = screenshotFile();
-  if (!fileName.isEmpty())
-  {
-    QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-    screenshot_.save(fileName);
-  }
-}
-
 void Screenshot::saveScreenshot(const QString& fileName)
 {
   index_++;
   if (!fileName.isEmpty())
-  {
-      QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_));
-    screenshot_.save(fileName + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_));
-  }
-}
-
-void Screenshot::saveScreenshotFromPath(bool prompt)
-{
-  index_++;
-  auto fileName = screenshotFileFromPreferences();
-  if (!fileName.isEmpty())
-  {
-    if (prompt)
-      QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
     screenshot_.save(fileName);
-  }
-}
-
-QString Screenshot::screenshotFileFromPreferences() const
-{
-  return directory_ + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
-}
-
-QString Screenshot::screenshotFile() const
-{
-  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", directory_, "*.png");
 }
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const

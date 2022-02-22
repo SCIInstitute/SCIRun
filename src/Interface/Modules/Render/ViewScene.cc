@@ -2644,13 +2644,13 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool)
 void ViewSceneDialog::screenshotClicked()
 {
   takeScreenshot();
-  saveScreenshot("");
+  saveScreenshot("", true);
 }
 
 void ViewSceneDialog::quickScreenshot()
 {
   takeScreenshot();
-  saveScreenshot(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
+  saveScreenshot(getScreenshotFileName(), true);
 }
 
 QString ViewSceneDialog::getScreenshotDirectory() {
@@ -2659,16 +2659,13 @@ QString ViewSceneDialog::getScreenshotDirectory() {
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
   }
 
-  std::cout <<state_->getValue(Parameters::ScreenshotDirectory)<< "VALUE\n";
-  impl_->screenshotTaker_->setDirectory(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
-  return impl_->screenshotTaker_->screenshotDirectory();
+  return QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString());
 }
 
 void ViewSceneDialog::setScreenshotDirectory() {
 
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().parent_path().string()));
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   //impl_->screenshotTaker_->screenshotDirectory();
-  impl_->screenshotTaker_->setDirectory(dir);
   impl_->screenshotControls_->defaultPathEdit_->setText(dir);
   //ScreenshotControls::setScreenshotDirectory(dir);
 
@@ -2683,25 +2680,34 @@ void ViewSceneDialog::setScreenshotDirectory() {
 
 }
 
-void ViewSceneDialog::saveScreenshot(QString directory)
+void ViewSceneDialog::saveScreenshot(QString fileName, bool prompt)
 {
-  if(directory.isEmpty())
-    impl_->screenshotTaker_->saveScreenshot(QFileDialog::getSaveFileName(impl_->mGLWidget, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png"));
+  if(fileName.isEmpty())
+    fileName = QFileDialog::getSaveFileName(impl_->mGLWidget, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png");
 
-  else
-    impl_->screenshotTaker_->saveScreenshot(directory);
+  if(prompt)
+    QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+
+  impl_->screenshotTaker_->saveScreenshot(fileName);
+}
+
+QString ViewSceneDialog::getScreenshotFileName()
+{
+
+  return QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
+         QString("/%1_%2.png").arg(windowTitle().remove(">").remove("<").remove(" ").replace(':', '-')).arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 }
 
 void ViewSceneDialog::autoSaveScreenshot()
 {
   QThread::sleep(1);
   takeScreenshot();
-  const auto file = impl_->screenshotTaker_->screenshotDirectory() +
+  const auto file = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
                     QString("/%1_%2.png")
                     .arg(windowTitle().replace(':', '-'))
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
-  saveScreenshot(file);
+  saveScreenshot(file, false);
 }
 
 void ViewSceneDialog::sendBugReport()
@@ -2712,7 +2718,7 @@ void ViewSceneDialog::sendBugReport()
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
   const QImage image = impl_->screenshotTaker_->getScreenshot();
-  QString location = impl_->screenshotTaker_->screenshotDirectory() + ("/scirun_bug.png");
+  QString location = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) + ("/scirun_bug.png");
   image.save(location);
 
   // Generate email template
@@ -2761,7 +2767,6 @@ void ViewSceneDialog::takeScreenshot()
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
 
-  impl_->screenshotTaker_->setDirectory(QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
   impl_->screenshotTaker_->takeScreenshot();
 }
 
