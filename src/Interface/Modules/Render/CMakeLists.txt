@@ -142,6 +142,9 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt::OpenGL)
+if (${QT_VERSION_MAJOR} STREQUAL "6")
+  TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt::OpenGLWidgets)
+endif()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)

@@ -37,6 +37,7 @@
 #include <QMimeData>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <QRegularExpression>
 
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Python/PythonInterpreter.h>
@@ -312,7 +313,7 @@ void PythonConsoleEdit::issue_command()
   this->interactive_position_ = this->document_end();
 
   NetworkEditor::InEditingContext iec(rootNetworkEditor_);
-  auto lines = command.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+  auto lines = command.split(QRegularExpression("[\r\n]"), Qt::SkipEmptyParts);
   for (const auto& line : lines)
   {
     if (!line.isEmpty())

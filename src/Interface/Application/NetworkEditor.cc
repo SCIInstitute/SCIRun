@@ -890,6 +890,15 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
   }
 }
 
+static auto eventPos(QDropEvent* event)
+{
+#ifdef SCIRUN_QT6_ENABLED
+  return event->position().toPoint();
+#else
+  return event->pos();
+#endif
+}
+
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
   auto data = event->mimeData();
@@ -910,7 +919,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
 
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(mapToScene(event->pos()));
+    addNewModuleAtPosition(mapToScene(eventPos(event)));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());

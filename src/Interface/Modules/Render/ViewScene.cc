@@ -1419,7 +1419,7 @@ namespace
 {
   auto xPos(QMouseEvent* e)
   {
-    #ifdef QT6_IN_USE_NEED_TO_CHANGE_THIS
+    #ifdef SCIRUN_QT6_ENABLED
       return e->position().x();
     #else
       return e->x();
@@ -1428,7 +1428,7 @@ namespace
 
   auto yPos(QMouseEvent* e)
   {
-    #ifdef QT6_IN_USE_NEED_TO_CHANGE_THIS
+    #ifdef SCIRUN_QT6_ENABLED
       return e->position().y();
     #else
       return e->y();
