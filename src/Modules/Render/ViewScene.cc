@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
@@ -256,8 +257,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
 
-  //state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
-  state->setValue(Parameters::ScreenshotDirectory, std::string("/Users/nids/Desktop"));
+  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+  //state->setValue(Parameters::ScreenshotDirectory, std::string("/Users/nids/Desktop"));
 
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });

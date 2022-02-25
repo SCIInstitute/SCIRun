@@ -187,7 +187,6 @@ namespace SCIRun {
       void screenshotClicked();
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
-      QString getScreenshotDirectory();
       void setScreenshotDirectory();
       void saveNewGeometryChanged(int state);
 
