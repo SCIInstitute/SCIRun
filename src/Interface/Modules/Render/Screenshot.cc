@@ -38,8 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 
 Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   : QObject(parent),
-  viewport_(glwidget),
-  index_(0)
+  viewport_(glwidget)
 {
 }
 
@@ -64,7 +63,6 @@ QImage Screenshot::getScreenshot()
 
 void Screenshot::saveScreenshot(const QString& fileName)
 {
-  index_++;
   if (!fileName.isEmpty())
     screenshot_.save(fileName);
 }

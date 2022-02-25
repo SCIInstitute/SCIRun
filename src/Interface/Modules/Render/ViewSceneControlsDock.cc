@@ -591,10 +591,8 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
   : QWidget(parent)
 {
   setupUi(this);
-  connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotClicked()));
+  connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotSaveAsClicked()));
   connect(screenshotPathButton_, SIGNAL(clicked()), parent, SLOT(setScreenshotDirectory()));
-
-  //defaultPathEdit_->setText(parent->getScreenshotDirectory());
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)

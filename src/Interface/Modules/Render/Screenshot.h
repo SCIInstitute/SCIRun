@@ -53,7 +53,6 @@ namespace SCIRun
     private:
       QOpenGLWidget* viewport_;
       QImage screenshot_;
-      uint index_;
     };
   }
 }
