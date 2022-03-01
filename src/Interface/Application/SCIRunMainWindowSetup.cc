@@ -512,17 +512,62 @@ void SCIRunMainWindow::setupTagManagerWindow()
   addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
 
-#if (defined(__arm__) && defined(__APPLE__))
-#define SCIRUN_CPU_VERSION "(a64)"
-#else
-#define SCIRUN_CPU_VERSION "(x86)"
+#ifdef __APPLE__
+
+#include <iostream>
+#include <stdio.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
+std::string show_cpu_info()
+{
+  char buffer[1024];
+  size_t size=sizeof(buffer);
+  if (sysctlbyname("machdep.cpu.brand_string", &buffer, &size, NULL, 0) < 0) {
+      perror("sysctl");
+  }
+  std::ostringstream ostr;
+  ostr << buffer;
+  return ostr.str();
+}
+
+bool isAppleSilicon()
+{
+  auto cpu = show_cpu_info();
+  return cpu.find("Apple M") != std::string::npos;
+}
+
+int processIsTranslated()
+{
+   int ret = 0;
+   size_t size = sizeof(ret);
+   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1)
+   {
+      if (errno == ENOENT)
+         return 0;
+      return -1;
+   }
+   return ret;
+}
+
+bool nativeAppleSiliconProcess()
+{
+  return 0 == processIsTranslated();
+}
+
 #endif
 
 void SCIRunMainWindow::setupVersionButton()
 {
   auto qver = QString::fromStdString(VersionInfo::GIT_VERSION_TAG) + "+Qt";
   qver += qVersion();
-  qver += SCIRUN_CPU_VERSION;
+  #ifdef __APPLE__
+  auto appleChip = isAppleSilicon();
+  qver += appleChip ? "(a64)" : "(x86)";
+  if (appleChip)
+    qver += nativeAppleSiliconProcess() ? "[native]" : "[translated]";
+  #endif
   versionButton_ = new QPushButton("Version: " + qver);
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
