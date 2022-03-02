@@ -506,10 +506,10 @@ void PortWidget::makeConnection(const ConnectionDescription& cd)
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
     auto id = ConnectionId::create(cd);
     auto c = connectionFactory_()->makeFinishedConnection(out, in, id);
-    connect(c, &Connection::deleted, this, &PortWidget::connectionDeleted);
-    connect(c, &Connection::noteChanged, this, &PortWidget::connectionNoteChanged);
-    connect(out, &PortWidget::portMoved, c, &Connection::trackNodes);
-    connect(in, &PortWidget::portMoved, c, &Connection::trackNodes);
+    connect(c, &ConnectionLine::deleted, this, &PortWidget::connectionDeleted);
+    connect(c, &ConnectionLine::noteChanged, this, &PortWidget::connectionNoteChanged);
+    connect(out, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
+    connect(in, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
     setConnected(true);
   }
 }
