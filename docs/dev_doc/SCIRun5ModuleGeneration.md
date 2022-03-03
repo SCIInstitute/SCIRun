@@ -9,7 +9,6 @@ This project was supported by grants from the National Center for Research Resou
 Authors:  
 Jess Tate and Garima Chhabra
 
-
 ## SCIRun Overview
 
 **This tutorial demonstrates how to create new modules in SCIRun 5.0.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programming skills**
@@ -57,6 +56,7 @@ $git checkout master
 
 $git merge upstream/master
 ```
+
 You should sync and merge your fork before you start a new module and before you create a pull request.  
 
 It is a good practice to create a new branch in your fork for every module you will be adding. The command to create a new branch is:
@@ -67,10 +67,9 @@ $git checkout -b [branch_name]
 
 Please see the [GitHub help page](https://help.github.com) for more information.
 
-
 ## Files Needed for a New Module
 
-**This section will describe the files need to create a module in SCIRun. Each file will be described and a template example will be provided. These template files are all included in the source code in the template directories.**
+**This section describes the files need to create a module in SCIRun. Each file is described and a template example provided. These template files are all included in the source code in the template directories.**
 
 ### Overview of Files Needed for each Module
 
@@ -78,23 +77,23 @@ There are only three files required to create a module, though more may be neede
 
 In addition to the required module source code and header files *modulename.cc* and *modulename.h*, a module configuration file is needed. The module configuration file *modulename.module* contains a description of the module and its state and names all the files needed for the module to be included in SCIRun.
 
-Simple modules without user interfaces (UIs) can be created with the previously list three files alone.
+Simple modules without user interfaces (UIs) can be created with the previously listed three files alone.
 
 However, if the module function needs a UI, there are three additional files needed.  
 
-SCIRun can generate a UI for a module without these, but the functionality will be very limited to nonexistent.
+SCIRun can generate a UI for a module without these, but the functionality is limited to nonexistent.
 
-The Qt UI file *modulenameDialog.ui* describes the graphics and hooks of the UI can be created using the Qt UI editor. Module UIs also require a code and header file *modulenameDialog.cc* and *modulenameDialog.h*.    
+The Qt UI file *modulenameDialog.ui* that describes the graphics and hooks of the UI is created using the Qt UI editor. Module UIs also require source code and header files; *modulenameDialog.cc* and *modulenameDialog.h*.    
 
-Most modules, especially those requiring more than minimal code, should also have algorithm code to allow for greater portability and code control. This algorithm code and header file *modulenameAlgo.cc* and *modulenameAlgo.h* should contain all the computation of the module.
+Most modules, especially those requiring more than minimal code, should also have algorithm code to allow for greater portability and code control. The algorithm code and header files; *modulenameAlgo.cc* and *modulenameAlgo.h*, contain all the computation of the module.
 
-Though it is possible to build modules without these algorithm files, it is considered good practice to do so.  
+Though it is possible to build modules without algorithm files, it is considered good practice to do so.  
 
 It is worth noting that each of the *CMakeLists.txt* files are in the directories of all of the files (except the module config file). See the examples in the following chapters for details.
 
 ### Module Configuration File
 
-The module configuration file contains all the information needed for the module factory to create necessary linkage and helper files for modules to be properly included into SCIRun. Module configuration files should be located in `src/Modules/Factory/Config/`. It is a text file that describes fields specific to the module delimited by curly brackets.  
+The module configuration file contains all the information needed for the module factory to create necessary linkage and helper files for modules to be properly included into SCIRun.  The module configuration file is located in `src/Modules/Factory/Config/`. It is a text file that describes fields specific to the module delimited by curly brackets.  
 
 There are three fields: "module", "algorithm", and "UI" and within each field are subfields "name" and "header", and others depending on the field. The following is an example that reflects the template files included in the source code.
 
@@ -118,9 +117,10 @@ There are three fields: "module", "algorithm", and "UI" and within each field ar
   }
 }
 ```
-This config file example would not build. We will include specific examples that will build and work in following sections of this tutorial ([Simple Module Without UI](#example-simple-module-without-ui), [Simple Module With UI](#example-simple-module-with-ui), [Simple Module With Algorithm](#example-simple-module-with-algorithm)).  
 
-As mentioned before, the UI and algorithm files are not required to generate a module, therefore the subfields for the "algorithm" or "UI" fields can changed to "N/A" to indicate that these files do not exist. Please refer to [Module Config File](#module-config-file) section for an example.
+This config file example would not build.  Specific examples that build and work are found in the following sections of this tutorial ([Simple Module Without UI](#example-simple-module-without-ui), [Simple Module With UI](#example-simple-module-with-ui), [Simple Module With Algorithm](#example-simple-module-with-algorithm)).  
+
+As mentioned before, the UI and algorithm files are not required to generate a module, therefore the subfields for the "algorithm" or "UI" fields can be changed to "N/A" to indicate that these files do not exist. Please refer to [Module Config File](#module-config-file) section for an example.
 
 ### Module Source Code
 
@@ -168,20 +168,23 @@ namespace Fields {
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
   };
 }}}
-	#endif
+    #endif
 ```
+
 One of the key functions of this header file is the definition of the ports used by the module. This template uses one input and output, but any number can be used by changing the number and defining all the port types. To use two inputs and outputs:
 
 ```
 public Has2InputPorts<FieldPortTag,FieldPortTag>,
 public Has2OutputPorts<FieldPortTag,FieldPortTag>
 ```
+
 If no there are no input or output ports, the commands are:
 
 ```
 public HasNoInputPorts,
 public HasNoOutputPorts
 ```
+
 Dynamic ports are also possible for the inputs.  
 
 Dynamic ports are essentially a vector of ports, and are counted as a single port in the header.
@@ -192,6 +195,7 @@ For a single dynamic port, then a static port and a dynamic port:
 public Has1InputPort<DynamicPortTag<FieldPortTag>>,        
 public Has2InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>
 ```
+
 Here is a list of port tags that can be used in SCIRun:
 
 - MatrixPortTag
@@ -206,9 +210,9 @@ Here is a list of port tags that can be used in SCIRun:
 
 The header is also where the ports are named and the datatype is declared. It is important for the name of each port to be unique, including all the inputs and outputs. The datatype of each port is specific when the port is declared and named.
 
-This declares the datatype expected by the port and can be a subset of the port tag type, e.g., DenseMatrix instead of Matrix. However, it can be better to do this within the module to control the exception.  
+This declares the datatype expected by the port and can be a subset of the port tag type, e.g., DenseMatrix instead of Matrix. However, it is better to do this within the module to control the exception.  
 
-If there is a UI with the module in question, the state variables may be needed to pass data between the module and the UI. State variables will need to be declared here as public (see [Connecting UI to the Module](#connecting-ui-to-the-module) for an example). The `setStateDefault` function is how the default state variables are set. If there is no UI and therefore no state variables, this function can be set to empty in this file (`virtual void setStateDefaults() {};`)  and omitted from the .cc file.
+If there is a UI with the module in question, the state variables are needed to pass data between the module and the UI. State variables are declared here as public (see [Connecting UI to the Module](#connecting-ui-to-the-module) for an example). The `setStateDefault` function is how the default state variables are set. If there is no UI and therefore no state variables, this function is set to empty in this file (`virtual void setStateDefaults() {};`)  and omitted from the .cc file.
 
 #### Module Code File
 
@@ -257,17 +261,18 @@ void @ModuleName@::execute()
   sendOutputFromAlgorithm(OutputField, output);
 }
 ```
+
 As shown in this template example, the module.cc file contains mostly constructors and sends the inputs to the SCIRun algorithm. Most modules should follow this practice, which allows for easier maintenance of common algorithms.
 
 ### Module UI Code
 
-There are three files needed to set up a UI for a module, a design file, a header file, and a .cc file. These files should all be located in the same directory within the `src/Interface/Modules/`.
+Three files are needed to set up a UI for a module; a design file, a header file, and a .cc file. These files are located in the same directory within `src/Interface/Modules/`.
 
-We will show the examples located in `src/Interface/Modules/Template` as examples of the core functions needed.
+We show the examples located in `src/Interface/Modules/Template` as examples of the core functions needed.
 
 #### Module Design File
 
-The module design file is an xml file that describes the UI structure. This file can be created and edited in the Qt editor. The image below shows the example template *ModuleDesignerFile.ui* within the Qt editor.
+The module design file is an xml file that describes the UI structure. This file is created and edited in the Qt editor. The image below shows the example template *ModuleDesignerFile.ui* within the Qt editor.
 
 :::{figure-md} fig-QT-Editor
 
@@ -276,9 +281,9 @@ The module design file is an xml file that describes the UI structure. This file
 Template module interface design file as seen in the Qt editor
 :::
 
-As shown, the user can interactively modify the placement of the widgets in the window. The Widget Box window allows the user to choose and place new objects within the window. The Property Editor allows for the modification of properties of the various objects and widgets within the UI, including size, type of input, names, etc. With the Object Inspector window, the hierarchy and organization of the UI can be changed.
+As shown, the user interactively modifies the placement of widgets in the window. The Widget Box window allows the user to choose and place new objects within the window. The Property Editor allows modification of properties of the various objects and widgets within the UI, including size, type of input, names, etc.  The hierarchy and organization of the UI can be changed within the Object Inspector window .
 
-When using the editor to make a module UI, there are a few things to consider. First, make sure all the relevant objects, including the name of UI (QDialog) is consistent with module dialog code. You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some operating systems will interpret the file slightly differently. The structure of the UI can be changed or destroyed.
+When using the editor to make a module UI, there are a few things to consider. First, make sure all the relevant objects, including the name of UI (QDialog) is consistent with module dialog code. You can change the size and placement of objects with the property manager, but make sure to leave some buffer space as some operating systems interpret the file slightly differently. The structure of the UI can be changed or destroyed.
 
 Look at some of the existing modules for examples.
 
@@ -302,7 +307,7 @@ namespace Gui {
 class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
   public Ui::@ModuleName@
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
   @ModuleName@Dialog(const std::string& name,
@@ -316,7 +321,7 @@ public:
  #endif
 ```
 
-The module dialog header file will be very similar for each module, with only the names of the module and a few different functions declared here.  
+The module dialog header file is similar for each module, with only the names of the module and a few different functions declared.  
 
 #### Module Dialog Code
 
@@ -353,7 +358,8 @@ void @ModuleName@Dialog::pull()
   pull_newVersionToReplaceOld();
 }
 ```
-The module dialog code is used mostly for passing data between the module and the UI and changing the UI when required by the module. Parameters and inputs can be passed straight to the algorithm, as shown in this example. The 'pull' functions are optional to use data from the module and algorithm to either display in the UI or to use to change the options or appearance of the UI. There can be other forms of 'pull', such as `pullSpecial`. A `push` function can be used in conjunction with `pull`.
+
+The module dialog code is used mostly for passing data between the module and the UI and changing the UI when required by the module. Parameters and inputs are passed straight to the algorithm, as shown in this example. The 'pull' functions are optional, and use data from the module and algorithm to either display in the UI or to change the options or appearance of the UI.  There are other forms of 'pull', such as `pullSpecial`. A `push` function can be used in conjunction with `pull`.
 
 These functions, `pull` and `push` are automatic functions in the module UI.
 
@@ -361,15 +367,15 @@ These functions, `pull` and `push` are automatic functions in the module UI.
 
 The Module algorithm files are where most of the computation code should live. There are two files, a header and a .cc file. Making algorithm files can be tricky for a beginner, because there are several options to use due to the flexible nature of SCIRun. However, the module algorithms have more in common than initially apparent.
 
-The trick to implementing a new module algorithm (as with most things) is look at several other modules that have similar functions and try to emulate those methods.  
+The trick to implementing a new module algorithm (as with most things) is to look at several other modules that have similar functions and try to emulate those methods.  
 
 Module algorithm code belongs in the relevant directory within the `src/Core/Algorithms/` directory.
 
-Provided in this section are some template examples, found in `src/Core/Algorithms/Template/`
+ Some template examples are provided for this section, and are found in `src/Core/Algorithms/Template/`
 
 #### Module Algorithm Header
 
-The module algorithm header performs as a traditional C++ header for the module algorithm code. Shown here is the example *AlgorithmTemplate.h* in the `src/Core/Algorithm/Template` folder.
+The module algorithm header performs as a traditional C++ header for the module algorithm code.  The example *AlgorithmTemplate.h* found in the `src/Core/Algorithm/Template` folder is shown below.
 
 ```
 #ifndef CORE_ALGORITHMS_FIELDS_@AlgorithmName@_H
@@ -382,7 +388,7 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-// declare parametes and options in header when not part of standard names.
+// declare parameters and options in header when not part of standard names.
         ALGORITHM_PARAMETER_DECL(Knob1);
         ALGORITHM_PARAMETER_DECL(Knob2);
 
@@ -395,15 +401,16 @@ namespace SCIRun {
       }}}}
 #endif
 ```
-A key difference that may occur in the algorithm header file are the function and variable declarations.
 
-Parameters and options for the algorithm may need to be declared here if they are not included in the recognized list (listed in `Core/Algorithms/Base/AlgorithmVariableNames.h`).
+A key difference in the algorithm header file are the function and variable declarations.
+
+Parameters and options for the algorithm are declared here if they are not included in the recognized list (listed in `Core/Algorithms/Base/AlgorithmVariableNames.h`).
 
 #### Module Algorithm Code
 
-The module algorithm .cc file should contain the majority of the computation necessary for the module.
+The module algorithm .cc file contains the majority of the computation necessary for the module.
 
-Shown here is the example *AlgorithmTemplate.cc* in the `src/Core/Algorithm/Template/` folder.
+The example *AlgorithmTemplate.cc* found in the `src/Core/Algorithm/Template/` folder is shown below
 
 ```
  #include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
@@ -451,22 +458,21 @@ AlgorithmOutput @AlgorithmName@Algo::run(const
 }
 ```
 
-This template shows the algorithm using some of the defined names from`Core/Algorithms/Base/AlgorithmVariableNames.h`, using the Variable namespace. This allows for easy use of common inputs and output to the algorithm. If other or more values are needed, they can be declared in the header. Also of note, the default values for the UI are set in the `@AlgorithmName@Algo()` function, and then in the module code, the `setStateDefault` function pulls the values from the algorithm.  
+This template uses the Variable namespace, which provides defined names from`Core/Algorithms/Base/AlgorithmVariableNames.h`.  This allows for easy use of common input and output to the algorithm.  If other or more values are needed, they are declared in the header.  Also of note, the default values for the UI are set in the `@AlgorithmName@Algo()` function, and then in the module code, the `setStateDefault` function pulls the values from the algorithm.  
 
 This only works if the algorithm files are linked in the module configuration file.   
 
 There are several algorithms already implemented in SCIRun. If there are modules that have similar functionality you may be able to use some of the functionality already implemented. The module may still need it's own algorithm file.  
 
-
 ## Example: Simple Module Without UI
 
-**This section describes how to create a very simple module in SCIRun. We will show how to make a simple module that outputs a simple string. This example will show the basics of the functions and code used by SCIRun to create and run modules.**
+**This section describes how to create a very simple module in SCIRun. We will show how to make a simple module that outputs a simple string. This example shows the basics of the functions and code used by SCIRun to create and run modules.**
 
 ### Module Config File
 
-If you have created a fork from the SCIRun Git repository begin by creating a new branch in your repository. Be sure to commit your changes to your repository often as this can help you and the developers fix and make improvements to the code. It is often easiest to modify existing code to fit your purposes than create new code, so determine a module that has similar functionality or structure to the new module. If desired, there is also the template files described in [Files Needed for a New Module](#files-needed-for-a-new-module) to use as a basis. In this example, we will provide the code needed, so it is not necessary to copy another module.
+If you have created a fork from the SCIRun Git repository begin by creating a new branch in your repository. Be sure to commit your changes to your repository often as this can help you and the developers fix and make improvements to the code. It is often easiest to modify existing code to fit your purposes than create new code, so determine a module that has similar functionality or structure to the new module. If desired, there are also several template files described in [Files Needed for a New Module](#files-needed-for-a-new-module) to use as a basis. In this example, we provide the code needed, so it is not necessary to copy another module.
 
-Begin with the module config file. Create a new text file in the module factory configuration directory (`src/Modules/Factory/Config/`) for the new module. It should be named *TestModuleSimple.module* or something similar. The text of the file should be:
+Begin with the module config file. Create a new text file in the module factory configuration directory (`src/Modules/Factory/Config/`) for the new module.  Name it *TestModuleSimple.module* or something similar. The text of the file is:
 
 ```
 {
@@ -489,11 +495,11 @@ Begin with the module config file. Create a new text file in the module factory 
 }
 ```
 
-The exact text of the status and description can be whatever the developer desires. The names of the module and filenames can also be different, but they must match the module code.  
+The exact text of the status and description is whatever the developer desires. The names of the module and filenames can be different, but they must match the module code.  
 
 ### Module Header File
 
-Now we move on to the module code. The module will need to be placed in one of the directories in `src/Modules/`, so choose the directory that fits the modules use best (do not place the module code in *Factory* or *Template*, and *Legacy* is generally for converted modules from earlier versions of SCIRun). Since this module will only have a string output, we will place the module code in `src/Modules/String/`. In this directory create a file called *TestModuleSimple.h*. This file will be very similar to the *ModuleTemplate.h* file shown earlier. In addition to the SCIRun license information, the content of the header file should be:
+Now we move on to the module code. The module is placed in one of the directories in `src/Modules/`, so choose the directory that fits the modules use best (do not place the module code in *Factory* or *Template*, and *Legacy* is generally for converted modules from earlier versions of SCIRun). Since this module has a simple string output, we place the module code in `src/Modules/String/`.  Create a file called *TestModuleSimple.h* in this directory. This file is similar to the *ModuleTemplate.h* file shown earlier. In addition to the SCIRun license information, the content of the header file is:
 
 ```
 #ifndef MODULES_STRING_TestModuleSimple_H
@@ -517,12 +523,10 @@ public:
 
   OUTPUT_PORT(0, OutputString, String);
 
-  MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
-
+  MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
 };
 }}}
 #endif
-
 ```
 
 As mentioned in [Module Configuration File](#module-configuration-file), the header files for most modules do not vary significantly. This example in particular contains only elements common to most other modules. The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
@@ -531,9 +535,9 @@ If desired, the final version of the header file is in the source code: `src/Mod
 
 ### Module Source Code
 
-The final file needed for this module is the source code file (*ModuleTemplate.cc*).
+The final file needed for this module is the source code file; TestModuleSimple.cc.
 
-The functionality used in this module is minimal to show how the essential functions. With the license and other comments, the file should contain:
+The functionality used in this module is minimal to show essential functions.  With the license and other comments, the file should contain:
 
 ```
 #include <Modules/String/TestModuleSimple.h>
@@ -547,7 +551,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class TestModuleSimple
 /// @brief This module splits out a string.
 
-MODULE_INFO_DEF(TestModuleSimple, String, SCIRun) ;
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple","String","SCIRun");
 
 TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
 {
@@ -564,18 +568,17 @@ TestModuleSimple::execute()
   StringHandle msH(new String(message_string));
   sendOutput(OutputString, msH);
 }
-
 ```
 
 ### Building and Testing
 
-For comparison, the final version of the module code file is in the source code: `src/Modules/Examples/TestModuleSimple.cc`.
+For comparison, the final version of the module code file is in `src/Modules/Examples/TestModuleSimple.cc`.
 
 After these files are modified correctly, the only step remaining before building is adding the module code and header to the compiler list.  
 
 Open the `src/Modules/String/CMakeLists.txt` file.
 
-Add *TestModuleSimple.cc* and *TestModuleSimple.h* to the respective list. There will more to the file, but the relevant sections should look something like this:
+Add *TestModuleSimple.cc* and *TestModuleSimple.h* to the respective list. There is more to the file, but the relevant sections should look something like this:
 
 ```
 SET(Modules_String_SRCS
@@ -590,21 +593,19 @@ SET(Modules_String_HEADERS
   share.h
   TestModuleSimple.h
 )
-
 ```
 
 After changing the CMakeList.txt file, build SCIRun using the build script, or if you have already built SCIRun recently, go to the `SCIRun_root/bin/SCIRun` directory and run make.  
 
-Take note of any build errors, if there is a problem in the with any module factory files, make sure that there are no mistakes in the the module configuration file and build again.  
+Take note of any build errors, if there is a problem with any module factory files, make sure that there are no mistakes in the the module configuration file and build again.  
 
 Check out the common build errors in [Common Build Errors](#common-build-errors).
 
-After SCIRun builds completely, Launch SCIRun and test the module. You can use the PrintDatatype module to view the string that this module outputs. Other modules will require more testing, but due to the very simple nature of the module you can know that if the messages matches what you expect, then it is working properly.  
-
+After SCIRun builds completely, Launch SCIRun and test the module. You can use the PrintDatatype module to view the string that this module outputs by running the 2 module network and then opening the PrintDatatype User Interface. Other modules require more testing, but due to the simple nature of this module you can know that if the message matches what you expect, then it is working properly.  
 
 ## Example: Simple Module With UI
 
-**In this chapter, we will build off the module that we described in the previous chapter to show how to add a UI and an input port. This module will print a message that comes from either the input port or the UI. We will show how to add a UI incrementally to help convey the principles that the software is based upon. This incremental approach allows the user to copy this approach with more complicated module as it provides sanity checks for the user.**
+**In this chapter, we build off the module that we described in the previous chapter to show how to add a UI and an input port. This module prints a message that comes from either the input port or the UI. We show how to add a UI incrementally to help convey the principles that the software is based upon. This incremental approach allows the user to copy this approach with more complicated modules as it provides sanity checks for the user.**
 
 ### Duplicate the Previous Module
 
@@ -619,18 +620,17 @@ Change the name and header field to reflect the new name of the module, as shown
     "description": "This is a simple module to show how to make new modules.",
     "header": "Modules/String/TestModuleSimpleUI.h"
   },
-
 ```
 
 For now, leave the rest of the fields as 'N/A'; we will come back to those.  
 
 Next, copy the module code files *TestModuleSimple.h* and *TestModuleSimple.cc* in the `src/Modules/String/` directory and rename them appropriately (*TestModuleSimpleUI.h* and *TestModuleSimpleUI.cc*).  
 
-In these new files, change all the references of the modules name to TestModuleSimpleUI.
+In these new files, change all the references of the module's name to TestModuleSimpleUI.
 
 A find and replace function will manage most instances, but make sure that all of them are changed.
 
-There are 4 lines in each of the two files that need to be changed, with more than one change in some lines. The changes in *TestModuleSimpleUI.h* are these lines:
+There are 4 lines in each of the two files that need to be changed, with more than one change in some lines. The changes in *TestModuleSimpleUI.h* are shown below:
 
 ```
 #ifndef MODULES_STRING_TestModuleSimpleUI_H
@@ -646,7 +646,6 @@ public:
   TestModuleSimpleUI();
 
 ...  
-
 ```
 
 For the *TestModuleSimpleUI.cc* file:
@@ -664,25 +663,23 @@ TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 void
 TestModuleSimpleUI::execute()
 {  
-
 ```
 
 Another change you may notice is to remove the `false` input in the constructor line:
 
 ```
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
-
 ```
 
-The *'false'* options means that there is no module.  
+The *'false'* option means that there is no module UI.  
 
-Removing the options changes the input to 'true', which allows for a module UI.
+Removing the option changes the input to 'true', which allows for a module UI.
 
-If no UI file is found, a default UI will be used.  
+If no UI file is found, a default UI is used.  
 
-With these changes we should try to build. Make sure the files are added to the CMakeList.txt file in `src/Modules/String/` as we showed in the previous chapter. If there are build errors, check for spelling mismatches.
+With these changes we should try to build. Make sure the files are added to the CMakeList.txt file in `src/Modules/String/` as shown in the previous example. If there are build errors, check for spelling mismatches.
 
-Also, check out the common build errors in [Common Build Errors](#common-build-errors). Once SCIRun is built, you can try to add the new module to the workspace. SCIRun will give you a warning dialogue about not finding a UI file, so it will create a default one.
+Also, check out the common build errors in [Common Build Errors](#common-build-errors). Once SCIRun is built, you can try to add the new module to the workspace.  SCIRun will give you a warning dialogue about not finding a UI file, so it will create a default one.
 
 This UI is not connected to anything, so it won't affect the module at all, but you should be able to open the UI and see it (a slider and two buttons).
 
@@ -692,18 +689,18 @@ If everything is working properly, we can move onto the next step of adding our 
 
 ### Creating a Custom UI
 
-To create a new UI, we need to add three new files: a design file, and a .cc and a header file for the UI. We will need these files linked to the other module code, so we will modify the module config file again to add the name of the UI and the path to the header file. The naming convention often used is to add 'Dialog' to the end of the module name for the name of the UI and the names of the files.
+To create a new UI, we add three new files: a design file, a UI source code file and a UI header file.  These files are linked to the other module code.  To do that we modify the module config file again to add the name of the UI and the path to the header file. The naming convention often used is to add 'Dialog' to the end of the module name for the name of the UI and the names of the files.
 
 ```
 "UI": {
     "name": "TestModuleSimpleUIDialog",
     "header": "Interface/Modules/String/TestModuleSimpleUIDialog.h"
   }
-
 ```
-Next, we need to use the Qt editor to design a module UI. Copy the Qt module file from `src/Interface/Modules/Template/ModuleDesignerFile.ui` to `src/Interface/Modules/String/TestModuleSimpleUIDialog.ui`.  
 
-Open the *TestModuleSimpleUIDialog.ui* file in the Qt editor, which provides a graphic method for modifying and compiling the design file. First, delete the check box, input scroll wheel widgets, and the `knob 2` label. Next, add a `line edit widget` by finding it in the *Widgdet Box* window (in the *Input Widget* section) then clicking and dragging it next to the remaining label.
+Next, we use the Qt editor to design a module UI.  Copy the Qt module file from `src/Interface/Modules/Template/ModuleDesignerFile.ui` to `src/Interface/Modules/String/TestModuleSimpleUIDialog.ui`.  
+
+Open the *TestModuleSimpleUIDialog.ui* file in the Qt editor, which provides a graphic method for modifying and compiling the design file.  First, delete the check box, input scroll wheel widgets, and the `knob 2` label.  Next, add a `line edit widget` by finding it in the *Widgdet Box* window (in the *Input Widget* section) then clicking and dragging it next to the remaining label.
 
 Change the text of the remaining label to `My String:` or something similar.
 
@@ -722,7 +719,7 @@ Module interface design file for the TestModuleSimpleUI module as seen in the Qt
 
 Now that the module UI is designed, we need to link it to the module with the module dialog code.
 
-Copy the *ModuleDialog.cc* and the *ModuleDialog.h* from the `src/Interface/Modules/Template/` directory to the `src/Interface/Modules/String/` directory, with the appropriate names (*TestModuleSimpleUIDialog.cc* and *TestModuleSimpleUIDialog.h*). For the *TestModuleSimpleUIDialog.h*, change the module name reference to the correct module name and delete the 'virtual void pull()' function. The code should be very similar to the following:
+Copy the *ModuleDialog.cc* and the *ModuleDialog.h* from the `src/Interface/Modules/Template/` directory to the `src/Interface/Modules/String/` directory, with the appropriate names (*TestModuleSimpleUIDialog.cc* and *TestModuleSimpleUIDialog.h*).  For the *TestModuleSimpleUIDialog.h*, change the module name reference to the correct module name and delete the 'virtual void pull()' function. The code should be very similar to the following:
 
 ```
 #ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
@@ -738,7 +735,7 @@ namespace Gui {
 class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
   public Ui::TestModuleSimpleUIDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
   TestModuleSimpleUIDialog(const std::string& name,
@@ -747,10 +744,9 @@ public:
 };
 }}
 #endif
-
 ```
 
-The *TestModuleSimpleUIDialog.cc* requires similar treatment, but will require the addition of few more changes. Add and include for the module header file, change the namespace from `Field` to `StringManip`, and delete the last two lines from the main function.
+The *TestModuleSimpleUIDialog.cc* requires similar treatment, but requires the addition of a few more changes.  Add an include for the module header file, change the namespace from `Field` to `StringManip`, delete the last two lines from the main function, and delete the small function found after the main function.
 
 The code should be:
 
@@ -771,10 +767,9 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name,
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 }
-
 ```
 
-This should be enough to create a UI for the TestModuleSimpleUI module, but it will not be able to interact yet. We will need to modify this file later to connect all the required inputs. For now, we can build SCIRun to test the UI design. Make sure that these three new files are added to the *CMakeList.txt* in the `src/Interface/Modules/String/` directory:
+This is enough to create a UI for the TestModuleSimpleUI module, but it will not be able to interact yet. We modify this file later to connect all the required inputs. For now, build SCIRun to test the UI design. Make sure that these three new files are added to the *CMakeList.txt* in the `src/Interface/Modules/String/` directory:
 
 ```
 SET(Interface_Modules_String_FORMS
@@ -797,31 +792,29 @@ SET(Interface_Modules_String_SOURCES
 
   TestModuleSimpleUIDialog.cc
 )
-
 ```
 
-Once these files are added, SCIRun should build. Load SCIRun and place the TestModuleSimpleUI module. Open the UI for the module and make sure that looks correct.
+Once these files are added, SCIRun should build. Load SCIRun and place the TestModuleSimpleUI module. Open the UI for the module and make sure that it looks correct.
 
 ### Connecting UI to the module
 
-Now we will work on connecting the input from the UI to the code in the module. Begin by modifying the *TestModuleSimpleUIDialog.cc* to include a line that reads the input field and assigns it to a variable.
+We now work on connecting the input from the UI to the code in the module.  Begin by modifying the *TestModuleSimpleUIDialog.cc* to include a line that reads the input field and assigns it to a variable.
 
-This line needs to go near the end in the main function of the module dialog code
+This line is placed near the end of the main function in the module dialog code
 
 ```
 addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
-
 ```
 
-This function will read the value of `inputstring` and set it to `FormatString`, which we have included as if it was part of the `|TestModuleSimpleUI` namespace.  
+This function reads the value of `inputstring` and sets it to `FormatString`, which we have included as if it was part of the `TestModuleSimpleUI` namespace.  
 
-We will need to include it as such, by adding it as a public function in the *TestModuleSimpleUI.h* file.
+We include it as such, by adding it as a public function in the *TestModuleSimpleUI.h* file.
 
 ```
 static Core::Algorithms::AlgorithmParameterName FormatString;
 ```
 
-This should be the final declaration in the public list (after `MODULE_TRAITS_AND_INFO(ModuleHasUI)_` ). Another change in this file is to modify the `setStateDefault` function so that it is not empty. Remove the curly brackets from this:
+This is the final declaration in the public list (after `MODULE_TRAITS_AND_INFO(ModuleHasUI)_` ). Another change in this file is to modify the `setStateDefault` function so that it is not empty. Remove the curly brackets from this:
 
 ```
 virtual void setStateDefaults() {};
@@ -840,7 +833,7 @@ SCIRun::Core::Algorithms::AlgorithmParameterName
 TestModuleSimpleUI::FormatString("FormatString");
 ```
 
-Next we need to be able to set the state defaults by creating context for the 'setStateDefault' function we just exposed. Add this function just before the execute function.
+Next, we set the state defaults by creating context for the 'setStateDefault' function we just exposed. Add this function just before the execute function.
 
 ```
 void TestModuleSimpleUI::setStateDefaults()
@@ -854,7 +847,7 @@ With these three additions, the code should build.
 
 If you load the module, you should see the default message (`"[Insert message here]"`) in the input field. Changing this will still not affect the output because the execute function is still hard coded for a specific message.
 
-Now we need to change the execute function to use the UI inputs, which is very simple. Simply get the state of the module (`auto state = get_state();`), then assign the output string variable to `state -> getValue(FormatString).toString();` so that the function is as follows:
+We now change the execute function to use the UI inputs.  Simply get the state of the module (`auto state = get_state();`), then assign the output string variable to `state -> getValue(FormatString).toString();.  The function is as follows:
 
 ```
 void
@@ -866,14 +859,13 @@ TestModuleSimpleUI::execute()
   StringHandle msH(new String(message_string));
   sendOutput(OutputString, msH);
 }
-
 ```
 
 After building the software, you should now see that the output of module will be the same as the string that is put in the input field in the module UI.  
 
 ### Adding an Input Port
 
-With the UI implemented and working, we will now add an optional input port to the module. This functionality is fairly simple in SCIRun 5. We need to add the port in the *TestModuleSimpleUI.h* file. First, replace the line:
+With the UI implemented and working, we now add an optional input port to the module.  This functionality is simple in SCIRun 5.  We add the port in the *TestModuleSimpleUI.h* file. First, replace the line:
 
 ```
  public HasNoInputPorts,
@@ -885,14 +877,13 @@ with:
 public Has1InputPort<StringPortTag>,
 ```
 
-Next, we need to name the port in the list of public objects. Add:
+Next, we name the port in the list of public objects.  Add:
 
 ```
 INPUT_PORT(0, InputString, String);
-
 ```
 
-near the output port declaration. These changes are all that are needed in the header file, but we need to initialize the port in the .cc file. In the *TestModuleSimpleUI.cc*, add the initializing line to the module constructor function, which should be then:
+near the output port declaration. These changes are all that are needed in the header file, but we need to initialize the port in the .cc file. In the *TestModuleSimpleUI.cc*, add the initializing line to the module constructor function:
 
 ```
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
@@ -902,9 +893,9 @@ TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 }
 ```
 
-These changes should allow the code to build with an input port, yet the input will not affect the output of the module.  
+These changes allow the code to build with an input port, yet the input will not yet affect the output of the module.  
 
-In the main execute function in *TestModuleSimpleUI.cc*, we need to read whether there is an input, then use that input or the UI input if there is none. This is straight forward in SCIRun, the execute function will be:
+In the main execute function in *TestModuleSimpleUI.cc*, we read whether there is an input, then use that input or the UI input if there is none.  The execute function is:
 
 ```
 void
@@ -923,33 +914,31 @@ TestModuleSimpleUI::execute()
   StringHandle msH(new String(message_string));
   sendOutput(OutputString, msH);
 }
-
 ```
 
 This code reads an optional input, checks if it is not empty, and if so then changes the state variable to the input. By changing the state variable before assigning it to the output, it changes the UI input string also.    
 
-This should be all the changes necessary to add inputs to this module. Build SCIRun, then test the module using the CreateString and PrintDatatype modules. When there is no input, the value in the UI field is the output. When there is an output, the input port is the same as the output port, and the UI input field is set to the input string. This prevents the user from changing the input string while there is a string in the input port.  
+This is all the changes necessary to add inputs to this module. Build SCIRun, then test the module using the CreateString and PrintDatatype modules. When there is no input, the value in the UI field is the output. When there is an output, the input port is the same as the output port, and the UI input field is set to the input string. This prevents the user from changing the input string while there is a string in the input port.  
 
-For a slightly more complicated, yet much more useful module as an example, check out PrintStringIntoString. The setup code is mostly the same, except there are dynamic ports, so much of the code will look very similar.  
+For a slightly more complicated, yet much more useful module as an example, check out PrintStringIntoString. The setup code is mostly the same, except there are dynamic ports, so much of the code looks similar.  
 
 ### Finished Code
 
 For the sake of comparison, the final version of the code for this module is included in the source code in the Example files. The module code files are in `src/Modules/Examples/`, *TestModuleSimpleUI.cc* and *TestModuleSimpleUI.h*. The module UI code files are in `src/interface/Modules/Examples/`, *TestModuleSimpleUIDialog.cc*, *TestModuleSimpleUIDialog.h*, and *TestModuleSimpleUIDialog.ui*.  
 
-
 ## Example: Simple Module With Algorithm
 
-**In this chapter, we will show how to build a module with a simple algorithm and a simple UI. This chapter will build off the principles established in the previous examples. We will use SCIRun to create a module that will perform a simple sorting algorithm on a matrix. This example will show how to use module algorithm files with a module UI to implement simple algorithms into modules. We will build off some of the principles of the previous examples.**
+**In this chapter, we show how to build a module with a simple algorithm and a simple UI. This chapter builds off the principles established in the previous examples. We use SCIRun to create a module that performs a simple sorting algorithm on a matrix. This example shows how to use module algorithm files with a module UI to implement simple algorithms into modules.**
 
 ### Module Overview
 
-As mentioned in the chapter introduction, we are going to create a module that will sort the entries of a matrix in ascending or descending order. We will call the module SortMatrix. This module will use a simple simple quicksort algorithm with a [Lomuto partition scheme](https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme). There are some implementations for vector sorting in the STL algorithm library, but this implementation works more generally on matrices and will hopefully be helpful in showing how to implement an algorithm from scratch.
+As mentioned in the chapter introduction, we create a module that sorts the entries of a matrix in ascending or descending order.  We call the module SortMatrix.  This module uses a simple simple quicksort algorithm with a [Lomuto partition scheme](https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme). There are some implementations for vector sorting in the STL algorithm library, but this implementation works more generally on matrices and will hopefully be helpful in showing how to implement an algorithm from scratch.
 
-There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files. The first six were used in the previous example, but this chapter will show how to incorporate the algorithm code and how it interacts with the module and UI code. Each file is also described in the general in [Files Needed for a New Module](#files-needed-for-a-new-module) with templates.
+There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files. The first six were used in the previous example, but this chapter shows how to incorporate the algorithm code and how it interacts with the module and UI code. Each file is also described in general in [Files Needed for a New Module](#files-needed-for-a-new-module) with templates.
 
 ### Module Configuration File
 
-As with the other examples, we need a module configuration file for this module. This file will need every field filled. Create a *SortMatrix.module* file in the `src/Modules/Factory/Config/` directory containing the following:
+As with the other examples, we need a module configuration file for this module. This file need every field filled. Create a *SortMatrix.module* file in the `src/Modules/Factory/Config/` directory containing the following:
 
 ```
 {
@@ -970,14 +959,13 @@ As with the other examples, we need a module configuration file for this module.
     "header": "Interface/Modules/Math/SortMatrixDialog.h"
   }
 }
-
 ```
 
 If you copy another module config file, make sure all the names are correct and that the namespace is set to Math.  
 
 ### Module Code
 
-The next files needed for this module are the module code (*SortMatrix.cc*) and the header (*SortMatrix.h*) files. These files should be located in `src/Modules/Math/`.  
+The next files needed for this module are the module code (*SortMatrix.cc*) and the header (*SortMatrix.h*) files. These files are located in `src/Modules/Math/`.  
 
 The header (*SortMatrix.h*) file is not much different from the other two examples, as shown here:
 
@@ -1005,14 +993,13 @@ namespace Math {
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm)
   };
 }}}
 #endif
-
 ```
 
-The import differences in this example are that the namespace and type of ports are different, and to leave the *setStateDefaults()* function without brackets so it can be set in the cc file.  
+The important differences in this example are that the namespace and type of ports are different, and to leave the *setStateDefaults()* function without brackets so it can be set in the cc file.  
 
 The *SortMatrix.cc* file is a bit different from the previous examples. First, since most of the functionality of the module is in the algorithm files, this file can be very short, yet still have a powerful module. This file, along with the header, is mostly the code that pulls the code from the UI and algorithm together and interacts with SCIRun.  
 
@@ -1055,10 +1042,9 @@ SortMatrix::execute()
     sendOutputFromAlgorithm(OutputMatrix, output);
   }
 }
-
 ```
 
-Notice that the algorithm file header is included.
+Notice that the algorithm file header; SortMatrixAlgo.h, is included.
 
 Also, most of the code in this file links the algorithm code directly to either the UI (with `setStateIntFromAlgo`, and `setAlgoIntFromState`) or SCIRun (`sendOutputFromAlgorithm`).
 
@@ -1068,11 +1054,9 @@ The final module header and .cc files are included in the source code in `src/Mo
 
 ### Module UI Code
 
-We will create a simple module UI for the SortMatrix module. The UI will consist of a toggle switch to choose between ascending and descending sorting. As before, we will need three files: *SortMatrixDialog.ui*, *SortMatrixDialog.h*, and *SortMatrixDialog.cc*, all need to be in `src/Interfac/Modules/Math/`.
+We create a simple module UI for the SortMatrix module. The UI consists of a toggle switch to choose between ascending and descending sorting. As before, we create three files: *SortMatrixDialog.ui*, *SortMatrixDialog.h*, and *SortMatrixDialog.cc*, all are in `src/Interfac/Modules/Math/`.
 
-The process and code for this example is very similar to the previous example.
-
-We will make the *SortMatrixDialog.ui* in the Qt editor as we did previously ([Files Needed for a New Module](#files-needed-for-a-new-module)). It may be easier to copy a previously created UI file and modify it rather than to create one from scratch. Copy the `src/Interface/Template/ModuleDesignerFile.ui` file and rename it.Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window). Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to `ascendButton_` and `descendButton_`. You will also need to make sure to change the name of the `QDialog` to `SortMatrixDialog` (also in the 'Object Inpector'). The placement of the buttons and the size of the window and boxes can be adjusted in the 'Property Editor' window. The UI should look similar to {numref}`fig-algo-UI`.
+The process and code for this example is similar to the previous example.
 
 :::{figure-md} fig-algo-UI
 
@@ -1092,28 +1076,26 @@ The *SortMatrixDialog.h* is virtually identical to the header in the previous ex
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Gui {
-		class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-			public Ui::SortMatrixDialog
-		{
-			Q_OBJECT
+    namespace Gui {
+        class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
+            public Ui::SortMatrixDialog
+        {
+            Q_OBJECT
 
-		public:
-			SortMatrixDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = nullptr);
-		};
+        public:
+            SortMatrixDialog(const std::string& name,
+                        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+                        QWidget* parent = nullptr);
+        };
 }}
 #endif
-
 ```
 
-*SortMatrixDialog.cc* is also very similar to the dialog .cc file in the previous example ([Simple Module With UI](#example-simple-module-with-ui)):
+*SortMatrixDialog.cc* is also similar to the dialog .cc file in the previous example ([Simple Module With UI](#example-simple-module-with-ui)):
 
 ```
 #include <Interface/Modules/Math/SortMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -1125,22 +1107,21 @@ SortMatrixDialog::SortMatrixDialog(const std::string& name,
          : ModuleDialogGeneric(state, parent)
 {
          setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
-	fixSize();
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
 
   addRadioButtonGroupManager({ ascendButton_, descendButton_ },
-  	Variables::Method);
+      Variables::Method);
 }
-
 ```
 
-The key difference in this file is the line that pulls the inputs from the UI using `addRadioButtonGroupManager`. This function pulls a set of radio buttons and creates a toggle switch to assign it to a variable. The order of the button names is important, as that determines the integer values of the variable when it is pressed, i.e., in the order shown, ascending will be 0 and descending will be 1.  
+The key difference in this file is the line that pulls the inputs from the UI using `addRadioButtonGroupManager`. This function pulls a set of radio buttons and creates a toggle switch to assign it to a variable. The order of the button names is important, as that determines the integer values of the variable when it is pressed, i.e., in the order shown, ascending is 0 and descending is 1.  
 
 The final module UI code files are included in the source code in `src/Interface/Modules/Examples/`.  *SortMatrixDialog.ui*, *SortMatrixDialog.cc* and *SortMatrixDialog.h*.
 
 ### Module Algorithm Code
 
-The final step in creating the SortMatrix module is to create the module algorithm code. Two files are needed for the algorithm, *SortMatrixAlgo.h* and *SortMatrixAlgo.cc*, which should be located in `src/Core/Algorithms/Math/`. The header file contains all the declarations for the functions needed in the algorithm and should be as follows:
+The final step in creating the SortMatrix module is to create the module algorithm code. Two files are needed for the algorithm, *SortMatrixAlgo.h* and *SortMatrixAlgo.cc*, which are located in `src/Core/Algorithms/Math/`. The header file contains all the declarations for the functions needed in the algorithm:
 
 ```
 #ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
@@ -1180,13 +1161,11 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
 };
       }}}}
 #endif
-
 ```
 
-In this algorithm, we have three functions to help implement the sorting algorithm, which will be called in the `run` function.  
-The *SortMatrixAlgo.cc* file contains the computation code for the module.
+In this algorithm, we have three functions to help implement the sorting algorithm, which are called in the `run` function in *SortMatrixAlgo.cc*. 
 
-There are five functions in it.The first `SortMatrixAlgo()` sets up the defaults for the parameters that are set in the module UI. `run` is the main function of the algorithm and the module. It mostly takes the inputs from the module and sends the data to use in the helper functions. `Sort` is the main helper function, which further processes the data into a format that be quickly sorted. `Quicksort` uses the output of `Partition` to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.`Partition` properly places the last entry in the matrix subset, with the values larger after and those lower before, and splits the matrix at that new place for the next iteration. The code should be similar to this:
+The  *SortMatrixAlgo.cc* file contains the computation code for the module.  There are five functions in *SortMatrixAlgo.cc*.  The first; `SortMatrixAlgo()` sets up the defaults for the parameters that are set in the module UI. `run()` is the main function of the algorithm and the module.  It mostly takes the inputs from the module and sends the data to use in the helper functions. `Sort()` is the main helper function, which further processes the data into a format that be quickly sorted. `Quicksort()` uses the output of `Partition()` to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.`Partition()` properly places the last entry in the matrix subset, with the values larger after and those lower before, and splits the matrix at that new place for the next iteration.  The code is:
 
 ```
 #include <Core/Algorithms/Math/SortMatrixAlgo.h>
@@ -1305,7 +1284,7 @@ SortMatrixAlgo::Partition(double* input, index_type lo, index_type hi) const
 }
 ```
 
-This algorithm uses the common inputs defined in the *AlgorithmVariableNames.h* file with the Variable namespace (`Variable:Method`, `Variable:InputMatrix`, and `Variable:OutputMatrix`. This allows for fewer declarations in the header file and is slightly easier to use. Also of note is that this algorithm is only implemented for dense matrices. This is because some support for sparse matrices hasn't been implemented at the time of writing this tutorial.   
+This algorithm uses the common inputs defined in *AlgorithmVariableNames.h* with the Variable namespace (`Variable:Method`, `Variable:InputMatrix`, and `Variable:OutputMatrix`).  This allows for fewer declarations in the header file and is slightly easier to use.  Also of note is that this algorithm is only implemented for dense matrices.  This is because some support for sparse matrices hasn't been implemented at the time of writing this tutorial.   
 
 The final module algorithm header and .cc files are included in the source code in `src/Core/Algorithms/Examples/` (*SortMatrixAlgo.cc* and *SortMatrixAlgo.h*).
 
@@ -1313,13 +1292,13 @@ The final module algorithm header and .cc files are included in the source code 
 
 #### Building
 
-Once all the files have been created, SCIRun can be built with the new module. Be sure to added all eight files to the appropriate *CMakeList.txt* files in the `src/Modules/Math/`, `src/Interface/Modules/Math/`, and `src/Core/Algorithms/Math/`.  
+Once all the files have been created, SCIRun can be built with the new module. Be sure to add all seven files to the appropriate *CMakeList.txt* files in the `src/Modules/Math/`, `src/Interface/Modules/Math/`, and `src/Core/Algorithms/Math/`.  
 
 Just add each of the filenames to the appropriate lists within the *CMakeList.txt* file, as shown in the previous examples ([Building and Testing](#building-and-testing), [Duplicate the Previous Module](#duplicate-the-previous-module), [Creating a Custom UI](#creating-a-custom-ui)).  
 
-When creating new modules, it can be easier to added the code in a piecemeal fashion.
+When creating new modules, it can be easier to add the code in a piecemeal fashion.
 
-This would entail geting SCIRun to build with just the bare minimum of the algorithm code (only `run` with no calls other functions) then to add the other functions in a step by step manner. This allows for easier debugging and a more systematic process to get the module working. Check [Common Build Errors](#common-build-errors) for common build problems.
+This includes getting SCIRun to build with just the bare minimum of the algorithm code (only `run` with no calls to other functions) then to add the other functions in a step by step manner. This allows for easier debugging and a more systematic process to get the module working. Check [Common Build Errors](#common-build-errors) for common build problems.
 
 #### Testing
 
@@ -1336,13 +1315,11 @@ In the 4x2 matrix that shown in {numref}`fig-algo-Network`,the format string was
 Network for running and testing the SortMatrix module.
 :::
 
-
 Alternatively, the matrix entries can be printed as a list with `%4.2g` (make sure there is a space at the beginning or end of the string).
 
 This network can be used to see the input and output of the SortMatrix module.  
 
-If this or another module is not behaving as expected, change the output of some functions and set the output of the module to be some of the intermediate steps, or use `std::cout<< "message" <<std::endl;` to print values as the code runs. Unit Test can also find some bugs in the module code.
-
+If this or another module is not behaving as expected, change the output of some functions and set the output of the module to be some of the intermediate steps, or use `std::cout<< "message" <<std::endl;` to print values as the code runs.  Unit Test can also find some bugs in the module code.
 
 ## Converting Modules from SCIRun 4
 
@@ -1382,6 +1359,7 @@ void @ModuleName@::setStateDefaults()
 
 }
 ```
+
 or, if there is no module UI planned, add empty curly brackets to the header file declaration as discussed in [Module Header File](#module-header-file) .  
 
 The only code that will carry over is probably the `execute()` and other functions coded in the module, so everything else can be removed. Any helper functions should be moved to an algorithm file later, but for now comment them out. Also comment out the content of the executable for now.  
@@ -1467,26 +1445,27 @@ With the module fully completed, we can now submit it to be included in the main
   | ``output->mesh_detach();``
   - ``FieldHandle output_field(input_field->deep_clone());``
   - Copy a field and disconnect the mesh and data.
-
 ```
 
 ### Common Build Errors
 
 1.
+
 ```
 ConvertMeshToPointCloudDialog.h:32:10: fatal error:
       Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
 ```
 
-
 In this instance, the path to the header is misspelled. Check for the correct path and filename. Make sure the file you want to include exists. If the code was converted from SCIRun 4, some of the dependent header files are renamed, combined with other files, or deprecated.  
 
 2.
+
 ```
 /Users/jess/software/SCIRun_mine/bin/SCIRun/Core/AlgorithmsFactoryAlgorithmFactoryImpl_Generated.cc:4:10: error: empty filename
 #include <>
          ^
 ```
+
 ```
 /Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc: 21:43: error: expected namespace name
 using namespace SCIRun::Core::Algorithms::;
@@ -1501,25 +1480,24 @@ using namespace SCIRun::Core::Algorithms::;
 This is a result of something wrong with the module configuration file. Check the spelling and syntax of the new file. Specifically, check the quotation characters used, as they may be different (for instance on Mac TextEdit). This may also be caused if the Algorithm and other files have not been added to the `CMakeList.txt` file.
 
 3.
- ```
-/Users/jess/software/SCIRun_mine/src/Interface/Modules/Base/ModuleDialogGeneric.h:71:5: warning: 'metaObject' overrides a member function but is not marked
-      'override' [-Winconsistent-missing-override]
-    Q_OBJECT
-    ^   
- ```  
 
- ```
+```
+/Users/jess/software/SCIRun_mine/src/Interface/Modules/Base/ModuleDialogGeneric.h:71:5: warning: 'metaObject' overrides a member function but is not marked
+     'override' [-Winconsistent-missing-override]
+   Q_OBJECT
+   ^   
+```
+
+```
 /usr/local/Cellar/qt/4.8.7_3/lib/QtCore.framework/Headers/qobjectdefs.h:162:32: note: expanded from macro 'Q_OBJECT'
- virtual const QMetaObject *metaObject() const;
+virtual const QMetaObject *metaObject() const;
 ```
 
 Errors that involve Qt and Qt objects deal with the GUI code. Make sure that the GUI name is spelled correctly. Also make sure that the QObject name is set properly.  
 
-
 ## Creating Unit Tests
 
 You will at least need a testing network.  
-
 
 ## Documenting the New Module
 
@@ -1575,10 +1553,13 @@ Create a symbolic link in `docs/modules` with the same name that points to this 
 #### OS X/Linux
 
 Execute `ln` command
+
 ```
 ln -s path/to/original path/to/link
 ```
+
 For example, if you are in the SCIRun directory, this is what the command might look like:
+
 ```
 ln -s docs/_includes/modules/ModuleName.md /docs/modules/ModuleName.md
 ```
@@ -1606,6 +1587,7 @@ You will need to have [Jekyll](https://jekyllrb.com/docs/installation/) installe
 ```
 bundle exec jekyll serve
 ```
+
 This will build the site as well as make it available on a local server on the server address provided on the command line. If everything was done correctly, the documentation for your new module should be available under Modules and the category provided in *ModuleName.md*. (`/SCIRun/modules.html/#ModuleName`)  
 
 Once you have confirmed everything is correct. Be sure to push your changes to GitHub and make a pull request using the same instructions from [GitHub Pull Requests](#github-pull-request) .
