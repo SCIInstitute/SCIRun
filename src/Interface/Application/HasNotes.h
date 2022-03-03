@@ -36,19 +36,33 @@ class QAction;
 namespace SCIRun {
 namespace Gui {
 
-  class HasNotes
+  class HasNotesBase
   {
   public:
-    HasNotes(const std::string& name, bool positionAdjustable);
+    HasNotesBase(const std::string& name, bool positionAdjustable);
     void connectNoteEditorToAction(QAction* action);
-    void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note, bool updateEditor);
     Note getCurrentNote() const { return currentNote_; }
     void setDefaultNoteFontSize(int size);
-  private:
+  protected:
     NoteEditor noteEditor_;
     Note currentNote_;
   };
+
+  template <class ConnectedWidget>
+  class HasNotes : public HasNotesBase
+  {
+  public:
+    using HasNotesBase::HasNotesBase;
+    void connectUpdateNote(ConnectedWidget* obj);
+  };
+
+  template <class ConnectedWidget>
+  void HasNotes<ConnectedWidget>::connectUpdateNote(ConnectedWidget* obj)
+  {
+    QObject::connect(&noteEditor_, &NoteEditor::noteChanged, obj, &ConnectedWidget::updateNote);
+    QObject::connect(&noteEditor_, &NoteEditor::noteChanged, obj, &ConnectedWidget::noteChanged);
+  }
 
 }
 }

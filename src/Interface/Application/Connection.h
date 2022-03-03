@@ -67,7 +67,11 @@ enum
   EXTERNAL_SUBNET_CONNECTION = 200
 };
 
-class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
+class ConnectionLine : public QObject,
+  public QGraphicsPathItem,
+  public HasNotes<ConnectionLine>,
+  public NoteDisplayHelper,
+  public NeedsScenePositionProvider
 {
   Q_OBJECT
 

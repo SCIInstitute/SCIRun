@@ -105,7 +105,8 @@ typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 
 class ModuleWidget : public QStackedWidget,
-  public Dataflow::Networks::ExecutableObject, public HasNotes
+  public Dataflow::Networks::ExecutableObject,
+  public HasNotes<ModuleWidget>
 {
 	Q_OBJECT
 
