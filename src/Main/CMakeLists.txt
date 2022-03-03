@@ -186,7 +186,7 @@ ELSE()
 		  ${QTPRINTSUPPORTNAME}
 		  DESTINATION bin)
 		  INSTALL(PROGRAMS "${SCI_QWT_LIBRARY_DIR}/Release/${SCI_QWT_LIBRARY}.dll" DESTINATION bin CONFIGURATIONS Release)
-		  INSTALL(PROGRAMS "${Qt5_PATH}/plugins/platforms/qwindows.dll" DESTINATION bin/platforms CONFIGURATIONS Release)
+		  INSTALL(PROGRAMS "${Qt_PATH}/plugins/platforms/qwindows.dll" DESTINATION bin/platforms CONFIGURATIONS Release)
   	ENDIF()
       IF(BUILD_WITH_PYTHON)
         INSTALL(PROGRAMS
