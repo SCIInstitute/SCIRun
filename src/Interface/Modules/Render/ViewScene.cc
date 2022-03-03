@@ -1199,7 +1199,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   if (impl_->saveScreenshotOnNewGeometry_)
-    quickScreenshot();
+    autoSaveScreenshot();
 }
 
 void ViewSceneDialog::lockMutex()
@@ -2653,7 +2653,7 @@ void ViewSceneDialog::screenshotSaveAs()
 void ViewSceneDialog::quickScreenshot()
 {
   auto fileName = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
-         QString("/%1_%2.png").arg(windowTitle().remove(">").remove("<").remove(" ").replace(':', '-')).arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
+         QString("/%1_%2.png").arg(QString::fromStdString(getName()).replace(':', '-')).arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
   saveScreenshot(fileName, true);
 }
@@ -2682,7 +2682,7 @@ void ViewSceneDialog::autoSaveScreenshot()
   QThread::sleep(1);
   const auto file = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
                     QString("/%1_%2.png")
-                    .arg(windowTitle().replace(':', '-'))
+                    .arg(QString::fromStdString(getName()).replace(':', '-'))
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
   saveScreenshot(file, false);
