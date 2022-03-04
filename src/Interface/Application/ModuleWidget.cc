@@ -1457,7 +1457,7 @@ void ModuleWidget::changeExecuteButtonToStop()
 void ModuleWidget::changeExecuteButtonToPlay()
 {
   fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(*currentExecuteIcon_));
-  disconnect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::(stopButtonPushed);
+  disconnect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::stopButtonPushed);
   connect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::executeButtonPushed);
   movePortWidgets(currentIndex(), static_cast<int>(ModuleWidgetPages::TITLE_PAGE));
   setCurrentIndex(static_cast<int>(ModuleWidgetPages::TITLE_PAGE));

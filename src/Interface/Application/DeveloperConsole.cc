@@ -27,6 +27,7 @@
 
 
 #include <QtGui>
+#include <QPushButton>
 #include <iostream>
 #include <Interface/Application/DeveloperConsole.h>
 

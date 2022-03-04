@@ -90,10 +90,10 @@ namespace SCIRun {
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-    protected Q_SLOTS:
+    public Q_SLOTS:
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
-
+    protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
 

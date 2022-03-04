@@ -36,7 +36,6 @@
 
 #include <qwt_knob.h>
 #include <qwt_abstract_slider.h>
-//#include <qwt_dial_needle.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -677,8 +676,8 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(toStringButton_, &QPushButton::clicked, parent, &DeveloperControls::printToString);
-  connect(bugReportButton_, &QPushButton::clicked, parent, &DeveloperControls::sendBugReport);
+  connect(toStringButton_, &QPushButton::clicked, parent, &ViewSceneDialog::printToString);
+  connect(bugReportButton_, &QPushButton::clicked, parent, &ViewSceneDialog::sendBugReport);
 }
 
 ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle)

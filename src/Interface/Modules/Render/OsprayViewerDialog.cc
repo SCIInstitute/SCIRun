@@ -277,7 +277,7 @@ void OsprayViewerDialog::addViewBarButton()
   auto viewBarBtn = new QPushButton();
   viewBarBtn->setToolTip("Show View Options");
   viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
-  connect(viewBarBtn, &QPushButton::clicked, this, &OsprayViewerDialog::viewBarButtonClicked);
+  //connect(viewBarBtn, &QPushButton::clicked, this, &OsprayViewerDialog::viewBarButtonClicked);
   addToolbarButton(viewBarBtn);
 }
 
