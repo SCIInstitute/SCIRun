@@ -53,7 +53,7 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
 
   createExecuteInteractivelyToggleAction();
 
-  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(defaultMeshColorButton_, &QPushButton::clicked, this, &ShowFieldGlyphsDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(defaultMeshColorButton_);
 }
 

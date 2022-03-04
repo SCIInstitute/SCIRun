@@ -47,13 +47,13 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
   helpToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
   collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ToolBarVerticalExtensionButton));
 
-  connect(executeDownOnlyToolButton_, SIGNAL(clicked()), parent->getExecuteDownstreamAction(), SIGNAL(triggered()));
-  connect(executeToolButton_, SIGNAL(clicked()), parent->getExecuteAction(), SIGNAL(triggered()));
-  connect(closeToolButton_, SIGNAL(clicked()), parent, SIGNAL(closeButtonClicked()));
-  connect(helpToolButton_, SIGNAL(clicked()), parent, SIGNAL(helpButtonClicked()));
-  connect(findToolButton_, SIGNAL(clicked()), parent, SIGNAL(findButtonClicked()));
-  connect(collapseToolButton_, SIGNAL(clicked()), parent, SLOT(toggleCollapse()));
-  connect(collapseToolButton_, SIGNAL(clicked()), this, SLOT(switchIcons()));
+  connect(executeDownOnlyToolButton_, &QPushButton::clicked, parent->getExecuteDownstreamAction(), &QAction::triggered);
+  connect(executeToolButton_, &QPushButton::clicked, parent->getExecuteAction(), &QAction::triggered);
+  connect(closeToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::closeButtonClicked);
+  connect(helpToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::helpButtonClicked);
+  connect(findToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::findButtonClicked);
+  connect(collapseToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::toggleCollapse);
+  connect(collapseToolButton_, &QPushButton::clicked, this, &ModuleButtonBar::switchIcons);
 }
 
 void ModuleButtonBar::setTitle(const QString& title)

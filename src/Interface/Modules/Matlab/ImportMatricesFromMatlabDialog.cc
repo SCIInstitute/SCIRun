@@ -43,7 +43,7 @@ ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string
   fixSize();
 
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ImportMatricesFromMatlabDialog::openFile);
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));

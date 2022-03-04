@@ -66,10 +66,10 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addComboBoxManager(curveStyleComboBox_, Parameters::CurveStyle);
 	connect(curveStyleComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setCurveStyle(const QString&)));
 
-	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
-	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
-	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
-  connect(backgroundColorPushButton_, SIGNAL(clicked()), this, SLOT(assignBackgroundColor()));
+	connect(showPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::showPlot);
+	connect(exportPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::exportPlot);
+	connect(dataColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignDataColor);
+  connect(backgroundColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignBackgroundColor);
   connect(dataSeriesComboBox_, SIGNAL(activated(int)), this, SLOT(switchDataSeries(int)));
   connect(dataLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(assignDataLabel(const QString&)));
   dataSeriesComboBox_->setDisabled(true);

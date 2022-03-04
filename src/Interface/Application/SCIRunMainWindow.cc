@@ -207,9 +207,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
   connect(prefsWindow_->defaultNoteSizeComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNoteSize(int)));
-  connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
-  connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
-  connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
+  connect(prefsWindow_->cubicPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesCubicBezier);
+  connect(prefsWindow_->manhattanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesManhattan);
+  connect(prefsWindow_->euclideanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesEuclidean);
   connect(prefsWindow_->maxCoresSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(maxCoreValueChanged(int)));
   //TODO: will be a user or network setting
   makePipesEuclidean();
@@ -224,9 +224,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   makeFilterButtonMenu();
 
-  connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
-  connect(prefsWindow_->screenshotPathPushButton_, SIGNAL(clicked()), this, SLOT(setScreenshotDirectoryFromGUI()));
-  //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
+  connect(prefsWindow_->scirunDataPushButton_, &QPushButton::clicked, this, &SCIRunMainWindow::setDataDirectoryFromGUI);
+  connect(prefsWindow_->screenshotPathPushButton_, &QPushButton::clicked, this, &SCIRunMainWindow::setScreenshotDirectoryFromGUI);
+  //connect(prefsWindow_->addToPathButton_, &QPushButton::clicked, this, &SCIRunMainWindow::addToPathFromGUI);
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   actionAddModule_->setVisible(false);
@@ -304,14 +304,14 @@ SCIRunMainWindow::SCIRunMainWindow()
 	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
 
-  connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
+  connect(prefsWindow_->actionTextIconCheckBox_, &QPushButton::clicked, this, &SCIRunMainWindow::adjustExecuteButtonAppearance);
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
 
   connect(networkEditor_, SIGNAL(newSubnetworkCopied(const QString&)), this, SLOT(updateClipboardHistory(const QString&)));
   connect(networkEditor_, SIGNAL(middleMouseClicked()), this, SLOT(switchMouseMode()));
 
-  connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
+  connect(openLogFolderButton_, &QPushButton::clicked, this, &SCIRunMainWindow::openLogFolder);
 
   setupInputWidgets();
 

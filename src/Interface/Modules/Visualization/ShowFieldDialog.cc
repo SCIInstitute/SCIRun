@@ -81,8 +81,8 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_/*, conversionRGBFaceColoringButton_*/ }, Parameters::FacesColoring);
   addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_, conversionRGBTextRadioButton_ }, Parameters::TextColoring);
 
-  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultTextColor()));
+  connect(defaultMeshColorButton_, &QPushButton::clicked, this, &ShowFieldDialog::assignDefaultMeshColor);
+  connect(textColorPushButton_, &QPushButton::clicked, this, &ShowFieldDialog::assignDefaultTextColor);
 
   connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
     enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,

@@ -46,7 +46,7 @@ ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, 
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ExportFieldsToMatlabDialog::saveFile);
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }

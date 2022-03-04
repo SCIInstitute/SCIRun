@@ -52,11 +52,11 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
 
   connect(provenanceListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
   connect(provenanceListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
-  connect(undoButton_, SIGNAL(clicked()), this, SLOT(undo()));
-  connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
-  connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
-  connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
-  connect(clearButton_, SIGNAL(clicked()), this, SLOT(clear()));
+  connect(undoButton_, &QPushButton::clicked, this, &ProvenanceWindow::undo);
+  connect(redoButton_, &QPushButton::clicked, this, &ProvenanceWindow::redo);
+  connect(undoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::undoAll);
+  connect(redoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::redoAll);
+  connect(clearButton_, &QPushButton::clicked, this, &ProvenanceWindow::clear);
   connect(itemMaxSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setMaxItems(int)));
   setMaxItems(10);
   setUndoEnabled(false);

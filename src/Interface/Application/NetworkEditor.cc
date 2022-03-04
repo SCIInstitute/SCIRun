@@ -1027,7 +1027,7 @@ NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
 {
   setupUi(this);
   connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), ned, SLOT(searchTextChanged(const QString&)));
-  connect(clearToolButton_, SIGNAL(clicked()), searchLineEdit_, SLOT(clear()));
+  connect(clearToolButton_, &QPushButton::clicked, searchLineEdit_, &QLineEdit::clear);
 }
 
 SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std::function<void()> action, QGraphicsItem* parent)

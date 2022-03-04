@@ -56,9 +56,9 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
   connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
   connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(iAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(jAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(kAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
+  connect(iAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(jAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(kAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()

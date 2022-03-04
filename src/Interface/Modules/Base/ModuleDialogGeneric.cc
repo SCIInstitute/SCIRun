@@ -110,7 +110,7 @@ void ModuleDialogGeneric::setupButtonBar()
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
-  connect(button, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(button, &QPushButton::clicked, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(button);
@@ -778,7 +778,7 @@ public:
   CheckableButtonSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QAbstractButton* checkable) :
     WidgetSlotManager(state, dialog, checkable, stateKey), stateKey_(stateKey), checkable_(checkable)
       {
-        connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
+        connect(checkable_, &QPushButton::clicked, this, &CheckableButtonSlotManager::push);
       }
       void pull() override
       {
@@ -870,7 +870,7 @@ public:
   {
     for (auto button : radioButtons_)
     {
-      connect(button, SIGNAL(clicked()), this, SLOT(push()));
+      connect(button, &QPushButton::clicked, this, &RadioButtonGroupSlotManager::push);
       WidgetStyleMixin::setStateVarTooltipWithStyle(button, stateKey.name_);
     }
   }

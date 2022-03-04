@@ -501,15 +501,15 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 {
-  connect(display->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  connect(display->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::executeButtonPushed);
   if (!theModule_->isStoppable())
   {
     addWidgetToExecutionDisableList(display->getExecuteButton());
   }
-  connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
-  connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
+  connect(display->getOptionsButton(), &QPushButton::clicked, this, &ModuleWidget::toggleOptionsDialog);
+  connect(display->getHelpButton(), &QPushButton::clicked, this, &ModuleWidget::launchDocumentation);
   dialogManager_.connectDisplayLogButton(display->getLogButton());
-  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
+  connect(display->getSubnetButton(), &QPushButton::clicked, this, &ModuleWidget::subnetButtonClicked);
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
 
@@ -587,7 +587,7 @@ void ModuleWidget::showReplaceWithWidget()
   fillReplaceWithMenu(menu);
   layout->addWidget(button);
   auto cancel = new QPushButton("Cancel");
-  connect(cancel, SIGNAL(clicked()), replaceWithDialog_, SLOT(reject()));
+  connect(cancel, &QPushButton::clicked, replaceWithDialog_, &QDialog::reject);
   layout->addWidget(cancel);
   replaceWithDialog_->setLayout(layout);
   replaceWithDialog_->exec();
@@ -1446,8 +1446,8 @@ void ModuleWidget::executeTriggeredViaStateChange()
 void ModuleWidget::changeExecuteButtonToStop()
 {
   fullWidgetDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
-  disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  disconnect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::executeButtonPushed);
+  connect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::stopButtonPushed);
   movePortWidgets(currentIndex(), static_cast<int>(ModuleWidgetPages::PROGRESS_PAGE));
   setCurrentIndex(static_cast<int>(ModuleWidgetPages::PROGRESS_PAGE));
 
@@ -1457,8 +1457,8 @@ void ModuleWidget::changeExecuteButtonToStop()
 void ModuleWidget::changeExecuteButtonToPlay()
 {
   fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(*currentExecuteIcon_));
-  disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
-  connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  disconnect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::(stopButtonPushed);
+  connect(fullWidgetDisplay_->getExecuteButton(), &QPushButton::clicked, this, &ModuleWidget::executeButtonPushed);
   movePortWidgets(currentIndex(), static_cast<int>(ModuleWidgetPages::TITLE_PAGE));
   setCurrentIndex(static_cast<int>(ModuleWidgetPages::TITLE_PAGE));
 }
@@ -1495,12 +1495,12 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 
-  disconnect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
+  disconnect(fullWidgetDisplay_->getOptionsButton(), &QPushButton::clicked, this, &ModuleWidget::toggleOptionsDialog);
 
   //This is entirely ViewScene-specific.
   fullWidgetDisplay_->getOptionsButton()->setText("");
   fullWidgetDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
-  connect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
+  connect(fullWidgetDisplay_->getOptionsButton(), &QPushButton::clicked, this, &ModuleWidget::replaceMe);
 
   auto id = QString::fromStdString(getModuleId());
   QMessageBox::critical(nullptr, "Critical module error: " + id,

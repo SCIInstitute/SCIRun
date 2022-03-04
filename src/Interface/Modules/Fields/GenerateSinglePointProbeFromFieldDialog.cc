@@ -60,7 +60,7 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxSize);
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
-  connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(colorChooserPushButton_);
   connect(bboxScaleCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleSpinBoxes()));
 }

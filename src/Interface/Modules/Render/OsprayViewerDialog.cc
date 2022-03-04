@@ -194,7 +194,7 @@ void OsprayViewerDialog::addConfigurationButton()
   configurationButton->setToolTip("Open/Close Configuration Menu");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
-  connect(configurationButton, SIGNAL(clicked()), this, SLOT(configButtonClicked()));
+  connect(configurationButton, &QPushButton::clicked, this, &OsprayViewerDialog::configButtonClicked);
   addToolbarButton(configurationButton);
 }
 
@@ -227,7 +227,7 @@ void OsprayViewerDialog::addAutoViewButton()
   autoViewButton_->setToolTip("Auto View");
   autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewButton_->setShortcut(Qt::Key_0);
-  connect(autoViewButton_, SIGNAL(clicked()), this, SLOT(autoViewClicked()));
+  connect(autoViewButton_, &QPushButton::clicked, this, &OsprayViewerDialog::autoViewClicked);
   addToolbarButton(autoViewButton_);
 }
 
@@ -238,7 +238,7 @@ void OsprayViewerDialog::addAutoRotateButton()
   autoRotateButton_->setCheckable(true);
   autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(autoRotateButton_, SIGNAL(clicked()), this, SLOT(autoRotateClicked()));
+  connect(autoRotateButton_, &QPushButton::clicked, this, &OsprayViewerDialog::autoRotateClicked);
   addToolbarButton(autoRotateButton_);
 }
 
@@ -249,7 +249,7 @@ void OsprayViewerDialog::addTimestepButtons()
   nextTimestep->setToolTip("Next timestep");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(nextTimestep, SIGNAL(clicked()), this, SLOT(nextTimestepClicked()));
+  connect(nextTimestep, &QPushButton::clicked, this, &OsprayViewerDialog::nextTimestepClicked);
   addToolbarButton(nextTimestep);
 
   playTimestepsButton_ = new QPushButton(this);
@@ -258,7 +258,7 @@ void OsprayViewerDialog::addTimestepButtons()
   playTimestepsButton_->setCheckable(true);
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(playTimestepsButton_, SIGNAL(clicked()), this, SLOT(playTimestepsClicked()));
+  connect(playTimestepsButton_, &QPushButton::clicked, this, &OsprayViewerDialog::playTimestepsClicked);
   addToolbarButton(playTimestepsButton_);
 }
 
@@ -268,7 +268,7 @@ void OsprayViewerDialog::addScreenshotButton()
   screenshotButton->setToolTip("Take screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
-  connect(screenshotButton, SIGNAL(clicked()), this, SLOT(screenshotClicked()));
+  connect(screenshotButton, &QPushButton::clicked, this, &OsprayViewerDialog::screenshotClicked);
   addToolbarButton(screenshotButton);
 }
 
@@ -277,7 +277,7 @@ void OsprayViewerDialog::addViewBarButton()
   auto viewBarBtn = new QPushButton();
   viewBarBtn->setToolTip("Show View Options");
   viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
-  connect(viewBarBtn, SIGNAL(clicked()), this, SLOT(viewBarButtonClicked()));
+  connect(viewBarBtn, &QPushButton::clicked, this, &OsprayViewerDialog::viewBarButtonClicked);
   addToolbarButton(viewBarBtn);
 }
 

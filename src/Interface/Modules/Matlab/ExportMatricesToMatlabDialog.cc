@@ -45,7 +45,7 @@ ExportMatricesToMatlabDialog::ExportMatricesToMatlabDialog(const std::string& na
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ExportMatricesToMatlabDialog::saveFile);
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }

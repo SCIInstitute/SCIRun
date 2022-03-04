@@ -665,8 +665,8 @@ CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent
 {
   setupUi(this);
 
-  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
-  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
+  connect(addGroup_, &QPushButton::clicked, this, &CameraLockControls::addGroup);
+  connect(removeGroup_, &QPushButton::clicked, this, &CameraLockControls::removeGroup);
   connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
   connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
   updateViewSceneTree();
@@ -677,8 +677,8 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
-  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
+  connect(toStringButton_, &QPushButton::clicked, parent, &DeveloperControls::printToString);
+  connect(bugReportButton_, &QPushButton::clicked, parent, &DeveloperControls::sendBugReport);
 }
 
 ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle)

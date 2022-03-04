@@ -218,7 +218,7 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   layout->addWidget(pathWidget_);
   auto button = new QPushButton("Set Path...");
   layout->addWidget(button);
-  connect(button, SIGNAL(clicked()), SCIRunMainWindow::Instance(), SLOT(setDataDirectoryFromGUI()));
+  connect(button, &QPushButton::clicked, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setDataDirectoryFromGUI);
   connect(SCIRunMainWindow::Instance(), SIGNAL(dataDirectorySet(const QString&)), this, SLOT(updatePathLabel(const QString&)));
 
   page->setLayout(layout);
@@ -993,7 +993,7 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
                     "selection-background-color:blue;" // 336699 lighter blue
                     "background-color:rgb(66,66,69);"
                     "selection-color:yellow;}"
-#ifndef __linux__ 
+#ifndef __linux__
                     "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
 #endif
                     "QLineEdit{border:1px solid white}"

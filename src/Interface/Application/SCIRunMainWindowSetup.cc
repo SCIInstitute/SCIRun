@@ -572,6 +572,6 @@ void SCIRunMainWindow::setupVersionButton()
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
   versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
-  connect(versionButton_, SIGNAL(clicked()), this, SLOT(copyVersionToClipboard()));
+  connect(versionButton_, &QPushButton::clicked, this, &SCIRunMainWindow::copyVersionToClipboard);
   statusBar()->addPermanentWidget(versionButton_);
 }

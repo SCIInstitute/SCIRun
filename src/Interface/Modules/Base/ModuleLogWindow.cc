@@ -45,7 +45,7 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer
 	setWindowTitle("Log for " + moduleName);
   setVisible(false);
   buttonBox->button(QDialogButtonBox::Discard)->setText("Clear");
-  connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
+  connect(buttonBox->button(QDialogButtonBox::Discard), &QPushButton::clicked, logTextEdit_, &QTextEdit::clear);
   logTextEdit_->setStyleSheet("background-color: lightgray;");
 }
 
@@ -75,7 +75,7 @@ void ModuleLogWindow::popupMessageBox(const QString& message)
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
     msgBox->setStandardButtons(QMessageBox::Ok);
     auto showButton = msgBox->addButton("Show Module", QMessageBox::ApplyRole);
-    connect(showButton, SIGNAL(clicked()), this, SIGNAL(requestModuleVisible()));
+    connect(showButton, &QPushButton::clicked, this, &ModuleLogWindow::requestModuleVisible);
     msgBox->setWindowTitle(windowTitle());
     msgBox->setText(errorText);
     msgBox->setModal(false);

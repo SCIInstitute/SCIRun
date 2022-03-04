@@ -77,8 +77,8 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   addRadioButtonGroupManager({predefinedColorMapRadioButton_, customColorMapRadioButton_}, Parameters::ColorMapOption);
 
-  connect(customColorButton0_, SIGNAL(clicked()), this, SLOT(selectCustomColorMin()));
-  connect(customColorButton1_, SIGNAL(clicked()), this, SLOT(selectCustomColorMax()));
+  connect(customColorButton0_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::selectCustomColorMin);
+  connect(customColorButton1_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::selectCustomColorMax);
 
   customColors_[0] = colorFromState(Parameters::CustomColor0);
   customColors_[1] = colorFromState(Parameters::CustomColor1);
@@ -94,8 +94,8 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
   connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview()));
-  connect(predefinedColorMapRadioButton_, SIGNAL(clicked()), this, SLOT(updateColorMapPreview()));
-  connect(customColorMapRadioButton_, SIGNAL(clicked()), this, SLOT(updateColorMapPreview()));
+  connect(predefinedColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(customColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
   // Create preview window
   scene_ = new QGraphicsScene(this);
@@ -105,7 +105,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->updateSize();
   previewColorMap_->show();
-  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
+  connect(clearAlphaPointsToolButton_, &QPushButton::clicked, previewColorMap_, &ColormapPreview::clearAlphaPointGraphics);
 }
 
 void CreateStandardColorMapDialog::selectCustomColorMin()

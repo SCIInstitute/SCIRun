@@ -47,7 +47,7 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  connect(saveFileButton_, &QPushButton::clicked, this, &WriteFieldDialog::saveFile);
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());

@@ -49,13 +49,13 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   addCheckBoxManager(loopCheckBox_, Parameters::LoopForever);
 
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
-  connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
+  connect(nextIndexButton_, &QPushButton::clicked, this, &GeometryBufferDialog::incrementIndex);
   previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
-  connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
+  connect(previousIndexButton_, &QPushButton::clicked, this, &GeometryBufferDialog::decrementIndex);
   firstIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekBackward));
-  connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
+  connect(firstIndexButton_, &QPushButton::clicked, this, &GeometryBufferDialog::selectFirstIndex);
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
-  connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
+  connect(lastIndexButton_, &QPushButton::clicked, this, &GeometryBufferDialog::selectLastIndex);
   connect(indexSlider_, &QSlider::sliderReleased, [this]()
   {
     state_->setValue(Parameters::SingleStep, true);
