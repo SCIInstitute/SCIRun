@@ -295,6 +295,11 @@ void PythonConsoleEdit::replace_command_buffer(const QString& text)
 
 //TODO!!!
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#ifdef SCIRUN_QT6_ENABLED
+#define REGEXP_NAMESPACE Qt
+#else
+#define REGEXP_NAMESPACE QString
+#endif
 
 void PythonConsoleEdit::issue_command()
 {
@@ -313,7 +318,7 @@ void PythonConsoleEdit::issue_command()
   this->interactive_position_ = this->document_end();
 
   NetworkEditor::InEditingContext iec(rootNetworkEditor_);
-  auto lines = command.split(QRegularExpression("[\r\n]"), Qt::SkipEmptyParts);
+  auto lines = command.split(QRegularExpression("[\r\n]"), REGEXP_NAMESPACE::SkipEmptyParts);
   for (const auto& line : lines)
   {
     if (!line.isEmpty())
