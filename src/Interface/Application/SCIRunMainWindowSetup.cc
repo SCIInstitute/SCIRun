@@ -354,12 +354,12 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
 {
   triggeredEventsWindow_ = new TriggeredEventsWindow(this);
   connect(actionTriggeredEvents_, &QAction::toggled, triggeredEventsWindow_, &TriggeredEventsWindow::setVisible);
-  connect(triggeredEventsWindow_, SIGNAL(visibilityChanged(bool)), actionTriggeredEvents_, SLOT(setChecked(bool)));
+  connect(triggeredEventsWindow_, &TriggeredEventsWindow::visibilityChanged, actionTriggeredEvents_, &QAction::setChecked);
   triggeredEventsWindow_->hide();
 
   macroEditor_ = new MacroEditor(this);
   connect(actionMacroEditor_, &QAction::toggled, macroEditor_, &MacroEditor::setVisible);
-  connect(macroEditor_, SIGNAL(visibilityChanged(bool)), actionMacroEditor_, SLOT(setChecked(bool)));
+  connect(macroEditor_, &MacroEditor::visibilityChanged, actionMacroEditor_, &QAction::setChecked);
   connect(macroEditor_, SIGNAL(macroButtonChanged(int, const QString&)), this, SLOT(updateMacroButton(int, const QString&)));
   macroEditor_->hide();
 }
@@ -369,19 +369,19 @@ void SCIRunMainWindow::setupProvenanceWindow()
   ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
   connect(actionProvenance_, &QAction::toggled, provenanceWindow_, &ProvenanceWindow::setVisible);
-  connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
+  connect(provenanceWindow_, &ProvenanceWindow::visibilityChanged, actionProvenance_, &QAction::setChecked);
 
-  connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
-  connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
+  connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
+  connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
   actionUndo_->setEnabled(false);
   actionRedo_->setEnabled(false);
-  connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
-  connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
-  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
+  connect(provenanceWindow_, &ProvenanceWindow::undoStateChanged, actionUndo_, &QAction::setEnabled);
+  connect(provenanceWindow_, &ProvenanceWindow::redoStateChanged, actionRedo_, &QAction::setEnabled);
+  connect(provenanceWindow_, &ProvenanceWindow::networkModified, networkEditor_, &NetworkEditor::updateViewport);
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
-  connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
+  connect(commandConverter_.get(), &GuiActionProvenanceConverter::provenanceItemCreated, provenanceWindow_, &ProvenanceWindow::addProvenanceItem);
 
 	provenanceWindow_->hide();
 }
@@ -391,16 +391,16 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setEnabled(false);
   #if 0 // disable dev console for now
   devConsole_ = new DeveloperConsole(this);
-  connect(actionDevConsole_, &QAction::toggled, devConsole_, SLOT(setVisible(bool)));
-  connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
+  connect(actionDevConsole_, &QAction::toggled, devConsole_, &DeveloperConsole::setVisible);
+  connect(devConsole_, &DeveloperConsole::visibilityChanged, actionDevConsole_, &QAction::setChecked);
 
   devConsole_->setVisible(false);
   devConsole_->setFloating(true);
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
 
   actionDevConsole_->setShortcut(QKeySequence("`"));
-  connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
-  connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
+  connect(devConsole_, &DeveloperConsole::executorChosen, this, &SCIRunMainWindow::setExecutor);
+  connect(devConsole_, &DeveloperConsole::globalPortCachingChanged, this, &SCIRunMainWindow::setGlobalPortCaching);
   #endif
 }
 
@@ -408,7 +408,7 @@ void SCIRunMainWindow::setupPreferencesWindow()
 {
   prefsWindow_ = new PreferencesWindow(networkEditor_, [this]() { writeSettings(); }, this);
 
-  connect(actionPreferences_, SIGNAL(triggered()), prefsWindow_, SLOT(show()));
+  connect(actionPreferences_, &QAction::triggered, prefsWindow_, &PreferencesWindow::show);
 
   prefsWindow_->setVisible(false);
 }
@@ -419,7 +419,7 @@ void SCIRunMainWindow::setupPythonConsole()
   pythonConsole_ = new PythonConsoleWidget(networkEditor_, this);
   connect(actionPythonConsole_, &QAction::toggled, pythonConsole_, &PythonConsoleWidget::setVisible);
   actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
-  connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
+  connect(pythonConsole_, &PythonConsoleWidget::visibilityChanged, actionPythonConsole_, &QAction::setChecked);
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
 	pythonConsole_->setObjectName("PythonConsole");
@@ -507,7 +507,7 @@ void SCIRunMainWindow::setupTagManagerWindow()
 {
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, &QAction::toggled, tagManagerWindow_, &TagManagerWindow::setVisible);
-  connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
+  connect(tagManagerWindow_, &TagManagerWindow::visibilityChanged, actionTagManager_, &QAction::setChecked);
   tagManagerWindow_->setVisible(false);
   addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
