@@ -57,7 +57,7 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
   connect(undoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::undoAll);
   connect(redoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::redoAll);
   connect(clearButton_, &QPushButton::clicked, this, &ProvenanceWindow::clear);
-  connect(itemMaxSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setMaxItems(int)));
+  connect(itemMaxSpinBox_, &QSpinBox::valueChanged, this, &ProvenanceWindow::setMaxItems);
   setMaxItems(10);
   setUndoEnabled(false);
   setRedoEnabled(false);

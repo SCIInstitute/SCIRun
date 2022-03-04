@@ -210,7 +210,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(prefsWindow_->cubicPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesCubicBezier);
   connect(prefsWindow_->manhattanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesManhattan);
   connect(prefsWindow_->euclideanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesEuclidean);
-  connect(prefsWindow_->maxCoresSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(maxCoreValueChanged(int)));
+  connect(prefsWindow_->maxCoresSpinBox_, &QSpinBox::valueChanged, this, &SCIRunMainWindow::maxCoreValueChanged);
   //TODO: will be a user or network setting
   makePipesEuclidean();
 

@@ -235,7 +235,7 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderTensorsBelowThreshold);
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
   addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowFieldGlyphs::SuperquadricEmphasis);
-  connect(this->superquadricEmphasisSlider_, SIGNAL(valueChanged(int)), this, SLOT(emphasisSliderChanged(int)));
+  connect(this->superquadricEmphasisSlider_, &QSlider::valueChanged, this, &ShowFieldGlyphsDialog::emphasisSliderChanged);
   connect(this->superquadricEmphasisDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emphasisSpinBoxChanged(double)));
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);

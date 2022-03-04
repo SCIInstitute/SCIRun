@@ -50,12 +50,12 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addCheckBoxManager(axisExecuteCheckBox_, AxisReexecute);
   addCheckBoxManager(sliderExecuteCheckBox_, SliderReexecute);
 
-  connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(iAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(jAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(kAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(iAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(jAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(kAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
   connect(iAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
   connect(jAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
   connect(kAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);

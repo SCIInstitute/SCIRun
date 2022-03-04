@@ -48,7 +48,7 @@ BuildNoiseColumnMatrixDialog::BuildNoiseColumnMatrixDialog(const std::string& na
 
 	addDoubleSpinBoxManager(noiseSpinBox_, Parameters::SignalToNoiseRatio);
 
-	connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBox()));
+	connect(noiseSlider_, &QSlider::valueChanged, this, &BuildNoiseColumnMatrixDialog::setSpinBox);
 	connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSlider()));
 }
 

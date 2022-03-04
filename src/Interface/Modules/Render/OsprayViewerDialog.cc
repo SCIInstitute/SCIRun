@@ -104,8 +104,8 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
 
-  connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
-  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(igeomDataTransientnt)));
+  connect(configDialog_->viewerHeightSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setHeight);
+  connect(configDialog_->viewerWidthSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setWidth);
 
   connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
   connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));

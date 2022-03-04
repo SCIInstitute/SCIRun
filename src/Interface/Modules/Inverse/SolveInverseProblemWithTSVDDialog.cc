@@ -43,7 +43,7 @@ SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
@@ -59,7 +59,7 @@ SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::
     {"Slider", "slider"},
     {"L-curve", "lcurve"}});
 
-  connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
+  connect(lambdaSlider_, &QSlider::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSpinBoxValue);
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));

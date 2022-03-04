@@ -93,6 +93,7 @@ namespace SCIRun {
     public Q_SLOTS:
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
+      void adjustZoomSpeed(int value);
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
@@ -110,7 +111,6 @@ namespace SCIRun {
       void autoViewClicked();
       void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
-      void adjustZoomSpeed(int value);
       void lockRotationToggled();
       void lockPanningToggled();
       void lockZoomToggled();

@@ -67,12 +67,12 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   colorMapNameComboBox_->addItem(QString::fromStdString("Custom"));
 
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
-  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
+  connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::setResolutionSlider);
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
-  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(updateColorMapPreview()));
+  connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
-  connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
-  connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
+  connect(shiftSlider_, &QSlider::valueChanged, this, &CreateStandardColorMapDialog::setShiftSpinner);
+  connect(resolutionSlider_, &QSlider::valueChanged, resolutionSpin_, &QSpinBox::setValue);
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
   addRadioButtonGroupManager({predefinedColorMapRadioButton_, customColorMapRadioButton_}, Parameters::ColorMapOption);

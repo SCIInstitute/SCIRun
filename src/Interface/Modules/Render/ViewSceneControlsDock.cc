@@ -571,9 +571,9 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushB
   connect(orientationCheckableGroupBox_, &QGroupBox::toggled,
     [parent, this](bool b) { parent->showOrientationChecked(b); toggleButton(); }
     );
-  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
-  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
-  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
+  connect(orientAxisSize_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisSize);
+  connect(orientAxisXPos_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisPosX);
+  connect(orientAxisYPos_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisPosY);
   connect(orientDefaultPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setDefaultOrientPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
@@ -595,10 +595,10 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
     [parent, this](bool b) { parent->setScaleBarVisible(b); updateToolbarButton(buttonOutlineColor); }
     );
   linkedCheckable_ = [this]() { return showScaleBarTextGroupBox_->isChecked(); };
-  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
+  connect(fontSizeSpinBox_, &QSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarFontSize);
   connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
   connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
-  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
+  connect(numTicksSpinBox_, &QSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarNumTicks);
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
 }
@@ -631,10 +631,10 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   linkedCheckable_ = [this]() { return planeVisibleCheckBox_->isChecked(); };
   connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
   connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
-  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
-  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
-  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  connect(xValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneX);
+  connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneY);
+  connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneZ);
+  connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneD);
 }
 
 InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -657,7 +657,7 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
-  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);
 }
 
 CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent)
