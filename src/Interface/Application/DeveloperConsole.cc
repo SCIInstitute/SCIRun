@@ -39,7 +39,7 @@ DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(pare
   connect(serialExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
   connect(parallelExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
   connect(improvedParallelExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
-  connect(globalPortCacheButton_, SIGNAL(stateChanged(int)), this, SLOT(globalPortCacheButtonClicked()));
+  connect(globalPortCacheButton_, &QCheckBox::stateChanged, this, &DeveloperConsole::globalPortCacheButtonClicked);
 }
 
 void DeveloperConsole::updateNetworkViewLog(const QString& s)

@@ -317,16 +317,16 @@ void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
   if (saveFragmentData_ == subnetData)
   {
     QMenu menu;
-		menu.addAction("Export fragment list...", this, SLOT(exportFragmentList()));
-    menu.addAction("Import fragment list...", this, SLOT(importFragmentList()));
-    menu.addAction("Clear", this, SLOT(clearFragmentList()));
+		menu.addAction("Export fragment list...", this, &SCIRunMainWindow::exportFragmentList);
+    menu.addAction("Import fragment list...", this, &SCIRunMainWindow::importFragmentList);
+    menu.addAction("Clear", this, &SCIRunMainWindow::clearFragmentList);
   	menu.exec(globalPos);
   }
 	else if (!subnetData.isEmpty())
 	{
   	QMenu menu;
-		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
-		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
+		menu.addAction("Rename", this, &SCIRunMainWindow::renameSavedSubnetwork)->setProperty("ID", subnetData);
+		menu.addAction("Delete", this, &SCIRunMainWindow::removeSavedSubnetwork)->setProperty("ID", subnetData);
   	menu.exec(globalPos);
 	}
 }
@@ -634,10 +634,11 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   auto modAction = new QAction(this);
   modAction->setText(modId);
   modAction->setEnabled(hasUI);
-  connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
+  connect(modAction, &QAction::triggered, networkEditor_, &NetworkEditor::moduleWindowAction);
   currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
 
+#if 0
   if (modId.contains("Subnet"))
   {
     if (menuCurrentSubnets_->actions().isEmpty())
@@ -651,11 +652,12 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
     renameAction->setText("Rename...");
     subnetMenu->addAction(renameAction);
 
-    connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
-    connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    connect(showAction, &QAction::triggered, networkEditor_, &NetworkEditor::subnetMenuActionTriggered);
+    connect(renameAction, &QAction::triggered, networkEditor_, &NetworkEditor::subnetMenuActionTriggered);
     currentSubnetActions_.insert(modId, subnetMenu);
     menuCurrentSubnets_->addMenu(subnetMenu);
   }
+#endif
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)

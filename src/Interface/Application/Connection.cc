@@ -194,7 +194,7 @@ namespace SCIRun
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
         [conn](QAction* action)
         {
-          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule()));
+          QObject::connect(action, &QAction::triggered, conn, &ConnectionLine::insertNewModule);
           action->setProperty("insert", true);
         },
         menu);
@@ -291,9 +291,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(makeShared<MidpointPositionerFromPorts>(fromPort_, toPort_));
-  connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-  connect(this, SIGNAL(insertNewModule(const QMap<QString, std::string>&)),
-    fromPort_, SLOT(insertNewModule(const QMap<QString, std::string>&)));
+  connect(menu_->disableAction_, &QAction::triggered, this, &ConnectionLine::toggleDisabled);
+  connect(this, &ConnectionLine::requestInsertNewModule, [this](const QMap<QString, std::string>& m) { fromPort_->insertNewModule(m); });
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
@@ -384,7 +383,7 @@ void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
   ConnectionDescription cd{ { out->description()->getUnderlyingModuleId(), out->description()->id() }, { in->description()->getUnderlyingModuleId(), in->description()->id() } };
   subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
 
-  connect(subnetPort, SIGNAL(portMoved()), subnetCompanion_, SLOT(trackNodes()));
+  connect(subnetPort, &PortWidget::portMoved, subnetCompanion_, sl(trackNodes()));
 
   subnetCompanion_->isCompanion_ = true;
   subnetCompanion_->trackNodes();
@@ -491,7 +490,7 @@ void ConnectionLine::insertNewModule()
   auto toPortLocal = toPort_;
   toPort_ = nullptr;
 
-  Q_EMIT insertNewModule({
+  Q_EMIT requestInsertNewModule({
     { "moduleToAdd", moduleToAddName.toStdString() },
     { "endModuleId", toPortLocal->description()->getUnderlyingModuleId().id_ },
     { "inputPortName", toPortLocal->description()->get_portname() },

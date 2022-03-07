@@ -299,7 +299,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionLoadToolkit_, &QAction::triggered, this, &SCIRunMainWindow::loadToolkit);
 
   connect(networkEditor_, &NetworkEditor::networkExecuted, networkProgressBar_.get(), &NetworkExecutionProgressBar::resetModulesDone);
-  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
+  connect(networkEditor_->moduleEventProxy().get(), &ModuleEventProxy::moduleExecuteEnd, networkProgressBar_.get(), &NetworkExecutionProgressBar::incrementModulesDone);
   connect(networkEditor_, &NetworkEditor::networkExecuted, []() { DialogErrorControl::instance().resetCounter(); });
 	connect(networkEditor_, &NetworkEditor::requestLoadNetwork, this, &SCIRunMainWindow::checkAndLoadNetworkFile);
   connect(networkEditor_, &NetworkEditor::networkExecuted, this, &SCIRunMainWindow::changeExecuteActionIconToStop);
