@@ -376,20 +376,20 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   addPorts(currentIndex());
   updateProgrammablePorts();
 
-  connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
+  connect(this, &ModuleWidget::backgroundColorUpdated, this, &ModuleWidget::updateBackgroundColor);
   theModule_->executionState().connectExecutionStateChanged([this](int state) { (void)QtConcurrent::run(
       [this, state] { updateBackgroundColorForModuleState(state); }); });
 
   theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
-  connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
+  connect(this, &ModuleWidget::executeAgain, this, &ModuleWidget::executeTriggeredProgrammatically);
 
   Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
   connect(actionsMenu_->getAction("Destroy"), &QAction::triggered, this, &ModuleWidget::deleteMeLater);
 
   connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
-  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
-  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
+  connect(this, &ModuleWidget::executeEnds, this, &ModuleWidget::changeExecuteButtonToPlay);
+  connect(this, &ModuleWidget::signalExecuteButtonIconChangeToStop, this, &ModuleWidget::changeExecuteButtonToStop);
   connect(this, &ModuleWidget::dynamicPortChanged, this, &ModuleWidget::updateDialogForDynamicPortChange);
 
   if (theModule->isDeprecated() && !Core::Application::Instance().parameters()->isRegressionMode())
@@ -554,7 +554,7 @@ void ModuleWidget::setupModuleActions()
 
   connect(actionsMenu_->getAction("Execute"), &QAction::triggered, this, &ModuleWidget::executeButtonPushed);
   connect(actionsMenu_->getAction("... Downstream Only"), &QAction::triggered, this, &ModuleWidget::executeTriggeredViaStateChange);
-  connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
+  connect(this, &ModuleWidget::updateProgressBarSignal, this, &ModuleWidget::updateProgressBar);
   connect(actionsMenu_->getAction("Help"), &QAction::triggered, this, &ModuleWidget::launchDocumentation);
   connect(actionsMenu_->getAction("Duplicate"), &QAction::triggered, this, &ModuleWidget::duplicate);
   connect(actionsMenu_->getAction("Toggle Programmable Input Port"), &QAction::triggered, this, &ModuleWidget::toggleProgrammableInputPort);
@@ -673,8 +673,8 @@ public:
         {},
         widget);
       widget->hookUpGeneralPortSignals(w);
-      widget->connect(widget, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-      widget->connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), widget, SLOT(incomingConnectionStateChanged(bool, int)));
+      QObject::connect(widget, &ModuleWidget::connectionAdded, w, &InputPortWidget::makeConnection);
+      QObject::connect(w, &InputPortWidget::incomingConnectionStateChange, widget, &ModuleWidget::incomingConnectionStateChanged);
       widget->ports_->addPort(w);
       ++i;
       if (widget->dialogManager_.hasOptions() && port->isDynamic())

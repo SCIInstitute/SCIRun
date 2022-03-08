@@ -132,7 +132,7 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
-  bool executionDisabled() const { return disabled_; }
+  bool isExecutionDisabled() const { return disabled_; }
   void setExecutionDisabled(bool disabled);
 
   void saveImagesFromViewScene();

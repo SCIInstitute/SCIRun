@@ -94,7 +94,8 @@ void SCIRunMainWindow::preexecute()
 
 void SCIRunMainWindow::setupQuitAfterExecute()
 {
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::executionFinished,
+    this, &SCIRunMainWindow::exitApplication);
   quitAfterExecute_ = true;
 }
 

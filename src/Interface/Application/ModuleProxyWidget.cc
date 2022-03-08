@@ -136,11 +136,11 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
   setData(TagDataKey, NoTag);
 
-  connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
-  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
-  connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
-  connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
-  connect(module, SIGNAL(findInNetwork()), this, SLOT(findInNetwork()));
+  connect(module, &ModuleWidget::noteUpdated, this, &ModuleProxyWidget::updateNote);
+  connect(module, &ModuleWidget::requestModuleVisible, this, &ModuleProxyWidget::ensureThisVisible);
+  connect(module, &ModuleWidget::deleteMeLater, this, &ModuleProxyWidget::deleteLater);
+  connect(module, &ModuleWidget::executionDisabled, this, &ModuleProxyWidget::disableModuleGUI);
+  connect(module, &ModuleWidget::findInNetwork, this, &ModuleProxyWidget::findInNetwork);
 
   stackDepth_ = 0;
 
@@ -202,7 +202,7 @@ void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
 
   animateColor_ = color;
   timeLine_ = new QTimeLine(milliseconds, this);
-  connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
+  connect(timeLine_, &QTimeLine::valueChanged, this, &ModuleProxyWidget::colorAnimate);
   timeLine_->start();
   ensureThisVisible();
 

@@ -1406,7 +1406,7 @@ DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modF
   {
     if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      if (mod->getModuleWidget()->executionDisabled() && modFilter(mod->getModuleWidget()->getModule()))
+      if (mod->getModuleWidget()->isExecutionDisabled() && modFilter(mod->getModuleWidget()->getModule()))
         disabled->disabledModules.push_back(mod->getModuleWidget()->getModuleId());
     }
     if (auto conn = dynamic_cast<ConnectionLine*>(item))

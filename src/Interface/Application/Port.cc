@@ -335,7 +335,7 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
 
     if (currentConnection_)
     {
-      makeConnection(pos);
+      makeConnectionAtPoint(pos);
     }
   }
   else if (button == Qt::RightButton && (!isConnected() || !description()->isInput()))
@@ -448,7 +448,7 @@ void PortWidget::cancelConnectionsInProgress()
   currentConnection_ = nullptr;
 }
 
-void PortWidget::makeConnection(const QPointF& pos)
+void PortWidget::makeConnectionAtPoint(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 

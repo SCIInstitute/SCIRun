@@ -50,8 +50,8 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
   // TODO deprecated
   //networkXMLTextEdit_->setTabStopWidth(15);
 
-  connect(provenanceListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
-  connect(provenanceListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
+  connect(provenanceListWidget_, &QListWidget::itemClicked, this, &ProvenanceWindow::displayInfo);
+  connect(provenanceListWidget_, &QListWidget::currentItemChanged, this, &ProvenanceWindow::displayInfo);
   connect(undoButton_, &QPushButton::clicked, this, &ProvenanceWindow::undo);
   connect(redoButton_, &QPushButton::clicked, this, &ProvenanceWindow::redo);
   connect(undoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::undoAll);

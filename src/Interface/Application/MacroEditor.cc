@@ -45,8 +45,8 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
 {
   setupUi(this);
   gridLayout_4->addWidget(scriptPlainTextEdit_, 0, 1);
-  connect(macroListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
-  connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
+  connect(macroListWidget_, &QListWidget::itemSelectionChanged, this, &MacroEditor::updateScriptEditor);
+  connect(scriptPlainTextEdit_, &QPlainTextEdit::textChanged, this, &MacroEditor::updateScripts);
   connect(addPushButton_, &QPushButton::clicked, this, &MacroEditor::addMacro);
   connect(removePushButton_, &QPushButton::clicked, this, &MacroEditor::removeMacro);
   connect(renamePushButton_, &QPushButton::clicked, this, &MacroEditor::renameMacro);

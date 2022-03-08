@@ -196,7 +196,7 @@ private:
   static void forEachPort(Func func, Pred pred);
 
   QGraphicsItem* dragImpl(const QPointF& endPos);
-  void makeConnection(const QPointF& pos);
+  void makeConnectionAtPoint(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port, double threshold);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
