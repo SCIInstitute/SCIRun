@@ -746,7 +746,7 @@ public:
   CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) :
     WidgetSlotManager(state, dialog, checkBox, stateKey), stateKey_(stateKey), checkBox_(checkBox)
   {
-    connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+    connect(checkBox_, &QCheckBox::stateChanged, this, &CheckBoxSlotManager::push);
   }
   void pull() override
   {

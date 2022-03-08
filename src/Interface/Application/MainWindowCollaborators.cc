@@ -300,8 +300,8 @@ public:
   explicit OtherSettingsWizardPage(NewUserWizard* wiz)
   {
     setupUi(this);
-    connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
-    connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
+    connect(saveBeforeExecuteCheckBox_, &QCheckBox::stateChanged, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setSaveBeforeExecute);
+    connect(loadPreferencesCheckBox_, &QCheckBox::stateChanged, wiz, &NewUserWizard::setShowPrefs);
   }
 };
 

@@ -94,6 +94,7 @@ namespace SCIRun {
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
       void adjustZoomSpeed(int value);
+      void saveNewGeometryChanged(int state);
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
@@ -187,8 +188,6 @@ namespace SCIRun {
       void screenshotClicked();
       void quickScreenshot(bool prompt);
       void quickScreenshotClicked() { quickScreenshot(true); }
-      void saveNewGeometryChanged(int state);
-
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
