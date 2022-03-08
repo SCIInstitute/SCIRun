@@ -66,9 +66,9 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   colorMapNameComboBox_->addItem(QString::fromStdString("Custom"));
 
-  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
+  connect(shiftSpin_, &QDoubleSpinBox::valueChanged, this, &CreateStandardColorMapDialog::setShiftSlider);
   connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::setResolutionSlider);
-  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
+  connect(shiftSpin_, &QDoubleSpinBox::valueChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
   connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
   connect(shiftSlider_, &QSlider::valueChanged, this, &CreateStandardColorMapDialog::setShiftSpinner);

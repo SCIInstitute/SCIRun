@@ -60,10 +60,10 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
     {"L-curve", "lcurve"}});
 
   connect(lambdaSlider_, &QSlider::valueChanged, this, &SolveInverseProblemWithTikhonovSVDDialog::setSpinBoxValue);
-  connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
-  connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
-  connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
-  connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
+  connect(lambdaSliderDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovSVDDialog::setSliderValue);
+  connect(lambdaMinDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovSVDDialog::setSliderMin);
+  connect(lambdaMaxDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovSVDDialog::setSliderMax);
+  connect(lambdaResolutionDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovSVDDialog::setSliderStep);
 
   WidgetStyleMixin::tabStyle(tabWidget);
 }

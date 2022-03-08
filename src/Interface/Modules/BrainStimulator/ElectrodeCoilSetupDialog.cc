@@ -75,7 +75,7 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   connect(PutElectrodesOnScalpCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
   connect(electrodethicknessCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
 
-  connect(electrodethicknessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateThicknessColumnValues(double)));
+  connect(electrodethicknessSpinBox_, &QDoubleSpinBox::valueChanged, this, &ElectrodeCoilSetupDialog::updateThicknessColumnValues);
 }
 
 void ElectrodeCoilSetupDialog::updateInvertNormals()

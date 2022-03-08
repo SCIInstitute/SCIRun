@@ -147,7 +147,7 @@ void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QSpinBox* box)
 
 void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QDoubleSpinBox* box)
 {
-  connect(box, SIGNAL(valueChanged(double)), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(box, &QDoubleSpinBox::valueChanged, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
@@ -714,7 +714,7 @@ public:
   DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) :
     WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
-    connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+    connect(spinBox_, &QDoubleSpinBox::valueChanged, this, &DoubleSpinBoxSlotManager::push);
   }
   void pull() override
   {

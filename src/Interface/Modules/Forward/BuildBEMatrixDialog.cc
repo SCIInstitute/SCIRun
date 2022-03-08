@@ -100,8 +100,8 @@ QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
 {
   auto spin = new QDoubleSpinBox();
   spin->setValue((row + col + 1) % 2);
-  const char* slot = col == TableColumns::InsideConductivity ? SLOT(pushInsides()) : SLOT(pushOutsides());
-  connect(spin, SIGNAL(valueChanged(double)), this, slot);
+  auto slot = col == TableColumns::InsideConductivity ? &BuildBEMatrixDialog::pushInsides : &BuildBEMatrixDialog::pushOutsides;
+  connect(spin, &QDoubleSpinBox::valueChanged, this, slot);
   return spin;
 }
 

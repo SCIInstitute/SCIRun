@@ -205,8 +205,8 @@ void ctkDoubleSpinBoxPrivate::init()
   this->InputRange[0] = this->SpinBox->minimum();
   this->InputRange[1] = this->SpinBox->maximum();
 
-  QObject::connect(this->SpinBox, SIGNAL(valueChanged(double)),
-    this, SLOT(onValueChanged()));
+  QObject::connect(this->SpinBox, &QDoubleSpinBox::valueChanged,
+    this, &ctkDoubleSpinBoxPrivate::onValueChanged);
   QObject::connect(this->SpinBox, SIGNAL(editingFinished()),
     q, SIGNAL(editingFinished()));
 

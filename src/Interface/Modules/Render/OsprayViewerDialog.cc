@@ -107,22 +107,22 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->viewerHeightSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setHeight);
   connect(configDialog_->viewerWidthSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setWidth);
 
-  connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewAtZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewFromXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewFromYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewFromZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewUpXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewUpYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
-  connect(configDialog_->cameraViewUpZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewAtXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
 
-  connect(configDialog_->ambientLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
-  connect(configDialog_->ambientLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
-  connect(configDialog_->ambientLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
-  connect(configDialog_->directionalLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
-  connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
-  connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->ambientLightColorRDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->ambientLightColorGDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->ambientLightColorBDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorRDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorGDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorBDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
 
   //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
   //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
