@@ -385,7 +385,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
 
   Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
-  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+  connect(actionsMenu_->getAction("Destroy"), &QAction::triggered, this, &ModuleWidget::deleteMeLater);
 
   connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
@@ -552,11 +552,11 @@ void ModuleWidget::setupModuleActions()
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("... Downstream Only"));
 
-  connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
-  connect(actionsMenu_->getAction("... Downstream Only"), SIGNAL(triggered()), this, SLOT(executeTriggeredViaStateChange()));
+  connect(actionsMenu_->getAction("Execute"), &QAction::triggered, this, &ModuleWidget::executeButtonPushed);
+  connect(actionsMenu_->getAction("... Downstream Only"), &QAction::triggered, this, &ModuleWidget::executeTriggeredViaStateChange);
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
-  connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
-  connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
+  connect(actionsMenu_->getAction("Help"), &QAction::triggered, this, &ModuleWidget::launchDocumentation);
+  connect(actionsMenu_->getAction("Duplicate"), &QAction::triggered, this, &ModuleWidget::duplicate);
   connect(actionsMenu_->getAction("Toggle Programmable Input Port"), &QAction::triggered, this, &ModuleWidget::toggleProgrammableInputPort);
   if (theModule_->id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
@@ -571,7 +571,7 @@ void ModuleWidget::postLoadAction()
 {
   auto replaceWith = actionsMenu_->getAction("Replace With...");
   if (replaceWith)
-    connect(replaceWith, SIGNAL(triggered()), this, SLOT(showReplaceWithWidget()));
+    connect(replaceWith, &QAction::triggered, this, &ModuleWidget::showReplaceWithWidget);
 }
 
 void ModuleWidget::showReplaceWithWidget()
@@ -614,11 +614,11 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
-    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
+    [=](QAction* action) { QObject::connect(action, &QAction::triggered, this, &ModuleWidget::replaceModule); },
     replaceWithDialog_);
 }
 
-void ModuleWidget::replaceModuleWith()
+void ModuleWidget::replaceModule()
 {
   delete replaceWithDialog_;
   replaceWithDialog_ = nullptr;

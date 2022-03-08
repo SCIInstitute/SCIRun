@@ -219,7 +219,7 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   auto button = new QPushButton("Set Path...");
   layout->addWidget(button);
   connect(button, &QPushButton::clicked, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setDataDirectoryFromGUI);
-  connect(SCIRunMainWindow::Instance(), SIGNAL(dataDirectorySet(const QString&)), this, SLOT(updatePathLabel(const QString&)));
+  connect(SCIRunMainWindow::Instance(), &SCIRunMainWindow::dataDirectorySet, this, &NewUserWizard::updatePathLabel);
 
   page->setLayout(layout);
 
@@ -823,9 +823,9 @@ void PythonWizard::setShowPrefs(int state)
 }
 
 
-void ToolkitInfo::setupAction(QAction* action, QObject* window) const
+void ToolkitInfo::setupAction(QAction* action, SCIRunMainWindow* window) const
 {
-  QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+  QObject::connect(action, &QAction::triggered, window, &SCIRunMainWindow::toolkitDownload);
   action->setProperty(ToolkitIconURL, iconUrl);
   action->setProperty(ToolkitURL, zipUrl);
   action->setProperty(ToolkitFilename, filename);
@@ -887,22 +887,22 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
   QObject::connect(mainWindow_, SIGNAL(defaultNoteSizeChanged(int)), editor, SIGNAL(defaultNoteSizeChanged(int)));
 
   // for active network editor
-  QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
-  QObject::connect(mainWindow_->actionDelete_, SIGNAL(triggered()), editor, SLOT(del()));
-  QObject::connect(mainWindow_->actionCleanUpNetwork_, SIGNAL(triggered()), editor, SLOT(cleanUpNetwork()));
+  QObject::connect(mainWindow_->actionSelectAll_, &QAction::triggered, editor, &NetworkEditor::selectAll);
+  QObject::connect(mainWindow_->actionDelete_, &QAction::triggered, editor, &NetworkEditor::del);
+  QObject::connect(mainWindow_->actionCleanUpNetwork_, &QAction::triggered, editor, &NetworkEditor::cleanUpNetwork);
   QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
-  QObject::connect(mainWindow_->actionCut_, SIGNAL(triggered()), editor, SLOT(cut()));
-  QObject::connect(mainWindow_->actionCopy_, SIGNAL(triggered()), editor, SLOT(copy()));
-  QObject::connect(mainWindow_->actionPaste_, SIGNAL(triggered()), editor, SLOT(paste()));
+  QObject::connect(mainWindow_->actionCut_, &QAction::triggered, editor, &NetworkEditor::cut);
+  QObject::connect(mainWindow_->actionCopy_, &QAction::triggered, editor, &NetworkEditor::copy);
+  QObject::connect(mainWindow_->actionPaste_, &QAction::triggered, editor, &NetworkEditor::paste);
 
   if (!editor->parentNetwork())
   {
     // root NetworkEditor only.
-    QObject::connect(mainWindow_, SIGNAL(moduleItemDoubleClicked()), editor, SLOT(addModuleViaDoubleClickedTreeItem()));
-    QObject::connect(mainWindow_->actionCenterNetworkViewer_, SIGNAL(triggered()), editor, SLOT(centerView()));
-    QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
-    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
-    QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+    QObject::connect(mainWindow_, &SCIRunMainWindow::moduleItemDoubleClicked, editor, &NetworkEditor::addModuleViaDoubleClickedTreeItem);
+    QObject::connect(mainWindow_->actionCenterNetworkViewer_, &QAction::triggered, editor, &NetworkEditor::centerView);
+    QObject::connect(mainWindow_->actionPinAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::pinAllModuleUIs);
+    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::restoreAllModuleUIs);
+    QObject::connect(mainWindow_->actionHideAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::hideAllModuleUIs);
     QObject::connect(mainWindow_->actionPeakBehindModuleUIs_, &QAction::triggered,
       [this, editor]() {
         if (mainWindow_->actionPeakBehindModuleUIs_->isChecked())
@@ -910,7 +910,7 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
         else
           editor->normalOpacityAllModuleUIs();
         });
-    //QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+    //QObject::connect(mainWindow_->actionMakeSubnetwork_, &QAction::triggered, editor, &NetworkEditor::makeSubnetwork()));
   }
   // children only
   // addDockWidget(Qt::RightDockWidgetArea, subnet);

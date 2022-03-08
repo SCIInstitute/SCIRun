@@ -248,7 +248,7 @@ namespace Gui {
 
     QString iconUrl, zipUrl, filename;
 
-    void setupAction(QAction* action, QObject* window) const;
+    void setupAction(QAction* action, SCIRunMainWindow* window) const;
   };
 
   class NetworkStatusImpl : public NetworkStatus

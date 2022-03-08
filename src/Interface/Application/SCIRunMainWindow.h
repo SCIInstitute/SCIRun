@@ -115,6 +115,7 @@ public Q_SLOTS:
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
   void reportIssue();
+  void toolkitDownload();
 protected:
   void closeEvent(QCloseEvent* event) override;
   void keyPressEvent(QKeyEvent *event) override;
@@ -289,7 +290,6 @@ private Q_SLOTS:
   void toggleFullScreen();
   void toggleMetadataLayer(bool toggle);
   void toggleTagLayer(bool toggle);
-  void toolkitDownload();
   void updateClipboardHistory(const QString& xml);
   void updateDockWidgetProperties(bool isFloating);
   void zoomNetwork();

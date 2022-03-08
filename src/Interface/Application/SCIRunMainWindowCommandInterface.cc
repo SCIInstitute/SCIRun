@@ -305,18 +305,18 @@ void SCIRunMainWindow::addToolkit(const QString& filename, const QString& direct
       std::ostringstream net;
       XMLSerializer::save_xml(t2.second, net, "networkFile");
       networkAction->setProperty("network", QString::fromStdString(net.str()));
-      connect(networkAction, SIGNAL(triggered()), this, SLOT(openToolkitNetwork()));
+      connect(networkAction, &QAction::triggered, this, &SCIRunMainWindow::openToolkitNetwork);
     }
   }
 
   auto folder = menu->addAction("Open Toolkit Directory");
   folder->setProperty("path", directory);
-  connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
+  connect(folder, &QAction::triggered, this, &SCIRunMainWindow::openToolkitFolder);
 
   auto remove = menu->addAction("Remove Toolkit...");
   remove->setProperty("filename", filename);
   remove->setProperty("fullpath", fullpath);
-  connect(remove, SIGNAL(triggered()), this, SLOT(removeToolkit()));
+  connect(remove, &QAction::triggered, this, &SCIRunMainWindow::removeToolkit);
 
   if (!startup_)
   {

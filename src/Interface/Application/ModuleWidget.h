@@ -246,7 +246,7 @@ private Q_SLOTS:
   void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
-  void replaceModuleWith();
+  void replaceModule();
   void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
   void changeExecuteButtonToPlay();

@@ -760,23 +760,23 @@ void ViewSceneDialog::addControlLockButton()
 
   impl_->lockRotation_ = menu->addAction("Lock Rotation");
   impl_->lockRotation_->setCheckable(true);
-  connect(impl_->lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+  connect(impl_->lockRotation_, &QAction::triggered, this, &ViewSceneDialog::lockRotationToggled);
 
   impl_->lockPan_ = menu->addAction("Lock Panning");
   impl_->lockPan_->setCheckable(true);
-  connect(impl_->lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+  connect(impl_->lockPan_, &QAction::triggered, this, &ViewSceneDialog::lockPanningToggled);
 
   impl_->lockZoom_ = menu->addAction("Lock Zoom");
   impl_->lockZoom_->setCheckable(true);
-  connect(impl_->lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+  connect(impl_->lockZoom_, &QAction::triggered, this, &ViewSceneDialog::lockZoomToggled);
 
   menu->addSeparator();
 
   auto lockAll = menu->addAction("Lock All");
-  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
+  connect(lockAll, &QAction::triggered, this, &ViewSceneDialog::lockAllTriggered);
 
   auto unlockAll = menu->addAction("Unlock All");
-  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
+  connect(unlockAll, &QAction::triggered, this, &ViewSceneDialog::unlockAllTriggered);
 
   impl_->controlLock_->setMenu(menu);
 

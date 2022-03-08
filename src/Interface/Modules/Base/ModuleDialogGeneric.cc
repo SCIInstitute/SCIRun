@@ -190,7 +190,7 @@ void ModuleDialogGeneric::createExecuteAction()
   //TODO: doesn't work on Mac
   //executeAction_->setShortcut(QKeySequence("Ctrl+1"));
   executeAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
+  connect(executeAction_, &QAction::triggered, this, &ModuleDialogGeneric::executeActionTriggered);
 }
 
 void ModuleDialogGeneric::createExecuteDownstreamAction()
@@ -198,7 +198,7 @@ void ModuleDialogGeneric::createExecuteDownstreamAction()
   executeDownstreamAction_ = new QAction(this);
   executeDownstreamAction_->setText("Execute + downstream only");
   executeDownstreamAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
-  connect(executeDownstreamAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
+  connect(executeDownstreamAction_, &QAction::triggered, this, &ModuleDialogGeneric::executeActionTriggeredViaStateChange);
 }
 
 void ModuleDialogGeneric::createShrinkAction()
@@ -206,7 +206,7 @@ void ModuleDialogGeneric::createShrinkAction()
   shrinkAction_ = new QAction(this);
   shrinkAction_->setText("Collapse");
   //TODO: redo this slot to hook up to toggled() signal
-  connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+  connect(shrinkAction_, &QAction::triggered, this, &ModuleDialogGeneric::toggleCollapse);
 }
 
 void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()

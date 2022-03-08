@@ -361,6 +361,9 @@ namespace Gui {
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
+    void cut();
+    void copy();
+    void paste();
 #if 0
     void makeSubnetwork();
     void makeSubnetworkFromComponents(const QString& name,
@@ -390,9 +393,6 @@ namespace Gui {
     void newSubnetworkCopied(const QString& xml);
     void requestLoadNetwork(const QString& file);
   private Q_SLOTS:
-    void cut();
-    void copy();
-    void paste();
     void bringToFront();
     void sendToBack();
     void searchTextChanged(const QString& text);
