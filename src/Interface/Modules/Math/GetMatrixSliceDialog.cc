@@ -61,7 +61,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
   connect(lastIndexButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::selectLastIndex);
 
-  connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(indexSlider_, &QSlider::sliderReleased, this, &GetMatrixSliceDialog::executeFromStateChangeTriggered);
 
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(playButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::startPlay);

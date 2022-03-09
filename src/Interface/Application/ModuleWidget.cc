@@ -773,8 +773,8 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
   connect(port, &PortWidget::connectionDeleted, this, &ModuleWidget::connectionDeleted);
   connect(this, &ModuleWidget::cancelConnectionsInProgress, port, &PortWidget::cancelConnectionsInProgress);
   connect(this, &ModuleWidget::cancelConnectionsInProgress, port, &PortWidget::clearPotentialConnections);
-  connect(port, &PortWidget::connectNewModuleHere, this, &ModuleWidget::connectNewModule);
-  connect(port, &PortWidget::insertNewModuleHere, this, &ModuleWidget::insertNewModule);
+  connect(port, &PortWidget::connectNewModuleHere, this, &ModuleWidget::connectNewModuleTo);
+  connect(port, &PortWidget::insertNewModuleHere, this, &ModuleWidget::insertNewModuleTo);
   connect(port, &PortWidget::connectionNoteChanged, this, &ModuleWidget::noteChanged);
   connect(port, &PortWidget::highlighted, this, &ModuleWidget::updatePortSpacing);
 }
@@ -1354,12 +1354,12 @@ void ModuleWidget::duplicate()
   Q_EMIT duplicateModule(theModule_);
 }
 
-void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void ModuleWidget::connectNewModuleTo(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 
-void ModuleWidget::insertNewModule(const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
+void ModuleWidget::insertNewModuleTo(const PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info)
 {
   Q_EMIT insertNewModule(theModule_, portToConnect, info);
 }
