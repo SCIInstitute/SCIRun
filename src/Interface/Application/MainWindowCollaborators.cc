@@ -285,7 +285,7 @@ public:
     cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
     registerField("connectionChoice", connectionComboBox_);
     SCIRunMainWindow::Instance()->setConnectionPipelineType(0);
-    connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
+    connect(connectionComboBox_, &QComboBox::currentIndexChanged, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setConnectionPipelineType);
   }
 };
 
@@ -347,7 +347,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
 
   setStartId(Page_Home);
 
-  connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
+  connect(this, &PythonWizard::customButtonClicked, this, &PythonWizard::customClicked);
 }
 
 void PythonWizard::customClicked(int which) {
@@ -882,15 +882,15 @@ size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
 void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
 {
   // for any network editor
-  QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
-  QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
-  QObject::connect(mainWindow_, SIGNAL(defaultNoteSizeChanged(int)), editor, SIGNAL(defaultNoteSizeChanged(int)));
+  QObject::connect(editor, &NetworkEditor::modified, mainWindow_, &SCIRunMainWindow::networkModified);
+  QObject::connect(mainWindow_, &SCIRunMainWindow::defaultNotePositionChanged, editor, &NetworkEditor::defaultNotePositionChanged);
+  QObject::connect(mainWindow_, &SCIRunMainWindow::defaultNoteSizeChanged, editor, &NetworkEditor::defaultNoteSizeChanged);
 
   // for active network editor
   QObject::connect(mainWindow_->actionSelectAll_, &QAction::triggered, editor, &NetworkEditor::selectAll);
   QObject::connect(mainWindow_->actionDelete_, &QAction::triggered, editor, &NetworkEditor::del);
   QObject::connect(mainWindow_->actionCleanUpNetwork_, &QAction::triggered, editor, &NetworkEditor::cleanUpNetwork);
-  QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
+  QObject::connect(editor, &NetworkEditor::zoomLevelChanged, mainWindow_, &SCIRunMainWindow::showZoomStatusMessage);
   QObject::connect(mainWindow_->actionCut_, &QAction::triggered, editor, &NetworkEditor::cut);
   QObject::connect(mainWindow_->actionCopy_, &QAction::triggered, editor, &NetworkEditor::copy);
   QObject::connect(mainWindow_->actionPaste_, &QAction::triggered, editor, &NetworkEditor::paste);
@@ -1063,7 +1063,7 @@ void ToolkitDownloader::downloadIcon()
   if (!settings.contains(iconKey_))
   {
     iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
-    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+    connect(iconDownloader_, &FileDownloader::downloaded, this, &ToolkitDownloader::showMessageBox);
   }
   else
     showMessageBox();
@@ -1108,7 +1108,7 @@ void ToolkitDownloader::showMessageBox()
     {
       toolkitDir_.setPath(dir);
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
-      connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
+      connect(zipDownloader_, &FileDownloader::downloaded, this, &ToolkitDownloader::saveToolkit);
     }
   }
 }

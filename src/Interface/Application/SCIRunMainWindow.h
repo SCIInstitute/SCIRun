@@ -116,6 +116,7 @@ public Q_SLOTS:
   void setSaveBeforeExecute(int state);
   void reportIssue();
   void toolkitDownload();
+  void networkModified();
 protected:
   void closeEvent(QCloseEvent* event) override;
   void keyPressEvent(QKeyEvent *event) override;
@@ -254,7 +255,6 @@ private Q_SLOTS:
   void makePipesManhattan();
   void maxCoreValueChanged(int value);
   void modulesSnapToChanged();
-  void networkModified();
   void networkTimedOut();
   bool newNetwork();
   void openLogFolder();

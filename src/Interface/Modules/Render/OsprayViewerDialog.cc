@@ -68,7 +68,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   viewer_ = new QOSPRayWidget(parent, renderer_);
 
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+  connect(this, &OsprayViewerDialog::newGeometryValueForwarder, this, &OsprayViewerDialog::newGeometryValue);
 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));

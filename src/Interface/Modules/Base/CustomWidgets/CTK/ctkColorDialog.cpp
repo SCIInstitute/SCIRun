@@ -75,8 +75,8 @@ void ctkColorDialogPrivate::init()
   q->setSizeGripEnabled(true);
   q->layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
 
-  QObject::connect(q, SIGNAL(currentColorChanged(QColor)),
-                   q, SLOT(resetColorName()));
+  QObject::connect(q, &ctkColorDialog::currentColorChanged,
+                   q, &ctkColorDialog::resetColorName);
 }
 
 //------------------------------------------------------------------------------

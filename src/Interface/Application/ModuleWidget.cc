@@ -769,18 +769,14 @@ void ModuleWidget::updateProgrammablePorts()
 
 void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
 {
-  connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
-    this, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
-  connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
-    this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
-  connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
-  connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(clearPotentialConnections()));
-  connect(port, SIGNAL(connectNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
-    this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
-  connect(port, SIGNAL(insertNewModuleHere(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)),
-    this, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const QMap<QString, std::string>&)));
-  connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
-  connect(port, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
+  connect(port, &PortWidget::requestConnection, this, &ModuleWidget::requestConnection);
+  connect(port, &PortWidget::connectionDeleted, this, &ModuleWidget::connectionDeleted);
+  connect(this, &ModuleWidget::cancelConnectionsInProgress, port, &PortWidget::cancelConnectionsInProgress);
+  connect(this, &ModuleWidget::cancelConnectionsInProgress, port, &PortWidget::clearPotentialConnections);
+  connect(port, &PortWidget::connectNewModuleHere, this, &ModuleWidget::connectNewModule);
+  connect(port, &PortWidget::insertNewModuleHere, this, &ModuleWidget::insertNewModule);
+  connect(port, &PortWidget::connectionNoteChanged, this, &ModuleWidget::noteChanged);
+  connect(port, &PortWidget::highlighted, this, &ModuleWidget::updatePortSpacing);
 }
 
 void ModuleWidget::addOutputPortsToLayout(int index)
