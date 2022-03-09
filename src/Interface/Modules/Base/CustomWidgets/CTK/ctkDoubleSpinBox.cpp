@@ -197,8 +197,8 @@ void ctkDoubleSpinBoxPrivate::init()
   this->SpinBox->setInvertedControls(this->InvertedControls);
   // ctkQDoubleSpinBox needs to be first to receive textChanged() signals.
   QLineEdit* lineEdit = new QLineEdit(q);
-  QObject::connect(lineEdit, SIGNAL(textChanged(QString)),
-                   this, SLOT(editorTextChanged(QString)));
+  QObject::connect(lineEdit, &QLineEdit::textChanged,
+                   this, &ctkDoubleSpinBoxPrivate::editorTextChanged);
   this->SpinBox->setLineEdit(lineEdit);
   lineEdit->setObjectName(QLatin1String("qt_spinbox_lineedit"));
   this->InputValue = this->SpinBox->value();

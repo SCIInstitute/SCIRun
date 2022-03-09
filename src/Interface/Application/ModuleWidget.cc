@@ -944,6 +944,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
       [this]() { return closestPortFinder_; },
       PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
+    //TODO: later
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
     const auto newPortIndex = static_cast<int>(port->getIndex());
@@ -1032,7 +1033,7 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 
 ModuleWidget::~ModuleWidget()
 {
-  disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+  disconnect(this, &ModuleWidget::dynamicPortChanged, this, &ModuleWidget::updateDialogForDynamicPortChange);
 
   if (!theModule_->isStoppable())
   {

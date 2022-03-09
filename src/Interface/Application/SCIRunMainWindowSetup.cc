@@ -186,23 +186,23 @@ void SCIRunMainWindow::postConstructionSignalHookup()
 	connect(networkEditor_, &NetworkEditor::disableWidgetDisabling, &WidgetDisablingService::Instance(), &WidgetDisablingService::temporarilyDisableService);
   connect(networkEditor_, &NetworkEditor::reenableWidgetDisabling, &WidgetDisablingService::Instance(), &WidgetDisablingService::temporarilyEnableService);
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
+    networkEditor_, &NetworkEditor::removeModuleWidget);
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
-    commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    commandConverter_.get(), SLOT(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
-    commandConverter_.get(), SLOT(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)),
-    commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
-  connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
-    commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
-  connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
-  connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleAdded,
+    commandConverter_.get(), &GuiActionProvenanceConverter::moduleAdded);
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
+    commandConverter_.get(), &GuiActionProvenanceConverter::moduleRemoved);
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionAdded,
+    commandConverter_.get(), &GuiActionProvenanceConverter::connectionAdded);
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionRemoved,
+    commandConverter_.get(), &GuiActionProvenanceConverter::connectionRemoved);
+  connect(networkEditor_, &NetworkEditor::moduleMoved,
+    commandConverter_.get(), &GuiActionProvenanceConverter::moduleMoved);
+  connect(provenanceWindow_, &ProvenanceWindow::modifyingNetwork, commandConverter_.get(), &GuiActionProvenanceConverter::networkBeingModifiedByProvenanceManager);
+  connect(networkEditor_, &NetworkEditor::newModule, this, &SCIRunMainWindow::addModuleToWindowList);
+  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
+    this, &SCIRunMainWindow::removeModuleFromWindowList);
 
   for (const auto& t : toolkitFiles_)
   {
@@ -360,7 +360,7 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
   macroEditor_ = new MacroEditor(this);
   connect(actionMacroEditor_, &QAction::toggled, macroEditor_, &MacroEditor::setVisible);
   connect(macroEditor_, &MacroEditor::visibilityChanged, actionMacroEditor_, &QAction::setChecked);
-  connect(macroEditor_, SIGNAL(macroButtonChanged(int, const QString&)), this, SLOT(updateMacroButton(int, const QString&)));
+  connect(macroEditor_, &MacroEditor::macroButtonChanged, this, &SCIRunMainWindow::updateMacroButton);
   macroEditor_->hide();
 }
 
@@ -479,7 +479,7 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
 
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(handleCheckedModuleEntry(QTreeWidgetItem*, int)));
+  connect(moduleSelectorTreeWidget_, &QTreeWidget::itemChanged, this, &SCIRunMainWindow::handleCheckedModuleEntry);
 
   moduleSelectorTreeWidget_->setStyleSheet(
     "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"

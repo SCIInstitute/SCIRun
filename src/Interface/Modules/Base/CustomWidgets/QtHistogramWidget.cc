@@ -86,28 +86,14 @@ QtHistogramWidget::QtHistogramWidget( QWidget *parent,
   this->private_->histogram_graph_->setObjectName( QString::fromUtf8( "histogram_" ) );
   this->private_->ui_.histogramLayout->addWidget( this->private_->histogram_graph_ );
 
-  connect( this->private_->histogram_graph_, SIGNAL( lower_position( int ) ), this,
-    SLOT( handle_right_button_click( int ) ) );
+  connect( this->private_->histogram_graph_, &QtHistogramGraph::lower_position, this,
+    &QtHistogramWidget::handle_right_button_click);
 
-  connect( this->private_->histogram_graph_, SIGNAL( upper_position( int ) ), this,
-    SLOT( handle_left_button_click( int ) ) );
+  connect( this->private_->histogram_graph_, &QtHistogramGraph::upper_position, this,
+    &QtHistogramWidget::handle_left_button_click);
 
-  connect( this->private_->ui_.log_histogram_combo_, SIGNAL( currentIndexChanged ( int ) ),
-    this, SLOT( set_histogram_view( int ) ) );
-  //
-  //if( this->private_->upper_threshold_ != 0 )
-  //{
-  //  connect( this->private_->upper_threshold_, SIGNAL( valueAdjusted( double ) ),
-  //    this, SLOT( set_max( double ) ) );
-  //
-  //}
-  //
-  //if( this->private_->lower_threshold_ != 0 )
-  //{
-  //  connect( this->private_->lower_threshold_, SIGNAL( valueAdjusted( double ) ),
-  //    this, SLOT( set_min( double ) ) );
-  //}
-
+  connect( this->private_->ui_.log_histogram_combo_, &QComboBox::currentIndexChanged,
+    this, &QtHistogramWidget::set_histogram_view);
 
   this->private_->min_bar_ = new QWidget( this );
   this->private_->max_bar_ = new QWidget( this );
