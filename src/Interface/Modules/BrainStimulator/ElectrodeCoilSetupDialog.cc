@@ -66,7 +66,7 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   addCheckBoxManager(PutElectrodesOnScalpCheckBox_, Parameters::PutElectrodesOnScalpCheckBox);
   addCheckBoxManager(InterpolateElectrodeShapeCheckbox_, Parameters::InterpolateElectrodeShapeCheckbox);
   addDoubleSpinBoxManager(electrodethicknessSpinBox_, Parameters::ElectrodethicknessSpinBox);
-  connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
+  connect(electrode_coil_tableWidget, &QTableWidget::cellChanged, this, &ElectrodeCoilSetupDialog::validateCell);
   connect(AllInputsTDCS_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateStimTypeColumn);
   connect(invertNormalsCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateInvertNormals);
   connect(ProtoTypeInputCheckbox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly);
@@ -287,8 +287,8 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
   electrode_coil_tableWidget->setCellWidget(i,1,StimType);
   inputPortsVector_.push_back(InputPorts);
   stimTypeVector_.push_back(StimType);
-  connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
-  connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
+  connect(InputPorts, &QComboBox::currentIndexChanged, this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
+  connect(StimType, &QComboBox::currentIndexChanged, this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
 }
 
 void ElectrodeCoilSetupDialog::pushComboBoxChange(int)

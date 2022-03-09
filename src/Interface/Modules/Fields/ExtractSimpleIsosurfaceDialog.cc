@@ -51,7 +51,7 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addDoubleSpinBoxManager(manualMaxDoubleSpinBox_, Parameters::ManualMaximumIsovalue);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
-  connect(singleHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderChanged()));
+  connect(singleHorizontalSlider_, &QSlider::sliderReleased, this, &ExtractSimpleIsosurfaceDialog::sliderChanged);
 }
 
 void ExtractSimpleIsosurfaceDialog::sliderChanged()

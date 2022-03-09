@@ -44,8 +44,8 @@ ImportMatricesFromMatlabDialog::ImportMatricesFromMatlabDialog(const std::string
 
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
   connect(openFileButton_, &QPushButton::clicked, this, &ImportMatricesFromMatlabDialog::openFile);
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
-  connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ImportMatricesFromMatlabDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ImportMatricesFromMatlabDialog::pushFileNameToState);
+  connect(portListWidget_, &QListWidget::currentRowChanged, this, &ImportMatricesFromMatlabDialog::portItemClicked);
+  connect(matlabObjectListWidget_, &QListWidget::currentRowChanged, this, &ImportMatricesFromMatlabDialog::matlabItemClicked);
 }

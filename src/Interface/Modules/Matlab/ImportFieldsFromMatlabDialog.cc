@@ -50,10 +50,10 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
 
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
   connect(openFileButton_, &QPushButton::clicked, this, &ImportFieldsFromMatlabDialog::openFile);
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
-  connect(matlabObjectListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(matlabItemClicked(int)));
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ImportFieldsFromMatlabDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ImportFieldsFromMatlabDialog::pushFileNameToState);
+  connect(portListWidget_, &QListWidget::currentRowChanged, this, &ImportFieldsFromMatlabDialog::portItemClicked);
+  connect(matlabObjectListWidget_, &QListWidget::currentRowChanged, this, &ImportFieldsFromMatlabDialog::matlabItemClicked);
 }
 
 ImportObjectsFromMatlabDialogBase::ImportObjectsFromMatlabDialogBase(ModuleStateHandle state, QWidget* parent) :

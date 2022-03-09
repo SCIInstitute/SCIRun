@@ -49,8 +49,8 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
   fixSize();
 
   connect(openFileButton_, &QPushButton::clicked, this, &ReadFieldDialog::openFile);
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ReadFieldDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ReadFieldDialog::pushFileNameToState);
   WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(openFileButton_, Variables::FileTypeName.name());

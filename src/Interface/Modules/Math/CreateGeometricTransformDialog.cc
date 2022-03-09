@@ -88,7 +88,7 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   addCheckBoxManager(resizeSeparablyCheckBox_, Parameters::ResizeSeparably);
   addCheckBoxManager(ignoreChangesCheckBox_, Parameters::IgnoreChanges);
 
-  connect(transformTabWidget_, SIGNAL(currentChanged(int)), this, SLOT(changeTransformType(int)));
+  connect(transformTabWidget_, &QTabWidget::currentChanged, this, &CreateGeometricTransformDialog::changeTransformType);
   connect(resetPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetValues);
   connect(resetFieldMapPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetFieldMap);
   connect(resetWidgetPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetWidget);
@@ -102,7 +102,7 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   connect(flipZPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::flipZ);
   connect(applyTransformPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::applyTransform);
   connect(compositeTransformPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::compositeTransform);
-  connect(logCalculatorLineEdit_, SIGNAL(textEdited(const QString&)), this, SLOT(calculateLog(const QString&)));
+  connect(logCalculatorLineEdit_, &QLineEdit::textEdited, this, &CreateGeometricTransformDialog::calculateLog);
 }
 
 void CreateGeometricTransformDialog::pullSpecial()
