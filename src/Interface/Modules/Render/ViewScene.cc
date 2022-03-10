@@ -389,10 +389,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   format.setVersion(2, 1);
   impl_->mGLWidget->setFormat(format);
 
-  connect(impl_->mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
-  connect(impl_->mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
-  connect(this, SIGNAL(mousePressSignalForGeometryObjectFeedback(int, int, const std::string&)),
-          this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
+  connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
+  connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
+  connect(this, &ViewSceneDialog::mousePressSignalForGeometryObjectFeedback,
+          this, &ViewSceneDialog::sendGeometryFeedbackToState);
 
   impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
 
@@ -420,16 +420,16 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometriesAndSendScreenShot()));
+  connect(this, &ViewSceneDialog::newGeometryValueForwarder, this, &ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot);
 
   state->connectSpecificStateChanged(Parameters::CameraRotation,[this](){Q_EMIT cameraRotationChangeForwarder();});
-  connect(this, SIGNAL(cameraRotationChangeForwarder()), this, SLOT(pullCameraRotation()));
+  connect(this, &ViewSceneDialog::cameraRotationChangeForwarder, this, &ViewSceneDialog::pullCameraRotation);
 
   state->connectSpecificStateChanged(Parameters::CameraLookAt,[this](){Q_EMIT cameraLookAtChangeForwarder();});
-  connect(this, SIGNAL(cameraLookAtChangeForwarder()), this, SLOT(pullCameraLookAt()));
+  connect(this, &ViewSceneDialog::cameraLookAtChangeForwarder, this, &ViewSceneDialog::pullCameraLookAt);
 
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
-  connect(this, SIGNAL(cameraDistanceChangeForwarder()), this, SLOT(pullCameraDistance()));
+  connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
   lockMutex();
 
@@ -439,7 +439,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
 
   impl_->resizeTimer_.setSingleShot(true);
-  connect(&impl_->resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
+  connect(&impl_->resizeTimer_, &QTimer::timeout, this, &ViewSceneDialog::resizingDone);
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -674,7 +674,7 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_->setToolTip("Auto View");
   impl_->autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   impl_->autoViewButton_->setShortcut(Qt::Key_0);
-  connect(impl_->autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  connect(impl_->autoViewButton_, &QPushButton::clicked, this, &ViewSceneDialog::autoViewClicked);
   addToolbarButton(impl_->autoViewButton_, 1);
 }
 
@@ -684,7 +684,7 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setToolTip("Take Screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
-  connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
+  connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::screenshotClicked);
   addToolbarButton(screenshotButton, 1);
 }
 

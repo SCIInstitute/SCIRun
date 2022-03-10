@@ -89,9 +89,9 @@ void ModuleLogWindow::popupMessageBox(const QString& message)
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name().toStdString())
 {
-  connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
-  connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
-  connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
+  connect(this, &ModuleLogger::logSignal, window, &ModuleLogWindow::appendMessage);
+  connect(this, &ModuleLogger::alert, window, &ModuleLogWindow::messageReceived);
+  connect(this, &ModuleLogger::popup, window, &ModuleLogWindow::popupMessageBox);
 }
 
 ModuleLogger::~ModuleLogger()

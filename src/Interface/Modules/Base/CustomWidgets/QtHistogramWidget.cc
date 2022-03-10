@@ -279,20 +279,6 @@ void QtHistogramWidget::mouseMoveEvent( QMouseEvent* e )
 {
   this->private_->histogram_graph_->mouseMoveEvent( e );
 }
-//
-//void QtHistogramWidget::set_thresholds( QtSliderDoubleCombo* upper_threshold, QtSliderDoubleCombo* lower_threshold )
-//{
-//  this->private_->upper_threshold_ = upper_threshold;
-//  this->private_->lower_threshold_ = lower_threshold;
-//  this->private_->threshold_bars_enabled_ = true;
-//  this->set_bar_visibility();
-//
-//  connect( this->private_->upper_threshold_, SIGNAL( valueAdjusted( double ) ),
-//    this, SLOT( set_max( double ) ) );
-//
-//  connect( this->private_->lower_threshold_, SIGNAL( valueAdjusted( double ) ),
-//    this, SLOT( set_min( double ) ) );
-//}
 
 void QtHistogramWidget::resizeEvent( QResizeEvent* event )
 {

@@ -73,7 +73,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   connect(shiftSlider_, &QSlider::valueChanged, this, &CreateStandardColorMapDialog::setShiftSpinner);
   connect(resolutionSlider_, &QSlider::valueChanged, resolutionSpin_, &QSpinBox::setValue);
-  connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
+  connect(invertCheck_, &QCheckBox::toggled, this, &CreateStandardColorMapDialog::onInvertCheck);
 
   addRadioButtonGroupManager({predefinedColorMapRadioButton_, customColorMapRadioButton_}, Parameters::ColorMapOption);
 
@@ -93,7 +93,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
     qDebug() << "NO RAINBOW!";
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
-  connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview()));
+  connect(colorMapNameComboBox_, &QComboBox::currentIndexChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
   connect(predefinedColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
   connect(customColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 

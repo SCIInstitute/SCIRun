@@ -456,9 +456,6 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, &ModuleWidget::replaceModuleWith, this, &NetworkEditor::replaceModuleWith);
   connect(module, &ModuleWidget::disableWidgetDisabling, this, &NetworkEditor::disableWidgetDisabling);
   connect(module, &ModuleWidget::reenableWidgetDisabling, this, &NetworkEditor::reenableWidgetDisabling);
-  //connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(showSubnetChild(const QString&)));
-  //disable for IBBM
-  //connect(module, SIGNAL(showUIrequested(ModuleDialogGeneric*)), ctorParams_.dockManager_, SLOT(requestShow(ModuleDialogGeneric*)));
 
   if (module->hasDynamicPorts())
   {

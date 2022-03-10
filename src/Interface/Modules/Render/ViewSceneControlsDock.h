@@ -71,11 +71,11 @@ namespace SCIRun {
       void clear();
       void selectAllClicked();
       void deselectAllClicked();
+      void updateVisible(QTreeWidgetItem* item, int column);
     Q_SIGNALS:
       void visibleItemChange();
       void meshComponentSelectionChange(const QString& moduleId, const QString& component, bool selected);
     private Q_SLOTS:
-      void updateVisible(QTreeWidgetItem* item, int column);
       void updateState();
     private:
       void addRenderItem(const QString& name);

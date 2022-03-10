@@ -61,7 +61,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
     LOG_TRACE(("ModuleDialogGeneric connecting to state"));
     stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
-  connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
+  connect(this, &ModuleDialogGeneric::pullSignal, this, &ModuleDialogGeneric::pull);
   createExecuteAction();
   createExecuteDownstreamAction();
   createShrinkAction();
@@ -89,7 +89,7 @@ void ModuleDialogGeneric::setupButtonBar()
   dock_->setTitleBarWidget(buttonBox_);
   if (executeInteractivelyToggleAction_)
   {
-    connect(buttonBox_->executeInteractivelyCheckBox_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+    connect(buttonBox_->executeInteractivelyCheckBox_, &QCheckBox::toggled, this, &ModuleDialogGeneric::executeInteractivelyToggled);
     buttonBox_->executeInteractivelyCheckBox_->setChecked(executeInteractivelyToggleAction_->isChecked());
   }
   else
@@ -99,7 +99,7 @@ void ModuleDialogGeneric::setupButtonBar()
 
   if (forceAlwaysExecuteToggleAction_)
   {
-    connect(buttonBox_->forceAlwaysExecuteCheckBox_, SIGNAL(toggled(bool)), this, SLOT(forceAlwaysExecuteToggled(bool)));
+    connect(buttonBox_->forceAlwaysExecuteCheckBox_, &QCheckBox::toggled, this, &ModuleDialogGeneric::forceAlwaysExecuteToggled);
     buttonBox_->forceAlwaysExecuteCheckBox_->setChecked(forceAlwaysExecuteToggleAction_->isChecked());
   }
   else
@@ -127,7 +127,7 @@ void ModuleDialogGeneric::connectButtonsToExecuteSignal(std::initializer_list<QA
 
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
-  connect(box, SIGNAL(activated(const QString&)), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(box, &QComboBox::textActivated, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
@@ -215,7 +215,7 @@ void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
   executeInteractivelyToggleAction_->setText("Execute Interactively");
   executeInteractivelyToggleAction_->setCheckable(true);
   executeInteractivelyToggleAction_->setChecked(true);
-  connect(executeInteractivelyToggleAction_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+  connect(executeInteractivelyToggleAction_, &QAction::toggled, this, &ModuleDialogGeneric::executeInteractivelyToggled);
 }
 
 void ModuleDialogGeneric::createForceAlwaysExecuteToggleAction()
@@ -224,7 +224,7 @@ void ModuleDialogGeneric::createForceAlwaysExecuteToggleAction()
   forceAlwaysExecuteToggleAction_->setText("Execute Always");
   forceAlwaysExecuteToggleAction_->setCheckable(true);
   forceAlwaysExecuteToggleAction_->setChecked(false);
-  connect(forceAlwaysExecuteToggleAction_, SIGNAL(toggled(bool)), this, SLOT(forceAlwaysExecuteToggled(bool)));
+  connect(forceAlwaysExecuteToggleAction_, &QAction::toggled, this, &ModuleDialogGeneric::forceAlwaysExecuteToggled);
 }
 
 void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
@@ -247,12 +247,12 @@ void ModuleDialogGeneric::forceAlwaysExecuteToggled(bool toggle)
 
 void ModuleDialogGeneric::connectStateChangeToExecute()
 {
-  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
+  connect(this, &ModuleDialogGeneric::executeFromStateChangeTriggered, this, &ModuleDialogGeneric::executeActionTriggeredViaStateChange);
 }
 
 void ModuleDialogGeneric::disconnectStateChangeToExecute()
 {
-  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
+  disconnect(this, &ModuleDialogGeneric::executeFromStateChangeTriggered, this, &ModuleDialogGeneric::executeActionTriggeredViaStateChange);
 }
 
 void ModuleDialogGeneric::toggleCollapse()
@@ -397,7 +397,7 @@ public:
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
     WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_({})
   {
-    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
+    connect(comboBox, &QComboBox::currentIndexChanged, this, &ComboBoxSlotManager::push);
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     StringPairs stringPairs) :
@@ -414,7 +414,7 @@ public:
         comboBox->addItem(QString::fromStdString(choice));
       }
     }
-    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
+    connect(comboBox, &QComboBox::currentIndexChanged, this, &ComboBoxSlotManager::push);
   }
   void pull() override
   {
@@ -474,7 +474,7 @@ public:
   TwoChoiceBooleanComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
     WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox)
   {
-    connect(comboBox, SIGNAL(activated(int)), this, SLOT(push()));
+    connect(comboBox, &QComboBox::activated, this, &ComboBoxSlotManager::push);
   }
   void pull() override
   {
@@ -511,7 +511,7 @@ public:
   TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) :
     WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
   {
-    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+    connect(textEdit, &QTextEdit::textChanged, this, &TextEditSlotManager::push);
   }
   void pull() override
   {
@@ -543,7 +543,7 @@ public:
   PlainTextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QPlainTextEdit* textEdit) :
     WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
   {
-    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+    connect(textEdit, &QPlainTextEdit::textChanged, this, &PlainTextEditSlotManager::push);
   }
   void pull() override
   {
@@ -575,7 +575,7 @@ public:
   LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
     WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
   {
-    connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+    connect(lineEdit_, &QLineEdit::textChanged, this, &LineEditSlotManager::push);
   }
   void pull() override
   {
@@ -607,7 +607,7 @@ public:
   TabSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTabWidget* tabWidget) :
     WidgetSlotManager(state, dialog, tabWidget, stateKey), stateKey_(stateKey), tabWidget_(tabWidget)
   {
-    connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(push()));
+    connect(tabWidget_, &QTabWidget::currentChanged, this, &TabSlotManager::push);
   }
   void pull() override
   {
@@ -645,27 +645,27 @@ class DoubleLineEditSlotManager final : public WidgetSlotManager
 public:
   DoubleLineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
     WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
-      {
-        connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
-        lineEdit_->setValidator(new QDoubleValidator(lineEdit_));
-      }
-      void pull() override
-      {
-        const auto newValue = QString::number(state_->getValue(stateKey_).toDouble());
-        if (newValue != lineEdit_->text())
-        {
-          lineEdit_->setText(newValue);
-          LOG_TRACE("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
-        }
-      }
-      void pushImpl() override
-      {
-        LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
-        bool ok;
-        auto value = lineEdit_->text().toDouble(&ok);
-        if (ok)
-          state_->setValue(stateKey_, value);
-      }
+  {
+    connect(lineEdit_, &QLineEdit::textChanged, this, &DoubleLineEditSlotManager::push);
+    lineEdit_->setValidator(new QDoubleValidator(lineEdit_));
+  }
+  void pull() override
+  {
+    const auto newValue = QString::number(state_->getValue(stateKey_).toDouble());
+    if (newValue != lineEdit_->text())
+    {
+      lineEdit_->setText(newValue);
+      LOG_TRACE("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
+    }
+  }
+  void pushImpl() override
+  {
+    LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
+    bool ok;
+    auto value = lineEdit_->text().toDouble(&ok);
+    if (ok)
+      state_->setValue(stateKey_, value);
+  }
 private:
   AlgorithmParameterName stateKey_;
   QLineEdit* lineEdit_;

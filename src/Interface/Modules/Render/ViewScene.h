@@ -95,6 +95,8 @@ namespace SCIRun {
       void sendBugReport();
       void adjustZoomSpeed(int value);
       void saveNewGeometryChanged(int state);
+      void invertZoomClicked(bool value);
+      void menuMouseControlChanged(int index);
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
@@ -110,8 +112,6 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void menuMouseControlChanged(int index);
-      void invertZoomClicked(bool value);
       void lockRotationToggled();
       void lockPanningToggled();
       void lockZoomToggled();
