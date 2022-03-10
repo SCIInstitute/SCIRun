@@ -439,7 +439,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
       }
       else
       {
-        warning("there is a empty field");
+        warning("Empty field at node index " + std::to_string(p));
       }
     }
   }
@@ -751,7 +751,8 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
         imesh1 = fhandle1->vmesh();
         nnodes1 = imesh1->num_nodes();
 
-        for (int q = 0; q < nnodes1; q++) {
+        for (int q = 0; q < nnodes1; q++)
+        {
           i1 = q;
           outField1->set_value(max_area * (1.2), i1);
         }
@@ -773,7 +774,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
       }
       else
       {
-        warning("there is a empty field");
+        warning("Empty field at node index " + std::to_string(p));
       }
     }
   }

@@ -45,7 +45,7 @@ CalculateBundleDifference::CalculateBundleDifference()
   INITIALIZE_PORT(bundle2);
   INITIALIZE_PORT(seed);
   INITIALIZE_PORT(bundleOut1);
-  INITIALIZE_PORT(bundleOut1);
+  INITIALIZE_PORT(bundleOut2);
 }
 
 void CalculateBundleDifference::setStateDefaults()
