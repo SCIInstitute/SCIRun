@@ -78,7 +78,7 @@
 									<name>Filename</name>
 									<value object_id="_3">
 										<which>2</which>
-										<value>/Users/dan/Downloads/bundle_data/input1.bdl</value>
+										<value>%SCIRUNDATADIR%/Other/input1.bdl</value>
 									</value>
 								</second>
 							</item>
@@ -154,7 +154,7 @@
 									<name>Filename</name>
 									<value object_id="_8">
 										<which>2</which>
-										<value>/Users/dan/Downloads/bundle_data/input2.bdl</value>
+										<value>%SCIRUNDATADIR%/Other/input2.bdl</value>
 									</value>
 								</second>
 							</item>
@@ -230,7 +230,7 @@
 									<name>Filename</name>
 									<value object_id="_13">
 										<which>2</which>
-										<value>/Users/dan/Downloads/bundle_data/input3.bdl</value>
+										<value>%SCIRUNDATADIR%/Other/input3.bdl</value>
 									</value>
 								</second>
 							</item>
