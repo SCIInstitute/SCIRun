@@ -70,12 +70,12 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   connect(AllInputsTDCS_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateStimTypeColumn);
   connect(invertNormalsCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateInvertNormals);
   connect(ProtoTypeInputCheckbox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly);
-  connect(ProtoTypeInputComboBox_, &QComboBox::currentIndexChanged, this, &ElectrodeCoilSetupDialog::updatePrototypeColumnValues);
+  connect(ProtoTypeInputComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), this, &ElectrodeCoilSetupDialog::updatePrototypeColumnValues);
 
   connect(PutElectrodesOnScalpCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
   connect(electrodethicknessCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
 
-  connect(electrodethicknessSpinBox_, &QDoubleSpinBox::valueChanged, this, &ElectrodeCoilSetupDialog::updateThicknessColumnValues);
+  connect(electrodethicknessSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ElectrodeCoilSetupDialog::updateThicknessColumnValues);
 }
 
 void ElectrodeCoilSetupDialog::updateInvertNormals()
@@ -287,8 +287,8 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
   electrode_coil_tableWidget->setCellWidget(i,1,StimType);
   inputPortsVector_.push_back(InputPorts);
   stimTypeVector_.push_back(StimType);
-  connect(InputPorts, &QComboBox::currentIndexChanged, this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
-  connect(StimType, &QComboBox::currentIndexChanged, this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
+  connect(InputPorts, qOverload<int>(&QComboBox::currentIndexChanged), this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
+  connect(StimType, qOverload<int>(&QComboBox::currentIndexChanged), this, &ElectrodeCoilSetupDialog::pushComboBoxChange);
 }
 
 void ElectrodeCoilSetupDialog::pushComboBoxChange(int)

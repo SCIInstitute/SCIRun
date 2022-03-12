@@ -85,7 +85,7 @@ QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
     bcBox->setCurrentIndex(0);
   }
 
-  connect(bcBox, &QComboBox::currentIndexChanged, this, &ExportFieldsToMatlabDialog::pushArrayType);
+  connect(bcBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ExportFieldsToMatlabDialog::pushArrayType);
   return bcBox;
 }
 

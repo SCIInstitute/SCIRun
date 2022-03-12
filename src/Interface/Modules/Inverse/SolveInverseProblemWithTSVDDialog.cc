@@ -60,10 +60,10 @@ SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::
     {"L-curve", "lcurve"}});
 
   connect(lambdaSlider_, &QSlider::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSpinBoxValue);
-  connect(lambdaSliderDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSliderValue);
-  connect(lambdaMinDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSliderMin);
-  connect(lambdaMaxDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSliderMax);
-  connect(lambdaResolutionDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTSVDDialog::setSliderStep);
+  connect(lambdaSliderDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTSVDDialog::setSliderValue);
+  connect(lambdaMinDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTSVDDialog::setSliderMin);
+  connect(lambdaMaxDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTSVDDialog::setSliderMax);
+  connect(lambdaResolutionDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTSVDDialog::setSliderStep);
 
   WidgetStyleMixin::tabStyle(tabWidget);
 }

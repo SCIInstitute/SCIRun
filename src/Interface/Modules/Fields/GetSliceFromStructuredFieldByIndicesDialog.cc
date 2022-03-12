@@ -53,9 +53,9 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   connect(iAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
   connect(jAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
   connect(kAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
-  connect(iAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
-  connect(jAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
-  connect(kAxisSpinBox_, &QSpinBox::valueChanged, this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(iAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(jAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(kAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
   connect(iAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
   connect(jAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
   connect(kAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);

@@ -137,7 +137,7 @@ void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 
 void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QSpinBox* box)
 {
-  connect(box, &QSpinBox::valueChanged, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
+  connect(box, qOverload<int>(&QSpinBox::valueChanged), this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
@@ -147,7 +147,7 @@ void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QSpinBox* box)
 
 void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QDoubleSpinBox* box)
 {
-  connect(box, &QDoubleSpinBox::valueChanged, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
+  connect(box, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
@@ -397,7 +397,7 @@ public:
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
     WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_({})
   {
-    connect(comboBox, &QComboBox::currentIndexChanged, this, &ComboBoxSlotManager::push);
+    connect(comboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ComboBoxSlotManager::push);
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     StringPairs stringPairs) :
@@ -414,7 +414,7 @@ public:
         comboBox->addItem(QString::fromStdString(choice));
       }
     }
-    connect(comboBox, &QComboBox::currentIndexChanged, this, &ComboBoxSlotManager::push);
+    connect(comboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ComboBoxSlotManager::push);
   }
   void pull() override
   {
@@ -474,7 +474,7 @@ public:
   TwoChoiceBooleanComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
     WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox)
   {
-    connect(comboBox, &QComboBox::activated, this, &ComboBoxSlotManager::push);
+    connect(comboBox, qOverload<int>(&QComboBox::activated), this, &ComboBoxSlotManager::push);
   }
   void pull() override
   {
@@ -682,7 +682,7 @@ public:
   SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) :
     WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
-    connect(spinBox_, &QSpinBox::valueChanged, this, &SpinBoxSlotManager::push);
+    connect(spinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &SpinBoxSlotManager::push);
   }
   void pull() override
   {
@@ -714,7 +714,7 @@ public:
   DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) :
     WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
-    connect(spinBox_, &QDoubleSpinBox::valueChanged, this, &DoubleSpinBoxSlotManager::push);
+    connect(spinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &DoubleSpinBoxSlotManager::push);
   }
   void pull() override
   {

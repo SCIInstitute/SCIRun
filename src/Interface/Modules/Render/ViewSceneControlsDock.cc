@@ -495,7 +495,7 @@ AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent
   connect(rotateLeftButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateLeft);
   connect(rotateUpButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateUp);
   connect(rotateDownButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateDown);
-  connect(autoRotateSpeedSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setAutoRotateSpeed);
+  connect(autoRotateSpeedSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setAutoRotateSpeed);
 }
 
 ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
@@ -509,10 +509,10 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(ambientDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setAmbientValue);
-  connect(diffuseDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setDiffuseValue);
-  connect(specularDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setSpecularValue);
-  connect(shininessDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setShininessValue);
+  connect(ambientDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setAmbientValue);
+  connect(diffuseDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setDiffuseValue);
+  connect(specularDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setSpecularValue);
+  connect(shininessDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setShininessValue);
 }
 
 FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
@@ -520,8 +520,8 @@ FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
 {
   setupUi(this);
 
-  connect(fogStartDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setFogStartValue);
-  connect(fogEndDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setFogEndValue);
+  connect(fogStartDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setFogStartValue);
+  connect(fogEndDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setFogEndValue);
   connect(fogGroupBox_, &QGroupBox::clicked, parent, &ViewSceneDialog::setFogOn);
   connect(this, &FogControls::setFogTo, parent, &ViewSceneDialog::setFogOn);
   connect(fogUseBGColorCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::setFogUseBGColor);
@@ -595,11 +595,11 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
     [parent, this](bool b) { parent->setScaleBarVisible(b); updateToolbarButton(buttonOutlineColor); }
     );
   linkedCheckable_ = [this]() { return showScaleBarTextGroupBox_->isChecked(); };
-  connect(fontSizeSpinBox_, &QSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarFontSize);
-  connect(scaleBarLengthDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarLength);
-  connect(scaleBarHeightDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarHeight);
-  connect(numTicksSpinBox_, &QSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarNumTicks);
-  connect(scaleBarMultiplierDoubleSpinBox_, &QDoubleSpinBox::valueChanged, parent, &ViewSceneDialog::setScaleBarMultiplier);
+  connect(fontSizeSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarFontSize);
+  connect(scaleBarLengthDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarLength);
+  connect(scaleBarHeightDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarHeight);
+  connect(numTicksSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarNumTicks);
+  connect(scaleBarMultiplierDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarMultiplier);
   connect(scaleBarUnitLineEdit_, &QLineEdit::textEdited, parent, &ViewSceneDialog::setScaleBarUnitValue);
 }
 
@@ -656,7 +656,7 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
   updateZoomOptionVisibility();
 
   connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
-  connect(mouseControlComboBox_, &QComboBox::currentIndexChanged, parent, &ViewSceneDialog::menuMouseControlChanged);
+  connect(mouseControlComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), parent, &ViewSceneDialog::menuMouseControlChanged);
   connect(invertZoomCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::invertZoomClicked);
   connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);
 }

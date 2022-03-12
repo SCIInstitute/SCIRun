@@ -42,7 +42,7 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   connect(chooseColorButton_, &QPushButton::clicked, this, &NoteEditor::changeTextColor);
   connect(resetColorButton_, &QPushButton::clicked, this, &NoteEditor::resetTextColor);
   if (positionAdjustable)
-    connect(positionComboBox_, &QComboBox::activated, this, &NoteEditor::changeNotePosition);
+    connect(positionComboBox_, qOverload<int>(&QComboBox::activated), this, &NoteEditor::changeNotePosition);
   else
   {
     positionComboBox_->setVisible(false);

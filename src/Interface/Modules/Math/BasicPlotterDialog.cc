@@ -70,7 +70,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	connect(exportPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::exportPlot);
 	connect(dataColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignDataColor);
   connect(backgroundColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignBackgroundColor);
-  connect(dataSeriesComboBox_, &QComboBox::activated, this, &BasicPlotterDialog::switchDataSeries);
+  connect(dataSeriesComboBox_, qOverload<int>(&QComboBox::activated), this, &BasicPlotterDialog::switchDataSeries);
   connect(dataLineEdit_, &QLineEdit::textChanged, this, &BasicPlotterDialog::assignDataLabel);
   dataSeriesComboBox_->setDisabled(true);
 

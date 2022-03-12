@@ -66,10 +66,10 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   colorMapNameComboBox_->addItem(QString::fromStdString("Custom"));
 
-  connect(shiftSpin_, &QDoubleSpinBox::valueChanged, this, &CreateStandardColorMapDialog::setShiftSlider);
-  connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::setResolutionSlider);
-  connect(shiftSpin_, &QDoubleSpinBox::valueChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
-  connect(resolutionSpin_, &QSpinBox::valueChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(shiftSpin_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &CreateStandardColorMapDialog::setShiftSlider);
+  connect(resolutionSpin_, qOverload<int>(&QSpinBox::valueChanged), this, &CreateStandardColorMapDialog::setResolutionSlider);
+  connect(shiftSpin_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(resolutionSpin_, qOverload<int>(&QSpinBox::valueChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
   connect(shiftSlider_, &QSlider::valueChanged, this, &CreateStandardColorMapDialog::setShiftSpinner);
   connect(resolutionSlider_, &QSlider::valueChanged, resolutionSpin_, &QSpinBox::setValue);
@@ -93,7 +93,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
     qDebug() << "NO RAINBOW!";
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
-  connect(colorMapNameComboBox_, &QComboBox::currentIndexChanged, this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(colorMapNameComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
   connect(predefinedColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
   connect(customColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 

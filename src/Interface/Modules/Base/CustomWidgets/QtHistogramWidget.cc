@@ -92,7 +92,7 @@ QtHistogramWidget::QtHistogramWidget( QWidget *parent,
   connect( this->private_->histogram_graph_, &QtHistogramGraph::upper_position, this,
     &QtHistogramWidget::handle_left_button_click);
 
-  connect( this->private_->ui_.log_histogram_combo_, &QComboBox::currentIndexChanged,
+  connect( this->private_->ui_.log_histogram_combo_, qOverload<int>(&QComboBox::currentIndexChanged),
     this, &QtHistogramWidget::set_histogram_view);
 
   this->private_->min_bar_ = new QWidget( this );

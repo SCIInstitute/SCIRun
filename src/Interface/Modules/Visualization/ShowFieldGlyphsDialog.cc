@@ -236,7 +236,7 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
   addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowFieldGlyphs::SuperquadricEmphasis);
   connect(this->superquadricEmphasisSlider_, &QSlider::valueChanged, this, &ShowFieldGlyphsDialog::emphasisSliderChanged);
-  connect(this->superquadricEmphasisDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &ShowFieldGlyphsDialog::emphasisSpinBoxChanged);
+  connect(this->superquadricEmphasisDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ShowFieldGlyphsDialog::emphasisSpinBoxChanged);
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);

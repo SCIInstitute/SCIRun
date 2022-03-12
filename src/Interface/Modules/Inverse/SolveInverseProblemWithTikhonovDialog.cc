@@ -73,10 +73,10 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
     {"L-curve", "lcurve"}});
 
   connect(lambdaSlider_, &QSlider::valueChanged, this, &SolveInverseProblemWithTikhonovDialog::setSpinBoxValue);
-  connect(lambdaSliderDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovDialog::setSliderValue);
-  connect(lambdaMinDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovDialog::setSliderMin);
-  connect(lambdaMaxDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovDialog::setSliderMax);
-  connect(lambdaResolutionDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &SolveInverseProblemWithTikhonovDialog::setSliderStep);
+  connect(lambdaSliderDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTikhonovDialog::setSliderValue);
+  connect(lambdaMinDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTikhonovDialog::setSliderMin);
+  connect(lambdaMaxDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTikhonovDialog::setSliderMax);
+  connect(lambdaResolutionDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SolveInverseProblemWithTikhonovDialog::setSliderStep);
 
   WidgetStyleMixin::tabStyle(tabWidget);
 }
