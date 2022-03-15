@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "WriteBundle",
+    "namespace": "DataIO",
+    "status": "Ported module",
+    "description": "...",
+    "header": "Modules/DataIO/WriteBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "WriteBundleDialog",
+    "header": "Interface/Modules/DataIO/WriteBundleDialog.h"
+  }
+}

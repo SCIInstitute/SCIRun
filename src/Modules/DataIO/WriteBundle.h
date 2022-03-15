@@ -42,15 +42,15 @@ namespace SCIRun {
         typedef GenericWriter<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
         WriteBundle();
         void execute() override;
-        //bool useCustomExporter(const std::string& filename) const override;
-        //bool call_exporter(const std::string& filename) override;
+        bool useCustomExporter(const std::string&) const override { return false; }
+        bool call_exporter(const std::string&) override { return true; }
 
         INPUT_PORT(0, BundleToWrite, Bundle);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-      //protected:
-        //std::string defaultFileTypeName() const override;
+      protected:
+        std::string defaultFileTypeName() const override;
       };
 
     }}}

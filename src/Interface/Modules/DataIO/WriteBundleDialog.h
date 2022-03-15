@@ -25,43 +25,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/WriteBundle.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::DataIO;
+#ifndef INTERFACE_MODULES_WRITE_BUNDLE_H
+#define INTERFACE_MODULES_WRITE_BUNDLE_H
 
-/// @class WriteBundle
-/// @brief This module writes a bundle to file (a SCIRun .bdl file).
+#include "Interface/Modules/DataIO/ui_WriteBundle.h"
+#include <Core/Utils/SmartPointers.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/DataIO/share.h>
 
-MODULE_INFO_DEF(WriteBundle, DataIO, SCIRun)
+namespace SCIRun {
+namespace Gui {
 
-WriteBundle::WriteBundle()
-  : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
+class SCISHARE WriteBundleDialog : public ModuleDialogGeneric,
+  public Ui::WriteBundleDialog, public RemembersFileDialogDirectory
 {
-  // guiTypes_(get_ctx()->subVar("types", false)),
-  // guiFileType_(get_ctx()->subVar("filetype"),"Binary")
-  //
-  // std::string exporttypes = "{";
-  // exporttypes += "{{SCIRun Bundle File} {.bdl} } ";
-  // exporttypes += "{{SCIRun Bundle Any} {.*} } ";
-  // exporttypes += "}";
-  //
-  // guiTypes_.set(exporttypes);
+	Q_OBJECT
+
+public:
+  WriteBundleDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
+
+private Q_SLOTS:
+  void pushFileNameToState();
+  void saveFile();
+};
+
+}
 }
 
-void WriteBundle::execute()
-{
-  // const std::string ftpre = guiFileType_.get();
-  // const std::string::size_type loc = ftpre.find(" (");
-  // const std::string ft = ftpre.substr(0, loc);
-  //
-  // exporting_ = false;
-  my_base::execute();
-}
-
-std::string WriteBundle::defaultFileTypeName() const
-{
-  return "*.bdl";
-}
+#endif
