@@ -36,21 +36,21 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteBundle : public GenericWriter<BundleHandle, BundlePortTag>
+      class SCISHARE WriteBundle : public GenericWriter<Core::Datatypes::BundleHandle, BundlePortTag>
       {
       public:
-        typedef GenericWriter<BundleHandle, BundlePortTag> my_base;
+        typedef GenericWriter<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
         WriteBundle();
         void execute() override;
-        bool useCustomExporter(const std::string& filename) const override;
-        bool call_exporter(const std::string& filename) override;
+        //bool useCustomExporter(const std::string& filename) const override;
+        //bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, BundleToWrite, Bundle);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-      protected:
-        std::string defaultFileTypeName() const override;
+      //protected:
+        //std::string defaultFileTypeName() const override;
       };
 
     }}}
