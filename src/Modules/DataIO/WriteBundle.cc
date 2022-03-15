@@ -49,6 +49,9 @@ WriteBundle::WriteBundle()
   // exporttypes += "}";
   //
   // guiTypes_.set(exporttypes);
+  INITIALIZE_PORT(BundleToWrite)
+  objectPortName_ = &BundleToWrite;
+  filetype_ = "Binary";
 }
 
 void WriteBundle::execute()
