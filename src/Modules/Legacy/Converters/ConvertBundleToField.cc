@@ -34,8 +34,8 @@
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-#include <Core/Algorithms/Converter/ConvertBundleToField.h>
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertBundleToField.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/BundlePort.h>
