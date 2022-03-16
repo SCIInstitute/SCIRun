@@ -34,7 +34,7 @@
 
 namespace SCIRun {
 	namespace Modules {
-			namespace Converters {
+		namespace Converters {
 
 	class SCISHARE ConvertBundleToField : public Dataflow::Networks::Module,
 		public Has1InputPort<BundlePortTag>,
@@ -47,7 +47,7 @@ namespace SCIRun {
 
 				INPUT_PORT(0, InputBundle, Bundle);
 				OUTPUT_PORT(0, OutputField, Field);
-				MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
+				MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 		};
 }}}
 
