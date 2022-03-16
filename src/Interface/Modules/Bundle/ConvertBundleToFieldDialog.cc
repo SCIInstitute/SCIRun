@@ -27,9 +27,12 @@
 
 
 #include <Interface/Modules/Bundle/ConvertBundleToFieldDialog.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertBundleToField.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Algorithms::Converters;
 using namespace SCIRun::Dataflow::Networks;
 
 ConvertBundleToFieldDialog::ConvertBundleToFieldDialog(const std::string& name, ModuleStateHandle state,
@@ -38,4 +41,10 @@ ConvertBundleToFieldDialog::ConvertBundleToFieldDialog(const std::string& name, 
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+
+  addCheckBoxManager(forcePointCloudCheckBox_, SCIRun::Core::Algorithms::Fields::Parameters::ForcePointCloud);
+  addCheckBoxManager(mergeDuplicateNodesCheckBox_, Parameters::MergeNodes);
+  addCheckBoxManager(mergeMeshOnlyCheckBox_, Parameters::MakeNoData);
+  addCheckBoxManager(onlyMergeSameValueCheckBox_, Parameters::MatchNodeValues);
+  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, Parameters::Tolerance);
 }
