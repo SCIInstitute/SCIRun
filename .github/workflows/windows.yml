@@ -71,10 +71,12 @@ jobs:
     - name: Package
       working-directory: bin/SCIRun
       shell: cmd
+      continue-on-error: true
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
+      continue-on-error: true
       with:
         name: SCIRunWindowsInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
@@ -113,10 +115,12 @@ jobs:
     - name: Package
       working-directory: bin/SCIRun
       shell: cmd
+      continue-on-error: true
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
+      continue-on-error: true
       with:
         name: SCIRunWindowsPythonInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
@@ -166,10 +170,12 @@ jobs:
     - name: Package
       working-directory: bin/SCIRun
       shell: cmd
+      continue-on-error: true
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
       uses: actions/upload-artifact@v2
+      continue-on-error: true
       with:
         name: SCIRunWindowsOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
