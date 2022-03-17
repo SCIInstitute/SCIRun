@@ -729,7 +729,7 @@ void SCIRunMainWindow::runNewModuleWizard()
 
 void SCIRunMainWindow::copyVersionToClipboard()
 {
-  QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
+  QApplication::clipboard()->setText(versionButton_->text());
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
 }
 
