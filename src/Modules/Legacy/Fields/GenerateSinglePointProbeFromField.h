@@ -85,7 +85,7 @@ namespace SCIRun {
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix);
 
-        FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
+        FieldHandle GenerateOutputField(std::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();
         void setNearestNode(const Core::Geometry::Point& location);
         void setNearestElement(const Core::Geometry::Point& location);

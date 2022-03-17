@@ -119,7 +119,7 @@ namespace Engine {
     struct InsertInfo { std::string newModuleName, endModuleId, inputPortName, inputPortId; };
     Networks::ModuleHandle insertNewModule(const Networks::PortDescriptionInterface* portToConnect, const InsertInfo& info);
 
-    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
+    std::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
     std::future<int> executeAll() override;

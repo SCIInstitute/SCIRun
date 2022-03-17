@@ -260,7 +260,7 @@ void SRInterface::runGCOnNextExecution()
         if (fboMan)
         {
           fboMan->removeInMemoryFBO(*widgetSelectFboId_);
-          widgetSelectFboId_ = boost::none;
+          widgetSelectFboId_ = std::nullopt;
         }
       }
     }

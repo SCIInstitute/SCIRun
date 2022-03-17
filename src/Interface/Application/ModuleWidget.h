@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MODULEWIDGET_H
 
 #include <QStackedWidget>
+#include <Interface/qt_include.h>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/SmartPointers.h>
 #include <boost/bimap.hpp>
@@ -254,7 +255,7 @@ private Q_SLOTS:
   void showReplaceWithWidget();
   void toggleProgrammableInputPort();
 protected:
-  void enterEvent(QEvent* event) override;
+  void enterEvent(Q_ENTER_EVENT_CLASS* event) override;
   void leaveEvent(QEvent* event) override;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:

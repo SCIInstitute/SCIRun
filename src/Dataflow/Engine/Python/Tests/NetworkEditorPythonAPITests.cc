@@ -133,7 +133,7 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::none));
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(std::nullopt));
   NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 

@@ -675,7 +675,7 @@ void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
   }
 }
 
-boost::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
+std::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
 {
   auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
   if (moduleNameMapIter == nameAndValLookup_.end())
