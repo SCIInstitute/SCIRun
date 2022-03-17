@@ -323,8 +323,8 @@ namespace Gui {
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
-    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to) override;
-    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const PortWidget* from, const PortWidget* to);
+    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to) override;
+    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const PortWidget* from, const PortWidget* to);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     void insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
@@ -495,7 +495,7 @@ namespace Gui {
       #endif
     }
 #endif
-     
+
     static NetworkEditor* inEditingContext_;
 
     static ConnectorFunc connectorFunc_;

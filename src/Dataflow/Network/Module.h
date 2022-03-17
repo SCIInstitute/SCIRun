@@ -149,7 +149,7 @@ namespace Networks {
     template <class T, size_t N>
     SharedPointer<T> getRequiredInput(const StaticPortName<T,N>& port);
     template <class T, size_t N>
-    boost::optional<SharedPointer<T>> getOptionalInput(const StaticPortName<T,N>& port);
+    std::optional<SharedPointer<T>> getOptionalInput(const StaticPortName<T,N>& port);
     template <class T, size_t N>
     std::vector<SharedPointer<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
     template <class T, size_t N>
@@ -203,7 +203,7 @@ namespace Networks {
     template <class T>
     SharedPointer<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
-    boost::optional<SharedPointer<T>> getOptionalInputAtIndex(const PortId& id);
+    std::optional<SharedPointer<T>> getOptionalInputAtIndex(const PortId& id);
     template <class T>
     SharedPointer<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 

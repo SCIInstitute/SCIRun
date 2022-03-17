@@ -260,7 +260,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
 	auto preexecuteFunc = [this]() { preexecute(); };
-  auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
+  auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().value_or(1.0);
   {
     auto screen = QGuiApplication::screens()[0]->size();
     if (screen.height() > 1600 && screen.height() * screen.width() > 4096000) // 2560x1600
@@ -512,15 +512,63 @@ void SCIRunMainWindow::setupTagManagerWindow()
   addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define QT5_VERSION_STRING "+Qt" TOSTRING(QT5_VERSION)
+#ifdef __APPLE__
+
+#include <iostream>
+#include <stdio.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
+std::string show_cpu_info()
+{
+  char buffer[1024];
+  size_t size=sizeof(buffer);
+  if (sysctlbyname("machdep.cpu.brand_string", &buffer, &size, NULL, 0) < 0) {
+      perror("sysctl");
+  }
+  std::ostringstream ostr;
+  ostr << buffer;
+  return ostr.str();
+}
+
+bool isAppleSilicon()
+{
+  auto cpu = show_cpu_info();
+  return cpu.find("Apple M") != std::string::npos;
+}
+
+int processIsTranslated()
+{
+   int ret = 0;
+   size_t size = sizeof(ret);
+   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1)
+   {
+      if (errno == ENOENT)
+         return 0;
+      return -1;
+   }
+   return ret;
+}
+
+bool nativeAppleSiliconProcess()
+{
+  return 0 == processIsTranslated();
+}
+
+#endif
 
 void SCIRunMainWindow::setupVersionButton()
 {
-  auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
-  qVersion += QT5_VERSION_STRING;
-  versionButton_ = new QPushButton("Version: " + qVersion);
+  auto qver = QString::fromStdString(VersionInfo::GIT_VERSION_TAG) + "+Qt";
+  qver += qVersion();
+  #ifdef __APPLE__
+  auto appleChip = isAppleSilicon();
+  qver += appleChip ? "(a64)" : "(x86)";
+  if (appleChip)
+    qver += nativeAppleSiliconProcess() ? "[native]" : "[translated]";
+  #endif
+  versionButton_ = new QPushButton("Version: " + qver);
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
   versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");

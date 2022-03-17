@@ -358,8 +358,12 @@ private:
   }
 };
 
-//TODO!!!
+#ifdef SCIRUN_QT6_ENABLED
+#define MULTIMAP_FUNC insert
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#define MULTIMAP_FUNC unite
+#endif
 
 void SCIRunMainWindow::importFragmentList()
 {
@@ -375,8 +379,8 @@ void SCIRunMainWindow::importFragmentList()
       xmls.insert(key, QString::fromStdString(frag.second.second));
     }
     addFragmentsToMenu(names, xmls);
-    savedSubnetworksNames_.unite(names);
-    savedSubnetworksXml_.unite(xmls);
+    savedSubnetworksNames_.MULTIMAP_FUNC(names);
+    savedSubnetworksXml_.MULTIMAP_FUNC(xmls);
     showStatusMessage("Fragment list imported: " + filename, 2000);
   }
 }

@@ -50,8 +50,8 @@ namespace SCIRun
     public:
       explicit PlotDialog(QWidget* parent = nullptr);
       void updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
-        const boost::optional<double>& horizAxisOpt,
-        const boost::optional<double>& vertAxisOpt);
+        const std::optional<double>& horizAxisOpt,
+        const std::optional<double>& vertAxisOpt);
       ~PlotDialog();
       Plot* plot() { return plot_; }
     public Q_SLOTS:

@@ -32,7 +32,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Thread/Mutex.h>

@@ -38,7 +38,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory(const boost::optional<std::string>& threadMode) :
+DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory(const std::optional<std::string>& threadMode) :
   threadMode_(threadMode),
   serial_(new SerialExecutionStrategy),
   parallel_(new BasicParallelExecutionStrategy),

@@ -115,8 +115,8 @@ void BasicPlotterDialog::updatePlot()
   plotData();
 
   plotDialog_->updatePlot(titleLineEdit_->text(), xAxisLineEdit_->text(), yAxisLineEdit_->text(),
-    boost::make_optional(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value()),
-    boost::make_optional(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value()));
+    horizontalAxisGroupBox_->isChecked() ? std::optional<double>(horizontalAxisSpinBox_->value()) : std::nullopt,
+    verticalAxisGroupBox_->isChecked() ? std::optional<double>(verticalAxisSpinBox_->value()) : std::nullopt);
 }
 
 void BasicPlotterDialog::plotData()

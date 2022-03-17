@@ -165,7 +165,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(std::optional<std::string>()));
   NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
 
   Module::resetIdGenerator();
@@ -357,7 +357,7 @@ TEST(ToolkitSerializationTest, Experimenting)
   {
     ModuleFactoryHandle mf(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(std::optional<std::string>()));
     NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
 
     Module::resetIdGenerator();
@@ -406,7 +406,7 @@ TEST(ToolkitSerializationTest, Experimenting)
   {
     ModuleFactoryHandle mf(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(std::optional<std::string>()));
     NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
 
     Module::resetIdGenerator();

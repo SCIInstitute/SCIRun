@@ -66,7 +66,7 @@ namespace Gui {
     };
 
     explicit HideItemsNotMatchingString(SearchType searchType, const QString& pattern);
-    QRegExp match_;
+    QRegularExpression match_;
     QString start_;
     SearchType searchType_;
 

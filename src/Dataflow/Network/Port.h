@@ -78,7 +78,7 @@ public:
   size_t getIndex() const override;
   void setIndex(size_t index) override;
 
-  boost::optional<ConnectionId> firstConnectionId() const override;
+  std::optional<ConnectionId> firstConnectionId() const override;
   ModuleStateHandle moduleState() const override;
   ModuleInterface* underlyingModule() const override { return module_; }
 
@@ -119,7 +119,7 @@ public:
   bool hasChanged() const override;
   boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
   void resendNewDataSignal() override;
-  boost::optional<std::string> connectedModuleId() const override;
+  std::optional<std::string> connectedModuleId() const override;
   ModuleStateHandle stateFromConnectedModule() const override;
 private:
   bool shouldTriggerDataChange() const;

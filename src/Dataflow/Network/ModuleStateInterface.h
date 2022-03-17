@@ -34,7 +34,6 @@
 #include <string>
 #include <iostream>
 #include <boost/signals2/signal.hpp>
-#include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <boost/atomic.hpp>
 #include <Core/Algorithms/Base/Name.h>
@@ -73,7 +72,7 @@ namespace Networks {
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;
-    typedef boost::optional<TransientValue> TransientValueOption;
+    typedef std::optional<TransientValue> TransientValueOption;
     virtual TransientValueOption getTransientValue(const Name& name) const = 0;
     TransientValueOption getTransientValue(const std::string& name) const { return getTransientValue(Name(name)); }
     virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) = 0;
@@ -117,7 +116,7 @@ namespace Networks {
   template <class T>
   T transient_value_cast(const ModuleStateInterface::TransientValueOption& x)
   {
-    return x ? any_cast_or_default_<T>(*x) : T();
+    return x.has_value() ? any_cast_or_default_<T>(*x) : T();
   }
 
   template <class T>

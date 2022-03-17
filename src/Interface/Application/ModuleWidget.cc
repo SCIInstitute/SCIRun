@@ -377,7 +377,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   updateProgrammablePorts();
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(
+  theModule_->executionState().connectExecutionStateChanged([this](int state) { (void)QtConcurrent::run(
       [this, state] { updateBackgroundColorForModuleState(state); }); });
 
   theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
@@ -993,7 +993,7 @@ bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout
 void ModuleWidget::printPortPositions() const
 {
   std::cout << "Port positions for module " << moduleId_ << std::endl;
-  Q_FOREACH(PortWidget* p, ports_->getAllPorts())
+  for (const auto& p : ports_->getAllPorts())
   {
     std::cout << "\t" << p->pos();
   }
@@ -1007,7 +1007,7 @@ enum class ModuleWidgetPages
   BUTTON_PAGE
 };
 
-void ModuleWidget::enterEvent(QEvent* event)
+void ModuleWidget::enterEvent(Q_ENTER_EVENT_CLASS* event)
 {
   previousPageIndex_ = currentIndex();
   movePortWidgets(previousPageIndex_, static_cast<int>(ModuleWidgetPages::BUTTON_PAGE));
@@ -1051,7 +1051,7 @@ ModuleWidget::~ModuleWidget()
   //disconnect()
   deleting_ = true;
   theModule_->disconnectStateListeners();
-  Q_FOREACH (PortWidget* p, ports_->getAllPorts())
+  for (auto& p : ports_->getAllPorts())
     p->deleteConnections();
 
   theModule_->setLogger(nullptr);
@@ -1081,7 +1081,7 @@ ModuleWidget::~ModuleWidget()
 
 void ModuleWidget::trackConnections()
 {
-  Q_FOREACH (PortWidget* p, ports_->getAllPorts())
+  for (auto& p : ports_->getAllPorts())
     p->trackConnections();
 }
 

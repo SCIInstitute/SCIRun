@@ -202,7 +202,7 @@ void ShowOrientationAxes::execute()
   {
     auto state = get_state();
     if (inputField)
-      impl_->setField(inputField.get());
+      impl_->setField(*inputField);
 
     impl_->setFieldScaling(state->getValue(ScaleByField).toBool() && inputField);
     if (state->getValue(ScaleByScaleFactor).toBool())
