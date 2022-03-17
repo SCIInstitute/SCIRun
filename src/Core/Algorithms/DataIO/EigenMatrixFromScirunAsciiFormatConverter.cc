@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#if 0
 #include <boost/scoped_ptr.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -104,7 +104,7 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
   return mat;
 }
 
-boost::optional<std::string> EigenMatrixFromScirunAsciiFormatConverter::getMatrixContentsLine(const std::string& matStr)
+std::optional<std::string> EigenMatrixFromScirunAsciiFormatConverter::getMatrixContentsLine(const std::string& matStr)
 {
   if (reporter_)
     reporter_->update_progress(0.2);
@@ -116,7 +116,7 @@ boost::optional<std::string> EigenMatrixFromScirunAsciiFormatConverter::getMatri
     if (line.length() > 2 && isdigit(line[0]))
       return line;
   }
-  return boost::optional<std::string>();
+  return {};
 }
 
 std::string EigenMatrixFromScirunAsciiFormatConverter::readFile(const std::string& filename)
@@ -131,7 +131,7 @@ std::string EigenMatrixFromScirunAsciiFormatConverter::readFile(const std::strin
 
 DenseMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeDense(const std::string& matFile)
 {
-  DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
+  DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get());
   DenseMatrixHandle mat(makeShared<DenseMatrix>(data.get<0>(), data.get<1>()));
 
   auto values = data.get<2>().begin();
@@ -154,8 +154,11 @@ DenseColumnMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeColumn(co
   return mat;
 }
 
-boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseDenseMatrixString(const std::string& matString)
+std::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseDenseMatrixString(const std::optional<std::string>& matString)
 {
+  if (!matString)
+    return {};
+
   boost::regex r("(\\d+) (\\d+) \\{0 (.*)\\}\\}");
   boost::smatch what;
   regex_match(matString, what, r);
@@ -163,10 +166,10 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMa
   {
     return boost::make_tuple(what[1].str(), what[2].str(), what[3].str());
   }
-  return boost::optional<RawDenseData>();
+  return {};
 }
 
-boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseColumnMatrixString(const std::string& matString)
+std::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseColumnMatrixString(const std::string& matString)
 {
   boost::regex r("(\\d+) (.*)\\}");
   boost::smatch what;
@@ -175,7 +178,7 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMa
   {
     return boost::make_tuple(what[1].str(), std::string("1"), what[2].str());
   }
-  return boost::optional<RawDenseData>();
+  return std::optional<RawDenseData>();
 }
 
 EigenMatrixFromScirunAsciiFormatConverter::DenseData EigenMatrixFromScirunAsciiFormatConverter::convertRaw(const RawDenseData& data)
@@ -186,7 +189,7 @@ EigenMatrixFromScirunAsciiFormatConverter::DenseData EigenMatrixFromScirunAsciiF
     parseLineOfNumbers<double>(data.get<2>()));
 }
 
-boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenMatrixFromScirunAsciiFormatConverter::parseSparseMatrixString(const std::string& matString)
+std::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenMatrixFromScirunAsciiFormatConverter::parseSparseMatrixString(const std::string& matString)
 {
   boost::regex r("(\\d+) (\\d+) (\\d+) \\{8 (.*)\\}\\{8 (.*)\\}\\{(.*)\\}\\}\\h*");
   boost::smatch what;
@@ -197,7 +200,7 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenM
       reporter_->update_progress(0.4);
     return boost::make_tuple(what[1].str(), what[2].str(), what[3].str(), what[4].str(), what[5].str(), what[6].str());
   }
-  return boost::optional<RawSparseData>();
+  return std::optional<RawSparseData>();
 }
 
 EigenMatrixFromScirunAsciiFormatConverter::SparseData EigenMatrixFromScirunAsciiFormatConverter::convertRaw(const RawSparseData& data)
@@ -212,3 +215,4 @@ EigenMatrixFromScirunAsciiFormatConverter::SparseData EigenMatrixFromScirunAscii
     parseLineOfNumbers<int>(data.get<4>()),
     parseLineOfNumbers<double>(data.get<5>()));
 }
+#endif

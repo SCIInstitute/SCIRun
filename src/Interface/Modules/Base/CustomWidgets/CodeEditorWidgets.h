@@ -63,7 +63,7 @@ private Q_SLOTS:
 
 private:
   QWidget* lineNumberArea_;
-  class Highlighter* highlighter_;
+  class CodeEditorHighlighter* highlighter_ {nullptr};
   void createParenthesisSelection(int pos, const QColor& color);
   bool matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numRightParentheses);
   bool matchRightParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numLeftParentheses);
@@ -92,12 +92,13 @@ private:
   CodeEditor *codeEditor;
 };
 
-class Highlighter : public QSyntaxHighlighter
+#ifndef SCIRUN_QT6_ENABLED
+class CodeEditorHighlighter : public QSyntaxHighlighter
 {
   Q_OBJECT
 
 public:
-  Highlighter(QTextDocument* parent = nullptr);
+  CodeEditorHighlighter(QTextDocument* parent = nullptr);
 
 protected:
   void highlightBlock(const QString &text) override;
@@ -122,6 +123,7 @@ private:
 
   void highlightBlockParens(const QString& text);
 };
+#endif
 
 struct ParenthesisInfo
 {

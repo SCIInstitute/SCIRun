@@ -43,7 +43,9 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
   updateLineNumberAreaWidth(0);
   highlightCurrentLine();
 
-  highlighter_ = new Highlighter(document());
+#ifndef SCIRUN_QT6_ENABLED
+  highlighter_ = new CodeEditorHighlighter(document());
+#endif
 
   connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchParentheses()));
 }
@@ -198,7 +200,8 @@ void CodeEditor::createParenthesisSelection(int pos, const QColor& color)
   setExtraSelections(selections);
 }
 
-Highlighter::Highlighter(QTextDocument *parent)
+#ifndef SCIRUN_QT6_ENABLED
+CodeEditorHighlighter::CodeEditorHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
   HighlightingRule rule;
@@ -252,7 +255,7 @@ Highlighter::Highlighter(QTextDocument *parent)
   commentEndExpression = QRegExp(matlabDelimiter);
 }
 
-void Highlighter::highlightBlock(const QString &text)
+void CodeEditorHighlighter::highlightBlock(const QString &text)
 {
   highlightBlockParens(text);
   for (const auto& rule : highlightingRules)
@@ -290,7 +293,7 @@ void Highlighter::highlightBlock(const QString &text)
   }
 }
 
-void Highlighter::highlightBlockParens(const QString &text)
+void CodeEditorHighlighter::highlightBlockParens(const QString &text)
 {
   auto data = new TextBlockData;
   for (const auto& type : { parentheses, brackets, braces })
@@ -310,6 +313,7 @@ void Highlighter::highlightBlockParens(const QString &text)
   }
   setCurrentBlockUserData(data);
 }
+#endif
 
 bool CodeEditor::matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int i, int numLeftParentheses)
 {

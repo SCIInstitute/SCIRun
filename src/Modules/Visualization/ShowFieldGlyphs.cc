@@ -73,11 +73,11 @@ namespace SCIRun {
         /// \param id       Ends up becoming the name of the spire object.
         GeometryHandle buildGeometryObject(
           FieldHandle pfield,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> pcolormap,
-          boost::optional<ColorMapHandle> scolormap,
-          boost::optional<ColorMapHandle> tcolormap,
+          std::optional<FieldHandle> sfield,
+          std::optional<FieldHandle> tfield,
+          std::optional<ColorMapHandle> pcolormap,
+          std::optional<ColorMapHandle> scolormap,
+          std::optional<ColorMapHandle> tcolormap,
           ModuleStateHandle state,
           const GeometryIDGenerator& idgen,
           const Module* module);
@@ -323,8 +323,8 @@ void ShowFieldGlyphs::execute()
 
 void ShowFieldGlyphs::configureInputs(
     FieldHandle pfield,
-    boost::optional<FieldHandle> sfield,
-    boost::optional<FieldHandle> tfield)
+    std::optional<FieldHandle> sfield,
+    std::optional<FieldHandle> tfield)
 {
   FieldInformation pfinfo(pfield);
 
@@ -367,11 +367,11 @@ RenderState::GlyphInputPort GlyphBuilder::getInput(const std::string& port_name)
 
 GeometryHandle GlyphBuilder::buildGeometryObject(
   FieldHandle pfield,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolormap,
-  boost::optional<ColorMapHandle> scolormap,
-  boost::optional<ColorMapHandle> tcolormap,
+  std::optional<FieldHandle> sfield,
+  std::optional<FieldHandle> tfield,
+  std::optional<ColorMapHandle> pcolormap,
+  std::optional<ColorMapHandle> scolormap,
+  std::optional<ColorMapHandle> tcolormap,
   ModuleStateHandle state,
   const GeometryIDGenerator& idgen,
   const Module* module)
@@ -793,7 +793,7 @@ void GlyphBuilder::renderTensors(
   }
 
   // Prints warning if there are negative eigen values
-  if (neg_eigval_count > 0) 
+  if (neg_eigval_count > 0)
   {
       module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
   }

@@ -23,6 +23,7 @@
 
 // CTK includes
 #include "ctkBasePopupWidget.h"
+#include <Interface/qt_include.h>
 
 class ctkPopupWidgetPrivate;
 
@@ -78,7 +79,7 @@ public:
   typedef ctkBasePopupWidget Superclass;
   /// By default, the parent is the \a baseWidget.
   /// \sa baseWidget()
-  explicit ctkPopupWidget(QWidget* parent = 0);
+  explicit ctkPopupWidget(QWidget* parent = nullptr);
   virtual ~ctkPopupWidget();
 
   bool isActive()const;
@@ -109,21 +110,21 @@ public Q_SLOTS:
 
 public:
   /// Reimplemented for internal reasons
-  virtual void hidePopup();
+  void hidePopup() override;
 
 protected:
-  virtual void leaveEvent(QEvent* event);
-  virtual void enterEvent(QEvent* event);
-  virtual bool eventFilter(QObject* obj, QEvent* event);
+  void leaveEvent(QEvent* event) override;
+  void enterEvent(Q_ENTER_EVENT_CLASS* event) override;
+  bool eventFilter(QObject* obj, QEvent* event) override;
 
   /// Widget the popup is attached to. It opens right under \a baseWidget
   /// and if the ctkPopupWidget sizepolicy contains the growFlag/shrinkFlag,
   /// it tries to resize itself to fit the same width of \a baseWidget.
-  virtual void setBaseWidget(QWidget* baseWidget);
+  void setBaseWidget(QWidget* baseWidget) override;
 
 protected Q_SLOTS:
   void updatePopup();
-  virtual void onEffectFinished();
+  void onEffectFinished() override;
 
 private:
   Q_DECLARE_PRIVATE(ctkPopupWidget);

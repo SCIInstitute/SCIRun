@@ -100,7 +100,7 @@ namespace SCIRun
       SCISHARE Algorithms::Variable convertPythonObjectToVariableWithTypeInference(
         const boost::python::object& object, const Algorithms::Variable& var);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
-      SCISHARE boost::python::object convertTransientVariableToPythonObject(const boost::optional<boost::any>& v);
+      SCISHARE boost::python::object convertTransientVariableToPythonObject(const std::optional<boost::any>& v);
 
       class SCISHARE DatatypePythonExtractor
       {

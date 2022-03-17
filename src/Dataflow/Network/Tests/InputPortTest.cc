@@ -74,7 +74,7 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   EXPECT_CALL(*sink, waitForData()).Times(0);
   EXPECT_CALL(*sink, receive()).Times(0);
   DatatypeHandleOption data = inputPort->getData();
-  EXPECT_FALSE(data.is_initialized());
+  EXPECT_FALSE(data.has_value());
 }
 
 //let's just use all "real" objects to see if it works.
@@ -99,7 +99,7 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   outputPort->sendData(dataToPush);
 
   DatatypeHandleOption data = inputPort->getData();
-  EXPECT_TRUE(data.is_initialized());
+  EXPECT_TRUE(data.has_value());
   EXPECT_EQ(dataValue, (*data)->as<Int32>()->toInt());
 }
 

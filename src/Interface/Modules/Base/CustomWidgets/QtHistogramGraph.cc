@@ -62,7 +62,7 @@ void QtHistogramGraph::reset_histogram( )
 void QtHistogramGraph::paintEvent(QPaintEvent*)
 {
   QStyleOption opt;
-  opt.init(this);
+  opt.initFrom(this);
   QPainter painter( this );
   painter.setRenderHint( QPainter::Antialiasing, true );
   style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);

@@ -357,12 +357,17 @@ void CodeStylePage::initializePage()
     baseIncludeLabel->setEnabled(!baseClass.isEmpty());
     baseIncludeLineEdit->setEnabled(!baseClass.isEmpty());
 
-    if (baseClass.isEmpty()) {
-        baseIncludeLineEdit->clear();
-    } else if (QRegExp("Q[A-Z].*").exactMatch(baseClass)) {
-        baseIncludeLineEdit->setText("<" + baseClass + ">");
-    } else {
-        baseIncludeLineEdit->setText("\"" + baseClass.toLower() + ".h\"");
+    if (baseClass.isEmpty())
+    {
+      baseIncludeLineEdit->clear();
+    }
+    else if (QRegularExpression(QRegularExpression::anchoredPattern("Q[A-Z].*")).match(baseClass).hasMatch()) 
+    {
+      baseIncludeLineEdit->setText("<" + baseClass + ">");
+    }
+    else
+    {
+      baseIncludeLineEdit->setText("\"" + baseClass.toLower() + ".h\"");
     }
 }
 

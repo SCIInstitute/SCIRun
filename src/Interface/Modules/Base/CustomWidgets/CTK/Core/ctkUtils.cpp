@@ -21,9 +21,9 @@
 // Qt includes
 #include <QDebug>
 #include <QDir>
-#include <QRegExp>
 #include <QString>
 #include <QStringList>
+#include <QSize>
 
 #include "ctkUtils.h"
 
@@ -77,92 +77,6 @@ void ctk::stlVectorToQList(const std::vector<std::string>& vector,
                                  QStringList& list)
 {
   std::transform(vector.begin(),vector.end(),std::back_inserter(list),&QString::fromStdString);
-}
-
-//-----------------------------------------------------------------------------
-const char *ctkNameFilterRegExp =
-  "^(.*)\\(([a-zA-Z0-9_.*? +;#\\-\\[\\]@\\{\\}/!<>\\$%&=^~:\\|]*)\\)$";
-const char *ctkValidWildCard =
-  "^[\\w\\s\\.\\*\\_\\~\\$\\[\\]]+$";
-
-//-----------------------------------------------------------------------------
-QStringList ctk::nameFilterToExtensions(const QString& nameFilter)
-{
-  QRegExp regexp(QString::fromLatin1(ctkNameFilterRegExp));
-  int i = regexp.indexIn(nameFilter);
-  if (i < 0)
-    {
-    QRegExp isWildCard(QString::fromLatin1(ctkValidWildCard));
-    if (isWildCard.indexIn(nameFilter) >= 0)
-      {
-      return QStringList(nameFilter);
-      }
-    return QStringList();
-    }
-  QString f = regexp.cap(2);
-  #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  return f.split(QLatin1Char(' '), Qt::SkipEmptyParts);
-  #else
-  return f.split(QLatin1Char(' '), QString::SkipEmptyParts);
-  #endif
-}
-
-//-----------------------------------------------------------------------------
-QStringList ctk::nameFiltersToExtensions(const QStringList& nameFilters)
-{
-  QStringList extensions;
-  Q_FOREACH(const QString& nameFilter, nameFilters)
-    {
-    extensions << nameFilterToExtensions(nameFilter);
-    }
-  return extensions;
-}
-
-//-----------------------------------------------------------------------------
-QString ctk::extensionToRegExp(const QString& extension)
-{
-  // typically *.jpg
-  QRegExp extensionExtractor("\\*\\.(\\w+)");
-  int pos = extensionExtractor.indexIn(extension);
-  if (pos < 0)
-    {
-    return QString();
-    }
-  return ".*\\." + extensionExtractor.cap(1) + "?$";
-}
-
-//-----------------------------------------------------------------------------
-QRegExp ctk::nameFiltersToRegExp(const QStringList& nameFilters)
-{
-  QString pattern;
-  Q_FOREACH(const QString& nameFilter, nameFilters)
-    {
-    Q_FOREACH(const QString& extension, nameFilterToExtensions(nameFilter))
-      {
-      QString regExpExtension = extensionToRegExp(extension);
-      if (!regExpExtension.isEmpty())
-        {
-        if (pattern.isEmpty())
-          {
-          pattern = "(";
-          }
-        else
-          {
-          pattern += "|";
-          }
-        pattern +=regExpExtension;
-        }
-      }
-    }
-  if (pattern.isEmpty())
-    {
-    pattern = ".+";
-    }
-  else
-    {
-    pattern += ")";
-    }
-  return QRegExp(pattern);
 }
 
 //-----------------------------------------------------------------------------
@@ -462,4 +376,10 @@ QString ctk::internalPathFromAbsolute(const QString& absolutePath, const QString
   {
     return absolutePath;
   }
+}
+
+//TODO:
+QSize ctk::globalStrutReplacement()
+{
+  return {0,0};
 }
