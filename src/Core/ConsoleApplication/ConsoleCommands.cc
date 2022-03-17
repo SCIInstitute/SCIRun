@@ -243,7 +243,7 @@ bool RunPythonScriptCommandConsole::execute()
 
 bool SetupDataDirectoryCommand::execute()
 {
-  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  auto dir = *Application::Instance().parameters()->dataDirectory();
   LOG_DEBUG("Data dir set to: {}", dir.string());
 
   Preferences::Instance().setDataDirectory(dir);

@@ -85,13 +85,6 @@ QString CTK_CORE_EXPORT extensionToRegExp(const QString& extension);
 
 ///
 /// \ingroup Core
-/// Convert a list of wildcar extension filters ("*.jpg")
-/// into a regular expression string
-/// "*.jpg", "*.txt" -> "(.*\\.jpg?$|.*\\.txt?$)"
-QRegExp CTK_CORE_EXPORT nameFiltersToRegExp(const QStringList& nameFilters);
-
-///
-/// \ingroup Core
 /// Return a "smart" number of decimals needed to display (in a gui) a floating
 /// number. 16 is the max that can be returned, -1 for NaN numbers. When the
 /// number of decimals is not obvious, it defaults to defaultDecimals if it is
@@ -179,6 +172,7 @@ QString CTK_CORE_EXPORT absolutePathFromInternal(const QString& internalPath, co
 /// Absolute path can be retrieved from an internal path using absolutePathFromInternal function.
 QString CTK_CORE_EXPORT internalPathFromAbsolute(const QString& absolutePath, const QString& basePath);
 
+QSize CTK_CORE_EXPORT globalStrutReplacement();
 }
 
 #endif

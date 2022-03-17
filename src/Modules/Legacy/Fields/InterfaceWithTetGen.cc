@@ -116,7 +116,7 @@ void InterfaceWithTetGen::execute()
     inputs.moreSwitches_ = state->getValue(Parameters::MoreSwitches).toString();
 
     InterfaceWithTetGenImpl impl(this, inputs);
-    auto result = impl.runImpl(surfaces, points.get_value_or(nullptr), region_attribs.get_value_or(nullptr));
+    auto result = impl.runImpl(surfaces, points.value_or(nullptr), region_attribs.value_or(nullptr));
     sendOutput(TetVol, result);
   }
 #else

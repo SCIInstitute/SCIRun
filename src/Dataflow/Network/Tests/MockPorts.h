@@ -52,7 +52,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(internalId, PortId());
           MOCK_CONST_METHOD0(externalId, PortId());
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
         };
 
         typedef SharedPointer<MockPortDescription> MockPortDescriptionPtr;
@@ -80,10 +80,10 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
           MOCK_METHOD0(resendNewDataSignal, void());
           MOCK_CONST_METHOD0(moduleState, ModuleStateHandle());
-          MOCK_CONST_METHOD0(connectedModuleId, boost::optional<std::string>());
+          MOCK_CONST_METHOD0(connectedModuleId, std::optional<std::string>());
           MOCK_CONST_METHOD0(stateFromConnectedModule, ModuleStateHandle());
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
           MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());
@@ -116,7 +116,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
           MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
           MOCK_METHOD1(sendConnectionFeedback, void(const Core::Datatypes::ModuleFeedback&));
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
           MOCK_CONST_METHOD0(moduleState, ModuleStateHandle());
           MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
           MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());

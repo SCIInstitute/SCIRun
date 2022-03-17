@@ -33,3 +33,9 @@
 #else
 #define WIDTH_FUNC horizontalAdvance
 #endif
+
+#ifdef SCIRUN_QT6_ENABLED
+#define Q_ENTER_EVENT_CLASS QEnterEvent
+#else
+#define Q_ENTER_EVENT_CLASS QEvent
+#endif

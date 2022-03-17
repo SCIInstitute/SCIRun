@@ -30,8 +30,8 @@
 #define CORE_DATATYPES_DATATYPE_FWD_H
 
 #include <vector>
+#include <optional>
 #include <Core/Utils/SmartPointers.h>
-#include <boost/optional.hpp>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Utils/SmartPointers.h>
 #include <Core/Datatypes/MatrixFwd.h>
@@ -43,7 +43,7 @@ namespace Datatypes {
   class Datatype;
   typedef SharedPointer<Datatype> DatatypeHandle;
   typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
 
   class Scalar;
   class Double;

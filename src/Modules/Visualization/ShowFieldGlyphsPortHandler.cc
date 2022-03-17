@@ -46,11 +46,11 @@ namespace SCIRun{
           const Module* mod,
           const RenderState renState,
           FieldHandle pf,
-          boost::optional<FieldHandle> sf,
-          boost::optional<FieldHandle> tf,
-          boost::optional<ColorMapHandle> pcolorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap)
+          std::optional<FieldHandle> sf,
+          std::optional<FieldHandle> tf,
+          std::optional<ColorMapHandle> pcolorMap,
+          std::optional<ColorMapHandle> scolorMap,
+          std::optional<ColorMapHandle> tcolorMap)
         : module_(mod), pf_handle(pf), pf_info(pf)
       {
         // Save field info
@@ -69,9 +69,9 @@ namespace SCIRun{
           }
         if(sf)
           {
-            s_vfld = (sf.get())->vfield();
+            s_vfld = (*sf)->vfield();
             secondaryFieldGiven = true;
-            FieldInformation sf_info(sf.get());
+            FieldInformation sf_info(*sf);
             if(sf_info.is_scalar())
               {
                 sf_data_type = FieldDataType::Scalar;
@@ -91,9 +91,9 @@ namespace SCIRun{
           }
         if(tf)
           {
-            t_vfld = (tf.get())->vfield();
+            t_vfld = (*tf)->vfield();
             tertiaryFieldGiven = true;
-            FieldInformation tf_info(tf.get());
+            FieldInformation tf_info(*tf);
             if(tf_info.is_scalar())
               {
                 tf_data_type = FieldDataType::Scalar;
@@ -139,7 +139,7 @@ namespace SCIRun{
             case RenderState::GlyphInputPort::PRIMARY_PORT:
               if(pcolorMap)
               {
-                colorMap = pcolorMap;
+                colorMap_ = *pcolorMap;
                 colorMapGiven = true;
               }
               else
@@ -150,7 +150,7 @@ namespace SCIRun{
             case RenderState::GlyphInputPort::SECONDARY_PORT:
               if(scolorMap)
               {
-                colorMap = scolorMap;
+                colorMap_ = *scolorMap;
                 colorMapGiven = true;
               }
               else
@@ -161,7 +161,7 @@ namespace SCIRun{
             case RenderState::GlyphInputPort::TERTIARY_PORT:
               if(tcolorMap)
               {
-                colorMap = tcolorMap;
+                colorMap_ = *tcolorMap;
                 colorMapGiven = true;
               }
               else
@@ -272,13 +272,13 @@ namespace SCIRun{
             switch(pf_data_type)
             {
               case FieldDataType::Scalar:
-                colorMapVal = colorMap.get()->valueToColor(pinputScalar.get());
+                colorMapVal = colorMap_->valueToColor(*pinputScalar);
                 break;
               case FieldDataType::Vector:
-                colorMapVal = colorMap.get()->valueToColor(pinputVector.get());
+                colorMapVal = colorMap_->valueToColor(*pinputVector);
                 break;
               case FieldDataType::Tensor:
-                colorMapVal = colorMap.get()->valueToColor(pinputTensor.get());
+                colorMapVal = colorMap_->valueToColor(*pinputTensor);
                 break;
               default:
                 throw std::invalid_argument("Primary color map did not find scalar, vector, or tensor data.");
@@ -288,13 +288,13 @@ namespace SCIRun{
             switch(sf_data_type)
             {
               case FieldDataType::Scalar:
-                colorMapVal = colorMap.get()->valueToColor(sinputScalar.get());
+                colorMapVal = colorMap_->valueToColor(*sinputScalar);
                 break;
               case FieldDataType::Vector:
-                colorMapVal = colorMap.get()->valueToColor(sinputVector.get());
+                colorMapVal = colorMap_->valueToColor(*sinputVector);
                 break;
               case FieldDataType::Tensor:
-                colorMapVal = colorMap.get()->valueToColor(sinputTensor.get());
+                colorMapVal = colorMap_->valueToColor(*sinputTensor);
                 break;
               default:
                 throw std::invalid_argument("Secondary color map did not find scalar, vector, or tensor data.");
@@ -304,13 +304,13 @@ namespace SCIRun{
             switch(tf_data_type)
             {
               case FieldDataType::Scalar:
-                colorMapVal = colorMap.get()->valueToColor(tinputScalar.get());
+                colorMapVal = colorMap_->valueToColor(*tinputScalar);
                 break;
               case FieldDataType::Vector:
-                colorMapVal = colorMap.get()->valueToColor(tinputVector.get());
+                colorMapVal = colorMap_->valueToColor(*tinputVector);
                 break;
               case FieldDataType::Tensor:
-                colorMapVal = colorMap.get()->valueToColor(tinputTensor.get());
+                colorMapVal = colorMap_->valueToColor(*tinputTensor);
                 break;
               default:
                 throw std::invalid_argument("Tertiary color map did not find scalar, vector, or tensor data.");
@@ -331,13 +331,13 @@ namespace SCIRun{
           switch(colorInput)
           {
             case RenderState::GlyphInputPort::PRIMARY_PORT:
-              if(!colorMap)
+              if(!colorMap_)
               {
                 throw std::invalid_argument("Primary Color Map input is required.");
               }
               break;
             case RenderState::GlyphInputPort::SECONDARY_PORT:
-              if(!(secondaryFieldGiven && colorMap))
+              if(!(secondaryFieldGiven && colorMap_))
               {
                 throw std::invalid_argument("Secondary Field and Color Map input is required.");
               }
@@ -347,7 +347,7 @@ namespace SCIRun{
               }
               break;
             case RenderState::GlyphInputPort::TERTIARY_PORT:
-              if(!(tertiaryFieldGiven && colorMap))
+              if(!(tertiaryFieldGiven && colorMap_))
               {
                 throw std::invalid_argument("Tertiary Field and Color Map input is required.");
               }
@@ -444,31 +444,31 @@ namespace SCIRun{
           case RenderState::GlyphInputPort::PRIMARY_PORT:
             if(pf_data_type == FieldDataType::Vector)
               {
-                colorVector = pinputVector.get();
+                colorVector = *pinputVector;
               }
             else
               {
-                colorVector = getTensorColorVector(pinputTensor.get());
+                colorVector = getTensorColorVector(*pinputTensor);
               }
             break;
           case RenderState::GlyphInputPort::SECONDARY_PORT:
             if(sf_data_type == FieldDataType::Vector)
               {
-                colorVector = sinputVector.get();
+                colorVector = *sinputVector;
               }
             else
               {
-                colorVector = getTensorColorVector(sinputTensor.get());
+                colorVector = getTensorColorVector(*sinputTensor);
               }
             break;
           case RenderState::GlyphInputPort::TERTIARY_PORT:
             if(tf_data_type == FieldDataType::Vector)
               {
-                colorVector = tinputVector.get();
+                colorVector = *tinputVector;
               }
             else
               {
-                colorVector = getTensorColorVector(tinputTensor.get());
+                colorVector = getTensorColorVector(*tinputTensor);
               }
             break;
           default:
@@ -554,38 +554,38 @@ namespace SCIRun{
           {
             // Primary can only be vector for this function
           case RenderState::GlyphInputPort::PRIMARY_PORT:
-            val = pinputVector.get().length();
+            val = pinputVector->length();
             break;
           case RenderState::GlyphInputPort::SECONDARY_PORT:
             if(sf_data_type == FieldDataType::Scalar)
               {
-                val = sinputScalar.get();
+                val = *sinputScalar;
               }
             else if(sf_data_type == FieldDataType::Vector)
               {
-                val = sinputVector.get().length();
+                val = sinputVector->length();
               }
             else
               {
-                val = sinputTensor.get().magnitude();
+                val = sinputTensor->magnitude();
               }
             break;
           case RenderState::GlyphInputPort::TERTIARY_PORT:
             if(tf_data_type == FieldDataType::Scalar)
               {
-                val = tinputScalar.get();
+                val = *tinputScalar;
               }
             else if(tf_data_type == FieldDataType::Vector)
               {
-                val = tinputVector.get().length();
+                val = tinputVector->length();
               }
             else
               {
-                val = tinputTensor.get().magnitude();
+                val = tinputTensor->magnitude();
               }
             break;
           default:
-            val = pinputVector.get().length();
+            val = pinputVector->length();
             break;
           }
         return abs(val);
@@ -596,7 +596,7 @@ namespace SCIRun{
       {
         getFieldData(index);
 
-        return pinputScalar.get();
+        return *pinputScalar;
       }
 
       // Return primary vector
@@ -604,7 +604,7 @@ namespace SCIRun{
       {
         getFieldData(index);
 
-        return pinputVector.get();
+        return *pinputVector;
       }
 
       // Return primary vector
@@ -612,7 +612,7 @@ namespace SCIRun{
       {
         getFieldData(index);
 
-        return pinputTensor.get();
+        return *pinputTensor;
       }
 
       // Get primary field information
@@ -624,7 +624,7 @@ namespace SCIRun{
       // Returns color map
       ColorMapHandle ShowFieldGlyphsPortHandler::getColorMap()
       {
-        return colorMap.get();
+        return colorMap_;
       }
 
       // Returns VMesh pointer
@@ -643,7 +643,7 @@ namespace SCIRun{
       {
         ColorMapHandle realColorMap;
 
-        if (colorMap) realColorMap = colorMap.get();
+        if (colorMap_) realColorMap = colorMap_;
         else realColorMap = StandardColorMapFactory::create();
 
         textureMap = StandardColorMapFactory::create(
@@ -654,7 +654,7 @@ namespace SCIRun{
         coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
           realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
 
-        colorMap = coordinateMap;
+        colorMap_ = coordinateMap;
       }
 
     }

@@ -24,7 +24,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
 
     - name: Build
-      run: ./build.sh -DQt5_PATH=$(dpkg -L qtbase5-dev) -j3
+      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -j3
 
     - name: Basic Test
       working-directory: bin/SCIRun
@@ -46,7 +46,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
 
     - name: Build
-      run: ./build.sh -DQt5_PATH=$(dpkg -L qtbase5-dev) -DBUILD_WITH_PYTHON=OFF -DUSER_PYTHON_VERSION="3.8.2" -j3
+      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -DBUILD_WITH_PYTHON=OFF -DUSER_PYTHON_VERSION="3.9.10" -j3
 
     - name: Basic Test
       working-directory: bin/SCIRun
@@ -90,7 +90,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
 
     - name: Build
-      run: ./build.sh -DQt5_PATH=$(dpkg -L qtbase5-dev) -j3 -DBUILD_TESTING:BOOL=ON
+      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -j3 -DBUILD_TESTING:BOOL=ON
 
     - name: Test
       working-directory: bin/SCIRun
@@ -112,4 +112,4 @@ jobs:
       run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev
 
     - name: Build
-      run: ./build.sh -DQt5_PATH=$(dpkg -L qtbase5-dev) -DWITH_OSPRAY:BOOL=ON
+      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -DWITH_OSPRAY:BOOL=ON

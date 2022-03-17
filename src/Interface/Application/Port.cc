@@ -257,10 +257,10 @@ void PortWidget::turn_on_light()
 }
 
 #if 0
-boost::optional<ConnectionId> PortWidget::firstConnectionId() const
+std::optional<ConnectionId> PortWidget::firstConnectionId() const
 {
   auto c = firstConnection();
-  return c ? c->id() : boost::optional<ConnectionId>();
+  return c ? c->id() : std::optional<ConnectionId>();
 }
 #endif
 
@@ -855,7 +855,7 @@ public:
   bool isDynamic() const override { return false; }
   SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override { return ModuleId("<Blank>"); }
   size_t getIndex() const override { return 0; }
-  boost::optional<SCIRun::Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
+  std::optional<SCIRun::Dataflow::Networks::ConnectionId> firstConnectionId() const override { return std::nullopt; }
 };
 
 const SCIRun::Dataflow::Networks::PortDescriptionInterface* BlankPort::description() const

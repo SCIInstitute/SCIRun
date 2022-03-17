@@ -66,11 +66,11 @@ namespace SCIRun{
         Graphics::Datatypes::ColorScheme colorScheme;
         RenderState::GlyphInputPort colorInput;
         Core::Datatypes::ColorRGB defaultColor;
-        boost::optional<Core::Datatypes::ColorMapHandle> colorMap;
+        Core::Datatypes::ColorMapHandle colorMap_;
         Core::Datatypes::ColorMapHandle coordinateMap {nullptr}, textureMap {nullptr};
-        boost::optional<Core::Geometry::Tensor> pinputTensor, sinputTensor, tinputTensor;
-        boost::optional<Core::Geometry::Vector> pinputVector, sinputVector, tinputVector;
-        boost::optional<double> pinputScalar, sinputScalar, tinputScalar;
+        std::optional<Core::Geometry::Tensor> pinputTensor, sinputTensor, tinputTensor;
+        std::optional<Core::Geometry::Vector> pinputVector, sinputVector, tinputVector;
+        std::optional<double> pinputScalar, sinputScalar, tinputScalar;
         double current_index;
         bool colorMapGiven;
         bool secondaryFieldGiven, tertiaryFieldGiven;
@@ -89,11 +89,11 @@ namespace SCIRun{
                     const Dataflow::Networks::Module* mod_,
                     const RenderState renState,
                     FieldHandle pf,
-                    boost::optional<FieldHandle> sf,
-                    boost::optional<FieldHandle> tf,
-                    boost::optional<Core::Datatypes::ColorMapHandle> pcolorMap,
-                    boost::optional<Core::Datatypes::ColorMapHandle> scolorMap,
-                    boost::optional<Core::Datatypes::ColorMapHandle> tcolorMap);
+                    std::optional<FieldHandle> sf,
+                    std::optional<FieldHandle> tf,
+                    std::optional<Core::Datatypes::ColorMapHandle> pcolorMap,
+                    std::optional<Core::Datatypes::ColorMapHandle> scolorMap,
+                    std::optional<Core::Datatypes::ColorMapHandle> tcolorMap);
 
         // Verifies that data is valid. Run this after initialization
         void checkForErrors();

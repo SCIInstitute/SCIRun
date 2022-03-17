@@ -354,6 +354,22 @@ void ctkDoubleSpinBoxPrivate::editorTextChanged(const QString& text)
     }
 }
 
+namespace
+{
+  #pragma GCC diagnostic ignored "-Wunused-function"
+  bool isPrint(const QChar& sep)
+  {
+    return sep.isPrint();
+  }
+
+  //for Qt 6
+  #pragma GCC diagnostic ignored "-Wunused-function"
+  bool isPrint(const QString& sep)
+  {
+    return sep[0].isPrint();
+  }
+}
+
 //-----------------------------------------------------------------------------
 double ctkDoubleSpinBoxPrivate
 ::validateAndInterpret(QString &input, int &pos,
@@ -398,13 +414,14 @@ double ctkDoubleSpinBoxPrivate
   // could be because of group separators:
   if (!ok && state == QValidator::Acceptable)
     {
-    if (q->locale().groupSeparator().isPrint())
+      const auto sep = q->locale().groupSeparator();
+    if (isPrint(sep))
       {
       int start = (dec == -1 ? text.size() : dec)- 1;
       int lastGroupSeparator = start;
       for (int digit = start; digit >= 0; --digit)
         {
-        if (text.at(digit) == q->locale().groupSeparator())
+        if (text.at(digit) == sep)
           {
           if (digit != lastGroupSeparator - 3)
             {
@@ -1102,7 +1119,7 @@ QSize ctkDoubleSpinBox::sizeHint() const
   opt.rect = this->rect();
   d->CachedSizeHint = this->style()->sizeFromContents(
     QStyle::CT_SpinBox, &opt, newSizeHint, this)
-    .expandedTo(QApplication::globalStrut());
+    .expandedTo(ctk::globalStrutReplacement());
   return d->CachedSizeHint;
 }
 
@@ -1158,7 +1175,7 @@ QSize ctkDoubleSpinBox::minimumSizeHint() const
   opt.rect = this->rect();
   d->CachedMinimumSizeHint = this->style()->sizeFromContents(
     QStyle::CT_SpinBox, &opt, newSizeHint, this)
-    .expandedTo(QApplication::globalStrut());
+    .expandedTo(ctk::globalStrutReplacement());
   return d->CachedMinimumSizeHint;
 }
 

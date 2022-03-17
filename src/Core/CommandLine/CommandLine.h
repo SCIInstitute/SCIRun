@@ -30,8 +30,8 @@
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H
 
 #include <string>
+#include <optional>
 #include <boost/filesystem.hpp>
-#include <boost/optional.hpp>
 #include <Core/Utils/SmartPointers.h>
 #include <boost/noncopyable.hpp>
 #include <Core/CommandLine/share.h>
@@ -48,9 +48,9 @@ namespace SCIRun {
       public:
         virtual ~ApplicationParameters();
         virtual const std::vector<std::string>& inputFiles() const = 0;
-        virtual boost::optional<boost::filesystem::path> pythonScriptFile() const = 0;
-        virtual boost::optional<boost::filesystem::path> dataDirectory() const = 0;
-        virtual boost::optional<std::string> importNetworkFile() const = 0;
+        virtual std::optional<boost::filesystem::path> pythonScriptFile() const = 0;
+        virtual std::optional<boost::filesystem::path> dataDirectory() const = 0;
+        virtual std::optional<std::string> importNetworkFile() const = 0;
         virtual bool help() const = 0;
         virtual bool version() const = 0;
         virtual bool executeNetwork() const = 0;
@@ -72,12 +72,12 @@ namespace SCIRun {
       {
       public:
         virtual ~DeveloperParameters() {}
-        virtual boost::optional<int> regressionTimeoutSeconds() const = 0;
-        virtual boost::optional<std::string> threadMode() const = 0;
-        virtual boost::optional<std::string> reexecuteMode() const = 0;
-        virtual boost::optional<int> frameInitLimit() const = 0;
-        virtual boost::optional<unsigned int> maxCores() const = 0;
-        virtual boost::optional<double> guiExpandFactor() const = 0;
+        virtual std::optional<int> regressionTimeoutSeconds() const = 0;
+        virtual std::optional<std::string> threadMode() const = 0;
+        virtual std::optional<std::string> reexecuteMode() const = 0;
+        virtual std::optional<int> frameInitLimit() const = 0;
+        virtual std::optional<unsigned int> maxCores() const = 0;
+        virtual std::optional<double> guiExpandFactor() const = 0;
       };
 
       typedef SharedPointer<ApplicationParameters> ApplicationParametersHandle;
