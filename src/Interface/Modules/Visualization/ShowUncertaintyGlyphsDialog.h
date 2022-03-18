@@ -43,7 +43,8 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    ShowUncertaintyGlyphsDialog(SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    ShowUncertaintyGlyphsDialog(const std::string& name,
+                                SCIRun::Dataflow::Networks::ModuleStateHandle state,
                                 QWidget* parent = 0);
   private:
     void setupTensorsTab();

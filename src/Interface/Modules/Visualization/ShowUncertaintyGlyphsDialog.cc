@@ -34,11 +34,14 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 
-ShowUncertaintyGlyphsDialog::ShowUncertaintyGlyphsDialog(ModuleStateHandle state,
+ShowUncertaintyGlyphsDialog::ShowUncertaintyGlyphsDialog(const std::string& name,
+                                                         ModuleStateHandle state,
                                                          QWidget* parent)
 : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
   setupTensorsTab();
   addLineEditManager(lineEdit, ShowUncertaintyGlyphs::FieldName);
 }
