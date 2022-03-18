@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Algorithms;
 
 MODULE_INFO_DEF(SplitFileName, String, SCIRun)
 
-SplitFileName::SplitFileName() : Module(staticInfo_,false)
+SplitFileName::SplitFileName() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Full_Filename);
   INITIALIZE_PORT(Pathname);
@@ -59,58 +59,20 @@ SplitFileName::execute()
 {
   auto filenameH = getRequiredInput(Full_Filename);
 
-  std::string filename, fn, pn, ext, fnext;
+  const char sep = boost::filesystem::path::preferred_separator;
 
-  const char sep = '/';
-  const char dot = '.';
-
-  filename = filenameH->value();
+  auto filename = filenameH->value();
 
   if (needToExecute())
   {
+    if (!filename.empty()) 
+      if (filename.back() == sep)
+        filename = filename.substr(0, filename.size() - 1);
 
-      if (filename.size() > 0) if (filename[filename.size()-1] == sep)
-                                                              filename = filename.substr(0,filename.size()-1);
-
-    int lastsep = -1;
-    for (size_t p = 0; p < filename.size(); p++) if (filename[p] == sep) lastsep = (int)p;
-
-    if (lastsep > -1)
-    {
-      pn = filename.substr(0,lastsep+1);
-      fn = filename.substr(lastsep+1);
-    }
-    else
-    {
-      pn = "";
-      fn = filename;
-    }
-
-    int lastdot = -1;
-    for (size_t p = 0; p < fn.size(); p++) if (fn[p] == dot) lastdot = (int)p;
-
-    if (lastdot > -1)
-    {
-      ext = fn.substr(lastdot);
-      fn = fn.substr(0,lastdot);
-    }
-    else
-    {
-      ext = "";
-    }
-
-    fnext = fn+ext;
-
-    StringHandle pnH(new String(pn));
-    sendOutput(Pathname, pnH);
-
-    StringHandle fnH(new String(fn));
-    sendOutput(Base, fnH);
-
-    StringHandle extH(new String(ext));
-    sendOutput(Extension, extH);
-
-    StringHandle fnextH(new String(fnext));
-    sendOutput(Filename, fnextH);
+    boost::filesystem::path p(filename);
+    sendOutput(Pathname, std::make_shared<String>(p.parent_path().make_preferred().string() + sep));
+    sendOutput(Base, std::make_shared<String>(p.stem().string()));
+    sendOutput(Extension, std::make_shared<String>(p.extension().string()));
+    sendOutput(Filename, std::make_shared<String>(p.filename().string()));
   }
 }
