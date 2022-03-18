@@ -117,8 +117,8 @@ namespace SCIRun {
       private:
         void configureInputs(
             FieldHandle pfield,
-            boost::optional<FieldHandle> sfield,
-            boost::optional<FieldHandle> tfield);
+            std::optional<FieldHandle> sfield,
+            std::optional<FieldHandle> tfield);
         RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 

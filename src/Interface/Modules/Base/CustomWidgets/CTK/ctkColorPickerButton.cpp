@@ -30,6 +30,7 @@
 #include <QStylePainter>
 
 // CTK includes
+#include "Core/ctkUtils.h"
 #include "ctkColorDialog.h"
 #include "ctkColorPickerButton.h"
 
@@ -298,7 +299,7 @@ QSize ctkColorPickerButton::sizeHint()const
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = this->style()->sizeFromContents(
       QStyle::CT_ToolButton, &opt, opt.iconSize, this).
-      expandedTo(QApplication::globalStrut());
+      expandedTo(ctk::globalStrutReplacement());
     }
   else
     {
@@ -307,7 +308,7 @@ QSize ctkColorPickerButton::sizeHint()const
     pushButtonOpt.rect.setSize(pushButtonOpt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = (style()->sizeFromContents(
                            QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this).
-                         expandedTo(QApplication::globalStrut()));
+                         expandedTo(ctk::globalStrutReplacement()));
     }
   return d->CachedSizeHint;
 }

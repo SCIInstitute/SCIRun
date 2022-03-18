@@ -197,7 +197,7 @@ std::vector<Variable> AlgorithmParameter::toVector() const
 
 DatatypeHandle AlgorithmParameter::getDatatype() const
 {
-  return data_.get_value_or(nullptr);
+  return data_.value_or(nullptr);
 }
 
 Variable SCIRun::Core::Algorithms::makeVariable(const std::string& name, const Variable::Value& value)

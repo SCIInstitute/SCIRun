@@ -264,14 +264,14 @@ namespace SCIRun {
         bool isClippable() const {return isClippable_;}
 
         //void setColorMap(const std::string&) { }
-        boost::optional<std::string> colorMap() const { return mColorMap; }
+        std::optional<std::string> colorMap() const { return mColorMap; }
 
       private:
         VBOList mVBOs;  ///< Array of vertex buffer objects.
         IBOList mIBOs;  ///< Array of index buffer objects.
         PassList  mPasses; /// List of passes to setup.
         bool isClippable_;
-        boost::optional<std::string> mColorMap;
+        std::optional<std::string> mColorMap;
       };
 
       typedef SharedPointer<GeometryObjectSpire> GeometryHandle;

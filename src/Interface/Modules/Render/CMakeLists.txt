@@ -141,7 +141,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_QWT_LIBRARY}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)
+TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)

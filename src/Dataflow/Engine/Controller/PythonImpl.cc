@@ -257,7 +257,7 @@ namespace
       {
         return output->peekData();
       }
-      return boost::none;
+      return {};
     }
     SharedPointer<PortDescriptionInterface> port_;
     NetworkEditorController& nec_;

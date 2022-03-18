@@ -32,11 +32,20 @@ SET(QWT_CACHE_ARGS
   "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
   )
 
-SET(qwt_GIT_TAG "origin/qt5-static-6.1.5")
 LIST(APPEND QWT_CACHE_ARGS
-  "-DQt5_PATH:PATH=${Qt5_PATH}"
-  "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
+  "-DQt_PATH:PATH=${Qt_PATH}"
+  "-DQt5_PATH:PATH=${Qt_PATH}"
+  "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
+  "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
+  "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
+  "-DQt${QT_VERSION_MAJOR}GuiTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}GuiTools_DIR}"
 )
+
+if (${QT_VERSION_MAJOR} STREQUAL "5")
+  SET(qwt_GIT_TAG "origin/qt5-static-6.1.5")
+else()
+  SET(qwt_GIT_TAG "origin/qt6-static-6.2.0")
+endif()
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).

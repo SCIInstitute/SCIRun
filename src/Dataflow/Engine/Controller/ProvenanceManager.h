@@ -72,7 +72,7 @@ namespace Engine {
     ItemHandle redo(bool restore);
     IOType* networkIO_;
     Stack undo_, redo_;
-    boost::optional<Memento> initialState_;
+    std::optional<Memento> initialState_;
   };
 
 
@@ -134,7 +134,7 @@ namespace Engine {
         if (!undo_.empty())
           networkIO_->loadNetwork(undo_.top()->memento());
         else if (initialState_)
-          networkIO_->loadNetwork(initialState_.get());
+          networkIO_->loadNetwork(*initialState_);
       }
 
       return undone;
@@ -177,7 +177,7 @@ namespace Engine {
       undone.push_back(undo(false));
     networkIO_->clear();
     if (initialState_)
-      networkIO_->loadNetwork(initialState_.get());
+      networkIO_->loadNetwork(*initialState_);
     return undone;
   }
 
