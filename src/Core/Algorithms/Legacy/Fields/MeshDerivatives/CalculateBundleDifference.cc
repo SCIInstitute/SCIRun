@@ -87,7 +87,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
 
   FieldHandle fhandle1, fhandle2, fhandle_seed, out_fhandle1, out_fhandle2;
 
-
   VMesh::Node::index_type i1, i2, ic, id, si;
   VMesh* smesh;
   VMesh* imesh1;
@@ -109,8 +108,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
   }
 
   //Change the points to coordinate
-
-
   //!loop into each fiber in bundle 1
   for (int p = 0; p < numFields1; p++)
   {
@@ -183,9 +180,8 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
 
   std::vector<int> dir_label(static_cast<int>(nnodes_seed));
 
-  for (int p = 0; p < nnodes_seed; p++) {
-
-
+  for (int p = 0; p < nnodes_seed; p++)
+  {
     if ((boundleseed1[p][0] != -1) && (boundleseed2[p][0] != -1))
     {
       fhandle1 = handle1->getField(handle1->getFieldNames()[boundleseed1[p][0]]);
@@ -227,7 +223,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
   VField* outField1;
   VField* outField2;
 
-
   if (checkOption(Variables::Method, "distance_between_nodes"))
   {
     for (int p = 0; p < nnodes_seed; p++)
@@ -262,12 +257,10 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
           fi = std::min(boundleseed1[p][1], (static_cast<int>(nnodes2) - boundleseed2[p][1] - 1));
           bi = std::min((static_cast<int>(nnodes1) - boundleseed1[p][1] - 1), boundleseed2[p][1]);
         }
-        else {
-
+        else
+        {
         }
-
         //this part calculate the common area of the two fiber bundles
-
         if (dir_label[p] == 1)
         {
           for (int q = 0; q < fi; q++)
@@ -318,7 +311,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
         {
           i1 = q;
           outField1->set_value(max_dist * (1.2), i1);
-
         }
         //this part set up the value for all of the node in bundle 2
         for (int q = 0; q < nnodes2; q++)
@@ -332,9 +324,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
         i2 = boundleseed2[p][1];
         outField1->set_value(0, i1);
         outField2->set_value(0, i2);
-
         //this part calculate the common area of the two fiber bundles
-
         if (dir_label[p] == 1)
         {
           for (int q = 0; q < fi; q++)
@@ -344,13 +334,11 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             i2 = boundleseed2[p][1] - q - 1;
             imesh2->get_center(point2, i2);
             dist = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            if (dist > max_dist) max_dist = dist;
-
+            if (dist > max_dist)
+              max_dist = dist;
             outField1->set_value(dist, i1);
             outField2->set_value(dist, i2);
-
           }
-
           for (int q = 0; q < bi; q++)
           {
             i1 = boundleseed1[p][1] + q + 1;
@@ -363,7 +351,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
 
             outField1->set_value(dist, i1);
             outField2->set_value(dist, i2);
-
           }
         }
         else
@@ -381,7 +368,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             outField1->set_value(dist, i1);
             outField2->set_value(dist, i2);
           }
-
           for (int q = 0; q < bi; q++)
           {
             i1 = boundleseed1[p][1] + q + 1;
@@ -394,7 +380,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
 
             outField1->set_value(dist, i1);
             outField2->set_value(dist, i2);
-
           }
         }
       } //end for the boundleseed1 checking
@@ -418,7 +403,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
           i1 = q;
           outField1->set_value(max_dist * (1.2), i1);
         }
-
       }
       else if ((boundleseed1[p][0] == -1) && (boundleseed2[p][0] != -1))
       {
@@ -476,7 +460,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
           fi = std::min(boundleseed1[p][1], (static_cast<int>(nnodes2) - boundleseed2[p][1] - 1));
           bi = std::min((static_cast<int>(nnodes1) - boundleseed1[p][1] - 1), boundleseed2[p][1]);
         }
-
         //this part calculate the common area of the two fiber bundles
 
         if (dir_label[p] == 1)
@@ -507,7 +490,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             area = area1 + area2;
             if (area > max_area) max_area = area;
           }
-
           for (int q = 0; q < (bi - 1); q++)
           {
             i1 = boundleseed1[p][1] + q + 1;
@@ -563,7 +545,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             area = area1 + area2;
             if (area > max_area) max_area = area;
           }
-
           for (int q = 0; q < (bi - 1); q++)
           {
             i1 = boundleseed1[p][1] + q + 1;
@@ -780,7 +761,6 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
   }
   return (true);
 }
-
 
 AlgorithmOutput CalculateBundleDifferenceAlgo::run(const AlgorithmInput& input) const
 {
