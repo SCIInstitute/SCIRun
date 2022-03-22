@@ -154,6 +154,22 @@ void SCIRunMainWindow::addSnippetMenu(QTreeWidget* tree)
   tree->addTopLevelItem(snips);
 }
 
+void SCIRunMainWindow::addFrequentMenu(QTreeWidget* tree)
+{
+  auto freqs = new QTreeWidgetItem();
+  freqs->setText(0, bullet + "Frequent Modules");
+  freqs->setForeground(0, favesColor());
+  tree->addTopLevelItem(freqs);
+}
+
+void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)
+{
+  auto recent = new QTreeWidgetItem();
+  recent->setText(0, bullet + "Recent Modules");
+  recent->setForeground(0, favesColor());
+  tree->addTopLevelItem(recent);
+}
+
 void SCIRunMainWindow::addSavedSubnetworkMenu(QTreeWidget* tree)
 {
   auto savedSubnetworks = new QTreeWidgetItem();

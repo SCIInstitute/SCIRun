@@ -189,7 +189,10 @@ private:
   void readCustomSnippets(QTreeWidgetItem* snips);
   void addSnippetMenu(QTreeWidget* tree);
   void addSavedSubnetworkMenu(QTreeWidget* tree);
+  void addFrequentMenu(QTreeWidget* tree);
+  void addRecentMenu(QTreeWidget* tree);
   void addClipboardHistoryMenu(QTreeWidget* tree);
+  void updateRecentModules(const QString& modId);
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
   void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
   void sortFavorites(QTreeWidget* tree);

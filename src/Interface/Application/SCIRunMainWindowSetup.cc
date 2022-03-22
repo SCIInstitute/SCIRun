@@ -464,6 +464,8 @@ void SCIRunMainWindow::fillModuleSelector()
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
+  addRecentMenu(moduleSelectorTreeWidget_);
+  addFrequentMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
 	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
   fillSavedSubnetworkMenu();

@@ -645,6 +645,8 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
 
+  updateRecentModules(modId);
+
 #if 0
   if (modId.contains("Subnet"))
   {
@@ -743,12 +745,31 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   clip->setData(0, clipboardKey, xml);
   clip->setForeground(0, CLIPBOARD_COLOR);
 
-  const int clipMax = 5;
+  static constexpr int clipMax = 20;
   if (clips->childCount() == clipMax)
     clips->removeChild(clips->child(0));
 
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
+}
+
+void SCIRunMainWindow::updateRecentModules(const QString& moduleName)
+{
+  qDebug() << __FUNCTION__ << moduleName;
+  //auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
+
+  // auto clip = new QTreeWidgetItem();
+  // clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
+  // clip->setToolTip(0, "todo: xml translation");
+  // clip->setData(0, clipboardKey, xml);
+  // clip->setForeground(0, CLIPBOARD_COLOR);
+  //
+  // static constexpr int clipMax = 20;
+  // if (clips->childCount() == clipMax)
+  //   clips->removeChild(clips->child(0));
+  //
+  // clip->setCheckState(0, Qt::Unchecked);
+  // clips->addChild(clip);
 }
 
 void SCIRunMainWindow::showSnippetHelp()

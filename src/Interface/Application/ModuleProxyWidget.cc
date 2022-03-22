@@ -172,6 +172,9 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+  disconnect(module_, &ModuleWidget::dynamicPortChanged, this, &ModuleProxyWidget::createPortPositionProviders);
+  disconnect(module_, &ModuleWidget::displayChanged, this, &ModuleProxyWidget::createPortPositionProviders);
+  destroyed_ = true;
   delete backgroundShape_;
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << "~dtor" << __FILE__ << __LINE__ << pos() << scenePos();
@@ -626,6 +629,14 @@ void ModuleProxyWidget::setBackgroundPolygon(LoopDiamondPolygon* p)
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
+  if (destroyed_)
+  {
+    //TODO: debug
+    //qDebug() << __FUNCTION__ << "called after destructor";
+    //qDebug() << sender();
+    return;
+  }
+
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __FILE__ << __LINE__ << pos() << scenePos();
   logCritical("module proxy {} when is pos set back to 0,0 {},{}", module_->getModuleId(),
