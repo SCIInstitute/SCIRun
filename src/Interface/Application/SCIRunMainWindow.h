@@ -185,6 +185,7 @@ private:
   QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree);
   QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree);
   QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getRecentModulesMenu(QTreeWidget* tree);
   void addSnippet(const QString& code, QTreeWidgetItem* snips);
   void readCustomSnippets(QTreeWidgetItem* snips);
   void addSnippetMenu(QTreeWidget* tree);

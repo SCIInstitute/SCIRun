@@ -753,23 +753,41 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   clips->addChild(clip);
 }
 
-void SCIRunMainWindow::updateRecentModules(const QString& moduleName)
+void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
 {
-  qDebug() << __FUNCTION__ << moduleName;
-  //auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
+  //qDebug() << __FUNCTION__ << moduleId;
+  auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
 
-  // auto clip = new QTreeWidgetItem();
-  // clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
-  // clip->setToolTip(0, "todo: xml translation");
-  // clip->setData(0, clipboardKey, xml);
-  // clip->setForeground(0, CLIPBOARD_COLOR);
-  //
-  // static constexpr int clipMax = 20;
-  // if (clips->childCount() == clipMax)
-  //   clips->removeChild(clips->child(0));
-  //
-  // clip->setCheckState(0, Qt::Unchecked);
-  // clips->addChild(clip);
+  const auto name = moduleId.split(':')[0];
+  const auto label = "0 - " + name;
+
+  for (int i = 0; i < recent->childCount(); ++i)
+  {
+    //qDebug() << '\t' << i << recent->child(i)->text(0);
+    if (recent->child(i)->text(0).endsWith(name))
+    {
+      //qDebug() << " need to move to top " << name;
+      delete recent->takeChild(i);
+    }
+  }
+
+  static constexpr int recentMax = 10;
+  if (recent->childCount() == recentMax)
+  {
+    recent->removeChild(recent->child(recentMax - 1));
+  }
+
+  for (int i = 0; i < recent->childCount(); ++i)
+  {
+    auto oldName = recent->child(i)->text(0);
+    recent->child(i)->setText(0, QString::number(i+1) + " - " + oldName.split(' ')[2]);
+  }
+
+  auto mod = new QTreeWidgetItem();
+  mod->setText(0, label);
+  mod->setData(0, clipboardKey, name);
+
+  recent->insertChild(0, mod);
 }
 
 void SCIRunMainWindow::showSnippetHelp()

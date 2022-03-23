@@ -61,13 +61,20 @@ void TextEditAppender::log4(const std::string& message) const
 
 QString TreeViewModuleGetter::text() const
 {
+  auto clip = tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  if (!clip.isEmpty())
+    return clip;
   return tree_.currentItem()->text(0);
 }
 
 bool TreeViewModuleGetter::isModule() const
 {
   auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->foreground(0) != CLIPBOARD_COLOR;
+  return current
+    && current->childCount() == 0
+    && current->parent()
+    && !current->text(0).startsWith("clipboard")
+    && current->foreground(0) != CLIPBOARD_COLOR;
 }
 
 QString TreeViewModuleGetter::clipboardXML() const

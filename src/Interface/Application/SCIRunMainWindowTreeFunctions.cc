@@ -71,6 +71,7 @@ namespace
   const QString favoritesText = bullet + "Favorites";
   const QString clipboardHistoryText = hash + "Clipboard History";
   const QString savedSubsText = hash + "Saved Fragments";
+  const QString recentText = bullet + "Recent Modules";
 }
 
 void SCIRunMainWindow::addFavoriteMenu(QTreeWidget* tree)
@@ -103,6 +104,11 @@ QTreeWidgetItem* SCIRunMainWindow::getFavoriteMenu(QTreeWidget* tree)
 QTreeWidgetItem* SCIRunMainWindow::getClipboardHistoryMenu(QTreeWidget* tree)
 {
   return getTreeMenu(tree, clipboardHistoryText);
+}
+
+QTreeWidgetItem* SCIRunMainWindow::getRecentModulesMenu(QTreeWidget* tree)
+{
+  return getTreeMenu(tree, recentText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getSavedSubnetworksMenu(QTreeWidget* tree)
@@ -165,7 +171,7 @@ void SCIRunMainWindow::addFrequentMenu(QTreeWidget* tree)
 void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)
 {
   auto recent = new QTreeWidgetItem();
-  recent->setText(0, bullet + "Recent Modules");
+  recent->setText(0, recentText);
   recent->setForeground(0, favesColor());
   tree->addTopLevelItem(recent);
 }
