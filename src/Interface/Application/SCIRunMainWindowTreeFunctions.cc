@@ -174,6 +174,14 @@ void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)
   recent->setText(0, recentText);
   recent->setForeground(0, favesColor());
   tree->addTopLevelItem(recent);
+
+  for (const auto& m : recentModules_)
+  {
+    auto mod = new QTreeWidgetItem();
+    mod->setText(0, m);
+    mod->setData(0, clipboardKey, m.split(' ')[2]);
+    recent->insertChild(0, mod);
+  }
 }
 
 void SCIRunMainWindow::addSavedSubnetworkMenu(QTreeWidget* tree)

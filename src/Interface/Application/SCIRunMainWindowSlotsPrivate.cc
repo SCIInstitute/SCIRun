@@ -755,7 +755,6 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
 void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
 {
-  //qDebug() << __FUNCTION__ << moduleId;
   auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
 
   const auto name = moduleId.split(':')[0];
@@ -763,10 +762,8 @@ void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
 
   for (int i = 0; i < recent->childCount(); ++i)
   {
-    //qDebug() << '\t' << i << recent->child(i)->text(0);
     if (recent->child(i)->text(0).endsWith(name))
     {
-      //qDebug() << " need to move to top " << name;
       delete recent->takeChild(i);
     }
   }
@@ -788,6 +785,13 @@ void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
   mod->setData(0, clipboardKey, name);
 
   recent->insertChild(0, mod);
+
+  recentModules_.clear();
+  for (int i = 0; i < recent->childCount(); ++i)
+  {
+    recentModules_ << recent->child(i)->text(0);
+  }
+  writeSettings();
 }
 
 void SCIRunMainWindow::showSnippetHelp()

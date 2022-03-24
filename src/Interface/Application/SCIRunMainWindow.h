@@ -138,7 +138,7 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
-  QStringList toolkitFiles_, importedToolkits_;
+  QStringList toolkitFiles_, importedToolkits_, recentModules_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
   QMap<QString, QMenu*> toolkitMenus_;
