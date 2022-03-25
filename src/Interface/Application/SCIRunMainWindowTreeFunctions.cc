@@ -72,6 +72,7 @@ namespace
   const QString clipboardHistoryText = hash + "Clipboard History";
   const QString savedSubsText = hash + "Saved Fragments";
   const QString recentText = bullet + "Recent Modules";
+  const QString frequentText = bullet + "Frequent Modules";
 }
 
 void SCIRunMainWindow::addFavoriteMenu(QTreeWidget* tree)
@@ -109,6 +110,11 @@ QTreeWidgetItem* SCIRunMainWindow::getClipboardHistoryMenu(QTreeWidget* tree)
 QTreeWidgetItem* SCIRunMainWindow::getRecentModulesMenu(QTreeWidget* tree)
 {
   return getTreeMenu(tree, recentText);
+}
+
+QTreeWidgetItem* SCIRunMainWindow::getFrequentModulesMenu(QTreeWidget* tree)
+{
+  return getTreeMenu(tree, frequentText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getSavedSubnetworksMenu(QTreeWidget* tree)
@@ -163,9 +169,17 @@ void SCIRunMainWindow::addSnippetMenu(QTreeWidget* tree)
 void SCIRunMainWindow::addFrequentMenu(QTreeWidget* tree)
 {
   auto freqs = new QTreeWidgetItem();
-  freqs->setText(0, bullet + "Frequent Modules");
+  freqs->setText(0, frequentText);
   freqs->setForeground(0, favesColor());
   tree->addTopLevelItem(freqs);
+
+  // for (const auto& m : frequentModulesSettings_.keys())
+  // {
+  //   auto mod = new QTreeWidgetItem();
+  //   mod->setText(0, m);
+  //   //mod->setData(0, clipboardKey, m.split(' ')[2]);
+  //   freqs->insertChild(0, mod);
+  // }
 }
 
 void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)

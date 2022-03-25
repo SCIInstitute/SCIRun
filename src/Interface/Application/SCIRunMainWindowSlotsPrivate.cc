@@ -646,6 +646,7 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   menuCurrent_->addAction(modAction);
 
   updateRecentModules(modId);
+  updateFrequentModules(modId);
 
 #if 0
   if (modId.contains("Subnet"))
@@ -751,6 +752,65 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
+}
+
+void SCIRunMainWindow::updateFrequentModules(const QString& moduleId)
+{
+  const auto name = moduleId.split(':')[0];
+  frequentModules_[name]++;
+
+  qDebug() << "Current frequents:";
+  for (const auto& p : frequentModules_)
+  {
+    qDebug() << '\t' << p.first << p.second;
+  }
+
+  static constexpr size_t frequentMax = 5;
+  std::vector<std::pair<int, QString>> modUsage;
+  std::for_each(frequentModules_.begin(), frequentModules_.end(),
+    [&modUsage](const auto& p) { modUsage.emplace_back(p.second, p.first); });
+  std::sort(modUsage.begin(), modUsage.end(), [](auto&& p1, auto&& p2) { return p1.first > p2.first; });
+
+  qDebug() << "Ordered frequents:";
+  for (const auto& p : modUsage)
+  {
+    qDebug() << '\t' << p.first << p.second;
+  }
+
+  std::set<QString> top5;
+  std::transform(modUsage.begin(), modUsage.begin() + std::min(modUsage.size(), frequentMax),
+    std::inserter(top5, top5.begin()), [](auto&& p) { return p.second; });
+
+  qDebug() << "Top 5 frequents:";
+  for (const auto& p : top5)
+  {
+    qDebug() << '\t' << p;
+  }
+
+  auto freqs = getFrequentModulesMenu(moduleSelectorTreeWidget_);
+
+  for (int i = 0; i < freqs->childCount(); ++i)
+  {
+    const auto m = freqs->child(i)->text(0);
+    if (top5.find(m) == top5.end())
+    {
+      delete freqs->takeChild(i);
+    }
+    else
+    {
+      top5.erase(m);
+    }
+  }
+  for (const auto& m : top5)
+  {
+    auto mod = new QTreeWidgetItem();
+    mod->setText(0, m);
+    freqs->addChild(mod);
+  }
+
+  frequentModulesSettings_.clear();
+  std::for_each(frequentModules_.begin(), frequentModules_.end(), [&](auto&& p) { frequentModulesSettings_.insert(p.first, p.second); });
+  writeSettings();
 }
 
 void SCIRunMainWindow::updateRecentModules(const QString& moduleId)

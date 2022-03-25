@@ -138,6 +138,8 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
+  QMap<QString, QVariant> frequentModulesSettings_;
+  std::map<QString, int> frequentModules_;
   QStringList toolkitFiles_, importedToolkits_, recentModules_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
@@ -186,6 +188,7 @@ private:
   QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree);
   QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree);
   QTreeWidgetItem* getRecentModulesMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getFrequentModulesMenu(QTreeWidget* tree);
   void addSnippet(const QString& code, QTreeWidgetItem* snips);
   void readCustomSnippets(QTreeWidgetItem* snips);
   void addSnippetMenu(QTreeWidget* tree);
@@ -194,6 +197,7 @@ private:
   void addRecentMenu(QTreeWidget* tree);
   void addClipboardHistoryMenu(QTreeWidget* tree);
   void updateRecentModules(const QString& modId);
+  void updateFrequentModules(const QString& modId);
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
   void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
   void sortFavorites(QTreeWidget* tree);
