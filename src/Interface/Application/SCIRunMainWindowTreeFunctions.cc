@@ -173,13 +173,15 @@ void SCIRunMainWindow::addFrequentMenu(QTreeWidget* tree)
   freqs->setForeground(0, favesColor());
   tree->addTopLevelItem(freqs);
 
-  // for (const auto& m : frequentModulesSettings_.keys())
-  // {
-  //   auto mod = new QTreeWidgetItem();
-  //   mod->setText(0, m);
-  //   //mod->setData(0, clipboardKey, m.split(' ')[2]);
-  //   freqs->insertChild(0, mod);
-  // }
+  std::for_each(frequentModulesSettings_.constKeyValueBegin(), frequentModulesSettings_.constKeyValueEnd(),
+    [&](auto&& p) { frequentModules_.emplace(p.first, p.second.toInt()); });
+
+  for (const auto& m : topNMostFrequentModules())
+  {
+    auto mod = new QTreeWidgetItem();
+    mod->setText(0, m);
+    freqs->addChild(mod);
+  }
 }
 
 void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)

@@ -31,6 +31,7 @@
 
 #include <QDialog>
 #include <QDir>
+#include <set>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Application/PositionProvider.h>
 #include "ui_SCIRunMainWindow.h"
@@ -201,6 +202,7 @@ private:
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
   void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
   void sortFavorites(QTreeWidget* tree);
+  std::set<QString> topNMostFrequentModules() const;
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
