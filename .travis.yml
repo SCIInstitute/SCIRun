@@ -1,33 +1,30 @@
-language: c++
+language: ruby
 
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      compiler: gcc
-    - os: linux
-      dist: trusty
-      sudo: required
-      compiler: clang
-#   - os: osx
-#     osx_image: xcode7.2
+os:
+- linux
 
-# check environment (copied from libgit2sharp)
-before_install:
-- date -u
-- uname -a
-#- sudo apt-get update -qq
+rvm:
+- 2.7.0
 
-# TODO: could move script to separate file
-# Not running unit tests at the moment, so turn off testing, which will
-# hopefully make OS X builds a bit faster
-script:
-  - cd bin
-  - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
-  - make -j4 1> /dev/null
-#  make SCIRunTestData_external
-#  && make test
+before_script:
+ - chmod +x ./scripts/cibuild.sh # or do this locally and commit
+ - gem install html-proofer
+
+# Assume bundler is being used, therefore
+# the `install` step will run `bundle install` by default.
+script: ./scripts/cibuild.sh
+
+# branch whitelist, only for GitHub Pages
+branches:
+  only:
+  - gh-pages     # test the gh-pages branch
+  - /pages-(.*)/ # test every branch which starts with "pages-"
+
+env:
+  global:
+  - NOKOGIRI_USE_SYSTEM_LIBRARIES=true # speeds up installation of html-proofer
+
+sudo: false # route your build to the container-based infrastructure for a faster build
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1

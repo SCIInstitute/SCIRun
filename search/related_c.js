@@ -1,6 +1,0 @@
-var searchData=
-[
-  ['operator_2b',['operator+',['../struct_s_c_i_run_1_1_v_node_iterator.html#a795d02375aa45437ca9a10dbd4046193',1,'SCIRun::VNodeIterator::operator+()'],['../struct_s_c_i_run_1_1_v_face_iterator.html#ab9d69e695ca2cca30e1ec58303a43d5a',1,'SCIRun::VFaceIterator::operator+()']]],
-  ['operator_3c_3c',['operator&lt;&lt;',['../class_s_c_i_run_1_1_core_1_1_datatypes_1_1_matrix_base.html#ab8c3d0a7b17a8b471e9ed371fa65c4c0',1,'SCIRun::Core::Datatypes::MatrixBase::operator&lt;&lt;()'],['../class_s_c_i_run_1_1_core_1_1_geometry_1_1_b_box.html#a1a3b02446995a20e0e29bbbe40919fd2',1,'SCIRun::Core::Geometry::BBox::operator&lt;&lt;()'],['../class_s_c_i_run_1_1_core_1_1_geometry_1_1_point.html#a399ef1f9302b33d17cf1b7bb4e1f78ef',1,'SCIRun::Core::Geometry::Point::operator&lt;&lt;()'],['../class_s_c_i_run_1_1_core_1_1_logging_1_1_log_1_1_stream.html#aad77d8c8a7c45c81208759f4c8e95227',1,'SCIRun::Core::Logging::Log::Stream::operator&lt;&lt;()'],['../class_s_c_i_run_1_1_core_1_1_logging_1_1_log.html#a544b090f58e79690ee919d9ecd509f82',1,'SCIRun::Core::Logging::Log::operator&lt;&lt;()']]],
-  ['operator_3e_3e',['operator&gt;&gt;',['../class_s_c_i_run_1_1_core_1_1_geometry_1_1_point.html#a4d281deae3a828de94746fdd03909ca2',1,'SCIRun::Core::Geometry::Point']]]
-];
