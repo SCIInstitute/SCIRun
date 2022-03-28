@@ -335,7 +335,7 @@ void SCIRunMainWindow::clearFragmentList()
 {
   savedSubnetworksNames_.clear();
   savedSubnetworksXml_.clear();
-  auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  auto menu = getSavedSubnetworksMenu();
   auto count = menu->childCount();
   for (int i = 0; i < count; ++i)
   {
@@ -410,7 +410,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
+    auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu() : getFavoriteMenu();
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -447,7 +447,7 @@ void SCIRunMainWindow::removeSavedSubnetwork()
 	auto toDelete = sender()->property("ID").toString();
   savedSubnetworksNames_.remove(toDelete);
   savedSubnetworksXml_.remove(toDelete);
-	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+	auto tree = getSavedSubnetworksMenu();
 	for (int i = 0; i < tree->childCount(); ++i)
 	{
 		auto subnet = tree->child(i);
@@ -467,7 +467,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
   if (ok && !text.isEmpty())
   {
     savedSubnetworksNames_[toRename] = text;
-    auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+    auto tree = getSavedSubnetworksMenu();
     for (int i = 0; i < tree->childCount(); ++i)
     {
       auto subnet = tree->child(i);
@@ -738,7 +738,7 @@ void SCIRunMainWindow::copyVersionToClipboard()
 
 void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 {
-  auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
+  auto clips = getClipboardHistoryMenu();
 
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
@@ -774,7 +774,7 @@ void SCIRunMainWindow::updateFrequentModules(const QString& moduleId)
   const auto name = moduleId.split(':')[0];
   frequentModules_[name]++;
 
-  auto freqs = getFrequentModulesMenu(moduleSelectorTreeWidget_);
+  auto freqs = getFrequentModulesMenu();
   qDeleteAll(freqs->takeChildren());
 
   for (const auto& m : topNMostFrequentModules())
@@ -791,7 +791,7 @@ void SCIRunMainWindow::updateFrequentModules(const QString& moduleId)
 
 void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
 {
-  auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
+  auto recent = getRecentModulesMenu();
 
   const auto name = moduleId.split(':')[0];
   const auto label = "0 - " + name;
@@ -1012,7 +1012,7 @@ void SCIRunMainWindow::toggleFullScreen()
 
 void SCIRunMainWindow::clearRecentModules()
 {
-  auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
+  auto recent = getRecentModulesMenu();
   qDeleteAll(recent->takeChildren());
   recentModules_.clear();
   writeSettings();
@@ -1020,7 +1020,7 @@ void SCIRunMainWindow::clearRecentModules()
 
 void SCIRunMainWindow::clearFrequentModules()
 {
-  auto freqs = getFrequentModulesMenu(moduleSelectorTreeWidget_);
+  auto freqs = getFrequentModulesMenu();
   qDeleteAll(freqs->takeChildren());
   frequentModules_.clear();
   frequentModulesSettings_.clear();

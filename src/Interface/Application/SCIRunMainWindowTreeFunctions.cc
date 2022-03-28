@@ -97,29 +97,29 @@ QTreeWidgetItem* SCIRunMainWindow::getTreeMenu(QTreeWidget* tree, const QString&
   return nullptr;
 }
 
-QTreeWidgetItem* SCIRunMainWindow::getFavoriteMenu(QTreeWidget* tree)
+QTreeWidgetItem* SCIRunMainWindow::getFavoriteMenu()
 {
-  return getTreeMenu(tree, favoritesText);
+  return getTreeMenu(moduleSelectorTreeWidget_, favoritesText);
 }
 
-QTreeWidgetItem* SCIRunMainWindow::getClipboardHistoryMenu(QTreeWidget* tree)
+QTreeWidgetItem* SCIRunMainWindow::getClipboardHistoryMenu()
 {
-  return getTreeMenu(tree, clipboardHistoryText);
+  return getTreeMenu(moduleSelectorTreeWidget_, clipboardHistoryText);
 }
 
-QTreeWidgetItem* SCIRunMainWindow::getRecentModulesMenu(QTreeWidget* tree)
+QTreeWidgetItem* SCIRunMainWindow::getRecentModulesMenu()
 {
-  return getTreeMenu(tree, recentText);
+  return getTreeMenu(moduleSelectorTreeWidget_, recentText);
 }
 
-QTreeWidgetItem* SCIRunMainWindow::getFrequentModulesMenu(QTreeWidget* tree)
+QTreeWidgetItem* SCIRunMainWindow::getFrequentModulesMenu()
 {
-  return getTreeMenu(tree, frequentText);
+  return getTreeMenu(moduleSelectorTreeWidget_, frequentText);
 }
 
-QTreeWidgetItem* SCIRunMainWindow::getSavedSubnetworksMenu(QTreeWidget* tree)
+QTreeWidgetItem* SCIRunMainWindow::getSavedSubnetworksMenu()
 {
-  return getTreeMenu(tree, savedSubsText);
+  return getTreeMenu(moduleSelectorTreeWidget_, savedSubsText);
 }
 
 void SCIRunMainWindow::addSnippet(const QString& code, QTreeWidgetItem* snips)
@@ -234,7 +234,7 @@ QTreeWidgetItem* SCIRunMainWindow::addFavoriteItem(QTreeWidgetItem* faves, QTree
 
 void SCIRunMainWindow::fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
 {
-  auto faves = getFavoriteMenu(tree);
+  auto faves = getFavoriteMenu();
   for (const auto& package : moduleMap)
   {
     const auto& packageName = package.first;
@@ -281,8 +281,8 @@ void SCIRunMainWindow::fillTreeWidget(QTreeWidget* tree, const ModuleDescription
   }
 }
 
-void SCIRunMainWindow::sortFavorites(QTreeWidget* tree)
+void SCIRunMainWindow::sortFavorites()
 {
-  auto faves = getFavoriteMenu(tree);
+  auto faves = getFavoriteMenu();
   faves->sortChildren(0, Qt::AscendingOrder);
 }

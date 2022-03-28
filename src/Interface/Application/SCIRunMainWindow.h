@@ -185,11 +185,11 @@ private:
 
   void addFavoriteMenu(QTreeWidget* tree);
   QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text);
-  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getRecentModulesMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getFrequentModulesMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getFavoriteMenu();
+  QTreeWidgetItem* getClipboardHistoryMenu();
+  QTreeWidgetItem* getSavedSubnetworksMenu();
+  QTreeWidgetItem* getRecentModulesMenu();
+  QTreeWidgetItem* getFrequentModulesMenu();
   void addSnippet(const QString& code, QTreeWidgetItem* snips);
   void readCustomSnippets(QTreeWidgetItem* snips);
   void addSnippetMenu(QTreeWidget* tree);
@@ -201,7 +201,7 @@ private:
   void updateFrequentModules(const QString& modId);
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
   void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
-  void sortFavorites(QTreeWidget* tree);
+  void sortFavorites();
   std::set<QString> topNMostFrequentModules() const;
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting

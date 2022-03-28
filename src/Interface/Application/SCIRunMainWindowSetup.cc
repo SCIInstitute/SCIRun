@@ -441,7 +441,7 @@ void SCIRunMainWindow::fillSavedSubnetworkMenu()
 
 void SCIRunMainWindow::addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls)
 {
-  auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  auto savedSubnetworks = getSavedSubnetworksMenu();
   auto keys = names.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
   for (auto&& tup : zip(names, xmls, keys))
   {
@@ -471,7 +471,7 @@ void SCIRunMainWindow::fillModuleSelector()
   fillSavedSubnetworkMenu();
 	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
-  sortFavorites(moduleSelectorTreeWidget_);
+  sortFavorites();
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);

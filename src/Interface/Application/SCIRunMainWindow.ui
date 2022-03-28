@@ -422,6 +422,54 @@
       </layout>
      </item>
      <item>
+      <widget class="QTreeWidget" name="userModuleSelectorTreeWidget_">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Drag or double-click to add a module. Star icon adds/removes from favorites.</string>
+       </property>
+       <property name="whatsThis">
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module. Click the checkbox to add/remove from the favorites list.</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="animated">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>50</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
