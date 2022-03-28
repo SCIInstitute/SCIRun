@@ -463,23 +463,25 @@ void SCIRunMainWindow::fillModuleSelector()
 
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
-  addFavoriteMenu(moduleSelectorTreeWidget_);
-  addRecentMenu(moduleSelectorTreeWidget_);
-  addFrequentMenu(moduleSelectorTreeWidget_);
+  addFavoriteMenu(userModuleSelectorTreeWidget_);
+  addRecentMenu(userModuleSelectorTreeWidget_);
+  addFrequentMenu(userModuleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
-	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
+	addSavedSubnetworkMenu(userModuleSelectorTreeWidget_);
   fillSavedSubnetworkMenu();
-	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
+	addClipboardHistoryMenu(userModuleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites();
 
-  GrabNameAndSetFlags visitor;
-  visitTree(moduleSelectorTreeWidget_, visitor);
-
-  moduleSelectorTreeWidget_->expandAll();
-  moduleSelectorTreeWidget_->resizeColumnToContents(0);
-  moduleSelectorTreeWidget_->resizeColumnToContents(1);
-  moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+  for (auto& tree : {moduleSelectorTreeWidget_, userModuleSelectorTreeWidget_})
+  {
+    GrabNameAndSetFlags visitor;
+    visitTree(tree, visitor);
+    tree->expandAll();
+    tree->resizeColumnToContents(0);
+    tree->resizeColumnToContents(1);
+    tree->sortByColumn(0, Qt::AscendingOrder);
+  }
 
   connect(moduleSelectorTreeWidget_, &QTreeWidget::itemChanged, this, &SCIRunMainWindow::handleCheckedModuleEntry);
 

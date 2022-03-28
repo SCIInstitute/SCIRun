@@ -99,27 +99,27 @@ QTreeWidgetItem* SCIRunMainWindow::getTreeMenu(QTreeWidget* tree, const QString&
 
 QTreeWidgetItem* SCIRunMainWindow::getFavoriteMenu()
 {
-  return getTreeMenu(moduleSelectorTreeWidget_, favoritesText);
+  return getTreeMenu(userModuleSelectorTreeWidget_, favoritesText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getClipboardHistoryMenu()
 {
-  return getTreeMenu(moduleSelectorTreeWidget_, clipboardHistoryText);
+  return getTreeMenu(userModuleSelectorTreeWidget_, clipboardHistoryText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getRecentModulesMenu()
 {
-  return getTreeMenu(moduleSelectorTreeWidget_, recentText);
+  return getTreeMenu(userModuleSelectorTreeWidget_, recentText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getFrequentModulesMenu()
 {
-  return getTreeMenu(moduleSelectorTreeWidget_, frequentText);
+  return getTreeMenu(userModuleSelectorTreeWidget_, frequentText);
 }
 
 QTreeWidgetItem* SCIRunMainWindow::getSavedSubnetworksMenu()
 {
-  return getTreeMenu(moduleSelectorTreeWidget_, savedSubsText);
+  return getTreeMenu(userModuleSelectorTreeWidget_, savedSubsText);
 }
 
 void SCIRunMainWindow::addSnippet(const QString& code, QTreeWidgetItem* snips)
