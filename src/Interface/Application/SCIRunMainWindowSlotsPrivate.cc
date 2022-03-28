@@ -679,6 +679,7 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
   if (menuCurrent_->actions().isEmpty())
     menuCurrent_->setEnabled(false);
 
+#if 0
   if (modId.id_.find("Subnet") != std::string::npos)
   {
     auto subnet = currentSubnetActions_[name];
@@ -688,6 +689,7 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
     if (menuCurrentSubnets_->actions().isEmpty())
       menuCurrentSubnets_->setEnabled(false);
   }
+#endif
 
 }
 
@@ -810,10 +812,14 @@ void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
     recent->removeChild(recent->child(recentMax - 1));
   }
 
-  for (int i = 0; i < recent->childCount(); ++i)
+  for (int i = recent->childCount() - 1; i >=0 ; --i)
   {
     auto oldName = recent->child(i)->text(0);
-    recent->child(i)->setText(0, QString::number(i+1) + " - " + oldName.split(' ')[2]);
+    const auto split = oldName.split(' ');
+    const auto num = split[0].toInt();
+    const auto mod = split[2];
+    const auto newName = QString::number(i+1) + " - " + mod;
+    recent->child(i)->setText(0, newName);
   }
 
   auto mod = new QTreeWidgetItem();

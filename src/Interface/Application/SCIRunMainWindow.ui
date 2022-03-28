@@ -120,29 +120,6 @@
     <addaction name="separator"/>
     <addaction name="menuCurrent_"/>
    </widget>
-   <widget class="QMenu" name="menuSubnets_">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="title">
-     <string>&amp;Subnets</string>
-    </property>
-    <widget class="QMenu" name="menuCurrentSubnets_">
-     <property name="title">
-      <string>Current</string>
-     </property>
-    </widget>
-    <widget class="QMenu" name="menuSavedSubnets_">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Saved</string>
-     </property>
-    </widget>
-    <addaction name="menuCurrentSubnets_"/>
-    <addaction name="menuSavedSubnets_"/>
-   </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
      <bool>true</bool>
@@ -306,7 +283,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuNetwork"/>
    <addaction name="menuModules_"/>
-   <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
    <addaction name="menuHelp_"/>
