@@ -1012,10 +1012,17 @@ void SCIRunMainWindow::toggleFullScreen()
 
 void SCIRunMainWindow::clearRecentModules()
 {
-  qDebug() << __FUNCTION__;
+  auto recent = getRecentModulesMenu(moduleSelectorTreeWidget_);
+  qDeleteAll(recent->takeChildren());
+  recentModules_.clear();
+  writeSettings();
 }
 
 void SCIRunMainWindow::clearFrequentModules()
 {
-  qDebug() << __FUNCTION__;
+  auto freqs = getFrequentModulesMenu(moduleSelectorTreeWidget_);
+  qDeleteAll(freqs->takeChildren());
+  frequentModules_.clear();
+  frequentModulesSettings_.clear();
+  writeSettings();
 }
