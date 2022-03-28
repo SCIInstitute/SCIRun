@@ -115,6 +115,8 @@
     </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>
+    <addaction name="actionClearRecentModules_"/>
+    <addaction name="actionClearFrequentModules_"/>
     <addaction name="separator"/>
     <addaction name="menuCurrent_"/>
    </widget>
@@ -1400,6 +1402,16 @@
   <action name="actionStateViewer_">
    <property name="text">
     <string>State Viewer</string>
+   </property>
+  </action>
+  <action name="actionClearRecentModules_">
+   <property name="text">
+    <string>Clear recent modules</string>
+   </property>
+  </action>
+  <action name="actionClearFrequentModules_">
+   <property name="text">
+    <string>Clear frequent modules</string>
    </property>
   </action>
  </widget>

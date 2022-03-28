@@ -303,6 +303,8 @@ private Q_SLOTS:
   void updateClipboardHistory(const QString& xml);
   void updateDockWidgetProperties(bool isFloating);
   void zoomNetwork();
+  void clearRecentModules();
+  void clearFrequentModules();
 };
 
 }

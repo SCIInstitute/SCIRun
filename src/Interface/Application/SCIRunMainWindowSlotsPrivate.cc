@@ -1009,3 +1009,13 @@ void SCIRunMainWindow::toggleFullScreen()
   else
     showFullScreen();
 }
+
+void SCIRunMainWindow::clearRecentModules()
+{
+  qDebug() << __FUNCTION__;
+}
+
+void SCIRunMainWindow::clearFrequentModules()
+{
+  qDebug() << __FUNCTION__;
+}

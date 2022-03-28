@@ -182,6 +182,7 @@ void SCIRunMainWindow::addFrequentMenu(QTreeWidget* tree)
     mod->setText(0, m);
     freqs->addChild(mod);
   }
+  connect(actionClearFrequentModules_, &QAction::triggered, this, &SCIRunMainWindow::clearFrequentModules);
 }
 
 void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)
@@ -198,6 +199,7 @@ void SCIRunMainWindow::addRecentMenu(QTreeWidget* tree)
     mod->setData(0, clipboardKey, m.split(' ')[2]);
     recent->insertChild(0, mod);
   }
+  connect(actionClearRecentModules_, &QAction::triggered, this, &SCIRunMainWindow::clearRecentModules);
 }
 
 void SCIRunMainWindow::addSavedSubnetworkMenu(QTreeWidget* tree)
