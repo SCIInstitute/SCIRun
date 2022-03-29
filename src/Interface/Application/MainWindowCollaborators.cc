@@ -59,17 +59,17 @@ void TextEditAppender::log4(const std::string& message) const
   log(QString::fromStdString(message));
 }
 
-QString TreeViewModuleGetter::text() const
+QString TreeViewActiveModuleItem::text() const
 {
-  auto clip = tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  auto clip = activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
   if (!clip.isEmpty())
     return clip;
-  return tree_.currentItem()->text(0);
+  return activeTree_->currentItem()->text(0);
 }
 
-bool TreeViewModuleGetter::isModule() const
+bool TreeViewActiveModuleItem::isModule() const
 {
-  auto current = tree_.currentItem();
+  auto current = activeTree_->currentItem();
   return current
     && current->childCount() == 0
     && current->parent()
@@ -77,14 +77,14 @@ bool TreeViewModuleGetter::isModule() const
     && current->foreground(0) != CLIPBOARD_COLOR;
 }
 
-QString TreeViewModuleGetter::clipboardXML() const
+QString TreeViewActiveModuleItem::clipboardXML() const
 {
-  return tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  return activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
 }
 
-bool TreeViewModuleGetter::isClipboardXML() const
+bool TreeViewActiveModuleItem::isClipboardXML() const
 {
-  auto current = tree_.currentItem();
+  auto current = activeTree_->currentItem();
   return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->foreground(0) == CLIPBOARD_COLOR);
 }
 

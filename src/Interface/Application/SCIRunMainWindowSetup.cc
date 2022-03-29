@@ -173,9 +173,12 @@ void SCIRunMainWindow::createExecuteToolbar()
 
 void SCIRunMainWindow::postConstructionSignalHookup()
 {
-  connect(moduleSelectorTreeWidget_, &QTreeWidget::itemDoubleClicked, this, &SCIRunMainWindow::filterDoubleClickedModuleSelectorItem);
-	moduleSelectorTreeWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(moduleSelectorTreeWidget_, &QTreeWidget::customContextMenuRequested, this, &SCIRunMainWindow::showModuleSelectorContextMenu);
+  for (auto& tree : {moduleSelectorTreeWidget_, userModuleSelectorTreeWidget_})
+  {
+    connect(tree, &QTreeWidget::itemDoubleClicked, this, &SCIRunMainWindow::filterDoubleClickedModuleSelectorItem);
+  	tree->setContextMenuPolicy(Qt::CustomContextMenu);
+  	connect(tree, &QTreeWidget::customContextMenuRequested, this, &SCIRunMainWindow::showModuleSelectorContextMenu);
+  }
 
   WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
   connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::executionStarted, &WidgetDisablingService::Instance(), &WidgetDisablingService::disableInputWidgets);
@@ -249,7 +252,7 @@ void SCIRunMainWindow::setupInputWidgets()
 
 void SCIRunMainWindow::setupNetworkEditor()
 {
-  SharedPointer<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
+  moduleSelection_.reset(new TreeViewActiveModuleItem);
 
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   SharedPointer<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
@@ -266,7 +269,7 @@ void SCIRunMainWindow::setupNetworkEditor()
     if (screen.height() > 1600 && screen.height() * screen.width() > 4096000) // 2560x1600
       highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
-  networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, preexecuteFunc,
+  networkEditor_ = new NetworkEditor({ moduleSelection_, defaultNotePositionGetter_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor, nullptr }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 

@@ -65,16 +65,16 @@ namespace Gui {
     mutable QMutex mutex_;
   };
 
-  class TreeViewModuleGetter : public CurrentModuleSelection
+  class TreeViewActiveModuleItem : public CurrentModuleSelection
   {
   public:
-    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
+    void setActiveTree(QTreeWidget* tree) override { activeTree_ = tree; }
     QString text() const override;
     QString clipboardXML() const override;
     bool isModule() const override;
     bool isClipboardXML() const override;
   private:
-    QTreeWidget& tree_;
+    QTreeWidget* activeTree_ {nullptr};
   };
 
   class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter

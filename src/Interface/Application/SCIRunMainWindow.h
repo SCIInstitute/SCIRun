@@ -150,6 +150,7 @@ private:
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
   MacroEditor* macroEditor_;
+  SharedPointer<class CurrentModuleSelection> moduleSelection_;
 
   void createStandardToolbars();
   void createExecuteToolbar();

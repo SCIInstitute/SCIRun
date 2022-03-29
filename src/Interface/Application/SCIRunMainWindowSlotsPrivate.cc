@@ -250,6 +250,7 @@ void SCIRunMainWindow::zoomNetwork()
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
 {
+  moduleSelection_->setActiveTree(qobject_cast<QTreeWidget*>(sender()));
   if (item && item->childCount() == 0)
     Q_EMIT moduleItemDoubleClicked();
 }
@@ -816,7 +817,6 @@ void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
   {
     auto oldName = recent->child(i)->text(0);
     const auto split = oldName.split(' ');
-    const auto num = split[0].toInt();
     const auto mod = split[2];
     const auto newName = QString::number(i+1) + " - " + mod;
     recent->child(i)->setText(0, newName);

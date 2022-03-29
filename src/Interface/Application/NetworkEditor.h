@@ -52,6 +52,7 @@ class QToolBar;
 class QAction;
 class QGraphicsScene;
 class QTimeLine;
+class QTreeWidget;
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -66,6 +67,7 @@ namespace Gui {
   {
   public:
     virtual ~CurrentModuleSelection() {}
+    virtual void setActiveTree(QTreeWidget* tree) = 0;
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
     virtual QString clipboardXML() const = 0;
