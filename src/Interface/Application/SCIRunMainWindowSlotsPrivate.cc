@@ -150,24 +150,27 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
 {
-  ShowAll show;
-  visitTree(moduleSelectorTreeWidget_, show);
+  for (auto& tree : {moduleSelectorTreeWidget_, userModuleSelectorTreeWidget_})
+  {
+    ShowAll show;
+    visitTree(tree, show);
 
-  HideItemsNotMatchingString::SearchType searchType;
-  if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
-    searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
-  if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
-    searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
-  else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
-    searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
-  else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
-    searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
+    HideItemsNotMatchingString::SearchType searchType;
+    if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
+      searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
+    if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
+      searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
+    else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
+      searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
+    else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
+      searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
 
-  HideItemsNotMatchingString func(searchType, start);
+    HideItemsNotMatchingString func(searchType, start);
 
-  //note: goofy double call, first to hide the leaves, then hide the categories.
-  visitTree(moduleSelectorTreeWidget_, func);
-  visitTree(moduleSelectorTreeWidget_, func);
+    //note: goofy double call, first to hide the leaves, then hide the categories.
+    visitTree(tree, func);
+    visitTree(tree, func);
+  }
 }
 
 void SCIRunMainWindow::makePipesCubicBezier()
@@ -312,8 +315,12 @@ void SCIRunMainWindow::updateMacroButton(int index, const QString& name)
 
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
 {
-  auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
-	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
+  auto tree = qobject_cast<QTreeWidget*>(sender());
+  if (!tree)
+    return;
+    
+  auto globalPos = tree->mapToGlobal(pos);
+	auto item = tree->selectedItems()[0];
 	auto subnetData = item->data(0, Qt::UserRole).toString();
   if (saveFragmentData_ == subnetData)
   {

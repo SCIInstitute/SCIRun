@@ -244,6 +244,7 @@ void SCIRunMainWindow::setupInputWidgets()
     actionNew_,
     actionDelete_,
     moduleSelectorTreeWidget_,
+    userModuleSelectorTreeWidget_,
     actionRunScript_ };
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
@@ -489,13 +490,13 @@ void SCIRunMainWindow::fillModuleSelector()
     tree->resizeColumnToContents(0);
     tree->resizeColumnToContents(1);
     tree->sortByColumn(0, Qt::AscendingOrder);
+
+    connect(tree, &QTreeWidget::itemChanged, this, &SCIRunMainWindow::handleCheckedModuleEntry);
+
+    tree->setStyleSheet(
+      "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
+      "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
   }
-
-  connect(moduleSelectorTreeWidget_, &QTreeWidget::itemChanged, this, &SCIRunMainWindow::handleCheckedModuleEntry);
-
-  moduleSelectorTreeWidget_->setStyleSheet(
-    "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
-    "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
 }
 
 void SCIRunMainWindow::hideNonfunctioningWidgets()
