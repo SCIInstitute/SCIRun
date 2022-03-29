@@ -254,6 +254,11 @@ void SCIRunMainWindow::setupNetworkEditor()
 {
   moduleSelection_.reset(new TreeViewActiveModuleItem);
 
+  {
+    connect(moduleSelectorTreeWidget_, &QTreeWidget::itemPressed, [this]() { moduleSelection_->setActiveTree(moduleSelectorTreeWidget_); });
+    connect(userModuleSelectorTreeWidget_, &QTreeWidget::itemPressed, [this]() { moduleSelection_->setActiveTree(userModuleSelectorTreeWidget_); });
+  }
+
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   SharedPointer<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
   ModuleLog::Instance().addCustomSink(moduleLog);
