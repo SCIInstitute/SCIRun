@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>1100</width>
-         <height>982</height>
+         <height>958</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -291,7 +291,7 @@
    <property name="minimumSize">
     <size>
      <width>224</width>
-     <height>554</height>
+     <height>200</height>
     </size>
    </property>
    <property name="features">
@@ -545,6 +545,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="networkMiniViewDockWidget_">
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>200</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
      <width>400</width>
@@ -595,6 +601,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="userModuleSelectorDockWidget_">
+   <property name="minimumSize">
+    <size>
+     <width>224</width>
+     <height>100</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>User Module Selector</string>
    </property>
