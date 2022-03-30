@@ -76,7 +76,7 @@ class SCIRun::Modules::Teem::TendFiberImpl
     Nrrd *tfx_nrrd {nullptr};
 };
 
-TendFiber::TendFiber() : Module(staticInfo_), impl_(new TendFiberImpl)
+TendFiber::TendFiber() : Module(staticInfo_), impl_(new TendFiberImpl(this))
 {
   INITIALIZE_PORT(InputNrrd);
   INITIALIZE_PORT(SeedPoints);
