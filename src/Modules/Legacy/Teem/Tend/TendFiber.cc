@@ -78,8 +78,10 @@ class SCIRun::Modules::Teem::TendFiberImpl
 
 TendFiber::TendFiber() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputNrrd);
+  INITIALIZE_PORT(SeedPoints);
+  INITIALIZE_PORT(Fibers);
 }
-
 
 TendFiberImpl::~TendFiberImpl()
 {
