@@ -200,7 +200,6 @@
      <addaction name="actionMacroBar_"/>
     </widget>
     <addaction name="separator"/>
-    <addaction name="actionPythonConsole_"/>
     <addaction name="actionStateViewer_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
@@ -751,11 +750,6 @@
     <string>Dump positions</string>
    </property>
   </action>
-  <action name="actionRenderer">
-   <property name="text">
-    <string>Renderer</string>
-   </property>
-  </action>
   <action name="actionClear_Recent">
    <property name="text">
     <string>Clear Recent</string>
@@ -863,17 +857,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
-   </property>
-  </action>
-  <action name="actionPythonConsole_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Python Console</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+Y</string>
    </property>
   </action>
   <action name="actionNew_">

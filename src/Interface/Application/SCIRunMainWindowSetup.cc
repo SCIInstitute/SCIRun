@@ -420,15 +420,11 @@ void SCIRunMainWindow::setupPythonConsole()
 {
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(networkEditor_, this);
-  connect(actionPythonConsole_, &QAction::toggled, pythonConsole_, &PythonConsoleWidget::setVisible);
-  actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
-  connect(pythonConsole_, &PythonConsoleWidget::visibilityChanged, actionPythonConsole_, &QAction::setChecked);
+  pythonConsole_->toggleViewAction()->setIcon(QPixmap(":/general/Resources/terminal.png"));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
 	pythonConsole_->setObjectName("PythonConsole");
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
-#else
-  actionPythonConsole_->setEnabled(false);
 #endif
 }
 

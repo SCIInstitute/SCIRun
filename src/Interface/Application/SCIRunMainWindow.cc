@@ -322,6 +322,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
   setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
   setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
+  #ifdef BUILD_WITH_PYTHON
+  setupDockToggleViewAction(pythonConsole_, "Ctrl+Shift+Y");
+  #endif
 
   setupInputWidgets();
 
