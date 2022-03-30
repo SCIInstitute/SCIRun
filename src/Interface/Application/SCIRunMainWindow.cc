@@ -35,6 +35,7 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
@@ -97,12 +98,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionExecuteAll_, &QAction::triggered, this, &SCIRunMainWindow::executeAll);
   connect(actionNew_, &QAction::triggered, this, &SCIRunMainWindow::newNetwork);
 
-  setActionIcons();
-
   createStandardToolbars();
   createExecuteToolbar();
   createAdvancedToolbar();
-  createMacroToolbar();
 
   #ifdef __APPLE__
   connect(actionLaunchNewInstance_, &QAction::triggered, this, &SCIRunMainWindow::launchNewInstance);
@@ -201,6 +199,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 	setupScriptedEventsWindow();
   setupProvenanceWindow();
+  createMacroToolbar();
+
+  setActionIcons();
 
   setupDevConsole();
   setupPythonConsole();
@@ -313,6 +314,15 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(openLogFolderButton_, &QPushButton::clicked, this, &SCIRunMainWindow::openLogFolder);
 
+  setupDockToggleViewAction(moduleSelectorDockWidget_, "Ctrl+Shift+M");
+  setupDockToggleViewAction(userModuleSelectorDockWidget_, "Ctrl+Shift+U");
+  setupDockToggleViewAction(logDockWidget_, "Ctrl+Shift+L");
+  setupDockToggleViewAction(networkMiniViewDockWidget_, "Ctrl+Shift+V");
+  setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
+  setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
+  setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
+  setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
+
   setupInputWidgets();
 
   logTextBrowser_->append("Hello! Welcome to SCIRun 5.");
@@ -321,12 +331,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setCurrentFile("");
 
-  actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
-  actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
-  actionProvenance_->setChecked(!provenanceWindow_->isHidden());
-  actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
-  actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
   moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -372,6 +377,13 @@ void SCIRunMainWindow::executeCommandLineRequests()
 void SCIRunMainWindow::networkTimedOut()
 {
 	exitApplication(2);
+}
+
+void SCIRunMainWindow::setupDockToggleViewAction(QDockWidget* dock, const QString& shortcut)
+{
+  auto tva = dock->toggleViewAction();
+  tva->setShortcut(QKeySequence(shortcut));
+  menuWindow->addAction(tva);
 }
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)

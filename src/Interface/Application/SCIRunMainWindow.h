@@ -183,6 +183,7 @@ private:
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
   void addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls);
+  void setupDockToggleViewAction(QDockWidget* dock, const QString& shortcut);
 
   void addFavoriteMenu(QTreeWidget* tree);
   QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text);

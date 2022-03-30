@@ -132,7 +132,7 @@ void SCIRunMainWindow::createMacroToolbar()
   WidgetStyleMixin::toolbarStyle(macroBar);
   macroBar->setObjectName("MacroToolbar");
 
-  macroBar->addAction(actionMacroEditor_);
+  macroBar->addAction(macroEditor_->toggleViewAction());
   macroBar->addAction(actionRunMacro1_);
   macroBar->addAction(actionRunMacro2_);
   macroBar->addAction(actionRunMacro3_);
@@ -298,7 +298,7 @@ void SCIRunMainWindow::setActionIcons()
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
 
-  actionMacroEditor_->setIcon(QPixmap(":/general/Resources/script_play-512lime.png"));
+  macroEditor_->toggleViewAction()->setIcon(QPixmap(":/general/Resources/script_play-512lime.png"));
   actionRunMacro1_->setIcon(QPixmap(":/general/Resources/flash1.png"));
   actionRunMacro2_->setIcon(QPixmap(":/general/Resources/flash2.png"));
   actionRunMacro3_->setIcon(QPixmap(":/general/Resources/flash3.png"));
@@ -362,13 +362,9 @@ void SCIRunMainWindow::makeFilterButtonMenu()
 void SCIRunMainWindow::setupScriptedEventsWindow()
 {
   triggeredEventsWindow_ = new TriggeredEventsWindow(this);
-  connect(actionTriggeredEvents_, &QAction::toggled, triggeredEventsWindow_, &TriggeredEventsWindow::setVisible);
-  connect(triggeredEventsWindow_, &TriggeredEventsWindow::visibilityChanged, actionTriggeredEvents_, &QAction::setChecked);
   triggeredEventsWindow_->hide();
 
   macroEditor_ = new MacroEditor(this);
-  connect(actionMacroEditor_, &QAction::toggled, macroEditor_, &MacroEditor::setVisible);
-  connect(macroEditor_, &MacroEditor::visibilityChanged, actionMacroEditor_, &QAction::setChecked);
   connect(macroEditor_, &MacroEditor::macroButtonChanged, this, &SCIRunMainWindow::updateMacroButton);
   macroEditor_->hide();
 }
@@ -377,8 +373,6 @@ void SCIRunMainWindow::setupProvenanceWindow()
 {
   ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
-  connect(actionProvenance_, &QAction::toggled, provenanceWindow_, &ProvenanceWindow::setVisible);
-  connect(provenanceWindow_, &ProvenanceWindow::visibilityChanged, actionProvenance_, &QAction::setChecked);
 
   connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
   connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);

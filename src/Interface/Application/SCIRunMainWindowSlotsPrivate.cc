@@ -558,7 +558,7 @@ void SCIRunMainWindow::highlightPortsChanged()
 
 void SCIRunMainWindow::resetWindowLayout()
 {
-  configurationDockWidget_->hide();
+  logDockWidget_->hide();
   provenanceWindow_->hide();
   moduleSelectorDockWidget_->show();
   moduleSelectorDockWidget_->setFloating(false);

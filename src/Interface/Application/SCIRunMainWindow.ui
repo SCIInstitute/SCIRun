@@ -199,21 +199,15 @@
      <addaction name="actionAdvancedBar_"/>
      <addaction name="actionMacroBar_"/>
     </widget>
-    <addaction name="actionConfiguration_"/>
-    <addaction name="actionModule_Selector"/>
-    <addaction name="actionProvenance_"/>
-    <addaction name="actionMiniview_"/>
     <addaction name="separator"/>
     <addaction name="actionPythonConsole_"/>
-    <addaction name="actionDevConsole_"/>
-    <addaction name="actionTriggeredEvents_"/>
-    <addaction name="actionMacroEditor_"/>
     <addaction name="actionStateViewer_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
     <addaction name="actionToggleFullScreenMode_"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -465,7 +459,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="configurationDockWidget_">
+  <widget class="QDockWidget" name="logDockWidget_">
    <property name="whatsThis">
     <string/>
    </property>
@@ -752,37 +746,6 @@
     <string>License...</string>
    </property>
   </action>
-  <action name="actionConfiguration_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Log</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+L</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionModule_Selector">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Module Selector</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+M</string>
-   </property>
-  </action>
   <action name="actionDump_positions">
    <property name="text">
     <string>Dump positions</string>
@@ -807,17 +770,6 @@
    </property>
    <property name="text">
     <string>Enter &quot;What's This?&quot; Mode</string>
-   </property>
-  </action>
-  <action name="actionProvenance_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Provenance</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+P</string>
    </property>
   </action>
   <action name="actionUndo_">
@@ -1087,14 +1039,6 @@
     <string>Ctrl+Alt+Shift+K</string>
    </property>
   </action>
-  <action name="actionDummy">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </action>
   <action name="actionCleanUpNetwork_">
    <property name="text">
     <string>Clean Up Network</string>
@@ -1179,14 +1123,6 @@
     <string>Network Editor GUI*</string>
    </property>
   </action>
-  <action name="actionTriggeredEvents_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Triggered Events</string>
-   </property>
-  </action>
   <action name="helpActionClipboard_">
    <property name="enabled">
     <bool>true</bool>
@@ -1260,11 +1196,6 @@
     <string>Import toolkit...</string>
    </property>
   </action>
-  <action name="actionAsd">
-   <property name="text">
-    <string>asd</string>
-   </property>
-  </action>
   <action name="actionNetworkBar_">
    <property name="checkable">
     <bool>true</bool>
@@ -1282,16 +1213,6 @@
    </property>
    <property name="text">
     <string>Advanced</string>
-   </property>
-  </action>
-  <action name="actionX">
-   <property name="text">
-    <string>x</string>
-   </property>
-  </action>
-  <action name="actionA">
-   <property name="text">
-    <string>a</string>
    </property>
   </action>
   <action name="actionExecuteAll_">
@@ -1330,14 +1251,6 @@
   <action name="actionCreateToolkitFromDirectory_">
    <property name="text">
     <string>Create toolkit from directory...</string>
-   </property>
-  </action>
-  <action name="actionMiniview_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Miniview</string>
    </property>
   </action>
   <action name="actionToggleFullScreenMode_">
@@ -1379,17 +1292,6 @@
   <action name="actionRunMacro5_">
    <property name="text">
     <string>Run Macro 5</string>
-   </property>
-  </action>
-  <action name="actionMacroEditor_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Macro Editor</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+X</string>
    </property>
   </action>
   <action name="actionPython_Wizard">
@@ -1454,38 +1356,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>actionModule_Selector</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>moduleSelectorDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>97</x>
-     <y>367</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionConfiguration_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>configurationDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>518</x>
-     <y>847</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>clearFilterButton_</sender>
    <signal>clicked()</signal>
    <receiver>moduleFilterLineEdit_</receiver>
@@ -1498,70 +1368,6 @@
     <hint type="destinationlabel">
      <x>141</x>
      <y>63</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>moduleSelectorDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionModule_Selector</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>288</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>configurationDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionConfiguration_</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>559</x>
-     <y>696</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionMiniview_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>networkMiniViewDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1283</x>
-     <y>220</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>networkMiniViewDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionMiniview_</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1283</x>
-     <y>220</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
     </hint>
    </hints>
   </connection>
