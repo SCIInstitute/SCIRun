@@ -318,7 +318,7 @@ void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
   auto tree = qobject_cast<QTreeWidget*>(sender());
   if (!tree)
     return;
-    
+
   auto globalPos = tree->mapToGlobal(pos);
 	auto item = tree->selectedItems()[0];
 	auto subnetData = item->data(0, Qt::UserRole).toString();

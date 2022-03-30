@@ -34,6 +34,7 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Network/NetworkFwd.h>
@@ -269,7 +270,7 @@ void SCIRunMainWindow::fillTreeWidget(QTreeWidget* tree, const ModuleDescription
         moduleItem->setForeground(1, Qt::lightGray);
         moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
         moduleItem->setForeground(2, Qt::lightGray);
-        moduleItem->setData(0, Qt::UserRole, module.second.hasUI_);
+        moduleItem->setData(0, hasUIDataFlag, module.second.hasUI_);
         categoryItem->addChild(moduleItem);
         totalModules++;
       }
