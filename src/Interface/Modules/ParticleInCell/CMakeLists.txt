@@ -29,17 +29,20 @@
 SET(Interface_Modules_ParticleInCell_FORMS
   ElectroStaticDialog.ui
   GravitySimulationDialog.ui
+  PIConGPUDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
   ElectroStaticDialog.h
   GravitySimulationDialog.h
+  PIConGPUDialog.h
   share.h
 )
 
 SET(Interface_Modules_ParticleInCell_SOURCES
   ElectroStaticDialog.cc
   GravitySimulationDialog.cc
+  PIConGPUDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

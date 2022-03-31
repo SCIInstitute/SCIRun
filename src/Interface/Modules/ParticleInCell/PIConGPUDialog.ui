@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ElectroStaticDialog</class>
- <widget class="QDialog" name="ElectroStaticDialog">
+ <class>PIConGPUDialog</class>
+ <widget class="QDialog" name="PIConGPUDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -36,16 +36,16 @@
        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
       </property>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="printtimesButton_">
+       <widget class="QRadioButton" name="savedataButton_">
         <property name="text">
-         <string>print times</string>
+         <string>save output</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QRadioButton" name="dontprinttimesButton_">
+       <widget class="QRadioButton" name="dontsavedataButton_">
         <property name="text">
-         <string>don't print times</string>
+         <string>don't save output</string>
         </property>
        </widget>
       </item>

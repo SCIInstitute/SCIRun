@@ -25,23 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/ParticleInCell/PIConGPU.h>
+//#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-#include <Interface/Modules/ParticleInCell/ElectroStaticDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
-
-using namespace SCIRun::Gui;
+using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-ElectroStaticDialog::ElectroStaticDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = nullptr */)
-  : ModuleDialogGeneric(state, parent)
+MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
+
+PIConGPU::PIConGPU() : Module(staticInfo_)
     {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    addRadioButtonGroupManager({dontprinttimesButton_ ,printtimesButton_}, Variables::Method);
-    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
+    INITIALIZE_PORT(x_coordinates);
+    INITIALIZE_PORT(y_coordinates);
+    INITIALIZE_PORT(z_coordinates);
+    }
+
+void PIConGPU::setStateDefaults()
+    {
+    setStateIntFromAlgo(Variables::Method);
+//    setStateIntFromAlgo(Parameters::NumTimeSteps); 
+    }
+
+void PIConGPU::execute()
+    {
+    if(needToExecute())
+        {
+        setAlgoIntFromState(Variables::Method);
+//        setAlgoIntFromState(Parameters::NumTimeSteps); 
+        AlgorithmInput input;
+        auto output=algo().run(input);
+
+//        sendOutputFromAlgorithm(x_coordinates,output);
+//        sendOutputFromAlgorithm(y_coordinates,output);
+//        sendOutputFromAlgorithm(z_coordinates,output);
+        }
     }

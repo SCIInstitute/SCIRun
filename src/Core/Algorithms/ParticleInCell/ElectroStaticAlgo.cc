@@ -29,7 +29,6 @@
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
 
-//using namespace Parameters;
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -44,7 +43,7 @@ const AlgorithmOutputName ElectroStaticAlgo::z_coordinates("z_coordinates");
 ElectroStaticAlgo::ElectroStaticAlgo()
     {
     addParameter(Variables::Method,0);;
-    addParameter(Parameters::NumTimeSteps,10000);                                     //here 2
+    addParameter(Parameters::NumTimeSteps,5000);                                     //here 2
     }
 
 AlgorithmOutput ElectroStaticAlgo::run(const AlgorithmInput&) const
@@ -59,10 +58,11 @@ using namespace std;
 
     int num_particles       = 10000;                  //should be set by User Interface input
     double delta_t          = 2e-10;                  //should be set by User Interface input
-//    int iterations          = 100;                    //should be set by User Interface input
 
-    int iterations          = get(Parameters::NumTimeSteps).toInt();                  //here 3
-//    int iterations          = 10000;                  //To be set by the input variable NumTimeSteps (see above)
+    auto iterations         = get(Parameters::NumTimeSteps).toInt();                  //here 3
+    printf("Debug 4: iterations is %d\n", iterations);
+
+//    int iterations          = 10000;
 //    int iterations          = 5000;
 
 //    const int sample_size_p = 1000;                                        //should be set by User Interface input
@@ -83,7 +83,7 @@ using namespace std;
     auto buffer_pos_x       = new double[buffer_size];
     auto buffer_pos_y       = new double[buffer_size];
     auto buffer_pos_z       = new double[buffer_size];
-    auto buffer_potential   = new double[iterations/sample_size_i][21][21][21];
+    auto buffer_potential   = new double[(iterations/(sample_size_i*100))+1][21][21][21];
 
 /*
 ************************************************ Output Data Setup
@@ -138,9 +138,11 @@ using namespace Const;
         {
         //Save electric potential for output to SCIRun
 //        if (world.getTs()%500==0 || world.isLastTimeStep())
-        if (!(iterations_index%(sample_size_i*100)) && (pot_buffer_index < iterations/sample_size_i))
+//        if (!(iterations_index%(sample_size_i*100)) && (pot_buffer_index < iterations/sample_size_i))
+        if (!(world.getTs()%(sample_size_i*100)) && (pot_buffer_index < iterations/sample_size_i))
             {
             cout<<"pot_buffer_index is "<<pot_buffer_index<<"\n";
+            cout<<"world.getTs()/(sample_size_i*100) is "<<world.getTs()/(sample_size_i*100)<<"\n";
             for (int i=0;i<world.ni-1;i++)
                 for (int j=0;j<world.nj-1;j++)
                     for (int k=0;k<world.nk-1;k++)

@@ -29,6 +29,7 @@
 SET(Modules_ParticleInCell_SRCS
   ElectroStatic.cc
   GravitySimulation.cc
+  PIConGPU.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -46,6 +47,7 @@ TARGET_LINK_LIBRARIES(Modules_ParticleInCell
   Dataflow_Network
   Core_Datatypes
   Algorithms_Base
+
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -26,12 +26,12 @@ void Output::fields(World &world, vector<Species> &species)
 	out<<"Spacing=\""<<dh[0]<<" "<<dh[1]<<" "<<dh[2]<<"\" ";
 	out<<"WholeExtent=\"0 "<<world.ni-1<<" 0 "<<world.nj-1<<" 0 "<<world.nk-1<<"\">\n";
 	
-/*
+
 
 
 	//output data stored on nodes (point data)//
 	out<<"<PointData>\n";
-
+/*
 	//node volumes, scalar//
 	out<<"<DataArray Name=\"NodeVol\" NumberOfComponents=\"1\" format=\"ascii\" type=\"Float64\">\n";
 	out<<world.node_vol;
@@ -46,25 +46,29 @@ void Output::fields(World &world, vector<Species> &species)
 
 
 
+*/
 	//charge density, scalar//
 	out<<"<DataArray Name=\"rho\" NumberOfComponents=\"1\" format=\"ascii\" type=\"Float64\">\n";
 	out<<world.rho;
 	out<<"</DataArray>\n";
+/*
 
 
-*/
 
 	//species number densities//
-
-//Figure out a way to just output the electron density (later)
-
 	for (Species &sp:species)
 	{
 		out<<"<DataArray Name=\"nd."<<sp.name<<"\" NumberOfComponents=\"1\" format=\"ascii\" type=\"Float64\">\n";
 		out<<sp.den;
 		out<<"</DataArray>\n";
 	}
-
+*/
+//output only the electron density
+    vector<Species>::iterator iter=species.begin();
+    Species &sp = *iter;
+    out<<"<DataArray Name=\"nd."<<sp.name<<"\" NumberOfComponents=\"1\" format=\"ascii\" type=\"Float64\">\n";
+    out<<sp.den;
+    out<<"</DataArray>\n";
 /*
 
 	//electric field, 3 component vector//

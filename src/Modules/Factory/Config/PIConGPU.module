@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "PIConGPU",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "PIConGPU simulation module",
+    "header": "Modules/ParticleInCell/PIConGPU.h"
+     },
+
+"algorithm":
+    {
+    "name": "PIConGPUAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "PIConGPUDialog",
+    "header": "Interface/Modules/ParticleInCell/PIConGPUDialog.h"
+    }
+}

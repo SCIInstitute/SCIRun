@@ -25,23 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUDialog_H
+#define INTERFACE_MODULES_ParticleInCell_PIConGPUDialog_H
 
-#include <Interface/Modules/ParticleInCell/ElectroStaticDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
+#include <Interface/Modules/ParticleInCell/ui_PIConGPUDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
+namespace SCIRun {
+namespace Gui    {
 
-ElectroStaticDialog::ElectroStaticDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = nullptr */)
-  : ModuleDialogGeneric(state, parent)
-    {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    addRadioButtonGroupManager({dontprinttimesButton_ ,printtimesButton_}, Variables::Method);
-    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
-    }
+class SCISHARE PIConGPUDialog : public ModuleDialogGeneric,
+  public Ui::PIConGPUDialog
+      {
+	  Q_OBJECT
+
+      public:
+          PIConGPUDialog(const std::string& name,
+          SCIRun::Dataflow::Networks::ModuleStateHandle state,
+          QWidget* parent = nullptr);
+      };
+}}
+#endif

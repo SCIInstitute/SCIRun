@@ -25,23 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_PARTICLEINCELL_PIConGPU_H
+#define MODULES_PARTICLEINCELL_PIConGPU_H
 
-#include <Interface/Modules/ParticleInCell/ElectroStaticDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/ParticleInCell/share.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
+namespace SCIRun         {
+namespace Modules        {
+namespace ParticleInCell {
 
-ElectroStaticDialog::ElectroStaticDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = nullptr */)
-  : ModuleDialogGeneric(state, parent)
-    {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    addRadioButtonGroupManager({dontprinttimesButton_ ,printtimesButton_}, Variables::Method);
-    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
-    }
+    class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+            {
+            public:
+                PIConGPU();
+                virtual void execute();
+                virtual void setStateDefaults();
+
+                OUTPUT_PORT(0, x_coordinates, Matrix);
+                OUTPUT_PORT(1, y_coordinates, Matrix);
+                OUTPUT_PORT(2, z_coordinates, Matrix);
+
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            };
+}}}
+#endif

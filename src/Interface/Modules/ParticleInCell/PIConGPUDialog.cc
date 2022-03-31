@@ -26,22 +26,22 @@
 */
 
 
-#include <Interface/Modules/ParticleInCell/ElectroStaticDialog.h>
+#include <Interface/Modules/ParticleInCell/PIConGPUDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/ParticleInCell/ElectroStaticAlgo.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-ElectroStaticDialog::ElectroStaticDialog(const std::string& name, ModuleStateHandle state,
+PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
     {
     setupUi(this);
     setWindowTitle(QString::fromStdString(name));
     fixSize();
-    addRadioButtonGroupManager({dontprinttimesButton_ ,printtimesButton_}, Variables::Method);
-    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
+    addRadioButtonGroupManager({dontsavedataButton_ ,savedataButton_}, Variables::Method);
+//    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
     }

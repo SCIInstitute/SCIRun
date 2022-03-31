@@ -33,6 +33,7 @@ SET(Algorithms_ParticleInCell_SRCS
   PotentialSolver.cpp
   Species.cpp
   World.cpp
+  PIConGPUAlgo.cpp
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
@@ -42,6 +43,7 @@ SET(Algorithms_ParticleInCell_HEADERS
   PotentialSolver.h
   Species.h
   World.h
+  PIConGPUAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell
