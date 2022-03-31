@@ -1,0 +1,11 @@
+#!/usr/bin bash
+
+source picongpu.profile
+pic-create $PIC_EXAMPLES/LaserWakefield $HOME/picInputs/myLWFA
+cd $HOME/picInputs/myLWFA 
+pic-build 2>err.txt | tee out.txt
+tbg -s bash -c etc/picongpu/1.cfg -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001 2>erroutput
+
+#cd $HOME/picInputs/myLWFA && pic-build && tbg -s bash -c etc/picongpu/1.cfg -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001
+#pic-build 2>err.txt | tee out.txt
+#tbg -s bash -c etc/picongpu/1.cfg -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001 2>erroutput
