@@ -67,11 +67,22 @@ void VectorGlyphBuilder::setP2(const Point& p)
   p2_ = p;
 }
 
+void VectorGlyphBuilder::setShowNormals(bool showNormals)
+{
+  showNormals_ = showNormals;
+}
+
+void VectorGlyphBuilder::setShowNormalsScale(double showNormalsScale)
+{
+  showNormalsScale_ = showNormalsScale * (p2_ - p1_).length();
+}
+
 void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double radius1, double radius2, bool renderBase1, bool renderBase2)
 {
   if (radius1 < 0) radius1 = 1.0;
   if (radius2 < 0) radius2 = 1.0;
 
+  auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   //generate triangles for the cylinders.
   Vector n((p1_ - p2_).normal());
   Vector crx = n.getArbitraryTangent();
@@ -83,13 +94,13 @@ void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double 
   int p1_index, p2_index;
   if(renderBase1)
   {
-    p1_index = constructor.getCurrentIndex();
-    constructor.addVertex(Vector(p1_), n, color1_);
+    p1_index = constructor.getCurrentIndex(prim);
+    constructor.addVertex(prim, Vector(p1_), n, color1_);
   }
   if(renderBase2)
   {
-    p2_index = constructor.getCurrentIndex();
-    constructor.addVertex(Vector(p2_), -n, color2_);
+    p2_index = constructor.getCurrentIndex(prim);
+    constructor.addVertex(prim, Vector(p2_), -n, color2_);
   }
 
   // Precalculate
@@ -97,34 +108,50 @@ void VectorGlyphBuilder::generateCylinder(GlyphConstructor& constructor, double 
   double strip_angle = 2. * M_PI / resolution_;
 
   Vector p;
-  auto startOffset = constructor.getCurrentIndex();
+  auto startOffset = constructor.getCurrentIndex(prim);
   for (int strip = 0; strip <= resolution_; ++strip)
   {
     p = std::cos(strip_angle * strip) * u +
         std::sin(strip_angle * strip) * crx;
     p.normalize();
     Vector normals((length * p + (radius2-radius1)*n).normal());
+    auto vert1 = radius1 * p + Vector(p1_);
+    auto vert2 = radius2 * p + Vector(p2_);
 
-    constructor.setOffset();
-    constructor.addVertex(radius1 * p + Vector(p1_), normals, color1_);
-    constructor.addVertex(radius2 * p + Vector(p2_), normals, color2_);
-    constructor.addIndicesToOffset(0, 1, points_per_loop);
-    constructor.addIndicesToOffset(points_per_loop, 1, points_per_loop + 1);
+    constructor.setOffset(prim);
+    constructor.addVertex(prim, vert1, normals, color1_);
+    constructor.addVertex(prim, vert2, normals, color2_);
+    constructor.addIndicesToOffset(prim, 0, 1, points_per_loop);
+    constructor.addIndicesToOffset(prim, points_per_loop, 1, points_per_loop + 1);
 
     if(renderBase1)
-      constructor.addVertex(radius1 * p + Vector(p1_), n, color1_);
+    {
+      constructor.addVertex(prim, vert1, n, color1_);
+      if (showNormals_)
+        constructor.addLine(vert1, vert1 + showNormalsScale_ * n, color1_, color1_);
+    }
     if(renderBase2)
-      constructor.addVertex(radius2 * p + Vector(p2_), -n, color2_);
+    {
+      constructor.addVertex(prim, vert2, -n, color2_);
+      if (showNormals_)
+        constructor.addLine(vert2, vert2 - showNormalsScale_ * n, color2_, color2_);
+    }
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(vert1, vert1 + normScaled, color1_, color1_);
+      constructor.addLine(vert2, vert2 + normScaled, color2_, color2_);
+    }
   }
-  constructor.popIndicesNTimes(6);
+  constructor.popIndicesNTimes(prim, 6);
 
   for (int strip = 0; strip < resolution_; ++strip)
   {
     int offset = strip * points_per_loop + startOffset;
     if(renderBase1)
-      constructor.addIndices(p1_index, offset + 2, offset + points_per_loop + 2);
+      constructor.addIndices(prim, p1_index, offset + 2, offset + points_per_loop + 2);
     if(renderBase2)
-      constructor.addIndices(offset + renderBase1 + 2, p2_index,
+      constructor.addIndices(prim, offset + renderBase1 + 2, p2_index,
                               offset + points_per_loop + renderBase1 + 2);
   }
 }
@@ -134,6 +161,7 @@ void VectorGlyphBuilder::generateComet(GlyphConstructor& constructor, double rad
   if (radius < 0) radius = 1;
   Vector dir = (p2_-p1_).normal();
 
+  auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   //Generate triangles for the cone.
   Vector n((p1_ - p2_).normal());
   Vector crx = n.getArbitraryTangent();
@@ -161,10 +189,17 @@ void VectorGlyphBuilder::generateComet(GlyphConstructor& constructor, double rad
     Vector new_point = cone_radius * p + Vector(cone_p2);
     cone_rim_points.push_back(new_point);
 
-    constructor.setOffset();
-    constructor.addVertex(new_point, normals, color1_);
-    constructor.addVertex(Vector(p1_), normals, color2_);
-    constructor.addIndicesToOffset(0, points_per_loop, 1);
+    constructor.setOffset(prim);
+    constructor.addVertex(prim, new_point, normals, color1_);
+    constructor.addVertex(prim, Vector(p1_), normals, color2_);
+    constructor.addIndicesToOffset(prim, 0, points_per_loop, 1);
+
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(new_point, normScaled + new_point, color1_, color1_);
+      constructor.addLine(Vector(p1_), normScaled + Vector(p1_), color2_, color2_);
+    }
   }
 
   // Generate ellipsoid
@@ -217,24 +252,29 @@ void VectorGlyphBuilder::generateComet(GlyphConstructor& constructor, double rad
       Vector norm1 = (rotate * Vector(modelVert1)).normal();
       Vector norm2 = (rotate * Vector(modelVert2)).normal();
 
-      constructor.setOffset();
+      constructor.setOffset(prim);
 
       // Use cone points around rim of ellipsoid
       if(v == nv - 2)
-        constructor.addVertex(cone_rim_points[cone_rim_index++], norm1, color1_);
-      else
-        constructor.addVertex(vert1, norm1, color1_);
+        vert1 = cone_rim_points[cone_rim_index++];
 
-      constructor.addVertex(vert2, norm2, color1_);
-      constructor.addIndicesToOffset(0, 1, 2);
-      constructor.addIndicesToOffset(2, 1, 3);
+      constructor.addVertex(prim, vert1, norm1, color1_);
+      constructor.addVertex(prim, vert2, norm2, color1_);
+      constructor.addIndicesToOffset(prim, 0, 1, 2);
+      constructor.addIndicesToOffset(prim, 2, 1, 3);
+      if (showNormals_)
+      {
+        constructor.addLine(vert1, vert1 + showNormalsScale_ * norm1, color1_, color1_);
+        constructor.addLine(vert2, vert2 + showNormalsScale_ * norm2, color2_, color2_);
+      }
     }
-    constructor.popIndicesNTimes(6);
+    constructor.popIndicesNTimes(prim, 6);
   }
 }
 
 void VectorGlyphBuilder::generateCone(GlyphConstructor& constructor, double radius, bool renderBase)
 {
+  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   if (radius < 0) radius = 1;
 
   //generate triangles for the cylinders.
@@ -244,10 +284,10 @@ void VectorGlyphBuilder::generateCone(GlyphConstructor& constructor, double radi
 
   // Center of base
   int points_per_loop = 2;
-  size_t base_index = constructor.getCurrentIndex();
+  size_t base_index = constructor.getCurrentIndex(prim);
   if(renderBase)
   {
-    constructor.addVertex(Vector(p1_), n, color1_);
+    constructor.addVertex(prim, Vector(p1_), n, color1_);
     points_per_loop = 3;
   }
 
@@ -262,22 +302,33 @@ void VectorGlyphBuilder::generateCone(GlyphConstructor& constructor, double radi
     p.normalize();
     Vector normals((length * p - radius * n).normal());
 
-    auto offset = constructor.setOffset();
-    constructor.addVertex(radius * p + Vector(p1_), normals, color1_);
-    constructor.addVertex(Vector(p2_), normals, color2_);
-    constructor.addIndicesToOffset(0, 1, points_per_loop);
+    auto offset = constructor.setOffset(prim);
+    auto vert1 = radius * p + Vector(p1_);
+    constructor.addVertex(prim, vert1, normals, color1_);
+    constructor.addVertex(prim, Vector(p2_), normals, color2_);
+    constructor.addIndicesToOffset(prim, 0, 1, points_per_loop);
 
     if(renderBase)
     {
-      constructor.addVertex(radius * p + Vector(p1_), n, color1_);
-      constructor.addIndices(base_index, offset + 2, offset + points_per_loop + 2);
+      auto point = radius * p + Vector(p1_);
+      constructor.addVertex(prim, point, n, color1_);
+      constructor.addIndices(prim, base_index, offset + 2, offset + points_per_loop + 2);
+      if (showNormals_)
+        constructor.addLine(Vector(point), Vector(point) + showNormalsScale_ * n, color2_, color2_);
+    }
+    if (showNormals_)
+    {
+      auto normScaled = showNormalsScale_ * normals;
+      constructor.addLine(vert1, vert1 + normScaled, color1_, color1_);
+      constructor.addLine(Vector(p2_), Vector(p2_) + normScaled, color2_, color2_);
     }
   }
-  constructor.popIndicesNTimes(3 * (1 + renderBase));
+  constructor.popIndicesNTimes(prim, 3 * (1 + renderBase));
 }
 
 void VectorGlyphBuilder::generateTorus(GlyphConstructor& constructor, double major_radius, double minor_radius)
 {
+  const auto prim = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   int nv = resolution_;
   int nu = nv + 1;
 
@@ -316,14 +367,19 @@ void VectorGlyphBuilder::generateTorus(GlyphConstructor& constructor, double maj
       Vector norm1 = (rotate * Vector(nr1*nx, nr1*ny, z1)).normal();
       Vector norm2 = (rotate * Vector(nr2*nx, nr2*ny, z2)).normal();
 
-      constructor.setOffset();
-      constructor.addVertex(vert1, norm1, color1_);
-      constructor.addVertex(vert2, norm2, color1_);
-      constructor.addIndicesToOffset(0, 1, 2);
-      constructor.addIndicesToOffset(2, 1, 3);
+      constructor.setOffset(prim);
+      constructor.addVertex(prim, vert1, norm1, color1_);
+      constructor.addVertex(prim, vert2, norm2, color1_);
+      constructor.addIndicesToOffset(prim, 0, 1, 2);
+      constructor.addIndicesToOffset(prim, 2, 1, 3);
+      if (showNormals_)
+      {
+        constructor.addLine(Vector(vert1), Vector(vert1) + showNormalsScale_ * norm1, color1_, color1_);
+        constructor.addLine(Vector(vert2), Vector(vert2) + showNormalsScale_ * norm2, color2_, color2_);
+      }
     }
   }
-  constructor.popIndicesNTimes(6);
+  constructor.popIndicesNTimes(prim, 6);
 }
 
 void VectorGlyphBuilder::generateArrow(GlyphConstructor& constructor, double radius, double ratio, bool render_cylinder_base, bool render_cone_base)

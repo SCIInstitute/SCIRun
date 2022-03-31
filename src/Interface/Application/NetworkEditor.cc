@@ -246,14 +246,14 @@ SharedPointer<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler
   return controller_->createDynamicPortSwitch();
 }
 
-boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+std::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   auto id = controller_->requestConnection(from, to);
   Q_EMIT modified();
   return id;
 }
 
-boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortWidget* from, const PortWidget* to)
+std::optional<ConnectionId> NetworkEditor::requestConnection(const PortWidget* from, const PortWidget* to)
 {
   return requestConnection(from->description(), to->description());
 }
@@ -890,6 +890,15 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
   }
 }
 
+static auto eventPos(QDropEvent* event)
+{
+#ifdef SCIRUN_QT6_ENABLED
+  return event->position().toPoint();
+#else
+  return event->pos();
+#endif
+}
+
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
   auto data = event->mimeData();
@@ -910,7 +919,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
 
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(mapToScene(event->pos()));
+    addNewModuleAtPosition(mapToScene(eventPos(event)));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
@@ -1566,7 +1575,7 @@ void NetworkEditor::executeAll()
   preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this]() { controller_->executeAll(); };
-  QtConcurrent::run(exec);
+  (void)QtConcurrent::run(exec);
 
   //TODO: not sure about this right now.
   //Q_EMIT modified();
@@ -1578,7 +1587,7 @@ void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
   preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this, &module, fromButton]() { controller_->executeModule(module, fromButton); };
-  QtConcurrent::run(exec);
+  (void)QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -1629,7 +1638,7 @@ void NetworkEditor::clear()
     {
       deleteTheseFirst.append(item);
     }
-    else 
+    else
 #endif
     if (auto vsw = dynamic_cast<ModuleWidget*>(getModule(item)))
     {
@@ -1909,7 +1918,7 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
   {
     setTransformationAnchor(AnchorUnderMouse);
 
-    if (event->delta() > 0)
+    if (event->angleDelta().x() > 0)
     {
       zoomIn();
     }

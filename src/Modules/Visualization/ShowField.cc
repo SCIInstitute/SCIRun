@@ -70,26 +70,26 @@ public:
   /// field data.
   GeometryHandle buildGeometryObject(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     const GeometryIDGenerator& gid);
 
   /// Mesh construction. Any of the functions below can modify the renderState.
   /// This modified render state will be passed onto the renderer.
   void renderNodes(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFaces(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFacesLinear(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
@@ -106,14 +106,14 @@ public:
 
   void renderEdges(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state,
     GeometryHandle geom,
     const std::string& id);
 
-  RenderState getNodeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getEdgeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getFaceRenderState(boost::optional<ColorMapHandle> colorMap);
+  RenderState getNodeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getEdgeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getFaceRenderState(std::optional<ColorMapHandle> colorMap);
 private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
@@ -223,7 +223,7 @@ void ShowField::execute()
 }
 
 RenderState GeometryBuilder::getNodeRenderState(
-  boost::optional<SharedPointer<ColorMap>> colorMap)
+  std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -261,7 +261,7 @@ RenderState GeometryBuilder::getNodeRenderState(
   return renState;
 }
 
-RenderState GeometryBuilder::getEdgeRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
+RenderState GeometryBuilder::getEdgeRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -300,7 +300,7 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<SharedPointer<Co
   return renState;
 }
 
-RenderState GeometryBuilder::getFaceRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
+RenderState GeometryBuilder::getFaceRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -341,7 +341,7 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<SharedPointer<Co
 
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   const GeometryIDGenerator& gid)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
@@ -391,7 +391,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
 void GeometryBuilder::renderFaces(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state, GeometryHandle geom,
   const std::string& id)
 {
@@ -469,13 +469,15 @@ namespace
   }
 
   void spiltColorMapToTextureAndCoordinates(
-    const boost::optional<SharedPointer<ColorMap>>& colorMap,
+    const std::optional<SharedPointer<ColorMap>>& colorMap,
     ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
   {
-    ColorMapHandle realColorMap = nullptr;
+    ColorMapHandle realColorMap;
 
-    if(colorMap) realColorMap = colorMap.get();
-    else realColorMap = StandardColorMapFactory::create();
+    if (colorMap)
+      realColorMap = *colorMap;
+    else
+      realColorMap = StandardColorMapFactory::create();
 
     textureMap = StandardColorMapFactory::create(
       realColorMap->getColorData(), realColorMap->getColorMapName(),
@@ -491,7 +493,7 @@ namespace
 
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -825,7 +827,7 @@ void GeometryBuilder::renderFacesLinear(
 
 void GeometryBuilder::renderNodes(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -867,11 +869,6 @@ void GeometryBuilder::renderNodes(
 
   nodeTransparencyValue_ = static_cast<float>(state_->getValue(NodeTransparencyValue).toDouble());
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
-  // Use spheres...
-  if (state.get(RenderState::ActionFlags::USE_SPHERE))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
@@ -880,7 +877,6 @@ void GeometryBuilder::renderNodes(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
@@ -900,7 +896,7 @@ void GeometryBuilder::renderNodes(
     //accumulate VBO or IBO data
     if (state.get(RenderState::ActionFlags::USE_SPHERE))
     {
-      glyphs.addSphere(p, radius, num_strips, node_color);
+      glyphs.addSphere(p, radius, num_strips, node_color, false, 0.0);
     }
     else
     {
@@ -911,14 +907,14 @@ void GeometryBuilder::renderNodes(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
 
 
 
 void GeometryBuilder::renderEdges(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -961,11 +957,6 @@ void GeometryBuilder::renderEdges(
 
   std::string uniqueNodeID = id + "edge" + ss.str();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
-  // Use cylinders...
-  if (state.get(RenderState::ActionFlags::USE_CYLINDER))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
@@ -978,7 +969,6 @@ void GeometryBuilder::renderEdges(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)
@@ -1034,9 +1024,9 @@ void GeometryBuilder::renderEdges(
     {
       if (state.get(RenderState::ActionFlags::USE_CYLINDER))
       {
-        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
-        glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
-        glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
+        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1], false, 0.0);
+        glyphs.addSphere(p0, radius, num_strips, edge_colors[0], false, 0.0);
+        glyphs.addSphere(p1, radius, num_strips, edge_colors[1], false, 0.0);
       }
       else
       {
@@ -1048,7 +1038,7 @@ void GeometryBuilder::renderEdges(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)

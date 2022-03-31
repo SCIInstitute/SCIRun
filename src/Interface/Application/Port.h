@@ -65,7 +65,7 @@ public:
   //bool isDynamic() const override = 0;
   //SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
   //size_t getIndex() const override = 0;
-  //boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
+  //std::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
   virtual const SCIRun::Dataflow::Networks::PortDescriptionInterface* description() const = 0;
 
   virtual QColor color() const = 0;
@@ -160,7 +160,7 @@ public:
 
   const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
 
-  //boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
+  //std::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
   QGraphicsTextItem* makeNameLabel() const;
 

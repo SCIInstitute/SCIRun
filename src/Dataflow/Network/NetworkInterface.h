@@ -112,7 +112,7 @@ namespace Networks {
   {
   public:
     virtual ~ConnectionMakerService() {}
-    virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+    virtual std::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
   struct SCISHARE NetworkAppendInfo

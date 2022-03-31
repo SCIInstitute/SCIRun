@@ -62,9 +62,9 @@ namespace Teem {
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
-    Core::Datatypes::MatrixHandle create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataH,
-      boost::optional<NrrdDataHandle> rowsH,
-      boost::optional<NrrdDataHandle> colsH, int cols);
+    Core::Datatypes::MatrixHandle create_matrix_from_nrrds(std::optional<NrrdDataHandle> dataH,
+      std::optional<NrrdDataHandle> rowsH,
+      std::optional<NrrdDataHandle> colsH, int cols);
     template<class PTYPE>
     Core::Datatypes::MatrixHandle create_column_matrix(NrrdDataHandle dataH);
     template<class PTYPE>

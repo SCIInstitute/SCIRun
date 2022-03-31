@@ -201,7 +201,7 @@ namespace Gui {
                                                                                {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                                {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
 
-          boost::optional<QPoint> savedPos_;
+          std::optional<QPoint> savedPos_;
           QColor                                bgColor_                      {};
           ScaleBarData                              scaleBar_                     {};
           Render::ClippingPlaneManagerPtr clippingPlaneManager_;
@@ -1415,6 +1415,27 @@ MouseButton SCIRun::Gui::getSpireButton(QMouseEvent* event)
   return btn;
 }
 
+namespace
+{
+  auto xPos(QMouseEvent* e)
+  {
+    #ifdef SCIRUN_QT6_ENABLED
+      return e->position().x();
+    #else
+      return e->x();
+    #endif
+  }
+
+  auto yPos(QMouseEvent* e)
+  {
+    #ifdef SCIRUN_QT6_ENABLED
+      return e->position().y();
+    #else
+      return e->y();
+    #endif
+  }
+}
+
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
   if (!clickedInViewer(event))
@@ -1423,8 +1444,8 @@ void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
   auto spire = impl_->mSpire.lock();
   if (!spire) return;
 
-  const int x_window = event->x() - impl_->mGLWidget->pos().x();
-  const int y_window = event->y() - impl_->mGLWidget->pos().y();
+  const int x_window = xPos(event) - impl_->mGLWidget->pos().x();
+  const int y_window = yPos(event) - impl_->mGLWidget->pos().y();
 
   const auto btn = getSpireButton(event);
 
@@ -1463,7 +1484,7 @@ bool ViewSceneDialog::canSelectWidget()
 
 bool ViewSceneDialog::clickedInViewer(QMouseEvent* e) const
 {
-  return childAt(e->x(), e->y()) == impl_->mGLWidget;
+  return childAt(xPos(e), yPos(e)) == impl_->mGLWidget;
 }
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
@@ -1474,13 +1495,13 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   }
 
   const auto btn = getSpireButton(event);
-  if (!tryWidgetSelection(event->x(), event->y(), btn))
+  if (!tryWidgetSelection(xPos(event), yPos(event), btn))
   {
     auto spire = impl_->mSpire.lock();
     if (!spire) return;
 
-    int x_window = event->x() - impl_->mGLWidget->pos().x();
-    int y_window = event->y() - impl_->mGLWidget->pos().y();
+    int x_window = xPos(event) - impl_->mGLWidget->pos().x();
+    int y_window = yPos(event) - impl_->mGLWidget->pos().y();
 
     float x_ss, y_ss;
     spire->calculateScreenSpaceCoords(x_window, y_window, x_ss, y_ss);
@@ -1488,7 +1509,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     for (auto* vsd : impl_->viewScenesToUpdate)
       vsd->inputMouseDownHelper(x_ss, y_ss);
   }
-  impl_->previousWidgetInfo_.setMousePosition(event->x(), event->y());
+  impl_->previousWidgetInfo_.setMousePosition(xPos(event), yPos(event));
 }
 
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
@@ -1502,7 +1523,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     if (widgetMoved)
     {
       Q_EMIT mousePressSignalForGeometryObjectFeedback(
-               event->x(), event->y(), impl_->selectedWidget_->uniqueID());
+               xPos(event), yPos(event), impl_->selectedWidget_->uniqueID());
       impl_->previousWidgetInfo_.setFrameIsFinished(false);
     }
     else
@@ -1528,14 +1549,14 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   impl_->mouseButtonPressed_ = false;
 }
 
-//TODO!!!
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 {
   if (!impl_->selectedWidget_)
   {
     for (auto* vsd : impl_->viewScenesToUpdate)
-      vsd->inputMouseWheelHelper(event->delta());
+    {
+      vsd->inputMouseWheelHelper(event->angleDelta().y());
+    }
   }
 }
 
@@ -2145,7 +2166,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
   auto geom(makeShared<GeometryObjectSpire>(*impl_->gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
+    colorScheme, renState, BBox(Point{}, Point{}), false, nullptr);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -2160,7 +2181,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, bool reverseNormal, 
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(makeShared<GeometryObjectSpire>(*impl_->gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox(Point{}, Point{}), false, nullptr);
+    colorScheme, renState, BBox(Point{}, Point{}), false, nullptr);
 
   impl_->clippingPlaneGeoms_.push_back(geom);
   impl_->clippingPlaneGeoms_.push_back(geom2);
@@ -2748,16 +2769,4 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 void ViewSceneDialog::initializeVisibleObjects()
 {
   impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
-}
-
-void ViewSceneDialog::enterEvent(QEvent* event)
-{
-  //qDebug() << "enterEvent" << event;
-  ModuleDialogGeneric::enterEvent(event);
-}
-
-void ViewSceneDialog::leaveEvent(QEvent* event)
-{
-  //qDebug() << "leaveEvent" << event;
-  ModuleDialogGeneric::leaveEvent(event);
 }

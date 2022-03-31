@@ -48,6 +48,8 @@ public:
   void reorderTensorValues(std::vector<Core::Geometry::Vector>& eigvecs, std::vector<double>& eigvals);
   void makeTensorPositive();
   void normalizeTensor();
+  void setShowNormals(bool showNormals);
+  void setShowNormalsScale(double scale);
   void setColor(const Core::Datatypes::ColorRGB& color);
   void setResolution(double resolution);
   void generateSuperquadricTensor(GlyphConstructor& constructor, double emphasis);
@@ -80,6 +82,8 @@ private:
   void postScaleTransorms();
   void computeSinCosTable(bool half);
 
+  bool showNormals_ = false;
+  double normalDebugScale_ = 0.1;
   const static int DIMENSIONS_ = 3;
   const static int BOX_FACE_POINTS_ = 4;
   Core::Datatypes::Dyadic3DTensor t_;

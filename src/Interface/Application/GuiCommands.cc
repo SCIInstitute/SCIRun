@@ -299,14 +299,14 @@ bool RunPythonScriptCommandGui::execute()
     app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
   }
 
-  auto script = app.parameters()->pythonScriptFile().get();
+  auto script = *app.parameters()->pythonScriptFile();
   SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
   return true;
 }
 
 bool SetupDataDirectoryCommandGui::execute()
 {
-  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  auto dir = *Application::Instance().parameters()->dataDirectory();
   LOG_DEBUG("Data dir set to: {}", dir.string());
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));

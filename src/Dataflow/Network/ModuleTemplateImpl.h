@@ -46,7 +46,7 @@
   }
 
   template <class T>
-  boost::optional<SharedPointer<T>> Module::getOptionalInputAtIndex(const PortId& id)
+  std::optional<SharedPointer<T>> Module::getOptionalInputAtIndex(const PortId& id)
   {
     auto inputOpt = get_input_handle(id);
     if (!inputOpt)
@@ -93,7 +93,7 @@
   }
 
   template <class T, size_t N>
-  boost::optional<SharedPointer<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
+  std::optional<SharedPointer<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
   {
     return getOptionalInputAtIndex<T>(port.id_);
   }

@@ -73,11 +73,11 @@ namespace SCIRun {
         /// \param id       Ends up becoming the name of the spire object.
         GeometryHandle buildGeometryObject(
           FieldHandle pfield,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> pcolormap,
-          boost::optional<ColorMapHandle> scolormap,
-          boost::optional<ColorMapHandle> tcolormap,
+          std::optional<FieldHandle> sfield,
+          std::optional<FieldHandle> tfield,
+          std::optional<ColorMapHandle> pcolormap,
+          std::optional<ColorMapHandle> scolormap,
+          std::optional<ColorMapHandle> tcolormap,
           ModuleStateHandle state,
           const GeometryIDGenerator& idgen,
           const Module* module);
@@ -124,6 +124,8 @@ namespace SCIRun {
           int resolution,
           ColorRGB& node_color,
           bool use_lines,
+          bool show_normals,
+          double show_normals_scale,
           bool render_base1,
           bool render_base2);
 
@@ -173,6 +175,8 @@ void GlyphBuilder::addGlyph(
   int resolution,
   ColorRGB& node_color,
   bool use_lines,
+  bool show_normals,
+  double show_normals_scale,
   bool render_base1 = false,
   bool render_base2 = false)
 {
@@ -189,26 +193,31 @@ void GlyphBuilder::addGlyph(
     case RenderState::GlyphType::COMET_GLYPH:
     {
       static const double sphere_extrusion = 0.0625f;
-      glyphs.addComet(p1-(dir*scale), p1, scaled_radius, resolution, node_color, node_color, sphere_extrusion);
+      glyphs.addComet(p1-(dir*scale), p1, scaled_radius, resolution, node_color, node_color,
+                      sphere_extrusion, show_normals, show_normals_scale);
       break;
     }
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, scaled_radius, resolution, render_base1, node_color, node_color);
+      glyphs.addCone(p1, p2, scaled_radius, resolution, render_base1, node_color, node_color,
+                     show_normals, show_normals_scale);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
-      glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
+      glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color,
+                      render_base1, render_base2, show_normals, show_normals_scale);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
     {
       Point new_p2 = p1 + dir.normal() * scaled_radius * 2.0;
       double new_radius = dir.length() * scale * 0.5;
-      glyphs.addDisk(p1, new_p2, new_radius, resolution, node_color, node_color);
+      glyphs.addDisk(p1, new_p2, new_radius, resolution, node_color, node_color,
+                     show_normals, show_normals_scale);
       break;
     }
     case RenderState::GlyphType::RING_GLYPH:
     {
       double major_radius = dir.length() * scale * 0.5;
-      glyphs.addTorus(p1, p2, major_radius, scaled_radius, resolution, node_color, node_color);
+      glyphs.addTorus(p1, p2, major_radius, scaled_radius, resolution, node_color, node_color,
+                      show_normals, show_normals_scale);
       break;
     }
     case RenderState::GlyphType::SPRING_GLYPH:
@@ -217,7 +226,8 @@ void GlyphBuilder::addGlyph(
       if (use_lines)
         glyphs.addLine(p1, p2, node_color, node_color);
       else
-        glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
+        glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color,
+                        render_base1, render_base2, show_normals, show_normals_scale);
   }
 }
 
@@ -240,6 +250,8 @@ void ShowFieldGlyphs::setStateDefaults()
   // General Options
   state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
   state->setValue(FieldName, std::string());
+  state->setValue(ShowNormals, false);
+  state->setValue(ShowNormalsScale, 0.1);
 
   // Vectors
   state->setValue(ShowVectorTab, false);
@@ -311,8 +323,8 @@ void ShowFieldGlyphs::execute()
 
 void ShowFieldGlyphs::configureInputs(
     FieldHandle pfield,
-    boost::optional<FieldHandle> sfield,
-    boost::optional<FieldHandle> tfield)
+    std::optional<FieldHandle> sfield,
+    std::optional<FieldHandle> tfield)
 {
   FieldInformation pfinfo(pfield);
 
@@ -355,11 +367,11 @@ RenderState::GlyphInputPort GlyphBuilder::getInput(const std::string& port_name)
 
 GeometryHandle GlyphBuilder::buildGeometryObject(
   FieldHandle pfield,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolormap,
-  boost::optional<ColorMapHandle> scolormap,
-  boost::optional<ColorMapHandle> tcolormap,
+  std::optional<FieldHandle> sfield,
+  std::optional<FieldHandle> tfield,
+  std::optional<ColorMapHandle> pcolormap,
+  std::optional<ColorMapHandle> scolormap,
+  std::optional<ColorMapHandle> tcolormap,
   ModuleStateHandle state,
   const GeometryIDGenerator& idgen,
   const Module* module)
@@ -509,13 +521,6 @@ void GlyphBuilder::renderVectors(
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-  // Use Lines
-  if (useLines)
-  {
-    primIn = SpireIBO::PRIMITIVE::LINES;
-  }
-
   // Gets user set data
   ColorScheme colorScheme = portHandler_->getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
@@ -528,6 +533,8 @@ void GlyphBuilder::renderVectors(
   bool renderBases = state->getValue(ShowFieldGlyphs::RenderBases).toBool();
   bool renderGlphysBelowThreshold = state->getValue(ShowFieldGlyphs::RenderVectorsBelowThreshold).toBool();
   float threshold = state->getValue(ShowFieldGlyphs::VectorsThreshold).toDouble();
+  auto showNormals = state->getValue(ShowFieldGlyphs::ShowNormals).toBool();
+  auto showNormalsScale = state->getValue(ShowFieldGlyphs::ShowNormalsScale).toDouble();
 
   // Make sure scale and resolution are not below minimum values
   if (scale < 0) scale = 1.0;
@@ -572,13 +579,13 @@ void GlyphBuilder::renderVectors(
       // No need to render cylinder base if arrow is bidirectional
       bool render_cylinder_base = renderBases && !renderBidirectionaly;
       addGlyph(glyphs, renState.mGlyphType, points[i], dir, radius, scale, arrowHeadRatio,
-               resolution, node_color, useLines, render_cylinder_base, renderBases);
+               resolution, node_color, useLines, showNormals, showNormalsScale, render_cylinder_base, renderBases);
 
       if(renderBidirectionaly)
       {
         Vector neg_dir = -dir;
         addGlyph(glyphs, renState.mGlyphType, points[i], neg_dir, radius, scale, arrowHeadRatio,
-                 resolution, node_color, useLines, render_cylinder_base, renderBases);
+                 resolution, node_color, useLines, showNormals, showNormalsScale, render_cylinder_base, renderBases);
       }
     }
   }
@@ -590,7 +597,7 @@ void GlyphBuilder::renderVectors(
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES),
                      state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
-                     colorScheme, renState, primIn, mesh->get_bounding_box(), true, portHandler_->getTextureMap());
+                     colorScheme, renState, mesh->get_bounding_box(), true, portHandler_->getTextureMap());
 }
 
 void GlyphBuilder::renderScalars(
@@ -606,17 +613,12 @@ void GlyphBuilder::renderScalars(
   ColorScheme colorScheme = portHandler_->getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
   int resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
+  auto showNormals = state->getValue(ShowFieldGlyphs::ShowNormals).toBool();
+  auto showNormalsScale = state->getValue(ShowFieldGlyphs::ShowNormalsScale).toDouble();
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
 
   bool usePoints = renState.mGlyphType == RenderState::GlyphType::POINT_GLYPH;
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
-  // Use Points
-  if (usePoints)
-  {
-    primIn = SpireIBO::PRIMITIVE::POINTS;
-  }
 
   auto indices = std::vector<int>();
   auto points = std::vector<Point>();
@@ -637,7 +639,7 @@ void GlyphBuilder::renderScalars(
         glyphs.addPoint(points[i], node_color);
         break;
       case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(points[i], radius, resolution, node_color);
+        glyphs.addSphere(points[i], radius, resolution, node_color, showNormals, showNormalsScale);
         break;
       case RenderState::GlyphType::BOX_GLYPH:
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
@@ -647,7 +649,7 @@ void GlyphBuilder::renderScalars(
         if (usePoints)
           glyphs.addPoint(points[i], node_color);
         else
-          glyphs.addSphere(points[i], radius, resolution, node_color);
+          glyphs.addSphere(points[i], radius, resolution, node_color, showNormals, showNormalsScale);
         break;
     }
   }
@@ -659,7 +661,7 @@ void GlyphBuilder::renderScalars(
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES),
                      state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(),
-                     colorScheme, renState, primIn, mesh->get_bounding_box(), true,
+                     colorScheme, renState, mesh->get_bounding_box(), true,
                      portHandler_->getTextureMap());
 }
 
@@ -705,17 +707,14 @@ void GlyphBuilder::renderTensors(
   std::string uniqueLineID = id + "tensor_line_glyphs" + ss.str();
   std::string uniquePointID = id + "tensor_point_glyphs" + ss.str();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  GlyphGeom tensor_line_glyphs;
-  GlyphGeom point_glyphs;
-
   int neg_eigval_count = 0;
   int tensorcount = 0;
   static const double vectorThreshold = 0.001;
   static const double pointThreshold = 0.01;
   static const double epsilon = pow(2, -52);
 
+  auto showNormals = state->getValue(ShowFieldGlyphs::ShowNormals).toBool();
+  auto showNormalsScale = state->getValue(ShowFieldGlyphs::ShowNormalsScale).toDouble();
   GlyphGeom glyphs;
   // Render every item from facade
   for (int i = 0; i < indices.size(); i++)
@@ -751,7 +750,7 @@ void GlyphBuilder::renderTensors(
 
     if (order0Tensor)
     {
-      point_glyphs.addPoint(points[i], node_color);
+      glyphs.addPoint(points[i], node_color);
     }
     else if (order1Tensor)
     {
@@ -764,7 +763,7 @@ void GlyphBuilder::renderTensors(
         dir = eigvec2 * eigvals[1];
       // Point p1 = points[i];
       // Point p2 = points[i] + dir;
-      addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, points[i], dir, scale, scale, scale, resolution, node_color, true);
+      addGlyph(glyphs, RenderState::GlyphType::LINE_GLYPH, points[i], dir, scale, scale, scale, resolution, node_color, true, showNormals, showNormalsScale);
     }
     // Render as order 2 or 3 tensor
     else
@@ -773,18 +772,18 @@ void GlyphBuilder::renderTensors(
       switch (renState.mGlyphType)
       {
         case RenderState::GlyphType::BOX_GLYPH:
-          glyphs.addBox(points[i], newT, scale, node_color, normalizeGlyphs);
+          glyphs.addBox(points[i], newT, scale, node_color, normalizeGlyphs, showNormals, showNormalsScale);
           break;
         case RenderState::GlyphType::ELLIPSOID_GLYPH:
-          glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
+          glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs, showNormals, showNormalsScale);
           break;
         case RenderState::GlyphType::SUPERQUADRIC_TENSOR_GLYPH:
         {
           double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
           if(emphasis > 0.0)
-            glyphs.addSuperquadricTensor(points[i], newT, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            glyphs.addSuperquadricTensor(points[i], newT, scale, resolution, node_color, normalizeGlyphs, emphasis, showNormals, showNormalsScale);
           else
-            glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs);
+            glyphs.addEllipsoid(points[i], newT, scale, resolution, node_color, normalizeGlyphs, showNormals, showNormalsScale);
         }
         default:
           break;
@@ -794,29 +793,15 @@ void GlyphBuilder::renderTensors(
   }
 
   // Prints warning if there are negative eigen values
-  if (neg_eigval_count > 0) 
+  if (neg_eigval_count > 0)
   {
       module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY),
                      state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
-                     colorScheme, renState, primIn, mesh->get_bounding_box(), true,
+                     colorScheme, renState, mesh->get_bounding_box(), true,
                      portHandler_->getTextureMap());
-
-  // Render lines(2 eigenvalues equaling 0)
-  RenderState lineRenState = getVectorsRenderState(state);
-  tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES),
-                                 state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
-                                 colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box(),
-                                 true, portHandler_->getTextureMap());
-
-  // Render scalars(3 eigenvalues equaling 0)
-  RenderState pointRenState = getScalarsRenderState(state);
-  point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES),
-                           state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
-                           colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box(),
-                           true, portHandler_->getTextureMap());
 }
 
 void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)
@@ -1010,6 +995,8 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
 }
 
 const AlgorithmParameterName ShowFieldGlyphs::FieldName("FieldName");
+const AlgorithmParameterName ShowFieldGlyphs::ShowNormals("ShowNormals");
+const AlgorithmParameterName ShowFieldGlyphs::ShowNormalsScale("ShowNormalsScale");
 // Mesh Color
 const AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");
 // Vector Controls

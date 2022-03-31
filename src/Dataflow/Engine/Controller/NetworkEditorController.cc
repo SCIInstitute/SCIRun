@@ -436,7 +436,7 @@ void NetworkEditorController::printNetwork() const
   }
 }
 
-boost::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+std::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
@@ -462,7 +462,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 
   logWarning("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
   signals_.invalidConnection_(desc);
-  return boost::none;
+  return {};
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
