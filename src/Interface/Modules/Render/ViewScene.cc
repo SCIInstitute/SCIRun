@@ -2674,7 +2674,7 @@ void ViewSceneDialog::screenshotSaveAs()
 void ViewSceneDialog::quickScreenshot()
 {
   auto fileName = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
-         QString("/%1_%2.png").arg(QString::fromStdString(getName()).replace(':', '-')).arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
+         QString("/%1_%2.png").arg(QString::fromStdString(getName()).replace(':', '-')).arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz"));
 
   saveScreenshot(fileName, true);
 }
