@@ -258,7 +258,6 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesY, 100);
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
-  //state->setValue(Parameters::ScreenshotDirectory, std::string("/Users/nids/Desktop"));
 
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
