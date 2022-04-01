@@ -183,6 +183,8 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     unconvertedModule("OptimizeDipole"),
     unconvertedModule("OptimizeConductivities"),
     { "CalculateNodeNormals", "GenerateNodeNormals" },
+    { "ChooseField", "ChooseInput" },
+    { "ChooseColorMap", "ChooseInput" },
     unconvertedModule("SynchronizeGeometry"),
     unconvertedModule("TransformData"),
     unconvertedModule("SetFieldOrMeshStringProperty"),

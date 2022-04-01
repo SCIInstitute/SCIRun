@@ -25,53 +25,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Dataflow/Modules/DataIO/GenericWriter.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Modules/DataIO/WriteBundle.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::DataIO;
 
 /// @class WriteBundle
 /// @brief This module writes a bundle to file (a SCIRun .bdl file).
 
-class WriteBundle  : public GenericWriter<BundleHandle> {
-  public:
-    WriteBundle(GuiContext*);
-    virtual ~WriteBundle() {}
-    virtual void execute();
+MODULE_INFO_DEF(WriteBundle, DataIO, SCIRun)
 
-  protected:
-    GuiString guiTypes_;
-    GuiString guiFileType_;
-};
-
-
-DECLARE_MAKER(WriteBundle)
-WriteBundle::WriteBundle(GuiContext* ctx)
-  : GenericWriter<BundleHandle>("WriteBundle", ctx, "DataIO", "SCIRun"),
-    guiTypes_(get_ctx()->subVar("types", false)),
-    guiFileType_(get_ctx()->subVar("filetype"),"Binary")
+WriteBundle::WriteBundle()
+  : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
 {
-  std::string exporttypes = "{";
-  exporttypes += "{{SCIRun Bundle File} {.bdl} } ";
-  exporttypes += "{{SCIRun Bundle Any} {.*} } ";
-  exporttypes += "}";
-
-  guiTypes_.set(exporttypes);
+  // guiTypes_(get_ctx()->subVar("types", false)),
+  // guiFileType_(get_ctx()->subVar("filetype"),"Binary")
+  //
+  // std::string exporttypes = "{";
+  // exporttypes += "{{SCIRun Bundle File} {.bdl} } ";
+  // exporttypes += "{{SCIRun Bundle Any} {.*} } ";
+  // exporttypes += "}";
+  //
+  // guiTypes_.set(exporttypes);
+  INITIALIZE_PORT(BundleToWrite)
+  objectPortName_ = &BundleToWrite;
+  filetype_ = "Binary";
 }
 
-void
-WriteBundle::execute()
+void WriteBundle::execute()
 {
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
+  // const std::string ftpre = guiFileType_.get();
+  // const std::string::size_type loc = ftpre.find(" (");
+  // const std::string ft = ftpre.substr(0, loc);
+  //
+  // exporting_ = false;
+  my_base::execute();
+}
 
-  exporting_ = false;
-  GenericWriter<BundleHandle>::execute();
+std::string WriteBundle::defaultFileTypeName() const
+{
+  return "*.bdl";
 }

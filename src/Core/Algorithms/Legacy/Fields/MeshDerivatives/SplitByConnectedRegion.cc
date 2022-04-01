@@ -42,14 +42,14 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, SortDomainBySize);
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField4("OutputField4");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField5("OutputField5");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField4("OutputField4");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField5("OutputField5");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
 
 class SortSizes
 {

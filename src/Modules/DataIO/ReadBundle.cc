@@ -28,7 +28,6 @@
 
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/DataIO/ReadBundle.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;

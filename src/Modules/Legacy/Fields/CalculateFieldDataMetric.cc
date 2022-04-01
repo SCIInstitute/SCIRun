@@ -25,25 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Modules/Legacy/Fields/CalculateFieldDataMetric.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Parser/ArrayMathEngine.h>
-#include <Core/Algorithms/Fields/FieldData/CalculateFieldDataMetric.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 /// @class CalculateFieldDataMetric
 /// @brief Reads in a field file(s), allows parser edits to the data, and
 /// exports 1 of 7 metrics selected by the user as a matrix file.
-
+/*
 class CalculateFieldDataMetric : public Module {
   public:
     CalculateFieldDataMetric(GuiContext*);
@@ -60,76 +54,80 @@ class CalculateFieldDataMetric : public Module {
     SCIRunAlgo::CalculateFieldDataMetricAlgo algo_;
 
 };
+*/
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-DECLARE_MAKER(CalculateFieldDataMetric)
-CalculateFieldDataMetric::CalculateFieldDataMetric(GuiContext* ctx)
-  : Module("CalculateFieldDataMetric", ctx, Source, "ChangeFieldData", "SCIRun"),
-  guimethod_(get_ctx()->subVar("method"),"value-mean"),
-  guifunction_(get_ctx()->subVar("function"),"RESULT = DATA;"),
-  guienable_function_(get_ctx()->subVar("enable-function"),0),
-  guimetric_(get_ctx()->subVar("metric",false),"---")
+MODULE_INFO_DEF(CalculateFieldDataMetric, ChangeFieldData, SCIRun)
+ALGORITHM_PARAMETER_DEF(Fields, EnableFunction)
+
+CalculateFieldDataMetric::CalculateFieldDataMetric()
+  : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(Metric);
+}
+
+void CalculateFieldDataMetric::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(Variables::FunctionString, std::string("RESULT = DATA;"));
+  state->setValue(Parameters::EnableFunction, false);
+  setStateStringFromAlgoOption(Variables::Method);
 }
 
 void
 CalculateFieldDataMetric::execute()
 {
-  // Define local handles of data objects:
-  StringHandle func;
-  std::vector<FieldHandle> fields;
-
-  // Get the new input data:
-  if (get_input_handle("Function",func,false))
+  auto fields = getRequiredDynamicInputs(InputFields);
+  auto func = getOptionalInput(Function);
+  auto state = get_state();
+  if (func)
   {
-    if (func.get_rep())
+    if (*func)
     {
-      guifunction_.set(func->get());
-      get_ctx()->reset();
+      get_state()->setValue(Variables::FunctionString, (*func)->value());
     }
   }
-  get_dynamic_input_handles("Fields",fields,false);
 
-  TCLInterface::eval(get_id()+" update_text");
-
-  if (inputs_changed_ || guimethod_.changed() ||
-      guifunction_.changed() || guienable_function_.changed() ||
-      !oport_cached("Metric"))
+  if (needToExecute())
   {
-    // Inform module that execution started
-    update_state(Executing);
-
-    std::vector<FieldHandle> mfields(fields.size(),0);
+    std::vector<FieldHandle> modifiedFields;
     // If not caching set the field and count to zero.
 
-    if (guienable_function_.get())
+    if (state->getValue(Parameters::EnableFunction).toBool())
     {
-      for (size_t j=0;j<fields.size();j++)
+      for (auto& field : fields)
       {
-        if (fields[j].get_rep() && fields[j]->vmesh()->num_nodes() > 0)
+        if (field && field->vmesh()->num_nodes() > 0)
         {
           NewArrayMathEngine engine;
-          engine.set_progress_reporter(this);
+          engine.setLogger(this);
 
           // Create the DATA object for the function
           // DATA is the data on the field
-          if(!(engine.add_input_fielddata("DATA",fields[j]))) return;
+          if(!(engine.add_input_fielddata("DATA",field))) return;
 
           // Create the POS, X,Y,Z, data location objects.
 
-          if(!(engine.add_input_fielddata_location("POS",fields[j]))) return;
-          if(!(engine.add_input_fielddata_coordinates("X","Y","Z",fields[j]))) return;
+          if(!(engine.add_input_fielddata_location("POS",field))) return;
+          if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field))) return;
 
 
           // Create the ELEMENT object describing element properties
-          if(!(engine.add_input_fielddata_element("ELEMENT",fields[j]))) return;
+          if(!(engine.add_input_fielddata_element("ELEMENT",field))) return;
 
-          int basis_order = fields[j]->vfield()->basis_order();
+          int basis_order = field->vfield()->basis_order();
 
-          std::string function = guifunction_.get();
+          std::string function = state->getValue(Variables::FunctionString).toString();
 
-          if(!(engine.add_output_fielddata("RESULT",fields[j],basis_order,"double"))) return;
+          if(!(engine.add_output_fielddata("RESULT",field,basis_order,"double"))) return;
 
           // Add an object for getting the index and size of the array.
 
@@ -142,37 +140,31 @@ CalculateFieldDataMetric::execute()
           // code for all the objects, as well as inserting the function and looping
           // over every data point
 
-          if (!(engine.run()))
+          if (!engine.run())
           {
+            error("Error in parser."); //todo: improve
             return;
           }
           // Get the result from the engine
 
-          engine.get_field("RESULT",mfields[j]);
+          FieldHandle modified;
+          engine.get_field("RESULT", modified);
+          modifiedFields.push_back(modified);
         }
       }
     }
     else
     {
-      for (size_t j=0; j<fields.size(); j++) mfields[j] = fields[j];
+      modifiedFields = fields;
     }
 
-    MatrixHandle metric;
-    algo_.set_option("method",guimethod_.get());
-    if (!(algo_.run(mfields,metric))) return;
+    setAlgoOptionFromState(Variables::Method);
+    auto output = algo().run(withInputData((InputFields, modifiedFields)));
+    auto metric = output.get<DenseMatrix>(Core::Algorithms::AlgorithmParameterName(Variables::OutputMatrix));
 
-    guimetric_.set(to_string(metric));
+    //TODO later
+    //guimetric_.set(to_string(metric));
 
-    // send new output if there is any:
-    send_output_handle("Metric", metric);
+    sendOutput(Metric, metric);
   }
 }
-
-void
-CalculateFieldDataMetric::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
-} // End namespace SCIRun
