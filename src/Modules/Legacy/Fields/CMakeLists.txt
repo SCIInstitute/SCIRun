@@ -100,7 +100,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
-  #CompositeModuleTestGFB_FM.h
+  CalculateFieldDataMetric.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -183,7 +183,7 @@ SET(Modules_Legacy_Fields_SRCS
   #ConvertMeshToIrregularMesh.cc
   ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
-  #CalculateFieldDataMetric.cc
+  CalculateFieldDataMetric.cc
   CalculateMeshNodes.cc
   #QueryFieldData.cc
   TransformMeshWithTransform.cc

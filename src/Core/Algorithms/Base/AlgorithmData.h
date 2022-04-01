@@ -75,7 +75,7 @@ namespace Algorithms {
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
 
-  private:
+  protected:
     Map data_;
     boost::any transient_;
   };
@@ -92,6 +92,15 @@ namespace Algorithms {
   public:
     VariableHandle additionalAlgoOutput() const { return additionalAlgoOutput_; }
     void setAdditionalAlgoOutput(VariableHandle var) { additionalAlgoOutput_ = var; }
+    Datatypes::DatatypeHandle at(size_t index) const
+    {
+      if (index >= size())
+        return nullptr;
+      auto iter = data_.begin();
+      std::advance(iter, index);
+      return iter->second[0];
+    }
+    size_t size() const { return data_.size(); }
   private:
     VariableHandle additionalAlgoOutput_;
   };
