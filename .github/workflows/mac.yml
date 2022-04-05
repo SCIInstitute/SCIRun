@@ -82,6 +82,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
+        setup-python: 'false'
         install-deps: true
 
     - name: Prepare
@@ -124,6 +125,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
+        setup-python: 'false'
         install-deps: true
 
     - name: Print out Qt directory

@@ -53,6 +53,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
+        setup-python: 'false'
         install-deps: true
 
     - name: Print out Qt directory
@@ -100,6 +101,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
+        setup-python: 'false'
         install-deps: true
 
     - name: Configure
@@ -155,6 +157,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
+        setup-python: 'false'
         install-deps: true
 
     - name: Configure
