@@ -30,19 +30,22 @@
 // Author: Fangxiang Jiao
 // Date:   March 25 2010
 
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <Core/Algorithms/Converter/ConvertBundleToField.h>
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Legacy/Converters/ConvertBundleToField.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertBundleToField.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::Converters;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Converters;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
+#if 0
 class ConvertBundleToField : public Module {
 
 public:
@@ -61,68 +64,49 @@ private:
     SCIRunAlgo::ConvertBundleToFieldAlgo algo_;
     SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;
 };
+#endif
 
-DECLARE_MAKER(ConvertBundleToField)
-ConvertBundleToField::ConvertBundleToField(GuiContext* ctx)
-  : Module("ConvertBundleToField", ctx, Source, "Converters", "SCIRun"),
-  guiclear_(get_ctx()->subVar("clear", false), 0),
-  guitolerance_(get_ctx()->subVar("tolerance"), 0.0001),
-  guimergenodes_(get_ctx()->subVar("force-nodemerge"), 1),
-  guiforcepointcloud_(get_ctx()->subVar("force-pointcloud"), 0),
-  guimatchval_(get_ctx()->subVar("matchval"), 0),
-  guimeshonly_(get_ctx()->subVar("meshonly"), 0)
+MODULE_INFO_DEF(ConvertBundleToField, Converters, SCIRun)
+
+ConvertBundleToField::ConvertBundleToField() :
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
-  calgo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputField);
+}
+
+void ConvertBundleToField::setStateDefaults()
+{
+  auto state = get_state();
+  setStateBoolFromAlgo(Parameters::MergeNodes);
+  setStateBoolFromAlgo(Parameters::MatchNodeValues);
+  setStateBoolFromAlgo(Parameters::MakeNoData);
+  setStateDoubleFromAlgo(Parameters::Tolerance);
+  state->setValue(Fields::Parameters::ForcePointCloud, false);
 }
 
 void ConvertBundleToField::execute()
 {
-  // Define input handle:
-  BundleHandle handle;
+  auto bundle = getRequiredInput(InputBundle);
 
-  // Get data from input port:
-  if (!(get_input_handle("bundle", handle, true)))
+  if (needToExecute())
   {
-    return;
-  }
+    setAlgoBoolFromState(Parameters::MakeNoData);
+    setAlgoBoolFromState(Parameters::MergeNodes);
+    setAlgoBoolFromState(Parameters::MatchNodeValues);
+    setAlgoDoubleFromState(Parameters::Tolerance);
 
-  if (inputs_changed_ || !oport_cached("Output") )
-  {
-    update_state(Executing);
-
-    // Some stuff for old power apps
-    if (guiclear_.get())
-    {
-      guiclear_.set(0);
-
-      // Sending 0 does not clear caches.
-      FieldInformation fi("PointCloudMesh", 0, "double");
-      FieldHandle fhandle = CreateField(fi);
-
-      send_output_handle("Output", fhandle);
-      return;
-    }
-
-    FieldHandle output;
-
-    algo_.set_scalar("tolerance", guitolerance_.get());
-    algo_.set_bool("merge_nodes", guimergenodes_.get());
-    algo_.set_bool("match_node_values", guimatchval_.get());
-    algo_.set_bool("make_no_data", guimeshonly_.get());
-
-    if (! ( algo_.run(handle, output) ))
-      return;
+    auto output = algo().run(withInputData((InputBundle, bundle)));
+    auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
     // This option is here to be compatible with the old GatherFields module:
     // This is a separate algorithm now
-    if (guiforcepointcloud_.get())
+    if (get_state()->getValue(Fields::Parameters::ForcePointCloud).toBool())
     {
-      if(! ( calgo_.run(output, output) ))
-        return;
+      Fields::ConvertMeshToPointCloudMeshAlgo calgo;
+      calgo.runImpl(outputField, outputField);
     }
 
-    // send new output if there is any:
-    send_output_handle("Output", output);
+    sendOutput(OutputField, outputField);
   }
 }

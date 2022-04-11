@@ -35,6 +35,8 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/MatrixAlgorithms.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/Datatypes/ColumnMatrixFunctions.h>
 
 using namespace SCIRun::Core::Geometry;
@@ -303,5 +305,26 @@ namespace SCIRun {
         dummy[cnt] = matrix.get(i,j);
     t.set(dummy);
     return t;
+  }
+
+  DenseMatrixHandle MatrixAlgorithms::matrixFromTensor(const Tensor& tensor)
+  {
+    auto m = makeShared<DenseMatrix>(1, 6);
+    (*m)(0, 0) = tensor.xx();
+    (*m)(0, 1) = tensor.xy();
+    (*m)(0, 2) = tensor.xz();
+    (*m)(0, 3) = tensor.yy();
+    (*m)(0, 4) = tensor.yz();
+    (*m)(0, 5) = tensor.zz();
+    return m;
+  }
+
+  DenseMatrixHandle MatrixAlgorithms::matrixFromVector(const Vector& vec)
+  {
+    auto m = makeShared<DenseMatrix>(1, 3);
+    (*m)(0, 0) = vec.x();
+    (*m)(0, 1) = vec.y();
+    (*m)(0, 2) = vec.z();
+    return m;
   }
 } // End namespace SCIRun

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateFieldDataMetric",
+    "namespace": "Fields",
+    "status": "converted module",
+    "description": "Calculates field metrics, e.g. average",
+    "header": "Modules/Legacy/Fields/CalculateFieldDataMetric.h"
+  },
+  "algorithm": {
+    "name": "CalculateFieldDataMetricAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/CalculateFieldDataMetric.h"
+  },
+  "UI": {
+    "name": "CalculateFieldDataMetricDialog",
+    "header": "Interface/Modules/Fields/CalculateFieldDataMetricDialog.h"
+  }
+}

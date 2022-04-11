@@ -30,6 +30,7 @@ SET(Modules_DataIO_SRCS
   ReadField.cc
   ReadBundle.cc
   ReadMatrixClassic.cc
+  WriteBundle.cc
   WriteField.cc
   WriteG3D.cc
   WriteMatrix.cc
@@ -42,6 +43,7 @@ SET(Modules_DataIO_HEADERS
   ReadField.h
   ReadBundle.h
   ReadMatrixClassic.h
+  WriteBundle.h
   WriteField.h
   WriteG3D.h
   WriteMatrix.h

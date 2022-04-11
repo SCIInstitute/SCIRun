@@ -26,32 +26,14 @@
 */
 
 
-#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
-#define MODULES_FIELDS_CalculateInsideWhichField_H
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
-
-  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
-  {
-  public:
-    CalculateInsideWhichField();
-    void execute() override;
-    void setStateDefaults() override;
-
-
-    INPUT_PORT(0, InputField, Field);
-    HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(1, InputFields, Field);
-    OUTPUT_PORT(0, OutputField, Field);
-
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
-  };
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#  ifdef BUILD_Modules_Legacy_Teem_Tend
+#    define SCISHARE __declspec(dllexport)
+#  else
+#    define SCISHARE __declspec(dllimport)
+#  endif
+#else
+#  define SCISHARE
 #endif

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertBundleToField",
+    "namespace": "Converters",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Converters/ConvertBundleToField.h"
+  },
+  "algorithm": {
+    "name": "ConvertBundleToFieldAlgo",
+    "namespace": "Converters",
+    "header": "Core/Algorithms/Legacy/Converter/ConvertBundleToField.h"
+  },
+  "UI": {
+    "name": "ConvertBundleToFieldDialog",
+    "header": "Interface/Modules/Bundle/ConvertBundleToFieldDialog.h"
+  }
+}

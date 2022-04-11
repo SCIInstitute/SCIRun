@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "TendFiber",
+    "namespace": "Teem",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/Teem/Tend/TendFiber.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "TendFiberDialog",
+    "header": "Interface/Modules/Teem/TendFiberDialog.h"
+  }
+}
