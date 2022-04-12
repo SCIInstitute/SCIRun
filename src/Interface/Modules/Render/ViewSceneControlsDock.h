@@ -36,6 +36,7 @@
 #include "Interface/Modules/Render/ui_Fog.h"
 #include "Interface/Modules/Render/ui_ObjectSelection.h"
 #include "Interface/Modules/Render/ui_OrientationAxes.h"
+#include "Interface/Modules/Render/ui_Screenshot.h"
 #include "Interface/Modules/Render/ui_ScaleBar.h"
 #include "Interface/Modules/Render/ui_ClippingPlanes.h"
 #include "Interface/Modules/Render/ui_InputControls.h"
@@ -169,6 +170,18 @@ namespace SCIRun {
     public:
       explicit OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
       void toggleButton();
+    private:
+      void setSliderDefaultPos();
+      void setSliderCenterPos();
+    };
+
+    class SCISHARE ScreenshotControls : public QWidget, public Ui::Screenshot
+    {
+      Q_OBJECT
+
+    public:
+      explicit ScreenshotControls(ViewSceneDialog* parent);
+      void setScreenshotDirectory(const QString& dir);
     private:
       void setSliderDefaultPos();
       void setSliderCenterPos();
