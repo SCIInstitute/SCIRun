@@ -31,14 +31,14 @@
 SET(Modules_Legacy_Converters_HEADERS
   ConvertMatrixToString.h
   #ConvertMatrixToField.h
-  #ConvertBundleToField.h
+  ConvertBundleToField.h
   share.h
 )
 
 SET(Modules_Legacy_Converters_SRCS
   ConvertMatrixToString.cc
   #ConvertMatrixToField.cc
-  #ConvertBundleToField.cc
+  ConvertBundleToField.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Converters
@@ -49,20 +49,9 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Converters
   Core_Datatypes
   Dataflow_Network
   Core_Persistent
-  #Core_Util
-  #Core_Exceptions
-  Core_Thread
-  #Dataflow_GuiInterface
-  #Core_Geom
   Core_Datatypes
-  #Core_Geometry
-  #Core_GeomInterface
-  #Dataflow_TkExtensions
   Core_Algorithms_Legacy_Converter
   Core_Algorithms_Legacy_Fields
-  ${TK_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

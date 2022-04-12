@@ -586,6 +586,15 @@ void OrientationAxesControls::toggleButton()
   updateToolbarButton("lightGray");
 }
 
+ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
+  : QWidget(parent)
+{
+  setupUi(this);
+  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
+  connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotSaveAsClicked()));
+  connect(screenshotPathButton_, SIGNAL(clicked()), parent, SLOT(setScreenshotDirectory()));
+}
+
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
 {
@@ -655,7 +664,7 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
 
   updateZoomOptionVisibility();
 
-  connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
+  //connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
   connect(mouseControlComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), parent, &ViewSceneDialog::menuMouseControlChanged);
   connect(invertZoomCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::invertZoomClicked);
   connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);

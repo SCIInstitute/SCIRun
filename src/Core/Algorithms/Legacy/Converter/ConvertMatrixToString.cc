@@ -61,4 +61,4 @@ AlgorithmOutput ConvertMatrixToStringAlgo::run(const AlgorithmInput& input) cons
 	return output;
 }
 
-AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");
+const AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");

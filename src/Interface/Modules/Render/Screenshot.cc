@@ -38,28 +38,8 @@ using namespace SCIRun::Core::Datatypes;
 
 Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   : QObject(parent),
-  viewport_(glwidget),
-  index_(0)
+  viewport_(glwidget)
 {
-}
-
-QString Screenshot::screenshotDirectory()
-{
-  // static const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-  QString filePath = QString::fromStdString(Core::Preferences::Instance().screenshotDirectory().string());
-
-  if (filePath.isEmpty())
-  {
-    filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-
-    QDir dir(filePath);
-    if (!dir.exists())
-    {
-      dir.mkpath(filePath);
-    }
-  }
-
-  return filePath;
 }
 
 void Screenshot::takeScreenshot()
@@ -81,42 +61,10 @@ QImage Screenshot::getScreenshot()
   return image;
 }
 
-void Screenshot::saveScreenshot()
+void Screenshot::saveScreenshot(const QString& fileName)
 {
-  index_++;
-  const auto fileName = screenshotFile();
   if (!fileName.isEmpty())
-  {
-    QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
     screenshot_.save(fileName);
-  }
-}
-
-void Screenshot::saveScreenshot(const QString& filename)
-{
-  screenshot_.save(filename);
-}
-
-void Screenshot::saveScreenshotFromPath(bool prompt)
-{
-  index_++;
-  auto fileName = screenshotFileFromPreferences();
-  if (!fileName.isEmpty())
-  {
-    if (prompt)
-      QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-    screenshot_.save(fileName);
-  }
-}
-
-QString Screenshot::screenshotFileFromPreferences() const
-{
-  return screenshotDirectory() + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
-}
-
-QString Screenshot::screenshotFile() const
-{
-  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", screenshotDirectory(), "*.png");
 }
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const

@@ -31,8 +31,9 @@
 
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
-#include <Interface/Modules/Render/Ospray/share.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Interface/Modules/Render/Ospray/share.h>
+
 
 namespace SCIRun { namespace Render {
 

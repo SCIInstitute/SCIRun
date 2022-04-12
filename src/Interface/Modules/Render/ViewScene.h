@@ -185,9 +185,13 @@ namespace SCIRun {
       void setTransparencySortTypeContinuous(bool index);
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
-      void screenshotClicked();
-      void quickScreenshot(bool prompt);
-      void quickScreenshotClicked() { quickScreenshot(true); }
+      void screenshotSaveAs();
+      void screenshotSaveAsClicked() { screenshotSaveAs(); };
+      void quickScreenshot();
+      void quickScreenshotClicked() { quickScreenshot(); }
+      void setScreenshotDirectory();
+      void saveNewGeometryChanged(int state);
+
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
@@ -222,7 +226,6 @@ namespace SCIRun {
       void setupMaterials();
       void addAutoViewButton();
       void addScreenshotButton();
-      void addQuickScreenshotButton();
       void addViewBarButton();
       void addControlLockButton();
       void addAutoRotateButton();
@@ -282,6 +285,7 @@ namespace SCIRun {
       //---------------- Misc. ---------------------------------------------------------------------
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
+      void saveScreenshot(QString directory, bool notify);
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 
@@ -292,6 +296,7 @@ namespace SCIRun {
       friend class MaterialsControls;
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
+      friend class ScreenshotControls;
       friend class ScaleBarControls;
       friend class LightControls;
       friend class ClippingPlaneControls;

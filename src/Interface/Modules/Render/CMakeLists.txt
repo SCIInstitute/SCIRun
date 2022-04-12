@@ -43,6 +43,7 @@ SET(Interface_Modules_Render_FORMS
   Materials.ui
   ObjectSelection.ui
   OrientationAxes.ui
+  Screenshot.ui
   ScaleBar.ui
   ClippingPlanes.ui
   InputControls.ui
