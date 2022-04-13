@@ -190,8 +190,6 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
-      void saveNewGeometryChanged(int state);
-
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
