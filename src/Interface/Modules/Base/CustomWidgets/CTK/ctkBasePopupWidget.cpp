@@ -497,13 +497,7 @@ QWidget* ctkBasePopupWidget::baseWidget()const
 void ctkBasePopupWidget::setBaseWidget(QWidget* widget)
 {
   Q_D(ctkBasePopupWidget);
-  if (!d->BaseWidget.isNull())
-    {
-    }
   d->BaseWidget = widget;
-  if (!d->BaseWidget.isNull())
-    {
-    }
 }
 
 // -------------------------------------------------------------------------
