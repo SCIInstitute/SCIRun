@@ -30,8 +30,10 @@
 
 #ifdef OLDER_QT_SUPPORT_NEEDED // remove when Travis linux build has newer Qt 5 version
 #define WIDTH_FUNC width
+#define COMBO_BOX_ACTIVATED qOverload<int>(&QComboBox::activated)
 #else
 #define WIDTH_FUNC horizontalAdvance
+#define COMBO_BOX_ACTIVATED &QComboBox::textActivated
 #endif
 
 #ifdef SCIRUN_QT6_ENABLED

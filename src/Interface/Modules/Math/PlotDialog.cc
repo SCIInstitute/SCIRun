@@ -67,7 +67,7 @@ PlotDialog::PlotDialog(QWidget* parent)
   statusBar_->setMaximumHeight(20);
   layout->addWidget(statusBar_);
 
-  connect(zoomBox, &QComboBox::textActivated, plot_, &Plot::adjustZoom);
+  connect(zoomBox, COMBO_BOX_ACTIVATED, plot_, &Plot::adjustZoom);
 
   setLayout(layout);
   resize( 600, 400 );

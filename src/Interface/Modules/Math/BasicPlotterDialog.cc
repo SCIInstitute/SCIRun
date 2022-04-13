@@ -64,7 +64,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
 	addCheckBoxManager(transposeDataCheckBox_, Parameters::TransposeData);
 	addComboBoxManager(curveStyleComboBox_, Parameters::CurveStyle);
-	connect(curveStyleComboBox_, &QComboBox::textActivated, this, &BasicPlotterDialog::setCurveStyle);
+	connect(curveStyleComboBox_, COMBO_BOX_ACTIVATED, this, &BasicPlotterDialog::setCurveStyle);
 
 	connect(showPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::showPlot);
 	connect(exportPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::exportPlot);
