@@ -127,7 +127,7 @@ void ModuleDialogGeneric::connectButtonsToExecuteSignal(std::initializer_list<QA
 
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
-  connect(box, COMBO_BOX_ACTIVATED, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
+  connect(box, COMBO_BOX_ACTIVATED_STRING, this, &ModuleDialogGeneric::executeFromStateChangeTriggered);
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);

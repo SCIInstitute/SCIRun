@@ -834,7 +834,7 @@ ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWid
 {
   setupUi(this);
 
-  connect(lookDownComboBox_, COMBO_BOX_ACTIVATED, this, &ViewAxisChooserControls::viewAxisSelected);
+  connect(lookDownComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &ViewAxisChooserControls::viewAxisSelected);
 }
 
 QString ViewAxisChooserControls::currentAxis() const

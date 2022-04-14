@@ -53,7 +53,7 @@ CreateStandardMatrixDialog::CreateStandardMatrixDialog(const std::string& name, 
   addDoubleSpinBoxManager(sizeOfStep_,Parameters::Size);
   addDoubleSpinBoxManager(startPointer_,Parameters::StartPointer);
 
-  connect(matrixType_, COMBO_BOX_ACTIVATED, this, &CreateStandardMatrixDialog::enableWidgets);
+  connect(matrixType_, COMBO_BOX_ACTIVATED_STRING, this, &CreateStandardMatrixDialog::enableWidgets);
 }
 
 void CreateStandardMatrixDialog::enableWidgets(const QString& mode)

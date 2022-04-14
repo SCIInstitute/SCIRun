@@ -48,7 +48,7 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
     positionComboBox_->setVisible(false);
     positionLabel_->setVisible(false);
   }
-  connect(fontSizeComboBox_, COMBO_BOX_ACTIVATED, this, &NoteEditor::changeFontSize);
+  connect(fontSizeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &NoteEditor::changeFontSize);
 
   connect(textEdit_, &QTextEdit::textChanged, this, &NoteEditor::updateNote);
 
