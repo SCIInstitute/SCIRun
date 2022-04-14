@@ -104,25 +104,25 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
 
-  connect(configDialog_->viewerHeightSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setHeight);
-  connect(configDialog_->viewerWidthSpinBox_, &QSpinBox::valueChanged, this, &OsprayViewerDialog::setWidth);
+  connect(configDialog_->viewerHeightSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &OsprayViewerDialog::setHeight);
+  connect(configDialog_->viewerWidthSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &OsprayViewerDialog::setWidth);
 
-  connect(configDialog_->cameraViewAtXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewAtYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewAtZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpXDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpYDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpZDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setViewportCamera);
 
-  connect(configDialog_->ambientLightColorRDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
-  connect(configDialog_->ambientLightColorGDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
-  connect(configDialog_->ambientLightColorBDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
-  connect(configDialog_->directionalLightColorRDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
-  connect(configDialog_->directionalLightColorGDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
-  connect(configDialog_->directionalLightColorBDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->ambientLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->ambientLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->ambientLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
+  connect(configDialog_->directionalLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &OsprayViewerDialog::setLightColor);
 
   //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
   //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
