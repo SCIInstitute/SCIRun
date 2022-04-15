@@ -45,6 +45,7 @@ SCIRUN_ADD_LIBRARY(Modules_Render
 TARGET_LINK_LIBRARIES(Modules_Render
   Dataflow_Network
   Core_Datatypes
+  Core_Application_Preferences
 )
 
 IF(BUILD_SHARED_LIBS)

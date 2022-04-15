@@ -124,6 +124,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(Light2Inclination);
         ALGORITHM_PARAMETER_DECL(Light3Inclination);
 
+        ALGORITHM_PARAMETER_DECL(ScreenshotDirectory);
+
         // not used--GUI hidden/never implemented
         //ALGORITHM_PARAMETER_DECL(Lighting);
         //ALGORITHM_PARAMETER_DECL(ShowBBox);

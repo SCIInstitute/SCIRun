@@ -169,6 +169,7 @@ namespace Gui {
           ViewAxisChooserControls* viewAxisChooser_{nullptr};
           ObjectSelectionControls* objectSelectionControls_{nullptr};
           OrientationAxesControls* orientationAxesControls_{nullptr};
+          ScreenshotControls* screenshotControls_{nullptr};
           ScaleBarControls* scaleBarControls_{nullptr};
           ClippingPlaneControls* clippingPlaneControls_{nullptr};
           InputControls* inputControls_{nullptr};
@@ -448,6 +449,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   glLayout->addWidget(impl_->toolBar2_, 1, 0);
   glLayout->update();
 
+  addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
+
   viewSceneManager.addViewScene(this);
 }
 
@@ -488,7 +491,6 @@ void ViewSceneDialog::addToolBar()
   addObjectSelectionButton();
   addAutoViewButton();
   addScreenshotButton();
-  addQuickScreenshotButton();
   addAutoRotateButton();
   addColorOptionsButton();
   addLightButtons();
@@ -684,18 +686,9 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setToolTip("Take Screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
-  connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
-  addToolbarButton(screenshotButton, 1);
-}
-
-void ViewSceneDialog::addQuickScreenshotButton()
-{
-  auto* quickScreenshotButton = new QPushButton(this);
-  quickScreenshotButton->setToolTip("Take Quick Screenshot");
-  quickScreenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/quickscreenshot.png"));
-  quickScreenshotButton->setShortcut(Qt::Key_F12);
-  connect(quickScreenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
-  addToolbarButton(quickScreenshotButton, 1);
+  connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(quickScreenshotClicked()));
+  impl_->screenshotControls_ = new ScreenshotControls(this);
+  addToolbarButton(screenshotButton, 1, impl_->screenshotControls_);
 }
 
 using V = glm::vec3;
@@ -1206,7 +1199,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   }
 
   if (impl_->saveScreenshotOnNewGeometry_)
-    quickScreenshot(false);
+    autoSaveScreenshot();
 }
 
 void ViewSceneDialog::lockMutex()
@@ -2671,28 +2664,49 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool)
   updateAllGeometries();
 }
 
-void ViewSceneDialog::screenshotClicked()
+void ViewSceneDialog::screenshotSaveAs()
 {
-  takeScreenshot();
-  impl_->screenshotTaker_->saveScreenshot();
+  auto fileName = QFileDialog::getSaveFileName(impl_->mGLWidget, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png");
+
+  saveScreenshot(fileName, true);
 }
 
-void ViewSceneDialog::quickScreenshot(bool prompt)
+void ViewSceneDialog::quickScreenshot()
 {
-  takeScreenshot();
-  impl_->screenshotTaker_->saveScreenshotFromPath(prompt);
+  auto fileName = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
+         QString("/%1_%2.png").arg(QString::fromStdString(getName()).replace(':', '-')).arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz"));
+
+  saveScreenshot(fileName, true);
+}
+
+void ViewSceneDialog::setScreenshotDirectory()
+{
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
+
+  state_->setValue(Parameters::ScreenshotDirectory, dir.toStdString());
+}
+
+void ViewSceneDialog::saveScreenshot(QString fileName, bool notify)
+{
+  if(!fileName.isEmpty())
+  {
+    takeScreenshot();
+    if(notify)
+      QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+
+    impl_->screenshotTaker_->saveScreenshot(fileName);
+  }
 }
 
 void ViewSceneDialog::autoSaveScreenshot()
 {
   QThread::sleep(1);
-  takeScreenshot();
-  const auto file = Screenshot::screenshotDirectory() +
+  const auto file = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
                     QString("/%1_%2.png")
-                    .arg(windowTitle().replace(':', '-'))
+                    .arg(QString::fromStdString(getName()).replace(':', '-'))
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
-  impl_->screenshotTaker_->saveScreenshot(file);
+  saveScreenshot(file, false);
 }
 
 void ViewSceneDialog::sendBugReport()
@@ -2701,10 +2715,8 @@ void ViewSceneDialog::sendBugReport()
   const QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 
   // Temporarily save screenshot so that it can be sent over email
-  takeScreenshot();
-  const QImage image = impl_->screenshotTaker_->getScreenshot();
-  QString location = Screenshot::screenshotDirectory() + ("/scirun_bug.png");
-  image.save(location);
+  QString location = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) + ("/scirun_bug.png");
+  saveScreenshot(location, false);
 
   // Generate email template
   const QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "

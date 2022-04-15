@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
@@ -158,6 +159,8 @@ ALGORITHM_PARAMETER_DEF(Render, AxesX);
 ALGORITHM_PARAMETER_DEF(Render, AxesY);
 ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
 
+ALGORITHM_PARAMETER_DEF(Render, ScreenshotDirectory);
+
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
@@ -253,6 +256,9 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesSize, 10);
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
+
+  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
