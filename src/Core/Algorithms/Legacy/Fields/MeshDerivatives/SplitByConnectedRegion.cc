@@ -358,7 +358,7 @@ AlgorithmOutput SplitFieldByConnectedRegionAlgo::run(const AlgorithmInput& input
     auto boutput = std::make_shared<Bundle>();
     for (size_t j = 0; j < output_fields.size() ; ++j)
     {
-      boutput->set("Field" + std::to_string(j), output.at(j));
+      boutput->set("Field" + std::to_string(j), output_fields.at(j));
     }
     
     output[OutputBundle]=boutput;
