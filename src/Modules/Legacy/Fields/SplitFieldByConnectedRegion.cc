@@ -83,11 +83,7 @@ void SplitFieldByConnectedRegion::execute()
     sendOutputFromAlgorithm(OutputField7, output);
     sendOutputFromAlgorithm(OutputField8, output);
 
-    auto boutput = std::make_shared<Bundle>();
-    for (size_t j = 0; j < output.size(); ++j)
-    {
-      boutput->set("Field" + std::to_string(j), output.at(j));
-    }
-    sendOutput(OutputBundle, boutput);
+    
+    sendOutputFromAlgorithm(OutputBundle, output);
   }
 }
