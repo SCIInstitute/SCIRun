@@ -3696,7 +3696,7 @@
 									<name>FieldName</name>
 									<value object_id="_248">
 										<which>2</which>
-										<value></value>
+										<value>centroids</value>
 									</value>
 								</second>
 							</item>
@@ -3708,7 +3708,7 @@
 									<name>NodeAsSpheres</name>
 									<value object_id="_249">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -3912,7 +3912,7 @@
 									<name>SphereScaleValue</name>
 									<value object_id="_266">
 										<which>1</which>
-										<value>2.79000000000000026e-01</value>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -5148,7 +5148,7 @@
 									<name>FieldName</name>
 									<value object_id="_365">
 										<which>2</which>
-										<value></value>
+										<value>slice1</value>
 									</value>
 								</second>
 							</item>
@@ -5632,7 +5632,7 @@
 									<name>FieldName</name>
 									<value object_id="_404">
 										<which>2</which>
-										<value></value>
+										<value>slice2</value>
 									</value>
 								</second>
 							</item>
@@ -6116,7 +6116,7 @@
 									<name>FieldName</name>
 									<value object_id="_443">
 										<which>2</which>
-										<value></value>
+										<value>slice3</value>
 									</value>
 								</second>
 							</item>
@@ -6600,7 +6600,7 @@
 									<name>FieldName</name>
 									<value object_id="_482">
 										<which>2</which>
-										<value></value>
+										<value>single fiber</value>
 									</value>
 								</second>
 							</item>
@@ -7084,7 +7084,7 @@
 									<name>FieldName</name>
 									<value object_id="_521">
 										<which>2</which>
-										<value></value>
+										<value>CBDout1</value>
 									</value>
 								</second>
 							</item>
@@ -7568,7 +7568,7 @@
 									<name>FieldName</name>
 									<value object_id="_560">
 										<which>2</which>
-										<value></value>
+										<value>CBDout2</value>
 									</value>
 								</second>
 							</item>
@@ -8464,7 +8464,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_628">
 										<which>1</which>
-										<value>1.50002517700195312e+02</value>
+										<value>4.71150245666503906e+01</value>
 									</value>
 								</second>
 							</item>
@@ -8531,28 +8531,28 @@
 												<name>listElement</name>
 												<value object_id="_635">
 													<which>1</which>
-													<value>3.36714804172515869e-01</value>
+													<value>2.51989126205444336e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_636">
 													<which>1</which>
-													<value>-1.26884534955024719e-01</value>
+													<value>1.02155275642871857e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_637">
 													<which>1</which>
-													<value>-4.12387490272521973e-01</value>
+													<value>-4.53975826501846313e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_638">
 													<which>1</which>
-													<value>-8.36934924125671387e-01</value>
+													<value>-8.48511397838592529e-01</value>
 												</value>
 											</item>
 										</value>
@@ -9390,7 +9390,7 @@
 									<value object_id="_721">
 										<which>5</which>
 										<value>
-											<count>8</count>
+											<count>9</count>
 											<item_version>0</item_version>
 											<item>
 												<name>graphicsItem</name>
@@ -9400,14 +9400,14 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:8</name>
+															<name>CBDout1 (from ShowField:7)</name>
 															<value object_id="_723">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_724">
 																<which>3</which>
 																<value>1</value>
@@ -9421,7 +9421,7 @@
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_726">
 																<which>3</which>
 																<value>0</value>
@@ -9438,14 +9438,14 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:7</name>
+															<name>CBDout2 (from ShowField:8)</name>
 															<value object_id="_728">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_729">
 																<which>3</which>
 																<value>1</value>
@@ -9459,7 +9459,7 @@
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_731">
 																<which>3</which>
 																<value>0</value>
@@ -9476,17 +9476,17 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:6</name>
+															<name>centroids (from ShowField:0)</name>
 															<value object_id="_733">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_734">
 																<which>3</which>
-																<value>1</value>
+																<value>0</value>
 															</value>
 														</item>
 														<item>
@@ -9497,7 +9497,7 @@
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_736">
 																<which>3</which>
 																<value>1</value>
@@ -9511,24 +9511,27 @@
 												<value object_id="_737">
 													<which>5</which>
 													<value>
-														<count>4</count>
+														<count>1</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:5</name>
+															<name>ShowColorMap:1</name>
 															<value object_id="_738">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>graphicsItem</name>
+												<value object_id="_739">
+													<which>5</which>
+													<value>
+														<count>4</count>
+														<item_version>0</item_version>
 														<item>
-															<name>Nodes</name>
-															<value object_id="_739">
-																<which>3</which>
-																<value>0</value>
-															</value>
-														</item>
-														<item>
-															<name>Faces</name>
+															<name>ShowField:3</name>
 															<value object_id="_740">
 																<which>3</which>
 																<value>1</value>
@@ -9541,32 +9544,32 @@
 																<value>0</value>
 															</value>
 														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>graphicsItem</name>
-												<value object_id="_742">
-													<which>5</which>
-													<value>
-														<count>4</count>
-														<item_version>0</item_version>
 														<item>
-															<name>ShowField:4</name>
-															<value object_id="_743">
+															<name>Faces</name>
+															<value object_id="_742">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
 														<item>
 															<name>Nodes</name>
-															<value object_id="_744">
+															<value object_id="_743">
 																<which>3</which>
 																<value>0</value>
 															</value>
 														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>graphicsItem</name>
+												<value object_id="_744">
+													<which>5</which>
+													<value>
+														<count>4</count>
+														<item_version>0</item_version>
 														<item>
-															<name>Faces</name>
+															<name>single fiber (from ShowField:6)</name>
 															<value object_id="_745">
 																<which>3</which>
 																<value>1</value>
@@ -9576,7 +9579,21 @@
 															<name>Edges</name>
 															<value object_id="_746">
 																<which>3</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Faces</name>
+															<value object_id="_747">
+																<which>3</which>
 																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Nodes</name>
+															<value object_id="_748">
+																<which>3</which>
+																<value>1</value>
 															</value>
 														</item>
 													</value>
@@ -9584,30 +9601,16 @@
 											</item>
 											<item>
 												<name>graphicsItem</name>
-												<value object_id="_747">
+												<value object_id="_749">
 													<which>5</which>
 													<value>
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:3</name>
-															<value object_id="_748">
-																<which>3</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Nodes</name>
-															<value object_id="_749">
-																<which>3</which>
-																<value>0</value>
-															</value>
-														</item>
-														<item>
-															<name>Faces</name>
+															<name>slice1 (from ShowField:3)</name>
 															<value object_id="_750">
 																<which>3</which>
-																<value>0</value>
+																<value>1</value>
 															</value>
 														</item>
 														<item>
@@ -9617,42 +9620,18 @@
 																<value>0</value>
 															</value>
 														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>graphicsItem</name>
-												<value object_id="_752">
-													<which>5</which>
-													<value>
-														<count>4</count>
-														<item_version>0</item_version>
 														<item>
-															<name>ShowField:0</name>
-															<value object_id="_753">
+															<name>Faces</name>
+															<value object_id="_752">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
 														<item>
 															<name>Nodes</name>
-															<value object_id="_754">
+															<value object_id="_753">
 																<which>3</which>
 																<value>0</value>
-															</value>
-														</item>
-														<item>
-															<name>Faces</name>
-															<value object_id="_755">
-																<which>3</which>
-																<value>0</value>
-															</value>
-														</item>
-														<item>
-															<name>Edges</name>
-															<value object_id="_756">
-																<which>3</which>
-																<value>1</value>
 															</value>
 														</item>
 													</value>
@@ -9660,16 +9639,75 @@
 											</item>
 											<item>
 												<name>graphicsItem</name>
-												<value object_id="_757">
+												<value object_id="_754">
 													<which>5</which>
 													<value>
-														<count>1</count>
+														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowColorMap:1</name>
-															<value object_id="_758">
+															<name>slice2 (from ShowField:4)</name>
+															<value object_id="_755">
 																<which>3</which>
 																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Edges</name>
+															<value object_id="_756">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Faces</name>
+															<value object_id="_757">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Nodes</name>
+															<value object_id="_758">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>graphicsItem</name>
+												<value object_id="_759">
+													<which>5</which>
+													<value>
+														<count>4</count>
+														<item_version>0</item_version>
+														<item>
+															<name>slice3 (from ShowField:5)</name>
+															<value object_id="_760">
+																<which>3</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Edges</name>
+															<value object_id="_761">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Faces</name>
+															<value object_id="_762">
+																<which>3</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Nodes</name>
+															<value object_id="_763">
+																<which>3</which>
+																<value>0</value>
 															</value>
 														</item>
 													</value>
@@ -9685,9 +9723,9 @@
 								</first>
 								<second>
 									<name>WindowPositionX</name>
-									<value object_id="_759">
+									<value object_id="_764">
 										<which>0</which>
-										<value>-86</value>
+										<value>420</value>
 									</value>
 								</second>
 							</item>
@@ -9697,9 +9735,9 @@
 								</first>
 								<second>
 									<name>WindowPositionY</name>
-									<value object_id="_760">
+									<value object_id="_765">
 										<which>0</which>
-										<value>968</value>
+										<value>145</value>
 									</value>
 								</second>
 							</item>
@@ -9709,7 +9747,7 @@
 								</first>
 								<second>
 									<name>WindowSizeX</name>
-									<value object_id="_761">
+									<value object_id="_766">
 										<which>0</which>
 										<value>924</value>
 									</value>
@@ -9721,7 +9759,7 @@
 								</first>
 								<second>
 									<name>WindowSizeY</name>
-									<value object_id="_762">
+									<value object_id="_767">
 										<which>0</which>
 										<value>749</value>
 									</value>
@@ -9733,82 +9771,6 @@
 			</item>
 			<item>
 				<first>WriteField:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>5</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value object_id="_763">
-										<which>2</which>
-										<value>SCIRun Field File (*.fld)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value object_id="_764">
-										<which>2</which>
-										<value>/local/fjiao/SCIRun/bin/DATA_CODE//../../../Users/jeroen/projects/scirun/trunk/bin/data.mat</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>GuiFileTypeName</name>
-								</first>
-								<second>
-									<name>GuiFileTypeName</name>
-									<value object_id="_765">
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ProgrammableInputPortEnabled</name>
-								</first>
-								<second>
-									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_766">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>filetype</name>
-								</first>
-								<second>
-									<name>filetype</name>
-									<value object_id="_767">
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>WriteField:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -9839,7 +9801,7 @@
 									<name>Filename</name>
 									<value object_id="_769">
 										<which>2</which>
-										<value>/local/fjiao/SCIRun/bin/DATA_CODE//../../../local/fjiao/SCIRun/bin/fiber_tend.m</value>
+										<value>/local/fjiao/SCIRun/bin/DATA_CODE//../../../Users/jeroen/projects/scirun/trunk/bin/data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -9874,6 +9836,82 @@
 								<second>
 									<name>filetype</name>
 									<value object_id="_772">
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>WriteField:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>WriteField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>5</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value object_id="_773">
+										<which>2</which>
+										<value>SCIRun Field File (*.fld)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value object_id="_774">
+										<which>2</which>
+										<value>/local/fjiao/SCIRun/bin/DATA_CODE//../../../local/fjiao/SCIRun/bin/fiber_tend.m</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>GuiFileTypeName</name>
+								</first>
+								<second>
+									<name>GuiFileTypeName</name>
+									<value object_id="_775">
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_776">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>filetype</name>
+								</first>
+								<second>
+									<name>filetype</name>
+									<value object_id="_777">
 										<which>0</which>
 										<value>0</value>
 									</value>
