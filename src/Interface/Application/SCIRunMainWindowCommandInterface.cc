@@ -228,7 +228,7 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
     prefsWindow_->scirunDataLineEdit_->setToolTip(dir);
 
     RemembersFileDialogDirectory::setStartingDir(dir);
-    Preferences::Instance().setDataDirectory(dir.toStdString());
+    PythonInterpreter::Instance().run_string(Preferences::Instance().setDataDirectory(dir.toStdString()));
     Q_EMIT dataDirectorySet(dir);
   }
 }
