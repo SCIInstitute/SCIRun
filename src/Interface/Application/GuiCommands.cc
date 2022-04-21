@@ -142,7 +142,7 @@ void ShowSplashScreenGui::initSplashScreen()
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
-  QObject::connect( splashTimer_, SIGNAL( timeout() ), splash_, SLOT( close() ));
+  QObject::connect(splashTimer_, &QTimer::timeout, splash_, &QSplashScreen::close);
 }
 
 QSplashScreen* ShowSplashScreenGui::splash_ = nullptr;

@@ -64,7 +64,7 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addDoubleSpinBoxManager(normalZ_, CreateImageModule::NormalZ);
 
   addDoubleSpinBoxManager(position_, CreateImageModule::Position);
-  connect(axis_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
+  connect(axis_, COMBO_BOX_ACTIVATED_STRING, this, &CreateImageDialog::enableWidgets);
 
   addComboBoxManager(dataLocation_, CreateImageModule::DataLocation);
 }

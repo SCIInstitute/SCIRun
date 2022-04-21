@@ -31,6 +31,7 @@
 
 #include <QDialog>
 #include <QDir>
+#include <set>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Application/PositionProvider.h>
 #include "ui_SCIRunMainWindow.h"
@@ -115,6 +116,8 @@ public Q_SLOTS:
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
   void reportIssue();
+  void toolkitDownload();
+  void networkModified();
 protected:
   void closeEvent(QCloseEvent* event) override;
   void keyPressEvent(QKeyEvent *event) override;
@@ -136,7 +139,9 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
-  QStringList toolkitFiles_, importedToolkits_;
+  QMap<QString, QVariant> frequentModulesSettings_;
+  std::map<QString, int> frequentModules_;
+  QStringList toolkitFiles_, importedToolkits_, recentModules_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
   QMap<QString, QMenu*> toolkitMenus_;
@@ -145,6 +150,7 @@ private:
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
   MacroEditor* macroEditor_;
+  SharedPointer<class CurrentModuleSelection> moduleSelection_;
 
   void createStandardToolbars();
   void createExecuteToolbar();
@@ -177,20 +183,28 @@ private:
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
   void addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls);
+  void setupDockToggleViewAction(QDockWidget* dock, const QString& shortcut);
 
   void addFavoriteMenu(QTreeWidget* tree);
   QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text);
-  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree);
-  QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getFavoriteMenu();
+  QTreeWidgetItem* getClipboardHistoryMenu();
+  QTreeWidgetItem* getSavedSubnetworksMenu();
+  QTreeWidgetItem* getRecentModulesMenu();
+  QTreeWidgetItem* getFrequentModulesMenu();
   void addSnippet(const QString& code, QTreeWidgetItem* snips);
   void readCustomSnippets(QTreeWidgetItem* snips);
   void addSnippetMenu(QTreeWidget* tree);
   void addSavedSubnetworkMenu(QTreeWidget* tree);
+  void addFrequentMenu(QTreeWidget* tree);
+  void addRecentMenu(QTreeWidget* tree);
   void addClipboardHistoryMenu(QTreeWidget* tree);
+  void updateRecentModules(const QString& modId);
+  void updateFrequentModules(const QString& modId);
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
   void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
-  void sortFavorites(QTreeWidget* tree);
+  void sortFavorites();
+  std::set<QString> topNMostFrequentModules() const;
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
@@ -253,7 +267,6 @@ private Q_SLOTS:
   void makePipesManhattan();
   void maxCoreValueChanged(int value);
   void modulesSnapToChanged();
-  void networkModified();
   void networkTimedOut();
   bool newNetwork();
   void openLogFolder();
@@ -289,10 +302,11 @@ private Q_SLOTS:
   void toggleFullScreen();
   void toggleMetadataLayer(bool toggle);
   void toggleTagLayer(bool toggle);
-  void toolkitDownload();
   void updateClipboardHistory(const QString& xml);
   void updateDockWidgetProperties(bool isFloating);
   void zoomNetwork();
+  void clearRecentModules();
+  void clearFrequentModules();
 };
 
 }

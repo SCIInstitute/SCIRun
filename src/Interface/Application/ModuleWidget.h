@@ -105,7 +105,8 @@ typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 
 class ModuleWidget : public QStackedWidget,
-  public Dataflow::Networks::ExecutableObject, public HasNotes
+  public Dataflow::Networks::ExecutableObject,
+  public HasNotes<ModuleWidget>
 {
 	Q_OBJECT
 
@@ -131,7 +132,7 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
-  bool executionDisabled() const { return disabled_; }
+  bool isExecutionDisabled() const { return disabled_; }
   void setExecutionDisabled(bool disabled);
 
   void saveImagesFromViewScene();
@@ -191,8 +192,8 @@ public Q_SLOTS:
   void setStartupNote(const QString& text);
   void updateNote(const Note& note);
   void duplicate();
-  void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
+  void connectNewModuleTo(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void insertNewModuleTo(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
   void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void pinUI();
@@ -203,6 +204,7 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
+  void changeExecuteButtonToPlay();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -245,10 +247,9 @@ private Q_SLOTS:
   void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
-  void replaceModuleWith();
+  void replaceModule();
   void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
-  void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled, int index);

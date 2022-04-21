@@ -42,8 +42,8 @@ ProjectPointsOntoMeshDialog::ProjectPointsOntoMeshDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(pointsOntoElementsRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(pointsOntoNodesRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(pointsOntoElementsRadioButton_, &QPushButton::clicked, this, &ProjectPointsOntoMeshDialog::push);
+  connect(pointsOntoNodesRadioButton_, &QPushButton::clicked, this, &ProjectPointsOntoMeshDialog::push);
 }
 
 void ProjectPointsOntoMeshDialog::push()

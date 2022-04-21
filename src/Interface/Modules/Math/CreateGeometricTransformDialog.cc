@@ -88,21 +88,21 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   addCheckBoxManager(resizeSeparablyCheckBox_, Parameters::ResizeSeparably);
   addCheckBoxManager(ignoreChangesCheckBox_, Parameters::IgnoreChanges);
 
-  connect(transformTabWidget_, SIGNAL(currentChanged(int)), this, SLOT(changeTransformType(int)));
-  connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetValues()));
-  connect(resetFieldMapPushButton_, SIGNAL(clicked()), this, SLOT(resetFieldMap()));
-  connect(resetWidgetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
-  connect(cycleUpPushButton_, SIGNAL(clicked()), this, SLOT(cycleUp()));
-  connect(cycleDownPushButton_, SIGNAL(clicked()), this, SLOT(cycleDown()));
-  connect(swapXYPushButton_, SIGNAL(clicked()), this, SLOT(swapXY()));
-  connect(swapYZPushButton_, SIGNAL(clicked()), this, SLOT(swapYZ()));
-  connect(swapXZPushButton_, SIGNAL(clicked()), this, SLOT(swapXZ()));
-  connect(flipXPushButton_, SIGNAL(clicked()), this, SLOT(flipX()));
-  connect(flipYPushButton_, SIGNAL(clicked()), this, SLOT(flipY()));
-  connect(flipZPushButton_, SIGNAL(clicked()), this, SLOT(flipZ()));
-  connect(applyTransformPushButton_, SIGNAL(clicked()), this, SLOT(applyTransform()));
-  connect(compositeTransformPushButton_, SIGNAL(clicked()), this, SLOT(compositeTransform()));
-  connect(logCalculatorLineEdit_, SIGNAL(textEdited(const QString&)), this, SLOT(calculateLog(const QString&)));
+  connect(transformTabWidget_, &QTabWidget::currentChanged, this, &CreateGeometricTransformDialog::changeTransformType);
+  connect(resetPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetValues);
+  connect(resetFieldMapPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetFieldMap);
+  connect(resetWidgetPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::resetWidget);
+  connect(cycleUpPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::cycleUp);
+  connect(cycleDownPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::cycleDown);
+  connect(swapXYPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::swapXY);
+  connect(swapYZPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::swapYZ);
+  connect(swapXZPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::swapXZ);
+  connect(flipXPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::flipX);
+  connect(flipYPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::flipY);
+  connect(flipZPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::flipZ);
+  connect(applyTransformPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::applyTransform);
+  connect(compositeTransformPushButton_, &QPushButton::clicked, this, &CreateGeometricTransformDialog::compositeTransform);
+  connect(logCalculatorLineEdit_, &QLineEdit::textEdited, this, &CreateGeometricTransformDialog::calculateLog);
 }
 
 void CreateGeometricTransformDialog::pullSpecial()

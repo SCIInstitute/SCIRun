@@ -85,7 +85,7 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   setWindowTitle(windowTitle() + " - " + name);
   auto vbox = qobject_cast<QVBoxLayout*>(layout());
   vbox->insertWidget(0, editor);
-  connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
+  connect(expandPushButton_, sig(clicked()), this, SLOT(expand()));
   editor_->setParent(this);
   editor_->setAcceptDrops(true);
 
@@ -129,7 +129,7 @@ void NetworkEditor::sendItemsToParent()
       auto proxy = dynamic_cast<ModuleProxyWidget*>(item);
       if (proxy)
       {
-        connect(parentNetwork_->scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
+        connect(parentNetwork_->scene_, sig(selectionChanged()), proxy, SLOT(highlightIfSelected()));
       }
 
       parentNetwork_->scene_->addItem(item);
@@ -346,9 +346,9 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
 
   subnet->setSceneRect(QRectF(0, 0, NetworkBoundaries::sceneWidth / 2, NetworkBoundaries::sceneHeight / 2));
-  connect(subnet->scene_, SIGNAL(selectionChanged()), scene_, SLOT(clearSelection()));
-  connect(subnet->scene_, SIGNAL(selectionChanged()), this, SLOT(clearSiblingSelections()));
-  connect(scene_, SIGNAL(selectionChanged()), subnet->scene_, SLOT(clearSelection()));
+  connect(subnet->scene_, sig(selectionChanged()), scene_, SLOT(clearSelection()));
+  connect(subnet->scene_, sig(selectionChanged()), this, SLOT(clearSiblingSelections()));
+  connect(scene_, sig(selectionChanged()), subnet->scene_, SLOT(clearSelection()));
 
   for (auto& item : childrenNetworkItems_[name])
   {
@@ -356,7 +356,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
     if (auto proxy = qgraphicsitem_cast<ModuleProxyWidget*>(item))
     {
       item->setVisible(true);
-      connect(subnet->scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
+      connect(subnet->scene_, sig(selectionChanged()), proxy, SLOT(highlightIfSelected()));
     }
     else
     {
@@ -830,10 +830,10 @@ void NetworkEditor::resizeEvent(QResizeEvent *event)
 SubnetModuleConnector::SubnetModuleConnector(NetworkEditor* parent) :
   parent_(parent), subnet_(nullptr)
 {
-  connect(parent, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
+  connect(parent, sig(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
     this, SLOT(connectionDeletedFromParent()));
 
-  connect(parent_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+  connect(parent_->getNetworkEditorController().get(), sig(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
     this, SLOT(moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 }
 
@@ -841,7 +841,7 @@ void SubnetModuleConnector::setSubnet(NetworkEditor* subnet)
 {
   subnet_ = subnet;
 
-  connect(subnet_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+  connect(subnet_->getNetworkEditorController().get(), sig(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
     this, SLOT(moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 }
 

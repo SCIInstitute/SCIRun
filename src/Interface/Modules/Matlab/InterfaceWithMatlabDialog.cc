@@ -162,7 +162,7 @@ QComboBox* InterfaceWithMatlabDialog::makeInputDataTypeComboBoxItem() const
   QComboBox* bcBox = new QComboBox();
   bcBox->addItems(bcList);
   bcBox->setCurrentIndex(0);
-  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
+  connect(bcBox, &QComboBox::currentIndexChanged, this, &InterfaceWithMatlabDialog::pushMatrixInput);
   return bcBox;
 }
 
@@ -174,7 +174,7 @@ QComboBox* InterfaceWithMatlabDialog::makeInputArrayTypeComboBoxItem() const
   QComboBox* bcBox = new QComboBox();
   bcBox->addItems(bcList);
   bcBox->setCurrentIndex(0);
-  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
+  connect(bcBox, &QComboBox::currentIndexChanged, this, &InterfaceWithMatlabDialog::pushMatrixInput);
   return bcBox;
 }
 

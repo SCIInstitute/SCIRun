@@ -58,18 +58,18 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
 
-  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleUpPush()));
-  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleUpPush()));
-  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
-  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
+  connect(upScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleUpPush);
+  connect(doubleUpScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDoubleUpPush);
+  connect(downScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDownPush);
+  connect(doubleDownScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDoubleDownPush);
 
   setScaleButtonsEnabled(false);
 
-  connect(resetSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(resetSizePushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(resetCenterPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(setCenterPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(setSizePushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(resetAllPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
 
   connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
     setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_, resetAllPushButton_ });

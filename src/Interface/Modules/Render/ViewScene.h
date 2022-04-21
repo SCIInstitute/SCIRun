@@ -90,10 +90,14 @@ namespace SCIRun {
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-    protected Q_SLOTS:
+    public Q_SLOTS:
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
-
+      void adjustZoomSpeed(int value);
+      void saveNewGeometryChanged(int state);
+      void invertZoomClicked(bool value);
+      void menuMouseControlChanged(int index);
+    protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
 
@@ -108,9 +112,6 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void menuMouseControlChanged(int index);
-      void invertZoomClicked(bool value);
-      void adjustZoomSpeed(int value);
       void lockRotationToggled();
       void lockPanningToggled();
       void lockZoomToggled();
@@ -189,8 +190,6 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
-      void saveNewGeometryChanged(int state);
-
 
     protected:
       //---------------- Initialization ------------------------------------------------------------

@@ -60,14 +60,14 @@ PlotDialog::PlotDialog(QWidget* parent)
   layout->addWidget(zoomBox);
 
   plot_ = new Plot(parent);
-  connect(plot_, SIGNAL(hasMessage(const QString&)), this, SLOT(message(const QString&)));
+  connect(plot_, &Plot::hasMessage, this, &PlotDialog::message);
   layout->addWidget(plot_);
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
   layout->addWidget(statusBar_);
 
-  connect(zoomBox, SIGNAL(activated(const QString&)), plot_, SLOT(adjustZoom(const QString&)));
+  connect(zoomBox, COMBO_BOX_ACTIVATED_STRING, plot_, &Plot::adjustZoom);
 
   setLayout(layout);
   resize( 600, 400 );
@@ -125,7 +125,7 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   setAutoFillBackground( true );
 
   auto canvas = new SpecialMapPlotCanvas(pointCurveMap_, this);
-  connect(canvas, SIGNAL(curveSelected(int, const QString&)), this, SLOT(highlightCurve(int, const QString&)));
+  connect(canvas, &SpecialMapPlotCanvas::curveSelected, this, &Plot::highlightCurve);
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
   //canvas->setBorderRadius( 3 ); //TODO: this line is buggy in Qt5. Plus, the background color doesn't work.

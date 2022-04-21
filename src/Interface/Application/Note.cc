@@ -38,25 +38,19 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
+HasNotesBase::HasNotesBase(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, nullptr)
 {
   noteEditor_.setStyleSheet(scirunStylesheet());
 }
 
-void HasNotes::connectNoteEditorToAction(QAction* action)
+void HasNotesBase::connectNoteEditorToAction(QAction* action)
 {
-  QObject::connect(action, SIGNAL(triggered()), &noteEditor_, SLOT(show()));
-  QObject::connect(action, SIGNAL(triggered()), &noteEditor_, SLOT(raise()));
+  QObject::connect(action, &QAction::triggered, &noteEditor_, &NoteEditor::show);
+  QObject::connect(action, &QAction::triggered, &noteEditor_, &NoteEditor::raise);
 }
 
-void HasNotes::connectUpdateNote(QObject* obj)
-{
-  QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
-  QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SIGNAL(noteChanged()));
-}
-
-void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
+void HasNotesBase::setCurrentNote(const Note& note, bool updateEditor)
 {
   currentNote_ = note;
   if (updateEditor)
@@ -66,7 +60,7 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
   }
 }
 
-void HasNotes::setDefaultNoteFontSize(int size)
+void HasNotesBase::setDefaultNoteFontSize(int size)
 {
   noteEditor_.setDefaultNoteFontSize(size);
 }

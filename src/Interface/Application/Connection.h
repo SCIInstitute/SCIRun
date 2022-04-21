@@ -67,7 +67,11 @@ enum
   EXTERNAL_SUBNET_CONNECTION = 200
 };
 
-class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
+class ConnectionLine : public QObject,
+  public QGraphicsPathItem,
+  public HasNotes<ConnectionLine>,
+  public NoteDisplayHelper,
+  public NeedsScenePositionProvider
 {
   Q_OBJECT
 
@@ -98,7 +102,7 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
-  void insertNewModule(const QMap<QString, std::string>& info);
+  void requestInsertNewModule(const QMap<QString, std::string>& info);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

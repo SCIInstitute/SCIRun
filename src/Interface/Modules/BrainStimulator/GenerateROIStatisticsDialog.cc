@@ -68,8 +68,8 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   SpecifyROI_tabWidget->setItem(0, 3, new QTableWidgetItem(" "));
   SpecifyROI_tabWidget->setItem(0, 4, new QTableWidgetItem(" 0 "));
 
-  connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
-  connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(StatisticsOutput_tableWidget, &QTableWidget::cellChanged, this, &GenerateROIStatisticsDialog::push);
+  connect(SpecifyROI_tabWidget, &QTableWidget::cellChanged, this, &GenerateROIStatisticsDialog::push);
 }
 
 void GenerateROIStatisticsDialog::push()

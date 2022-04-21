@@ -56,7 +56,7 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	addSpinBoxManager(yTranslationSpin_, SCM::YTranslation);
   addLineEditManager(colorMapNameLineEdit_, SCM::ColorMapName);
 
-  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+  connect(textColorPushButton_, &QPushButton::clicked, this, &ShowColorMapDialog::getColor);
   connectButtonsToExecuteSignal({ leftRadioButton_, bottomRadioButton_, firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_, textColorPushButton_ } );
 
   addDoubleSpinBoxManager(&r_, SCM::TextRed);
