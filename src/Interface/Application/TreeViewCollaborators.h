@@ -55,6 +55,8 @@ namespace Gui {
       visitItem(tree->topLevelItem(i), itemFunc);
   }
 
+  static constexpr auto hasUIDataFlag = Qt::UserRole + 1;
+
   struct HideItemsNotMatchingString
   {
     enum class SearchType

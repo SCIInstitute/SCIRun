@@ -59,7 +59,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputField1, Field);
-	      OUTPUT_PORT(1, OutputField2, Field);
+        OUTPUT_PORT(1, OutputField2, Field);
         OUTPUT_PORT(2, OutputField3, Field);
         OUTPUT_PORT(3, OutputField4, Field);
         OUTPUT_PORT(4, OutputField5, Field);

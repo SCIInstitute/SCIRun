@@ -65,6 +65,7 @@ public:
   static const AlgorithmOutputName OutputField6;
   static const AlgorithmOutputName OutputField7;
   static const AlgorithmOutputName OutputField8;
+  static const AlgorithmOutputName OutputBundle;
 
   std::vector<FieldHandle> run(FieldHandle input) const;
 

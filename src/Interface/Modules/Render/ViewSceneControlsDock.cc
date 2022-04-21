@@ -36,7 +36,6 @@
 
 #include <qwt_knob.h>
 #include <qwt_abstract_slider.h>
-//#include <qwt_dial_needle.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -496,7 +495,7 @@ AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent
   connect(rotateLeftButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateLeft);
   connect(rotateUpButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateUp);
   connect(rotateDownButton_, &QPushButton::clicked, parent, &ViewSceneDialog::autoRotateDown);
-  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
+  connect(autoRotateSpeedSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setAutoRotateSpeed);
 }
 
 ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
@@ -510,10 +509,10 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
-  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
-  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
-  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
+  connect(ambientDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setAmbientValue);
+  connect(diffuseDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setDiffuseValue);
+  connect(specularDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setSpecularValue);
+  connect(shininessDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setShininessValue);
 }
 
 FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
@@ -521,11 +520,11 @@ FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
 {
   setupUi(this);
 
-  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
-  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
-  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
-  connect(this, SIGNAL(setFogTo(bool)), parent, SLOT(setFogOn(bool)));
-  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
+  connect(fogStartDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setFogStartValue);
+  connect(fogEndDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setFogEndValue);
+  connect(fogGroupBox_, &QGroupBox::clicked, parent, &ViewSceneDialog::setFogOn);
+  connect(this, &FogControls::setFogTo, parent, &ViewSceneDialog::setFogOn);
+  connect(fogUseBGColorCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::setFogUseBGColor);
   qobject_cast<QGridLayout*>(fogGroupBox_->layout())->addWidget(colorPickerButton_, 3, 0, 1, 2);
   linkedCheckable_ = [this]() { return fogGroupBox_->isChecked(); };
   connect(this, &FogControls::lightColorUpdated, parent, &ViewSceneDialog::assignFogColor);
@@ -548,10 +547,10 @@ ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWid
   visibleItems_.reset(new VisibleItemManager(objectListWidget_, parent->state_));
   connect(selectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::selectAllClicked);
   connect(deselectAllPushButton_, &QPushButton::clicked, visibleItems_.get(), &VisibleItemManager::deselectAllClicked);
-  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
-  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
-  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
-    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
+  connect(objectListWidget_, &QTreeWidget::itemClicked, visibleItems_.get(), &VisibleItemManager::updateVisible);
+  connect(visibleItems_.get(), &VisibleItemManager::visibleItemChange, parent, &ViewSceneDialog::newGeometryValueForwarder);
+  connect(visibleItems_.get(), &VisibleItemManager::meshComponentSelectionChange,
+    parent, &ViewSceneDialog::updateMeshComponentSelection);
 }
 
 namespace
@@ -572,9 +571,9 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushB
   connect(orientationCheckableGroupBox_, &QGroupBox::toggled,
     [parent, this](bool b) { parent->showOrientationChecked(b); toggleButton(); }
     );
-  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
-  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
-  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
+  connect(orientAxisSize_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisSize);
+  connect(orientAxisXPos_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisPosX);
+  connect(orientAxisYPos_, &QSlider::valueChanged, parent, &ViewSceneDialog::setOrientAxisPosY);
   connect(orientDefaultPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setDefaultOrientPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, parent, &ViewSceneDialog::setCenterOrientPos);
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
@@ -605,12 +604,12 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
     [parent, this](bool b) { parent->setScaleBarVisible(b); updateToolbarButton(buttonOutlineColor); }
     );
   linkedCheckable_ = [this]() { return showScaleBarTextGroupBox_->isChecked(); };
-  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
-  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
-  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
-  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
-  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
+  connect(fontSizeSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarFontSize);
+  connect(scaleBarLengthDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarLength);
+  connect(scaleBarHeightDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarHeight);
+  connect(numTicksSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarNumTicks);
+  connect(scaleBarMultiplierDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarMultiplier);
+  connect(scaleBarUnitLineEdit_, &QLineEdit::textEdited, parent, &ViewSceneDialog::setScaleBarUnitValue);
 }
 
 ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
@@ -633,18 +632,19 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
   plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
+  //TODO
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, &QCheckBox::toggled,
     [parent, this](bool b) {
       parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }
     );
   linkedCheckable_ = [this]() { return planeVisibleCheckBox_->isChecked(); };
-  connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
-  connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
-  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
-  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
-  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  connect(showPlaneFrameCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::setClippingPlaneFrameOn);
+  connect(reversePlaneNormalCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::reverseClippingPlaneNormal);
+  connect(xValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneX);
+  connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneY);
+  connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneZ);
+  connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneD);
 }
 
 InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
@@ -664,19 +664,20 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
 
   updateZoomOptionVisibility();
 
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
-  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  //connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
+  connect(mouseControlComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), parent, &ViewSceneDialog::menuMouseControlChanged);
+  connect(invertZoomCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::invertZoomClicked);
+  connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);
 }
 
 CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(addGroup_, SIGNAL(clicked()), this, SLOT(addGroup()));
-  connect(removeGroup_, SIGNAL(clicked()), this, SLOT(removeGroup()));
-  connect(viewSceneTreeWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(viewSceneTreeClicked(QTreeWidgetItem*, int)));
-  connect(&ViewSceneDialog::viewSceneManager, SIGNAL(groupsUpdatedSignal()), this, SLOT(updateViewSceneTree()));
+  connect(addGroup_, &QPushButton::clicked, this, &CameraLockControls::addGroup);
+  connect(removeGroup_, &QPushButton::clicked, this, &CameraLockControls::removeGroup);
+  connect(viewSceneTreeWidget_, &QTreeWidget::itemClicked, this, &CameraLockControls::viewSceneTreeClicked);
+  connect(&ViewSceneDialog::viewSceneManager, &ViewSceneManager::groupsUpdatedSignal, this, &CameraLockControls::updateViewSceneTree);
   updateViewSceneTree();
   groupRemoveSpinBox_->setRange(0, 0);
 }
@@ -685,8 +686,8 @@ DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
-  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
+  connect(toStringButton_, &QPushButton::clicked, parent, &ViewSceneDialog::printToString);
+  connect(bugReportButton_, &QPushButton::clicked, parent, &ViewSceneDialog::sendBugReport);
 }
 
 ButtonStylesheetToggler::ButtonStylesheetToggler(QPushButton* toolbarButton, std::function<void()> whatToToggle)
@@ -833,7 +834,7 @@ ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWid
 {
   setupUi(this);
 
-  connect(lookDownComboBox_, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
+  connect(lookDownComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &ViewAxisChooserControls::viewAxisSelected);
 }
 
 QString ViewAxisChooserControls::currentAxis() const

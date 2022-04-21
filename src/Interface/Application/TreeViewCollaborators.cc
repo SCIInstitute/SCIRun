@@ -84,7 +84,7 @@ bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
   if (searchType_ == SearchType::HIDE_NON_UI)
-    return !item->data(0, Qt::UserRole).toBool();
+    return !item->data(0, hasUIDataFlag).toBool();
   else if (searchType_ == SearchType::STARTS_WITH)
     return !text.startsWith(start_, Qt::CaseInsensitive);
   else if(searchType_ == SearchType::WILDCARDS

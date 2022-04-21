@@ -52,6 +52,7 @@ class QToolBar;
 class QAction;
 class QGraphicsScene;
 class QTimeLine;
+class QTreeWidget;
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -66,6 +67,7 @@ namespace Gui {
   {
   public:
     virtual ~CurrentModuleSelection() {}
+    virtual void setActiveTree(QTreeWidget* tree) = 0;
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
     virtual QString clipboardXML() const = 0;
@@ -324,7 +326,7 @@ namespace Gui {
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
     std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to) override;
-    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const PortWidget* from, const PortWidget* to);
+    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnectionWidget(const PortWidget* from, const PortWidget* to);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     void insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
@@ -361,6 +363,10 @@ namespace Gui {
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
+    void cut();
+    void copy();
+    void paste();
+    void searchTextChanged(const QString& text);
 #if 0
     void makeSubnetwork();
     void makeSubnetworkFromComponents(const QString& name,
@@ -390,12 +396,8 @@ namespace Gui {
     void newSubnetworkCopied(const QString& xml);
     void requestLoadNetwork(const QString& file);
   private Q_SLOTS:
-    void cut();
-    void copy();
-    void paste();
     void bringToFront();
     void sendToBack();
-    void searchTextChanged(const QString& text);
 #if 0
     void clearSiblingSelections();
 #endif
@@ -410,7 +412,7 @@ namespace Gui {
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
-    void highlightTaggedItem(QGraphicsItem* item, TagValues tagValue);
+    void highlightTaggedItemImpl(QGraphicsItem* item, TagValues tagValue);
     void pasteImpl(const QString& xml);
     void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect,
       const std::string& newModuleName);

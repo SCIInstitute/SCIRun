@@ -38,7 +38,7 @@ QOSPRayWidget::QOSPRayWidget(QWidget *parent, OSPRayRenderer* renderer) :
   QOpenGLWidget(parent), renderer(renderer)
 {
   renderTimer = new QTimer(this);
-  connect(renderTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  connect(renderTimer, &QTimer::timeout, this, &QOSPRayWidget::updateRenderer);
   renderTimer->start(16);
 }
 

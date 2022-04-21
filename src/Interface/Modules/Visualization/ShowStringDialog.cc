@@ -47,7 +47,7 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
 
   WidgetStyleMixin::tabStyle(locationTabWidget_);
 
-  connect(colorButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+  connect(colorButton_, &QPushButton::clicked, this, &ShowStringDialog::getColor);
   connectButtonToExecuteSignal(colorButton_);
 
   addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);

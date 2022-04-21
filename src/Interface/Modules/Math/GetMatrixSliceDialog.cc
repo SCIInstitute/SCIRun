@@ -53,20 +53,20 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
     {"Loop forever (EXPERIMENTAL)", "loopforever"}});
 
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
-  connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
+  connect(nextIndexButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::incrementIndex);
   previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
-  connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
+  connect(previousIndexButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::decrementIndex);
   firstIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekBackward));
-  connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
+  connect(firstIndexButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::selectFirstIndex);
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
-  connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
+  connect(lastIndexButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::selectLastIndex);
 
-  connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(indexSlider_, &QSlider::sliderReleased, this, &GetMatrixSliceDialog::executeFromStateChangeTriggered);
 
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  connect(playButton_, SIGNAL(clicked()), this, SLOT(startPlay()));
+  connect(playButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::startPlay);
   pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
-  connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
+  connect(pauseButton_, &QPushButton::clicked, this, &GetMatrixSliceDialog::stopPlay);
 
   //TODO: add convenience function at ModuleDialogGeneric level
   for (QToolButton* b : { nextIndexButton_, previousIndexButton_, firstIndexButton_, lastIndexButton_, playButton_, pauseButton_ })

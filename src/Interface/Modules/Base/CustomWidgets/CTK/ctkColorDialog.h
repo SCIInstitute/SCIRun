@@ -97,7 +97,7 @@ public:
 
   /// Add a custom widget as an additional tab of the color dialog created by
   /// ctkColorDialog::getColor. \a label is title of the tab and \a signal is the signal fired by
-  /// the widget whenever a QColor is changed, typically: SIGNAL(currentColorChanged(QColor)). It
+  /// the widget whenever a QColor is changed, typically: &_::currentColorChanged. It
   /// is internally connected to set the current color of the dialog
   Q_INVOKABLE static inline void addDefaultTab(QWidget* widget, const QString& label,
                                    const char* colorSignal = 0,

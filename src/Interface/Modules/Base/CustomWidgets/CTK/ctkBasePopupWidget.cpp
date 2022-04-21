@@ -497,17 +497,7 @@ QWidget* ctkBasePopupWidget::baseWidget()const
 void ctkBasePopupWidget::setBaseWidget(QWidget* widget)
 {
   Q_D(ctkBasePopupWidget);
-  if (!d->BaseWidget.isNull())
-    {
-    //disconnect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
-    //           this, SLOT(onBaseWidgetDestroyed()));
-    }
   d->BaseWidget = widget;
-  if (!d->BaseWidget.isNull())
-    {
-    //connect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
-    //        this, SLOT(onBaseWidgetDestroyed()));
-    }
 }
 
 // -------------------------------------------------------------------------

@@ -128,7 +128,7 @@ namespace SCIRun {
         {
           auto pc = new QAction("Port Caching", parent);
           pc->setCheckable(true);
-          connect(pc, SIGNAL(triggered(bool)), parent, SLOT(portCachingChanged(bool)));
+          connect(pc, &QAction::triggered, parent, &PortWidget::portCachingChanged);
           //TODO for now: disable
           pc->setEnabled(false);
           //TODO:
@@ -142,7 +142,7 @@ namespace SCIRun {
         base_ = new QMenu("Connect Module", parent);
         compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         connectModuleAction_ = addAction("Connect Module...");
-        connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
+        connect(connectModuleAction_, &QAction::triggered, parent, &PortWidget::pickConnectModule);
       }
 
       //TODO: might add back as a feature later
@@ -335,7 +335,7 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
 
     if (currentConnection_)
     {
-      makeConnection(pos);
+      makeConnectionAtPoint(pos);
     }
   }
   else if (button == Qt::RightButton && (!isConnected() || !description()->isInput()))
@@ -375,12 +375,12 @@ void PortWidget::pickConnectModule()
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
     form.addWidget(&buttonBox);
-    connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+    connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
     if (dialog.exec() == QDialog::Accepted)
     {
-      Q_FOREACH(QListWidgetItem* lineEdit, list.selectedItems())
+      for (auto& lineEdit : list.selectedItems())
         menu_->portPicked(lineEdit->text());
     }
   }
@@ -448,7 +448,7 @@ void PortWidget::cancelConnectionsInProgress()
   currentConnection_ = nullptr;
 }
 
-void PortWidget::makeConnection(const QPointF& pos)
+void PortWidget::makeConnectionAtPoint(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
@@ -506,10 +506,10 @@ void PortWidget::makeConnection(const ConnectionDescription& cd)
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
     auto id = ConnectionId::create(cd);
     auto c = connectionFactory_()->makeFinishedConnection(out, in, id);
-    connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
-    connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
-    connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
-    connect(in, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(c, &ConnectionLine::deleted, this, &PortWidget::connectionDeleted);
+    connect(c, &ConnectionLine::noteChanged, this, &PortWidget::connectionNoteChanged);
+    connect(out, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
+    connect(in, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
     setConnected(true);
   }
 }
