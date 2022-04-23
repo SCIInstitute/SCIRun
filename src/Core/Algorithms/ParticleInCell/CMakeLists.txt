@@ -25,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+find_package(openPMD REQUIRED)
 
 SET(Algorithms_ParticleInCell_SRCS
   GravitySimulationAlgo.cc
@@ -57,6 +58,7 @@ TARGET_LINK_LIBRARIES(Algorithms_ParticleInCell
   Algorithms_Base
   Core_Parser
   ${SCI_BOOST_LIBRARY}
+  openPMD::openPMD
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -55,7 +55,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 */
 
 #include <stdlib.h>
-#include <string>
+//#include <string>
 using namespace std;
 
     const int buffer_size   = 100;
