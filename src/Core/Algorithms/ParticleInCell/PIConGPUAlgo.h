@@ -2,14 +2,6 @@
 #ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPU_H
 #define CORE_ALGORITHMS_ParticleInCell_PIConGPU_H
 
-//
-#include <openPMD/openPMD.hpp>
-#include <algorithm>
-#include <array>
-#include <iostream>
-#include <memory>
-//
-
 #include <string>
 #include <sstream>
 #include <vector>

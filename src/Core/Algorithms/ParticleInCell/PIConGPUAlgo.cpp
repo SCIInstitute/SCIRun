@@ -25,6 +25,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+//
+#include <openPMD/openPMD.hpp>
+//#include <algorithm>
+#include <array>
+#include <iostream>
+#include <memory>
+//
+
+
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
