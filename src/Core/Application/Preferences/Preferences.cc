@@ -34,9 +34,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#ifdef BUILD_WITH_PYTHON
-#include <Core/Python/PythonInterpreter.h>
-#endif
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -75,7 +72,7 @@ boost::filesystem::path Preferences::dataDirectory() const
   return dataDir_;
 }
 
-void Preferences::setDataDirectory(const boost::filesystem::path& path, bool runPython)
+std::string Preferences::setDataDirectory(const boost::filesystem::path& path)
 {
   dataDir_ = path;
 
@@ -92,16 +89,9 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
   AlgorithmParameterHelper::setDataDir(dataDir_);
   AlgorithmParameterHelper::setDataDirPlaceholder(dataDirectoryPlaceholder());
 
-#ifdef BUILD_WITH_PYTHON
-  if (runPython)
-  {
-    auto forwardSlashPath = boost::replace_all_copy(dataDir_.string(), "\\", "/");
-    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + forwardSlashPath + "\"";
-    PythonInterpreter::Instance().run_string(setDataDir);
-  }
-#else
-  (void)runPython;
-#endif
+  auto forwardSlashPath = boost::replace_all_copy(dataDir_.string(), "\\", "/");
+  auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + forwardSlashPath + "\"";
+  return setDataDir;
 }
 
 boost::filesystem::path Preferences::screenshotDirectory() const

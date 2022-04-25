@@ -246,6 +246,7 @@ bool SetupDataDirectoryCommand::execute()
   auto dir = *Application::Instance().parameters()->dataDirectory();
   LOG_DEBUG("Data dir set to: {}", dir.string());
 
-  Preferences::Instance().setDataDirectory(dir);
+  runPythonString(Preferences::Instance().setDataDirectory(dir));
+
   return true;
 }

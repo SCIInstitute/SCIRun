@@ -49,6 +49,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Utils/CurrentFileName.h>
@@ -228,7 +229,8 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
     prefsWindow_->scirunDataLineEdit_->setToolTip(dir);
 
     RemembersFileDialogDirectory::setStartingDir(dir);
-    Preferences::Instance().setDataDirectory(dir.toStdString());
+    runPythonString(Preferences::Instance().setDataDirectory(dir.toStdString()));
+
     Q_EMIT dataDirectorySet(dir);
   }
 }
