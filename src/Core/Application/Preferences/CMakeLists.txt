@@ -46,12 +46,6 @@ TARGET_LINK_LIBRARIES(Core_Application_Preferences
   ${SCI_BOOST_LIBRARY}
 )
 
-IF(BUILD_WITH_PYTHON)
-TARGET_LINK_LIBRARIES(Core_Application_Preferences
-  Core_Python
-)
-ENDIF()
-
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Application_Preferences)
 ENDIF(BUILD_SHARED_LIBS)
