@@ -26,7 +26,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="1" version="0" object_id="_0">
 										<which>2</which>
-										<value>C:/Dev/jake/FromMatlab/FromMatlab/EE.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/tet.mat</value>
 									</value>
 								</second>
 							</item>
@@ -66,7 +66,7 @@
 									<name>Filename</name>
 									<value object_id="_2">
 										<which>2</which>
-										<value>C:/Dev/jake/FromMatlab/FromMatlab/EE.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/tet.mat</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +106,7 @@
 									<name>InputString</name>
 									<value object_id="_4">
 										<which>2</which>
-										<value>C:/Dev/jake/FromMatlab/FromMatlab/EE.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/tet.mat</value>
 									</value>
 								</second>
 							</item>
