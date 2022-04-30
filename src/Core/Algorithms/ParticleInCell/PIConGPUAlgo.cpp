@@ -32,6 +32,9 @@
 #include <array>
 #include <iostream>
 #include <memory>
+
+#include <filesystem>
+#include <unistd.h>
 //
 
 
@@ -109,13 +112,13 @@ os.system('bash LaserWakefield_compile_run')
 ************************************************openPMD Reader
 */
 
-std::cout << "Moving on to openPMD Reader" << std::endl;
-
 using std::cout;
 using namespace openPMD;
 
 //int main()
 //{
+
+    while(!std::filesystem::exists("/home/kj/scratch/runs/lwfa_001/simOutput/openPMD/simData.sst")) sleep(1);
 
 //#if openPMD_HAVE_ADIOS2
     using position_t = float;
@@ -137,7 +140,6 @@ using namespace openPMD;
         std::array<Extent, 3> extents;
         std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
 
-
         for (size_t i = 0; i < 3; ++i)
             {
             std::string dim = dimensions[i];
@@ -147,7 +149,7 @@ using namespace openPMD;
             }
 
         iteration.close();
-
+/*
         for (size_t i = 0; i < 3; ++i)
             {
             std::string dim = dimensions[i];
@@ -160,10 +162,8 @@ using namespace openPMD;
                 }
             std::cout << "\n----------\n" << std::endl;
             }
-
-        }
-/*
 */
+        }
 
 //    return 0;
 //#else
