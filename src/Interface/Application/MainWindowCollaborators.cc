@@ -429,7 +429,7 @@ QWizardPage* PythonWizard::createIntroPage()
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
   page->textLayout->addWidget(pic);
-  connect(page->tableOfContents, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(switchPage(QAbstractButton*)) );
+  connect(page->tableOfContents, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked), this, &PythonWizard::switchPage);
   return page;
 }
 
@@ -1025,11 +1025,11 @@ void SCIRunGuiRunner::reportIssue()
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
-  connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+  connect(&webCtrl_, &QNetworkAccessManager::finished, this, &FileDownloader::fileDownloaded);
 
   QNetworkRequest request(imageUrl);
   reply_ = webCtrl_.get(request);
-  connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
+  connect(reply_, &QNetworkReply::downloadProgress, this, &FileDownloader::downloadProgress);
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)

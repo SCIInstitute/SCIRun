@@ -68,8 +68,8 @@ void ctkColorPickerButtonPrivate::init()
 {
   Q_Q(ctkColorPickerButton);
   q->setCheckable(true);
-  QObject::connect(q, SIGNAL(toggled(bool)),
-                   q, SLOT(onToggled(bool)));
+  QObject::connect(q, &ctkColorPickerButton::toggled,
+                   q, &ctkColorPickerButton::onToggled);
   this->computeIcon();
 }
 

@@ -590,9 +590,9 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
   : QWidget(parent)
 {
   setupUi(this);
-  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
-  connect(screenshotSaveAsButton_, SIGNAL(clicked()), parent, SLOT(screenshotSaveAsClicked()));
-  connect(screenshotPathButton_, SIGNAL(clicked()), parent, SLOT(setScreenshotDirectory()));
+  connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
+  connect(screenshotSaveAsButton_, &QPushButton::clicked, parent, &ViewSceneDialog::screenshotSaveAsClicked);
+  connect(screenshotPathButton_, &QPushButton::clicked, parent, &ViewSceneDialog::setScreenshotDirectory);
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
@@ -632,8 +632,7 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
   plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
-  //TODO
-  connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
+  connect(planeButtonGroup_, &QButtonGroup::idClicked, parent, &ViewSceneDialog::setClippingPlaneIndex);
   connect(planeVisibleCheckBox_, &QCheckBox::toggled,
     [parent, this](bool b) {
       parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }

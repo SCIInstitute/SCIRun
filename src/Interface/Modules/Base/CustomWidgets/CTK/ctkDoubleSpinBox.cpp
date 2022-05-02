@@ -207,8 +207,8 @@ void ctkDoubleSpinBoxPrivate::init()
 
   QObject::connect(this->SpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
     this, &ctkDoubleSpinBoxPrivate::onValueChanged);
-  QObject::connect(this->SpinBox, SIGNAL(editingFinished()),
-    q, SIGNAL(editingFinished()));
+  QObject::connect(this->SpinBox, &QDoubleSpinBox::editingFinished,
+    q, &ctkDoubleSpinBox::editingFinished);
 
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->SpinBox);
@@ -1043,20 +1043,20 @@ void ctkDoubleSpinBox::setValueProxy(ctkValueProxy* proxy)
 
   if (d->Proxy)
     {
-    disconnect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-               d, SLOT(onValueProxyAboutToBeModified()));
-    disconnect(d->Proxy.data(), SIGNAL(proxyModified()),
-               d, SLOT(onValueProxyModified()));
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->Proxy = proxy;
 
   if (d->Proxy)
     {
-    connect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-            d, SLOT(onValueProxyAboutToBeModified()));
-    connect(d->Proxy.data(), SIGNAL(proxyModified()),
-            d, SLOT(onValueProxyModified()));
+    connect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    connect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->onValueProxyModified();
