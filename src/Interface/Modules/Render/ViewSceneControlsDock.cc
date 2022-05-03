@@ -632,7 +632,7 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
   plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
-  connect(planeButtonGroup_, &QButtonGroup::idClicked, parent, &ViewSceneDialog::setClippingPlaneIndex);
+  connect(planeButtonGroup_, BUTTON_GROUP_SIGNAL, parent, &ViewSceneDialog::setClippingPlaneIndex);
   connect(planeVisibleCheckBox_, &QCheckBox::toggled,
     [parent, this](bool b) {
       parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }
