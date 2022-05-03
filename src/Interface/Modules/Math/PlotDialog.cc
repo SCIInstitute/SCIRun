@@ -170,7 +170,7 @@ void Plot::addLegend()
 	auto legend = new QwtLegend();
 	legend->setDefaultItemMode(QwtLegendData::Checkable);
   insertLegend(legend, QwtPlot::RightLegend);
-	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
+	connect(legend, &QwtLegend::checked, this, &Plot::showItem);
 
 	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
 	for ( int i = 0; i < items.size(); i++ )

@@ -200,7 +200,7 @@ bool NetworkFileProcessCommand::execute()
       {
         const int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
-        progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
+        QObject::connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::networkDoneLoading, &progress, &QProgressDialog::setValue);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
         progress.setValue(0);

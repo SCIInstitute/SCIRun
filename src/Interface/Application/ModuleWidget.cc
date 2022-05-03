@@ -944,8 +944,8 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
       [this]() { return closestPortFinder_; },
       PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
-    //TODO: later
-    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(makeConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+
+    connect(this, &ModuleWidget::connectionAdded, w, &InputPortWidget::makeConnection);
 
     const auto newPortIndex = static_cast<int>(port->getIndex());
 
