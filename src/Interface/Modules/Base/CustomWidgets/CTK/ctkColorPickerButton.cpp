@@ -31,7 +31,6 @@
 
 // CTK includes
 #include "Core/ctkUtils.h"
-#include "ctkColorDialog.h"
 #include "ctkColorPickerButton.h"
 
 class ctkColorPickerButtonPrivate
@@ -156,14 +155,9 @@ void ctkColorPickerButton::changeColor()
     static_cast<int>(d->DialogOptions & NoButtons));
   options |= QColorDialog::ColorDialogOption(
     static_cast<int>(d->DialogOptions & DontUseNativeDialog));
-  if (d->DialogOptions & UseCTKColorDialog)
+
     {
-    newColor = ctkColorDialog::getColor(d->Color, this, QString(""),options);
-    newColorName = ctkColorDialog::getColorName();
-    }
-  else
-    {
-    newColor = QColorDialog::getColor(d->Color, this, QString(""), options);
+      newColor = QColorDialog::getColor(d->Color, this, QString(""), options);
     }
   if (newColor.isValid())
     {
