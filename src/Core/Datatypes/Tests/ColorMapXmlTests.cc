@@ -70,6 +70,18 @@ namespace ColorXml
       ColorMap colorMap;
       colorMap.name = cm.attribute("name").as_string();
       colorMap.space = cm.attribute("space").as_string();
+      //std::cout << "Read cm " << colorMap.name << std::endl;
+      for (const auto& p : cm.children("Point"))
+      {
+        //std::cout << "reading point?" << p.attribute("x").as_double() << std::endl;
+        colorMap.points.push_back({
+          p.attribute("x").as_double(),
+          p.attribute("o").as_double(),
+          p.attribute("r").as_double(),
+          p.attribute("g").as_double(),
+          p.attribute("b").as_double()}
+        );
+      }
       colorMaps.maps.push_back(colorMap);
     }
     return colorMaps;
@@ -140,6 +152,36 @@ TEST(ColorMapXmlTests, CanReadColorMapXmlFromParaview)
 
 TEST(ColorMapXmlTests, CanCreateColorMapXmlData)
 {
-  auto colorMaps = ColorXml::readColorMapXml("/Users/dan/Downloads/colormaps/All_idl_cmaps.xml");
+  const auto colorMaps = ColorXml::readColorMapXml("/Users/dan/Downloads/colormaps/All_idl_cmaps.xml");
   EXPECT_EQ(colorMaps.maps.size(), 41);
+
+  const auto cm0 = colorMaps.maps[0];
+  EXPECT_EQ(cm0.name, "B-W_LINEAR");
+  EXPECT_EQ(cm0.space, "RGB");
+  EXPECT_EQ(cm0.points.size(), 256);
+  EXPECT_EQ(cm0.points[100].x, -0.215686);
+  EXPECT_EQ(cm0.points[100].o, 0.392157);
+  EXPECT_EQ(cm0.points[100].r, 0.392157);
+  EXPECT_EQ(cm0.points[100].g, 0.392157);
+  EXPECT_EQ(cm0.points[100].b, 0.392157);
+
+  const auto cm7 = colorMaps.maps[7];
+  EXPECT_EQ(cm7.name, "RED-PURPLE");
+  EXPECT_EQ(cm7.space, "RGB");
+  EXPECT_EQ(cm7.points.size(), 256);
+  EXPECT_EQ(cm7.points[100].x, -0.215686);
+  EXPECT_EQ(cm7.points[100].o, 0.392157);
+  EXPECT_EQ(cm7.points[100].r, 0.737255);
+  EXPECT_EQ(cm7.points[100].g, 0.031373);
+  EXPECT_EQ(cm7.points[100].b, 0.286275);
+
+  const auto cm35 = colorMaps.maps[35];
+  EXPECT_EQ(cm35.name, "Blue_Waves");
+  EXPECT_EQ(cm35.space, "RGB");
+  EXPECT_EQ(cm35.points.size(), 256);
+  EXPECT_EQ(cm35.points[100].x, -0.215686);
+  EXPECT_EQ(cm35.points[100].o, 0.392157);
+  EXPECT_EQ(cm35.points[100].r, 0.705882);
+  EXPECT_EQ(cm35.points[100].g, 0.2);
+  EXPECT_EQ(cm35.points[100].b, 0.133333);
 }
