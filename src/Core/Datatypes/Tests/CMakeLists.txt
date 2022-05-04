@@ -52,4 +52,5 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
   gtest_main
   gtest
   gmock
+  pugixml
 )
