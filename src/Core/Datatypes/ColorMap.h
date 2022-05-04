@@ -45,7 +45,7 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
+    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for its
     // default input range, we need to transform by default the data into [0,1] range.
     explicit ColorMap(const std::vector<ColorRGB>& color,
       const std::string& name = "Rainbow", const size_t resolution = 256, const double shift = 0.0,

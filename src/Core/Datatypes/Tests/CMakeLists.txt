@@ -38,6 +38,7 @@ SET(Core_Datatypes_Tests_SRCS
   MatrixTypeConversionTests.cc
   MatrixTestCases.h
   DyadicTensorTests.cc
+  ColorMapXmlTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests

@@ -97,14 +97,15 @@ LegacyNetworkIO::get_mod_id(const std::string& id)
 
 namespace
 {
+  static const char* placeholder = "PlaceholderModule";
   bool isPlaceholderModule(const std::string& name)
   {
-    return name == "PlaceholderModule";
+    return name == placeholder;
   }
 
   std::pair<std::string, std::string> unconvertedModule(const std::string& m)
   {
-    return { m, "PlaceholderModule" };
+    return { m, placeholder };
   }
 }
 void
