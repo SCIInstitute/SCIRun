@@ -49,6 +49,7 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
   Core_Datatypes_Legacy_Field
+  Testing_Utils
   gtest_main
   gtest
   gmock

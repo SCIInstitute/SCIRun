@@ -32,6 +32,7 @@
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 #include <pugixml/pugixml.hpp>
 
 using ::testing::_;
@@ -40,6 +41,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::TestUtils;
 
 namespace ColorXml
 {
@@ -152,7 +154,7 @@ TEST(ColorMapXmlTests, CanReadColorMapXmlFromParaview)
 
 TEST(ColorMapXmlTests, CanCreateColorMapXmlData)
 {
-  const auto colorMaps = ColorXml::readColorMapXml("/Users/dan/Downloads/colormaps/All_idl_cmaps.xml");
+  const auto colorMaps = ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_idl_cmaps.xml").string());
   EXPECT_EQ(colorMaps.maps.size(), 41);
 
   const auto cm0 = colorMaps.maps[0];
@@ -184,4 +186,6 @@ TEST(ColorMapXmlTests, CanCreateColorMapXmlData)
   EXPECT_EQ(cm35.points[100].r, 0.705882);
   EXPECT_EQ(cm35.points[100].g, 0.2);
   EXPECT_EQ(cm35.points[100].b, 0.133333);
+
+  EXPECT_EQ(ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_mpl_cmaps.xml").string()).maps.size(), 50);
 }
