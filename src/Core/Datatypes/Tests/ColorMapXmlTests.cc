@@ -31,65 +31,17 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
+#include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <pugixml/pugixml.hpp>
 
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::TestUtils;
-
-namespace ColorXml
-{
-  struct SCISHARE Point
-  {
-    double x, o, r, g, b;
-  };
-  struct SCISHARE ColorMap
-  {
-    std::string name, space;
-    std::vector<Point> points;
-  };
-  struct SCISHARE ColorMaps
-  {
-    std::vector<ColorMap> maps;
-  };
-
-  ColorMaps readColorMapXml(const std::string& filename)
-  {
-    pugi::xml_document doc;
-    auto result = doc.load_file(filename.c_str());
-    if (!result)
-      return {};
-
-    ColorMaps colorMaps;
-    for (const auto& cm : doc.child("ColorMaps"))
-    {
-      ColorMap colorMap;
-      colorMap.name = cm.attribute("name").as_string();
-      colorMap.space = cm.attribute("space").as_string();
-      for (const auto& p : cm.children("Point"))
-      {
-        colorMap.points.push_back({
-          p.attribute("x").as_double(),
-          p.attribute("o").as_double(),
-          p.attribute("r").as_double(),
-          p.attribute("g").as_double(),
-          p.attribute("b").as_double()}
-        );
-      }
-      colorMaps.maps.push_back(colorMap);
-    }
-    return colorMaps;
-  }
-
-  SCIRun::Core::Datatypes::ColorMapHandle createColorMapFromXmlData(const ColorMap& cmXml)
-  {
-    return SCIRun::Core::Datatypes::StandardColorMapFactory::create();
-  }
-}
 
 std::string example1File()
 {
@@ -98,12 +50,12 @@ std::string example1File()
 
 ColorXml::ColorMaps example1()
 {
-  return ColorXml::readColorMapXml(example1File());
+  return ColorXml::ColorMapXmlIO::readColorMapXml(example1File());
 }
 
 ColorXml::ColorMaps example2()
 {
-  return ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_mpl_cmaps.xml").string());
+  return ColorXml::ColorMapXmlIO::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_mpl_cmaps.xml").string());
 }
 
 
@@ -234,7 +186,7 @@ TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
   const auto cmXmls = example1();
   const auto cmXml = cmXmls.maps[7];
 
-  auto cm = createColorMapFromXmlData(cmXml);
+  auto cm = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXml);
 
   ASSERT_TRUE(cm != nullptr);
   EXPECT_EQ(cm->getColorMapName(), cmXml.name);
@@ -242,12 +194,4 @@ TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
   EXPECT_EQ(cm->getColorData()[42].g(), cmXml.points[42].g);
   EXPECT_EQ(cm->getColorData()[42].b(), cmXml.points[42].b);
   EXPECT_EQ(cm->getColorData()[42].a(), cmXml.points[42].o);
-
-
-  FAIL() << "todo";
-  // ColorRGB c(1.3,2.9,3.00014);
-  // const std::string expected = "Color(1.3,2.9,3.00014)";
-  // EXPECT_EQ(expected, c.toString());
-  // ColorRGB c2(expected);
-  // EXPECT_EQ(c, c2);
 }

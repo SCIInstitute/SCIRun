@@ -25,57 +25,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  ColorMapIEPlugin:  Data structure needed to make a SCIRun ColorMapIE Plugin
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
-
-#ifndef SCI_project_ColorMapIEPlugin_h
-#define SCI_project_ColorMapIEPlugin_h 1
-
-#include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/ImportExport/share.h>
+#include <pugixml/pugixml.hpp>
 
-namespace SCIRun
+using namespace SCIRun::ColorXml;
+using namespace SCIRun::Core::Datatypes;
+
+ColorMaps ColorMapXmlIO::readColorMapXml(const std::string& filename)
 {
+  pugi::xml_document doc;
+  auto result = doc.load_file(filename.c_str());
+  if (!result)
+    return {};
 
-  typedef GenericIEPluginInterface<Core::Datatypes::ColorMap> ColorMapIEPlugin;
-
-  typedef IEPluginLegacyAdapter<Core::Datatypes::ColorMap> ColorMapIEPluginLegacyAdapter;
-
-  typedef GenericIEPluginManager<Core::Datatypes::ColorMap> ColorMapIEPluginManager;
-
-  namespace ColorXml
+  ColorMaps colorMaps;
+  for (const auto& cm : doc.child("ColorMaps"))
   {
-    struct SCISHARE Point
+    ColorMap colorMap;
+    colorMap.name = cm.attribute("name").as_string();
+    colorMap.space = cm.attribute("space").as_string();
+    for (const auto& p : cm.children("Point"))
     {
-      double x, o, r, g, b;
-    };
-    struct SCISHARE ColorMap
-    {
-      std::string name, space;
-      std::vector<Point> points;
-    };
-    struct SCISHARE ColorMaps
-    {
-      std::vector<ColorMap> maps;
-    };
-
-    class SCISHARE ColorMapXmlIO
-    {
-    public:
-      static ColorMaps readColorMapXml(const std::string& filename);
-      static Core::Datatypes::ColorMapHandle createColorMapFromXmlData(const ColorMap& cmXml);
-    };
+      colorMap.points.push_back({
+        p.attribute("x").as_double(),
+        p.attribute("o").as_double(),
+        p.attribute("r").as_double(),
+        p.attribute("g").as_double(),
+        p.attribute("b").as_double()}
+      );
+    }
+    colorMaps.maps.push_back(colorMap);
   }
+  return colorMaps;
 }
 
-#endif
+ColorMapHandle ColorMapXmlIO::createColorMapFromXmlData(const ColorMap& cmXml)
+{
+  std::vector<ColorRGB> convertedColors;
+  std::transform(cmXml.points.begin(), cmXml.points.end(), std::back_inserter(convertedColors),
+    [](const auto& p) { return ColorRGB(p.r, p.g, p.b, p.o); });
+  return StandardColorMapFactory::create(convertedColors, cmXml.name);
+}
