@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "ReadBundleDialog",
-    "header": "Interface/Modules/DataIO/ReadBundleDialog.h"
+    "name": "ReadColorMapXmlDialog",
+    "header": "Interface/Modules/DataIO/ReadColorMapXmlDialog.h"
   }
 }
