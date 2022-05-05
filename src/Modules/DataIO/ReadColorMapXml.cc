@@ -28,7 +28,8 @@
 #include <Modules/DataIO/ReadColorMapXml.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/String.h>
-#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/Log.h>
@@ -78,32 +79,26 @@ void ReadColorMapXml::execute()
       THROW_ALGORITHM_INPUT_ERROR("File does not exist.");
     }
 
-    // const bool asMatrix = oport_connected(Matrix);
-    // const bool asField = oport_connected(Field);
-    // if (asMatrix && asField)
-    // {
-    //   THROW_ALGORITHM_INPUT_ERROR("Please specify which type of file this is by connecting to only one output port.");
-    // }
-    //
-    // using namespace detail;
-    // if (asMatrix)
-    // {
-    //   const QuickReader<MatrixHandle> matrixReader;
-    //   const auto m = matrixReader.read(filename);
-    //   sendOutput(Matrix, m);
-    // }
-    // else if (asField)
-    // {
-    //   const QuickReader<FieldHandle> fieldReader;
-    //   const auto f = fieldReader.read(filename);
-    //   sendOutput(Field, f);
-    // }
-    // else
-    // {
-    //   remark("No file loaded as no output port was connected.");
-    //   return;
-    // }
+    const auto filenameStr = filename.string();
 
-    remark("Loaded file " + filename.string());
+    remark("Loaded file " + filenameStr);
+
+    auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(filenameStr);
+    if (cmXmls.maps.empty())
+    {
+      THROW_ALGORITHM_INPUT_ERROR("No colormaps found in xml file: " + filenameStr);
+    }
+
+    const auto firstColorMap = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXmls.maps[0]);
+    sendOutput(FirstColorMap, firstColorMap);
+
+    BundleHandle bundle(new Bundle);
+    int i = 0;
+    for (const auto& cmXml : cmXmls.maps)
+    {
+      auto cm = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXml);
+      bundle->set("ColorMap #" + std::to_string(++i) + " [" + cm->getColorMapName() + "]", cm);
+    }
+    sendOutput(ColorMaps, bundle);
   }
 }
