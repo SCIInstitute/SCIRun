@@ -72,10 +72,8 @@ namespace ColorXml
       ColorMap colorMap;
       colorMap.name = cm.attribute("name").as_string();
       colorMap.space = cm.attribute("space").as_string();
-      //std::cout << "Read cm " << colorMap.name << std::endl;
       for (const auto& p : cm.children("Point"))
       {
-        //std::cout << "reading point?" << p.attribute("x").as_double() << std::endl;
         colorMap.points.push_back({
           p.attribute("x").as_double(),
           p.attribute("o").as_double(),
@@ -90,11 +88,26 @@ namespace ColorXml
   }
 }
 
+std::string example1File()
+{
+  return (TestResources::rootDir() / "Other/colormaps/All_idl_cmaps.xml").string();
+}
+
+ColorXml::ColorMaps example1()
+{
+  return ColorXml::readColorMapXml(example1File());
+}
+
+ColorXml::ColorMaps example2()
+{
+  return ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_mpl_cmaps.xml").string());
+}
+
 
 TEST(ColorMapXmlTests, CanReadColorMapXmlFromParaview)
 {
   pugi::xml_document doc;
-  auto result = doc.load_file("/Users/dan/Downloads/colormaps/All_idl_cmaps.xml");
+  auto result = doc.load_file(example1File().c_str());
   if (!result)
     FAIL() << "Couldn't read xml file";
 
@@ -102,7 +115,6 @@ TEST(ColorMapXmlTests, CanReadColorMapXmlFromParaview)
   for (const auto& cm : doc.child("ColorMaps"))
   {
     auto name = cm.attribute("name").as_string();
-    //std::cout << "\"" << name << "\",\n";
     colorMapNames.push_back(name);
   }
   std::vector<std::string> expectedColorMapNames =
@@ -154,7 +166,7 @@ TEST(ColorMapXmlTests, CanReadColorMapXmlFromParaview)
 
 TEST(ColorMapXmlTests, CanCreateColorMapXmlData)
 {
-  const auto colorMaps = ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_idl_cmaps.xml").string());
+  const auto colorMaps = example1();
   EXPECT_EQ(colorMaps.maps.size(), 41);
 
   const auto cm0 = colorMaps.maps[0];
@@ -187,5 +199,39 @@ TEST(ColorMapXmlTests, CanCreateColorMapXmlData)
   EXPECT_EQ(cm35.points[100].g, 0.2);
   EXPECT_EQ(cm35.points[100].b, 0.133333);
 
-  EXPECT_EQ(ColorXml::readColorMapXml((TestResources::rootDir() / "Other/colormaps/All_mpl_cmaps.xml").string()).maps.size(), 50);
+  EXPECT_EQ(example2().maps.size(), 50);
+}
+
+TEST(ColorMapXmlTests, CheckXRangeAndSizeOfExamples)
+{
+  for (const auto& colorMaps : {example1(), example2()})
+  {
+    for (const auto& colorMap : colorMaps.maps)
+    {
+      for (const auto& [x,o,r,g,b] : colorMap.points)
+      {
+        EXPECT_LE(x, 1.0);
+        EXPECT_GE(x, -1.0);
+        EXPECT_LE(o, 1.0);
+        EXPECT_GE(o, 0.0);
+        EXPECT_LE(r, 1.0);
+        EXPECT_GE(r, 0.0);
+        EXPECT_LE(g, 1.0);
+        EXPECT_GE(g, 0.0);
+        EXPECT_LE(b, 1.0);
+        EXPECT_GE(b, 0.0);
+      }
+      EXPECT_EQ(colorMap.points.size(), 256);
+    }
+  }
+}
+
+TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
+{
+  FAIL() << "todo";
+  // ColorRGB c(1.3,2.9,3.00014);
+  // const std::string expected = "Color(1.3,2.9,3.00014)";
+  // EXPECT_EQ(expected, c.toString());
+  // ColorRGB c2(expected);
+  // EXPECT_EQ(c, c2);
 }
