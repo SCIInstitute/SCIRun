@@ -28,9 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Datatypes/Color.h>
-#include <Core/GeometryPrimitives/Tensor.h>
-#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <pugixml/pugixml.hpp>
@@ -85,6 +83,11 @@ namespace ColorXml
       colorMaps.maps.push_back(colorMap);
     }
     return colorMaps;
+  }
+
+  SCIRun::Core::Datatypes::ColorMapHandle createColorMapFromXmlData(const ColorMap& cmXml)
+  {
+    return SCIRun::Core::Datatypes::StandardColorMapFactory::create();
   }
 }
 
@@ -228,6 +231,19 @@ TEST(ColorMapXmlTests, CheckXRangeAndSizeOfExamples)
 
 TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
 {
+  const auto cmXmls = example1();
+  const auto cmXml = cmXmls.maps[7];
+
+  auto cm = createColorMapFromXmlData(cmXml);
+
+  ASSERT_TRUE(cm != nullptr);
+  EXPECT_EQ(cm->getColorMapName(), cmXml.name);
+  EXPECT_EQ(cm->getColorData()[42].r(), cmXml.points[42].r);
+  EXPECT_EQ(cm->getColorData()[42].g(), cmXml.points[42].g);
+  EXPECT_EQ(cm->getColorData()[42].b(), cmXml.points[42].b);
+  EXPECT_EQ(cm->getColorData()[42].a(), cmXml.points[42].o);
+
+
   FAIL() << "todo";
   // ColorRGB c(1.3,2.9,3.00014);
   // const std::string expected = "Color(1.3,2.9,3.00014)";
