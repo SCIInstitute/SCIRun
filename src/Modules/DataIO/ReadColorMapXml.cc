@@ -97,7 +97,7 @@ void ReadColorMapXml::execute()
     for (const auto& cmXml : cmXmls.maps)
     {
       auto cm = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXml);
-      bundle->set("ColorMap #" + std::to_string(++i), cm);
+      bundle->set("ColorMap #" + std::to_string(++i) + " (" + cm->getColorMapName() + ")", cm);
     }
     sendOutput(ColorMaps, bundle);
   }

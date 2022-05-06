@@ -33,6 +33,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Algorithms/Math/ReportComplexMatrixInfo.h>
 
 using namespace SCIRun::Core::Algorithms::General;
@@ -93,7 +94,13 @@ std::string DescribeDatatype::describe(const DatatypeHandle& data) const
   auto geom = std::dynamic_pointer_cast<GeometryObject>(data);
   if (geom)
   {
-    return "[Geometry Object] ID:\n" + geom->uniqueID();
+    return "[Geometry Object]\nID:\n" + geom->uniqueID();
+  }
+
+  auto color = std::dynamic_pointer_cast<ColorMap>(data);
+  if (color)
+  {
+    return "[ColorMap Object]\nName: " + color->getColorMapName();
   }
 
   return "[Unknown Datatype]";

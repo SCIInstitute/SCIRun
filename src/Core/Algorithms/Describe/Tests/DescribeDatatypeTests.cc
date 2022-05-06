@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Describe/DescribeDatatype.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
@@ -95,4 +96,15 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeComplexSparseMatrix)
   auto desc = algo.describe(s);
 
   EXPECT_EQ("[Complex Matrix Data] Info:\nType:\t\tComplexSparseRowMatrix\n# Rows:\t\t2\n# Columns:\t\t2\n# Elements:\t\t4\nMinimum (by norm):\t(0,1)\nMaximum (by norm):\t(3,-1)\n", desc);
+}
+
+TEST(DescribeDatatypeAlgorithmTests, CanDescribeColorMap)
+{
+  DescribeDatatype algo;
+
+  auto cm = StandardColorMapFactory::create();
+
+  auto desc = algo.describe(cm);
+
+  EXPECT_EQ("[ColorMap Object]\nName: Rainbow", desc);
 }
