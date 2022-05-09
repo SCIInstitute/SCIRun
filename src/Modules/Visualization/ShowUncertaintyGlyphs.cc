@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
@@ -144,16 +145,6 @@ ShowUncertaintyGlyphsImpl& ShowUncertaintyGlyphsImpl::setTensorsScale(double sca
   return *this;
 }
 
-
-// TODO move
-enum FieldDataType
-{
-  node,
-  edge,
-  face,
-  cell
-};
-
 GeometryHandle ShowUncertaintyGlyphsImpl::run(
   const GeometryIDGenerator& idgen, const FieldHandle mean, const MatrixHandle covariance, std::string& idname)
 {
@@ -209,22 +200,22 @@ void ShowUncertaintyGlyphsImpl::getPointsForField(
     FieldHandle field, std::vector<int>& indices, std::vector<Point>& points)
 {
   // Collect indices and points from facades
-  FieldDataType fieldLocation;
+  int fieldLocation = 0;
   FieldInformation finfo(field);
   if (finfo.is_point() || finfo.is_linear())
-    fieldLocation = FieldDataType::node;
+    fieldLocation = Mesh::NODES_E;
   else if (finfo.is_line())
-    fieldLocation = FieldDataType::edge;
+    fieldLocation = Mesh::EDGES_E;
   else if (finfo.is_surface())
-    fieldLocation = FieldDataType::face;
+    fieldLocation = Mesh::FACES_E;
   else
-    fieldLocation = FieldDataType::cell;
+    fieldLocation = Mesh::CELLS_E;
 
   auto mesh = field->vmesh();
   auto primaryFacade = field->mesh()->getFacade();
   switch (fieldLocation)
   {
-  case FieldDataType::node:
+  case Mesh::NODES_E:
     for (const auto& node : primaryFacade->nodes())
     {
       indices.push_back(node.index());
@@ -233,7 +224,7 @@ void ShowUncertaintyGlyphsImpl::getPointsForField(
       points.push_back(p);
     }
     break;
-  case FieldDataType::edge:
+  case Mesh::EDGES_E:
     for (const auto& edge : primaryFacade->edges())
     {
       indices.push_back(edge.index());
@@ -242,7 +233,7 @@ void ShowUncertaintyGlyphsImpl::getPointsForField(
       points.push_back(p);
     }
     break;
-  case FieldDataType::face:
+  case Mesh::FACES_E:
     for (const auto& face : primaryFacade->faces())
     {
       indices.push_back(face.index());
@@ -251,7 +242,7 @@ void ShowUncertaintyGlyphsImpl::getPointsForField(
       points.push_back(p);
     }
     break;
-  case FieldDataType::cell:
+  case Mesh::CELLS_E:
     for (const auto& cell : primaryFacade->cells())
     {
       indices.push_back(cell.index());

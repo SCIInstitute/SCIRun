@@ -30,6 +30,7 @@
 #define GRAPHICS_DATATYPES_RENDER_FIELD_STATE_H
 
 #include <Core/Datatypes/Color.h>
+#include <array>
 #include <Graphics/Datatypes/share.h>
 
 namespace SCIRun {

@@ -48,7 +48,7 @@ UncertaintyTensorOffsetSurfaceBuilder::UncertaintyTensorOffsetSurfaceBuilder(
 
 void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstructor& constructor)
 {
-  Vector centerVector = Vector(center_);
+  Vector centerVector(center_);
 
   t_.makePositive();
   t_.setDescendingRHSOrder();

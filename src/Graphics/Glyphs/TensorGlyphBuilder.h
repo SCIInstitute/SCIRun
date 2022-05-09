@@ -115,12 +115,7 @@ protected:
 
   struct DifftValues
   {
-   private:
     const static size_t size = 12;
-
-   public:
-    std::array<Eigen::Matrix3d, size> scaleInv;
-    std::array<Eigen::Matrix3d, size> rotateTranspose;
     std::array<Eigen::Matrix3d, size> undoScaleAndRotate;
     std::array<bool, size> linear;
     std::array<double, size> A;

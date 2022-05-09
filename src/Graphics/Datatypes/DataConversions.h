@@ -35,7 +35,7 @@
 
 #include <sstream>
 
-#include <Core/Algorithms/Visualization/share.h>
+#include <Graphics/Datatypes/share.h>
 
 namespace SCIRun {
 
