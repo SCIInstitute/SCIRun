@@ -49,9 +49,19 @@
 #	endif
 #endif
 
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_pugixml
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
+
 // If no API is defined, assume default
 #ifndef PUGIXML_API
-#	define PUGIXML_API
+#	define PUGIXML_API SCISHARE
 #endif
 
 // If no API for classes is defined, assume default

@@ -61,3 +61,7 @@ if (BUILD_SHARED_LIBS)
     #${PROJECT_SOURCE_DIR}/scripts/pugixml_dll.rc
     ${PROJECT_SOURCE_DIR}/pugixml.cpp)
 endif()
+
+IF(BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS(-DBUILD_pugixml)
+ENDIF(BUILD_SHARED_LIBS)
