@@ -54,10 +54,6 @@ namespace Core {
 class AsciiConverterPrivate
 {
 public:
-//  // point(vertex) lookup table
-//  typedef std::unordered_map< Point, unsigned int, PointHash > PointTable;
-//  typedef std::list<Facet> FacetList;
-
   explicit AsciiConverterPrivate(LoggerHandle pr)
   : pr_(pr),
     CELL_SIZE(3)
@@ -67,7 +63,7 @@ public:
   bool writeFile(const std::string& filename, VMesh *vmesh);
   void formatLine(std::string& line) const
   {
-    // replace comma's and tabs with white spaces
+    // replace commas and tabs with white spaces
     for (size_t p = 0; p < line.size(); ++p)
     {
       if ( (line[p] == '\t') || (line[p] == ',') ) line[p] = ' ';

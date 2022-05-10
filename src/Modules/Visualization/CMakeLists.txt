@@ -40,6 +40,7 @@ SET(Modules_Visualization_SRCS
   ShowMeshBoundingBox.cc
   ShowOrientationAxes.cc
   GeometryBuffer.cc
+  GetColorMapInfo.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -56,6 +57,7 @@ SET(Modules_Visualization_HEADERS
   ShowMeshBoundingBox.h
   ShowOrientationAxes.h
   GeometryBuffer.h
+  GetColorMapInfo.h
   share.h
 )
 
