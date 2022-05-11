@@ -46,20 +46,6 @@ ReportColorMapInfo::ReportColorMapInfo() : Module(staticInfo_)
 void ReportColorMapInfo::setStateDefaults()
 {
   // auto state = get_state();
-  // state->setValue(DisplaySide, 0);
-  // state->setValue(DisplayLength, 0);
-  // state->setValue(TextSize, 8);
-  // state->setValue(TextRed, 1.);
-  // state->setValue(TextGreen, 1.);
-  // state->setValue(TextBlue, 1.);
-  // state->setValue(Labels, 10);
-  // state->setValue(Scale, 1.0);
-  // state->setValue(Units, std::string(""));
-  // state->setValue(SignificantDigits, 2);
-  // state->setValue(AddExtraSpace, false);
-  // state->setValue(XTranslation, 0);
-  // state->setValue(YTranslation, 0);
-  // state->setValue(ColorMapName, std::string(""));
 }
 
 void ReportColorMapInfo::execute()
@@ -68,11 +54,21 @@ void ReportColorMapInfo::execute()
   if (needToExecute())
   {
     std::ostringstream ostr;
-    ostr << id() << "$" <<
-      colorMap->getColorMapInvert() << colorMap->getColorMapName() << colorMap->getColorMapRescaleScale() <<
-      colorMap->getColorMapRescaleShift() << colorMap->getColorMapResolution() << colorMap.get() <<
-      colorMap->getColorMapShift();
+    ostr <<
+      "Name: " << colorMap->getColorMapName() <<
+      "\nResolution: " << colorMap->getColorMapResolution() <<
+      "\nInvert: " << std::boolalpha << colorMap->getColorMapInvert() <<
+      "\nShift: " << colorMap->getColorMapShift() <<
+      "\nScale: " << colorMap->getColorMapRescaleScale() <<
+      "\nRescale Shift: " << colorMap->getColorMapRescaleShift() << std::endl;
 
-    sendOutput(Description, makeShared<String>(ostr.str()));
+    {
+
+    }
+
+    auto info = ostr.str();
+    sendOutput(Description, makeShared<String>(info));
+    get_state()->setTransientValue("ReportedInfo", info);
+    get_state()->setTransientValue("StyleSheet", colorMap->styleSheet());
   }
 }

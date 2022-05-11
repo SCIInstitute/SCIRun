@@ -271,6 +271,25 @@ double ColorMap::valueToIndex(Tensor &tensor) const
   return getTransformedValue(magnitude);
 }
 
+std::string ColorMap::styleSheet() const
+{
+  if (styleSheet_.empty())
+  {  //TODO: cache these values, GUI is slow to update.
+    std::stringstream ss;
+    ss << "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,";
+    for (double i = 0.001; i < 1.0; i += 0.001)
+    { //styling values need to be in the range [0,1]
+      ss << " stop:" << i;
+      ss << " rgba(";
+      auto c = valueToColor(i * 2. - 1.); //need to match default ColorMap data range [-1,1]
+      ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
+    }
+    ss << ");";
+    styleSheet_ = ss.str();
+  }
+  return styleSheet_;
+}
+
 ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 {
   const std::vector<ColorRGB>* colorData;

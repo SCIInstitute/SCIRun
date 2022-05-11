@@ -42,9 +42,10 @@ ReportColorMapInfoDialog::ReportColorMapInfoDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+}
 
-  // addDoubleSpinBoxManager(minSpinBox_, Parameters::FixedMin);
-  // addDoubleSpinBoxManager(maxSpinBox_, Parameters::FixedMax);
-  // addRadioButtonGroupManager({ autoScaleButton_, fixedScaleButton_ }, Parameters::AutoScale);
-  // addCheckBoxManager(symmetricCheckBox_, Parameters::Symmetric);
+void ReportColorMapInfoDialog::pullAndDisplayInfo()
+{
+  auto info = transient_value_cast<std::string>(state_->getTransientValue("ReportedInfo"));
+  colorMapInfoTextEdit_->setPlainText(QString::fromStdString(info));
 }

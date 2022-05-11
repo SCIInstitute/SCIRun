@@ -74,6 +74,7 @@ namespace Datatypes {
     std::string dynamic_type_name() const override { return "ColorMap"; }
     double alpha(double transformedValue) const;
     double getTransformedValue(double v) const;
+    std::string styleSheet() const;
 
   private:
     ///<< Internal functions.
@@ -88,6 +89,7 @@ namespace Datatypes {
     double rescale_scale_; //Rescaling scale (usually 1. / (data_max - data_min) ).
     double rescale_shift_; //Rescaling shift (usually -data_min). Shift happens before scale.
     std::vector<double> alphaLookup_;
+    mutable std::string styleSheet_;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
