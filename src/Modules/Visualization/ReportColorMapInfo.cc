@@ -45,7 +45,6 @@ ReportColorMapInfo::ReportColorMapInfo() : Module(staticInfo_)
 
 void ReportColorMapInfo::setStateDefaults()
 {
-  // auto state = get_state();
 }
 
 void ReportColorMapInfo::execute()
@@ -60,11 +59,7 @@ void ReportColorMapInfo::execute()
       "\nInvert: " << std::boolalpha << colorMap->getColorMapInvert() <<
       "\nShift: " << colorMap->getColorMapShift() <<
       "\nScale: " << colorMap->getColorMapRescaleScale() <<
-      "\nRescale Shift: " << colorMap->getColorMapRescaleShift() << std::endl;
-
-    {
-
-    }
+      "\nRescale Shift: " << colorMap->getColorMapRescaleShift();
 
     auto info = ostr.str();
     sendOutput(Description, makeShared<String>(info));

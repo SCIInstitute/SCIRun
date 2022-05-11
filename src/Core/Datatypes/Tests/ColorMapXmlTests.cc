@@ -195,3 +195,13 @@ TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
   EXPECT_EQ(cm->getColorData()[42].b(), cmXml.points[42].b);
   EXPECT_EQ(cm->getColorData()[42].a(), cmXml.points[42].o);
 }
+
+TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
+{
+  auto cm = StandardColorMapFactory::create("Rainbow", 10);
+
+  ASSERT_TRUE(cm != nullptr);
+  EXPECT_EQ(cm->styleSheet().substr(0, 135),
+    "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.001 rgba(0, 0, 255, 255), stop:0.002 rgba(0, 0, 255, 255),"
+  );
+}
