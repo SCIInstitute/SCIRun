@@ -26,8 +26,8 @@
 */
 
 
-#include <Interface/Modules/Visualization/GetColorMapInfoDialog.h>
-#include <Modules/Visualization/GetColorMapInfo.h>
+#include <Interface/Modules/Visualization/ReportColorMapInfoDialog.h>
+#include <Modules/Visualization/ReportColorMapInfo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
@@ -35,7 +35,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
 
-GetColorMapInfoDialog::GetColorMapInfoDialog(const std::string& name, ModuleStateHandle state,
+ReportColorMapInfoDialog::ReportColorMapInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {

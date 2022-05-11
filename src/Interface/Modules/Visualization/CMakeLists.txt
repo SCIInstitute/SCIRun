@@ -39,7 +39,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowMeshBoundingBox.ui
   ShowOrientationAxes.ui
   GeometryBuffer.ui
-  GetColorMapInfo.ui
+  ReportColorMapInfo.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -56,7 +56,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowMeshBoundingBoxDialog.h
   ShowOrientationAxesDialog.h
   GeometryBufferDialog.h
-  GetColorMapInfoDialog.h
+  ReportColorMapInfoDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -72,7 +72,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowMeshBoundingBoxDialog.cc
   ShowOrientationAxesDialog.cc
   GeometryBufferDialog.cc
-  GetColorMapInfoDialog.cc
+  ReportColorMapInfoDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")

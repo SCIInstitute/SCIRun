@@ -29,20 +29,20 @@
 #ifndef INTERFACE_MODULES_GETCOLORMAPINFODIALOG_H
 #define INTERFACE_MODULES_GETCOLORMAPINFODIALOG_H
 
-#include "Interface/Modules/Visualization/ui_GetColorMapInfo.h"
+#include "Interface/Modules/Visualization/ui_ReportColorMapInfo.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE GetColorMapInfoDialog : public ModuleDialogGeneric,
-	public Ui::GetColorMapInfo
+class SCISHARE ReportColorMapInfoDialog : public ModuleDialogGeneric,
+	public Ui::ReportColorMapInfo
 {
 	Q_OBJECT
 
 public:
-  GetColorMapInfoDialog(const std::string& name,
+  ReportColorMapInfoDialog(const std::string& name,
   SCIRun::Dataflow::Networks::ModuleStateHandle state,
   QWidget* parent = nullptr);
 };

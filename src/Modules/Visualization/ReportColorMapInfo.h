@@ -26,8 +26,8 @@
 */
 
 
-#ifndef MODULES_VISUALIZATION_GETCOLORMAPINFO_H
-#define MODULES_VISUALIZATION_GETCOLORMAPINFO_H
+#ifndef MODULES_VISUALIZATION_ReportCOLORMAPINFO_H
+#define MODULES_VISUALIZATION_ReportCOLORMAPINFO_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/share.h>
@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE GetColorMapInfo : public SCIRun::Dataflow::Networks::Module,
+      class SCISHARE ReportColorMapInfo : public SCIRun::Dataflow::Networks::Module,
         public Has1InputPort<ColorMapPortTag>,
         public Has1OutputPort<StringPortTag>
       {
       public:
-        GetColorMapInfo();
+        ReportColorMapInfo();
         void execute() override;
         void setStateDefaults() override;
 

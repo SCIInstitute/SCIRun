@@ -26,7 +26,7 @@
 */
 
 
-#include <Modules/Visualization/GetColorMapInfo.h>
+#include <Modules/Visualization/ReportColorMapInfo.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/String.h>
 
@@ -35,15 +35,15 @@ using namespace Modules::Visualization;
 using namespace Core::Datatypes;
 using namespace Dataflow::Networks;
 
-MODULE_INFO_DEF(GetColorMapInfo, Visualization, SCIRun)
+MODULE_INFO_DEF(ReportColorMapInfo, Visualization, SCIRun)
 
-GetColorMapInfo::GetColorMapInfo() : Module(staticInfo_)
+ReportColorMapInfo::ReportColorMapInfo() : Module(staticInfo_)
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(Description);
 }
 
-void GetColorMapInfo::setStateDefaults()
+void ReportColorMapInfo::setStateDefaults()
 {
   // auto state = get_state();
   // state->setValue(DisplaySide, 0);
@@ -62,7 +62,7 @@ void GetColorMapInfo::setStateDefaults()
   // state->setValue(ColorMapName, std::string(""));
 }
 
-void GetColorMapInfo::execute()
+void ReportColorMapInfo::execute()
 {
   auto colorMap = getRequiredInput(ColorMapObject);
   if (needToExecute())
