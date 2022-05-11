@@ -290,6 +290,19 @@ std::string ColorMap::styleSheet() const
   return styleSheet_;
 }
 
+std::string ColorMap::describe() const
+{
+  std::ostringstream ostr;
+  ostr <<
+    "Name: " << getColorMapName() <<
+    "\nResolution: " << getColorMapResolution() <<
+    "\nInvert: " << std::boolalpha << getColorMapInvert() <<
+    "\nShift: " << getColorMapShift() <<
+    "\nScale: " << getColorMapRescaleScale() <<
+    "\nRescale Shift: " << getColorMapRescaleShift();
+  return ostr.str();
+}
+
 ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 {
   const std::vector<ColorRGB>* colorData;

@@ -52,16 +52,7 @@ void ReportColorMapInfo::execute()
   auto colorMap = getRequiredInput(ColorMapObject);
   if (needToExecute())
   {
-    std::ostringstream ostr;
-    ostr <<
-      "Name: " << colorMap->getColorMapName() <<
-      "\nResolution: " << colorMap->getColorMapResolution() <<
-      "\nInvert: " << std::boolalpha << colorMap->getColorMapInvert() <<
-      "\nShift: " << colorMap->getColorMapShift() <<
-      "\nScale: " << colorMap->getColorMapRescaleScale() <<
-      "\nRescale Shift: " << colorMap->getColorMapRescaleShift();
-
-    auto info = ostr.str();
+    const auto info = colorMap->describe();
     sendOutput(Description, makeShared<String>(info));
     get_state()->setTransientValue("ReportedInfo", info);
     get_state()->setTransientValue("StyleSheet", colorMap->styleSheet());

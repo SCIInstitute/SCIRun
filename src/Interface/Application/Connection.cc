@@ -419,10 +419,6 @@ double ConnectionLine::defaultZValue() const
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  //TODO: this is a bit inconsistent, disabling for now
-//  if (event->button() == Qt::MiddleButton)
-//    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
-
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
 	setZValue(defaultZValue());
