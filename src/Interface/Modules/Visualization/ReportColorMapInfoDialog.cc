@@ -48,4 +48,6 @@ void ReportColorMapInfoDialog::pullAndDisplayInfo()
 {
   auto info = transient_value_cast<std::string>(state_->getTransientValue("ReportedInfo"));
   colorMapInfoTextEdit_->setPlainText(QString::fromStdString(info));
+  auto style = transient_value_cast<std::string>(state_->getTransientValue("StyleSheet"));
+  colorMapLabel_->setStyleSheet(QString::fromStdString(style));
 }
