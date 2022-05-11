@@ -534,7 +534,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  auto msgBox = new QMessageBox(mainWindowWidget());
+  auto msgBox = new DatatypeInfoBox(mainWindowWidget());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setEscapeButton(QMessageBox::Ok);
@@ -543,7 +543,21 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->setText(info);
   msgBox->setModal(false);
   msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
+  if (id.find("ColorMapObject") != std::string::npos)
+  {
+    msgBox->addColorLabel("background-color: red");
+  }
   msgBox->show();
+}
+
+void DatatypeInfoBox::addColorLabel(const QString& style)
+{
+  auto label = new QLabel;
+  label->setMinimumSize(QSize(230, 30));
+  label->setStyleSheet(style);
+  label->setMargin(10);
+  auto grid = qobject_cast<QGridLayout*>(layout());
+  grid->addWidget(label, 5, 1);
 }
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)
