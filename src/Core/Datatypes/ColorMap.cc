@@ -290,7 +290,7 @@ std::string ColorMap::styleSheet() const
   return styleSheet_;
 }
 
-std::string ColorMap::describe() const
+std::string ColorMap::info() const
 {
   std::ostringstream ostr;
   ostr <<

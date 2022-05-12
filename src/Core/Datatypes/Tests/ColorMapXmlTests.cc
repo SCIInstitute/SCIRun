@@ -204,4 +204,5 @@ TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
   EXPECT_EQ(cm->styleSheet().substr(0, 135),
     "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.001 rgba(0, 0, 255, 255), stop:0.002 rgba(0, 0, 255, 255),"
   );
+  EXPECT_EQ(cm->describe(), "Name: Rainbow\nResolution: 10\nInvert: false\nShift: 0\nScale: 0.5\nRescale Shift: 1 & " + cm->styleSheet());
 }

@@ -540,12 +540,18 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->setEscapeButton(QMessageBox::Ok);
   msgBox->setDetailedText("The above datatype info is displayed for the current run only. Hit i again after executing to display updated info. Keep this window open to compare info between runs.");
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
-  msgBox->setText(info);
   msgBox->setModal(false);
   msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
   if (id.find("ColorMapObject") != std::string::npos)
   {
-    msgBox->addColorLabel("background-color: red");
+    auto infos = info.split("&");
+    msgBox->setText(infos[0]);
+    if (infos.size() > 1)
+      msgBox->addColorLabel(infos[1]);
+  }
+  else
+  {
+    msgBox->setText(info);
   }
   msgBox->show();
 }

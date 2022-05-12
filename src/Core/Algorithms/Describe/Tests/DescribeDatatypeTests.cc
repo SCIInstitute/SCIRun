@@ -106,5 +106,5 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeColorMap)
 
   auto desc = algo.describe(cm);
 
-  EXPECT_EQ("[ColorMap Object]\nName: Rainbow", desc);
+  EXPECT_EQ("[ColorMap Object] Description: \nName: Rainbow\nResolution: 256\nInvert: false\nShift: 0\nScale: 0.5\nRescale Shift: 1 & " + cm->styleSheet(), desc);
 }

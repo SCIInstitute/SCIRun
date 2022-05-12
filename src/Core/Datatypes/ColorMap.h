@@ -75,7 +75,8 @@ namespace Datatypes {
     double alpha(double transformedValue) const;
     double getTransformedValue(double v) const;
     std::string styleSheet() const;
-    std::string describe() const;
+    std::string describe() const { return info() + " & " + styleSheet(); }
+    std::string info() const;
 
   private:
     ///<< Internal functions.

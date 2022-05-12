@@ -52,7 +52,7 @@ void ReportColorMapInfo::execute()
   auto colorMap = getRequiredInput(ColorMapObject);
   if (needToExecute())
   {
-    const auto info = colorMap->describe();
+    const auto info = colorMap->info();
     sendOutput(Description, makeShared<String>(info));
     get_state()->setTransientValue("ReportedInfo", info);
     get_state()->setTransientValue("StyleSheet", colorMap->styleSheet());
