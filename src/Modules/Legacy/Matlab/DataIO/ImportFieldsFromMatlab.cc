@@ -36,6 +36,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/String.h>
+#include <boost/filesystem.hpp>
 
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
@@ -103,23 +104,26 @@ int ImportFieldsFromMatlab::indexMatlabFile(matlabconverter& converter, const ma
 void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut)
 {
   auto fileOption = getOptionalInput(filenameIn);
-
-  if (needToExecute())
+  auto state = get_state();
+  if (fileOption && *fileOption)
   {
-    auto state = get_state();
-    if (fileOption && *fileOption)
-  	{
-      state->setValue(Variables::Filename, (*fileOption)->value());
-  	}
+    state->setValue(Variables::Filename, (*fileOption)->value());
+  }
 
-    auto filename = state->getValue(Variables::Filename).toFilename().string();
+  auto filename = state->getValue(Variables::Filename).toFilename().string();
 
-    if (filename.empty())
-    {
-      error("No file name was specified");
-      return;
-    }
+  if (filename.empty())
+  {
+    error("No file name was specified");
+    return;
+  }
 
+  time_t new_filemodification = boost::filesystem::last_write_time(filename);
+
+  if (new_filemodification != old_filemodification_ ||
+    needToExecute())
+  {
+    old_filemodification_ = new_filemodification;
     indexmatlabfile();
 
     auto choices = toStringVector(state->getValue(Parameters::PortChoices).toVector());
