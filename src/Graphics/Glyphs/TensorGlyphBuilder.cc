@@ -46,6 +46,9 @@ UncertaintyTensorOffsetSurfaceBuilder::UncertaintyTensorOffsetSurfaceBuilder(
   hHalf_ = h_ * 0.5;
 }
 
+
+/* Tim Gerrits' Uncertainty Tensor Glyphs
+ https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.13692 */
 void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstructor& constructor)
 {
   Vector centerVector(center_);
