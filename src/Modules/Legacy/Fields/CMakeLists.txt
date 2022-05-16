@@ -77,6 +77,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataFromSourceToDestination.h
   MapFieldDataOntoNodesRadialbasis.h
   ReportFieldGeometryMeasures.h
+  ReportScalarFieldStats.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
@@ -175,7 +176,7 @@ SET(Modules_Legacy_Fields_SRCS
   CreateLatVol.cc
   CreateImage.cc
   #CreateStructHex.cc
-  #ReportScalarFieldStats.cc
+  ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc

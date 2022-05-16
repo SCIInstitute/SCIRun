@@ -32,75 +32,78 @@
 ///   University of Utah
 ///@date  February 2001
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Modules/Legacy/Fields/ReportScalarFieldStats.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
-#include <string>
-#include <vector>
 
-#include <Dataflow/Modules/Fields/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Fields;
 
-namespace SCIRun {
+ALGORITHM_PARAMETER_DEF(Fields, AutoRangeEnabled);
+ALGORITHM_PARAMETER_DEF(Fields, Mean);
+ALGORITHM_PARAMETER_DEF(Fields, Median);
+ALGORITHM_PARAMETER_DEF(Fields, StandardDeviation);
 
 /// @class ReportScalarFieldStats
 /// @brief Analyze data from a scalarfield.
 
-class SCISHARE ReportScalarFieldStats : public Module
+namespace SCIRun::Modules::Fields {
+class ReportScalarFieldStatsImpl
 {
   public:
-    ReportScalarFieldStats(GuiContext* ctx);
-    virtual ~ReportScalarFieldStats() {}
-    virtual void execute();
+    explicit ReportScalarFieldStatsImpl(ReportScalarFieldStats* module) : module_(module) {}
 
-    void fill_histogram( std::vector<int>& hits);
+    void fill_histogram(const std::vector<int>& hits);
     void clear_histogram();
-    void local_reset_vars(){ reset_vars(); }
 
-  private:
-    GuiDouble min_;
-    GuiDouble max_;
-    GuiDouble mean_;
-    GuiDouble median_;
-    GuiDouble sigma_;   //standard deviation
-
-    GuiInt is_fixed_;
-    GuiInt nbuckets_;
-
+    ReportScalarFieldStats* module_;
+    double min_;
+    double max_;
+    double mean_;
+    double median_;
+    double sigma_;   //standard deviation
+    int is_fixed_;
+    int nbuckets_ {256};
 };
-
-
-DECLARE_MAKER(ReportScalarFieldStats)
-
-ReportScalarFieldStats::ReportScalarFieldStats(GuiContext* ctx)
-  : Module("ReportScalarFieldStats", ctx, Filter, "MiscField", "SCIRun"),
-    min_(get_ctx()->subVar("min"), 0.0),
-    max_(get_ctx()->subVar("max"), 0.0),
-    mean_(get_ctx()->subVar("mean"), 0.0),
-    median_(get_ctx()->subVar("median"), 0.0),
-    sigma_(get_ctx()->subVar("sigma"),0.0),
-    is_fixed_(get_ctx()->subVar("is_fixed"), 0),
-    nbuckets_(get_ctx()->subVar("nbuckets"), 256)
-{
 }
 
 
-void
-ReportScalarFieldStats::clear_histogram()
+MODULE_INFO_DEF(ReportScalarFieldStats, MiscField, SCIRun)
+
+ReportScalarFieldStats::ReportScalarFieldStats()
+  : Module(staticInfo_)
+    // min_(get_ctx()->subVar("min"), 0.0),
+    // max_(get_ctx()->subVar("max"), 0.0),
+    // mean_(get_ctx()->subVar("mean"), 0.0),
+    // median_(get_ctx()->subVar("median"), 0.0),
+    // sigma_(get_ctx()->subVar("sigma"),0.0),
+    // is_fixed_(get_ctx()->subVar("is_fixed"), 0),
+    // nbuckets_(get_ctx()->subVar("nbuckets"), 256)
 {
-  TCLInterface::execute(get_id() + " clear_data");
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(HistogramData);
 }
 
 
-void
-ReportScalarFieldStats::fill_histogram( std::vector<int>& hits)
+
+void ReportScalarFieldStatsImpl::fill_histogram(const std::vector<int>& hits)
 {
   std::ostringstream ostr;
   int nmin, nmax;
-  std::vector<int>::iterator it = hits.begin();
+  auto it = hits.begin();
   nmin = 0;  nmax = *it;
   ostr << *it;  ++it;
 
@@ -110,32 +113,33 @@ ReportScalarFieldStats::fill_histogram( std::vector<int>& hits)
     nmin = ((nmin < *it) ? nmin : *it );
     nmax = ((nmax > *it) ? nmax : *it );
   }
-  ostr <<std::ends;
-  std::string smin( to_string(nmin) );
-  std::string smax( to_string(nmax) );
-
+  ostr << std::ends;
   std::string data = ostr.str();
-  TCLInterface::execute(get_id() + " graph_data " + smin + " "
-	       + smax + " " + data );
+
+  // TCLInterface::execute();
+  module_->remark(" graph_data " + std::to_string(nmin) + " " + std::to_string(nmax) + " " + data );
 }
 
+ReportScalarFieldStats::~ReportScalarFieldStats() = default;
 
-void
-ReportScalarFieldStats::execute()
+void ReportScalarFieldStats::setStateDefaults()
 {
-  // Get input field.
-  FieldHandle ifield_handle;
-  get_input_handle("Input Field", ifield_handle, true);
 
-  if (!(ifield_handle->vfield()->is_scalar()))
+}
+
+void ReportScalarFieldStats::execute()
+{
+  auto inputField = getRequiredInput(InputField);
+
+  if (!(inputField->vfield()->is_scalar()))
   {
     error("This module only works on scalar fields.");
     return;
   }
 
-  update_state(Executing);
+  //update_state(Executing);
 
-  VField* ifield = ifield_handle->vfield();
+  VField* ifield = inputField->vfield();
 
   bool init = false;
   double value = 0;
@@ -144,12 +148,12 @@ ReportScalarFieldStats::execute()
   int counter = 0;
   std::vector<double> values;
 
-  update_progress(0.3);
+  //update_progress(0.3);
   double mean = 0;
-  double mmin = min_.get();
-  double mmax = max_.get();
+  double mmin = 0;
+  double mmax = 0;
 
-  if ( is_fixed_.get() == 1 )
+  if ( impl_->is_fixed_ == 1 )
   {
     VField::size_type num_values = ifield->num_values();
     for (VField::index_type idx=0; idx < num_values ;idx++)
@@ -165,7 +169,7 @@ ReportScalarFieldStats::execute()
     }
 
     mean = value/double(counter);
-    mean_.set( mean );
+    impl_->mean_ = mean;
   }
   else
   {
@@ -189,47 +193,48 @@ ReportScalarFieldStats::execute()
       ++counter;
     }
     mean = value/double(counter);
-    mean_.set( mean );
+    impl_->mean_ = mean;
 
-    min_.set( double( min ) );
-    max_.set( double( max ) );
+    impl_->min_ = min;
+    impl_->max_ = max;
   }
 
-  update_progress(0.6);
+  //update_progress(0.6);
 
-  local_reset_vars();
-  if ((max_.get() - min_.get()) > 1e-16 && values.size() > 0)
+  if ((impl_->max_ - impl_->min_) > 1e-16 && values.size() > 0)
   {
-    int nbuckets = nbuckets_.get();
+    int nbuckets = impl_->nbuckets_;
     std::vector<int> hits(nbuckets, 0);
 
     double frac = 1.0;
-    frac = (nbuckets-1)/(max_.get() - min_.get());
+    frac = (nbuckets-1)/(impl_->max_ - impl_->min_);
 
     double sigma = 0.0;
-    std::vector<double>::iterator vit = values.begin();
-    std::vector<double>::iterator vit_end = values.end();
+    auto vit = values.begin();
+    auto vit_end = values.end();
     for(; vit != vit_end; ++vit)
     {
-      if( *vit >= min_.get() && *vit <= max_.get())
+      if( *vit >= impl_->min_ && *vit <= impl_->max_)
       {
-        double value = (*vit - min_.get())*frac;
+        double value = (*vit - impl_->min_)*frac;
         hits[int(value)]++;
       }
       sigma += (*vit - mean)*(*vit - mean);
     }
-    sigma_.set( sqrt( sigma / double(values.size()) ));
+    impl_->sigma_ = sqrt( sigma / double(values.size()) );
 
     vit = values.begin();
     nth_element(vit, vit+values.size()/2, vit_end);
-    median_.set( double ( values[ values.size()/2] ) );
-    fill_histogram( hits );
+    impl_->median_ = values[values.size()/2];
+    impl_->fill_histogram(hits);
   }
   else
   {
     warning("min - max < precision or no values in range; clearing histogram");
-    clear_histogram();
+    impl_->clear_histogram();
   }
+  auto state = get_state();
+  state->setValue(Parameters::Mean, impl_->mean_);
+  state->setValue(Parameters::Median, impl_->median_);
+  state->setValue(Parameters::StandardDeviation, impl_->sigma_);
 }
-
-} // End namespace SCIRun
