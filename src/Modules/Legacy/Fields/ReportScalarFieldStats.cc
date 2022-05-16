@@ -67,7 +67,7 @@ class ReportScalarFieldStatsImpl
     explicit ReportScalarFieldStatsImpl(ReportScalarFieldStats* module) : module_(module) {}
 
     void fill_histogram(const std::vector<int>& hits);
-    void clear_histogram();
+    void clear_histogram() {}
 
     ReportScalarFieldStats* module_;
     double min_;

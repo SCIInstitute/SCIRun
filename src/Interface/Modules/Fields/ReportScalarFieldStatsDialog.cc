@@ -26,9 +26,8 @@
 */
 
 
-#include <Interface/Modules/Fields/CalculateFieldDataMetricDialog.h>
-#include <Modules/Legacy/Fields/CalculateFieldDataMetric.h>
-#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Interface/Modules/Fields/ReportScalarFieldStatsDialog.h>
+#include <Modules/Legacy/Fields/ReportScalarFieldStats.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
@@ -36,30 +35,12 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-CalculateFieldDataMetricDialog::CalculateFieldDataMetricDialog(const std::string& name, ModuleStateHandle state,
+ReportScalarFieldStatsDialog::ReportScalarFieldStatsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogWithParserHelp(state, parent)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(metricComboBox_, Variables::Method,
-    {{"Minimum", "min"},
-    {"Maximum", "max"},
-    {"Median", "median"},
-    {"Value-mean", "value-mean"},
-    {"Geometry-mean", "geom-mean"},
-    {"Sum", "sum"},
-    {"Integral", "integral"},
-    {"Volthreshold", "volthreshold"}
-  });
-  addCheckBoxManager(enableFunctionCheckBox_, Parameters::EnableFunction);
-  connectParserHelpButton(parserHelpButton_);
-
-  {
-    codeEdit_ = new CodeEditor(this);
-    qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
-    addPlainTextEditManager(codeEdit_, Variables::FunctionString);
-  }
 }

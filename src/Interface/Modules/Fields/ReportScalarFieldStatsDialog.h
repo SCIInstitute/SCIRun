@@ -26,27 +26,25 @@
 */
 
 
-#ifndef INTERFACE_MODULES_CALCULATEFIELDDATA_H
-#define INTERFACE_MODULES_CALCULATEFIELDDATA_H
+#ifndef INTERFACE_MODULES_REPORTSCALARFIELDSTATS_H
+#define INTERFACE_MODULES_REPORTSCALARFIELDSTATS_H
 
-#include "Interface/Modules/Fields/ui_CalculateFieldData.h"
+#include "Interface/Modules/Fields/ui_ReportScalarFieldStats.h"
 #include <Interface/Modules/Base/HasParserHelpDialog.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE CalculateFieldDataDialog : public ModuleDialogWithParserHelp,
-  public Ui::CalculateFieldData
+class SCISHARE ReportScalarFieldStatsDialog : public ModuleDialogGeneric,
+  public Ui::ReportScalarFieldStats
 {
 	Q_OBJECT
 
 public:
-  CalculateFieldDataDialog(const std::string& name,
+  ReportScalarFieldStatsDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-  private:
-    class CodeEditor* codeEdit_;
 };
 
 }
