@@ -71,8 +71,6 @@ ReportScalarFieldStats::ReportScalarFieldStats()
   INITIALIZE_PORT(HistogramData);
 }
 
-ReportScalarFieldStats::~ReportScalarFieldStats() = default;
-
 void ReportScalarFieldStats::setStateDefaults()
 {
   auto state = get_state();
