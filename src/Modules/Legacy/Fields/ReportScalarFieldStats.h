@@ -43,8 +43,8 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(Mean);
         ALGORITHM_PARAMETER_DECL(Median);
         ALGORITHM_PARAMETER_DECL(StandardDeviation);
-        // ALGORITHM_PARAMETER_DECL(IndexFlag);
-        // ALGORITHM_PARAMETER_DECL(SizeFlag);
+        ALGORITHM_PARAMETER_DECL(MinRange);
+        ALGORITHM_PARAMETER_DECL(MaxRange);
         // ALGORITHM_PARAMETER_DECL(NormalsFlag);
       }
     }

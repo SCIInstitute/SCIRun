@@ -43,4 +43,9 @@ ReportScalarFieldStatsDialog::ReportScalarFieldStatsDialog(const std::string& na
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addDynamicLabelManager(meanLabel_, Parameters::Mean);
+  addDynamicLabelManager(medianLabel_, Parameters::Median);
+  addDynamicLabelManager(sigmaLabel_, Parameters::StandardDeviation);
+  addDoubleSpinBoxManager(minDoubleSpinBox_, Parameters::MinRange);
+  addDoubleSpinBoxManager(maxDoubleSpinBox_, Parameters::MaxRange);
 }

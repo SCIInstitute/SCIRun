@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>220</height>
+    <height>245</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>330</width>
-    <height>220</height>
+    <height>245</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -23,20 +23,30 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Auto Range</string>
+      <string>Range</string>
      </property>
      <property name="checkable">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="maxDoubleSpinBox_"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Max</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Min</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="minDoubleSpinBox_">
         <property name="decimals">
          <number>9</number>
@@ -49,15 +59,19 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton">
         <property name="text">
-         <string>Max</string>
+         <string>Auto Scale</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="maxDoubleSpinBox_"/>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="text">
+         <string>Fixed Scale</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

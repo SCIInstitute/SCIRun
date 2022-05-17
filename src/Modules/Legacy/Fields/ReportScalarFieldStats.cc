@@ -75,7 +75,7 @@ class ReportScalarFieldStatsImpl
     double mean_;
     double median_;
     double sigma_;   //standard deviation
-    int is_fixed_;
+    int is_fixed_ {0};
     int nbuckets_ {256};
 };
 }
@@ -84,7 +84,7 @@ class ReportScalarFieldStatsImpl
 MODULE_INFO_DEF(ReportScalarFieldStats, MiscField, SCIRun)
 
 ReportScalarFieldStats::ReportScalarFieldStats()
-  : Module(staticInfo_)
+  : Module(staticInfo_), impl_(new ReportScalarFieldStatsImpl(this))
     // min_(get_ctx()->subVar("min"), 0.0),
     // max_(get_ctx()->subVar("max"), 0.0),
     // mean_(get_ctx()->subVar("mean"), 0.0),
@@ -124,7 +124,13 @@ ReportScalarFieldStats::~ReportScalarFieldStats() = default;
 
 void ReportScalarFieldStats::setStateDefaults()
 {
-
+  auto state = get_state();
+  state->setValue(Parameters::Mean, 0.0);
+  state->setValue(Parameters::Median, 0.0);
+  state->setValue(Parameters::StandardDeviation, 0.0);
+  state->setValue(Parameters::AutoRangeEnabled, true);
+  state->setValue(Parameters::MinRange, 0.0);
+  state->setValue(Parameters::MaxRange, 0.0);
 }
 
 void ReportScalarFieldStats::execute()
@@ -140,6 +146,7 @@ void ReportScalarFieldStats::execute()
   //update_state(Executing);
 
   VField* ifield = inputField->vfield();
+  auto state = get_state();
 
   bool init = false;
   double value = 0;
@@ -150,11 +157,11 @@ void ReportScalarFieldStats::execute()
 
   //update_progress(0.3);
   double mean = 0;
-  double mmin = 0;
-  double mmax = 0;
 
-  if ( impl_->is_fixed_ == 1 )
+  if (!state->getValue(Parameters::AutoRangeEnabled).toBool())
   {
+    double mmin = 0;
+    double mmax = 0;
     VField::size_type num_values = ifield->num_values();
     for (VField::index_type idx=0; idx < num_values ;idx++)
     {
@@ -200,6 +207,7 @@ void ReportScalarFieldStats::execute()
   }
 
   //update_progress(0.6);
+  //std::cout << "max " << impl_->max_  << " min " << impl_->min_ << " values size " << values.size() << std::endl;
 
   if ((impl_->max_ - impl_->min_) > 1e-16 && values.size() > 0)
   {
@@ -230,10 +238,10 @@ void ReportScalarFieldStats::execute()
   }
   else
   {
-    warning("min - max < precision or no values in range; clearing histogram");
+    warning("min - max less than precision or no values in range; clearing histogram");
     impl_->clear_histogram();
   }
-  auto state = get_state();
+
   state->setValue(Parameters::Mean, impl_->mean_);
   state->setValue(Parameters::Median, impl_->median_);
   state->setValue(Parameters::StandardDeviation, impl_->sigma_);
