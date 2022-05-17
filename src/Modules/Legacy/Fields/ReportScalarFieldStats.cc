@@ -43,7 +43,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>
 
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
@@ -56,68 +55,20 @@ ALGORITHM_PARAMETER_DEF(Fields, AutoRangeEnabled);
 ALGORITHM_PARAMETER_DEF(Fields, Mean);
 ALGORITHM_PARAMETER_DEF(Fields, Median);
 ALGORITHM_PARAMETER_DEF(Fields, StandardDeviation);
+ALGORITHM_PARAMETER_DEF(Fields, MinRange);
+ALGORITHM_PARAMETER_DEF(Fields, MaxRange);
+ALGORITHM_PARAMETER_DEF(Fields, HistogramBinCount);
 
 /// @class ReportScalarFieldStats
 /// @brief Analyze data from a scalarfield.
 
-namespace SCIRun::Modules::Fields {
-class ReportScalarFieldStatsImpl
-{
-  public:
-    explicit ReportScalarFieldStatsImpl(ReportScalarFieldStats* module) : module_(module) {}
-
-    void fill_histogram(const std::vector<int>& hits);
-    void clear_histogram() {}
-
-    ReportScalarFieldStats* module_;
-    double min_;
-    double max_;
-    double mean_;
-    double median_;
-    double sigma_;   //standard deviation
-    int is_fixed_ {0};
-    int nbuckets_ {256};
-};
-}
-
-
 MODULE_INFO_DEF(ReportScalarFieldStats, MiscField, SCIRun)
 
 ReportScalarFieldStats::ReportScalarFieldStats()
-  : Module(staticInfo_), impl_(new ReportScalarFieldStatsImpl(this))
-    // min_(get_ctx()->subVar("min"), 0.0),
-    // max_(get_ctx()->subVar("max"), 0.0),
-    // mean_(get_ctx()->subVar("mean"), 0.0),
-    // median_(get_ctx()->subVar("median"), 0.0),
-    // sigma_(get_ctx()->subVar("sigma"),0.0),
-    // is_fixed_(get_ctx()->subVar("is_fixed"), 0),
-    // nbuckets_(get_ctx()->subVar("nbuckets"), 256)
+  : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(HistogramData);
-}
-
-
-
-void ReportScalarFieldStatsImpl::fill_histogram(const std::vector<int>& hits)
-{
-  std::ostringstream ostr;
-  int nmin, nmax;
-  auto it = hits.begin();
-  nmin = 0;  nmax = *it;
-  ostr << *it;  ++it;
-
-  for(; it != hits.end(); ++it)
-  {
-    ostr <<" "<<*it;
-    nmin = ((nmin < *it) ? nmin : *it );
-    nmax = ((nmax > *it) ? nmax : *it );
-  }
-  ostr << std::ends;
-  std::string data = ostr.str();
-
-  // TCLInterface::execute();
-  module_->remark(" graph_data " + std::to_string(nmin) + " " + std::to_string(nmax) + " " + data );
 }
 
 ReportScalarFieldStats::~ReportScalarFieldStats() = default;
@@ -125,12 +76,13 @@ ReportScalarFieldStats::~ReportScalarFieldStats() = default;
 void ReportScalarFieldStats::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::Mean, 0.0);
-  state->setValue(Parameters::Median, 0.0);
-  state->setValue(Parameters::StandardDeviation, 0.0);
-  state->setValue(Parameters::AutoRangeEnabled, true);
+  state->setValue(Parameters::Mean, std::string(""));
+  state->setValue(Parameters::Median, std::string(""));
+  state->setValue(Parameters::StandardDeviation, std::string(""));
+  state->setValue(Parameters::AutoRangeEnabled, 0);
   state->setValue(Parameters::MinRange, 0.0);
   state->setValue(Parameters::MaxRange, 0.0);
+  state->setValue(Parameters::HistogramBinCount, 256);
 }
 
 void ReportScalarFieldStats::execute()
@@ -143,8 +95,6 @@ void ReportScalarFieldStats::execute()
     return;
   }
 
-  //update_state(Executing);
-
   VField* ifield = inputField->vfield();
   auto state = get_state();
 
@@ -154,14 +104,14 @@ void ReportScalarFieldStats::execute()
   double max = 0;
   int counter = 0;
   std::vector<double> values;
-
-  //update_progress(0.3);
   double mean = 0;
+  double median = 0;
+  double sigma = 0;   //standard deviation
 
-  if (!state->getValue(Parameters::AutoRangeEnabled).toBool())
+  if (state->getValue(Parameters::AutoRangeEnabled).toInt() == 1)
   {
-    double mmin = 0;
-    double mmax = 0;
+    const double mmin = state->getValue(Parameters::MinRange).toDouble();
+    const double mmax = state->getValue(Parameters::MaxRange).toDouble();
     VField::size_type num_values = ifield->num_values();
     for (VField::index_type idx=0; idx < num_values ;idx++)
     {
@@ -175,8 +125,9 @@ void ReportScalarFieldStats::execute()
       }
     }
 
+    min = mmin;
+    max = mmax;
     mean = value/double(counter);
-    impl_->mean_ = mean;
   }
   else
   {
@@ -194,55 +145,46 @@ void ReportScalarFieldStats::execute()
       }
       else
       {
-        min = (val < min) ? val:min;
-        max = (val > max) ? val:max;
+        min = std::min(val, min);
+        max = std::max(val, max);
       }
       ++counter;
     }
     mean = value/double(counter);
-    impl_->mean_ = mean;
-
-    impl_->min_ = min;
-    impl_->max_ = max;
   }
 
-  //update_progress(0.6);
-  //std::cout << "max " << impl_->max_  << " min " << impl_->min_ << " values size " << values.size() << std::endl;
-
-  if ((impl_->max_ - impl_->min_) > 1e-16 && values.size() > 0)
+  if ((max - min) > 1e-16 && values.size() > 0)
   {
-    int nbuckets = impl_->nbuckets_;
-    std::vector<int> hits(nbuckets, 0);
+    const int nbuckets = state->getValue(Parameters::HistogramBinCount).toInt();
+    std::vector<double> hits;
 
-    double frac = 1.0;
-    frac = (nbuckets-1)/(impl_->max_ - impl_->min_);
+    const double frac = nbuckets/(max - min);
 
-    double sigma = 0.0;
-    auto vit = values.begin();
-    auto vit_end = values.end();
-    for(; vit != vit_end; ++vit)
+    for (const auto v : values)
     {
-      if( *vit >= impl_->min_ && *vit <= impl_->max_)
+      if( v >= min && v <= max)
       {
-        double value = (*vit - impl_->min_)*frac;
-        hits[int(value)]++;
+        const auto bin = std::floor((v - min)*frac);
+        const auto histoVal = bin / frac + min;
+        hits.push_back(histoVal);
       }
-      sigma += (*vit - mean)*(*vit - mean);
+      sigma += (v - mean)*(v - mean);
     }
-    impl_->sigma_ = sqrt( sigma / double(values.size()) );
+    sigma = sqrt( sigma / double(values.size()) );
 
-    vit = values.begin();
-    nth_element(vit, vit+values.size()/2, vit_end);
-    impl_->median_ = values[values.size()/2];
-    impl_->fill_histogram(hits);
+    std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
+    median = values[values.size()/2];
+    auto hitsM = makeShared<DenseMatrix>(hits.size(), 1, 0);
+    std::copy(hits.begin(), hits.end(), &(*hitsM)(0,0));
+    sendOutput(HistogramData, hitsM);
   }
   else
   {
     warning("min - max less than precision or no values in range; clearing histogram");
-    impl_->clear_histogram();
+    sendOutput(HistogramData, makeShared<DenseMatrix>(0,0,0));
   }
 
-  state->setValue(Parameters::Mean, impl_->mean_);
-  state->setValue(Parameters::Median, impl_->median_);
-  state->setValue(Parameters::StandardDeviation, impl_->sigma_);
+  state->setValue(Parameters::Mean, std::to_string(mean));
+  state->setValue(Parameters::Median, std::to_string(median));
+  state->setValue(Parameters::StandardDeviation, std::to_string(sigma));
 }

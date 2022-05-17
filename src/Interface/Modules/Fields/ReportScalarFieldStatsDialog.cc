@@ -48,4 +48,6 @@ ReportScalarFieldStatsDialog::ReportScalarFieldStatsDialog(const std::string& na
   addDynamicLabelManager(sigmaLabel_, Parameters::StandardDeviation);
   addDoubleSpinBoxManager(minDoubleSpinBox_, Parameters::MinRange);
   addDoubleSpinBoxManager(maxDoubleSpinBox_, Parameters::MaxRange);
+  addSpinBoxManager(binsSpinBox_, Parameters::HistogramBinCount);
+  addRadioButtonGroupManager({ autoScaleRadioButton_, fixedScaleRadioButton_ }, Parameters::AutoRangeEnabled);
 }

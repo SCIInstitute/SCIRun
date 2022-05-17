@@ -45,7 +45,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(StandardDeviation);
         ALGORITHM_PARAMETER_DECL(MinRange);
         ALGORITHM_PARAMETER_DECL(MaxRange);
-        // ALGORITHM_PARAMETER_DECL(NormalsFlag);
+        ALGORITHM_PARAMETER_DECL(HistogramBinCount);
       }
     }
   }
@@ -58,7 +58,6 @@ namespace SCIRun {
       {
       public:
         ReportScalarFieldStats();
-        ~ReportScalarFieldStats() override;
 
         void execute() override;
         void setStateDefaults() override;
@@ -67,8 +66,6 @@ namespace SCIRun {
         OUTPUT_PORT(0, HistogramData, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-      private:
-        std::unique_ptr<class ReportScalarFieldStatsImpl> impl_;
       };
     }
   }
