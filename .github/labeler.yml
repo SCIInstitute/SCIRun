@@ -1,9 +1,0 @@
-Graphics:
-  - src/**/Renderer/**/*
-  - src/**/Visualization/**/*
-
-Modules: 
-  - src/Modules/**/*
-
-Build:
-  - .github/**/*
