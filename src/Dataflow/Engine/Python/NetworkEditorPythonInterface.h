@@ -65,6 +65,7 @@ namespace SCIRun
     //ports
     virtual SharedPointer<class PyPorts> output() = 0;
     virtual SharedPointer<class PyPorts> input() = 0;
+    virtual void setEnabled(bool enable) = 0;
 
     //time added to network, for id sorting
     virtual boost::posix_time::ptime creationTime() const = 0;

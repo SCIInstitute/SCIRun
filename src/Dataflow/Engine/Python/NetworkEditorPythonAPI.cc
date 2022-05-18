@@ -483,6 +483,26 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(cons
   return {};
 }
 
+std::string NetworkEditorPythonAPI::scirun_enable_module(const std::string& moduleId)
+{
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    module->setEnabled(true);
+  }
+  return "TODO: " + moduleId + " enabled.";
+}
+
+std::string NetworkEditorPythonAPI::scirun_disable_module(const std::string& moduleId)
+{
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    module->setEnabled(false);
+  }
+  return "TODO: " + moduleId + " disabled.";
+}
+
 boost::python::object SimplePythonAPI::scirun_module_ids()
 {
   auto mods = NetworkEditorPythonAPI::modules();

@@ -479,6 +479,11 @@ namespace
       return creationTime_;
     }
 
+    void setEnabled(bool enable) override
+    {
+      module_->setExecutionDisabled(!enable);
+    }
+
   private:
     ModuleHandle module_;
     NetworkEditorController& nec_;
