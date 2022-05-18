@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SolveBiotSavart",
+    "namespace": "BrainStimulator",
+    "status": "converted based on code from Petar Petrov",
+    "description": "Computes magnetic field from TMS coil geometry on mesh input",
+    "header": "Modules/BrainStimulator/SolveBiotSavart.h"
+  },
+  "algorithm": {
+    "name": "BiotSavartSolverAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/BiotSavartSolverAlgorithm.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SmoothVecFieldMedian",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SmoothVecFieldMedian.h"
+  },
+  "algorithm": {
+    "name": "SmoothVecFieldMedianAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/SmoothVecFieldMedianAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

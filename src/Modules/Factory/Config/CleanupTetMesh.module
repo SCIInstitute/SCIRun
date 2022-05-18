@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CleanupTetMesh",
+    "namespace": "Fields",
+    "status": "In progress: needs more testing",
+    "description": "Corrects defect tetrahedral meshes",
+    "header": "Modules/Legacy/Fields/CleanupTetMesh.h"
+  },
+  "algorithm": {
+    "name": "CleanupTetMeshAlgo",
+    "namespace": "FiniteElements",
+    "header": "Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h"
+  },
+  "UI": {
+    "name": "CleanupTetMeshDialog",
+    "header": "Interface/Modules/Fields/CleanupTetMeshDialog.h"
+  }
+}

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+scirunbuild_dir=@CMAKE_BINARY_DIR@
+productbuild_dir=@PKG_BUILD_DIR@
+productroot_dir=@PKG_ROOT_DIR@
+
+if [[ ! -e $productroot_dir ]]; then
+  echo "$productroot_dir does not exist"
+  exit 1
+fi
+
+@PKGBUILD_EXE@ --analyze --root $productroot_dir $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
+plutil -replace BundleIsRelocatable -bool NO $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
+@PKGBUILD_EXE@ --identifier edu.utah.sci.@CPACK_PACKAGE_NAME@ --root $productroot_dir \
+    --component-plist $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist \
+    --install-location /Applications $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg
+@PRODUCTBUILD_EXE@ --distribution $scirunbuild_dir/CPack.Distribution.dist \
+    --package-path $productroot_dir $productbuild_dir/tmp.pkg
+# Tip: pkgutil --expand can be used to debug package building
+@PKGUTIL_EXE@ --expand $productbuild_dir/tmp.pkg $productbuild_dir/tmp
+@PKGUTIL_EXE@ --flatten $productbuild_dir/tmp $scirunbuild_dir/@PKG_FILE_NAME@.pkg
+rm -f $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
+rm -Rf $productbuild_dir/tmp

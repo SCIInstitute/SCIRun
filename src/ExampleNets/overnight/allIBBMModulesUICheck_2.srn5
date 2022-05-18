@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="6">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>1</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>CreateFieldData:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>3</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>BasisString</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>BasisString</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = 1;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>0</count>
+			<item_version>0</item_version>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="13" tracking_level="0" version="0">
+		<count>1</count>
+		<item_version>0</item_version>
+		<item class_id="14" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
+			<second class_id="15" tracking_level="0" version="0">
+				<first>2.86000000000000000e+002</first>
+				<second>1.13600000000000000e+003</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="16" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="17" tracking_level="0" version="0">
+		<count>1</count>
+		<item_version>0</item_version>
+		<item class_id="18" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="19" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="20" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
+</networkFile>
+</boost_serialization>
+

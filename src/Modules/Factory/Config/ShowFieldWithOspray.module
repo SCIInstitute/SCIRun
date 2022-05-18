@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ShowFieldWithOspray",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Visualization/ShowFieldWithOspray.h"
+  },
+  "algorithm": {
+    "name": "OsprayDataAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/OsprayDataAlgorithm.h"
+  },
+  "UI": {
+    "name": "ShowFieldWithOsprayDialog",
+    "header": "Interface/Modules/Visualization/ShowFieldWithOsprayDialog.h"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SolveComplexLinearSystem",
+    "namespace": "Math",
+    "status": "New module.  Needs testing.",
+    "description": "Solves system with Eigen",
+    "header": "Modules/Math/SolveComplexLinearSystem.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "SolveComplexLinearSystemDialog",
+    "header": "Interface/Modules/Math/SolveComplexLinearSystemDialog.h"
+  }
+}

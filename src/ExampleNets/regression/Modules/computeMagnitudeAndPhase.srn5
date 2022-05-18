@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="6">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>6</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>ConvertComplexToRealMatrix:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Converters</category_name_>
+						<module_name_>ConvertComplexToRealMatrix</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateComplexMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateComplexMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>TextEntry</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>TextEntry</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>(1,-1) (3,3)
+(-2,-2) (-4,4)</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>5</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>ConvertComplexToRealMatrix:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>Magnitude</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertComplexToRealMatrix:0</moduleId1_>
+				<port1_>
+					<name>OutputComplexPartMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertComplexToRealMatrix:0</moduleId1_>
+				<port1_>
+					<name>OutputRealPartMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertComplexToRealMatrix:0</moduleId1_>
+				<port1_>
+					<name>Phase</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateComplexMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ConvertComplexToRealMatrix:0</moduleId2_>
+				<port2_>
+					<name>InputComplexMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>ConvertComplexToRealMatrix:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>1.50000000000000000e+001</first>
+				<second>-1.53000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateComplexMatrix:0</first>
+			<second>
+				<first>5.20000000000000000e+001</first>
+				<second>-3.10000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>
+				<first>-1.50000000000000000e+002</first>
+				<second>-2.70000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>
+				<first>2.40000000000000000e+001</first>
+				<second>-4.20000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>2.19000000000000000e+002</first>
+				<second>-3.20000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>
+				<first>4.47000000000000000e+002</first>
+				<second>-1.30000000000000000e+001</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>ConvertComplexToRealMatrix:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateComplexMatrix:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
+</networkFile>
+</boost_serialization>
+

@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="6">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>InterfaceWithPython:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Python</category_name_>
+						<module_name_>InterfaceWithPython</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>14</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>InputMatrix:0</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>InputMatrix:0</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>xx</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputMatrix:1</name>
+								</first>
+								<second>
+									<name>InputMatrix:1</name>
+									<value>
+										<which>2</which>
+										<value>zz</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NumberOfRetries</name>
+								</first>
+								<second>
+									<name>NumberOfRetries</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonCode</name>
+								</first>
+								<second>
+									<name>PythonCode</name>
+									<value>
+										<which>2</which>
+										<value># Insert your Python code here. The SCIRun API package is automatically imported.
+
+import numpy as np
+
+#print(xx)
+#print(zz)
+
+r = 2. # Fixed input into genz oscillatory function
+d = len(zz)
+f = []
+
+for xval in xx:
+	print(xval)
+	f.append( [np.cos( 2*np.pi*r + np.dot(xval*np.ones(d), zz))[0]])
+#print(&quot;f&quot;, f)
+
+matrixOutput1 = f</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField1Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField2Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField3Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix1Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix2Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix3Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString2Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString3Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput3</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SimpleTextFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Dropbox/work/akil_test/xx.txt</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScriptEnvironmentVariable</name>
+								</first>
+								<second>
+									<name>ScriptEnvironmentVariable</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadMatrix:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SimpleTextFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Dropbox/work/akil_test/zz.txt</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScriptEnvironmentVariable</name>
+								</first>
+								<second>
+									<name>ScriptEnvironmentVariable</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>WriteMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>WriteMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SimpleTextFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Dropbox/work/akil_test/output.txt</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>3</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>InterfaceWithPython:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>PythonMatrix1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>WriteMatrix:0</moduleId2_>
+				<port2_>
+					<name>MatrixToWrite</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMatrix:0</moduleId1_>
+				<port1_>
+					<name>Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMatrix:1</moduleId1_>
+				<port1_>
+					<name>Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>1</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>InterfaceWithPython:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-8.50000000000000000e+01</first>
+				<second>-2.00000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:0</first>
+			<second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:1</first>
+			<second>
+				<first>0.00000000000000000e+00</first>
+				<second>-1.52000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>WriteMatrix:0</first>
+			<second>
+				<first>-5.30000000000000000e+01</first>
+				<second>9.40000000000000000e+01</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>2</count>
+		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ReadMatrix:0</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;xx&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>xx</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:1</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;zz&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>zz</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>InterfaceWithPython:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadMatrix:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadMatrix:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>WriteMatrix:0</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="25" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
+</networkFile>
+</boost_serialization>
+

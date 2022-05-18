@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "MapFieldDataOntoNodesRadialbasis",
+    "namespace": "Fields",
+    "status": "converted",
+    "description": "N/A",
+    "header": "Modules/Legacy/Fields/MapFieldDataOntoNodesRadialbasis.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "MapFieldDataOntoNodesRadialbasisDialog",
+    "header": "Interface/Modules/Fields/MapFieldDataOntoNodesRadialbasisDialog.h"
+  }
+}

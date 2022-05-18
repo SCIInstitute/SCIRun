@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BooleanCompare",
+    "namespace": "Math",
+    "status": "new module",
+    "description": "compare matrices and send output accordingly",
+    "header": "Modules/Math/BooleanCompare.h"
+  },
+  "algorithm": {
+    "name": "BooleanCompareAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/BooleanCompareAlgo.h"
+  },
+  "UI": {
+    "name": "BooleanCompareDialog",
+    "header": "Interface/Modules/Math/BooleanCompareDialog.h"
+  }
+}

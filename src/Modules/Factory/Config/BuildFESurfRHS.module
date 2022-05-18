@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildFESurfRHS",
+    "namespace": "FiniteElements",
+    "status": "In Progress.",
+    "description": "Builds the RHS of the FE matrix for surface meshes",
+    "header": "Modules/Legacy/FiniteElements/BuildFESurfRHS.h"
+  },
+  "algorithm": {
+    "name": "BuildFESurfRHSAlgo",
+    "namespace": "FiniteElements",
+    "header": "Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFESurfRHS.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SubnetEditor</class>
+ <widget class="QFrame" name="SubnetEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>576</width>
+    <height>576</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Subnet Editor</string>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>-1</number>
+   </property>
+   <item>
+    <widget class="QPushButton" name="expandPushButton_">
+     <property name="maximumSize">
+      <size>
+       <width>220</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Expand (send back to parent)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="saveAsTemplatePushButton_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>220</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Save as template...</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

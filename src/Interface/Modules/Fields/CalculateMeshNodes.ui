@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CalculateMeshNodes</class>
+ <widget class="QDialog" name="CalculateMeshNodes">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>581</width>
+    <height>625</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>581</width>
+    <height>625</height>
+   </size>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::TabFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>CalculateMeshNodes</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Output array: NEWPOS (vector)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Input array: X, Y, Z (scalar: Cartensian coordinates of node/element)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="0">
+    <widget class="QGroupBox" name="expressionGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>557</width>
+       <height>356</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Expression</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Input array: INDEX (scalar: number of the element)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="parserHelpButton_">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Parser Help</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Input array: SIZE (scalar: number of elements)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Input array: POS (vector: vector with node/element position)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Input array: DATA (scalar/vector/tensor: data from field port)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="function_result">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Function: NEWPOS = function(DATA, POS, INDEX, A, B, C,...)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Input array: A, B, C, ...(scalar/vector/tensor: data from matrix ports)</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
