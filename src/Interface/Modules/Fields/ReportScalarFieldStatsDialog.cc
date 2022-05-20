@@ -29,6 +29,7 @@
 #include <Interface/Modules/Fields/ReportScalarFieldStatsDialog.h>
 #include <Modules/Legacy/Fields/ReportScalarFieldStats.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

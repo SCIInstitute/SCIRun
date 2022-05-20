@@ -39,7 +39,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>
 
@@ -55,8 +55,6 @@ ALGORITHM_PARAMETER_DEF(Fields, AutoRangeEnabled);
 ALGORITHM_PARAMETER_DEF(Fields, Mean);
 ALGORITHM_PARAMETER_DEF(Fields, Median);
 ALGORITHM_PARAMETER_DEF(Fields, StandardDeviation);
-ALGORITHM_PARAMETER_DEF(Fields, MinRange);
-ALGORITHM_PARAMETER_DEF(Fields, MaxRange);
 ALGORITHM_PARAMETER_DEF(Fields, HistogramBinCount);
 
 /// @class ReportScalarFieldStats
