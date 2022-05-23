@@ -30,6 +30,7 @@ SET(Interface_Modules_Bundle_FORMS
   GetFieldsFromBundleDialog.ui
   GetMatricesFromBundleDialog.ui
   GetStringsFromBundleDialog.ui
+  GetColorMapsFromBundleDialog.ui
   InsertFieldsIntoBundleDialog.ui
   InsertMatricesIntoBundleDialog.ui
   InsertStringsIntoBundleDialog.ui
@@ -41,6 +42,7 @@ SET(Interface_Modules_Bundle_HEADERS
   GetFieldsFromBundleDialog.h
   GetMatricesFromBundleDialog.h
   GetStringsFromBundleDialog.h
+  GetColorMapsFromBundleDialog.h
   InsertFieldsIntoBundleDialog.h
   InsertMatricesIntoBundleDialog.h
   InsertStringsIntoBundleDialog.h
@@ -53,6 +55,7 @@ SET(Interface_Modules_Bundle_SOURCES
   GetFieldsFromBundleDialog.cc
   GetMatricesFromBundleDialog.cc
   GetStringsFromBundleDialog.cc
+  GetColorMapsFromBundleDialog.cc
   InsertFieldsIntoBundleDialog.cc
   InsertMatricesIntoBundleDialog.cc
   InsertStringsIntoBundleDialog.cc

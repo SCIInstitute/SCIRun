@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportColorMapInfo",
+    "namespace": "Visualization",
+    "status": "",
+    "description": "",
+    "header": "Modules/Visualization/ReportColorMapInfo.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReportColorMapInfoDialog",
+    "header": "Interface/Modules/Visualization/ReportColorMapInfoDialog.h"
+  }
+}

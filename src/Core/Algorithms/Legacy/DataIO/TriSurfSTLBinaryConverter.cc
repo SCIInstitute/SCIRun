@@ -33,9 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <boost/shared_array.hpp>
-#include <Core/Utils/SmartPointers.h>
-
 #include <iomanip>
 #include <fstream>
 #include <sstream>
@@ -56,20 +53,15 @@ class ConverterPrivate
 {
 public:
   explicit ConverterPrivate(LoggerHandle pr)
-  : pr_(pr),
-    STL_HEADER_LENGTH(80),
-    STL_FIELD_LENGTH(4),
-    POINT_LEN(3),
-    CELL_SIZE(3),
-    FIELD_LEN(12),
-    ATTRIBUTE_BYTE_COUNT(2)
+  : pr_(pr)
   {}
 
   bool readFile(const std::string& filename, FieldHandle& field);
   bool writeFile(const std::string& filename, VMesh *vmesh);
 
   // assumes always array length 3
-  inline Point arrayToPoint(const boost::shared_array<float>& array)
+  template <typename V>
+  Point arrayToPoint(const V& array)
   {
     return Point( array[0], array[1], array[2] );
   }
@@ -77,13 +69,13 @@ public:
 private:
   LoggerHandle pr_;
   /// 80 byte header, usually ignored
-  const unsigned short STL_HEADER_LENGTH;
+  static constexpr unsigned short STL_HEADER_LENGTH {80};
   /// STL binary contains unsigned ints, floats
-  const unsigned short STL_FIELD_LENGTH;
-  const unsigned short POINT_LEN;
-  const unsigned short CELL_SIZE;
-  const unsigned short FIELD_LEN;
-  const unsigned short ATTRIBUTE_BYTE_COUNT;
+  static constexpr unsigned short STL_FIELD_LENGTH {4};
+  static constexpr unsigned short POINT_LEN {3};
+  static constexpr unsigned short CELL_SIZE {3};
+  static constexpr unsigned short FIELD_LEN {12};
+  static constexpr unsigned short ATTRIBUTE_BYTE_COUNT {2};
 
   PointTable pointsLookupTable;
 };
@@ -102,12 +94,12 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
     inputfile.open(filename.c_str(), std::ios::in | std::ios::binary);
 
     // check for solid and discard
-    SharedPointer<char> headerBuffer(new char[STL_HEADER_LENGTH]);
-    inputfile.read(headerBuffer.get(), STL_HEADER_LENGTH);
+    std::vector<char> headerBuffer(STL_HEADER_LENGTH);
+    inputfile.read(&headerBuffer[0], STL_HEADER_LENGTH);
 
-    std::string header( headerBuffer.get() );
+    std::string header(headerBuffer.begin(), headerBuffer.end());
     const std::string solidString("solid");
-	std::locale loc;
+	  std::locale loc;
     for (unsigned int i = 0; i < solidString.length() && i < header.length(); ++i)
     {
       header[i] = std::tolower(header[i], loc);
@@ -121,9 +113,9 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
         this->pr_->warning(filename + " header begins with \"solid\". This may be an ASCII STL file.");
     }
 
-    SharedPointer<char> numTrianglesBuffer(new char[STL_FIELD_LENGTH]);
-    inputfile.read(numTrianglesBuffer.get(), STL_FIELD_LENGTH);
-    unsigned int numTriangles = *( reinterpret_cast<unsigned int*>( numTrianglesBuffer.get() ) );
+    std::vector<char> numTrianglesBuffer(STL_FIELD_LENGTH);
+    inputfile.read(&numTrianglesBuffer[0], STL_FIELD_LENGTH);
+    unsigned int numTriangles = *( reinterpret_cast<unsigned int*>( &numTrianglesBuffer[0] ) );
     FacetList facetList;
 
     vmesh->elem_reserve(numTriangles);
@@ -134,20 +126,20 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
       // discard normals
       inputfile.seekg(FIELD_LEN, std::ios_base::cur);
 
-      boost::shared_array<char> vertex1Buffer(new char[FIELD_LEN]);
-      inputfile.read(vertex1Buffer.get(), FIELD_LEN);
-      boost::shared_array<float> vertex1(new float[POINT_LEN]);
-      memcpy(vertex1.get(), vertex1Buffer.get(), FIELD_LEN);
+      std::vector<char> vertex1Buffer(FIELD_LEN);
+      inputfile.read(&vertex1Buffer[0], FIELD_LEN);
+      std::vector<float> vertex1(POINT_LEN);
+      memcpy(&vertex1[0], &vertex1Buffer[0], FIELD_LEN);
 
-      boost::shared_array<char> vertex2Buffer(new char[FIELD_LEN]);
-      inputfile.read(vertex2Buffer.get(), FIELD_LEN);
-      boost::shared_array<float> vertex2(new float[POINT_LEN]);
-      memcpy(vertex2.get(), vertex2Buffer.get(), FIELD_LEN);
+      std::vector<char> vertex2Buffer(FIELD_LEN);
+      inputfile.read(&vertex2Buffer[0], FIELD_LEN);
+      std::vector<float> vertex2(POINT_LEN);
+      memcpy(&vertex2[0], &vertex2Buffer[0], FIELD_LEN);
 
-      boost::shared_array<char> vertex3Buffer(new char[FIELD_LEN]);
-      inputfile.read(vertex3Buffer.get(), FIELD_LEN);
-      boost::shared_array<float> vertex3(new float[POINT_LEN]);
-      memcpy(vertex3.get(), vertex3Buffer.get(), FIELD_LEN);
+      std::vector<char> vertex3Buffer(FIELD_LEN);
+      inputfile.read(&vertex3Buffer[0], FIELD_LEN);
+      std::vector<float> vertex3(POINT_LEN);
+      memcpy(&vertex3[0], &vertex3Buffer[0], FIELD_LEN);
 
       // discard attribute byte count
       inputfile.seekg(ATTRIBUTE_BYTE_COUNT, std::ios_base::cur);
@@ -244,23 +236,17 @@ ConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
       vmesh->get_center(p2, nodesFromFace[1]);
       vmesh->get_center(p3, nodesFromFace[2]);
 
-      boost::shared_array<float> normal = computeFaceNormal(p1, p2, p3);
-      outputfile.write(reinterpret_cast<char*>(normal.get()), FIELD_LEN);
+      auto normal = computeFaceNormal(p1, p2, p3);
+      outputfile.write(reinterpret_cast<char*>(&normal[0]), FIELD_LEN);
 
       std::vector<float> vertex1 = {static_cast<float>(p1.x()), static_cast<float>(p1.y()), static_cast<float>(p1.z())};
       outputfile.write(reinterpret_cast<char*>(&vertex1[0]), FIELD_LEN);
 
-      boost::shared_array<float> vertex2(new float[POINT_LEN]);
-      vertex2[0] = p2.x();
-      vertex2[1] = p2.y();
-      vertex2[2] = p2.z();
-      outputfile.write(reinterpret_cast<char*>(vertex2.get()), FIELD_LEN);
+      std::vector<float> vertex2 = {static_cast<float>(p2.x()), static_cast<float>(p2.y()), static_cast<float>(p2.z())};
+      outputfile.write(reinterpret_cast<char*>(&vertex2[0]), FIELD_LEN);
 
-      boost::shared_array<float> vertex3(new float[POINT_LEN]);
-      vertex3[0] = p3.x();
-      vertex3[1] = p3.y();
-      vertex3[2] = p3.z();
-      outputfile.write(reinterpret_cast<char*>(vertex3.get()), FIELD_LEN);
+      std::vector<float> vertex3 = {static_cast<float>(p3.x()), static_cast<float>(p3.y()), static_cast<float>(p3.z())};
+      outputfile.write(reinterpret_cast<char*>(&vertex3[0]), FIELD_LEN);
 
       outputfile.write(reinterpret_cast<char*>(&byteAttributeCount), ATTRIBUTE_BYTE_COUNT);
     }

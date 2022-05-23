@@ -36,4 +36,7 @@ ADD_SUBDIRECTORY(libxml2)
 MESSAGE(STATUS "Configuring spire")
 ADD_SUBDIRECTORY(spire)
 
+MESSAGE(STATUS "Configuring pugixml")
+ADD_SUBDIRECTORY(pugixml)
+
 ADD_SUBDIRECTORY(submodules)

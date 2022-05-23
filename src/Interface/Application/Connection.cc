@@ -419,10 +419,6 @@ double ConnectionLine::defaultZValue() const
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  //TODO: this is a bit inconsistent, disabling for now
-//  if (event->button() == Qt::MiddleButton)
-//    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
-
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
 	setZValue(defaultZValue());
@@ -538,25 +534,36 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  auto msgBox = new QMessageBox(mainWindowWidget());
+  auto msgBox = new DatatypeInfoBox(mainWindowWidget());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setEscapeButton(QMessageBox::Ok);
-
-#if 0
-  auto viewButton = new QPushButton("View...");
-  auto pixmap = QPixmap::grabWidget(SCIRunMainWindow::Instance()); //TODO: pass in screenshot of visualized data
-  viewButton->setIcon(pixmap);
-  viewButton->setIconSize(pixmap.rect().size() / 10);
-  msgBox->addButton(viewButton, QMessageBox::HelpRole);
-#endif
-
   msgBox->setDetailedText("The above datatype info is displayed for the current run only. Hit i again after executing to display updated info. Keep this window open to compare info between runs.");
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
-  msgBox->setText(info);
   msgBox->setModal(false);
   msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
+  if (id.find("ColorMapObject") != std::string::npos)
+  {
+    auto infos = info.split("&");
+    msgBox->setText(infos[0]);
+    if (infos.size() > 1)
+      msgBox->addColorLabel(infos[1]);
+  }
+  else
+  {
+    msgBox->setText(info);
+  }
   msgBox->show();
+}
+
+void DatatypeInfoBox::addColorLabel(const QString& style)
+{
+  auto label = new QLabel;
+  label->setMinimumSize(QSize(230, 30));
+  label->setStyleSheet(style);
+  label->setMargin(10);
+  auto grid = qobject_cast<QGridLayout*>(layout());
+  grid->addWidget(label, 5, 1);
 }
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)

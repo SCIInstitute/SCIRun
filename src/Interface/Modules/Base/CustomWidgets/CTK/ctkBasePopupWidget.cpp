@@ -112,17 +112,14 @@ void ctkBasePopupWidgetPrivate::init()
   this->AlphaAnimation->setDuration(this->EffectDuration);
   this->AlphaAnimation->setStartValue(0.);
   this->AlphaAnimation->setEndValue(1.);
-  QObject::connect(this->AlphaAnimation, SIGNAL(finished()),
-                   q, SLOT(onEffectFinished()));
+  QObject::connect(this->AlphaAnimation, &QPropertyAnimation::finished, q, &ctkBasePopupWidget::onEffectFinished);
 
   this->PopupPixmapWidget = new QLabel(q, Qt::ToolTip | Qt::FramelessWindowHint);
 
   this->ScrollAnimation = new QPropertyAnimation(q, "effectGeometry", q);
   this->ScrollAnimation->setDuration(this->EffectDuration);
-  QObject::connect(this->ScrollAnimation, SIGNAL(finished()),
-                   q, SLOT(onEffectFinished()));
-  QObject::connect(this->ScrollAnimation, SIGNAL(finished()),
-                   this->PopupPixmapWidget, SLOT(hide()));
+  QObject::connect(this->ScrollAnimation, &QPropertyAnimation::finished, q, &ctkBasePopupWidget::onEffectFinished);
+  QObject::connect(this->ScrollAnimation, &QPropertyAnimation::finished, this->PopupPixmapWidget, &QLabel::hide);
 
   q->setAnimationEffect(this->Effect);
   q->setEasingCurve(QEasingCurve::OutCubic);
