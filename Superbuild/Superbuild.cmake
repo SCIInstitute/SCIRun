@@ -69,7 +69,7 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
 # Configure tetgen
-OPTION(WITH_TETGEN "Build Tetgen." OFF)
+OPTION(WITH_TETGEN "Build Tetgen." ON)
 
 ###########################################
 # Configure ospray

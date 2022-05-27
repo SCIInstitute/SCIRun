@@ -32,6 +32,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsPathItem>
 #include <QPen>
+#include <QMessageBox>
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
@@ -270,6 +271,14 @@ private:
   QGraphicsProxyWidget* module_ {nullptr};
   SceneFunc func_;
   QGraphicsScene* getScene() const;
+};
+
+class DatatypeInfoBox : public QMessageBox
+{
+  Q_OBJECT
+public:
+  using QMessageBox::QMessageBox;
+  void addColorLabel(const QString& colorStyle);
 };
 
 }

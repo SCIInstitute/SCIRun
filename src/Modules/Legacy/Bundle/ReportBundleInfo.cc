@@ -29,6 +29,7 @@
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
@@ -75,6 +76,12 @@ void ReportBundleInfo::execute()
             auto field = std::dynamic_pointer_cast<Field>(obj);
             if (field)
               infostring << "Field (" << field->dynamic_type_name() << ")";
+            else
+            {
+              auto colorMap = std::dynamic_pointer_cast<Core::Datatypes::ColorMap>(obj);
+              if (colorMap)
+                infostring << "ColorMap (" << colorMap->getColorMapName() << ")";
+            }
           }
         }
       }

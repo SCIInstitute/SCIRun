@@ -2250,10 +2250,10 @@ namespace
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
       QMenu menu;
-      auto autoDisplay = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
+      auto autoDisplay = menu.addAction("Display in saved network", ned_, &NetworkEditor::saveTagGroupRectInFile);
       autoDisplay->setCheckable(true);
       autoDisplay->setChecked(ned_->showTagGroupsOnFileLoad());
-      auto rename = menu.addAction("Rename in saved network...", ned_, SLOT(renameTagGroupInFile()));
+      auto rename = menu.addAction("Rename in saved network...", ned_, &NetworkEditor::renameTagGroupInFile);
       rename->setProperty("tag", tagNumber_);
       menu.exec(event->screenPos());
       QGraphicsRectItem::mouseDoubleClickEvent(event);

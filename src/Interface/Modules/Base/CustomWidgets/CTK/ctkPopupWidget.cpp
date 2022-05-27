@@ -88,11 +88,11 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
   if (event->type() == QEvent::ApplicationDeactivate)
     {
     // We wait to see if there is no other window being active
-    QTimer::singleShot(0, this, SLOT(onApplicationDeactivate()));
+    QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::onApplicationDeactivate);
     }
   else if (event->type() == QEvent::ApplicationActivate)
     {
-    QTimer::singleShot(0, this, SLOT(updateVisibility()));
+    QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   if (this->BaseWidget.isNull())
     {
@@ -106,7 +106,7 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
       }
     else if (this->isHidingCandidate(widget))
       {
-      QTimer::singleShot(0, this, SLOT(updateVisibility()));
+      QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
       }
     }
   else if (event->type() == QEvent::Resize)
@@ -117,19 +117,19 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
       }
     else if (this->isHidingCandidate(widget))
       {
-      QTimer::singleShot(0, this, SLOT(updateVisibility()));
+      QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
       }
     }
   else if (event->type() == QEvent::WindowStateChange &&
            this->isHidingCandidate(widget))
     {
-    QTimer::singleShot(0, this, SLOT(updateVisibility()));
+    QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   else if ((event->type() == QEvent::WindowActivate ||
             event->type() == QEvent::WindowDeactivate) &&
            widget == this->BaseWidget->window())
     {
-    QTimer::singleShot(0, this, SLOT(updateVisibility()));
+    QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   else if (event->type() == QEvent::RequestSoftwareInputPanel)
     {
@@ -328,7 +328,7 @@ void ctkPopupWidget::setBaseWidget(QWidget* widget)
     {
     d->BaseWidget->installEventFilter(this);
     }
-  QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
+  QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
 }
 
 // -------------------------------------------------------------------------
@@ -343,7 +343,7 @@ void ctkPopupWidget::setAutoShow(bool mode)
 {
   Q_D(ctkPopupWidget);
   d->AutoShow = mode;
-  QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
+  QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
 }
 
 // -------------------------------------------------------------------------
@@ -372,7 +372,7 @@ void ctkPopupWidget::setAutoHide(bool mode)
 {
   Q_D(ctkPopupWidget);
   d->AutoHide = mode;
-  QTimer::singleShot(d->HideDelay, this, SLOT(updatePopup()));
+  QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
 }
 
 // -------------------------------------------------------------------------
@@ -410,7 +410,7 @@ void ctkPopupWidget::onEffectFinished()
 void ctkPopupWidget::leaveEvent(QEvent* event)
 {
   Q_D(ctkPopupWidget);
-  QTimer::singleShot(d->HideDelay, this, SLOT(updatePopup()));
+  QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
   this->Superclass::leaveEvent(event);
 }
 
@@ -418,7 +418,7 @@ void ctkPopupWidget::leaveEvent(QEvent* event)
 void ctkPopupWidget::enterEvent(Q_ENTER_EVENT_CLASS* event)
 {
   Q_D(ctkPopupWidget);
-  QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
+  QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
   this->Superclass::enterEvent(event);
 }
 
@@ -455,7 +455,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
             qobject_cast<QWidget*>(obj)->windowType() == Qt::Popup)
           {
           obj->removeEventFilter(this);
-          QTimer::singleShot(d->HideDelay, this, SLOT(updatePopup()));
+          QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
           }
         break;
         }
@@ -474,7 +474,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         {
         // Maybe the user moved the mouse on the widget by mistake, don't open
         // the popup instantly...
-        QTimer::singleShot(d->ShowDelay, this, SLOT(updatePopup()));
+        QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
         }
       else
         {
@@ -493,7 +493,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         break;
         }
       // The mouse might have left the area that keeps the popup open
-      QTimer::singleShot(d->HideDelay, this, SLOT(updatePopup()));
+      QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
       if (obj != d->BaseWidget &&
           obj != d->PopupPixmapWidget)
         {

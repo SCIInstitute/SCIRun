@@ -38,6 +38,7 @@ SET(Core_Datatypes_Tests_SRCS
   MatrixTypeConversionTests.cc
   MatrixTestCases.h
   DyadicTensorTests.cc
+  ColorMapXmlTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests
@@ -48,7 +49,10 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
   Core_Datatypes_Legacy_Field
+  Core_ImportExport
+  Testing_Utils
   gtest_main
   gtest
   gmock
+  pugixml
 )

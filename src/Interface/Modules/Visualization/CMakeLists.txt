@@ -40,6 +40,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowOrientationAxes.ui
   ShowUncertaintyGlyphs.ui
   GeometryBuffer.ui
+  ReportColorMapInfo.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -57,6 +58,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowOrientationAxesDialog.h
   ShowUncertaintyGlyphsDialog.h
   GeometryBufferDialog.h
+  ReportColorMapInfoDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -73,6 +75,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowOrientationAxesDialog.cc
   ShowUncertaintyGlyphsDialog.cc
   GeometryBufferDialog.cc
+  ReportColorMapInfoDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
