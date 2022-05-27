@@ -515,17 +515,22 @@ void ViewSceneDialog::addToolBar()
 
 namespace
 {
-  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, int which)
+  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, int which, QCheckBox* pinToggle)
   {
     auto* popup = new ctkPopupWidget(button);
     auto* popupLayout = new QVBoxLayout(popup);
-    const auto dir = which == 1 ? ctkBasePopupWidget::BottomToTop : ctkBasePopupWidget::TopToBottom;
+    const auto dir = which == 1 ? ctkBasePopupWidget::VerticalDirection::BottomToTop
+                                : ctkBasePopupWidget::VerticalDirection::TopToBottom;
     const auto alignment = which == 1 ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignLeft | Qt::AlignVCenter;
     const auto orientation = which == 1 ? Qt::Vertical : Qt::Horizontal;
     popup->setAlignment(alignment);
     popup->setOrientation(orientation);
     popup->setVerticalDirection(dir);
     popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
+    popup->setShowDelay(500);
+    popup->setHideDelay(20);
+    if (pinToggle) 
+      QObject::connect(pinToggle, &QCheckBox::toggled, popup, &ctkPopupWidget::pinPopup);
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
   }
@@ -545,7 +550,7 @@ void ViewSceneDialog::addObjectSelectionButton()
   auto* objectSelectionButton = new QPushButton();
   objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
-  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_);
+  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_, impl_->objectSelectionControls_->pinCheckBox_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -626,7 +631,7 @@ void ViewSceneDialog::addCameraLocksButton()
   addToolbarButton(cameraLocksButton, 2, impl_->cameraLockControls_);
 }
 
-void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup)
+void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup, QCheckBox* pinToggle)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
@@ -635,7 +640,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   {
     button->setIconSize(QSize(iconSize, iconSize));
     if (widgetToPopup)
-      setupPopupWidget(button, widgetToPopup, which);
+      setupPopupWidget(button, widgetToPopup, which, pinToggle);
   }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);
@@ -2781,4 +2786,10 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 void ViewSceneDialog::initializeVisibleObjects()
 {
   impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
+}
+
+void ViewSceneDialog::moveEvent(QMoveEvent* event)
+{
+  qDebug() << event;
+  ModuleDialogGeneric::moveEvent(event);
 }

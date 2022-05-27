@@ -214,6 +214,7 @@ namespace SCIRun {
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
+      void moveEvent(QMoveEvent* event) override;
 
 
     private:
@@ -237,7 +238,7 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
+      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr, QCheckBox* pinToggle = nullptr);
       void addConfigurationButton();
       void addObjectSelectionButton();
       void addLightButtons();
