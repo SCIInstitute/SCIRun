@@ -5,7 +5,7 @@
 
 
 ## Overview
-SCIRun is a modular dataflow programming Problem Solving Environment (PSE). SCIRun has a set of Modules that perform specific functions on a data stream. Each module reads data from its input ports, calculates the data, and sends new data from output ports. In SCIRun, a module is represented by a rectangular box on the Network Editor canvas. Data flowing between modules is represented by pipes connecting the modules. A group of connected modules is called a Dataflow Network, or Net (see Figure 1.3). An infinite number of nets can be created, each solving a separate problem.
+SCIRun is a modular dataflow programming Problem Solving Environment (PSE). SCIRun has a set of Modules that perform specific functions on a data stream. Each module reads data from its input ports, calculates the data, and sends new data from output ports. In SCIRun, a module is represented by a rectangular box on the Network Editor canvas. Data flowing between modules is represented by pipes connecting the modules. A group of connected modules is called a Dataflow Network, or Net (see {numref}`fig-ex-network`). An infinite number of nets can be created, each solving a separate problem.
 
 This tutorial demonstrates the use of SCIRun to visualize a tetrahedral mesh and the construction of a network comprised of three standard modules: ReadField, ShowField, and ViewScene. This tutorial also instructs the user on reading Field data from a file, setting rendering properties for the nodes, edges, and faces (**the nodes are rendered as blue spheres**), and rendering geometry to the screen in an interactive ViewScene window).
 
