@@ -90,11 +90,16 @@ namespace Gui {
   {
     Q_OBJECT
 
-   public:
+  public:
     explicit ViewSceneControlPopupWidget(ViewSceneDialog* parent);
+    QAction* pinToggleAction() { return pinToggleAction_; }
+  private Q_SLOTS:
+    void showContextMenu(const QPoint& pos);
+  private:
+    QAction* pinToggleAction_{ nullptr };
   };
 
-  class SCISHARE AutoRotateControls : public QWidget, public Ui::AutoRotateSettings
+  class SCISHARE AutoRotateControls : public ViewSceneControlPopupWidget, public Ui::AutoRotateSettings
   {
     Q_OBJECT
 
@@ -102,7 +107,7 @@ namespace Gui {
     explicit AutoRotateControls(ViewSceneDialog* parent);
   };
 
-  class SCISHARE ColorOptions : public QWidget, public Ui::ColorOptions
+  class SCISHARE ColorOptions : public ViewSceneControlPopupWidget, public Ui::ColorOptions
   {
     Q_OBJECT
 
@@ -111,7 +116,7 @@ namespace Gui {
     void setSampleColor(const QColor& color);
   };
 
-  class SCISHARE MaterialsControls : public QWidget, public Ui::Materials
+  class SCISHARE MaterialsControls : public ViewSceneControlPopupWidget, public Ui::Materials
   {
     Q_OBJECT
 
@@ -146,7 +151,7 @@ namespace Gui {
     virtual void lightColorUpdated() = 0;
   };
 
-  class SCISHARE FogControls : public QWidget, public Ui::Fog, public LightButtonUpdater
+  class SCISHARE FogControls : public ViewSceneControlPopupWidget, public Ui::Fog, public LightButtonUpdater
   {
     Q_OBJECT
 
@@ -160,7 +165,7 @@ namespace Gui {
     void toggleFog();
   };
 
-  class SCISHARE ObjectSelectionControls : public QWidget, public Ui::ObjectSelection
+  class SCISHARE ObjectSelectionControls : public ViewSceneControlPopupWidget, public Ui::ObjectSelection
   {
     Q_OBJECT
 
@@ -173,7 +178,7 @@ namespace Gui {
     std::unique_ptr<VisibleItemManager> visibleItems_;
   };
 
-  class SCISHARE OrientationAxesControls : public QWidget, public Ui::OrientationAxes, public ButtonStylesheetToggler
+  class SCISHARE OrientationAxesControls : public ViewSceneControlPopupWidget, public Ui::OrientationAxes, public ButtonStylesheetToggler
   {
     Q_OBJECT
 
@@ -186,7 +191,7 @@ namespace Gui {
     void setSliderCenterPos();
   };
 
-  class SCISHARE ScreenshotControls : public QWidget, public Ui::Screenshot
+  class SCISHARE ScreenshotControls : public ViewSceneControlPopupWidget, public Ui::Screenshot
   {
     Q_OBJECT
 
@@ -208,7 +213,7 @@ namespace Gui {
     double projLength;
   };
 
-  class SCISHARE ScaleBarControls : public QWidget, public Ui::ScaleBar, public ButtonStylesheetToggler
+  class SCISHARE ScaleBarControls : public ViewSceneControlPopupWidget, public Ui::ScaleBar, public ButtonStylesheetToggler
   {
     Q_OBJECT
 
@@ -220,7 +225,7 @@ namespace Gui {
     static const QColor buttonOutlineColor;
   };
 
-  class SCISHARE ClippingPlaneControls : public QWidget, public Ui::ClippingPlanes, public ButtonStylesheetToggler
+  class SCISHARE ClippingPlaneControls : public ViewSceneControlPopupWidget, public Ui::ClippingPlanes, public ButtonStylesheetToggler
   {
     Q_OBJECT
 
@@ -230,7 +235,7 @@ namespace Gui {
     void updatePlaneControlDisplay(double x, double y, double z, double d);
   };
 
-  class SCISHARE InputControls : public QWidget, public Ui::Input
+  class SCISHARE InputControls : public ViewSceneControlPopupWidget, public Ui::Input
   {
     Q_OBJECT
 
@@ -239,7 +244,7 @@ namespace Gui {
     void updateZoomOptionVisibility();
   };
 
-  class SCISHARE CameraLockControls : public QWidget, public Ui::CameraLocks
+  class SCISHARE CameraLockControls : public ViewSceneControlPopupWidget, public Ui::CameraLocks
   {
     Q_OBJECT
 
@@ -252,7 +257,7 @@ namespace Gui {
     void viewSceneTreeClicked(QTreeWidgetItem* widgetItem, int column);
   };
 
-  class SCISHARE DeveloperControls : public QWidget, public Ui::Developer
+  class SCISHARE DeveloperControls : public ViewSceneControlPopupWidget, public Ui::Developer
   {
     Q_OBJECT
 
@@ -266,7 +271,7 @@ namespace Gui {
 #define LightSliderType QSlider
 #endif
 
-  class SCISHARE LightControls : public QWidget, public Ui::LightControls, public LightButtonUpdater
+  class SCISHARE LightControls : public ViewSceneControlPopupWidget, public Ui::LightControls, public LightButtonUpdater
   {
     Q_OBJECT
 
@@ -285,7 +290,7 @@ namespace Gui {
     void lightColorUpdated() override;
   };
 
-  class SCISHARE ViewAxisChooserControls : public QWidget, public Ui::ViewAxisChooser
+  class SCISHARE ViewAxisChooserControls : public ViewSceneControlPopupWidget, public Ui::ViewAxisChooser
   {
     Q_OBJECT
    public:

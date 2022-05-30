@@ -487,7 +487,7 @@ void ObjectSelectionControls::setupObjectListWidget()
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
-AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent)
+AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -498,14 +498,14 @@ AutoRotateControls::AutoRotateControls(ViewSceneDialog* parent) : QWidget(parent
   connect(autoRotateSpeedSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setAutoRotateSpeed);
 }
 
-ColorOptions::ColorOptions(ViewSceneDialog* parent) : QWidget(parent)
+ColorOptions::ColorOptions(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
   connect(setBackgroundColorPushButton_, &QPushButton::clicked, parent, &ViewSceneDialog::assignBackgroundColor);
 }
 
-MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
+MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -516,7 +516,7 @@ MaterialsControls::MaterialsControls(ViewSceneDialog* parent) : QWidget(parent)
 }
 
 FogControls::FogControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent), LightButtonUpdater(toolbarButton, [this]() { toggleFog(); })
+  : ViewSceneControlPopupWidget(parent), LightButtonUpdater(toolbarButton, [this]() { toggleFog(); })
 {
   setupUi(this);
 
@@ -538,7 +538,7 @@ void FogControls::toggleFog()
   Q_EMIT setFogTo(toggle);
 }
 
-ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : QWidget(parent)
+ObjectSelectionControls::ObjectSelectionControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -563,7 +563,7 @@ namespace
 }
 
 OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent), ButtonStylesheetToggler(toolbarButton,
+  : ViewSceneControlPopupWidget(parent), ButtonStylesheetToggler(toolbarButton,
     [this]() { toggleCheckable(orientationCheckableGroupBox_); })
 {
   setupUi(this);
@@ -587,7 +587,7 @@ void OrientationAxesControls::toggleButton()
 }
 
 ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
-  : QWidget(parent)
+  : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
   connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
@@ -596,7 +596,7 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
+  : ViewSceneControlPopupWidget(parent), ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(showScaleBarTextGroupBox_); })
 {
   setupUi(this);
 
@@ -613,7 +613,7 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
 }
 
 ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
-  : QWidget(parent),
+  : ViewSceneControlPopupWidget(parent),
   ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(planeVisibleCheckBox_); })
 {
   setupUi(this);
@@ -646,7 +646,7 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneD);
 }
 
-InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
+InputControls::InputControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -669,7 +669,7 @@ InputControls::InputControls(ViewSceneDialog* parent) : QWidget(parent)
   connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);
 }
 
-CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent)
+CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -681,7 +681,7 @@ CameraLockControls::CameraLockControls(ViewSceneDialog* parent) : QWidget(parent
   groupRemoveSpinBox_->setRange(0, 0);
 }
 
-DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : QWidget(parent)
+DeveloperControls::DeveloperControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -703,7 +703,7 @@ LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton, std::function
 }
 
 LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
-  : QWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { lightCheckBox_->toggle(); }),
+  : ViewSceneControlPopupWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { lightCheckBox_->toggle(); }),
     lightNumber_(lightNumber)
 {
   setupUi(this);
@@ -829,7 +829,7 @@ void LightControls::setAdditionalLightState(int azimuth, int inclination, bool o
   updateLightColor();
 }
 
-ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : QWidget(parent)
+ViewAxisChooserControls::ViewAxisChooserControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
 
@@ -861,4 +861,19 @@ void ViewAxisChooserControls::viewAxisSelected(const QString& name)
     upVectorComboBox_->addItem("-Z");
   }
   upVectorComboBox_->setEnabled(true);
+}
+
+ViewSceneControlPopupWidget::ViewSceneControlPopupWidget(ViewSceneDialog* parent) : QWidget(parent)
+{
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, &QWidget::customContextMenuRequested, this, &ViewSceneControlPopupWidget::showContextMenu);
+  pinToggleAction_ = new QAction("Pin popup", this);
+  pinToggleAction_->setCheckable(true);
+}
+
+void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
+{
+  QMenu contextMenu(tr("Context menu"), this);
+  contextMenu.addAction(pinToggleAction_);
+  contextMenu.exec(mapToGlobal(pos));
 }

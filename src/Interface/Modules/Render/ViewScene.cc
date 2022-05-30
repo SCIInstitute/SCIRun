@@ -515,7 +515,7 @@ void ViewSceneDialog::addToolBar()
 
 namespace
 {
-  void setupPopupWidget(QPushButton* button, QWidget* underlyingWidget, int which, QCheckBox* pinToggle)
+  void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, int which)
   {
     auto* popup = new ctkPopupWidget(button);
     auto* popupLayout = new QVBoxLayout(popup);
@@ -529,8 +529,7 @@ namespace
     popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
     popup->setShowDelay(500);
     popup->setHideDelay(20);
-    if (pinToggle) 
-      QObject::connect(pinToggle, &QCheckBox::toggled, popup, &ctkPopupWidget::pinPopup);
+    QObject::connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
     popupLayout->addWidget(underlyingWidget);
     popupLayout->setContentsMargins(4,4,4,4);
   }
@@ -550,7 +549,7 @@ void ViewSceneDialog::addObjectSelectionButton()
   auto* objectSelectionButton = new QPushButton();
   objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
   impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
-  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_, impl_->objectSelectionControls_->pinCheckBox_);
+  addToolbarButton(objectSelectionButton, 1, impl_->objectSelectionControls_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -631,7 +630,7 @@ void ViewSceneDialog::addCameraLocksButton()
   addToolbarButton(cameraLocksButton, 2, impl_->cameraLockControls_);
 }
 
-void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widgetToPopup, QCheckBox* pinToggle)
+void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, ViewSceneControlPopupWidget* widgetToPopup)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
@@ -640,7 +639,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, int which, QWidget* widg
   {
     button->setIconSize(QSize(iconSize, iconSize));
     if (widgetToPopup)
-      setupPopupWidget(button, widgetToPopup, which, pinToggle);
+      setupPopupWidget(button, widgetToPopup, which);
   }
 
   (which == 1 ? impl_->toolBar1_ : impl_->toolBar2_)->addWidget(widget);

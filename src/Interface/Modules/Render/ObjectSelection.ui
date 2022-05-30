@@ -81,22 +81,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QCheckBox" name="pinCheckBox_">
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Pin popup</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
      </layout>

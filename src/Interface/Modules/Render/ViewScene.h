@@ -238,7 +238,7 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr, QCheckBox* pinToggle = nullptr);
+      void addToolbarButton(QWidget* w, int which, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addConfigurationButton();
       void addObjectSelectionButton();
       void addLightButtons();
