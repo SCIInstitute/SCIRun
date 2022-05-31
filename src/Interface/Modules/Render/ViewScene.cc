@@ -494,9 +494,17 @@ void ViewSceneDialog::setToolBarPositions()
     glLayout->addWidget(impl_->toolBar1_, 2, 0, 1, 2);
 
   if (state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool())
+  {
+    glLayout->removeWidget(impl_->mGLWidget);
+    glLayout->addWidget(impl_->mGLWidget, 1, 1);
     glLayout->addWidget(impl_->toolBar2_, 1, 0);
+  }
   else
-    glLayout->addWidget(impl_->toolBar2_, 1, 2);
+  {
+    glLayout->removeWidget(impl_->mGLWidget);
+    glLayout->addWidget(impl_->mGLWidget, 1, 0);
+    glLayout->addWidget(impl_->toolBar2_, 1, 1);
+  }
 }
 
 void ViewSceneDialog::addToolBar()
@@ -535,6 +543,11 @@ void ViewSceneDialog::addToolBar()
     connect(impl_->toolBar1Position_, &QPushButton::clicked, [this]()
       {
         state_->setValue(Parameters::HorizontalToolBarPositionDefault, !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
+        impl_->toolBar1Position_->setIcon(
+          state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool() ?
+          QApplication::style()->standardIcon(QStyle::SP_ArrowDown) :
+          QApplication::style()->standardIcon(QStyle::SP_ArrowUp)
+        );
         setToolBarPositions();
       });
   }
@@ -546,6 +559,11 @@ void ViewSceneDialog::addToolBar()
     connect(impl_->toolBar2Position_, &QPushButton::clicked, [this]()
       {
         state_->setValue(Parameters::VerticalToolBarPositionDefault, !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
+        impl_->toolBar2Position_->setIcon(
+          state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool() ?
+          QApplication::style()->standardIcon(QStyle::SP_ArrowRight) :
+          QApplication::style()->standardIcon(QStyle::SP_ArrowLeft)
+        );
         setToolBarPositions();
       });
   }
