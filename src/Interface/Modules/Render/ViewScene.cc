@@ -447,7 +447,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   addToolBar();
   setToolBarPositions();
   glLayout->addWidget(impl_->mGLWidget, 1, 1);
-  
+
   glLayout->update();
 
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
@@ -492,7 +492,7 @@ void ViewSceneDialog::showToolBarContextMenu(const QPoint& pos)
   QMenu contextMenu("Context menu", this);
   QAction switchPosition("Move toolbar");
   contextMenu.addAction(&switchPosition);
-  connect(&switchPosition, &QAction::triggered, [this]() { qDebug() << "need to switch toolbar position"; });
+  connect(&switchPosition, &QAction::triggered, []() { qDebug() << "need to switch toolbar position"; });
   contextMenu.exec(mapToGlobal(pos));
 }
 
