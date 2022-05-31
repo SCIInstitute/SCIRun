@@ -190,7 +190,6 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
-      void showToolBarContextMenu(const QPoint& pos);
       void setToolBarPositions();
 
     protected:

@@ -223,6 +223,8 @@ namespace Gui {
           QPushButton*                                      controlLock_        {nullptr};
           QPushButton*                                      autoViewButton_     {nullptr};
           QPushButton*                                      viewBarBtn_         {nullptr};
+          QPushButton* toolBar1Position_ {nullptr};
+          QPushButton* toolBar2Position_ {nullptr};
 
           std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
@@ -481,45 +483,10 @@ std::string ViewSceneDialog::toString(std::string prefix) const
   return output;
 }
 
-void ViewSceneDialog::showToolBarContextMenu(const QPoint& pos)
-{
-  auto toolbar = qobject_cast<QToolBar*>(sender());
-
-  QMenu contextMenu("Context menu", this);
-  QAction switchPosition("Switch toolbar");
-  contextMenu.addAction(&switchPosition);
-  connect(&switchPosition, &QAction::triggered, [this, toolbar]()
-    { 
-      if (toolbar)
-      {
-        if (toolbar->orientation() == Qt::Horizontal)
-          state_->setValue(Parameters::HorizontalToolBarPositionDefault, !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
-        else
-          state_->setValue(Parameters::VerticalToolBarPositionDefault, !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
-      }
-      setToolBarPositions(); 
-    });
-  qDebug() << pos << mapToGlobal(pos);
-  auto actualPos = mapToGlobal(pos);
-  if (toolbar->orientation() == Qt::Horizontal && !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
-  {
-    actualPos += QPoint(0, size().height());
-  }
-  else if (toolbar->orientation() == Qt::Vertical && !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool())
-  {
-    actualPos += QPoint(size().width(), 0);
-  }
-
-
-  contextMenu.exec(actualPos);
-}
-
 void ViewSceneDialog::setToolBarPositions()
 {
   glLayout->removeWidget(impl_->toolBar1_);
   glLayout->removeWidget(impl_->toolBar2_);
-  disconnect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
-  disconnect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
 
   if (state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
     glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
@@ -530,9 +497,6 @@ void ViewSceneDialog::setToolBarPositions()
     glLayout->addWidget(impl_->toolBar2_, 1, 0);
   else
     glLayout->addWidget(impl_->toolBar2_, 1, 2);
-
-  connect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
-  connect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
 }
 
 void ViewSceneDialog::addToolBar()
@@ -562,6 +526,29 @@ void ViewSceneDialog::addToolBar()
   setupMaterials();
   addViewBarButton();
   addControlLockButton();
+
+  {
+    impl_->toolBar1Position_ = new QPushButton();
+    impl_->toolBar1Position_->setToolTip("Switch toolbar 1 position");
+    impl_->toolBar1Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
+    addToolbarButton(impl_->toolBar1Position_, 1);
+    connect(impl_->toolBar1Position_, &QPushButton::clicked, [this]()
+      {
+        state_->setValue(Parameters::HorizontalToolBarPositionDefault, !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
+        setToolBarPositions();
+      });
+  }
+  {
+    impl_->toolBar2Position_ = new QPushButton();
+    impl_->toolBar2Position_->setToolTip("Switch toolbar 2 position");
+    impl_->toolBar2Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowRight));
+    addToolbarButton(impl_->toolBar2Position_, 2);
+    connect(impl_->toolBar2Position_, &QPushButton::clicked, [this]()
+      {
+        state_->setValue(Parameters::VerticalToolBarPositionDefault, !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
+        setToolBarPositions();
+      });
+  }
 
   impl_->statusLabel_ = new QLabel("");
   impl_->toolBar1_->addWidget(impl_->statusLabel_);
