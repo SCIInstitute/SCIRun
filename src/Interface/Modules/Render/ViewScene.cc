@@ -484,20 +484,43 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 void ViewSceneDialog::showToolBarContextMenu(const QPoint& pos)
 {
   auto toolbar = qobject_cast<QToolBar*>(sender());
-  if (toolbar)
-  {
-    qDebug() << toolbar << toolbar->orientation();
-    qDebug() << glLayout << glLayout->itemAtPosition(0, 0)->widget() << glLayout->itemAtPosition(1, 0)->widget();
-  }
+
   QMenu contextMenu("Context menu", this);
-  QAction switchPosition("Move toolbar");
+  QAction switchPosition("Switch toolbar");
   contextMenu.addAction(&switchPosition);
-  connect(&switchPosition, &QAction::triggered, []() { qDebug() << "need to switch toolbar position"; });
-  contextMenu.exec(mapToGlobal(pos));
+  connect(&switchPosition, &QAction::triggered, [this, toolbar]()
+    { 
+      if (toolbar)
+      {
+        if (toolbar->orientation() == Qt::Horizontal)
+          state_->setValue(Parameters::HorizontalToolBarPositionDefault, !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
+        else
+          state_->setValue(Parameters::VerticalToolBarPositionDefault, !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
+      }
+      setToolBarPositions(); 
+    });
+  qDebug() << pos << mapToGlobal(pos);
+  auto actualPos = mapToGlobal(pos);
+  if (toolbar->orientation() == Qt::Horizontal && !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
+  {
+    actualPos += QPoint(0, size().height());
+  }
+  else if (toolbar->orientation() == Qt::Vertical && !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool())
+  {
+    actualPos += QPoint(size().width(), 0);
+  }
+
+
+  contextMenu.exec(actualPos);
 }
 
 void ViewSceneDialog::setToolBarPositions()
 {
+  glLayout->removeWidget(impl_->toolBar1_);
+  glLayout->removeWidget(impl_->toolBar2_);
+  disconnect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
+  disconnect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
+
   if (state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
     glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
   else
@@ -507,17 +530,18 @@ void ViewSceneDialog::setToolBarPositions()
     glLayout->addWidget(impl_->toolBar2_, 1, 0);
   else
     glLayout->addWidget(impl_->toolBar2_, 1, 2);
+
+  connect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
+  connect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
 }
 
 void ViewSceneDialog::addToolBar()
 {
   impl_->toolBar1_ = new QToolBar(this);
   impl_->toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
   impl_->toolBar2_ = new QToolBar(this);
   impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
