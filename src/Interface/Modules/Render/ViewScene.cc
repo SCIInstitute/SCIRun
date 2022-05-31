@@ -445,8 +445,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   addToolBar();
+  setToolBarPositions();
   glLayout->addWidget(impl_->mGLWidget, 1, 1);
-  glLayout->addWidget(impl_->toolBar2_, 1, 0);
+  
   glLayout->update();
 
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
@@ -480,11 +481,43 @@ std::string ViewSceneDialog::toString(std::string prefix) const
   return output;
 }
 
+void ViewSceneDialog::showToolBarContextMenu(const QPoint& pos)
+{
+  auto toolbar = qobject_cast<QToolBar*>(sender());
+  if (toolbar)
+  {
+    qDebug() << toolbar << toolbar->orientation();
+    qDebug() << glLayout << glLayout->itemAtPosition(0, 0)->widget() << glLayout->itemAtPosition(1, 0)->widget();
+  }
+  QMenu contextMenu("Context menu", this);
+  QAction switchPosition("Move toolbar");
+  contextMenu.addAction(&switchPosition);
+  connect(&switchPosition, &QAction::triggered, [this]() { qDebug() << "need to switch toolbar position"; });
+  contextMenu.exec(mapToGlobal(pos));
+}
+
+void ViewSceneDialog::setToolBarPositions()
+{
+  if (state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
+    glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
+  else
+    glLayout->addWidget(impl_->toolBar1_, 2, 0, 1, 2);
+
+  if (state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool())
+    glLayout->addWidget(impl_->toolBar2_, 1, 0);
+  else
+    glLayout->addWidget(impl_->toolBar2_, 1, 2);
+}
+
 void ViewSceneDialog::addToolBar()
 {
   impl_->toolBar1_ = new QToolBar(this);
+  impl_->toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(impl_->toolBar1_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
   impl_->toolBar2_ = new QToolBar(this);
+  impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(impl_->toolBar2_, &QWidget::customContextMenuRequested, this, &ViewSceneDialog::showToolBarContextMenu);
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
@@ -503,9 +536,6 @@ void ViewSceneDialog::addToolBar()
   addCameraLocksButton();
   addDeveloperControlButton();
   setupMaterials();
-
-  glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
-
   addViewBarButton();
   addControlLockButton();
 
@@ -2785,10 +2815,4 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 void ViewSceneDialog::initializeVisibleObjects()
 {
   impl_->objectSelectionControls_->visibleItems().initializeSavedStateMap();
-}
-
-void ViewSceneDialog::moveEvent(QMoveEvent* event)
-{
-  qDebug() << event;
-  ModuleDialogGeneric::moveEvent(event);
 }

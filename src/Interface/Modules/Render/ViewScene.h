@@ -190,6 +190,8 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
+      void showToolBarContextMenu(const QPoint& pos);
+      void setToolBarPositions();
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
@@ -214,8 +216,6 @@ namespace SCIRun {
       void focusInEvent(QFocusEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
-      void moveEvent(QMoveEvent* event) override;
-
 
     private:
       //---------------- Initialization ------------------------------------------------------------
