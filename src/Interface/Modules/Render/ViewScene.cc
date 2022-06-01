@@ -434,6 +434,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
+  state->connectSpecificStateChanged(Parameters::HorizontalToolBarPositionDefault,
+    [this]() {Q_EMIT horizontalToolBarPopupChanged(state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());});
+
+  state->connectSpecificStateChanged(Parameters::VerticalToolBarPositionDefault,
+    [this]() {Q_EMIT verticalToolBarPopupChanged(state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());});
+
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -572,27 +578,35 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar1_->addWidget(impl_->statusLabel_);
 }
 
-namespace
+void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, int which)
 {
-  void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, int which)
-  {
-    auto* popup = new ctkPopupWidget(button);
-    auto* popupLayout = new QVBoxLayout(popup);
-    const auto dir = which == 1 ? ctkBasePopupWidget::VerticalDirection::BottomToTop
-                                : ctkBasePopupWidget::VerticalDirection::TopToBottom;
-    const auto alignment = which == 1 ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignLeft | Qt::AlignVCenter;
-    const auto orientation = which == 1 ? Qt::Vertical : Qt::Horizontal;
-    popup->setAlignment(alignment);
-    popup->setOrientation(orientation);
-    popup->setVerticalDirection(dir);
-    popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
-    popup->setShowDelay(500);
-    popup->setHideDelay(20);
-    QObject::connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
-    popupLayout->addWidget(underlyingWidget);
-    popupLayout->setContentsMargins(4,4,4,4);
-  }
+  auto* popup = new ctkPopupWidget(button);
+  auto* popupLayout = new QVBoxLayout(popup);
+  const bool isHorizontalBar = which == 1;
+  const auto dir = isHorizontalBar ? ctkBasePopupWidget::VerticalDirection::BottomToTop
+                              : ctkBasePopupWidget::VerticalDirection::TopToBottom;
+
+  const auto alignment = isHorizontalBar ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignLeft | Qt::AlignVCenter;
+  const auto orientation = isHorizontalBar ? Qt::Vertical : Qt::Horizontal;
+  popup->setAlignment(alignment);
+  popup->setOrientation(orientation);
+  popup->setVerticalDirection(dir);
+  popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
+  popup->setShowDelay(500);
+  popup->setHideDelay(20);
+  QObject::connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
+  if (isHorizontalBar)
+    connect(this, &ViewSceneDialog::horizontalToolBarPopupChanged, [popup](bool isDef)
+      {
+        popup->setAlignment(isDef ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignBottom | Qt::AlignHCenter);
+        qDebug() << "horiz popup change" << popup->alignment();
+      });
+  else
+    connect(this, &ViewSceneDialog::verticalToolBarPopupChanged, [popup](bool isDef) { popup->setAlignment(isDef ? Qt::AlignLeft | Qt::AlignVCenter : Qt::AlignRight | Qt::AlignVCenter);});
+  popupLayout->addWidget(underlyingWidget);
+  popupLayout->setContentsMargins(4,4,4,4);
 }
+
 
 void ViewSceneDialog::addConfigurationButton()
 {
