@@ -25,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/ParticleInCell/PIConGPU.h>
-//#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -61,8 +62,8 @@ void PIConGPU::execute()
         AlgorithmInput input;
         auto output=algo().run(input);
 
-//        sendOutputFromAlgorithm(x_coordinates,output);
-//        sendOutputFromAlgorithm(y_coordinates,output);
-//        sendOutputFromAlgorithm(z_coordinates,output);
+        sendOutputFromAlgorithm(x_coordinates,output);
+        sendOutputFromAlgorithm(y_coordinates,output);
+        sendOutputFromAlgorithm(z_coordinates,output);
         }
     }
