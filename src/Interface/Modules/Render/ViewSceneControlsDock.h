@@ -93,10 +93,12 @@ namespace Gui {
   public:
     explicit ViewSceneControlPopupWidget(ViewSceneDialog* parent);
     QAction* pinToggleAction() { return pinToggleAction_; }
+    QAction* closeAction() { return closeAction_; }
   private Q_SLOTS:
     void showContextMenu(const QPoint& pos);
   private:
     QAction* pinToggleAction_{ nullptr };
+    QAction* closeAction_{ nullptr };
   };
 
   class SCISHARE AutoRotateControls : public ViewSceneControlPopupWidget, public Ui::AutoRotateSettings

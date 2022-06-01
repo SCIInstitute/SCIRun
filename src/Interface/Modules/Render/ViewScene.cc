@@ -594,15 +594,21 @@ void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopu
   popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
   popup->setShowDelay(500);
   popup->setHideDelay(20);
-  QObject::connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
+  connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
+  connect(underlyingWidget->closeAction(), &QAction::triggered, popup, &QWidget::close);
   if (isHorizontalBar)
     connect(this, &ViewSceneDialog::horizontalToolBarPopupChanged, [popup](bool isDef)
       {
         popup->setAlignment(isDef ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignBottom | Qt::AlignHCenter);
-        qDebug() << "horiz popup change" << popup->alignment();
+        popup->setVerticalDirection(isDef ? ctkBasePopupWidget::VerticalDirection::BottomToTop
+                                    : ctkBasePopupWidget::VerticalDirection::TopToBottom);
       });
   else
-    connect(this, &ViewSceneDialog::verticalToolBarPopupChanged, [popup](bool isDef) { popup->setAlignment(isDef ? Qt::AlignLeft | Qt::AlignVCenter : Qt::AlignRight | Qt::AlignVCenter);});
+    connect(this, &ViewSceneDialog::verticalToolBarPopupChanged, [popup](bool isDef)
+    {
+      popup->setAlignment(isDef ? Qt::AlignLeft | Qt::AlignVCenter : Qt::AlignRight | Qt::AlignVCenter);
+      popup->setHorizontalDirection(isDef ? Qt::LayoutDirectionAuto : Qt::LeftToRight);
+    });
   popupLayout->addWidget(underlyingWidget);
   popupLayout->setContentsMargins(4,4,4,4);
 }

@@ -869,11 +869,13 @@ ViewSceneControlPopupWidget::ViewSceneControlPopupWidget(ViewSceneDialog* parent
   connect(this, &QWidget::customContextMenuRequested, this, &ViewSceneControlPopupWidget::showContextMenu);
   pinToggleAction_ = new QAction("Pin popup", this);
   pinToggleAction_->setCheckable(true);
+  closeAction_ = new QAction("Close popup", this);
 }
 
 void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
 {
   QMenu contextMenu(tr("Context menu"), this);
   contextMenu.addAction(pinToggleAction_);
+  contextMenu.addAction(closeAction_);
   contextMenu.exec(mapToGlobal(pos));
 }
