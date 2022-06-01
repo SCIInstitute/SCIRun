@@ -1,9 +1,0 @@
-{
-  "nodes":[
-    {
-      "blender-node": "Cylinder",
-      "output-name": "arrow",
-      "shader": "Shaders/UniformColor"
-    } ]
-}
-

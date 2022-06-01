@@ -1,108 +1,30 @@
-language: c++
-# cache: ccache
+language: ruby
 
-matrix:
-  include:
-    # - os: linux
-    #   dist: trusty
-    #   compiler: gcc
-    #   env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
-    # - os: linux
-    #   dist: xenial
-    #   compiler: gcc
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    # - os: linux
-    #   dist: xenial
-    #   compiler: clang
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: xenial
-      compiler: gcc
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    # - os: linux
-    #   dist: bionic
-    #   compiler: gcc
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    # - os: linux
-    #   dist: focal
-    #   compiler: gcc
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: gcc
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: gcc
-      env: PYTHON_VERSION=3.7.9 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: gcc
-      env: PYTHON_VERSION=3.8.7 OSPRAY_BUILD=OFF
-    # - os: linux
-    #   dist: focal
-    #   compiler: clang
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: clang
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: clang
-      env: PYTHON_VERSION=3.7.9 OSPRAY_BUILD=OFF
-    - os: linux
-      dist: focal
-      compiler: clang
-      env: PYTHON_VERSION=3.8.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode10.3
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode11.3
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode11.3
-      env: PYTHON_VERSION=3.7.9 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode11.3
-      env: PYTHON_VERSION=3.8.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode12.2
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode12.2
-      env: PYTHON_VERSION=3.7.9 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode12.2
-      env: PYTHON_VERSION=3.8.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode12.2
-      env: PYTHON_VERSION=3.9.1 OSPRAY_BUILD=OFF
+os:
+- linux
 
+rvm:
+- 2.7.0
 
-before_install:
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then date -u; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then uname -a; fi
+before_script:
+ - chmod +x ./scripts/cibuild.sh # or do this locally and commit
+ - gem install html-proofer
 
-install:
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
-# TODO: figure out/test ccache
-# - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
-# Verify qt 5.13, maybe not upgrade
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt || true; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade qt || true; fi
+# Assume bundler is being used, therefore
+# the `install` step will run `bundle install` by default.
+script: ./scripts/cibuild.sh
 
-script:
-  - cd bin
-  #-GNinja producing strange errors
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQt5_PATH=$(brew --prefix qt) ../Superbuild; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQt5_PATH=$(dpkg -L qtbase5-dev) ../Superbuild; fi
-  - travis_wait 80 make -j4
-  - cd SCIRun
-  - ./Algorithm_Layer_Test
-  - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
+# branch whitelist, only for GitHub Pages
+branches:
+  only:
+  - gh-pages     # test the gh-pages branch
+  - /pages-(.*)/ # test every branch which starts with "pages-"
+
+env:
+  global:
+  - NOKOGIRI_USE_SYSTEM_LIBRARIES=true # speeds up installation of html-proofer
+
+sudo: false # route your build to the container-based infrastructure for a faster build
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1

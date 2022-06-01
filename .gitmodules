@@ -1,3 +1,0 @@
-[submodule "src/Externals/submodules/googletest"]
-	path = src/Externals/submodules/googletest
-	url = https://github.com/CIBC-Internal/googletest.git
