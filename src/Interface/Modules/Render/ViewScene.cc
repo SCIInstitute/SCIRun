@@ -613,7 +613,6 @@ void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopu
   popupLayout->setContentsMargins(4,4,4,4);
 }
 
-
 void ViewSceneDialog::addConfigurationButton()
 {
   auto* configurationButton = new QPushButton();
