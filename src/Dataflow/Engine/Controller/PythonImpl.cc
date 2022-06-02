@@ -628,6 +628,7 @@ std::string PythonImpl::setConnectionStatus(const std::string& moduleIdFrom, int
   auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
   if (!id.empty())
   {
+    nec_.getNetwork()->setConnectionStatus(id, enable);
     return "setConnectionStatus" + std::to_string(enable);
   }
   else

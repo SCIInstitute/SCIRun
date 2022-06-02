@@ -140,7 +140,7 @@ bool Network::disconnect(const ConnectionId& id)
   return false;
 }
 
-void Network::disable_connection(const ConnectionId&)
+void Network::setConnectionStatus(const ConnectionId& cid, bool status)
 {
   /// @todo
 }
