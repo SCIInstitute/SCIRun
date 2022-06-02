@@ -483,24 +483,14 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(cons
   return {};
 }
 
-std::string NetworkEditorPythonAPI::scirun_enable_module(const std::string& moduleId)
+std::string NetworkEditorPythonAPI::scirun_enable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  auto module = impl_->findModule(moduleId);
-  if (module)
-  {
-    module->setEnabled(true);
-  }
-  return "TODO: " + moduleId + " enabled.";
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, true);
 }
 
-std::string NetworkEditorPythonAPI::scirun_disable_module(const std::string& moduleId)
+std::string NetworkEditorPythonAPI::scirun_disable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  auto module = impl_->findModule(moduleId);
-  if (module)
-  {
-    module->setEnabled(false);
-  }
-  return "TODO: " + moduleId + " disabled.";
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, false);
 }
 
 boost::python::object SimplePythonAPI::scirun_module_ids()

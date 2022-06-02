@@ -100,8 +100,8 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("get_output_data", &NetworkEditorPythonAPI::get_output_data);
   boost::python::def("set_output_data", &NetworkEditorPythonAPI::set_output_data);
 
-  boost::python::def("scirun_enable_module", &NetworkEditorPythonAPI::scirun_enable_module);
-  boost::python::def("scirun_disable_module", &NetworkEditorPythonAPI::scirun_disable_module);
+  boost::python::def("scirun_enable_connection", &NetworkEditorPythonAPI::scirun_enable_connection);
+  boost::python::def("scirun_disable_connection", &NetworkEditorPythonAPI::scirun_disable_connection);
 
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);

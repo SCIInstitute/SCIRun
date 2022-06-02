@@ -623,6 +623,19 @@ std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromInde
   }
 }
 
+std::string PythonImpl::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable) 
+{
+  auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
+  if (!id.empty())
+  {
+    return "setConnectionStatus" + std::to_string(enable);
+  }
+  else
+  {
+    return "Connection not found";
+  }
+}
+
 std::string PythonImpl::saveNetwork(const std::string& filename)
 {
   auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
