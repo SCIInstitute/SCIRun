@@ -142,6 +142,8 @@ bool Network::disconnect(const ConnectionId& id)
 
 void Network::setConnectionStatus(const ConnectionId& cid, bool status)
 {
+  (void)cid;
+  (void)status;
   /// @todo
 }
 
