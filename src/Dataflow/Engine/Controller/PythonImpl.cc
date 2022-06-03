@@ -600,16 +600,16 @@ std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromInde
   (void)moduleIdTo;
   (void)toIndex;
   //TODO: doesn't work at all since there is no GUI connection to this network change event. Issue is #...
-  //auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
-  //if (!id.empty())
+  auto conn = nec_.getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  if (conn)
   {
-    //nec_.removeConnection(id);
+    nec_.removeConnection(conn->id());
     return "PythonImpl::disconnect IS NOT IMPLEMENTED";
   }
-  // else
-  // {
-  //   return "PythonImpl::disconnect: connection not found";
-  // }
+  else
+  {
+    return "PythonImpl::disconnect: connection not found";
+  }
 }
 
 std::string PythonImpl::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable)

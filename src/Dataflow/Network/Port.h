@@ -62,7 +62,6 @@ public:
   Connection* connection(size_t) const override;
   bool hasConnectionCountIncreased() const override;
 
-
   PortId internalId() const override { return internalId_; }
   void setId_DynamicCase(const PortId& id) override { internalId_ = externalId_ = id; }
   void setInternalId(const PortId& id) override { internalId_ = id; }
