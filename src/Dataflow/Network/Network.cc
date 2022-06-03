@@ -140,11 +140,13 @@ bool Network::disconnect(const ConnectionId& id)
   return false;
 }
 
-void Network::setConnectionStatus(const ConnectionId& cid, bool status)
+ConnectionHandle Network::lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const
 {
-  (void)cid;
-  (void)status;
-  /// @todo
+  (void)moduleIdFrom;
+  (void)fromIndex;
+  (void)moduleIdTo;
+  (void)toIndex;
+  return {};
 }
 
 size_t Network::nmodules() const

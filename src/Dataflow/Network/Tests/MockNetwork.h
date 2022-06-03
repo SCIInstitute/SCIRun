@@ -51,6 +51,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(lookupExecutable, ExecutableObject*(const ModuleId&));
           MOCK_METHOD2(connect, ConnectionId(const ConnectionOutputPort&, const ConnectionInputPort&));
           MOCK_METHOD1(disconnect, bool(const ConnectionId&));
+          MOCK_CONST_METHOD4(lookupConnection, ConnectionHandle(const std::string&, int, const std::string&, int));
           MOCK_CONST_METHOD0(nconnections, size_t());
           MOCK_CONST_METHOD0(toString, std::string());
           MOCK_CONST_METHOD1(connections, ConnectionDescriptionList(bool));
@@ -62,7 +63,6 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(moduleExecutionStates, std::vector<ModuleExecutionState::Value>());
           MOCK_METHOD0(clear, void());
           MOCK_CONST_METHOD0(containsViewScene, bool());
-          MOCK_METHOD2(setConnectionStatus, void(const ConnectionId&, bool));
         };
 
         typedef SharedPointer<MockNetwork> MockNetworkPtr;

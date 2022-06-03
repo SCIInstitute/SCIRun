@@ -73,7 +73,6 @@ namespace Engine {
     void pythonModuleRemovedSlot(const Networks::ModuleId&);
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
-    SharedPointer<PythonImplImpl> impl_;
     std::map<std::string, SharedPointer<PyModule>> modules_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
