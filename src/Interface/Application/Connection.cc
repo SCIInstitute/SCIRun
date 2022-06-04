@@ -292,6 +292,14 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(makeShared<MidpointPositionerFromPorts>(fromPort_, toPort_));
   connect(menu_->disableAction_, &QAction::triggered, this, &ConnectionLine::toggleDisabled);
+  #if 0
+  connect(nec..., &NetworkEditorControllerGuiProxy::connectionStatusChanged,
+    [this] (const Networks::ConnectionId& id, bool enable)
+    {
+      if (id.id_ == id_.id_)
+        setDisabled(!enable);
+    });
+    #endif
   connect(this, &ConnectionLine::requestInsertNewModule, [this](const QMap<QString, std::string>& m) { fromPort_->insertNewModule(m); });
   menu_->setStyleSheet(fromPort->styleSheet());
 

@@ -590,21 +590,17 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
   auto modTo = network->lookupModule(ModuleId(moduleIdTo));
   auto inputPort = modTo->inputPorts().at(toIndex);
   auto id = nec_.requestConnection(outputPort.get(), inputPort.get());
-  return "PythonImpl::connect success";
+  return "PythonImpl::connect success: " + id->id_;
 }
 
 std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  (void)moduleIdFrom;
-  (void)fromIndex;
-  (void)moduleIdTo;
-  (void)toIndex;
   //TODO: doesn't work at all since there is no GUI connection to this network change event. Issue is #...
   auto conn = nec_.getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
   if (conn)
   {
     nec_.removeConnection(conn->id());
-    return "PythonImpl::disconnect IS NOT IMPLEMENTED";
+    return "PythonImpl::disconnect is not connected to GUI";
   }
   else
   {
@@ -614,16 +610,7 @@ std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromInde
 
 std::string PythonImpl::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable)
 {
-  auto conn = nec_.getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
-  if (conn)
-  {
-    conn->setDisable(!enable);
-    return "setConnectionStatus " + std::to_string(enable);
-  }
-  else
-  {
-    return "Connection not found";
-  }
+  return nec_.setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, enable);
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)

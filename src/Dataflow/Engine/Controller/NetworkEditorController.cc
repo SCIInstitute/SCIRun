@@ -524,6 +524,26 @@ boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(c
   return signals_.networkDoneLoading_.connect(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectConnectionStatusChanged(const ConnectionStatusChangedSignalType::slot_type& subscriber)
+{
+  return signals_.connectionStatusChanged_.connect(subscriber);
+}
+
+std::string NetworkEditorController::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable)
+{
+  auto conn = getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  if (conn)
+  {
+    conn->setDisable(!enable);
+    signals_.connectionStatusChanged_(conn->id_, enable);
+    return "setConnectionStatus " + conn->id_.id_ + " " + std::to_string(enable);
+  }
+  else
+  {
+    return "Connection not found";
+  }
+}
+
 NetworkFileHandle NetworkEditorController::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const
 {
   NetworkToXML conv(collabs_.serializationManager_);
