@@ -152,6 +152,9 @@ void NetworkEditor::setNetworkEditorController(SharedPointer<NetworkEditorContro
     connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionAdded,
       this, &NetworkEditor::connectionAddedQueued);
 
+    connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionStatusChanged,
+      this, &NetworkEditor::connectionStatusChanged);
+
     controller_->setExecutableLookup(this);
   }
 }
@@ -456,6 +459,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, &ModuleWidget::replaceModuleWith, this, &NetworkEditor::replaceModuleWith);
   connect(module, &ModuleWidget::disableWidgetDisabling, this, &NetworkEditor::disableWidgetDisabling);
   connect(module, &ModuleWidget::reenableWidgetDisabling, this, &NetworkEditor::reenableWidgetDisabling);
+  connect(this, &NetworkEditor::connectionStatusChanged, module, &ModuleWidget::connectionStatusChanged);
 
   if (module->hasDynamicPorts())
   {

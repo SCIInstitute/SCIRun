@@ -223,6 +223,7 @@ Q_SIGNALS:
   void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged(const std::string& portID, bool adding);
+  void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
   void noteChanged();
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);

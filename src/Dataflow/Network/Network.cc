@@ -142,6 +142,7 @@ bool Network::disconnect(const ConnectionId& id)
 
 ConnectionHandle Network::lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const
 {
+  //TODO: error checking
   const auto outputPortId = lookupModule(ModuleId(moduleIdFrom))->outputPorts()[fromIndex]->externalId();
   const auto inputPortId = lookupModule(ModuleId(moduleIdTo))->inputPorts()[toIndex]->externalId();
 

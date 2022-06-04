@@ -675,6 +675,7 @@ public:
       widget->hookUpGeneralPortSignals(w);
       QObject::connect(widget, &ModuleWidget::connectionAdded, w, &InputPortWidget::makeConnection);
       QObject::connect(w, &InputPortWidget::incomingConnectionStateChange, widget, &ModuleWidget::incomingConnectionStateChanged);
+      QObject::connect(widget, &ModuleWidget::connectionStatusChanged, w, &InputPortWidget::connectionStatusChanged);
       widget->ports_->addPort(w);
       ++i;
       if (widget->dialogManager_.hasOptions() && port->isDynamic())

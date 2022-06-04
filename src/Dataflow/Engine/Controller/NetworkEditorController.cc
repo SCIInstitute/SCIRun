@@ -536,11 +536,11 @@ std::string NetworkEditorController::setConnectionStatus(const std::string& modu
   {
     conn->setDisable(!enable);
     signals_.connectionStatusChanged_(conn->id_, enable);
-    return "setConnectionStatus " + conn->id_.id_ + " " + std::to_string(enable);
+    return std::string("Connection status ") + (enable ? "enabled" : "disabled") + ": " + moduleIdFrom + "(" + std::to_string(fromIndex) + ")->" + moduleIdTo + "(" + std::to_string(toIndex) + ")";
   }
   else
   {
-    return "Connection not found";
+    return "Connection not found: " + moduleIdFrom + "(" + std::to_string(fromIndex) + ")->" + moduleIdTo + "(" + std::to_string(toIndex) + ")";
   }
 }
 
