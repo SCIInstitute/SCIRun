@@ -81,7 +81,7 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::config(ModuleDialogGen
   }
 
   if (ModuleWidget::highResolutionExpandFactor_ > 1 && moduleWidget_->isViewScene_)
-    options->adjustToolbar();
+    options->adjustToolbar(ModuleWidget::highResolutionExpandFactor_);
 
   options->pull();
 

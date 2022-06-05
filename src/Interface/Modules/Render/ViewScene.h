@@ -67,7 +67,7 @@ namespace SCIRun {
       ~ViewSceneDialog() override;
 
       std::string toString(std::string prefix) const;
-      void adjustToolbar() override;
+      void adjustToolbar(double factor) override;
 
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(float x, float y);

@@ -1125,10 +1125,10 @@ void ViewSceneDialog::pullSpecial()
   }
 }
 
-void ViewSceneDialog::adjustToolbar()
+void ViewSceneDialog::adjustToolbar(double factor)
 {
-  adjustToolbarForHighResolution(impl_->toolBar1_);
-  adjustToolbarForHighResolution(impl_->toolBar2_);
+  adjustToolbarForHighResolution(impl_->toolBar1_, factor);
+  adjustToolbarForHighResolution(impl_->toolBar2_, factor);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)

@@ -1095,7 +1095,7 @@ std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>
   return qv;
 }
 
-void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
+void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar, double factor)
 {
   for (const auto& child : toolbar->children())
   {
@@ -1104,6 +1104,13 @@ void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
     {
       button->setFixedSize(button->size() * 2);
       button->setIconSize(button->iconSize() * 2);
+      for (const auto& child2 : button->children())
+      {
+        auto* popup = qobject_cast<QWidget*>(child2);
+        auto popupWidgetSize = popup->layout()->itemAt(0)->widget()->size();
+        popup->setFixedHeight(popupWidgetSize.height() * factor);
+        popup->setFixedWidth(popupWidgetSize.width() * (((factor - 1) * 0.5) + 1));
+      }
     }
   }
 }

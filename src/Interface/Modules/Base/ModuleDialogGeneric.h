@@ -90,7 +90,7 @@ namespace Gui {
     void setupButtonBar();
     bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
-    virtual void adjustToolbar() {}
+    virtual void adjustToolbar(double /*factor*/) {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
@@ -131,7 +131,7 @@ namespace Gui {
     void connectComboToExecuteSignal(QComboBox* box);
     void connectSpinBoxToExecuteSignal(QSpinBox* box);
     void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
-    void adjustToolbarForHighResolution(QToolBar* toolbar);
+    void adjustToolbarForHighResolution(QToolBar* toolbar, double factor);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
