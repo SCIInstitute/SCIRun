@@ -1272,7 +1272,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         else
         {
-          dockable_->move(400, 200);
+          dockable_->move(700, 400);
         }
         positions_.append(dockable_->pos());
       }
