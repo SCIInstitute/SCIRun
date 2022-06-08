@@ -23,13 +23,18 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+
+Coding Sources:
+   https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c
+   https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
+   email from Franz Poschel, dated 17 May 2022
+
 */
 
 /*
 To Do:
     Implement the input for particle sample rate
-    Remember the module that let me view the output in the module itself, and use that to verify the output ports are working
-    Include a preamble something like the preamble used in test_2.cpp
 */
 
 #include <openPMD/openPMD.hpp>
@@ -72,7 +77,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 /*
 ************************************************ Run the simulation code in a separate process
 
-The LaserWakefield.py python program is:
+The LaserWakefield_run.py python program is:
 
 import os
 import sys
@@ -188,7 +193,7 @@ os.system('bash LaserWakefield_compile_run')
 ***************************************************** Set up and load the buffers
 */
 
-        const int buffer_size   = num_particles/particle_sample_rate;
+        const int buffer_size   = 1+(num_particles/particle_sample_rate);
         auto buffer_pos_x       = new double[buffer_size];
         auto buffer_pos_y       = new double[buffer_size];
         auto buffer_pos_z       = new double[buffer_size];
