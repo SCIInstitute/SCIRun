@@ -1133,6 +1133,8 @@ void ModuleDialogDockWidget::moveEvent(QMoveEvent* e)
   {
     moduleDialog->postMoveEventCallback(e->pos());
   }
+
+  Q_EMIT movedToFullScreen(e->pos() == QPoint{0,0});
 }
 
 ModuleDialogFactoryInterfaceHandle ModuleDialogGeneric::factory()

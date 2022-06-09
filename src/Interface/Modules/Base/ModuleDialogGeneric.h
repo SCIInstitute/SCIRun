@@ -69,6 +69,8 @@ namespace Gui {
     Q_OBJECT
   public:
     using QDockWidget::QDockWidget;
+  Q_SIGNALS:
+    void movedToFullScreen(bool fullScreen);
   protected:
     void moveEvent(QMoveEvent* e) override;
   };
@@ -107,6 +109,7 @@ namespace Gui {
     void collapse() { if (!collapsed_) toggleCollapse(); }
     void expand() { if (collapsed_) toggleCollapse(); }
     virtual void updateFromPortChange(int, const std::string&, DynamicPortChange) {}
+    virtual void adaptToFullScreenView(bool /*fullScreen*/) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);

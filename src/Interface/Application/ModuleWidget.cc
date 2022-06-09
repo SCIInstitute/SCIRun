@@ -1272,7 +1272,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         else
         {
-          dockable_->move(700, 400);
+          dockable_->move(isViewScene_ ? 700 : 400, isViewScene_ ? 400 : 200);
         }
         positions_.append(dockable_->pos());
       }
