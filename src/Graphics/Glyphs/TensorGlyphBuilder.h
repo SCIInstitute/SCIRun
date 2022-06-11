@@ -98,6 +98,7 @@ protected:
   double normalDebugScale_ = 0.1;
   const static int DIMENSIONS_ = 3;
   const static int BOX_FACE_POINTS_ = 4;
+  const static int DEGREES_OF_FREEDOM_ = 6;
   Graphics::Datatypes::SpireIBO::PRIMITIVE PRIM_ = Datatypes::SpireIBO::PRIMITIVE::TRIANGLES;
   Core::Datatypes::Dyadic3DTensor t_;
   Core::Geometry::Point center_;

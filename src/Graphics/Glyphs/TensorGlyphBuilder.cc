@@ -109,8 +109,8 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
         params.sinPhi = normalParams.sinPhi = sinPhi[i];
         params.cosPhi = normalParams.cosPhi = cosPhi[i];
 
-        Vector pVector = Vector(evaluateSuperquadricPoint(linear, params));
-        Eigen::Vector3d p = scaleThenRotate * Eigen::Vector3d(pVector.x(), pVector.y(), pVector.z());
+        Vector posVector = Vector(evaluateSuperquadricPoint(linear, params));
+        Eigen::Vector3d pos = scaleThenRotate * Eigen::Vector3d(posVector.x(), posVector.y(), posVector.z());
         Vector normalVector = evaluateSuperquadricNormal(linear, normalParams);
         Eigen::Vector3d normal = Eigen::Vector3d(normalVector.x(), normalVector.y(), normalVector.z());
         normal = normal.cwiseProduct(eigvalsInv).normalized();
@@ -121,15 +121,15 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
         for (int j = 0; j < 3; ++j)
         {
           diff[j] = hHalf_;
-          Eigen::Vector3d newP = undoScaleAndRotate * (p + diff);
-          double d1 = evaluateSuperquadricImpl(linear, newP, params.A, params.B);
+          Eigen::Vector3d newPos = undoScaleAndRotate * (pos + diff);
+          double d1 = evaluateSuperquadricImpl(linear, newPos, params.A, params.B);
 
-          newP = undoScaleAndRotate * (p - diff);
-          double d2 = evaluateSuperquadricImpl(linear, newP, params.A, params.B);
+          newPos = undoScaleAndRotate * (pos - diff);
+          double d2 = evaluateSuperquadricImpl(linear, newPos, params.A, params.B);
           diff[j] = 0.0;
           nn(j) = (d1 - d2) / h_;
         }
-        MandelVector qn = getQn(difftVals, p);
+        MandelVector qn = getQn(difftVals, pos);
         qn /= h_;
         qn /= nn.norm();
         double q = std::sqrt(
@@ -139,10 +139,10 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
         Vector nVector = Vector(n.x(), n.y(), n.z());
 
         Eigen::Vector3d rotatedNormal = rotate * normal;
-        Eigen::Vector3d offsetP = p + q * rotatedNormal;
-        Vector offsetPVector = Vector(offsetP.x(), offsetP.y(), offsetP.z());
+        Eigen::Vector3d offsetPos = pos + q * rotatedNormal;
+        Vector offsetPosVector = Vector(offsetPos.x(), offsetPos.y(), offsetPos.z());
 
-        constructor.addVertex(PRIM_, offsetPVector + centerVector, nVector, ColorRGB(1.0, 1.0, 1.0));
+        constructor.addVertex(PRIM_, offsetPosVector + centerVector, nVector, ColorRGB(1.0, 1.0, 1.0));
       }
 
       constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
@@ -152,13 +152,14 @@ void UncertaintyTensorOffsetSurfaceBuilder::generateOffsetSurface(GlyphConstruct
   constructor.popIndicesNTimes(PRIM_, 6);
 }
 
+// Precalculate transformations for getQn()
 void UncertaintyTensorOffsetSurfaceBuilder::precalculateDifftValues(
     DifftValues& vals, const MandelVector& t)
 {
   MandelVector finiteDiff;
   finiteDiff.fill(0.0);
 
-  for (auto i = 0; i < 6; ++i)
+  for (auto i = 0; i < DEGREES_OF_FREEDOM_; ++i)
   {
     finiteDiff(i) = hHalf_;
     std::vector<double> dist(2);
@@ -191,11 +192,12 @@ void UncertaintyTensorOffsetSurfaceBuilder::scaleCovariance(double scale)
   covarianceMatrix_ *= std::pow(scale, 2);
 }
 
+// The vector Qn is a mandel vector of the finite difference of the mean tensor under a small perturbation for all 6 degrees of freedom
 MandelVector UncertaintyTensorOffsetSurfaceBuilder::getQn(
     const DifftValues& vals, const Eigen::Vector3d& p)
 {
   MandelVector qn;
-  for (int i = 0; i < 6; ++i)
+  for (int i = 0; i < DEGREES_OF_FREEDOM_; ++i)
   {
     std::vector<double> dist(2);
     for (int s = 0; s < 2; ++s)
@@ -379,7 +381,7 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
         params.sinPhi = sinPhi[i];
         params.cosPhi = cosPhi[i];
         Point point = evaluateEllipsoidPoint(params);
-        Vector pVector = Vector(trans_ * point);
+        Vector posVector = Vector(trans_ * point);
 
         Vector normal;
         if(flatTensor_)
@@ -394,9 +396,9 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
           normal.safe_normalize();
         }
 
-        constructor.addVertex(PRIM_, pVector, normal, color_);
+        constructor.addVertex(PRIM_, posVector, normal, color_);
         if (showNormals_)
-          constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
+          constructor.addLine(posVector, posVector + normalDebugScale_ * normal, color_, color_);
       }
 
       constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
@@ -472,8 +474,8 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
         params.sinPhi = sinPhi[i];
         params.cosPhi = cosPhi[i];
         // Transorm points and add to points list
-        Point p = evaluateSuperquadricPoint(linear, params);
-        Vector pVector = Vector(trans_ * p);
+        Point pos = evaluateSuperquadricPoint(linear, params);
+        Vector posVector = Vector(trans_ * pos);
 
         Vector normal;
         if(flatTensor_)
@@ -489,9 +491,9 @@ void TensorGlyphBuilder::generateSuperquadricSurfacePrivate(GlyphConstructor& co
           normal.safe_normalize();
         }
 
-        constructor.addVertex(PRIM_, pVector, normal, color_);
+        constructor.addVertex(PRIM_, posVector, normal, color_);
         if (showNormals_)
-          constructor.addLine(pVector, pVector + normalDebugScale_ * normal, color_, color_);
+          constructor.addLine(posVector, posVector + normalDebugScale_ * normal, color_, color_);
       }
 
       constructor.addIndicesToOffset(PRIM_, 0, 1, 2);
