@@ -38,7 +38,7 @@ namespace SCIRun {
 
       /// @todo:
       // 0. Bundle I/O
-      // 1. Store ColorMaps, Nrrds, and Bundles
+      // 1. Store Nrrds, and Bundles
       // 2. Matrix <-> Nrrd interop. Should go in separate class.
 
 class SCISHARE Bundle : public Datatype
@@ -71,6 +71,12 @@ class SCISHARE Bundle : public Datatype
     size_t numStrings() const;
     std::vector<StringHandle> getStrings() const;
     std::vector<std::string> getStringNames() const;
+
+    bool isColorMap(const std::string& name) const;
+    ColorMapHandle getColorMap(const std::string& name) const;
+    size_t numColorMaps() const;
+    std::vector<ColorMapHandle> getColorMaps() const;
+    std::vector<std::string> getColorMapNames() const;
 
     bool remove(const std::string& name);
 
@@ -133,34 +139,6 @@ class SCISHARE Bundle : public Datatype
 
     std::string getNrrdName(int index);
       // Implementation in cc file, with NRRD/MATRIX compatibility
-
-    /// The basic functions for managing colormaps
-    ///  getcolormap     -> Retrieve a Handle to a colormap stored in the bundle
-    ///  setcolormap     -> Add a colormap with a name, if it already exists the
-    ///                     old one is overwritten
-    ///  remcolormap     -> Remove a handle from the bundle
-    ///  iscolormap      -> Test whether a colormap is present in the bundle
-    ///  numcolormaps    -> The number of colormaps stored in the bundle
-    ///  getcolormapname -> Get the nth name in the bundle for building a
-    ///                     contents list
-
-    LockingHandle<ColorMap> getColorMap(const std::string& name)
-      { return(get<ColorMap>(name)); }
-
-    void setColorMap(const std::string& name, LockingHandle<ColorMap> &colormap)
-      { set<ColorMap>(name,colormap); }
-
-    void remColorMap(const std::string& name)
-      { rem(name); }
-
-    bool isColorMap(const std::string& name)
-      { return(is<ColorMap>(name)); }
-
-    int numColorMaps()
-      { return(num<ColorMap>()); }
-
-    std::string getColorMapName(int index)
-      { return(getName<ColorMap>(index)); }
 
     /// The basic functions for managing bundles
     ///  getbundle     -> Retrieve a Handle to a bundle stored in the bundle

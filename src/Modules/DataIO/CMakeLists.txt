@@ -35,6 +35,7 @@ SET(Modules_DataIO_SRCS
   WriteG3D.cc
   WriteMatrix.cc
   AutoReadFile.cc
+  ReadColorMapXml.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -48,6 +49,7 @@ SET(Modules_DataIO_HEADERS
   WriteG3D.h
   WriteMatrix.h
   AutoReadFile.h
+  ReadColorMapXml.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_DataIO

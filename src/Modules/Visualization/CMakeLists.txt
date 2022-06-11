@@ -41,6 +41,7 @@ SET(Modules_Visualization_SRCS
   ShowOrientationAxes.cc
   ShowUncertaintyGlyphs.cc
   GeometryBuffer.cc
+  ReportColorMapInfo.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -58,6 +59,7 @@ SET(Modules_Visualization_HEADERS
   ShowOrientationAxes.h
   ShowUncertaintyGlyphs.h
   GeometryBuffer.h
+  ReportColorMapInfo.h
   share.h
 )
 

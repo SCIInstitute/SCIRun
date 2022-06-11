@@ -53,6 +53,29 @@ namespace SCIRun
 
   typedef GenericIEPluginManager<Core::Datatypes::ColorMap> ColorMapIEPluginManager;
 
+  namespace ColorXml
+  {
+    struct SCISHARE Point
+    {
+      double x, o, r, g, b;
+    };
+    struct SCISHARE ColorMap
+    {
+      std::string name, space;
+      std::vector<Point> points;
+    };
+    struct SCISHARE ColorMaps
+    {
+      std::vector<ColorMap> maps;
+    };
+
+    class SCISHARE ColorMapXmlIO
+    {
+    public:
+      static ColorMaps readColorMapXml(const std::string& filename);
+      static Core::Datatypes::ColorMapHandle createColorMapFromXmlData(const ColorMap& cmXml);
+    };
+  }
 }
 
 #endif

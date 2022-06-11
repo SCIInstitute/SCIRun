@@ -689,6 +689,31 @@ std::vector<std::string> Bundle::getStringNames() const
   return getObjNames([this](const std::string& n) { return isString(n); });
 }
 
+ColorMapHandle Bundle::getColorMap(const std::string& name) const
+{
+  return std::dynamic_pointer_cast<ColorMap>(get(name));
+}
+
+bool Bundle::isColorMap(const std::string& name) const
+{
+  return getColorMap(name) != nullptr;
+}
+
+size_t Bundle::numColorMaps() const
+{
+  return numObjs([this](const std::string& n) { return isColorMap(n); });
+}
+
+std::vector<ColorMapHandle> Bundle::getColorMaps() const
+{
+  return getObjs<ColorMapHandle>([this](const std::string& n) { return getColorMap(n); });
+}
+
+std::vector<std::string> Bundle::getColorMapNames() const
+{
+  return getObjNames([this](const std::string& n) { return isColorMap(n); });
+}
+
 bool Bundle::remove(const std::string& name)
 {
   return bundle_.erase(name) == 1;
