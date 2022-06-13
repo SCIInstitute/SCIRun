@@ -27,11 +27,18 @@
 
 
 #include <Interface/Modules/ParticleInCell/PIConGPUDialog.h>
+
+#include <Modules/ParticleInCell/PIConGPU.h>
+
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+
+//using namespace SCIRun::Modules::StringManip;
+//using namespace SCIRun::Modules::ParticleInCell;
+
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
@@ -43,5 +50,8 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     setWindowTitle(QString::fromStdString(name));
     fixSize();
     addRadioButtonGroupManager({dontsavedataButton_ ,savedataButton_}, Variables::Method);
+
+    addLineEditManager(inputstring_,PIConGPU::FormatString);
+
 //    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
     }

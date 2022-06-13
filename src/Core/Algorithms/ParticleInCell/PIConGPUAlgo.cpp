@@ -124,7 +124,7 @@ os.system('bash LaserWakefield_compile_run')
              << iter.particles.size() << " particle species\n";
         cout << "The Series contains " << series.iterations.size() << " iterations\n";
 
-                                                    // Output data about particles
+                                                    //Output data about particles
         cout << "\nParticle data \n";
         for (auto const &ps : iter.particles)
             {
@@ -134,7 +134,7 @@ os.system('bash LaserWakefield_compile_run')
             }
         cout << '\n';
 
-              //Output data about meshes
+                                                    //Output data about meshes
         cout << "\nMesh data \n";
 
         for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
@@ -189,6 +189,12 @@ os.system('bash LaserWakefield_compile_run')
         cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
         cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
 
+//If output data is to be buffered, extend the loadedChunks array defined above as a 2D array to allow including all series iterations and do the following:
+//    collect data needed to allocate arrays that hold the buffered data
+//    end the series iteration loop here:
+//        } //end of the openPMD Reader series iteration loop
+//    include code to load data from all series iterations as noted below
+
 /*
 ***************************************************** Set up and load the buffers
 */
@@ -197,6 +203,12 @@ os.system('bash LaserWakefield_compile_run')
         auto buffer_pos_x       = new double[buffer_size];
         auto buffer_pos_y       = new double[buffer_size];
         auto buffer_pos_z       = new double[buffer_size];
+
+// implement a loop to load all series iterations:
+//    for (TBD)
+//        {
+// note: you can use the existing curly brace 38 lines below to close this series iteration loop
+// use the extended 2D loadedChunks array to define the chunk variable below
 
         for (size_t i_pos = 0; i_pos < 3; ++i_pos)
             {

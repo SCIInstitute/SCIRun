@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>167</height>
+    <width>609</width>
+    <height>559</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,42 +31,170 @@
      <property name="title">
       <string/>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+     <widget class="QRadioButton" name="savedataButton_">
+      <property name="geometry">
+       <rect>
+        <x>89</x>
+        <y>25</y>
+        <width>95</width>
+        <height>22</height>
+       </rect>
       </property>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="savedataButton_">
-        <property name="text">
-         <string>save output</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QRadioButton" name="dontsavedataButton_">
-        <property name="text">
-         <string>don't save output</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Number of Time Steps</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QSpinBox" name="NumTimeStepsSpinBox_">
-        <property name="maximum">
-         <number>100000</number>
-        </property>
-        <property name="value">
-         <number>10000</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
+      <property name="text">
+       <string>save output</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="dontsavedataButton_">
+      <property name="geometry">
+       <rect>
+        <x>89</x>
+        <y>63</y>
+        <width>129</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>don't save output</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>407</width>
+        <height>109</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Choose the PIConGPU simulation</string>
+      </property>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>371</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="fileNameLineEdit_">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="dragEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="openFileButton_">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>220</y>
+        <width>407</width>
+        <height>109</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Choose the config file</string>
+      </property>
+      <widget class="QWidget" name="layoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>371</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLineEdit" name="fileNameLineEdit_1">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="dragEnabled">
+           <bool>false</bool>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="openFileButton_1">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>330</y>
+        <width>411</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Choose the PIConGPU simulation</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="inputstring_"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>430</y>
+        <width>411</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Choose the config file</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="inputstring_1"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>

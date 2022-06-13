@@ -50,6 +50,7 @@ namespace ParticleInCell {
                 OUTPUT_PORT(2, z_coordinates, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+                static Core::Algorithms::AlgorithmParameterName FormatString;
             };
 }}}
 #endif
