@@ -1911,7 +1911,7 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
   {
     setTransformationAnchor(AnchorUnderMouse);
 
-    if (event->angleDelta().x() > 0)
+    if (event->angleDelta().y() > 0)
     {
       zoomIn();
     }
