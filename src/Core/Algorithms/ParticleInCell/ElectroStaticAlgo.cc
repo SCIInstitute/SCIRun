@@ -70,9 +70,9 @@ using namespace std;
 
 //    const int sample_size_i = 100;                    //should be set by User Interface input
 
-//      const int sample_size_i = 5;                    //Using 5 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
-      const int sample_size_i = 10;                   //Using 10 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
-//      const int sample_size_i = 50;                   //Using 50 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes ?? seconds
+//    const int sample_size_i = 5;                    //Using 5 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
+    const int sample_size_i = 10;                   //Using 10 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes 53 seconds
+//    const int sample_size_i = 50;                   //Using 50 for sample_size_i, 5,000 iterations, 10,000 for num_particles and 100 for sample_size_p, takes ?? seconds
     
 
     int output_count        = 0;

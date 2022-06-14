@@ -25,11 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/ParticleInCell/PIConGPU.h>
-//#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
@@ -46,23 +50,31 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
     INITIALIZE_PORT(z_coordinates);
     }
 
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
+
 void PIConGPU::setStateDefaults()
     {
-    setStateIntFromAlgo(Variables::Method);
-//    setStateIntFromAlgo(Parameters::NumTimeSteps); 
+    auto state = get_state();
+    state->setValue(FormatString,std::string("[Insert your message here]"));
     }
 
 void PIConGPU::execute()
     {
+    std::string message_string;
+    auto state=get_state();
+    message_string = state -> getValue(FormatString).toString();
+    StringHandle msH(new String(message_string));
+//    sendOutput(OutputString, msH);
+
     if(needToExecute())
         {
-        setAlgoIntFromState(Variables::Method);
+//        setAlgoIntFromState(Variables::Method);
 //        setAlgoIntFromState(Parameters::NumTimeSteps); 
         AlgorithmInput input;
         auto output=algo().run(input);
 
-//        sendOutputFromAlgorithm(x_coordinates,output);
-//        sendOutputFromAlgorithm(y_coordinates,output);
-//        sendOutputFromAlgorithm(z_coordinates,output);
+        sendOutputFromAlgorithm(x_coordinates,output);
+        sendOutputFromAlgorithm(y_coordinates,output);
+        sendOutputFromAlgorithm(z_coordinates,output);
         }
     }

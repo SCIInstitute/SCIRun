@@ -35,6 +35,7 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
+
     class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
@@ -49,6 +50,7 @@ namespace ParticleInCell {
                 OUTPUT_PORT(2, z_coordinates, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+                static Core::Algorithms::AlgorithmParameterName FormatString;
             };
 }}}
 #endif

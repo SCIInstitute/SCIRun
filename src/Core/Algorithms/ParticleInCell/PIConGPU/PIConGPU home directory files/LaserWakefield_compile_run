@@ -1,0 +1,5 @@
+#!/usr/bin bash
+
+cd $HOME && source picongpu.profile && pic-create $PIC_EXAMPLES/LaserWakefield $HOME/picInputs/myLWFA
+#cd $HOME/picInputs/myLWFA && pic-build && tbg -s bash -c etc/picongpu/1.cfg -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001
+cd $HOME/picInputs/myLWFA && pic-build && tbg -s bash -c etc/picongpu/sst.cfg -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001
