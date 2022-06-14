@@ -50,10 +50,11 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
     INITIALIZE_PORT(z_coordinates);
     }
 
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
+//SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
 
 void PIConGPU::setStateDefaults()
     {
+    setAlgoIntFromState
     auto state = get_state();
     state->setValue(FormatString,std::string("[Insert your message here]"));
     }

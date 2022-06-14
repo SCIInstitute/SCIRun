@@ -51,7 +51,7 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     fixSize();
     addRadioButtonGroupManager({dontsavedataButton_ ,savedataButton_}, Variables::Method);
 
-    addLineEditManager(inputstring_,PIConGPU::FormatString);
+    addLineEditManager(inputstring_,Parameters::FormatString);
 
 //    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
     }

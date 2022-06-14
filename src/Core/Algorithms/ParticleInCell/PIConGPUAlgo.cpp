@@ -64,7 +64,8 @@ const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
-    addParameter(Variables::Method,0);;
+    addParameter(Variables::Method,0);
+    addParameter(Parameters::FormatString,"/");
 //    addParameter(Parameters::NumTimeSteps,5000);
     }
 
