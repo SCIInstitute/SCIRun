@@ -56,16 +56,14 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, NumTimeSteps);
-
 const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
-    addParameter(Variables::Method,0);;
-//    addParameter(Parameters::NumTimeSteps,5000);
+    addParameter(Variables::FormatString, std::string());
+    addParameter(Variables::FunctionString, std::string());
     }
 
 AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const

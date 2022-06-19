@@ -25,21 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-#include <Core/Datatypes/String.h>
-
+using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
@@ -51,25 +44,22 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
     }
 
 SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
 
 void PIConGPU::setStateDefaults()
     {
     auto state = get_state();
-    state->setValue(FormatString,std::string("[Insert your message here]"));
+    state->setValue(FormatString,std::string("[Enter the path to your PIConGPU Simulation here]"));
+    state->setValue(FunctionString,std::string("[Enter the path to your .config file here]"));
     }
 
 void PIConGPU::execute()
     {
     std::string message_string;
-    auto state=get_state();
-    message_string = state -> getValue(FormatString).toString();
     StringHandle msH(new String(message_string));
-//    sendOutput(OutputString, msH);
 
     if(needToExecute())
-        {
-//        setAlgoIntFromState(Variables::Method);
-//        setAlgoIntFromState(Parameters::NumTimeSteps); 
+        { 
         AlgorithmInput input;
         auto output=algo().run(input);
 

@@ -7,16 +7,6 @@
 #include <vector>
 #include <algorithm>
 
-/*      Originally from electrostatic simulation Main.cpp
-#include <math.h>
-#include <iostream>
-#include <iomanip>
-#include "World.h"
-#include "PotentialSolver.h"
-#include "Species.h"
-#include "Output.h"
-*/
-
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/ParticleInCell/share.h>
@@ -25,8 +15,6 @@ namespace SCIRun         {
 namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
-
-//ALGORITHM_PARAMETER_DECL(NumTimeSteps);
 
 class SCISHARE PIConGPUAlgo : public AlgorithmBase
     {

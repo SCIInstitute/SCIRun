@@ -30,9 +30,6 @@
 
 #include <Interface/Modules/ParticleInCell/ui_PIConGPUDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
-#include <Interface/Modules/String/share.h>
-
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
