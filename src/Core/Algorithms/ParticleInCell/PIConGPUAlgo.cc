@@ -29,6 +29,7 @@ Coding Sources:
    https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c
    https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
    email from Franz Poschel, dated 17 May 2022
+   email from Franz Poschel, dated 16 June 2022: PIConGPU Issue 4162; https://github.com/ComputationalRadiationPhysics/picongpu/issues/4162
 
 */
 
@@ -38,13 +39,13 @@ To Do:
 */
 
 #include <openPMD/openPMD.hpp>
-
-// I don't know if all of the following are needed
-#include <array>
-#include <iostream>
-#include <memory>
 #include <filesystem>
-#include <unistd.h>
+
+// I don't know if any of the following are needed
+//#include <array>
+//#include <iostream>
+//#include <memory>
+//#include <unistd.h>
 //
 
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
@@ -69,9 +70,14 @@ PIConGPUAlgo::PIConGPUAlgo()
 AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
+    auto sim_input = get(Variables::FormatString).toString();
+    auto cfg_input = get(Variables::FunctionString).toString();
 
     #include <stdlib.h>
     using namespace std;
+
+    cout << "\nDebug input from UI: \nsim_input is " << sim_input << "\ncfg_input is " << cfg_input << "\n\n";
+
 /*
 ************************************************ Run the simulation code in a separate process
 

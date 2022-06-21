@@ -36,14 +36,14 @@ namespace SCIRun {
 namespace Gui    {
 
 class SCISHARE PIConGPUDialog : public ModuleDialogGeneric,
-  public Ui::PIConGPUDialog
-      {
-	  Q_OBJECT
+    public Ui::PIConGPUDialog
+        {
+        Q_OBJECT
 
-      public:
-          PIConGPUDialog(const std::string& name,
-          SCIRun::Dataflow::Networks::ModuleStateHandle state,
-          QWidget* parent = nullptr);
-      };
+        public:
+            PIConGPUDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+        };
 }}
 #endif

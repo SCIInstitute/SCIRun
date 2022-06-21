@@ -25,9 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
-
 #include <Modules/String/TestModuleSimpleUI.h>
 
 using namespace SCIRun::Gui;

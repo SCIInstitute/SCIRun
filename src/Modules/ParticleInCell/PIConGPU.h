@@ -35,7 +35,6 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-
     class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>

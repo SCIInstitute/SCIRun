@@ -28,6 +28,9 @@
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
+
+#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
@@ -36,15 +39,15 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
+
 PIConGPU::PIConGPU() : Module(staticInfo_)
     {
     INITIALIZE_PORT(x_coordinates);
     INITIALIZE_PORT(y_coordinates);
     INITIALIZE_PORT(z_coordinates);
     }
-
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
 
 void PIConGPU::setStateDefaults()
     {
@@ -55,12 +58,12 @@ void PIConGPU::setStateDefaults()
 
 void PIConGPU::execute()
     {
-    std::string message_string;
-    StringHandle msH(new String(message_string));
-
     if(needToExecute())
         { 
         AlgorithmInput input;
+        setAlgoStringFromState(Variables::FormatString);
+        setAlgoStringFromState(Variables::FunctionString);
+
         auto output=algo().run(input);
 
         sendOutputFromAlgorithm(x_coordinates,output);
