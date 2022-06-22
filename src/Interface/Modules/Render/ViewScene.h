@@ -241,7 +241,12 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, int which, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
+      enum class ToolBarChoice
+      {
+        TOP = 1,
+        SIDE = 1
+      };
+      void addToolbarButton(QWidget* w, ToolBarChoice which, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
@@ -253,7 +258,7 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
       void initializeVisibleObjects();
-      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, int which);
+      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, ToolBarChoice which);
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
