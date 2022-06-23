@@ -243,8 +243,8 @@ namespace SCIRun {
       void addDeveloperControlButton();
       enum class ToolBarChoice
       {
-        TOP = 1,
-        SIDE = 1
+        TOP,
+        SIDE
       };
       void addToolbarButton(QWidget* w, ToolBarChoice which, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();

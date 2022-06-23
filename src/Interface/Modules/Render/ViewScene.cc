@@ -453,29 +453,24 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
+  {
+    auto* mainWindow = new QMainWindow;
+    mainWindow->setCentralWidget(impl_->mGLWidget);
 
-{
-  QMainWindow* child = new QMainWindow;
-  //QLabel* label = new QLabel(tr("QMainWindow with toolbar!"));
-  //label->setAlignment(Qt::AlignCenter);
-  child->setCentralWidget(impl_->mGLWidget);
+    impl_->toolBar1_ = new QToolBar;
+    mainWindow->addToolBar(Qt::TopToolBarArea, impl_->toolBar1_);
+    impl_->toolBar1_->setMovable(true);
+    impl_->toolBar1_->setFloatable(true);
 
-  impl_->toolBar1_ = child->addToolBar("Main");
-  impl_->toolBar1_->setMovable(true);
-  impl_->toolBar1_->setFloatable(true);
+    impl_->toolBar2_ = new QToolBar;
+    mainWindow->addToolBar(Qt::LeftToolBarArea, impl_->toolBar2_);
+    impl_->toolBar2_->setMovable(true);
+    impl_->toolBar2_->setFloatable(true);
 
-  //QHBoxLayout* layout = new QHBoxLayout(this);
-  //layout->setContentsMargins(0,0,0,0);
-  layout()->addWidget(child);
-}
-addToolBar();
-
-
-  //setToolBarPositions();
-  //glLayout->addWidget(impl_->mGLWidget, 1, 1);
-
-  //glLayout->update();
-
+    layout()->addWidget(mainWindow);
+  }
+  addToolBar();
+  setToolBarPositions();
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
 
   viewSceneManager.addViewScene(this);
@@ -535,13 +530,16 @@ void ViewSceneDialog::setToolBarPositions()
 
 void ViewSceneDialog::addToolBar()
 {
-  //impl_->toolBar1_ = new QToolBar(this);
   impl_->toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
-  // impl_->toolBar2_ = new QToolBar(this);
-  // impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
-  // impl_->toolBar2_->setOrientation(Qt::Vertical);
-  // WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
+  connect(impl_->toolBar1_, &QToolBar::orientationChanged,
+    [](Qt::Orientation orientation) { qDebug() << "toolbar orientation" << orientation; });
+  connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
+    [](bool topLevel) { qDebug() << "toolbar topLevel" << topLevel; });
+
+  impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
+  impl_->toolBar2_->setOrientation(Qt::Vertical);
+  WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
   addObjectSelectionButton();
   addAutoViewButton();
@@ -596,18 +594,17 @@ void ViewSceneDialog::addToolBar()
   }
 #endif
   impl_->statusLabel_ = new QLabel("");
-  //impl_->toolBar1_->addWidget(impl_->statusLabel_);
+  impl_->toolBar1_->addWidget(impl_->statusLabel_);
 
-  impl_->toolBar1_->addWidget(new QCheckBox);
-
-  //layout()->setMenuBar(impl_->toolBar1_);
+  //impl_->toolBar1_->addWidget(new QCheckBox);
 }
 
-void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, ToolBarChoice /*which*/)
+void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, ToolBarChoice which)
 {
   auto* popup = new ctkPopupWidget(button);
+  button->setObjectName(button->objectName() + underlyingWidget->objectName());
   auto* popupLayout = new QVBoxLayout(popup);
-  const bool isHorizontalBar = true;//which == ToolBarChoice::TOP;
+  const bool isHorizontalBar = which == ToolBarChoice::TOP;
   const auto dir = isHorizontalBar ? ctkBasePopupWidget::VerticalDirection::BottomToTop
                               : ctkBasePopupWidget::VerticalDirection::TopToBottom;
 
@@ -617,13 +614,12 @@ void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopu
   popup->setOrientation(orientation);
   popup->setVerticalDirection(dir);
   popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
-  popup->setShowDelay(50);
+  popup->setShowDelay(200);
   popup->setHideDelay(200);
-  //popup->setAutoShow(false);
-  //popup->setAutoHide(false);
   connect(this, &ViewSceneDialog::closeAllNonPinnedPopups, [popup, underlyingWidget]() { if (!underlyingWidget->pinToggleAction()->isChecked()) popup->close(); });
   connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
   connect(underlyingWidget->closeAction(), &QAction::triggered, popup, &QWidget::close);
+  #if 0
   if (isHorizontalBar)
     connect(this, &ViewSceneDialog::horizontalToolBarPopupChanged, [this, popup](bool isDef)
       {
@@ -637,6 +633,7 @@ void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopu
       popup->setAlignment(impl_->fullScreenSwitcher_(isDef) ? Qt::AlignLeft | Qt::AlignVCenter : Qt::AlignRight | Qt::AlignVCenter);
       popup->setHorizontalDirection(impl_->fullScreenSwitcher_(isDef) ? Qt::LayoutDirectionAuto : Qt::LeftToRight);
     });
+  #endif
   popupLayout->addWidget(underlyingWidget);
   popupLayout->setContentsMargins(4,4,4,4);
 }
