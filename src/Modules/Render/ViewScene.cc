@@ -158,8 +158,8 @@ ALGORITHM_PARAMETER_DEF(Render, AxesSize);
 ALGORITHM_PARAMETER_DEF(Render, AxesX);
 ALGORITHM_PARAMETER_DEF(Render, AxesY);
 ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
-ALGORITHM_PARAMETER_DEF(Render, HorizontalToolBarPositionDefault);
-ALGORITHM_PARAMETER_DEF(Render, VerticalToolBarPositionDefault);
+ALGORITHM_PARAMETER_DEF(Render, ToolBar1Position);
+ALGORITHM_PARAMETER_DEF(Render, ToolBar2Position);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotDirectory);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
@@ -258,11 +258,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
 
-  state->setValue(Parameters::HorizontalToolBarPositionDefault, true);
-  state->setValue(Parameters::VerticalToolBarPositionDefault, true);
+  state->setValue(Parameters::ToolBar1Position, 4);
+  state->setValue(Parameters::ToolBar2Position, 1);
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
-
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
