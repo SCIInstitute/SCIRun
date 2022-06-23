@@ -79,6 +79,7 @@ namespace SCIRun {
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
       void vsLog(const QString& msg) const;
+      Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -89,8 +90,6 @@ namespace SCIRun {
       void cameraDistanceChangeForwarder();
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
-      void horizontalToolBarPopupChanged(bool state);
-      void verticalToolBarPopupChanged(bool state);
       void closeAllNonPinnedPopups();
 
     public Q_SLOTS:
@@ -253,7 +252,7 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
       void initializeVisibleObjects();
-      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, Qt::ToolBarArea area);
+      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar);
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();

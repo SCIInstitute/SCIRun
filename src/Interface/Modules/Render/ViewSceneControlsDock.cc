@@ -879,3 +879,29 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
   contextMenu.addAction(closeAction_);
   contextMenu.exec(mapToGlobal(pos));
 }
+
+ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) : QObject(dialog), dialog_(dialog)
+{
+
+}
+
+void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  //qDebug() << __FUNCTION__ << toolbar << popup;
+  connect(toolbar, &QToolBar::orientationChanged,
+    [this, popup, toolbar](Qt::Orientation orientation) { toolBarOrientationChanged(orientation, toolbar, popup); });
+  connect(toolbar, &QToolBar::topLevelChanged,
+    [this, popup, toolbar](bool topLevel) { toolBarPositionChanged(topLevel, toolbar, popup); });
+}
+
+void ViewSceneToolBarController::toolBarOrientationChanged(Qt::Orientation orientation, QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  qDebug() << __FUNCTION__ << orientation << toolbar << popup;
+  qDebug() << "\tor:" << toolbar->orientation() << " pos: " << dialog_->whereIs(toolbar);
+}
+
+void ViewSceneToolBarController::toolBarPositionChanged(bool topLevel, QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  qDebug() << __FUNCTION__ << topLevel << toolbar << popup;
+  qDebug() << "\tor:" << toolbar->orientation() << " pos: " << dialog_->whereIs(toolbar);
+}
