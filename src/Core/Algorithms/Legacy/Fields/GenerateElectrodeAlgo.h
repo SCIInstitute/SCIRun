@@ -40,12 +40,15 @@ namespace SCIRun
     {
       namespace Fields
       {
-        ALGORITHM_PARAMETER_DECL(NumSamples);
-        ALGORITHM_PARAMETER_DECL(DistributionType);
-        ALGORITHM_PARAMETER_DECL(ClampToNodes);
-        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
-        ALGORITHM_PARAMETER_DECL(RNGSeed);
-
+      ALGORITHM_PARAMETER_DECL(ElectrodeLength);
+      ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+      ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
+      ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
+      ALGORITHM_PARAMETER_DECL(ElectrodeType);
+      ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+      ALGORITHM_PARAMETER_DECL(MoveAll);
+      ALGORITHM_PARAMETER_DECL(UseFieldNodes);
+      
 class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
 {
   public:

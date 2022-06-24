@@ -42,9 +42,13 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(ElectrodeLength);
         ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+        ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
         ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
         ALGORITHM_PARAMETER_DECL(ElectrodeType);
         ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+        ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
+        ALGORITHM_PARAMETER_DECL(MoveAll);
+        ALGORITHM_PARAMETER_DECL(UseFieldNodes);
         class GenerateElectrodeImpl;
       }
     }

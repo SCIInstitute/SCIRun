@@ -57,9 +57,13 @@ MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeWidth);
 ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
+ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
+ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 
 namespace SCIRun
 {

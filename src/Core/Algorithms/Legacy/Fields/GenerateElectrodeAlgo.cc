@@ -42,17 +42,26 @@ using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeWidth);
 ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution;
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
+ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
+ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
+ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 
 GenerateElectrodeAlgo::GenerateElectrodeAlgo()
 {
   addParameter(Parameters::ElectrodeLength, 0.1);
   addParameter(Parameters::ElectrodeThickness, 0.003);
+  addParameter(Parameters::ElectrodeWidth, 0.02);
   addOption(Parameters::ElectrodeType,"wire","wire|planar");
+  addOption(Parameters::ElectrodeProjection,"midway","positive|midway|negative");
   addParameter(Parameters::NumberOfControlPoints,5);
   addParameter(Parameters::ElectrodeResolution,10);
+  addParameter(Parameters::UseFieldNodes,true);
+  addParameter(Parameters::MoveAll,false);
+  
 }
 
 namespace detail

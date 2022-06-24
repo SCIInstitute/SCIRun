@@ -45,35 +45,29 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(moveToComboBox_, Parameters::MoveMethod);
-  addDoubleSpinBoxManager(xLocationDoubleSpinBox_, Parameters::XLocation);
-  addDoubleSpinBoxManager(yLocationDoubleSpinBox_, Parameters::YLocation);
-  addDoubleSpinBoxManager(zLocationDoubleSpinBox_, Parameters::ZLocation);
-  addDoubleSpinBoxManager(sizeDoubleSpinBox_, Parameters::ProbeSize);
-  addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
-  addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
-  addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
-  addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
-  addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
+  addComboBoxManager(TypeComboBox_, Parameters::ElectrodeType);
+  addComboBoxManager(ProjectionComboBox_, Parameters::ElectrodeProjection);
+  addDoubleSpinBoxManager(LengthDoubleSpinBox_, Parameters::ElectrodeLength);
+  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ElectrodeWidth);
+  addDoubleSpinBoxManager(ThicknessDoubleSpinBox_, Parameters::ElectrodeThickness);
+  addSpinBoxManager(NumberOfControlPointsSpinBox_, Parameters::NumberOfControlPoints);
+  addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
+  addCheckBoxManager(MoveAllCheckBox_, Parameters::MoveAll);
+  addCheckBoxManager(UseFieldNodeCheckBox_, Parameters::UseFieldNodes);
 
-  addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxSize);
-  addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxSize);
-
-  connect(moveToComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
+  connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
   connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(colorChooserPushButton_);
-  connect(bboxScaleCheckBox_, &QCheckBox::stateChanged, this, &GenerateElectrodeDialog::toggleSpinBoxes);
+  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::AddPoint);
+  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::RemovePoint);
+  connectButtonToExecuteSignal(AddPointPushButton_);
+  connectButtonToExecuteSignal(RemovePointPushButton_);
 }
 
 void GenerateElectrodeDialog::enableWidgets(const QString& mode)
 {
-  xLocationDoubleSpinBox_->setReadOnly(mode != "Location");
-  yLocationDoubleSpinBox_->setReadOnly(mode != "Location");
-  zLocationDoubleSpinBox_->setReadOnly(mode != "Location");
-  fieldNodeSpinBox_->setReadOnly(mode != "Node");
-  fieldElemSpinBox_->setReadOnly(mode != "Element");
-  snapToNodeCheckBox_->setVisible(mode == "Node");
-  snapToElementCheckBox_->setVisible(mode == "Element");
+  WidthDoubleSpinBox_->setReadOnly(mode != "planar");
+  ProjectionComboBox_->setReadOnly(mode != "planar");
 }
 
 void GenerateElectrodeDialog::pullSpecial()
@@ -107,4 +101,17 @@ void GenerateElectrodeDialog::toggleSpinBoxes()
 {
   bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
   sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
+}
+
+void GenerateElectrodeDialog::AddPoint()
+{
+    double numpoints = state_->getValue(Parameters::NumberOfControlPoints);
+    state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
+}
+
+
+void GenerateElectrodeDialog::RemovePoint()
+{
+    double numpoints = state_->getValue(Parameters::NumberOfControlPoints);
+    state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);
 }
