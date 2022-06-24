@@ -309,11 +309,11 @@ namespace Gui {
     Q_OBJECT
    public:
      explicit ViewSceneToolBarController(ViewSceneDialog* dialog);
+     void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
    private:
      ViewSceneDialog* dialog_;
-     void toolBarOrientationChanged(Qt::Orientation orientation, QToolBar* toolbar, ctkPopupWidget* popup);
-     void toolBarPositionChanged(bool topLevel, QToolBar* toolbar, ctkPopupWidget* popup);
+     void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup);
    };
 }
 }

@@ -80,6 +80,7 @@ namespace SCIRun {
       void setFloatingState(bool isFloating);
       void vsLog(const QString& msg) const;
       Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
+      bool isFullScreen() const;
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -91,6 +92,7 @@ namespace SCIRun {
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
       void closeAllNonPinnedPopups();
+      void fullScreenChanged();
 
     public Q_SLOTS:
       void printToString() const {std::cout << toString("");}

@@ -599,54 +599,17 @@ void ViewSceneDialog::addToolBar()
 void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar)
 {
   auto* popup = new ctkPopupWidget(button);
-  button->setObjectName(button->objectName() + underlyingWidget->objectName());
-  auto* popupLayout = new QVBoxLayout(popup);
-  const bool isHorizontalBar = toolbar->orientation() == Qt::Horizontal; //which == Qt::TopToolBarArea || which == Qt::BottomToolBarArea;
-  const auto dir = isHorizontalBar ? ctkBasePopupWidget::VerticalDirection::BottomToTop
-                              : ctkBasePopupWidget::VerticalDirection::TopToBottom;
+  button->setObjectName("Button: " + underlyingWidget->objectName());
 
-  const auto alignment = isHorizontalBar ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignLeft | Qt::AlignVCenter;
-  const auto orientation = isHorizontalBar ? Qt::Vertical : Qt::Horizontal;
-  popup->setAlignment(alignment);
-  popup->setOrientation(orientation);
-  popup->setVerticalDirection(dir);
-  popup->setHorizontalDirection(Qt::LayoutDirectionAuto); // open outside the parent
-  popup->setShowDelay(200);
-  popup->setHideDelay(200);
+  impl_->toolBarController_->setDefaultProperties(toolbar, popup);
+
   connect(this, &ViewSceneDialog::closeAllNonPinnedPopups, [popup, underlyingWidget]() { if (!underlyingWidget->pinToggleAction()->isChecked()) popup->close(); });
   connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
   connect(underlyingWidget->closeAction(), &QAction::triggered, popup, &QWidget::close);
 
   impl_->toolBarController_->registerPopup(toolbar, popup);
-#if 0
-  connect(impl_->toolBar1_, &QToolBar::orientationChanged,
-    [this, popup](Qt::Orientation orientation) {
-      qDebug() << "toolbar orientation" << orientation;
-      bool isDef = orientation == Qt::Horizontal;
-      popup->setAlignment(impl_->fullScreenSwitcher_(isDef) ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignBottom | Qt::AlignHCenter);
-      popup->setVerticalDirection(impl_->fullScreenSwitcher_(isDef) ? ctkBasePopupWidget::VerticalDirection::BottomToTop
-                                  : ctkBasePopupWidget::VerticalDirection::TopToBottom);
-  });
 
-  if (isHorizontalBar)
-  {
-    connect(this, &ViewSceneDialog::horizontalToolBarPopupChanged, [this, popup](bool isDef)
-      {
-        popup->setAlignment(impl_->fullScreenSwitcher_(isDef) ? Qt::AlignTop | Qt::AlignHCenter : Qt::AlignBottom | Qt::AlignHCenter);
-        popup->setVerticalDirection(impl_->fullScreenSwitcher_(isDef) ? ctkBasePopupWidget::VerticalDirection::BottomToTop
-                                    : ctkBasePopupWidget::VerticalDirection::TopToBottom);
-      });
-  }
-  else
-  {
-    connect(this, &ViewSceneDialog::verticalToolBarPopupChanged, [this, popup](bool isDef)
-    {
-      popup->setAlignment(impl_->fullScreenSwitcher_(isDef) ? Qt::AlignLeft | Qt::AlignVCenter : Qt::AlignRight | Qt::AlignVCenter);
-      popup->setHorizontalDirection(impl_->fullScreenSwitcher_(isDef) ? Qt::LayoutDirectionAuto : Qt::LeftToRight);
-    });
-  }
-#endif
-
+  auto* popupLayout = new QVBoxLayout(popup);
   popupLayout->addWidget(underlyingWidget);
   popupLayout->setContentsMargins(4,4,4,4);
 }
@@ -2901,9 +2864,12 @@ void ViewSceneDialog::adaptToFullScreenView(bool fullScreen)
 {
   impl_->isFullScreen_ = fullScreen;
 
-qDebug() << "TODO adaptToFullScreenView";
-  //Q_EMIT horizontalToolBarPopupChanged(state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
-  //Q_EMIT verticalToolBarPopupChanged(state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
+  Q_EMIT fullScreenChanged();
+}
+
+bool ViewSceneDialog::isFullScreen() const
+{
+  return impl_->isFullScreen_;
 }
 
 Qt::ToolBarArea ViewSceneDialog::whereIs(QToolBar* toolbar) const

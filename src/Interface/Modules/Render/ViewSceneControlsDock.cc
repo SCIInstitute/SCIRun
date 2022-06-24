@@ -33,6 +33,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/StringUtil.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
 #include <qwt_knob.h>
 #include <qwt_abstract_slider.h>
@@ -885,23 +886,104 @@ ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) 
 
 }
 
+struct PopupProperties
+{
+  Qt::Alignment alignment;
+  Qt::Orientation orientation;
+  ctkBasePopupWidget::VerticalDirection verticalDirection;
+  Qt::LayoutDirection horizontalDirection;
+};
+
+constexpr PopupProperties bottomOutHorizontal { Qt::AlignBottom | Qt::AlignHCenter, Qt::Vertical,
+  ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LayoutDirectionAuto };
+constexpr PopupProperties topOutHorizontal { Qt::AlignTop | Qt::AlignHCenter, Qt::Vertical,
+  ctkBasePopupWidget::VerticalDirection::BottomToTop, Qt::LayoutDirectionAuto };
+constexpr PopupProperties leftOutVertical { Qt::AlignLeft | Qt::AlignVCenter, Qt::Horizontal,
+  ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LayoutDirectionAuto };
+constexpr PopupProperties rightOutVertical { Qt::AlignRight | Qt::AlignVCenter, Qt::Horizontal,
+  ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LeftToRight };
+
+
+PopupProperties getDefaultPopupProperties(Qt::Orientation toolbarOrientation, Qt::ToolBarArea area, bool isFullScreen)
+{
+  switch (toolbarOrientation)
+  {
+    case Qt::Horizontal:
+    {
+      if (!isFullScreen)
+      {
+        switch (area)
+        {
+          case Qt::BottomToolBarArea:
+            return bottomOutHorizontal;
+          default:
+          //case Qt::TopToolBarArea: and floating?
+            return topOutHorizontal;
+        }
+      }
+      else
+      {
+        switch (area)
+        {
+          case Qt::BottomToolBarArea:
+            return topOutHorizontal;
+          default:
+          //case Qt::TopToolBarArea: and floating?
+            return bottomOutHorizontal;
+        }
+      }
+    }
+    case Qt::Vertical:
+    {
+      if (!isFullScreen)
+      {
+        switch (area)
+        {
+          case Qt::LeftToolBarArea:
+            return leftOutVertical;
+          default:
+          //case Qt::RightToolBarArea:
+            return rightOutVertical;
+        }
+      }
+      else
+      {
+        switch (area)
+        {
+          case Qt::LeftToolBarArea:
+            return rightOutVertical;
+          default:
+          //case Qt::RightToolBarArea:
+            return leftOutVertical;
+        }
+      }
+    }
+  }
+}
+
+void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  updatePopupProperties(toolbar, popup);
+
+  popup->setShowDelay(200);
+  popup->setHideDelay(200);
+}
+
 void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
 {
-  //qDebug() << __FUNCTION__ << toolbar << popup;
   connect(toolbar, &QToolBar::orientationChanged,
-    [this, popup, toolbar](Qt::Orientation orientation) { toolBarOrientationChanged(orientation, toolbar, popup); });
+    [this, popup, toolbar](Qt::Orientation /*orientation*/) { updatePopupProperties(toolbar, popup); });
   connect(toolbar, &QToolBar::topLevelChanged,
-    [this, popup, toolbar](bool topLevel) { toolBarPositionChanged(topLevel, toolbar, popup); });
+    [this, popup, toolbar](bool /*topLevel*/) { updatePopupProperties(toolbar, popup); });
+  connect(dialog_, &ViewSceneDialog::fullScreenChanged,
+    [this, popup, toolbar]() { updatePopupProperties(toolbar, popup); });
 }
 
-void ViewSceneToolBarController::toolBarOrientationChanged(Qt::Orientation orientation, QToolBar* toolbar, ctkPopupWidget* popup)
+void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup)
 {
-  qDebug() << __FUNCTION__ << orientation << toolbar << popup;
-  qDebug() << "\tor:" << toolbar->orientation() << " pos: " << dialog_->whereIs(toolbar);
-}
-
-void ViewSceneToolBarController::toolBarPositionChanged(bool topLevel, QToolBar* toolbar, ctkPopupWidget* popup)
-{
-  qDebug() << __FUNCTION__ << topLevel << toolbar << popup;
-  qDebug() << "\tor:" << toolbar->orientation() << " pos: " << dialog_->whereIs(toolbar);
+  const auto props = getDefaultPopupProperties(toolbar->orientation(), dialog_->whereIs(toolbar), dialog_->isFullScreen());
+  popup->setAlignment(props.alignment);
+  popup->setOrientation(props.orientation);
+  popup->setVerticalDirection(props.verticalDirection);
+  popup->setHorizontalDirection(props.horizontalDirection);
 }
