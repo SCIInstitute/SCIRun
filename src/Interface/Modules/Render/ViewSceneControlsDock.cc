@@ -886,6 +886,8 @@ ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) 
 
 }
 
+namespace
+{
 struct PopupProperties
 {
   Qt::Alignment alignment;
@@ -961,6 +963,42 @@ PopupProperties getDefaultPopupProperties(Qt::Orientation toolbarOrientation, Qt
   }
 }
 
+QStyle::StandardPixmap oppositeArrow(const QPushButton* button)
+{
+  switch (static_cast<QStyle::StandardPixmap>(button->property("dir").toInt()))
+  {
+    case QStyle::SP_ArrowRight:
+      return QStyle::SP_ArrowLeft;
+    case QStyle::SP_ArrowLeft:
+      return QStyle::SP_ArrowRight;
+    case QStyle::SP_ArrowUp:
+      return QStyle::SP_ArrowDown;
+    case QStyle::SP_ArrowDown:
+      return QStyle::SP_ArrowUp;
+    default:
+      return QStyle::SP_BrowserStop;
+  }
+}
+
+QStyle::StandardPixmap outArrowForBarAt(Qt::ToolBarArea area)
+{
+  switch (area)
+  {
+    case Qt::LeftToolBarArea:
+      return QStyle::SP_ArrowLeft;
+    case Qt::RightToolBarArea:
+      return QStyle::SP_ArrowRight;
+    case Qt::BottomToolBarArea:
+      return QStyle::SP_ArrowDown;
+    case Qt::TopToolBarArea:
+      return QStyle::SP_ArrowUp;
+    default:
+      return QStyle::SP_BrowserStop;
+  }
+}
+
+}
+
 void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup)
 {
   updatePopupProperties(toolbar, popup);
@@ -986,4 +1024,21 @@ void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPop
   popup->setOrientation(props.orientation);
   popup->setVerticalDirection(props.verticalDirection);
   popup->setHorizontalDirection(props.horizontalDirection);
+}
+
+void ViewSceneToolBarController::registerDirectionButton(QToolBar* toolbar, QPushButton* button)
+{
+  connect(button, &QPushButton::clicked, [button]()
+    {
+      const auto opp = oppositeArrow(button);
+      button->setIcon(QApplication::style()->standardIcon(opp));
+      button->setProperty("dir", static_cast<int>(opp));
+    });
+
+  connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool topLevel)
+    {
+      auto outArrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+      button->setIcon(QApplication::style()->standardIcon(outArrow));
+      button->setProperty("dir", static_cast<int>(outArrow));
+    });
 }

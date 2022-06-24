@@ -311,6 +311,7 @@ namespace Gui {
      explicit ViewSceneToolBarController(ViewSceneDialog* dialog);
      void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
+     void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
    private:
      ViewSceneDialog* dialog_;
      void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup);

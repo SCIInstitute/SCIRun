@@ -562,34 +562,18 @@ void ViewSceneDialog::addToolBar()
   {
     impl_->toolBar1Position_ = new QPushButton();
     impl_->toolBar1Position_->setToolTip("Switch toolbar 1 popup direction");
-    impl_->toolBar1Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
+    impl_->toolBar1Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowUp));
+    impl_->toolBar1Position_->setProperty("dir", static_cast<int>(QStyle::SP_ArrowUp));
     addToolbarButton(impl_->toolBar1Position_, Qt::TopToolBarArea);
-    // connect(impl_->toolBar1Position_, &QPushButton::clicked, [this]()
-    //   {
-    //     state_->setValue(Parameters::HorizontalToolBarPositionDefault, !state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());
-    //     impl_->toolBar1Position_->setIcon(
-    //       state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool() ?
-    //       QApplication::style()->standardIcon(QStyle::SP_ArrowDown) :
-    //       QApplication::style()->standardIcon(QStyle::SP_ArrowUp)
-    //     );
-    //     setToolBarPositions();
-    //   });
+    impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
   }
   {
     impl_->toolBar2Position_ = new QPushButton();
     impl_->toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
-    impl_->toolBar2Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowRight));
+    impl_->toolBar2Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowLeft));
+    impl_->toolBar2Position_->setProperty("dir", static_cast<int>(QStyle::SP_ArrowLeft));
     addToolbarButton(impl_->toolBar2Position_, Qt::LeftToolBarArea);
-    // connect(impl_->toolBar2Position_, &QPushButton::clicked, [this]()
-    //   {
-    //     state_->setValue(Parameters::VerticalToolBarPositionDefault, !state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());
-    //     impl_->toolBar2Position_->setIcon(
-    //       state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool() ?
-    //       QApplication::style()->standardIcon(QStyle::SP_ArrowRight) :
-    //       QApplication::style()->standardIcon(QStyle::SP_ArrowLeft)
-    //     );
-    //     setToolBarPositions();
-    //   });
+    impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
   }
 
   impl_->statusLabel_ = new QLabel("");
