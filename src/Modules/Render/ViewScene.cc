@@ -258,8 +258,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
 
-  state->setValue(Parameters::ToolBar1Position, 4);
-  state->setValue(Parameters::ToolBar2Position, 1);
+  state->setValue(Parameters::ToolBar1Position, 4);  //TopToolBarArea
+  state->setValue(Parameters::ToolBar2Position, 1);  //LeftToolBarArea
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
 

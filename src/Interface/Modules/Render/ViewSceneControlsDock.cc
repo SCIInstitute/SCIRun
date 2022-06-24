@@ -935,7 +935,7 @@ PopupProperties popupPropertiesFor(Qt::Orientation toolbarOrientation, Qt::ToolB
 
 QStyle::StandardPixmap oppositeArrow(const QPushButton* button)
 {
-  switch (static_cast<QStyle::StandardPixmap>(button->property("dir").toInt()))
+  switch (static_cast<QStyle::StandardPixmap>(button->property(ViewSceneToolBarController::DirectionProperty).toInt()))
   {
     case QStyle::SP_ArrowRight:
       return QStyle::SP_ArrowLeft;
@@ -999,23 +999,28 @@ void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPop
 
 void ViewSceneToolBarController::registerDirectionButton(QToolBar* toolbar, QPushButton* button)
 {
-  button->setProperty("flip", true);
+  button->setProperty(FlipProperty, true);
+
+  auto arrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+  button->setIcon(QApplication::style()->standardIcon(arrow));
+  button->setProperty(DirectionProperty, static_cast<int>(arrow));
+
   connect(button, &QPushButton::clicked, [button, toolbar, this]()
     {
       const auto opp = oppositeArrow(button);
       button->setIcon(QApplication::style()->standardIcon(opp));
-      button->setProperty("dir", static_cast<int>(opp));
-      bool flip = button->property("flip").toBool();
+      button->setProperty(DirectionProperty, static_cast<int>(opp));
+      bool flip = button->property(FlipProperty).toBool();
       for (auto& pop : toolBarPopups_[toolbar])
         updatePopupProperties(toolbar, pop, flip);
-      button->setProperty("flip", !flip);
+      button->setProperty(FlipProperty, !flip);
     });
 
   connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool /*topLevel*/)
     {
-      button->setProperty("flip", true);
+      button->setProperty(FlipProperty, true);
       auto outArrow = outArrowForBarAt(dialog_->whereIs(toolbar));
       button->setIcon(QApplication::style()->standardIcon(outArrow));
-      button->setProperty("dir", static_cast<int>(outArrow));
+      button->setProperty(DirectionProperty, static_cast<int>(outArrow));
     });
 }

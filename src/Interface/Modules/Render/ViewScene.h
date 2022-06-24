@@ -36,7 +36,6 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/ViewSceneManager.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/TextBuilder.h>
@@ -56,6 +55,7 @@ namespace SCIRun {
     class GLWidget;
     class ScopedWidgetColorChanger;
     class ViewSceneDialogImpl;
+    class ViewSceneControlPopupWidget;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {

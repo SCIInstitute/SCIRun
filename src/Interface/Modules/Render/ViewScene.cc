@@ -41,6 +41,7 @@
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneUtility.h>
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
@@ -460,12 +461,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget);
 
     impl_->toolBar1_ = new QToolBar;
-    impl_->toolbarHolder_->addToolBar(Qt::TopToolBarArea, impl_->toolBar1_);
     impl_->toolBar1_->setMovable(true);
     impl_->toolBar1_->setFloatable(true);
 
     impl_->toolBar2_ = new QToolBar;
-    impl_->toolbarHolder_->addToolBar(Qt::LeftToolBarArea, impl_->toolBar2_);
     impl_->toolBar2_->setMovable(true);
     impl_->toolBar2_->setFloatable(true);
 
@@ -508,28 +507,23 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 void ViewSceneDialog::setToolBarPositions()
 {
-  #if 0
-  glLayout->removeWidget(impl_->toolBar1_);
-  glLayout->removeWidget(impl_->toolBar2_);
+  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar1Position).toInt());
+  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar2Position).toInt());
+  impl_->toolbarHolder_->addToolBar(toolBar1Position, impl_->toolBar1_);
+  impl_->toolbarHolder_->addToolBar(toolBar2Position, impl_->toolBar2_);
+  connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
+    [this](bool /*topLevel*/)
+    {
+      state_->setValue(Parameters::ToolBar1Position, static_cast<int>(whereIs(impl_->toolBar1_)));
+    });
+  connect(impl_->toolBar2_, &QToolBar::topLevelChanged,
+    [this](bool /*topLevel*/)
+    {
+      state_->setValue(Parameters::ToolBar2Position, static_cast<int>(whereIs(impl_->toolBar2_)));
+    });
 
-  if (state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool())
-    glLayout->addWidget(impl_->toolBar1_, 0, 0, 1, 2);
-  else
-    glLayout->addWidget(impl_->toolBar1_, 2, 0, 1, 2);
-
-  if (state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool())
-  {
-    glLayout->removeWidget(impl_->mGLWidget);
-    glLayout->addWidget(impl_->mGLWidget, 1, 1);
-    glLayout->addWidget(impl_->toolBar2_, 1, 0);
-  }
-  else
-  {
-    glLayout->removeWidget(impl_->mGLWidget);
-    glLayout->addWidget(impl_->mGLWidget, 1, 0);
-    glLayout->addWidget(impl_->toolBar2_, 1, 1);
-  }
-  #endif
+  impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
+  impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
 }
 
 void ViewSceneDialog::addToolBar()
@@ -562,18 +556,12 @@ void ViewSceneDialog::addToolBar()
   {
     impl_->toolBar1Position_ = new QPushButton();
     impl_->toolBar1Position_->setToolTip("Switch toolbar 1 popup direction");
-    impl_->toolBar1Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowUp));
-    impl_->toolBar1Position_->setProperty("dir", static_cast<int>(QStyle::SP_ArrowUp));
     addToolbarButton(impl_->toolBar1Position_, Qt::TopToolBarArea);
-    impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
   }
   {
     impl_->toolBar2Position_ = new QPushButton();
     impl_->toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
-    impl_->toolBar2Position_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowLeft));
-    impl_->toolBar2Position_->setProperty("dir", static_cast<int>(QStyle::SP_ArrowLeft));
     addToolbarButton(impl_->toolBar2Position_, Qt::LeftToolBarArea);
-    impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
   }
 
   impl_->statusLabel_ = new QLabel("");
