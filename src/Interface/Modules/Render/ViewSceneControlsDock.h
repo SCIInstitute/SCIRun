@@ -314,7 +314,8 @@ namespace Gui {
      void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
    private:
      ViewSceneDialog* dialog_;
-     void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup);
+     void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped);
+     std::map<QToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
    };
 }
 }

@@ -906,58 +906,28 @@ constexpr PopupProperties rightOutVertical { Qt::AlignRight | Qt::AlignVCenter, 
   ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LeftToRight };
 
 
-PopupProperties getDefaultPopupProperties(Qt::Orientation toolbarOrientation, Qt::ToolBarArea area, bool isFullScreen)
+PopupProperties popupPropertiesFor(Qt::Orientation toolbarOrientation, Qt::ToolBarArea area, bool flipped)
 {
   switch (toolbarOrientation)
   {
     case Qt::Horizontal:
     {
-      if (!isFullScreen)
+      switch (area)
       {
-        switch (area)
-        {
-          case Qt::BottomToolBarArea:
-            return bottomOutHorizontal;
-          default:
-          //case Qt::TopToolBarArea: and floating?
-            return topOutHorizontal;
-        }
-      }
-      else
-      {
-        switch (area)
-        {
-          case Qt::BottomToolBarArea:
-            return topOutHorizontal;
-          default:
-          //case Qt::TopToolBarArea: and floating?
-            return bottomOutHorizontal;
-        }
+        case Qt::BottomToolBarArea:
+          return flipped ? topOutHorizontal : bottomOutHorizontal;
+        default:
+          return flipped ? bottomOutHorizontal : topOutHorizontal;
       }
     }
     case Qt::Vertical:
     {
-      if (!isFullScreen)
+      switch (area)
       {
-        switch (area)
-        {
-          case Qt::LeftToolBarArea:
-            return leftOutVertical;
-          default:
-          //case Qt::RightToolBarArea:
-            return rightOutVertical;
-        }
-      }
-      else
-      {
-        switch (area)
-        {
-          case Qt::LeftToolBarArea:
-            return rightOutVertical;
-          default:
-          //case Qt::RightToolBarArea:
-            return leftOutVertical;
-        }
+        case Qt::LeftToolBarArea:
+          return flipped ? rightOutVertical : leftOutVertical;
+        default:
+          return flipped ? leftOutVertical : rightOutVertical;
       }
     }
   }
@@ -1001,7 +971,7 @@ QStyle::StandardPixmap outArrowForBarAt(Qt::ToolBarArea area)
 
 void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup)
 {
-  updatePopupProperties(toolbar, popup);
+  updatePopupProperties(toolbar, popup, false);
 
   popup->setShowDelay(200);
   popup->setHideDelay(200);
@@ -1010,16 +980,17 @@ void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopu
 void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
 {
   connect(toolbar, &QToolBar::orientationChanged,
-    [this, popup, toolbar](Qt::Orientation /*orientation*/) { updatePopupProperties(toolbar, popup); });
+    [this, popup, toolbar](Qt::Orientation /*orientation*/) { updatePopupProperties(toolbar, popup, false); });
   connect(toolbar, &QToolBar::topLevelChanged,
-    [this, popup, toolbar](bool /*topLevel*/) { updatePopupProperties(toolbar, popup); });
+    [this, popup, toolbar](bool /*topLevel*/) { updatePopupProperties(toolbar, popup, false); });
   connect(dialog_, &ViewSceneDialog::fullScreenChanged,
-    [this, popup, toolbar]() { updatePopupProperties(toolbar, popup); });
+    [this, popup, toolbar]() { updatePopupProperties(toolbar, popup, false); });
+  toolBarPopups_[toolbar].push_back(popup);
 }
 
-void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup)
+void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped)
 {
-  const auto props = getDefaultPopupProperties(toolbar->orientation(), dialog_->whereIs(toolbar), dialog_->isFullScreen());
+  const auto props = popupPropertiesFor(toolbar->orientation(), dialog_->whereIs(toolbar), dialog_->isFullScreen() || flipped);
   popup->setAlignment(props.alignment);
   popup->setOrientation(props.orientation);
   popup->setVerticalDirection(props.verticalDirection);
@@ -1028,15 +999,21 @@ void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPop
 
 void ViewSceneToolBarController::registerDirectionButton(QToolBar* toolbar, QPushButton* button)
 {
-  connect(button, &QPushButton::clicked, [button]()
+  button->setProperty("flip", true);
+  connect(button, &QPushButton::clicked, [button, toolbar, this]()
     {
       const auto opp = oppositeArrow(button);
       button->setIcon(QApplication::style()->standardIcon(opp));
       button->setProperty("dir", static_cast<int>(opp));
+      bool flip = button->property("flip").toBool();
+      for (auto& pop : toolBarPopups_[toolbar])
+        updatePopupProperties(toolbar, pop, flip);
+      button->setProperty("flip", !flip);
     });
 
-  connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool topLevel)
+  connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool /*topLevel*/)
     {
+      button->setProperty("flip", true);
       auto outArrow = outArrowForBarAt(dialog_->whereIs(toolbar));
       button->setIcon(QApplication::style()->standardIcon(outArrow));
       button->setProperty("dir", static_cast<int>(outArrow));
