@@ -76,22 +76,22 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     #include <stdlib.h>
     using namespace std;
 
-    cout << "\nDebug input from UI: \nsim_input is " << sim_input << "\ncfg_input is " << cfg_input << "\n\n";
+//    cout << "\nDebug input from UI: \nsim_input is " << sim_input << "\ncfg_input is " << cfg_input << "\n\n";
 
-/*
-************************************************ Run the simulation code in a separate process
+//    string str1="$PIC_EXAMPLES/LaserWakefield";
+//    string str2="$PIC_CFG/sst.cfg";
 
-The LaserWakefield_run.py python program is:
-
-import os
-import sys
-os.system('bash LaserWakefield_compile_run')
-*/
-
-
-    string str="cd $HOME && python3 LaserWakefield_run.py";
-	const char *command=str.c_str();
+    string text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
+                        +sim_input+" /home/kj/picInputs/myLWFA\ncd /home/kj/picInputs/myLWFA && pic-build && tbg -s bash -c "
+                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $SCRATCH/runs/lwfa_001 &' > /home/kj/Test_compile_run";
+	const char *command=text_file.c_str();
 	system(command);
+    
+//    cout << "\nDebug constructing the simulation compile and run instruction: \nTest_compile_run is " << text_file << "\n";;
+
+    string str="cd $HOME && python3 Test1.py";
+	const char *command_1=str.c_str();
+	system(command_1);
 
 
 /*
