@@ -31,22 +31,18 @@ Coding Sources:
    email from Franz Poschel, dated 17 May 2022
    email from Franz Poschel, dated 16 June 2022: PIConGPU Issue 4162; https://github.com/ComputationalRadiationPhysics/picongpu/issues/4162
 
-*/
 
-/*
 To Do:
-    Implement the input for particle sample rate
+    Implement a process for particle sample rate, mesh (node) sample rate, and mesh slice through a specified x, y, or z axis point
+    Implement all of the above as config settings
+
+The current known functional implementation is the LaserWakefield simulation using the 
+    $PIC_EXAMPLES/LaserWakefield
+    $PIC_CFG/sst.cfg
 */
 
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
-
-// I don't know if any of the following are needed
-//#include <array>
-//#include <iostream>
-//#include <memory>
-//#include <unistd.h>
-//
 
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include<Core/Datatypes/MatrixTypeConversions.h>
@@ -78,8 +74,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 
 //    cout << "\nDebug input from UI: \nsim_input is " << sim_input << "\ncfg_input is " << cfg_input << "\n\n";
 
-//    string str1="$PIC_EXAMPLES/LaserWakefield";
-//    string str2="$PIC_CFG/sst.cfg";
+
 
     string text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
                         +sim_input+" /home/kj/picInputs/myLWFA\ncd /home/kj/picInputs/myLWFA && pic-build && tbg -s bash -c "
