@@ -36,7 +36,8 @@ To Do:
     Implement a process for particle sample rate, mesh (node) sample rate, and mesh slice through a specified x, y, or z axis point
     Implement all of the above as config settings
 
-The current known functional implementation is the LaserWakefield simulation using the 
+The current known to be functional implementation is the LaserWakefield simulation using any of the following config files 1.cfg, 2.cfg and sst.cfg
+I have successfully tested the following PIConGPU module UI entries for Simulation and Config file:
     $PIC_EXAMPLES/LaserWakefield
     $PIC_CFG/sst.cfg
 */
