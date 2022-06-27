@@ -43,4 +43,6 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
 
     addLineEditManager({inputSimulation_}, Variables::FormatString);
     addLineEditManager({inputConfig_}, Variables::FunctionString);
+    addLineEditManager({inputClone_}, Variables::CloneString);
+    addLineEditManager({outputData_}, Variables::OutputString);
     }

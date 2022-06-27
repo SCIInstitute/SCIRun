@@ -50,6 +50,8 @@ namespace ParticleInCell {
 
                 static Core::Algorithms::AlgorithmParameterName FormatString;
                 static Core::Algorithms::AlgorithmParameterName FunctionString;
+                static Core::Algorithms::AlgorithmParameterName CloneString;
+                static Core::Algorithms::AlgorithmParameterName OutputString;
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };
 }}}

@@ -41,6 +41,8 @@ MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
 SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
 SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::CloneString("CloneString");
+SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::OutputString("OutputString");
 
 PIConGPU::PIConGPU() : Module(staticInfo_)
     {
@@ -54,6 +56,8 @@ void PIConGPU::setStateDefaults()
     auto state = get_state();
     state->setValue(FormatString,std::string("[Enter the path to your PIConGPU Simulation here]"));
     state->setValue(FunctionString,std::string("[Enter the path to your .config file here]"));
+    state->setValue(CloneString,std::string("[Enter the path to the simulation clone directory here]"));
+    state->setValue(OutputString,std::string("[Enter the path to the output directory here]"));
     }
 
 void PIConGPU::execute()
@@ -63,6 +67,8 @@ void PIConGPU::execute()
         AlgorithmInput input;
         setAlgoStringFromState(Variables::FormatString);
         setAlgoStringFromState(Variables::FunctionString);
+        setAlgoStringFromState(Variables::CloneString);
+        setAlgoStringFromState(Variables::OutputString);
 
         auto output=algo().run(input);
 
