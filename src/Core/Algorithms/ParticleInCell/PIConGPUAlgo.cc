@@ -40,6 +40,7 @@ The current known to be functional implementation is the LaserWakefield simulati
 I have successfully tested the following PIConGPU module UI entries for Simulation and Config file:
     $PIC_EXAMPLES/LaserWakefield
     $PIC_CFG/sst.cfg
+    $PIC_CFG/1.cfg
 */
 
 #include <openPMD/openPMD.hpp>
@@ -87,6 +88,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
         text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
                   +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
                   +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl /home/kj/scratch/runs/SST &' > /home/kj/Test_compile_run";
+        }
 
 	    const char *command=text_file.c_str();
 	    system(command);
@@ -212,8 +214,6 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     // implement a loop to load all series iterations:
     //    for (TBD)
     //        {
-    // note: you can use the existing curly brace 38 lines below to close this series iteration loop
-    // use the extended 2D loadedChunks array to define the chunk variable below
 
             for (size_t i_pos = 0; i_pos < 3; ++i_pos)
                 {
@@ -251,10 +251,14 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
             output[y_coordinates] = output_mat_1;
             output[z_coordinates] = output_mat_2;
 
-            } //end of the openPMD Reader series iteration loop
+//            } //end of the openPMD Reader series iteration loop
 
         return output;
         } //end of the SST output
+/*
+************************************************End of the simulation code call (for SST output)
+************************************************Save openPMD data to storage
+
 
     else
         {
@@ -264,7 +268,8 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
         string str="cd $HOME && python3 Test1.py";
 	    const char *command_1=str.c_str();
 	    system(command_1);
-        }
+        } //end of saving openPMD output (to storage)
+*/
 
 //#else
 //    std::cout << "The streaming example requires that openPMD has been built with ADIOS2." << std::endl;
