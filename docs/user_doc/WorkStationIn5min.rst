@@ -25,7 +25,7 @@ We will use the following files and directories:
 
 - :file:`$HOME/src/picongpu`: source files from github
 - :file:`picongpu.dependencies`: loads PIConGPU dependencies
-- :file:`picongpu.profile`: sets up directories and system variables needed to compile and run a PIConGPU simulation
+- :file:`picongpu.profile`: sets up directories and system variables
 - :file:`$HOME/picInputs`: scenarios to simulate
 - :file:`$HOME/scratch/runs`: output of the simulation runs
 
@@ -43,7 +43,7 @@ Download *picongpu.dependencies* and *picongpu.profile* executable scripts by do
   cp $HOME/SCIRun/scripts/picongpu/picongpu.profile .
 
 Install PIConGPU
------------------
+----------------::
 
   source picongpu.dependencies
 
@@ -56,7 +56,7 @@ Copy the LaserWakefield compile and run script to the $HOME directory::
   cp $HOME/SCIRun/scripts/picongpu/LaserWakefield_compile_run .
 
 Compile and Run
----------------
+---------------::
 
   source LaserWakefield_compile_run
 
@@ -65,9 +65,13 @@ This may take a while, go grab a coffee.
 Examine the Results
 -------------------
 
-Results are located at :file:`$HOME/scratch/runs/lwfa_001/simOutput`
+Results are located at::
 
-To view pretty pictures you can have a look at the images found at $HOME/scratch/runs/lwfa_001/simOutput/pngElectronsYX.
+$HOME/scratch/runs/lwfa_001/simOutput
+
+To view pretty pictures you can have a look at the images found at::
+
+$HOME/scratch/runs/lwfa_001/simOutput/pngElectronsYX
 
 Further Reading
 ---------------
