@@ -43,8 +43,8 @@ Download *picongpu.dependencies* and *picongpu.profile* executable scripts by do
   cp $HOME/SCIRun/scripts/picongpu/picongpu.profile .
 
 Install PIConGPU
-----------------:
-
+----------------
+ :
   source picongpu.dependencies
 
 Set up a simulation
@@ -56,8 +56,8 @@ Copy the LaserWakefield compile and run script to the $HOME directory::
   cp $HOME/SCIRun/scripts/picongpu/LaserWakefield_compile_run .
 
 Compile and Run
----------------:
-
+---------------
+ :
   source LaserWakefield_compile_run
 
 This may take a while, go grab a coffee.
