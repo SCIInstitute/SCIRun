@@ -44,7 +44,9 @@ Download *picongpu.dependencies* and *picongpu.profile* executable scripts by do
 
 Install PIConGPU
 ----------------
- :
+
+Install the PIConGPU dependencies with::
+
   source picongpu.dependencies
 
 Set up a simulation
@@ -57,7 +59,9 @@ Copy the LaserWakefield compile and run script to the $HOME directory::
 
 Compile and Run
 ---------------
- :
+
+Compile and run the simulation with::
+
   source LaserWakefield_compile_run
 
 This may take a while, go grab a coffee.
@@ -67,11 +71,11 @@ Examine the Results
 
 Results are located at::
 
-$HOME/scratch/runs/lwfa_001/simOutput
+  $HOME/scratch/runs/lwfa_001/simOutput
 
 To view pretty pictures you can have a look at the images found at::
 
-$HOME/scratch/runs/lwfa_001/simOutput/pngElectronsYX
+  $HOME/scratch/runs/lwfa_001/simOutput/pngElectronsYX
 
 Further Reading
 ---------------
