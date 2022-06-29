@@ -110,7 +110,7 @@ The ``tbg`` instruction creates a directory ``$PIC_OUTPUT/lwfa_001/input/`` in t
 contains the same structure as the original working directory, and provides an archive of the working directory files 
 used to run the simulation.  
 
-The directory ``$PIC_OUTPUT/lwfa_001/simOutput/`` is also created suring simulation execution and holds all the 
+The directory ``$PIC_OUTPUT/lwfa_001/simOutput/`` is also created during simulation execution and holds all the 
 simulation results.
 
 The Simulation_Compile_Run Script
@@ -132,5 +132,7 @@ The *LaserWakefield_compile_run* script is::
     cd /$HOME && source picongpu.profile && pic-create $PIC_EXAMPLES/LaserWakefield $PIC_CLONE/myLWFA
     cd $PIC_CLONE/myLWFA && pic-build && tbg -s bash -c $PIC_CFG/1.cfg -t etc/picongpu/bash/mpiexec.tpl $PIC_OUTPUT/lwfa_001 &
 
-Note that all of the steps described above for setting up, compiling and running the LaserWakefield simulation are 
-present and executerd in the order required.  A different simulation 
+All of the steps described above for setting up, compiling and running the LaserWakefield simulation are 
+present and executed in the order required.  A different simulation can be set up and run by setting the 
+4 variables noted above as needed for the new simulation.  That process is described in detail in the 
+SCIRun With PIConGPU Simulation Tutorial, next.
