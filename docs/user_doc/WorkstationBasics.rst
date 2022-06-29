@@ -73,7 +73,9 @@ Create a working copy of the entire simulation set of files by using the pic-cre
 
 PIConGPU is controlled via two kinds of textual input sets: compile-time options and runtime options.  Compile-time 
 options define the physics and numeric processes.  When any of these files are changed, the simulation must be 
-re-compiled.  Runtime options are set in configuration files, found in:: $PIC_CFG/*.cfg
+re-compiled.  Runtime options are set in configuration files, found in::
+
+$PIC_CFG/*.cfg
 
 Runtime options include things like simulation size, number of devices, output options, etc., and do not require a 
 re-compile when changed.
@@ -100,16 +102,16 @@ Compiling the simulation is accomplished by switching to the Working directory a
 3. Run The Simulation
 """""""""""""""""""""
 
-Execute the simulation from within the working directory.  PIC_CFG is set to 1.cfg::
+Execute the simulation from within the working directory::
 
    tbg -s bash -c $PIC_CFG/1.cfg -t etc/picongpu/bash/mpiexec.tpl $PIC_OUTPUT/lwfa_001
 
-The ``tbg`` instruction also creates a subfolder ``input/`` in the output directory.  This directory contains the 
-same structure as the working directory, and provides an archive of the working directory (input) files used to run 
-this simulation.  
+The ``tbg`` instruction creates a directory ``$PIC_OUTPUT/lwfa_001/input/`` in the output directory.  This directory 
+contains the same structure as the original working directory, and provides an archive of the working directory files 
+used to run the simulation.  
 
-The directory ``$PIC_OUTPUT/lwfa_001/simOutput/`` is created suring simulation execution and holds all the simulation 
-results.
+The directory ``$PIC_OUTPUT/lwfa_001/simOutput/`` is also created suring simulation execution and holds all the 
+simulation results.
 
 The Simulation_Compile_Run Script
 ---------------------------------
@@ -122,3 +124,13 @@ Note that with 4 variables::
 - PIC_OUTPUT/lwfa_001         The directory to be used for storing output
 
 A complete PIConGPU simulation can be set up and run.
+
+The *LaserWakefield_compile_run* script is::
+
+    #!/usr/bin bash
+
+    cd /$HOME && source picongpu.profile && pic-create $PIC_EXAMPLES/LaserWakefield $PIC_CLONE/myLWFA
+    cd $PIC_CLONE/myLWFA && pic-build && tbg -s bash -c $PIC_CFG/1.cfg -t etc/picongpu/bash/mpiexec.tpl $PIC_OUTPUT/lwfa_001 &
+
+Note that all of the steps described above for setting up, compiling and running the LaserWakefield simulation are 
+present and executerd in the order required.  A different simulation 
