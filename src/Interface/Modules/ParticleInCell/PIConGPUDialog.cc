@@ -25,22 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Interface/Modules/ParticleInCell/PIConGPUDialog.h>
-
-#include <Modules/ParticleInCell/PIConGPU.h>
-
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-
-//using namespace SCIRun::Modules::StringManip;
-//using namespace SCIRun::Modules::ParticleInCell;
-
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)
@@ -49,9 +40,9 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     setupUi(this);
     setWindowTitle(QString::fromStdString(name));
     fixSize();
-    addRadioButtonGroupManager({dontsavedataButton_ ,savedataButton_}, Variables::Method);
 
-    addLineEditManager(inputstring_,Parameters::FormatString);
-
-//    addSpinBoxManager({NumTimeStepsSpinBox_}, Parameters::NumTimeSteps);
+    addLineEditManager({inputSimulation_}, Variables::FormatString);
+    addLineEditManager({inputConfig_}, Variables::FunctionString);
+    addLineEditManager({inputClone_}, Variables::CloneString);
+    addLineEditManager({outputData_}, Variables::OutputString);
     }

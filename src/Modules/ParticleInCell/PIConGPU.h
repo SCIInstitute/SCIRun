@@ -29,12 +29,11 @@
 #define MODULES_PARTICLEINCELL_PIConGPU_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/ParticleInCell/share.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
-
 
     class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
@@ -49,8 +48,11 @@ namespace ParticleInCell {
                 OUTPUT_PORT(1, y_coordinates, Matrix);
                 OUTPUT_PORT(2, z_coordinates, Matrix);
 
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
                 static Core::Algorithms::AlgorithmParameterName FormatString;
+                static Core::Algorithms::AlgorithmParameterName FunctionString;
+                static Core::Algorithms::AlgorithmParameterName CloneString;
+                static Core::Algorithms::AlgorithmParameterName OutputString;
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };
 }}}
 #endif

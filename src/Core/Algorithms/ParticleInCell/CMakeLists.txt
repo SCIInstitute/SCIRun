@@ -34,7 +34,7 @@ SET(Algorithms_ParticleInCell_SRCS
   PotentialSolver.cpp
   Species.cpp
   World.cpp
-  PIConGPUAlgo.cpp
+  PIConGPUAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS

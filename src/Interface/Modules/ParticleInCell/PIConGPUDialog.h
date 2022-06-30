@@ -30,23 +30,20 @@
 
 #include <Interface/Modules/ParticleInCell/ui_PIConGPUDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
-#include <Interface/Modules/String/share.h>
-
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui    {
 
 class SCISHARE PIConGPUDialog : public ModuleDialogGeneric,
-  public Ui::PIConGPUDialog
-      {
-	  Q_OBJECT
+    public Ui::PIConGPUDialog
+        {
+        Q_OBJECT
 
-      public:
-          PIConGPUDialog(const std::string& name,
-          SCIRun::Dataflow::Networks::ModuleStateHandle state,
-          QWidget* parent = nullptr);
-      };
+        public:
+            PIConGPUDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+        };
 }}
 #endif

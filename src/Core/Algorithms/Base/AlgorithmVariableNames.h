@@ -53,7 +53,9 @@ public:
   static const AlgorithmParameterName FileTypeName;
   static const AlgorithmParameterName GuiFileTypeName;
   static const AlgorithmParameterName FormatString;
-	static const AlgorithmParameterName FunctionString;
+  static const AlgorithmParameterName FunctionString;
+  static const AlgorithmParameterName CloneString;
+  static const AlgorithmParameterName OutputString;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
   static const AlgorithmParameterName ProgrammableInputPortEnabled;
