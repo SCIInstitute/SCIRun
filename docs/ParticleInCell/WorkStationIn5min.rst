@@ -7,27 +7,27 @@ A guide to easily run, but not understand PIConGPU.
 It is aimed at users with access to a personal use multi GPU Workstation.
 
 This guide assumes the operator has **admin privelege** on the Workstation.
-Consider getting familiar with the shell (*command line*, usually :command:`bash`) and git.
+Consider getting familiar with the shell (*command line*, usually `bash`) and git.
 
-.. seealso::
+
    resources for the command line (bash)
      `a tutorial <http://www.bu.edu/tech/files/2018/05/2018-Summer-Tutorial-Intro-to-Linux.pdf>`_ |
      `another tutorial <https://cscar.research.umich.edu/wp-content/uploads/sites/5/2016/09/Intro-to-Command-Line.pdf>`_ |
      `scripting by examples <https://learnxinyminutes.com/docs/bash/>`_
 
    resources for git
-     `official tutorial <https://git-scm.com/docs/gittutorial>`_ (also available as man page :manpage:`gittutorial(7)`) |
+     `official tutorial <https://git-scm.com/docs/gittutorial>`_ 
      `w3school tutorial <https://www.w3schools.com/git/default.asp>`_ |
      `brief introduction <https://learnxinyminutes.com/docs/git/>`_ |
      `cheatsheet (by github) <https://training.github.com/downloads/github-git-cheat-sheet.pdf>`_
   
 We will use the following files and directories:
 
-- :file:`$HOME/src/picongpu`: source files from github
-- :file:`picongpu.dependencies`: loads PIConGPU dependencies
-- :file:`picongpu.profile`: sets up directories and system variables
-- :file:`$HOME/picInputs`: scenarios to simulate
-- :file:`$HOME/scratch/runs`: output of the simulation runs
+- `$HOME/src/picongpu`: source files from github
+- `picongpu.dependencies`: loads PIConGPU dependencies
+- `picongpu.profile`: sets up directories and system variables
+- `$HOME/picInputs`: scenarios to simulate
+- `$HOME/scratch/runs`: output of the simulation runs
 
 Setup
 -----
