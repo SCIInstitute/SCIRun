@@ -55,47 +55,82 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
+using std::cout;
+using namespace openPMD;
+using position_t = float; // TODO: move to header file
+
+ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
+
 const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
-    addParameter(Variables::FormatString, std::string());
-    addParameter(Variables::FunctionString, std::string());
-    addParameter(Variables::CloneString, std::string());
-    addParameter(Variables::OutputString, std::string());
+    addParameter(Paramaters::SimulationFile, std::string("[Enter the path to your PIConGPU Simulation here]"));
+    addParameter(Paramaters::ConfigFile, std::string("[Enter the path to your .config file here]"));
+    addParameter(Paramaters::CloneString, std::string("[Enter the path to the simulation clone directory here]"));
+    addParameter(Paramaters::OutputString, std::string("[Enter the path to the output directory here]"));
+    addParameter(Parameters::IterationIndex, 0);
+    simulationstarted_ = false;
     }
+
+bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output) const
+    {
+        #include <stdlib.h>
+        using namespace std;
+        string text_file;
+
+        text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
+                            +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
+                            +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > /home/kj/Test_compile_run";
+
+        if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
+            {
+            text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
+                      +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
+                      +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl /home/kj/scratch/runs/SST &' > /home/kj/Test_compile_run";
+            }
+
+            const char *command=text_file.c_str();
+            system(command);
+
+            string str="cd $HOME && python3 Test1.py";
+            const char *command_1=str.c_str();
+            system(command_1);
+        
+            //Wait for simulation output data to be generated and posted via SST
+            while(!std::filesystem::exists(sst_file_) sleep(1);
+                  
+      return true;
+        
+    }
+                                        
+                                        
 
 AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
-    auto sim_input  = get(Variables::FormatString).toString();
-    auto cfg_input  = get(Variables::FunctionString).toString();
-    auto sim_clone  = get(Variables::CloneString).toString();
-    auto sim_output = get(Variables::OutputString).toString();
+    auto sim_input  = get(Paramaters::SimulationFile).toString();
+    auto cfg_input  = get(Paramaters::ConfigFile).toString();
+    auto sim_clone  = get(Paramaters::CloneDir).toString();
+    auto sim_output = get(Paramaters::OutputDir).toString();
+    auto iter_ind = get(Paramaters::IterationIndex).toInt();
+                
+    if (!simulationstarted_)
+    {
+        StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
+        simulation_started_ = true;
+    }
+                
+    
 
-    #include <stdlib.h>
-    using namespace std;
-    string text_file;
-
-    text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
-                        +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > /home/kj/Test_compile_run";
-
-    if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
-        {
-        text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
-                  +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl /home/kj/scratch/runs/SST &' > /home/kj/Test_compile_run";
-        }
-
-	    const char *command=text_file.c_str();
-	    system(command);
-
-        string str="cd $HOME && python3 Test1.py";
-	    const char *command_1=str.c_str();
-	    system(command_1);
+    
 
 
 /*
@@ -103,13 +138,11 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 ************************************************Start the openPMD Reader
 */
 
-        using std::cout;
-        using namespace openPMD;
-                                                        //Wait for simulation output data to be generated and posted via SST
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        
+                                                        
 
     //#if openPMD_HAVE_ADIOS2
-        using position_t = float;
+        
 
     //    auto backends = openPMD::getFileExtensions();
     //    if (std::find(backends.begin(), backends.end(), "sst") == backends.end())
@@ -118,14 +151,22 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     //        return 0;
     //        }
 
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        Series series = Series(sst_file_, Access::READ_ONLY);
 
-        for (IndexedIteration iteration : series.readIterations())
-            {
-            cout << "\nCurrent iteration: " << iteration.iterationIndex << std::endl;
+                
+//        for (IndexedIteration iteration : series.readIterations())
+//            {
+                
+                
+                //check if  iteration is available (new function)
+                
+                
+                // something like this
+            IndexedIteration iteration = series.readIterations(iter_ind);
+            cout << "\nCurrent iteration: " << iter_ind << std::endl;
 
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
-            Iteration iter = series.iterations[iteration.iterationIndex];
+            Iteration iter = series.iterations[iter_ind];
             cout << "Iteration " << iteration.iterationIndex << " contains "
                  << iter.meshes.size()    << " meshes " << "and "
                  << iter.particles.size() << " particle species\n";

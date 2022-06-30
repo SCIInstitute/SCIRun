@@ -53,6 +53,8 @@ namespace ParticleInCell {
                 static Core::Algorithms::AlgorithmParameterName CloneString;
                 static Core::Algorithms::AlgorithmParameterName OutputString;
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            private:
+                bool running_;
             };
 }}}
 #endif

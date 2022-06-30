@@ -34,15 +34,15 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::CloneString("CloneString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::OutputString("OutputString");
+//SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
+//SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
+//SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::CloneString("CloneString");
+//SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::OutputString("OutputString");
 
 PIConGPU::PIConGPU() : Module(staticInfo_)
     {
@@ -53,27 +53,62 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
 
 void PIConGPU::setStateDefaults()
     {
-    auto state = get_state();
-    state->setValue(FormatString,std::string("[Enter the path to your PIConGPU Simulation here]"));
-    state->setValue(FunctionString,std::string("[Enter the path to your .config file here]"));
-    state->setValue(CloneString,std::string("[Enter the path to the simulation clone directory here]"));
-    state->setValue(OutputString,std::string("[Enter the path to the output directory here]"));
+    setStateStringFromAlgo(Parameters::SimulationFile);
+    setStateStringFromAlgo(Parameters::ConfigFile);
+    setStateStringFromAlgo(Parameters::CloneDir);
+    setStateStringFromAlgo(Parameters::OutputDir);
+    setStateIntFromAlgo(Parameters::IterationIndex);
+    setStateIntFromAlgo(Parameters::MaxIndex);
     }
 
 void PIConGPU::execute()
     {
-    if(needToExecute())
+    AlgorithmInput input;
+    if(needToExecute() || running_)
         { 
-        AlgorithmInput input;
-        setAlgoStringFromState(Variables::FormatString);
-        setAlgoStringFromState(Variables::FunctionString);
-        setAlgoStringFromState(Variables::CloneString);
-        setAlgoStringFromState(Variables::OutputString);
+        auto state = get_state();
+            
+        setAlgoStringFromState(Parameters::SimulationFile);
+        setAlgoStringFromState(Parameters::ConfigFile);
+        setAlgoStringFromState(Parameters::CloneDir);
+        setAlgoStringFromState(Parameters::OutputDir);
+            
+        int maxIndex;
 
+        try
+        {
         auto output=algo().run(input);
-
         sendOutputFromAlgorithm(x_coordinates,output);
         sendOutputFromAlgorithm(y_coordinates,output);
         sendOutputFromAlgorithm(z_coordinates,output);
+        maxIndex = output.additionalAlgoOutput()->toInt();
+        state->setValue(Parameters::MaxIndex, maxIndex);
+        }
+        catch (const Core::Algorithms::AlgorithmInputException&)
+        {
+          running_ = false;
+          throw;
+        }
+        
+        auto nextIndex = algo().get(Parameters::IterationIndex).toInt() + 1;
+        if (nextIndex >= (maxIndex + 1))
+        {
+            running_=false;
+        }
+        else
+        {
+            runNextIteration(nextIndex % (maxIndex + 1);
+        }
         }
     }
+
+void PIConGPU::runNextIteration(int nextIndex)
+{
+    auto state = get_state();
+    state->setValue(Parameters::IterationIndex, nextIndex);
+    running_ = true;
+//    int delay = state->getValue(Parameters::PlayModeDelay).toInt();
+//    //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
+//    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    enqueueExecuteAgain(false);
+}
