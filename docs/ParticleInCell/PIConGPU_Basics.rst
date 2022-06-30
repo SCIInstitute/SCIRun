@@ -6,9 +6,11 @@ the *LaserWakefield_compile_run* script.  This section summarizes the setup, com
 *LaserWakefield_compile_run* script does automatically.
 
 A more detailed explanation of the PIConGPU setup, compile and run process is provided on the PIConGPU ReadTheDocs 
-website found at https://picongpu.readthedocs.io/en/latest/usage/basics.html.
+website found at:
 
-The summary below is informative, and provided for backgrpound and foundation.  The implementation of PIConGPU in 
+    https://picongpu.readthedocs.io/en/latest/usage/basics.html.
+
+The summary below is informative, and provided for background and foundation.  The implementation of PIConGPU in 
 SCIRun uses the equivalent of a *LaserWakefield_compile_run* script.  The SCIRun With PIConGPU Simulation Tutorial 
 provides explanation and instruction for how to run a PIConGPU simulation in SCIRun.  
 
