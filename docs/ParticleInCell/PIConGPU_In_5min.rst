@@ -53,7 +53,7 @@ Set up a simulation
 -------------------
 
 As an example we will use the example LaserWakefield simulation.
-Copy the LaserWakefield compile and run script to the $HOME directory::
+Copy the *LaserWakefield_compile_run* script to the $HOME directory::
 
   cp $HOME/SCIRun/scripts/picongpu/LaserWakefield_compile_run .
 

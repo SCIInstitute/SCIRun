@@ -66,12 +66,14 @@ The remainder of the process is divided into 3 steps: Create a Working Copy, Com
 Simulation.  These steps include elements that are simulation specific.  This section uses the LaserWakefield 
 PIConGPU Example simulation, as was done in the 'PIConGPU in 5 Minutes on a Workstation' section.
 
-1. Create a Working Copy Input Set
-""""""""""""""""""""""""""""""""""
+1. Create a Working Copy
+""""""""""""""""""""""""
 
 Create a working copy of the entire simulation set of files by using the pic-create helper tool::
 
    pic-create $PIC_EXAMPLES/LaserWakefield $PIC_CLONE/myLWFA
+
+The *pic-create* instruction includes source and destination options.  The source contains files required to run a particular PIConGPU simulation, and the destination is the directory where output is stored.  *pic-create* creates the destination directory and copies files from the source to the destination.
 
 PIConGPU is controlled via two kinds of textual input sets: compile-time options and runtime options.  Compile-time 
 options define the physics and numeric processes.  When any of these files are changed, the simulation must be 
