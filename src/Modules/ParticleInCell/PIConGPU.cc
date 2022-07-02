@@ -36,13 +36,9 @@ using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
-
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FormatString("FormatString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::FunctionString("FunctionString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::CloneString("CloneString");
-SCIRun::Core::Algorithms::AlgorithmParameterName PIConGPU::OutputString("OutputString");
 
 PIConGPU::PIConGPU() : Module(staticInfo_)
     {
@@ -54,21 +50,23 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
 void PIConGPU::setStateDefaults()
     {
     auto state = get_state();
-    state->setValue(FormatString,std::string("[Enter the path to your PIConGPU Simulation here]"));
-    state->setValue(FunctionString,std::string("[Enter the path to your .config file here]"));
-    state->setValue(CloneString,std::string("[Enter the path to the simulation clone directory here]"));
-    state->setValue(OutputString,std::string("[Enter the path to the output directory here]"));
+    setStateStringFromAlgo(Parameters::SimulationFile);
+    setStateStringFromAlgo(Parameters::ConfigFile);
+    setStateStringFromAlgo(Parameters::CloneDir);
+    setStateStringFromAlgo(Parameters::OutputDir);
+//    setStateIntFromAlgo(Parameters::IterationIndex);
+//    setStateIntFromAlgo(Parameters::MaxIndex);
     }
 
 void PIConGPU::execute()
     {
-    if(needToExecute())
+    if(needToExecute() || running_)
         { 
         AlgorithmInput input;
-        setAlgoStringFromState(Variables::FormatString);
-        setAlgoStringFromState(Variables::FunctionString);
-        setAlgoStringFromState(Variables::CloneString);
-        setAlgoStringFromState(Variables::OutputString);
+        setAlgoStringFromState(Parameters::SimulationFile);
+        setAlgoStringFromState(Parameters::ConfigFile);
+        setAlgoStringFromState(Parameters::CloneDir);
+        setAlgoStringFromState(Parameters::OutputDir);
 
         auto output=algo().run(input);
 

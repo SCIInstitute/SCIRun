@@ -41,8 +41,8 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
-    addLineEditManager({inputSimulation_}, Variables::FormatString);
-    addLineEditManager({inputConfig_}, Variables::FunctionString);
-    addLineEditManager({inputClone_}, Variables::CloneString);
-    addLineEditManager({outputData_}, Variables::OutputString);
+    addLineEditManager({inputSimulation_}, Variables::SimulationFile);
+    addLineEditManager({inputConfig_}, Variables::ConfigFile);
+    addLineEditManager({inputClone_}, Variables::CloneDir);
+    addLineEditManager({outputData_}, Variables::OutputDir);
     }
