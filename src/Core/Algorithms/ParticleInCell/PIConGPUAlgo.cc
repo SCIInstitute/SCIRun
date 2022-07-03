@@ -289,10 +289,9 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
         output[y_coordinates] = output_mat_1;
         output[z_coordinates] = output_mat_2;
 
+        } //end of the openPMD Reader series iteration loop
 
-
-        return output;
-        } //end of the SST output
+    return output;
 /*
 ************************************************End of the simulation code call (for SST output)
 ************************************************Save openPMD data to storage
