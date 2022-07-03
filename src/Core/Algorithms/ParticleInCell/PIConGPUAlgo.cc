@@ -35,6 +35,7 @@ Coding Sources:
 To Do:
     Implement a process for particle sample rate, mesh (node) sample rate, and mesh slice through a specified x, y, or z axis point
     Implement all of the above as config settings
+    Figure out why including PSypy in the output (TBG Plugins option in the .cfg file) causes an execution crash
 
 The current known to be functional implementation is the LaserWakefield simulation using any of the following config files 1.cfg, 2.cfg and sst.cfg
 I have successfully tested the following PIConGPU module UI entries for Simulation and Config file:
@@ -88,7 +89,7 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
 
     text_file = "printf '#!/usr/bin bash\n\ncd $HOME && source picongpu.profile && pic-create "
                         +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Test_compile_run";
+                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+"' > $HOME/Test_compile_run";
 
     if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
         {
@@ -123,32 +124,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
         simulation_started_ = true;
         }
 */
-                   //This statement or the code block below appear to do the same thing
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
-
-/*
-    #include <stdlib.h>
-    using namespace std;
-    string text_file;
-
-    text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
-                        +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > /home/kj/Test_compile_run";
-
-    if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
-        {
-        text_file = "printf '#!/usr/bin bash\n\ncd /home/kj && source picongpu.profile && pic-create "
-                  +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl /home/kj/scratch/runs/SST &' > /home/kj/Test_compile_run";
-        }
-
-    const char *command=text_file.c_str();
-    system(command);
-
-    string str="cd $HOME && python3 Test1.py";
-    const char *command_1=str.c_str();
-    system(command_1);
-*/
 
 /*
 ************************************************End of the simulation code call (for SST output)
@@ -289,7 +265,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
         output[y_coordinates] = output_mat_1;
         output[z_coordinates] = output_mat_2;
 
-        } //end of the openPMD Reader series iteration loop
+        } //end of the openPMD Reader
 
     return output;
 /*
