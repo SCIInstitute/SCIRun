@@ -49,7 +49,7 @@ PIConGPU::PIConGPU() : Module(staticInfo_)
 
 void PIConGPU::setStateDefaults()
     {
-    auto state = get_state();
+//    auto state = get_state();  //original
     setStateStringFromAlgo(Parameters::SimulationFile);
     setStateStringFromAlgo(Parameters::ConfigFile);
     setStateStringFromAlgo(Parameters::CloneDir);
@@ -60,9 +60,12 @@ void PIConGPU::setStateDefaults()
 
 void PIConGPU::execute()
     {
+    AlgorithmInput input;           //New
     if(needToExecute() || running_)
         { 
-        AlgorithmInput input;
+//        AlgorithmInput input;       //original
+        auto state = get_state();   //New
+
         setAlgoStringFromState(Parameters::SimulationFile);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::CloneDir);

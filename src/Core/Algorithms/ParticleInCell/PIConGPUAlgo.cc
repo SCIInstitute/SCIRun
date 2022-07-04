@@ -64,8 +64,8 @@ ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
-ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
-ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
 
 const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
@@ -121,7 +121,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     if (!simulationstarted_)
         {
         StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
-        simulation_started_ = true;
+        simulationstarted_ = true;
         }
 */
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
@@ -146,7 +146,7 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 
     for (IndexedIteration iteration : series.readIterations())
         {
-        cout << "\nCurrent iteration: " << iteration.iterationIndex << std::endl;
+        cout << "\nCurrent iteration is: " << iteration.iterationIndex << std::endl;
 
                                                     //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
         Iteration iter = series.iterations[iteration.iterationIndex];
@@ -234,8 +234,6 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
             std::string dim = dimensions[i_pos];
             auto chunk = loadedChunks[i_pos];
 
-
-
             cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
             for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
             cout << "\n----------" << std::endl;
@@ -270,18 +268,6 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     return output;
 /*
 ************************************************End of the simulation code call (for SST output)
-************************************************Save openPMD data to storage
-
-
-    else
-        {
-	    const char *command=text_file.c_str();
-	    system(command);
-
-        string str="cd $HOME && python3 Test1.py";
-	    const char *command_1=str.c_str();
-	    system(command_1);
-        } //end of saving openPMD output (to storage)
 */
 
 //#else
