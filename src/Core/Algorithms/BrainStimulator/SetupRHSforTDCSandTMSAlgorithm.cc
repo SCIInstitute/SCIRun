@@ -939,7 +939,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
     auto mesh_elc_tri_surf = elc_tri_surf->vmesh();
     mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E);
     vmesh->synchronize(Mesh::NODE_LOCATE_E);
-    for (VMesh::Node::index_type l = 0; l < vmesh->num_nodes(); l++) { (*output)(l, 0) = 0; }
+    for (auto l = 0; l < vmesh->num_nodes(); l++) { (*output)(l, 0) = 0; }
     double min_dis = get(Parameters::pointdistancebound).toDouble();
     for (VMesh::Node::index_type l = 0; l < mesh_elc_tri_surf->num_nodes(); l++)
     {
@@ -948,14 +948,10 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
       double distance = -1;
       VMesh::Node::index_type ind;
       vmesh->find_closest_node(distance, q, ind, p);
-      (*output)(ind, 0) = elcs_wanted[l].toDouble() / 1000.0;
+      (*output)(static_cast<int>(ind), 0) = elcs_wanted[l].toDouble() / 1000.0;
       if (min_dis < distance)
       {
-        std::ostringstream ostr4;
-        ostr4 << " The electrode locations (4th module input) are further away from them mesh as "
-                 "provided by the GUI (min. distance bound). "
-              << std::endl;
-        remark(ostr4.str());
+        remark("The electrode locations (4th module input) are further away from them mesh as provided by the GUI (min. distance bound).\n");
       }
     }
 

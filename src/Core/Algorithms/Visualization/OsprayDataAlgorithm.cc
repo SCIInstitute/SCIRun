@@ -282,8 +282,7 @@ std::vector<uint32_t> OsprayDataAlgorithm::sort_points(EdgeVector edges, std::ve
     ostr<<" ]";
     LOG_DEBUG(ostr.str());
 
-    int sum_regions = 0;
-    for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
+    //for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
 
 
     std::list<Vertex_u> order_subset = sort_cc(edges_subset);

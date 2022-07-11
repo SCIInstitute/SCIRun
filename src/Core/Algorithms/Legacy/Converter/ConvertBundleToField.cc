@@ -221,7 +221,6 @@ bool ConvertBundleToFieldAlgo::runImpl(const BundleHandle& input, FieldHandle& o
   omesh->node_reserve(tot_num_nodes);
   omesh->elem_reserve(tot_num_elems);
 
-  size_type nodes_offset = 0;
   size_type elems_offset = 0;
   size_type nodes_count = 0;
   size_type elems_count = 0;
@@ -411,7 +410,6 @@ bool ConvertBundleToFieldAlgo::runImpl(const BundleHandle& input, FieldHandle& o
     }
 
     elems_offset += elems_count;
-    nodes_offset += nodes_count;
 
     update_progress_max(p+1, inputs.size());
   }
