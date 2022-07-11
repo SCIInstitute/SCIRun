@@ -92,7 +92,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
   int cnt =0;
   for (VMesh::Node::index_type i=0; i<size; ++i)
   {
-    const auto ii = static_cast<int>(i);
+    const auto ii = static_cast<uint64_t>(i);
     p.x( (*matrix)(ii, 0) );
     p.y( (*matrix)(ii, 1) );
     p.z( (*matrix)(ii, 2) );

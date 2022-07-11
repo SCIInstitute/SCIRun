@@ -72,7 +72,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     for (VMesh::Node::index_type i=0; i<size; ++i)
     {
       vmesh->get_center(p,i);
-      const auto ii = static_cast<int>(i);
+      const auto ii = static_cast<uint64_t>(i);
       (*output)(ii, 0) = p.x();
       (*output)(ii, 1) = p.y();
       (*output)(ii, 2) = p.z();
