@@ -72,6 +72,9 @@ namespace SCIRun {
     static boost::python::dict get_output_data(const std::string& moduleId);
     static std::string set_output_data(const std::string& moduleId, const boost::python::dict& outputMap);
 
+    static std::string scirun_enable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
+    static std::string scirun_disable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
+
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);

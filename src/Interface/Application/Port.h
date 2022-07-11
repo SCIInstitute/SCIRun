@@ -186,6 +186,7 @@ Q_SIGNALS:
   void connectionNoteChanged();
   void highlighted(bool highlighted);
   void incomingConnectionStateChange(bool disabled, int index);
+  void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
 protected:
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;

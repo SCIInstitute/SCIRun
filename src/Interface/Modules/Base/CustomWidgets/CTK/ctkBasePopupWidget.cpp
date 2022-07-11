@@ -89,7 +89,7 @@ ctkBasePopupWidgetPrivate::ctkBasePopupWidgetPrivate(ctkBasePopupWidget& object)
   // Geometry attributes
   this->Alignment = Qt::AlignJustify | Qt::AlignBottom;
   this->Orientations = Qt::Vertical;
-  this->VerticalDirection = ctkBasePopupWidget::TopToBottom;
+  this->VerticalDirection = ctkBasePopupWidget::VerticalDirection::TopToBottom;
   this->HorizontalDirection = Qt::LeftToRight;
 }
 
@@ -249,7 +249,7 @@ void ctkBasePopupWidgetPrivate::setupPopupPixmapWidget()
 Qt::Alignment ctkBasePopupWidgetPrivate::pixmapAlignment()const
 {
   Qt::Alignment alignment;
-  if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+  if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
     {
     alignment |= Qt::AlignBottom;
     }
@@ -281,7 +281,7 @@ QRect ctkBasePopupWidgetPrivate::closedGeometry(QRect openGeom)const
 {
   if (this->Orientations & Qt::Vertical)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::BottomToTop)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::BottomToTop)
       {
       openGeom.moveTop(openGeom.bottom());
       }
@@ -393,7 +393,7 @@ QRect ctkBasePopupWidgetPrivate::desiredOpenGeometry(QRect baseGeometry)const
 
   if (this->Alignment & Qt::AlignTop)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
       {
       geometry.moveTop(topLeft.y());
       }
@@ -404,7 +404,7 @@ QRect ctkBasePopupWidgetPrivate::desiredOpenGeometry(QRect baseGeometry)const
     }
   else if (this->Alignment & Qt::AlignBottom)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
       {
       geometry.moveTop(bottomRight.y() + 1);
       }

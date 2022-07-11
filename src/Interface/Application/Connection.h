@@ -99,6 +99,7 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void toggleDisabled();
   void insertNewModule();
+  void changeConnectionStatus(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
