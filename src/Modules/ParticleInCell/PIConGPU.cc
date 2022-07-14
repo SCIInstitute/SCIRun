@@ -34,18 +34,14 @@
 #include <Modules/ParticleInCell/PIConGPU.h>
 //#include <Core/Datatypes/String.h>
 //#include <Core/Datatypes/Matrix.h>
-/*
+
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-*/
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::ParticleInCell;
+
 
 using std::cout;
 using namespace openPMD;
@@ -70,6 +66,8 @@ void PIConGPU::setStateDefaults()
     setStateStringFromAlgo(Parameters::ConfigFile);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
+    setStateIntFromAlgo(ParticleInCell::IterationIndex);
+    setStateIntFromAlgo(ParticleInCell::MaxIndex);
     }
 
 void PIConGPU::execute()
@@ -83,7 +81,10 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
-
+        setAlgoIntFromState(ParticleInCell::IterationIndex);
+        setAlgoIntFromState(ParticleInCell::MaxIndex);
+            
+            
         auto output=algo().run(input);  //possibly need a replacement for this line of code
 
 /*
@@ -209,9 +210,9 @@ void PIConGPU::execute()
             std::copy(buffer_pos_y, buffer_pos_y+buffer_size, data1);
             std::copy(buffer_pos_z, buffer_pos_z+buffer_size, data2);
 
-            output[x_coordinates] = output_mat_0;
-            output[y_coordinates] = output_mat_1;
-            output[z_coordinates] = output_mat_2;
+//            output[x_coordinates] = output_mat_0;
+//            output[y_coordinates] = output_mat_1;
+//            output[z_coordinates] = output_mat_2;
 
     /*
     *****************************************************  end of the openPMD Reader function
@@ -220,9 +221,14 @@ void PIConGPU::execute()
     *****************************************************  Send data to the output ports
     */
 
-            sendOutputFromAlgorithm(x_coordinates,output);
-            sendOutputFromAlgorithm(y_coordinates,output);
-            sendOutputFromAlgorithm(z_coordinates,output);
+//            sendOutputFromAlgorithm(x_coordinates,output);
+//            sendOutputFromAlgorithm(y_coordinates,output);
+//            sendOutputFromAlgorithm(z_coordinates,output);
+            sendOutput(x_coordinates, output_mat_0);
+            sendOutput(y_coordinates, output_mat_1);
+            sendOutput(z_coordinates, output_mat_2);
+                
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function
+

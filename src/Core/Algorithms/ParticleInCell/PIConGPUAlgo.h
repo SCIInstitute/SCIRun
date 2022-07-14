@@ -20,8 +20,8 @@ ALGORITHM_PARAMETER_DECL(SimulationFile);
 ALGORITHM_PARAMETER_DECL(ConfigFile);
 ALGORITHM_PARAMETER_DECL(CloneDir);
 ALGORITHM_PARAMETER_DECL(OutputDir);
-//ALGORITHM_PARAMETER_DECL(IterationIndex);
-//ALGORITHM_PARAMETER_DECL(MaxIndex);
+ALGORITHM_PARAMETER_DECL(IterationIndex);
+ALGORITHM_PARAMETER_DECL(MaxIndex);
 
 class SCISHARE PIConGPUAlgo : public AlgorithmBase
     {
@@ -33,7 +33,6 @@ class SCISHARE PIConGPUAlgo : public AlgorithmBase
             static const AlgorithmOutputName z_coordinates;
     private:
         bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string) const;
-        std::string sst_file_ = "$HOME/scratch/runs/SST/simOutput/openPMD/simData.sst";
         bool simulationstarted_;
     };
 
