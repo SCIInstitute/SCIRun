@@ -64,8 +64,8 @@ ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
-ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
-ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
 
 const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
 const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
@@ -77,8 +77,8 @@ PIConGPUAlgo::PIConGPUAlgo()
     addParameter(Parameters::ConfigFile, std::string("[Enter the path to your .config file here]"));
     addParameter(Parameters::CloneDir, std::string("[Enter the path to the simulation clone directory here]"));
     addParameter(Parameters::OutputDir, std::string("[Enter the path to the output directory here]"));
-    addParameter(Parameters::IterationIndex, 0);
-    simulationstarted_ = false;
+//    addParameter(Parameters::IterationIndex, 0);
+//    simulationstarted_ = false;
     }
 
 bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output) const
@@ -118,6 +118,6 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
 
-    return true;  //need a replacement for this line of code
+    return output;  //need a replacement for this line of code
 
     } //end of the PIConGPUAlgo algorithm run

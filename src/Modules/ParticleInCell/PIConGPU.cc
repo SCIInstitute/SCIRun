@@ -30,6 +30,7 @@
 
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
+#include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 #include <Modules/ParticleInCell/PIConGPU.h>
 //#include <Core/Datatypes/String.h>
@@ -41,7 +42,6 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-
 
 using std::cout;
 using namespace openPMD;
@@ -66,8 +66,7 @@ void PIConGPU::setStateDefaults()
     setStateStringFromAlgo(Parameters::ConfigFile);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
-    setStateIntFromAlgo(ParticleInCell::IterationIndex);
-    setStateIntFromAlgo(ParticleInCell::MaxIndex);
+ //    setStateIntFromAlgo(Parameters::MaxIndex);
     }
 
 void PIConGPU::execute()
@@ -81,8 +80,8 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
-        setAlgoIntFromState(ParticleInCell::IterationIndex);
-        setAlgoIntFromState(ParticleInCell::MaxIndex);
+//        setAlgoIntFromState(Parameters::IterationIndex);
+//        setAlgoIntFromState(Parameters::MaxIndex);
             
             
         auto output=algo().run(input);  //possibly need a replacement for this line of code
