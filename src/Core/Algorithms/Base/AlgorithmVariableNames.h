@@ -54,10 +54,6 @@ public:
   static const AlgorithmParameterName GuiFileTypeName;
   static const AlgorithmParameterName FormatString;
   static const AlgorithmParameterName FunctionString;
-  static const AlgorithmParameterName SimulationFile;
-  static const AlgorithmParameterName ConfigFile;
-  static const AlgorithmParameterName CloneDir;
-  static const AlgorithmParameterName OutputDir;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
   static const AlgorithmParameterName ProgrammableInputPortEnabled;
