@@ -31,10 +31,7 @@
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
-
 #include <Modules/ParticleInCell/PIConGPU.h>
-//#include <Core/Datatypes/String.h>
-//#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
@@ -84,7 +81,7 @@ void PIConGPU::execute()
 //        setAlgoIntFromState(Parameters::MaxIndex);
             
             
-        auto output=algo().run(input);  //possibly need a replacement for this line of code
+        auto output=algo().run(input);
 
 /*
 ************************************************Start the openPMD Reader function and loop
@@ -133,8 +130,7 @@ void PIConGPU::execute()
             for (auto const &dim : extent_cd) cout << dim << ',';
             cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
 
-
-                                                        //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
+                                                 //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
             Record electronPositions = iteration.particles["e"]["position"];
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
             std::array<Extent, 3> extents;
@@ -209,23 +205,14 @@ void PIConGPU::execute()
             std::copy(buffer_pos_y, buffer_pos_y+buffer_size, data1);
             std::copy(buffer_pos_z, buffer_pos_z+buffer_size, data2);
 
-//            output[x_coordinates] = output_mat_0;
-//            output[y_coordinates] = output_mat_1;
-//            output[z_coordinates] = output_mat_2;
-
-    /*
-    *****************************************************  end of the openPMD Reader function
-    */
     /*
     *****************************************************  Send data to the output ports
     */
 
-//            sendOutputFromAlgorithm(x_coordinates,output);
-//            sendOutputFromAlgorithm(y_coordinates,output);
-//            sendOutputFromAlgorithm(z_coordinates,output);
             sendOutput(x_coordinates, output_mat_0);
             sendOutput(y_coordinates, output_mat_1);
             sendOutput(z_coordinates, output_mat_2);
+//            cout << "\nDebug 2\n";
                 
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block

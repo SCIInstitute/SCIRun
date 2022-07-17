@@ -52,10 +52,6 @@ namespace ParticleInCell {
                 OUTPUT_PORT(1, y_coordinates, Matrix);
                 OUTPUT_PORT(2, z_coordinates, Matrix);
 
-//                static Core::Algorithms::AlgorithmParameterName SimulationFile;
-//                static Core::Algorithms::AlgorithmParameterName ConfigFile;
-//                static Core::Algorithms::AlgorithmParameterName CloneDir;
-//                static Core::Algorithms::AlgorithmParameterName OutputDir;
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             private:
                 bool running_ = true;

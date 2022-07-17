@@ -67,10 +67,6 @@ ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
 
-const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
-const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
-const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
-
 PIConGPUAlgo::PIConGPUAlgo()
     {
     addParameter(Parameters::SimulationFile, std::string("[Enter the path to your PIConGPU Simulation here]"));
@@ -118,6 +114,6 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
 
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
 
-    return output;  //need a replacement for this line of code
+    return output;
 
     } //end of the PIConGPUAlgo algorithm run

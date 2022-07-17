@@ -1,0 +1,66 @@
+Settings used in ElectroStatic_buffering_medium_Spheres.srn5
+
+Module          UI setting              set to
+
+PIConGPU        Choose ... simulation   $PIC_EXAMPLES/LaserWakefield
+PIConGPU        Choose the config file  $PIC_CFG/sst.cfg
+PIConGPU        Set ... clone location  $PIC_CLONE/myLWFA
+PIConGPU        Set ... output location $PIC_OUTPUT/lwfa_001
+
+ElectroStatic   Number of Time Steps    5000
+
+ResizeMatrix    Rows                    100
+ResizeMatrix    Columns                 500
+ResizeMatrix    Major                   Column
+
+GetMatrixSlice  Column/Row              Column
+GetMatrixSlice  Current Index           (as needed)
+GetMatrixSlice  Advanced                Un-checked
+GetMatrixSlice  Increment               1
+GetMatrixSlice  Play mode               Loop once
+GetMatrixSlice  Step Delay (ms)         0
+
+Append Matrix   Append rows             Un-checked
+Append Matrix   Append columns          Checked
+
+CreateLatVol    X Size                  100
+CreateLatVol    Y Size                  100
+CreateLatVol    Z Size                  100
+CreateLatVol    Pad Percentage          0
+CreateLatVol    Data at Location        Nodes (linear basis)
+CreateLatVol    Mesh Dimensions         Between (-1,-1,-1) and (1,1,1)
+
+GeneratePointSamplesFromFieldOrWidget   Widget/Random                   Widget
+GeneratePointSamplesFromFieldOrWidget   Number of samples               100
+GeneratePointSamplesFromFieldOrWidget   Distribution                    Unweighted-Uniform
+GeneratePointSamplesFromFieldOrWidget   Increment RNG seed on execute   Checked
+GeneratePointSamplesFromFieldOrWidget   Seed value for RNG              25
+GeneratePointSamplesFromFieldOrWidget   Clamp to nodes                  Checked
+
+ShowField       Field Name              Blank
+ShowField       Default Color           Yellow
+ShowField       Display Options         Nodes selected
+ShowField       Show Nodes              Checked
+ShowField       Enable Transparency     0.65
+ShowField       Node Coloring           Default
+ShowField       Node Display Type       Spheres
+ShowField       Sphere Scale            0.002500000
+ShowField       Resolution              5
+
+EditMeshBoundingBox     Input Field Attributes  Center (x,y,z)  0.0000, 0.0000, 0.0000
+EditMeshBoundingBox     Input Field Attributes  Size (x,y,z)    0.0002, 0.0002, 0.0002
+EditMeshBoundingBox     Output Field Attributes Center  x  0.00000
+EditMeshBoundingBox     Output Field Attributes Center  y  0.00000
+EditMeshBoundingBox     Output Field Attributes Center  z  0.10000
+EditMeshBoundingBox     Output Field Attributes Size    x  0.20000
+EditMeshBoundingBox     Output Field Attributes Size    y  0.20000
+EditMeshBoundingBox     Output Field Attributes Size    z  0.20000
+EditMeshBoundingBox     No translation reatriction  Checked
+EditMeshBoundingBox     XYZ translation reatriction Not Checked
+EditMeshBoundingBox     RDI translation reatriction Not Checked
+
+Geometry Buffer Current Index           (as needed)
+Geometry Buffer Advanced                Un-checked
+Geometry Buffer Increment               1
+Geometry Buffer Step Delay (ms)         1
+
