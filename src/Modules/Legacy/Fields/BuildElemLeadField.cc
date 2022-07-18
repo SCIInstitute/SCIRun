@@ -75,7 +75,7 @@ namespace SCIRun::Modules::Fields
 class BuildElemLeadFieldImpl
 {
 public:
-  MatrixHandle leadfield_;
+  DenseMatrixHandle leadfield_;
   int last_mesh_generation_ {-1};
   int last_interp_generation_ {-1};
 };
@@ -150,7 +150,10 @@ void BuildElemLeadField::execute()
       (*rhs)[idx?idx[i*idxstride]:i] -= val[i*idxstride];
     }
 
+#if 0
+//TODO: looped execution!
     sendOutput(RHSVector, rhs, true, counter < (nelecs-2));
+#endif
 
     auto sol_in = getRequiredInput(SolutionVectors);
 
