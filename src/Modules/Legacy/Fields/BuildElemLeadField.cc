@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,29 +37,20 @@
  *
  */
 
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+
+#include <Modules/Legacy/Fields/BuildElemLeadField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+// #include <Core/Datatypes/Mesh.h>
+// #include <Core/Datatypes/MatrixTypeConverter.h>
 
-#include <iostream>
-#include <stdio.h>
-#include <math.h>
-
-namespace BioPSE {
-
-using std::pair;
-
-using namespace SCIRun;
-
-
-class BuildElemLeadField : public Module {    
+#if 0
+class BuildElemLeadField : public Module {
     MatrixHandle leadfield_;
     int last_mesh_generation_;
     int last_interp_generation_;
@@ -68,52 +59,67 @@ class BuildElemLeadField : public Module {
     virtual ~BuildElemLeadField();
     virtual void execute();
 };
+#endif
 
 
-DECLARE_MAKER(BuildElemLeadField)
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(BuildElemLeadField, LeadField, SCIRun)
 
-//---------------------------------------------------------------
-BuildElemLeadField::BuildElemLeadField(GuiContext *context)
-  : Module("BuildElemLeadField", context, Filter, "LeadField", "BioPSE"),
-    leadfield_(0),
-    last_mesh_generation_(-1),
-    last_interp_generation_(-1)
+namespace SCIRun::Modules::Fields
 {
+class BuildElemLeadFieldImpl
+{
+public:
+  MatrixHandle leadfield_;
+  int last_mesh_generation_ {-1};
+  int last_interp_generation_ {-1};
+};
 }
 
-
-BuildElemLeadField::~BuildElemLeadField()
+BuildElemLeadField::BuildElemLeadField() :
+  Module(staticInfo_), impl_(new BuildElemLeadFieldImpl)
 {
+  INITIALIZE_PORT(DomainMesh);
+  INITIALIZE_PORT(ElectrodeInterpolant);
+  INITIALIZE_PORT(SolutionVectors);
+  INITIALIZE_PORT(LeadField);
 }
 
+BuildElemLeadField::~BuildElemLeadField() = default;
 
-void
-BuildElemLeadField::execute()
+void BuildElemLeadField::execute()
 {
-  FieldHandle mesh_in;
-  if (!get_input_handle("Domain Mesh", mesh_in)) return;
+  auto mesh_in = getRequiredInput(DomainMesh);
 
-  VMesh::size_type nnodes = mesh_in->vmesh()->num_nodes();
-  VMesh::size_type nelems = mesh_in->vmesh()->num_elems();
+  auto nnodes = mesh_in->vmesh()->num_nodes();
+  auto nelems = mesh_in->vmesh()->num_elems();
 
-  MatrixHandle interp_in;
-  if (!get_input_handle("Electrode Interpolant", interp_in)) return;
+  auto interp_in = getRequiredInput(ElectrodeInterpolant);
 
-  // Can't shortcut return, downstream from the send intermediate may be 
+  // Can't shortcut return, downstream from the send intermediate may be
   // waiting for output, so don't hang.
-  last_mesh_generation_ = mesh_in->generation;
-  last_interp_generation_ = interp_in->generation;
+  //last_mesh_generation_ = mesh_in->generation;
+  //last_interp_generation_ = interp_in->generation;
 
-  VField::size_type nelecs=interp_in->nrows();
-  VField::index_type counter=0;
-  DenseMatrixHandle leadfield_mat = new DenseMatrix(nelecs, nelems*3, 0);
+  auto nelecs = interp_in->nrows();
+  auto counter = 0;
+  DenseMatrixHandle leadfield_mat(new DenseMatrix(nelecs, nelems*3, 0));
 
-  while (counter<(nelecs-1)) 
+  while (counter < (nelecs-1))
   {
-    update_progress(counter*1./(nelecs-1));
-    ColumnMatrixHandle rhs = new ColumnMatrix(nnodes);
-    rhs->zero();
+    {
+      std::ostringstream ostr;
+      ostr << "update_progress " << counter << " / " << nelecs - 1;
+      remark(ostr.str());
+      //update_progress(counter, nelecs - 1);
+    }
+    DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nnodes));
+    rhs->setZero();
     index_type i;
 
     index_type *idx;
@@ -122,37 +128,42 @@ BuildElemLeadField::execute()
     size_type idxstride;
 
     interp_in->getRowNonzerosNoCopy(0, idxsize, idxstride, idx, val);
-    if (!idxsize) ASSERTFAIL("No mesh node assigned to this element!");
-    for (i=0; i<idxsize; i++) {
-      if (idx[i*idxstride] >= nnodes) ASSERTFAIL("Mesh node out of range!");
-      (*rhs)[idx?idx[i*idxstride]:i]+=val[i*idxstride];
+    if (!idxsize)
+      THROW_ALGORITHM_PROCESSING_ERROR("No mesh node assigned to this element!");
+
+    for (i=0; i<idxsize; i++)
+    {
+      if (idx[i*idxstride] >= nnodes)
+        THROW_ALGORITHM_PROCESSING_ERROR("Mesh node out of range!");
+      (*rhs)[idx?idx[i*idxstride]:i] += val[i*idxstride];
     }
 
     interp_in->getRowNonzerosNoCopy(counter+1, idxsize, idxstride, idx, val);
-    if (!idxsize) ASSERTFAIL("No mesh node assigned to this element!");
-    for (i=0; i<idxsize; i++) {
-      if (idx[i*idxstride] >= nnodes) ASSERTFAIL("Mesh node out of range!");
-      (*rhs)[idx?idx[i*idxstride]:i]-=val[i*idxstride];
+    if (!idxsize)
+      THROW_ALGORITHM_PROCESSING_ERROR("No mesh node assigned to this element!");
+
+    for (i=0; i<idxsize; i++)
+    {
+      if (idx[i*idxstride] >= nnodes)
+        THROW_ALGORITHM_PROCESSING_ERROR("Mesh node out of range!");
+      (*rhs)[idx?idx[i*idxstride]:i] -= val[i*idxstride];
     }
 
-    send_output_handle("RHS Vector", rhs, true, counter < (nelecs-2));
+    sendOutput(RHSVector, rhs, true, counter < (nelecs-2));
 
-    // read sol'n
-    MatrixHandle sol_in;
-    if (!get_input_handle("Solution Vectors", sol_in)) return;
+    auto sol_in = getRequiredInput(SolutionVectors);
 
     for (i=0; i<nelems; i++)
-      for (index_type j=0; j<3; j++) 
+    {
+      for (index_type j=0; j<3; j++)
       {
-        (*leadfield_mat)[counter+1][i*3+j] =- sol_in->get(i, j);
+        (*leadfield_mat)(counter+1, i*3+j) = -(*sol_in)(i, j);
       }
+    }
     counter++;
   }
 
-  leadfield_ = leadfield_mat;
+  impl_->leadfield_ = leadfield_mat;
 
-  send_output_handle("Leadfield (nelecs x nelemsx3)", leadfield_, true);
-} 
-
-
-} // End namespace BioPSE
+  sendOutput(LeadField, impl_->leadfield_);
+}

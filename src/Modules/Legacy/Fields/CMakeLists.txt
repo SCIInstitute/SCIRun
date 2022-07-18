@@ -102,6 +102,7 @@ SET(Modules_Legacy_Fields_HEADERS
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
   CalculateFieldDataMetric.h
+  BuildElemLeadField.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -217,6 +218,7 @@ SET(Modules_Legacy_Fields_SRCS
   InterfaceWithTetGen.cc
   GenerateNodeNormals.cc
   #CompositeModuleTestGFB_FM.cc
+  BuildElemLeadField.cc
 )
 
 IF(WITH_TETGEN)
