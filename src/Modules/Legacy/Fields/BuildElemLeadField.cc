@@ -125,9 +125,10 @@ void BuildElemLeadField::execute()
     index_type *idx;
     double *val;
     size_type idxsize;
-    size_type idxstride;
+    //TODO: strided matrices not available--is it required?
+    const size_type idxstride = 1;
 
-    interp_in->getRowNonzerosNoCopy(0, idxsize, idxstride, idx, val);
+    interp_in->getRowNonzerosNoCopy(0, idxsize, /*idxstride,*/ idx, val);
     if (!idxsize)
       THROW_ALGORITHM_PROCESSING_ERROR("No mesh node assigned to this element!");
 
@@ -138,7 +139,7 @@ void BuildElemLeadField::execute()
       (*rhs)[idx?idx[i*idxstride]:i] += val[i*idxstride];
     }
 
-    interp_in->getRowNonzerosNoCopy(counter+1, idxsize, idxstride, idx, val);
+    interp_in->getRowNonzerosNoCopy(counter+1, idxsize, /*idxstride,*/ idx, val);
     if (!idxsize)
       THROW_ALGORITHM_PROCESSING_ERROR("No mesh node assigned to this element!");
 
