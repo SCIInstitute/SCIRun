@@ -119,6 +119,7 @@
     <addaction name="actionClearFrequentModules_"/>
     <addaction name="separator"/>
     <addaction name="menuCurrent_"/>
+    <addaction name="actionAutoRotateViewScene_"/>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
@@ -442,7 +443,6 @@
         </property>
         <property name="font">
          <font>
-          <weight>75</weight>
           <italic>true</italic>
           <bold>true</bold>
          </font>
@@ -1345,6 +1345,17 @@
   <action name="actionClearFrequentModules_">
    <property name="text">
     <string>Clear frequent modules</string>
+   </property>
+  </action>
+  <action name="actionAutoRotateViewScene_">
+   <property name="text">
+    <string>Toggle Auto-rotate ViewScene</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle auto-rotate ViewScene</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+Alt+R</string>
    </property>
   </action>
  </widget>

@@ -300,6 +300,12 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   guiLogDebug("Connection made: {}", id_.id_);
 }
 
+void ConnectionLine::changeConnectionStatus(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status)
+{
+  if (id.id_ == id_.id_)
+    setDisabled(!status);
+}
+
 ConnectionLine::~ConnectionLine()
 {
   destroyConnection();

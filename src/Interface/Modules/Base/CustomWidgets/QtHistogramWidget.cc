@@ -110,8 +110,8 @@ QtHistogramWidget::QtHistogramWidget( QWidget *parent,
 
   this->private_->ui_.label_3->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
 
-  // We will set the histogram to be logarithmic by default
-  this->private_->ui_.log_histogram_combo_->setCurrentIndex( 1 );
+  // We will set the histogram to be linear by default
+  this->private_->ui_.log_histogram_combo_->setCurrentIndex( 0 );
 }
 
 QtHistogramWidget::~QtHistogramWidget()

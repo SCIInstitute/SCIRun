@@ -36,10 +36,10 @@ For documentation, please see: https://scirun.readthedocs.io/en/latest/
 Please see https://scirun.readthedocs.io/en/latest/start/build.html
 
 #### Python API
-Please see https://scirun.readthedocs.io/en/latest/user_doc/python.html 
+Please see https://scirun.readthedocs.io/en/latest/user_doc/python.html
 
 ### Questions and Answers
-For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
+For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/discussions.
 
 ### License and Credits
   For more information, please see: http://software.sci.utah.edu

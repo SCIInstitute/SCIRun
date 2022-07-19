@@ -57,7 +57,7 @@ set(PUGIXML_PUBLIC_DEFINITIONS
   $<$<BOOL:${PUGIXML_NO_EXCEPTIONS}>:PUGIXML_NO_EXCEPTIONS>)
 
 if (BUILD_SHARED_LIBS)
-  add_library(pugixml SHARED
+  SCIRUN_ADD_LIBRARY(pugixml SHARED
     #${PROJECT_SOURCE_DIR}/scripts/pugixml_dll.rc
     ${PROJECT_SOURCE_DIR}/pugixml.cpp)
 endif()
