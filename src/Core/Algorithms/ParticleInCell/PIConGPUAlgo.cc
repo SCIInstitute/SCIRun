@@ -73,11 +73,12 @@ PIConGPUAlgo::PIConGPUAlgo()
     addParameter(Parameters::ConfigFile, std::string("[Enter the path to your .config file here]"));
     addParameter(Parameters::CloneDir, std::string("[Enter the path to the simulation clone directory here]"));
     addParameter(Parameters::OutputDir, std::string("[Enter the path to the output directory here]"));
+    addParameter(Variables::Method,1);
 //    addParameter(Parameters::IterationIndex, 0);
 //    simulationstarted_ = false;
     }
 
-bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output) const
+bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output, const int reRun) const
     {
     #include <stdlib.h>
     using namespace std;
@@ -93,6 +94,21 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
                   +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
                   +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
         }
+
+/*
+
+    if(reRun==0)
+        {
+        text_file = "printf '#!/usr/bin bash\n\ncd $HOME/"+sim_clone+" && tbg -s bash -c "
+                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+"' > $HOME/Test_compile_run";
+
+        if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
+            {
+            text_file = "printf '#!/usr/bin bash\n\ncd $HOME/"+sim_clone+" && tbg -s bash -c "
+                      +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
+            }
+        }
+*/
 
     const char *command=text_file.c_str();
     system(command);
@@ -111,8 +127,9 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     auto cfg_input  = get(Parameters::ConfigFile).toString();
     auto sim_clone  = get(Parameters::CloneDir).toString();
     auto sim_output = get(Parameters::OutputDir).toString();
+    auto reRun = get(Variables::Method).toInt();
 
-    StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output);
+    StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output, reRun);
 
     return output;
 

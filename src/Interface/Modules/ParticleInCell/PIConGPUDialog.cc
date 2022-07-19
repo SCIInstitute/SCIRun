@@ -45,4 +45,5 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     addLineEditManager({inputConfig_}, Variables::ConfigFile);
     addLineEditManager({inputClone_}, Variables::CloneDir);
     addLineEditManager({outputData_}, Variables::OutputDir);
+    addRadioButtonGroupManager({reRunButton_}, Variables::Method);
     }

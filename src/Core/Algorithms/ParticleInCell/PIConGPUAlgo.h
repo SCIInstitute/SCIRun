@@ -32,7 +32,7 @@ class SCISHARE PIConGPUAlgo : public AlgorithmBase
             static const AlgorithmOutputName y_coordinates;
             static const AlgorithmOutputName z_coordinates;
     private:
-        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string) const;
+        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
         bool simulationstarted_;
     };
 

@@ -63,6 +63,7 @@ void PIConGPU::setStateDefaults()
     setStateStringFromAlgo(Parameters::ConfigFile);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
+    setStateIntFromAlgo(Variables::Method);
  //    setStateIntFromAlgo(Parameters::MaxIndex);
     }
 
@@ -77,10 +78,10 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
+        setAlgoIntFromState(Variables::Method);
 //        setAlgoIntFromState(Parameters::IterationIndex);
 //        setAlgoIntFromState(Parameters::MaxIndex);
-            
-            
+
         auto output=algo().run(input);
 
 /*
@@ -189,6 +190,8 @@ void PIConGPU::execute()
                 if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) buffer_pos_z[m/particle_sample_rate]=chunk.get()[m];
                 }
 
+            cout << "\nDebug 1\n";
+
     /*
     *****************************************************  Set up the output data
     */
@@ -212,7 +215,8 @@ void PIConGPU::execute()
             sendOutput(x_coordinates, output_mat_0);
             sendOutput(y_coordinates, output_mat_1);
             sendOutput(z_coordinates, output_mat_2);
-//            cout << "\nDebug 2\n";
+
+            cout << "\nDebug 2\n";
                 
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
